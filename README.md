@@ -30,13 +30,13 @@ HOSCY is a free and Open-Source tool with many utilities for communication and O
 
 ## Shortcuts
 - **UI Pages**
-	- [Main Page](#pages-main)
-	- [Input Page](#pages-input)
-	- [Speech Page](#pages-speech)
-	- [API Page](#pages-api)
-	- [Output Page](#pages-output)
-	- [OSC Page](#pages-osc)
-	- [Debug Page](#pages-debug)
+	- [Main Page](#pages---main)
+	- [Input Page](#pages---input)
+	- [Speech Page](#pages---speech)
+	- [API Page](#pages---api)
+	- [Output Page](#pages---output)
+	- [OSC Page](#pages---osc)
+	- [Debug Page](#pages---debug)
 -  **Usage**
 	- [Messages and Notifications](#messages-and-notifications)
 	- [Commands and Replacements](#commands-and-replacements)
@@ -44,8 +44,8 @@ HOSCY is a free and Open-Source tool with many utilities for communication and O
 		- [OSC Command Example](#osc-command-example)
 		- [OSC Commands Information](#osc-command-information)
 	- [OSC Routing](#osc-routing)
-		- [Routing received Data]
-		- [Internal Endpoints]
+		- [Routing received Data](#routing-received-data)
+		- [Internal Endpoints](#internal-endpoints)
 - **Other**
 	- [Speech Recognition](#speech-recognition)
 	- [API Preset Configuration](#api-preset-configuration)
@@ -120,13 +120,13 @@ If you enable the "Debug" log level, I highly recommend to add following filters
 ## Messages and Notifications
 There is two different systems used in the Textbox to display information, messages and notifications
 
-Messages are used for **[speech recognition](#speech-recognition)** and **[manual input](#pages-input)** and notifications are used by **[media control](#commands)** to show "now playing"
+Messages are used for **[speech recognition](#speech-recognition)** and **[manual input](#pages---input)** and notifications are used by **[media control](#commands)** to show "now playing"
 
 **Messages** work in a queue, as many messages can be stored as needed, which will then be displayed consecutively
 
 There can only be a single **notification** at a time and if the last one has not been displayed yet, but a new notification is put into the system, the old one gets replaced. Notifications only get displayed after all messages have been sent to avoid them from interfering. Notifications are also not affected by **[commands and replacements](#commands-and-replacements)**
 
-Both messages and notifications have separate **[OSC endpoints](#pages-osc)** that can be targeted, it is recommended to use notifications when you want to display short information that is not as important *(like "now playing")*
+Both messages and notifications have separate **[OSC endpoints](#pages---osc)** that can be targeted, it is recommended to use notifications when you want to display short information that is not as important *(like "now playing")*
 
 ## Commands and Replacements
 Just like there is two different systems for textbox information, there is also two systems for text replacement, commands and replacements
@@ -139,7 +139,7 @@ If these are triggered can be configured in most cases. There usually is also a 
 Replacements are applied before commands are, so in theory it is possible to trigger commands via replacements
 
 ### Replacements
-Replacements can be found on the **[speech page](#pages-speech)**, they execute in the following order:
+Replacements can be found on the **[speech page](#pages---speech)**, they execute in the following order:
 - **Noise filters** remove certain words at the start and end of a message *("the I like..." => "I like..")*
 - **Replacements** replace a snippet of a message with some other text *("hi" => "hello")*
 - **Shortcuts** replace an entire message with some other text *("cat" => "I love cats")*
@@ -148,7 +148,7 @@ Replacements can be found on the **[speech page](#pages-speech)**, they execute 
 ### Commands
 Commands get run after replacements and are mostly hard-coded, they only trigger when sent as their own message:
 - **Skipping messages** can be done by either saying "clear" or "skip"
-- **Media Control** can be used to control your currently playing media and can be triggered by saying the keyword set in the **[speech page](#pages-speech)** followed by a command:
+- **Media Control** can be used to control your currently playing media and can be triggered by saying the keyword set in the **[speech page](#pages---speech)** followed by a command:
 	- **Pausing:** "Pause" / "Stop"
 	- **Resuming:** "Play" / "Resume"
 	- **Skip:** "Next" / "Skip"
@@ -202,14 +202,14 @@ The command then follows this pattern:
 	- **Floats** have the indicator `[f]` and their value can be any positive or negative decimal number
 	- **Strings** have the indicator `[s]` and their value can be any string. The value must be surrounded by quotes like this: `"Hello World!"` or it will not be recognized
 -  **IP and Address** ***(Optional)*** is the override for the target location
-	- If this parameter is not used, the default values from the **[OSC page](#pages-osc)** are used
+	- If this parameter is not used, the default values from the **[OSC page](#pages---osc)** are used
 	- Examples: `127.0.0.1:9001` and `192.168.0.1:9000`
 - **Waiting** ***(Optional)*** is a value that can be added at the end of a command to delay the execution of the next in the chain
 	- Usage is `w[value]` where `[value]` is replaced by a time in milliseconds
 	- Examples: `w100` and `w5000`
 
 ## OSC Routing
-This can be found on the **[OSC page](#pages-osc)** and handles incoming OSC data, allowing you to route all OSC from one source to multiple destinations.
+This can be found on the **[OSC page](#pages---osc)** and handles incoming OSC data, allowing you to route all OSC from one source to multiple destinations.
 
 ### Routing Received Data
 There is to levels to routing, firstly you set up the actual filter itself.
@@ -222,7 +222,7 @@ Additionally there is also some internal endpoints that can be used.
 Some of these are specifically targeted towards VRChat input, like buttons for skipping, muting the recognizer or indicating if the recognizer is muted. But you can also access TTS, **[Messages and Notifications](#messages-and-notifications)** with them.
 
 ## Speech Recognition
-HOSCY has many different ways of recognizing speech (found on the **[speech page](#pages-speech)**, each single one has benefits and drawbacks:
+HOSCY has many different ways of recognizing speech (found on the **[speech page](#pages---speech)**, each single one has benefits and drawbacks:
 
 - **Vosk Kaldi AI Recognizer**
 	- **Pros:** Local and free
@@ -243,10 +243,10 @@ HOSCY has many different ways of recognizing speech (found on the **[speech page
 - **Azure API Recognition**
 	- **Pros:** Fast, performant and accurate
 	- **Cons:** Not local, costs money
-	- This recognizer specifically uses **[Azure cognitive services](https://azure.microsoft.com/en-us/services/cognitive-services/)** for speech recognition, allowing continuous and accurate recognition. The only drawback being the cost. Options can be found **[here](#pages-api)**
+	- This recognizer specifically uses **[Azure cognitive services](https://azure.microsoft.com/en-us/services/cognitive-services/)** for speech recognition, allowing continuous and accurate recognition. The only drawback being the cost. Options can be found **[here](#pages---api)**
 
 ## API Preset Configuration
-Both translation and any-API recognition require an API preset to function, this topic can be very confusing to anyone not accustomed to working with this so I will try to keep it simple. Preset configuration can be found at the top of the **[API page](#pages-api)**
+Both translation and any-API recognition require an API preset to function, this topic can be very confusing to anyone not accustomed to working with this so I will try to keep it simple. Preset configuration can be found at the top of the **[API page](#pages---api)**
 
 ### Preset Parameters
 Ill be explaining the function of every parameter with the **[Azure cognitive services](https://azure.microsoft.com/en-us/services/cognitive-services/)** translation API as an example:
