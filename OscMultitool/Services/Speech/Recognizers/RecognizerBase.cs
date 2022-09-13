@@ -1,14 +1,7 @@
-﻿using NAudio.Wave;
-using OscMultitool.OscControl;
+﻿using OscMultitool.OscControl;
 using OscMultitool.Services.Speech.Recognizers;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace OscMultitool.Services.Speech
 {

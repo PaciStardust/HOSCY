@@ -1,17 +1,6 @@
-﻿using NAudio.CoreAudioApi;
-using NAudio.Wave;
-using OscMultitool.Services.Speech.Recognizers;
-using OscMultitool.Ui.Pages;
-using System;
+﻿using OscMultitool.Ui.Pages;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Speech.AudioFormat;
 using System.Speech.Recognition;
-using System.Speech.Synthesis;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace OscMultitool.Services.Speech
 {

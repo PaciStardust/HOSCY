@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OscMultitool.Services.Speech.Recognizers
+﻿namespace OscMultitool.Services.Speech.Recognizers
 {
     public readonly struct RecognizerPerms
     {
