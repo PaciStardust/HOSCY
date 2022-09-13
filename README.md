@@ -66,7 +66,7 @@ After sending a message, hitting the send button again will allow you to fill th
 
 The right side contains the preset selector, here you can create and use presets for sending messages you might send often *(Something like a greeting for example)*
 
-Additional options like allowing the message to use **[translation](#api-preset-configuartion)** or **[commands](#commands-and-replacements)** can be found on the speech page
+Additional options like allowing the message to use **[translation](#api-preset-configuration)** or **[commands](#commands-and-replacements)** can be found on the speech page
 
 ## Pages - Speech
 The speech page contains everything regarding speech recognition and a few options for the input page
@@ -80,7 +80,7 @@ Picking a recognizer will usually gray out some options below as the **[selected
 Recognizer specific options *(like microphone or API info)* only apply after restarting the recognizer, changing them during usage will not apply them
 
 ## Pages - API
-Here everything API related can be found, if you want to find out how to configure an API Preset, the information is located **[here](#api-preset-configuartion)**
+Here everything API related can be found, if you want to find out how to configure an API Preset, the information is located **[here](#api-preset-configuration)**
 
 Please keep in mind that in order to see the changes made to these options, you usually have to reload whatever is using them. If you are using Translation, simply hit the "Reload" button. The recognition options require you to restart the recognizer if it is running
 
