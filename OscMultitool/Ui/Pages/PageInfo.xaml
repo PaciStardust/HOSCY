@@ -1,0 +1,41 @@
+﻿<Page x:Class="OscMultitool.Ui.Pages.PageInfo"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:OscMultitool"
+      xmlns:pages="clr-namespace:OscMultitool.Ui.Pages"
+      mc:Ignorable="d" 
+      d:DesignHeight="420" d:DesignWidth="689"
+      Title="PageInfo">
+
+    <Grid Margin="32">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Margin="0,0,16,0" BorderBrush="White" BorderThickness="2">
+            <Grid Margin="16,4,16,4">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock x:Name="message" Grid.Row="1" TextAlignment="Center" Foreground="White" Text="No message sent since opening" VerticalAlignment="Center" FontFamily="Microsoft YaHei UI" FontSize="24" TextWrapping="Wrap"/>
+
+                <TextBlock x:Name="sendStatus" Grid.Row="0" TextAlignment="Center" Foreground="White" Text="No message sent since opening" FontFamily="Microsoft YaHei UI" FontSize="18" TextWrapping="Wrap" Opacity="0.5"/>
+
+                <TextBlock x:Name="notification" Grid.Row="2" TextAlignment="Center" Foreground="White" Text="No notification sent since opening" FontFamily="Microsoft YaHei UI" FontSize="18" TextWrapping="Wrap" Opacity="0.5"/>
+            </Grid>
+        </Border>
+
+        <Border Grid.Column="1" Margin="16,0,0,0" BorderBrush="White" BorderThickness="2" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel>
+                <Button x:Name="muteButton" Background="{x:Null}" BorderBrush="White" Foreground="White" Content="Mute Mic" FontSize="14" FontFamily="Microsoft YaHei UI" Margin="8,8,8,16" HorizontalAlignment="Left" Width="76" Click="Button_Mute" Height="76"/>
+                <Button Background="{x:Null}" BorderBrush="White" Foreground="White" Content="Clear" FontSize="14" FontFamily="Microsoft YaHei UI" Margin="8,16,8,8" HorizontalAlignment="Left" Width="76" Click="Button_Clear" Height="76"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Page>

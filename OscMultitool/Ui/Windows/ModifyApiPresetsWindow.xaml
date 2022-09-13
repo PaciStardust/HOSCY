@@ -1,0 +1,71 @@
+﻿<Window x:Class="OscMultitool.Ui.Windows.ModifyApiPresetsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OscMultitool"
+        xmlns:ui="clr-namespace:OscMultitool.Ui"
+        mc:Ignorable="d"
+        Title="Modify Listener Filters" Height="360" Width="689" Background="#FF444444" ResizeMode="CanMinimize">
+
+    <Grid Margin="16">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+        
+        <ListBox x:Name="listBox" SelectionChanged ="ListBox_SelectionChanged" Background="{x:Null}" BorderBrush="White" Foreground="White" FontSize="18" FontFamily="Microsoft YaHei UI" Margin="0,0,8,0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
+
+        <Grid Margin="8,0,0,0" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <StackPanel>
+                <WrapPanel HorizontalAlignment="Center">
+                    <Button Content="Add New" Click="Button_AddEntry" Background="{x:Null}" BorderBrush="White" Foreground="White" FontSize="18" FontFamily="Microsoft YaHei UI" Width="98"/>
+                    <Button Content="Remove" Margin="8,0,0,0" Click="Button_RemoveEntry" Background="{x:Null}" BorderBrush="White" Foreground="White" FontSize="18" FontFamily="Microsoft YaHei UI" Width="91"/>
+                </WrapPanel>
+
+                <WrapPanel Margin="0,8,0,0" HorizontalAlignment="Center">
+                    <Button Content="Modify" Click="Button_ModifyEntry" Background="{x:Null}" BorderBrush="White" Foreground="White" FontSize="18" FontFamily="Microsoft YaHei UI" Width="78"/>
+                    <Button Content="Headers" Click="Button_EditHeaders" Background="{x:Null}" BorderBrush="White" Foreground="White" FontSize="18" FontFamily="Microsoft YaHei UI" Margin="8,0,0,0" Width="81"/>
+                </WrapPanel>
+            </StackPanel>
+
+            <ScrollViewer Grid.Row="1" Margin="0,32,0,0">
+                <StackPanel Margin="0,0,16,0">
+                    <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="Name" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18"/>
+                    <TextBox x:Name="textName" TextWrapping="Wrap" Background="{x:Null}" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18" BorderBrush="White" Width="Auto" KeyUp="TextBox_KeyPressed"/>
+
+                    <TextBlock HorizontalAlignment="Center" Margin="0,8,0,0" TextWrapping="Wrap" Text="URL" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18"/>
+                    <TextBox x:Name="textUrl" TextWrapping="Wrap" Background="{x:Null}" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18" BorderBrush="White" Width="Auto" KeyUp="TextBox_KeyPressed"/>
+
+                    <Grid Margin="0,8,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Margin="0,0,8,0">
+                            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="Result Name" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18"/>
+                            <TextBox x:Name="textResult" TextWrapping="NoWrap" Background="{x:Null}" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18" BorderBrush="White" Width="Auto" KeyUp="TextBox_KeyPressed"/>
+                        </StackPanel>
+
+                        <StackPanel Margin="8,0,0,0" Grid.Column="1">
+                            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="Timeout (ms)" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18"/>
+                            <TextBox x:Name="textTimeout" TextWrapping="NoWrap" Background="{x:Null}" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18" BorderBrush="White" Width="Auto" KeyUp="TextBox_KeyPressed"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock HorizontalAlignment="Center" Margin="0,8,0,0" TextWrapping="Wrap" Text="Content Type (Speech Recognition)" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18"/>
+                    <TextBox x:Name="textContentType" TextWrapping="Wrap" Background="{x:Null}" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18" BorderBrush="White" Width="Auto" KeyUp="TextBox_KeyPressed"/>
+
+                    <TextBlock HorizontalAlignment="Center" Margin="0,8,0,0" TextWrapping="Wrap" Text="JSON (Translation, [T] gets replaced)" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18"/>
+                    <TextBox x:Name="textJson" TextWrapping="NoWrap" Background="{x:Null}" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18" BorderBrush="White" Width="Auto" AcceptsReturn="True"/>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</Window>

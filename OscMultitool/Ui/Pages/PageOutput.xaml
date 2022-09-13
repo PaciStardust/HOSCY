@@ -1,0 +1,135 @@
+﻿<Page x:Class="OscMultitool.Ui.Pages.PageOutput"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:OscMultitool"
+      xmlns:ui="clr-namespace:OscMultitool.Ui"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="PageOutput">
+
+    <ScrollViewer Margin="16,8,8,8" VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+            <!-- Textbox -->
+            <StackPanel>
+                <WrapPanel>
+                    <Label Content="Textbox" Foreground="White" FontSize="30" FontFamily="Microsoft YaHei UI" FontWeight="Bold"/>
+                    <Button Content="Skip Current Queue" Margin="16,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_SkipBox" Background="{x:Null}" BorderBrush="White" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18" Width="181"/>
+                </WrapPanel>
+
+                <!-- Message Timeout -->
+                <StackPanel>
+                    <Label Content="Message Timeout" Foreground="White" FontSize="24" FontFamily="Microsoft YaHei UI" FontWeight="Bold"/>
+
+                    <StackPanel Margin="8,4,0,0">
+                        <CheckBox  x:Name="textboxDynamicTimeout" Content="Enable dynamic timeout" Foreground="White" IsChecked="{Binding Textbox.DynamicTimeout, Source={x:Static local:Config.Data}}"  FontSize="18" FontFamily="Microsoft YaHei UI" BorderBrush="White" Background="White" Click="TextboxDynamicTimeout_Checked"/>
+
+                        <WrapPanel  x:Name="optionDynamicTimeout" Margin="0,4,0,0">
+                            <TextBox x:Name="textboxTimeoutMultiplier" VerticalAlignment="Center" TextWrapping="NoWrap" Width="120" FontFamily="Microsoft YaHei UI" FontSize="18" Background="#00000000" Foreground="White" BorderBrush="White">
+                                <TextBox.Text>
+                                    <Binding Source="{x:Static local:Config.Data}" Path="Textbox.TimeoutMultiplier" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <ui:IntegerValidationRule Min="1000" Max="10000"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Label Content ="Dynamic timeout (ms/20char)" Foreground="White" FontSize="18"  FontFamily="Microsoft YaHei UI"/>
+                        </WrapPanel>
+
+                        <WrapPanel x:Name="optionDefaultTimeout">
+                            <TextBox x:Name="textboxDefaultTimeout" VerticalAlignment="Center" TextWrapping="NoWrap" Width="120" FontFamily="Microsoft YaHei UI" FontSize="18" Background="#00000000" Foreground="White" BorderBrush="White">
+                                <TextBox.Text>
+                                    <Binding Source="{x:Static local:Config.Data}" Path="Textbox.DefaultTimeout" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <ui:IntegerValidationRule Min="1000" Max="30000"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Label Content="Default timeout (ms)" Foreground="White" FontSize="18"  FontFamily="Microsoft YaHei UI"/>
+                        </WrapPanel>
+                    </StackPanel>
+
+                </StackPanel>
+
+                <!-- Other -->
+                <StackPanel Margin="0,16,0,0">
+                    <Label Content="Other Options" Foreground="White" FontSize="24" FontFamily="Microsoft YaHei UI" FontWeight="Bold"/>
+
+                    
+                    <StackPanel Margin="8,4,0,0">
+                        <CheckBox x:Name="textboxAutoClearMsg" Content="Clear automatically after messages" Foreground="White" IsChecked="{Binding Textbox.AutomaticClearMessage, Source={x:Static local:Config.Data}}"  FontSize="18" FontFamily="Microsoft YaHei UI" BorderBrush="White" Background="White"/>
+                        <CheckBox x:Name="textboxAutoClearNot" Margin="0,4,0,0" Content="Clear automatically after notifications" Foreground="White" IsChecked="{Binding Textbox.AutomaticClearNotification, Source={x:Static local:Config.Data}}"  FontSize="18" FontFamily="Microsoft YaHei UI" BorderBrush="White" Background="White"/>
+                        <CheckBox x:Name="textboxMediaStatus" Margin="0,4,0,0" Content="Show media status" Foreground="White" IsChecked="{Binding Textbox.ShowMediaStatus, Source={x:Static local:Config.Data}}"  FontSize="18" FontFamily="Microsoft YaHei UI" BorderBrush="White" Background="White"/>
+                        
+                        <WrapPanel>
+                            <TextBox x:Name="textboxMaxTextlength" VerticalAlignment="Center" TextWrapping="NoWrap" Width="120" FontFamily="Microsoft YaHei UI" FontSize="18" Background="#00000000" Foreground="White" BorderBrush="White">
+                                <TextBox.Text>
+                                    <Binding Source="{x:Static local:Config.Data}" Path="Textbox.MaxLength" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <ui:IntegerValidationRule Min="50" Max="130"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Label Content="Max. text length" Foreground="White" FontSize="18" FontFamily="Microsoft YaHei UI"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- STT -->
+            <StackPanel Margin="0,32,0,0">
+                <WrapPanel>
+                    <Label Content="Text to Speech" Foreground="White" FontSize="30" FontFamily="Microsoft YaHei UI" FontWeight="Bold"/>
+                    <Button Content="Skip Current Speech" Margin="16,0,0,0" Click="Button_SkipSpeech" Background="{x:Null}" BorderBrush="White" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18" Width="186" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                </WrapPanel>
+
+                <!-- Audio Options -->
+                <StackPanel>
+                    <Label Content="Audio Options" Foreground="White" FontSize="24" FontFamily="Microsoft YaHei UI" FontWeight="Bold"/>
+
+                    <StackPanel Margin="8,4,0,0">
+                        <WrapPanel>
+                            <ComboBox x:Name="speechSpeakerBox" Width="240" VerticalAlignment="Center" SelectionChanged="SpeechSpeakerBox_SelectionChanged" FontFamily="Microsoft YaHei UI" FontSize="14" BorderBrush="White" Foreground="Black"/>
+                            <Label Foreground="White" Content="Output speakers" FontFamily="Microsoft YaHei UI" FontSize="18"/>
+                        </WrapPanel>
+
+                        <WrapPanel Margin="0,4,0,0">
+                            <ComboBox x:Name="speechWindowsSynthBox" Width="240" VerticalAlignment="Center" SelectionChanged="SpeechWindowsSynthBox_SelectionChanged" FontFamily="Microsoft YaHei UI" FontSize="14" BorderBrush="White" Foreground="Black"/>
+                            <Label Foreground="White" Content="Speech voice" FontFamily="Microsoft YaHei UI" FontSize="18"/>
+                        </WrapPanel>
+
+                        <WrapPanel Margin="0,4,0,0">
+                            <Slider Width="240" VerticalAlignment="Center" Minimum="0" Maximum="1" Value="{Binding Speech.SpeakerVolume, Source={x:Static local:Config.Data}}" ValueChanged="Slider_Volume" LargeChange="0.25" SmallChange="0.05" TickFrequency="0.05" IsSnapToTickEnabled="True" Height="17" FontSize="18" FontFamily="Microsoft YaHei UI"/>
+                            <Label Foreground="White" Content="Speech volume" FontFamily="Microsoft YaHei UI" FontSize="18"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Other Options -->
+                <StackPanel Margin="0,16,0,0">
+                    <Label Content="Other Options" Foreground="White" FontSize="24" FontFamily="Microsoft YaHei UI" FontWeight="Bold"/>
+
+                    <StackPanel Margin="8,4,0,0">
+                        <WrapPanel>
+                            <TextBox x:Name="oscOscIp" VerticalAlignment="Center" TextWrapping="NoWrap" Width="120" FontFamily="Microsoft YaHei UI" FontSize="18" Background="#00000000" Foreground="White" BorderBrush="White">
+                                <TextBox.Text>
+                                    <Binding Source="{x:Static local:Config.Data}" Path="Speech.MaxLenTtsString" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <ui:IntegerValidationRule Min="1" Max="99999"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Label Foreground="White" Content="Max. text length" FontFamily="Microsoft YaHei UI" FontSize="18"/>
+                        </WrapPanel>
+                        <CheckBox x:Name="skipTooLong" Content="Skip too long messages" Margin="0,4,0,0" Foreground="White" IsChecked="{Binding Speech.SkipLongerMessages, Source={x:Static local:Config.Data}}" BorderBrush="White" Background="White" FontFamily="Microsoft YaHei UI" FontSize="18"/>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

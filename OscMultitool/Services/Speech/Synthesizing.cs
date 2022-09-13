@@ -1,0 +1,224 @@
+﻿using NAudio.Wave;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Speech.AudioFormat;
+using System.Speech.Synthesis;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace OscMultitool.Services.Speech
+{
+    public static class Synthesizing
+    {
+        private static readonly SpeechSynthesizer _synth = new();
+        private static readonly MemoryStream _stream = new();
+        private static readonly WaveOut _waveOut = new();
+        private static RawSourceWaveStream? _provider;
+        private static string _currentString = string.Empty;
+        public static bool IsRunning => _provider != null;
+
+        static Synthesizing()
+        {
+            Startup();
+        }
+
+        /// <summary>
+        /// Handles all startup things on load and fails if no voices are available
+        /// </summary>
+        private static void Startup()
+        {
+            Logger.PInfo("Attempting to start synthesizer...", "Synth");
+
+            //Synth setup
+            var formatInfo = new SpeechAudioFormatInfo(16000, AudioBitsPerSample.Sixteen, AudioChannel.Mono);
+            _synth.SetOutputToAudioStream(_stream, formatInfo);
+
+            if (!ChangeVoice())
+                return;
+
+            //Mic Setup
+            _provider = GenerateProvider();
+            _waveOut.Init(_provider);
+
+            ChangeSpeakers();
+            ChangeVolume(); //Turns out the default for this somehow gets saved
+
+            Thread speechThread = new(new ThreadStart(SpeechLoop))
+            {
+                Name = "Synth",
+                IsBackground = true
+            };
+            speechThread.Start();
+
+            Logger.PInfo("Successfully started synthesizer thread", "Synth");
+        }
+
+        #region Synth Control
+        /// <summary>
+        /// Changers speakers based on config
+        /// </summary>
+        public static void ChangeSpeakers()
+        {
+            var newDeviceNumber = Devices.GetSpeakerIndex(Config.Speech.SpeakerId);
+
+            if (newDeviceNumber == _waveOut.DeviceNumber)
+                return;
+            
+            _waveOut.Stop(); //Only triggers if its not alrady playing
+            _waveOut.DeviceNumber = newDeviceNumber;
+            _waveOut.Init(_provider); //Redo init
+            Logger.PInfo("Changed synthesizer microphone: " + Devices.Speakers[newDeviceNumber].ProductName, "Synth");
+        }
+
+        /// <summary>
+        /// Changes Voice based on config
+        /// </summary>
+        /// <returns>False if no voices exist</returns>
+        public static bool ChangeVoice()
+        {
+            //Used for cancelling startup
+            if (WindowsSynths.Count == 0)
+            {
+                Logger.Warning("Could not find a voice to use for synthesizer", "Synth");
+                return false;
+            }
+
+            var voiceIndex = Math.Max(GetWindowsSynthIndex(Config.Speech.TtsId), 0);
+            var voiceName = WindowsSynths[voiceIndex].Name;
+
+            if (voiceName != _synth.Voice.Name)
+            {
+                _synth.SelectVoice(WindowsSynths[voiceIndex].Name);
+                Logger.PInfo("Changed synthesizer voice: " + WindowsSynths[voiceIndex].Description, "Synth");
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Changes the output volume
+        /// </summary>
+        public static void ChangeVolume()
+        {
+            var configVolume = Config.Speech.SpeakerVolume;
+            var roundedWaveOutVolume = Math.Ceiling(_waveOut.Volume * 20) / 20f;
+
+            //Floating points messed with this so its strings now
+            if (configVolume + string.Empty == roundedWaveOutVolume + string.Empty)
+                return;
+
+            _waveOut.Volume = configVolume;
+            Logger.PInfo("Changed synthesizer volume: " + configVolume, "Synth");
+        }
+        #endregion
+
+        #region Output
+        /// <summary>
+        /// Skips the playback by stopping the waveout
+        /// </summary>
+        public static void Skip()
+        {
+            Logger.Log("Skipping current synth audio", "Synth");
+            _waveOut.Stop();
+        }
+
+        /// <summary>
+        /// Plays and generates the audio for TTS
+        /// This works by essentially soft resetting stream and waveOut
+        /// </summary>
+        /// <param name="input">Sentence to say</param>
+        public static void Say(string input)
+        {
+            if (!IsRunning || string.IsNullOrWhiteSpace(input))
+                return;
+
+            if (input.Length > Config.Speech.MaxLenTtsString)
+            {
+                if (Config.Speech.SkipLongerMessages)
+                {
+                    Logger.Log("Skipping a message from synth as it is too long", "Synth");
+                    return;
+                }
+
+                input = input[..Config.Speech.MaxLenTtsString];
+            }
+
+            //This sets the string for SpeechLoop, see method info why
+            _currentString = input;
+        }
+
+        /// <summary>
+        /// Loop for speech
+        /// 
+        /// I have made the somewhat strange (in my opinion) choice to make this a loop thread.
+        /// If it rust runs on the main thread it causes the application to hang and I cant just start a thread for it
+        /// as it could cause it to be started again while previous speech is processing, which would break the stream
+        /// I have thought about using a flag for it or a sophomore but the first would kill any speech said while processing
+        /// while the other would maybe build up a lot of extra speech to process that would immedeately be cancelled by the next
+        /// </summary>
+        private static void SpeechLoop()
+        {
+            while (App.Running)
+            {
+                if (_currentString.Length == 0)
+                {
+                    Thread.Sleep(10);
+                    continue;
+                }
+
+                ResetStream();
+                _waveOut.Stop(); //Might be redundant
+                _provider = GenerateProvider(); //We reset the provider for each clip as it appears to cause issues otherwise
+                Logger.Log("Creating synth audio from: " + _currentString, "Synth"); 
+                _synth.Speak(_currentString); //This can lag
+
+                Logger.Info("Playing synth audio: " + _currentString, "Synth");
+                _currentString = string.Empty;
+                _stream.Position = 0;
+                _waveOut.Play();
+            }
+        }
+
+        /// <summary>
+        /// Utility for resetting the stream
+        /// </summary>
+        private static void ResetStream()
+        {
+            _stream.SetLength(0);
+            _stream.Capacity = 0;
+        }
+
+        /// <summary>
+        /// Generates a provider
+        /// </summary>
+        private static RawSourceWaveStream GenerateProvider()
+            => new (_stream, new(16000, 16, 1));
+        #endregion
+
+        #region TTS Devices
+        public static IReadOnlyList<VoiceInfo> WindowsSynths { get; private set; } = GetWindowsSynths();
+        private static IReadOnlyList<VoiceInfo> GetWindowsSynths()
+        {
+            Logger.Info("Getting installed Speech Synths", "Synth");
+            return _synth.GetInstalledVoices()
+                .Where(x => x.Enabled)
+                .Select(x => x.VoiceInfo)
+                .ToList();
+        }
+
+        public static int GetWindowsSynthIndex(string id)
+        {
+            for (int i = 0; i < WindowsSynths.Count; i++)
+            {
+                if (WindowsSynths[i].Id == id)
+                    return i;
+            }
+
+            return -1;
+        }
+        #endregion
+    }
+}

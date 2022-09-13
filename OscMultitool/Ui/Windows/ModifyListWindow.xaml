@@ -1,0 +1,44 @@
+﻿<Window x:Class="OscMultitool.Ui.Windows.ModifyListWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OscMultitool"
+        mc:Ignorable="d"
+        Title="Modify List Window" Height="300" Width="600" Background="#FF444444" ResizeMode="CanMinimize">
+
+    <Grid Margin="16">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+
+        <ListBox x:Name="listBox" Grid.Column="0" SelectionChanged ="ListBox_SelectionChanged" Background="{x:Null}" BorderBrush="White" Foreground="White" FontSize="18" FontFamily="Microsoft YaHei UI" Margin="0,0,8,0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
+        
+        <Grid Grid.Column="1" Margin="8,0,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <StackPanel>
+                <WrapPanel HorizontalAlignment="Center">
+                    <Button Content="Add New" Click="Button_AddEntry" Background="{x:Null}" BorderBrush="White" Foreground="White" FontSize="18" FontFamily="Microsoft YaHei UI" Width="98"/>
+                    <Button Content="Remove" Margin="8,0,0,0" Click="Button_RemoveEntry" Background="{x:Null}" BorderBrush="White" Foreground="White" FontSize="18" FontFamily="Microsoft YaHei UI" Width="91"/>
+                </WrapPanel>
+                <Button Content="Modify" HorizontalAlignment="Center" Click="Button_ModifyEntry" Background="{x:Null}" BorderBrush="White" Foreground="White" FontSize="18" FontFamily="Microsoft YaHei UI" Margin="0,8,0,0" Width="78"/>
+            </StackPanel>
+
+            <DockPanel Margin="0,16,0,0" Grid.Row="1">
+                <TextBlock Grid.Column="1" DockPanel.Dock="Top" HorizontalAlignment="Center" TextWrapping="Wrap" Text="Value" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18"/>
+                <TextBox x:Name="textValue" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="" Background="{x:Null}" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18" BorderBrush="White" Width="Auto" KeyUp="TextBox_KeyPressed"/>
+            </DockPanel>
+        </Grid>
+        
+        
+        
+        
+        
+        
+    </Grid>
+</Window>

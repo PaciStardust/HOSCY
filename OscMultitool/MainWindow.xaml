@@ -1,0 +1,31 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OscMultitool"
+        xmlns:locui="clr-namespace:OscMultitool.Ui.Controls"
+        xmlns:Wave="clr-namespace:NAudio.Wave;assembly=NAudio.WinMM" x:Name="window" x:Class="OscMultitool.MainWindow"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        Title="HOSCY - OSC and Communication Companion" Height="450" Width="800" ResizeMode="CanMinimize" WindowState="Normal" WindowStyle="SingleBorderWindow" Background="#FF252525">
+    <Grid x:Name="MainGrid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <ListBox x:Name="listBox" Grid.Column="0" Background="Transparent" SelectionChanged="ListBox_SelectionChanged" BorderBrush="{x:Null}">
+            <locui:NavigationButton Color="#FFC6FF" Title="Main" NavPage="/UI/Pages/PageInfo.xaml"/>
+            <locui:NavigationButton Color="#FFADAD" Title="Input" NavPage="/UI/Pages/PageInput.xaml"/>
+            <locui:NavigationButton Color="#FFD6A5" Title="Speech" NavPage="/UI/Pages/PageSpeech.xaml"/>
+            <locui:NavigationButton Color="#FDFFB6" Title="API" NavPage="/UI/Pages/PageAPI.xaml"/>
+            <locui:NavigationButton Color="#CAFFBF" Title="Output" NavPage="/UI/Pages/PageOutput.xaml"/>
+            <locui:NavigationButton Color="#FFA0DAFF" Title="OSC" NavPage="/UI/Pages/PageOsc.xaml"/>
+            <locui:NavigationButton Color="#BDB2FF" Title="Debug" NavPage="/UI/Pages/PageDebug.xaml"/>
+        </ListBox>
+
+        <Border x:Name="navBorder" Grid.Column="1" BorderBrush="#FFFFFFFF" BorderThickness="2,2,2,2" CornerRadius="8,0,0,8" Background="#FF444444">
+            <Frame x:Name="navFrame" NavigationUIVisibility="Hidden"></Frame>
+        </Border>
+    </Grid>
+</Window>

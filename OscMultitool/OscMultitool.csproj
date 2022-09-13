@@ -1,0 +1,69 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>Resources\hoscy_circle.ico</ApplicationIcon>
+    <Platforms>AnyCPU;x64</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\hoscy_circle.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\hoscy_circle.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.23.0" />
+    <PackageReference Include="NAudio" Version="2.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="System.Speech" Version="6.0.0" />
+    <PackageReference Include="Vosk" Version="0.3.38" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="SharpOSC">
+      <HintPath>Resources\SharpOSC\SharpOSC.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Ui\Windows\ModifyApiPresetsWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Ui\Windows\ModifyOscRoutingFiltersWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="C:\Users\DE088149\.nuget\packages\vosk\0.3.38\build\lib\win-x64\libwinpthread-1.dll" Link="Resources\Vosk\libwinpthread-1.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="C:\Users\DE088149\.nuget\packages\vosk\0.3.38\build\lib\win-x64\libvosk.dll" Link="Resources\Vosk\libvosk.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="C:\Users\DE088149\.nuget\packages\vosk\0.3.38\build\lib\win-x64\libstdc++-6.dll" Link="Resources\Vosk\libstdc++-6.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="C:\Users\DE088149\.nuget\packages\vosk\0.3.38\build\lib\win-x64\libgcc_s_seh-1.dll" Link="Resources\Vosk\libgcc_s_seh-1.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Ui\Windows\ModifyApiPresetsWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Ui\Windows\ModifyOscRoutingFiltersWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+</Project>
