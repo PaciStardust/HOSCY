@@ -16,9 +16,9 @@ namespace OscMultitool.Ui.Pages
     {
         private static readonly Dictionary<string, RecognizerPerms> _permDict = new()
         {
-            { "Vosk AI Recognizer", RecognizerVosk.Perms },
-            { "Windows Recognizer", RecognizerWindows.Perms },
             { "Windows Recognizer V2", RecognizerWindowsV2.Perms },
+            { "Windows Recognizer", RecognizerWindows.Perms },
+            { "Vosk AI Recognizer", RecognizerVosk.Perms },
             { "Any-API Recognizer", RecognizerApi.Perms },
             { "Azure API Recognizer", RecognizerAzure.Perms }
         };
@@ -26,9 +26,9 @@ namespace OscMultitool.Ui.Pages
         public static RecognizerBase? GetRecognizerFromUi()
             => Config.Speech.ModelName switch
             {
-                "Vosk AI Recognizer" => new RecognizerVosk(),
-                "Windows Recognizer" => new RecognizerWindows(),
                 "Windows Recognizer V2" => new RecognizerWindowsV2(),
+                "Windows Recognizer" => new RecognizerWindows(),
+                "Vosk AI Recognizer" => new RecognizerVosk(),
                 "Any-API Recognizer" => new RecognizerApi(),
                 "Azure API Recognizer" => new RecognizerAzure(),
                 _ => null
