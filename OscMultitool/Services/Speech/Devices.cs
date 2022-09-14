@@ -23,7 +23,11 @@ namespace OscMultitool.Services.Speech
                 if (Microphones[i].ProductName == guid)
                     return i;
             }
-            return -1;
+
+            if (Microphones.Count == 0)
+                return -1;
+            else
+                return 0;
         }
         #endregion
 
@@ -47,7 +51,10 @@ namespace OscMultitool.Services.Speech
                     return i;
             }
 
-            return -1;
+            if (Speakers.Count == 0)
+                return -1;
+            else
+                return 0;
         }
         #endregion
     }

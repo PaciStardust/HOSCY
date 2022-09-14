@@ -79,7 +79,11 @@ namespace OscMultitool.Services.Speech
                 if (WindowsRecognizers[i].Id == id)
                     return i;
             }
-            return -1;
+
+            if (WindowsRecognizers.Count == 0)
+                return -1;
+            else
+                return 0;
         }
         #endregion
     }

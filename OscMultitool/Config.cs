@@ -42,7 +42,7 @@ namespace OscMultitool
             }
             catch
             {
-                Data = new();
+                Data = GetDefaultConfig();
             }
 
             if (!Directory.Exists(ResourcePath))
@@ -71,6 +71,36 @@ namespace OscMultitool
             => Math.Max(Math.Min(max, value), min);
         public static float MinMax(float value, float min, float max)
             => Math.Max(Math.Min(max, value), min);
+
+
+        /// <summary>
+        /// This exists as newtonsoft seems to have an issue with my way of creating a default config
+        /// </summary>
+        private static ConfigModel GetDefaultConfig()
+        {
+            var config = new ConfigModel();
+
+            config.Speech.NoiseFilter.AddRange(new List<string>()
+            {
+                "the",
+                "and",
+                "einen"
+            });
+
+            config.Logging.LogFilter.AddRange(new List<string>()
+            {
+                "/angular",
+                "/grounded",
+                "/velocity",
+                "/upright",
+                "/voice",
+                "/viseme",
+                "/gesture"
+            });
+
+            return config;
+        }
+
         #endregion
 
         #region Models
@@ -152,7 +182,12 @@ namespace OscMultitool
             //Replacement
             public List<string> NoiseFilter { get; set; } = new();
             public bool IgnoreCaps { get; set; } = true;
-            public string MediaControlKeyword { get; set; } = "media";
+            public string MediaControlKeyword
+            {
+                get { return _mediaControlKeyword; }
+                set { _mediaControlKeyword = value.ToLower(); }
+            }
+            private string _mediaControlKeyword = "media";
             public Dictionary<string, string> Shortcuts { get; set; } = new();
             public Dictionary<string, string> Replacements { get; set; } = new();
         }

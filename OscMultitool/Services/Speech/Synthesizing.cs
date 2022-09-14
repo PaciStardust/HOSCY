@@ -215,7 +215,10 @@ namespace OscMultitool.Services.Speech
                     return i;
             }
 
-            return -1;
+            if (WindowsSynths.Count == 0)
+                return -1;
+            else
+                return 0;
         }
         #endregion
     }
