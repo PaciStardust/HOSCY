@@ -1,7 +1,7 @@
-﻿using OscMultitool.Services.Speech;
+﻿using Hoscy.Services.Speech;
 using System.Windows;
 
-namespace OscMultitool
+namespace Hoscy
 {
     /// <summary>
     /// Interaction logic for App.xaml

@@ -1,12 +1,12 @@
-﻿using OscMultitool.Services;
-using OscMultitool.Services.Speech;
-using OscMultitool.Ui.Windows;
+﻿using Hoscy;
+using Hoscy.Services.Speech;
+using Hoscy.Ui.Windows;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace OscMultitool.Ui.Pages
+namespace Hoscy.Ui.Pages
 {
     /// <summary>
     /// Interaction logic for PageInput.xaml

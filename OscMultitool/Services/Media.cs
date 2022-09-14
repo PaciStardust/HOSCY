@@ -1,11 +1,12 @@
-﻿using OscMultitool.Services.Speech;
+﻿using Hoscy;
+using Hoscy.Services.Speech;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Media.Control;
 
-namespace OscMultitool.Services
+namespace Hoscy.Services
 {
     public static class Media
     {

@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Hoscy;
+using System;
 using System.Speech.Recognition;
 
-namespace OscMultitool.Services.Speech.Recognizers
+namespace Hoscy.Services.Speech.Recognizers
 {
     public class RecognizerWindows : RecognizerBase
     {

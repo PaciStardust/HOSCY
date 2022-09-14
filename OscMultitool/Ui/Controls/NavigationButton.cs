@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace OscMultitool.Ui.Controls
+namespace Hoscy.Ui.Controls
 {
     public class NavigationButton : ListBoxItem
     {

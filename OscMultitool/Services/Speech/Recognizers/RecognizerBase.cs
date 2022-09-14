@@ -1,9 +1,10 @@
-﻿using OscMultitool.OscControl;
-using OscMultitool.Services.Speech.Recognizers;
+﻿using Hoscy;
+using Hoscy.OscControl;
+using Hoscy.Services.Speech.Recognizers;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace OscMultitool.Services.Speech
+namespace Hoscy.Services.Speech
 {
     public abstract class RecognizerBase
     {

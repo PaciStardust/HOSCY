@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace OscMultitool.OscControl
+namespace Hoscy.OscControl
 {
     public readonly struct OscPacket
     {

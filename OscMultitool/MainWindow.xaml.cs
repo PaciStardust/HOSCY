@@ -1,10 +1,10 @@
-﻿using OscMultitool.OscControl;
-using OscMultitool.Services;
-using OscMultitool.Ui.Controls;
+﻿using Hoscy.OscControl;
+using Hoscy.Services;
+using Hoscy.Ui.Controls;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace OscMultitool
+namespace Hoscy
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

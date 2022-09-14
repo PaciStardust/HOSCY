@@ -1,8 +1,9 @@
-﻿using NAudio.Wave;
+﻿using Hoscy;
+using NAudio.Wave;
 using System;
 using System.Speech.Recognition;
 
-namespace OscMultitool.Services.Speech.Recognizers
+namespace Hoscy.Services.Speech.Recognizers
 {
     public class RecognizerWindowsV2 : RecognizerBase
     {

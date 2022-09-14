@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Controls;
 
-namespace OscMultitool.Ui
+namespace Hoscy.Ui
 {
     public static class UiHelper
     {

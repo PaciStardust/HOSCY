@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace OscMultitool.Ui.Windows
+namespace Hoscy.Ui.Windows
 {
     /// <summary>
     /// Interaction logic for ModifyListWindow.xaml

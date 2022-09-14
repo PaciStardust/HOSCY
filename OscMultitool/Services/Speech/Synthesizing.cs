@@ -1,4 +1,5 @@
-﻿using NAudio.Wave;
+﻿using Hoscy;
+using NAudio.Wave;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,7 +8,7 @@ using System.Speech.AudioFormat;
 using System.Speech.Synthesis;
 using System.Threading;
 
-namespace OscMultitool.Services.Speech
+namespace Hoscy.Services.Speech
 {
     public static class Synthesizing
     {

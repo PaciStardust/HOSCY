@@ -1,9 +1,10 @@
-﻿using NAudio.Wave;
-using OscMultitool.Services.Api;
+﻿using Hoscy;
+using NAudio.Wave;
+using Hoscy.Services.Api;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace OscMultitool.Services.Speech.Recognizers
+namespace Hoscy.Services.Speech.Recognizers
 {
     public class RecognizerApi : RecognizerBase
     {

@@ -1,10 +1,10 @@
-﻿using OscMultitool.Services.Api;
-using OscMultitool.Ui.Windows;
+﻿using Hoscy.Services.Api;
+using Hoscy.Ui.Windows;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace OscMultitool.Ui.Pages
+namespace Hoscy.Ui.Pages
 {
     /// <summary>
     /// Interaction logic for PageApi.xaml

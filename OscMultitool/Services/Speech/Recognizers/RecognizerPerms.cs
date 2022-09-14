@@ -1,4 +1,4 @@
-﻿namespace OscMultitool.Services.Speech.Recognizers
+﻿namespace Hoscy.Services.Speech.Recognizers
 {
     public readonly struct RecognizerPerms
     {

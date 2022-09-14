@@ -1,8 +1,9 @@
-﻿using OscMultitool.Ui.Pages;
+﻿using Hoscy;
+using Hoscy.Ui.Pages;
 using System.Collections.Generic;
 using System.Speech.Recognition;
 
-namespace OscMultitool.Services.Speech
+namespace Hoscy.Services.Speech
 {
     public static class Recognition
     {

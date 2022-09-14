@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Windows.Controls;
 
-namespace OscMultitool.Ui
+namespace Hoscy.Ui
 {
     public class IntegerValidationRule : ValidationRule
     {

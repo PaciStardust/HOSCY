@@ -1,7 +1,7 @@
-﻿using OscMultitool.Services;
+﻿using Hoscy;
 using System.Collections.Generic;
 
-namespace OscMultitool.OscControl
+namespace Hoscy.OscControl
 {
     public readonly struct OscRoutingFilter
     {

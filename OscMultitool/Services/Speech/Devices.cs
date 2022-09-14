@@ -1,7 +1,8 @@
-﻿using NAudio.Wave;
+﻿using Hoscy;
+using NAudio.Wave;
 using System.Collections.Generic;
 
-namespace OscMultitool.Services.Speech
+namespace Hoscy.Services.Speech
 {
     public static class Devices
     {

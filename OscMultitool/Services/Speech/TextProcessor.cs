@@ -1,13 +1,14 @@
-﻿using OscMultitool.OscControl;
-using OscMultitool.Services.Api;
-using OscMultitool.Ui.Pages;
+﻿using Hoscy;
+using Hoscy.OscControl;
+using Hoscy.Services.Api;
+using Hoscy.Ui.Pages;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace OscMultitool.Services.Speech
+namespace Hoscy.Services.Speech
 {
     public class TextProcessor
     {

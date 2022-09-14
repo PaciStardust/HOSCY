@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using OscMultitool.Services;
+﻿using Hoscy;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 
-namespace OscMultitool
+namespace Hoscy
 {
     public static class Config
     {
@@ -95,7 +95,9 @@ namespace OscMultitool
                 "/upright",
                 "/voice",
                 "/viseme",
-                "/gesture"
+                "/gesture",
+                "_angle",
+                "_stretch"
             });
 
             return config;
@@ -187,7 +189,7 @@ namespace OscMultitool
                 get { return _mediaControlKeyword; }
                 set { _mediaControlKeyword = value.ToLower(); }
             }
-            private string _mediaControlKeyword = "media";
+            private string _mediaControlKeyword = "media"; //todo: remove and update doc
             public Dictionary<string, string> Shortcuts { get; set; } = new();
             public Dictionary<string, string> Replacements { get; set; } = new();
         }

@@ -1,13 +1,13 @@
-﻿using OscMultitool.Services.Speech;
-using OscMultitool.Services.Speech.Recognizers;
-using OscMultitool.Ui.Windows;
+﻿using Hoscy.Services.Speech;
+using Hoscy.Services.Speech.Recognizers;
+using Hoscy.Ui.Windows;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 
-namespace OscMultitool.Ui.Pages
+namespace Hoscy.Ui.Pages
 {
     /// <summary>
     /// Interaction logic for TestPage.xaml

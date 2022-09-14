@@ -1,6 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using Hoscy;
+using System.Threading.Tasks;
 
-namespace OscMultitool.Services.Api
+namespace Hoscy.Services.Api
 {
     public static class Translation
     {

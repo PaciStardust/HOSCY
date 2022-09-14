@@ -1,10 +1,10 @@
-﻿using OscMultitool.Services;
-using OscMultitool.Services.Speech;
+﻿using Hoscy;
+using Hoscy.Services.Speech;
 using SharpOSC;
 using System;
 using System.Collections.Generic;
 
-namespace OscMultitool.OscControl
+namespace Hoscy.OscControl
 {
     public class OscListener
     {

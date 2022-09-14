@@ -1,8 +1,9 @@
-﻿using NAudio.Wave;
+﻿using Hoscy;
+using NAudio.Wave;
 using System;
 using System.Linq;
 
-namespace OscMultitool.Services.Speech
+namespace Hoscy.Services.Speech
 {
     /// <summary>
     /// Proxy for mic that allows continous recording

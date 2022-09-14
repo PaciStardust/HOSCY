@@ -1,10 +1,11 @@
-﻿using OscMultitool.Services.Speech;
+﻿using Hoscy;
+using Hoscy.Services.Speech;
 using System;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OscMultitool.Services.Api
+namespace Hoscy.Services.Api
 {
     public class ApiClient
     {

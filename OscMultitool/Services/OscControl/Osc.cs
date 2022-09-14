@@ -1,12 +1,12 @@
 ﻿using SharpOSC;
-using OscMultitool.Services;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Threading.Tasks;
+using Hoscy;
 
-namespace OscMultitool.OscControl
+namespace Hoscy.OscControl
 {
     /// <summary>
     /// Static class for osc-related things

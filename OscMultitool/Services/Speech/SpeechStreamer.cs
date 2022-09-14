@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading;
 
-namespace OscMultitool.Services.Speech
+namespace Hoscy.Services.Speech
 {
     /// <summary>
     /// Class to use for windows recognizer as Stream, 

@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Hoscy;
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Windows;
 
-namespace OscMultitool.Services
+namespace Hoscy
 {
     /// <summary>
     /// Class for logging of information in console
@@ -77,7 +78,7 @@ namespace OscMultitool.Services
         public static void Error(string message, string source, bool window = true) //Error with basic message
         {
             Log(message.Replace("[s]", " "), source, LogSeverity.Error);
-            if(window) //[s] token replaces with newlines or space
+            if (window) //[s] token replaces with newlines or space
                 MessageBox.Show($"{message.Replace("[s]", "\n")}\n\nIf you are unsure what to do with this, please open an issue on GitHub", "Error at " + source, MessageBoxButton.OK, MessageBoxImage.Error);
         }
         public static void Error(string type, string message, string source, string trace = "unspecified location", bool window = true) //Error using type
@@ -87,7 +88,7 @@ namespace OscMultitool.Services
 
         // Other logging types
         public static void Info(string message, string source)
-            => Log (message, source, LogSeverity.Info);
+            => Log(message, source, LogSeverity.Info);
         public static void PInfo(string message, string source)
             => Log(message, source, LogSeverity.PrioInfo);
         public static void Warning(string message, string source)

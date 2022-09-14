@@ -1,12 +1,14 @@
-﻿using OscMultitool.OscControl;
-using OscMultitool.Ui.Pages;
+﻿using Hoscy;
+using Hoscy.OscControl;
+using Hoscy.Ui.Pages;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 
-namespace OscMultitool.Services.Speech
+namespace Hoscy.Services.Speech
 {
     public static class Textbox //todo: dynamic timeout time addition / min value
     {
@@ -171,8 +173,8 @@ namespace OscMultitool.Services.Speech
         private static string ReplaceSpecialCharacters(string text)
         {
             var normalizedString = text.Normalize(NormalizationForm.FormD);
-            var stringBuilder = new StringBuilder();
 
+            var stringBuilder = new StringBuilder();
             foreach (var c in normalizedString)
             {
                 if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)

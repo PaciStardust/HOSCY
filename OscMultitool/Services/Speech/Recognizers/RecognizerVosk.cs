@@ -1,4 +1,5 @@
-﻿using NAudio.Wave;
+﻿using Hoscy;
+using NAudio.Wave;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,7 +7,7 @@ using System.Reflection;
 using System.Threading;
 using Vosk;
 
-namespace OscMultitool.Services.Speech.Recognizers
+namespace Hoscy.Services.Speech.Recognizers
 {
     public class RecognizerVosk : RecognizerBase
     {

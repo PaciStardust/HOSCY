@@ -1,8 +1,8 @@
-﻿using OscMultitool.Ui.Windows;
+﻿using Hoscy.Ui.Windows;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace OscMultitool.Ui.Pages
+namespace Hoscy.Ui.Pages
 {
     /// <summary>
     /// Interaction logic for PageDebug.xaml

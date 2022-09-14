@@ -1,11 +1,12 @@
-﻿using Microsoft.CognitiveServices.Speech;
+﻿using Hoscy;
+using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
 using NAudio.CoreAudioApi;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OscMultitool.Services.Speech.Recognizers
+namespace Hoscy.Services.Speech.Recognizers
 {
     public class RecognizerAzure : RecognizerBase
     {
