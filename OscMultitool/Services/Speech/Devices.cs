@@ -10,7 +10,7 @@ namespace Hoscy.Services.Speech
         public static IReadOnlyList<WaveInCapabilities> Microphones { get; private set; } = GetMicrophones();
         private static IReadOnlyList<WaveInCapabilities> GetMicrophones()
         {
-            Logger.Info("Getting list of Microphones", "Devices");
+            Logger.Info("Getting list of Microphones");
             var list = new List<WaveInCapabilities>();
             for (int i = 0; i < WaveIn.DeviceCount; i++)
                 list.Add(WaveIn.GetCapabilities(i));
@@ -36,7 +36,7 @@ namespace Hoscy.Services.Speech
         public static IReadOnlyList<WaveOutCapabilities> Speakers { get; private set; } = GetSpeakers();
         private static IReadOnlyList<WaveOutCapabilities> GetSpeakers()
         {
-            Logger.Info("Getting list of Speakers", "Devices");
+            Logger.Info("Getting list of Speakers");
             var speakers = new List<WaveOutCapabilities>();
             for (int i = 0; i < WaveOut.DeviceCount; i++)
                 speakers.Add(WaveOut.GetCapabilities(i));

@@ -25,7 +25,7 @@ namespace Hoscy.OscControl
         {
             if(!p.IsValid)
             {
-                Logger.Warning($"Attempted to send a package to {p.Ip}:{p.Port} ({p.Address}), but the contents were empty or port was invalid", "OSCSender");
+                Logger.Warning($"Attempted to send a package to {p.Ip}:{p.Port} ({p.Address}), but the contents were empty or port was invalid");
                 return false;
             }
 
@@ -35,12 +35,12 @@ namespace Hoscy.OscControl
                 var sender = new UDPSender(p.Ip, p.Port);
 
                 sender.Send(message);
-                Logger.Debug($"Successfully sent data to {p}", "OSCSender");
+                Logger.Debug($"Successfully sent data to {p}");
                 return true;
             }
             catch (Exception e)
             {
-                Logger.Error(e, "OSCSender");
+                Logger.Error(e);
                 return false;
             }
         }
@@ -58,14 +58,14 @@ namespace Hoscy.OscControl
         {
             try
             {
-                Logger.PInfo("Recreating listener", "OSC");
+                Logger.PInfo("Recreating listener");
                 _listener?.Stop();
                 _listener = new(Config.Osc.PortListen, CreateInputFilters());
                 _listener.Start();
             }
             catch (Exception e)
             {
-                Logger.Error(e, "OSC");
+                Logger.Error(e);
             }
         }
 
@@ -75,11 +75,11 @@ namespace Hoscy.OscControl
         /// <returns>A list of tested filters</returns>
         private static List<OscRoutingFilter> CreateInputFilters()
         {
-            Logger.PInfo("Creating input filters", "OSC");
+            Logger.PInfo("Creating input filters");
             List<OscRoutingFilter> filters = new();
             if (Config.Osc.RoutingFilters.Count == 0)
             {
-                Logger.Info("No filtered listeners to create", "OSC");
+                Logger.Info("No filtered listeners to create");
                 return filters;
             }
 
@@ -89,15 +89,15 @@ namespace Hoscy.OscControl
 
                 if (!newFilter.TestValidity())
                 {
-                    Logger.Warning($"Skipping creation of listener \"{filter.Name}\" as its values are invalid (Name / Port / Ip / Filters)", "OSC");
+                    Logger.Warning($"Skipping creation of listener \"{filter.Name}\" as its values are invalid (Name / Port / Ip / Filters)");
                     continue;
                 }
 
                 filters.Add(newFilter);
-                Logger.Info($"Added new routing filter to listener: {newFilter}", "OSC");
+                Logger.Info($"Added new routing filter to listener: {newFilter}");
             }
 
-            Logger.PInfo("Created new input filters", "OSC");
+            Logger.PInfo("Created new input filters");
             return filters;
         }
         #endregion
@@ -112,11 +112,11 @@ namespace Hoscy.OscControl
         public static void ParseOscCommands(string message)
         {
             //Obtaining parsed command
-            Logger.Info("Detected osc command, attempting to parse: " + message, "OSC");
+            Logger.Info("Detected osc command, attempting to parse: " + message);
             var commandMatches = _oscCommandIdentifier.Matches(message);
             if (commandMatches == null || commandMatches.Count == 0)
             {
-                Logger.Warning("Failed parsing osc command, it did not match the filter", "OSC");
+                Logger.Warning("Failed parsing osc command, it did not match the filter");
                 return;
             }
 
@@ -132,7 +132,7 @@ namespace Hoscy.OscControl
 
             if (commandPackets.Count == 0)
             {
-                Logger.Warning("Failed to find any command packets to execute", "OSC");
+                Logger.Warning("Failed to find any command packets to execute");
                 return;
             }
 
@@ -145,7 +145,7 @@ namespace Hoscy.OscControl
         /// </summary>
         private static (OscPacket, int)? ParseOscCommandString(Match commandMatch)
         {
-            Logger.Log("Attempting to parse osc subcommand: " + commandMatch.Value, "OSC");
+            Logger.Log("Attempting to parse osc subcommand: " + commandMatch.Value);
 
             string addressText = commandMatch.Groups["address"].Value;
             string valuesText = commandMatch.Groups["values"].Value;
@@ -156,7 +156,7 @@ namespace Hoscy.OscControl
             //Parsing Port and Wait
             if (!int.TryParse(portText, out var parsedPort) || !int.TryParse(waitText, out var parsedWait))
             {
-                Logger.Warning("Failed parsing osc subcommand, unable to parse port or wait", "OSC");
+                Logger.Warning("Failed parsing osc subcommand, unable to parse port or wait");
                 return null;
             }
 
@@ -165,7 +165,7 @@ namespace Hoscy.OscControl
             var packet = new OscPacket(addressText, ipText, parsedPort, parsedVariables);
             if (!packet.IsValid)
             {
-                Logger.Warning("Failed parsing osc subcommand, packet is invalid", "OSC");
+                Logger.Warning("Failed parsing osc subcommand, packet is invalid");
                 return null;
             }
 
@@ -221,7 +221,7 @@ namespace Hoscy.OscControl
         /// <param name="commandPackets">packets to execute with wait</param>
         private static Task ExecuteOscCommands(string taskId, List<(OscPacket, int)> commandPackets)
         {
-            Logger.Info("Started osc subcommand execution task for: " + taskId, "OSCSubTask");
+            Logger.Info("Started osc subcommand execution task for: " + taskId);
             int cmdCount = commandPackets.Count;
 
             for (int i = 0; i < cmdCount; i++)
@@ -231,21 +231,21 @@ namespace Hoscy.OscControl
 
                 var packet = commandPackets[i];
                 var identifier = $"{taskId} ({packet.Item1}";
-                Logger.Info($"Running osc subcommand {i+1}/{cmdCount} for: " + identifier, "OSCSubTask");
+                Logger.Info($"Running osc subcommand {i+1}/{cmdCount} for: " + identifier);
 
                 if (!Send(packet.Item1))
                 {
-                    Logger.Warning($"Failed running osc subcommand {i+1}/{cmdCount} for: " + identifier, "OSCSubTask");
+                    Logger.Warning($"Failed running osc subcommand {i+1}/{cmdCount} for: " + identifier);
                     return Task.CompletedTask;
                 }
                 if (i != commandPackets.Count - 1)
                 {
-                    Logger.Log($"Setting osc subcommand timeout of {packet.Item2}ms for " + taskId, "OSCSubTask");
+                    Logger.Log($"Setting osc subcommand timeout of {packet.Item2}ms for " + taskId);
                     Task.Delay(packet.Item2).Wait();
                 }
 
             }
-            Logger.Info("Finished processing osc subcommands for: " + taskId, "OSCSubTask");
+            Logger.Info("Finished processing osc subcommands for: " + taskId);
             return Task.CompletedTask;
         }
         #endregion

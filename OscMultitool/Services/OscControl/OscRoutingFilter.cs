@@ -42,10 +42,10 @@ namespace Hoscy.OscControl
             if (string.IsNullOrWhiteSpace(Ip) || string.IsNullOrWhiteSpace(Name) || Filters.Count == 0)
                 return false;
 
-            Logger.Log($"Performing test send of filter {ToString()}", "OSCRoutFilt");
+            Logger.Log($"Performing test send of filter {ToString()}");
             if (!Send("/osctest123/", false))
             {
-                Logger.Warning($"Failed test send of filter {ToString()}", "OSCRoutFilt");
+                Logger.Warning($"Failed test send of filter {ToString()}");
                 return false;
             }
 

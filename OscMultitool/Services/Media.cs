@@ -20,7 +20,7 @@ namespace Hoscy.Services
 
         private static async Task StartMediaDetectionInternal()
         {
-            Logger.PInfo("Started media detection service", "Media");
+            Logger.PInfo("Started media detection service");
 
             _gsmtcsm = await GlobalSystemMediaTransportControlsSessionManager.RequestAsync();
             _gsmtcsm.CurrentSessionChanged += Gsmtcsm_CurrentSessionChanged;
@@ -33,7 +33,7 @@ namespace Hoscy.Services
             _session = sender.GetCurrentSession();
             _nowPlaying = null;
 
-            Logger.Info($"Media session has been changed to {_session?.SourceAppUserModelId ?? "None"} ", "Media");
+            Logger.Info($"Media session has been changed to {_session?.SourceAppUserModelId ?? "None"}");
 
             if (_session == null)
                 return;
@@ -79,7 +79,7 @@ namespace Hoscy.Services
                 if (!string.IsNullOrWhiteSpace(_nowPlaying.Artist))
                     playing += $" by '{_nowPlaying.Artist}'";
 
-                Logger.Log($"Currently playing media has changed to: {playing}", "Media");
+                Logger.Log($"Currently playing media has changed to: {playing}");
                 Textbox.Notify($"Listening to {playing}", NotificationType.Media);
             }
         }
@@ -169,22 +169,22 @@ namespace Hoscy.Services
             {
                 case MediaCommandType.Pause:
                     if (await _session.TryPauseAsync())
-                        Logger.Log("Paused media playback", "Media");
+                        Logger.Log("Paused media playback");
                     return;
 
                 case MediaCommandType.Unpause:
                     if (await _session.TryPlayAsync())
-                        Logger.Log("Resumed media playback", "Media");
+                        Logger.Log("Resumed media playback");
                     return;
 
                 case MediaCommandType.Skip:
                     if (await _session.TrySkipNextAsync())
-                        Logger.Log("Skipped media playback", "Media");
+                        Logger.Log("Skipped media playback");
                     return;
 
                 case MediaCommandType.Rewind:
                     if (await _session.TryRewindAsync())
-                        Logger.Log("Rewinded media playback", "Media");
+                        Logger.Log("Rewinded media playback");
                     return;
 
                 default: return;

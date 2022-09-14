@@ -30,7 +30,7 @@ namespace Hoscy.Services.Speech.Recognizers
             }
             catch (Exception e)
             {
-                Logger.Error(e, "RecWinV2");
+                Logger.Error(e);
                 return false;
             }
 
@@ -58,7 +58,7 @@ namespace Hoscy.Services.Speech.Recognizers
 
         private void OnSpeechRecognized(object? sender, SpeechRecognizedEventArgs e)
         {
-            Logger.Log("Got Message: " + e.Result.Text, "RecWinV2");
+            Logger.Log("Got Message: " + e.Result.Text);
 
             var message = Denoise(e.Result.Text);
             if (string.IsNullOrWhiteSpace(message))

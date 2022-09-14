@@ -26,7 +26,7 @@ namespace Hoscy.Services.Api
                     text = text[..Config.Api.TranslationMaxTextLength];
             }
 
-            Logger.Log("Requesting translation of text: " + text, "Translation");
+            Logger.Log("Requesting translation of text: " + text);
             string result = (await _client.SendText(text));
 
             return string.IsNullOrWhiteSpace(result) ? text : result;
@@ -34,12 +34,12 @@ namespace Hoscy.Services.Api
 
         public static void ReloadClient()
         {
-            Logger.PInfo("Creating a new ApiClient for Translation", "Translation");
+            Logger.PInfo("Creating a new ApiClient for Translation");
 
             var preset = Config.Api.GetPreset(Config.Api.TranslationPreset);
             if (preset == null)
             {
-                Logger.Warning("Attempted to use a non existant preset", "Translation");
+                Logger.Warning("Attempted to use a non existant preset");
                 return;
             }
             _client.LoadPreset(preset);

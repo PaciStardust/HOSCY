@@ -150,7 +150,7 @@ Replacements can be found on the **[speech page](#pages---speech)**, they execut
 ### Commands
 Commands get run after replacements and are mostly hard-coded, they only trigger when sent as their own message:
 - **Skipping messages** can be done by either saying "clear" or "skip"
-- **Media Control** can be used to control your currently playing media and can be triggered by saying the keyword set in the **[speech page](#pages---speech)** followed by a command:
+- **Media Control** can be used to control your currently playing media and can be triggered by saying "media" followed by a command:
 	- **Pausing:** "Pause" / "Stop"
 	- **Resuming:** "Play" / "Resume"
 	- **Skip:** "Next" / "Skip"

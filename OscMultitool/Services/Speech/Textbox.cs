@@ -29,7 +29,7 @@ namespace Hoscy.Services.Speech
             };
             loopThread.Start();
 
-            Logger.PInfo("Started textbox thread", "Textbox");
+            Logger.PInfo("Started textbox thread");
         }
 
         #region Message Handling
@@ -73,7 +73,7 @@ namespace Hoscy.Services.Speech
                         continue;
                     }
 
-                    Logger.Info($"Sent message with timeout {timeout}: {message}", "Textbox");
+                    Logger.Info($"Sent message with timeout {timeout}: {message}");
                 }
 
                 Thread.Sleep(timeout);
@@ -85,7 +85,7 @@ namespace Hoscy.Services.Speech
             var packet = new OscPacket("/chatbox/input", ReplaceSpecialCharacters(message), true);
             if (!packet.IsValid)
             {
-                Logger.Warning("Unable to send message to chatbox, packet is invalid", "Textbox");
+                Logger.Warning("Unable to send message to chatbox, packet is invalid");
                 return false;
             }
             Osc.Send(packet);
@@ -106,7 +106,7 @@ namespace Hoscy.Services.Speech
             foreach (var message in SplitMessage(input))
             {
                 MessageQueue.Enqueue(message);
-                Logger.Log($"Added to MessageQueue (Q:{MessageQueue.Count},L:{message.Length}): {message}", "Textbox");
+                Logger.Log($"Added to MessageQueue (Q:{MessageQueue.Count},L:{message.Length}): {message}");
             }
         }
 
@@ -129,7 +129,7 @@ namespace Hoscy.Services.Speech
             _notificationType = type;
             _notification = input;
             PageInfo.SetNotification(input, type);
-            Logger.Log("Setting notification to: " + input, "Textbox");
+            Logger.Log("Setting notification to: " + input);
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace Hoscy.Services.Speech
             MessageQueue.Clear();
             MessageQueue.Enqueue(string.Empty);
             ClearNotification();
-            Logger.Info("Clearing message queue", "Textbox");
+            Logger.Info("Clearing message queue");
         }
 
         /// <summary>
@@ -223,7 +223,7 @@ namespace Hoscy.Services.Speech
             var packet = new OscPacket("/chatbox/typing", mode ? 1 : 0);
             if (!packet.IsValid)
             {
-                Logger.Warning("Unable to set chatbox typing status, package is invalid", "Textbox");
+                Logger.Warning("Unable to set chatbox typing status, package is invalid");
                 return;
             }
             Osc.Send(packet);

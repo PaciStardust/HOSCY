@@ -30,7 +30,7 @@ namespace Hoscy.Services.Speech.Recognizers
             var preset = Config.Api.GetPreset(Config.Api.RecognitionPreset);
             if (preset == null)
             {
-                Logger.Warning("Attempted to use a non existant preset", "Translation");
+                Logger.Warning("Attempted to use a non existant preset");
                 return false;
             }
 
@@ -55,7 +55,7 @@ namespace Hoscy.Services.Speech.Recognizers
                 _microphone.StopRecording();
 
             Textbox.EnableTyping(enabled);
-            Logger.PInfo("Microphone status changed to " + enabled, "RecApi");
+            Logger.PInfo("Microphone status changed to " + enabled);
             return true;
         }
 

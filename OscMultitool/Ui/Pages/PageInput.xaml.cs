@@ -38,7 +38,7 @@ namespace Hoscy.Ui.Pages
                 return;
             }
 
-            Logger.Info("Manually input message: " + message, "Input");
+            Logger.Info("Manually input message: " + message);
 
             var tProcessor = new TextProcessor()
             {

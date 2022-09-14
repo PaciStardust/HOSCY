@@ -33,7 +33,7 @@ namespace Hoscy.Services.Speech
         /// <param name="message">The message to process</param>
         private async Task ProcessInternal(string message)
         {
-            Logger.Debug("Processing message: " + message, "TxtProcessor");
+            Logger.Debug("Processing message: " + message);
 
             if (TriggerReplace)
                 message = ReplaceMessage(message);
@@ -98,7 +98,7 @@ namespace Hoscy.Services.Speech
                     return File.ReadAllText(value);
                 } catch (Exception e)
                 {
-                    Logger.Error(e, "TextProcess");
+                    Logger.Error(e);
                     return string.Empty;
                 }
             }
@@ -124,16 +124,15 @@ namespace Hoscy.Services.Speech
 
             if (lowerMessage == "skip" || lowerMessage == "clear")
             {
-                Logger.Info("Executing clear command", "TxtProcessor");
+                Logger.Info("Executing clear command");
                 Textbox.Clear();
                 Synthesizing.Skip();
                 return true;
             }
 
-            var keyCheck = (Config.Speech.MediaControlKeyword + " ").ToLower();
-            if (!string.IsNullOrWhiteSpace(keyCheck) && lowerMessage.StartsWith(keyCheck))
+            if (lowerMessage.StartsWith("media "))
             {
-                Media.HandleRawMediaCommand(lowerMessage.Replace(keyCheck, ""));
+                Media.HandleRawMediaCommand(lowerMessage.Replace("media ", ""));
                 return true;
             }
 

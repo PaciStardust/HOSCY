@@ -50,7 +50,7 @@ namespace Hoscy.Services.Speech.Recognizers
             }
             catch (Exception e)
             {
-                Logger.Error(e, "RecAzure");
+                Logger.Error(e);
                 return rec;
             }
 
@@ -119,7 +119,7 @@ namespace Hoscy.Services.Speech.Recognizers
         #region Events
         private void OnRecognized(object? sender, SpeechRecognitionEventArgs e)
         {
-            Logger.Log("Got Message: " + e.Result.Text, "RecAzure");
+            Logger.Log("Got Message: " + e.Result.Text);
 
             var message = Denoise(e.Result.Text);
             if (string.IsNullOrWhiteSpace(message))
@@ -134,7 +134,7 @@ namespace Hoscy.Services.Speech.Recognizers
         private void OnCanceled(object? sender, SpeechRecognitionCanceledEventArgs e)
         {
             if (e.ErrorCode != CancellationErrorCode.NoError)
-                Logger.Warning($"Recognition was cancelled (Reason: {CancellationReason.Error}, Code: {e.ErrorCode}, Details: {e.ErrorDetails})", "RecAzure");
+                Logger.Warning($"Recognition was cancelled (Reason: {CancellationReason.Error}, Code: {e.ErrorCode}, Details: {e.ErrorDetails})");
 
             if (e.ErrorCode != CancellationErrorCode.ConnectionFailure)
             {
@@ -142,15 +142,15 @@ namespace Hoscy.Services.Speech.Recognizers
                 return;
             }
 
-            Logger.PInfo("Attempting to restart recognizer as it failed connecting", "RecAzure");
+            Logger.PInfo("Attempting to restart recognizer as it failed connecting");
             StopInternal();
             _rec = TryCreateRecognizer();
         }
 
         private void OnStopped(object? sender, SessionEventArgs e)
-            => Logger.Info("Recognition was stopped", "RecAzure");
+            => Logger.Info("Recognition was stopped");
         private void OnStarted(object? sender, SessionEventArgs e)
-            => Logger.Info("Recognition was started", "RecAzure");
+            => Logger.Info("Recognition was started");
         #endregion
     }
 }

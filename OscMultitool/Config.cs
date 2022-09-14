@@ -57,11 +57,11 @@ namespace Hoscy
             try
             {
                 File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(Data ?? new(), Formatting.Indented));
-                Logger.PInfo("Saved config file at " + ConfigPath, "Config");
+                Logger.PInfo("Saved config file at " + ConfigPath);
             }
             catch (Exception e)
             {
-                Logger.Error(e, "ConfigSave", false);
+                Logger.Error(e, false);
             }
         }
         #endregion
@@ -184,12 +184,6 @@ namespace Hoscy
             //Replacement
             public List<string> NoiseFilter { get; set; } = new();
             public bool IgnoreCaps { get; set; } = true;
-            public string MediaControlKeyword
-            {
-                get { return _mediaControlKeyword; }
-                set { _mediaControlKeyword = value.ToLower(); }
-            }
-            private string _mediaControlKeyword = "media"; //todo: remove and update doc
             public Dictionary<string, string> Shortcuts { get; set; } = new();
             public Dictionary<string, string> Replacements { get; set; } = new();
         }

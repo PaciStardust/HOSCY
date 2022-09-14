@@ -18,25 +18,25 @@ namespace Hoscy.Services.Speech
 
             if (_recognizer != null || IsRecognizerRunning)
             {
-                Logger.Warning("Attempted to start recognizer while one already was initialized", "Speech");
+                Logger.Warning("Attempted to start recognizer while one already was initialized");
                 return true;
             }
 
             _recognizer = PageSpeech.GetRecognizerFromUi();
             if (_recognizer == null)
             {
-                Logger.Error("Unable to grab Recognizer Type from UI, please open an issue on GitHub", "Speech");
+                Logger.Error("Unable to grab Recognizer Type from UI, please open an issue on GitHub");
                 return false;
             }
 
-            Logger.PInfo("Attempting to start recognizer...", "Speech");
+            Logger.PInfo("Attempting to start recognizer...");
             if (!_recognizer.Start())
             {
-                Logger.Warning("Failed to start recognizer", "Speech");
+                Logger.Warning("Failed to start recognizer");
                 _recognizer = null;
                 return false;
             }
-            Logger.PInfo("Successfully started recognizer", "Speech");
+            Logger.PInfo("Successfully started recognizer");
             return true;
         }
 
@@ -54,14 +54,14 @@ namespace Hoscy.Services.Speech
         {
             if (_recognizer == null)
             {
-                Logger.Warning("Attempted to stop recognizer while one wasnt running", "Speech");
+                Logger.Warning("Attempted to stop recognizer while one wasnt running");
                 return;
             }
 
             _recognizer.Stop();
             _recognizer = null;
             PageInfo.UpdateMicStatus();
-            Logger.PInfo("Successfully stopped recognizer", "Speech");
+            Logger.PInfo("Successfully stopped recognizer");
         }
         #endregion
 
@@ -69,7 +69,7 @@ namespace Hoscy.Services.Speech
         public static IReadOnlyList<RecognizerInfo> WindowsRecognizers { get; private set; } = GetWindowsRecognizers();
         private static IReadOnlyList<RecognizerInfo> GetWindowsRecognizers()
         {
-            Logger.Info("Getting installed Speech Recognizers", "Speech");
+            Logger.Info("Getting installed Speech Recognizers");
             return SpeechRecognitionEngine.InstalledRecognizers();
         }
 

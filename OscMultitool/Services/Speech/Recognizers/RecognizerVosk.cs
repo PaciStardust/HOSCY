@@ -33,7 +33,7 @@ namespace Hoscy.Services.Speech.Recognizers
             {
                 if (!Directory.Exists(Config.Speech.VoskModelPath))
                 {
-                    Logger.Error("The provided filepath for the model does not exist, did you download a model?", "RecVosk");
+                    Logger.Error("The provided filepath for the model does not exist, did you download a model?");
                     return false;
                 }
 
@@ -46,7 +46,7 @@ namespace Hoscy.Services.Speech.Recognizers
                 var modelhandleInternal = (System.Runtime.InteropServices.HandleRef)handleField.GetValue(model);
                 if (modelhandleInternal.Handle == IntPtr.Zero)
                 {
-                    Logger.Error("Attempted to start model but the picked recognition model file is invalid. Have you downloaded a compatible model and verified it is not corrupt?", "RecVosk");
+                    Logger.Error("Attempted to start model but the picked recognition model file is invalid. Have you downloaded a compatible model and verified it is not corrupt?");
                     return false;
                 }
 #nullable enable
@@ -55,7 +55,7 @@ namespace Hoscy.Services.Speech.Recognizers
             }
             catch (Exception e)
             {
-                Logger.Error(e, "RecVosk");
+                Logger.Error(e);
                 return false;
             }
 
@@ -99,7 +99,7 @@ namespace Hoscy.Services.Speech.Recognizers
         /// </summary>
         private void HandleAvailableDataLoop()
         {
-            Logger.PInfo("Started Vosk recognizer data handling thread", "RecVosk");
+            Logger.PInfo("Started Vosk recognizer data handling thread");
             while (_rec != null && !_threadStop)
             {
                 if (_dataAvailableQueue.Count == 0)
@@ -118,7 +118,7 @@ namespace Hoscy.Services.Speech.Recognizers
                 else
                     HandleResultIncomplete();
             }
-            Logger.PInfo("Stopped Vosk recognizer data handling thread", "RecVosk");
+            Logger.PInfo("Stopped Vosk recognizer data handling thread");
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace Hoscy.Services.Speech.Recognizers
         {
             if (_rec == null)
             {
-                Logger.Warning("Attempted to handle complete result on disabled recognizer", "RecVosk");
+                Logger.Warning("Attempted to handle complete result on disabled recognizer");
                 return;
             }
 
@@ -136,7 +136,7 @@ namespace Hoscy.Services.Speech.Recognizers
 
             if (!string.IsNullOrWhiteSpace(result))
             {
-                Logger.Log("Got Message: " + result, "RecVosk");
+                Logger.Log("Got Message: " + result);
                 ProcessMessage(result);
             }
 
@@ -150,7 +150,7 @@ namespace Hoscy.Services.Speech.Recognizers
         {
             if (_rec == null)
             {
-                Logger.Warning("Attempted to handle incomplete result on disabled recognizer", "RecVosk");
+                Logger.Warning("Attempted to handle incomplete result on disabled recognizer");
                 return;
             }
 
@@ -169,7 +169,7 @@ namespace Hoscy.Services.Speech.Recognizers
 
             if ((DateTime.Now - _lastChangedAt).Seconds > Config.Speech.VoskTimeout)
             {
-                Logger.Log("Got Message (T): " + result, "RecVosk");
+                Logger.Log("Got Message (T): " + result);
                 ProcessMessage(result);
                 ClearLastChanged();
             }

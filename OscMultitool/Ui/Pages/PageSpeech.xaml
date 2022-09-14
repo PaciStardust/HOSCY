@@ -21,7 +21,7 @@
                 <StackPanel>
                     <WrapPanel>
                         <Label Content="Recognizer Control" Foreground="White" FontSize="24" FontFamily="Microsoft YaHei UI" FontWeight="Bold"/>
-                        <Button Content="Mute" Margin="8,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_Mute" Background="{x:Null}" BorderBrush="White" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18" Width="57.6"/>
+                        <Button x:Name="buttonMute" Content="Muted" Margin="8,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_Mute" Background="{x:Null}" BorderBrush="White" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18" Width="89.77"/>
                     </WrapPanel>
 
                     <StackPanel Margin="8,4,0,0">
@@ -43,11 +43,6 @@
                             <Button Content="Noise Filter" Margin="16,0,0,0" Click="Button_OpenNoiseFilter" Background="{x:Null}" BorderBrush="White" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18" Width="109.676666666667"/>
                         </WrapPanel>
                         <CheckBox x:Name="speechToLower" Content="Ignore caps for list checks" Margin="0,8,0,0" Foreground="White" IsChecked="{Binding Speech.IgnoreCaps, Source={x:Static local:Config.Data}}" BorderBrush="White" Background="White" FontFamily="Microsoft YaHei UI" FontSize="18"/>
-
-                        <WrapPanel Margin="0,4,0,0">
-                            <TextBox x:Name="mediaKeyword" HorizontalAlignment="Left" TextWrapping="NoWrap" Text="{Binding Speech.MediaControlKeyword, Source={x:Static local:Config.Data}}" VerticalAlignment="Center" Width="120" FontFamily="Microsoft YaHei UI" FontSize="18" Background="#00000000" Foreground="White" BorderBrush="White"/>
-                            <Label Content="Media control keyword" Foreground="White" FontSize="18" FontFamily="Microsoft YaHei UI"/>
-                        </WrapPanel>
                     </StackPanel>
                 </StackPanel>
 

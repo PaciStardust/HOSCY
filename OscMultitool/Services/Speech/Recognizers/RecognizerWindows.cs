@@ -28,7 +28,7 @@ namespace Hoscy.Services.Speech.Recognizers
             }
             catch (Exception e)
             {
-                Logger.Error(e, "RecWin");
+                Logger.Error(e);
                 return false;
             }
         }
@@ -45,7 +45,7 @@ namespace Hoscy.Services.Speech.Recognizers
             else
                 _rec.RecognizeAsyncStop();
 
-            Logger.PInfo("Microphone status changed to " + enabled, "RecWin");
+            Logger.PInfo("Microphone status changed to " + enabled);
             return true;
         }
 
@@ -58,7 +58,7 @@ namespace Hoscy.Services.Speech.Recognizers
 
         private static void Recognizer_SpeechRecognized(object? sender, SpeechRecognizedEventArgs e)
         {
-            Logger.Log("Got Message: " + e.Result.Text, "RecWin");
+            Logger.Log("Got Message: " + e.Result.Text);
 
             var message = Denoise(e.Result.Text);
             if (string.IsNullOrWhiteSpace(message))

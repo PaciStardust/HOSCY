@@ -32,7 +32,7 @@ namespace Hoscy.Services.Speech
         {
             if (IsRunning)
             {
-                Logger.Warning("Tried to start recognizer while it is already running", "RecBase");
+                Logger.Warning("Tried to start recognizer while it is already running");
                 return true;
             }
 
@@ -62,7 +62,7 @@ namespace Hoscy.Services.Speech
         {
             if (!IsRunning)
             {
-                Logger.Warning("Tried to stop recognizer while it is not running", "RecBase");
+                Logger.Warning("Tried to stop recognizer while it is not running");
                 return;
             }
 
@@ -84,12 +84,12 @@ namespace Hoscy.Services.Speech
 
             bool result = SetListeningInternal(enabled);
             if (!result)
-                Logger.Warning("Failed to change mic status", "RecBase");
+                Logger.Warning("Failed to change mic status");
             else
             {
                 var packet = new OscPacket(Config.Osc.AddressListeningIndicator, enabled);//Ingame listening indicator
                 if (!packet.IsValid)
-                    Logger.Warning("Unable to send data to ingame listening indicator, packet is invalid", "RecBase");
+                    Logger.Warning("Unable to send data to ingame listening indicator, packet is invalid");
                 else
                     Osc.Send(packet);
             }
@@ -155,7 +155,7 @@ namespace Hoscy.Services.Speech
             var filterWords = Config.Speech.NoiseFilter.Select(x => $"(?:{x})");
             var filterCombined = string.Join('|', filterWords);
             var regString = $"^(?:{filterCombined})?(.*?)(?:{filterCombined})?$";
-            Logger.PInfo($"Updated denoiser ({regString})", "RecBase");
+            Logger.PInfo($"Updated denoiser ({regString})");
             _denoiseFilter = new Regex(regString, opt);
         }
         #endregion

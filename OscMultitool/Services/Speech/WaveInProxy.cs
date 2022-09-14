@@ -38,7 +38,7 @@ namespace Hoscy.Services.Speech
                 return false;
 
             IsListening = enabled;
-            Logger.PInfo("Microphone listening set to " + IsListening, "WaveInProxy");
+            Logger.PInfo("Microphone listening set to " + IsListening);
             return true;
         }
 
@@ -57,7 +57,7 @@ namespace Hoscy.Services.Speech
                 _microphone.StopRecording();
 
             IsRunning = enabled;
-            Logger.PInfo("Microphone running set to " + IsRunning, "WaveInProxy");
+            Logger.PInfo("Microphone running set to " + IsRunning);
             return true;
         }
         #endregion

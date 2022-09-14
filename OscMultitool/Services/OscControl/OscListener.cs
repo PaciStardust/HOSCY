@@ -31,12 +31,12 @@ namespace Hoscy.OscControl
             try
             {
                 _listener = new UDPListener(_port, Callback);
-                Logger.PInfo($"OSC-Listener is now listening on port {_port}", "OSCListener");
+                Logger.PInfo($"OSC-Listener is now listening on port {_port}");
                 return true;
             }
             catch (Exception e)
             {
-                Logger.Error(e, "OSCListener");
+                Logger.Error(e);
                 return false;
             }
         }
@@ -51,7 +51,7 @@ namespace Hoscy.OscControl
 
             if (message == null)
             {
-                Logger.Debug("Received an empty packet, skipping", "OSCListener");
+                Logger.Debug("Received an empty packet, skipping");
                 return;
             }
 
@@ -59,7 +59,7 @@ namespace Hoscy.OscControl
             foreach (var arg in message.Arguments)
                 argsInfo.Add($"{arg.GetType().Name}({arg})" ?? "???");
 
-            Logger.Debug($"Packet has been received on port {_port} ({message.Address}) => {string.Join(", ", argsInfo)}", "OSCListener");
+            Logger.Debug($"Packet has been received on port {_port} ({message.Address}) => {string.Join(", ", argsInfo)}");
             HandleData(message.Address, message.Arguments.ToArray());
         }
 
@@ -71,7 +71,7 @@ namespace Hoscy.OscControl
             _listener?.Close();
             //_listener?.Dispose(); This somehow crashes the program
             _listener = null;
-            Logger.PInfo($"Stopped listener on port " + _port, "OscLisBase");
+            Logger.PInfo($"Stopped listener on port " + _port);
         }
         #endregion
 

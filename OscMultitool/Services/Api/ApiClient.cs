@@ -19,7 +19,7 @@ namespace Hoscy.Services.Api
 
             if (!preset.IsValid())
             {
-                Logger.Error($"Did not reload ApiClient as preset \"{preset.Name}\" is invalid!", "ApiClient");
+                Logger.Error($"Did not reload ApiClient as preset \"{preset.Name}\" is invalid!");
                 Clear();
                 return false;
             }
@@ -39,7 +39,7 @@ namespace Hoscy.Services.Api
                 foreach (var headerInfo in preset.HeaderValues)
                 {
                     if (!client.DefaultRequestHeaders.TryAddWithoutValidation(headerInfo.Key, headerInfo.Value))
-                        Logger.Warning($"Skipped adding header info {headerInfo.Key} : {headerInfo.Value} as it was deemed invalid", "ApiClient");
+                        Logger.Warning($"Skipped adding header info {headerInfo.Key} : {headerInfo.Value} as it was deemed invalid");
                 }
 
                 _client = client;
@@ -48,7 +48,7 @@ namespace Hoscy.Services.Api
             }
             catch (Exception e)
             {
-                Logger.Error(e, "ApiClient");
+                Logger.Error(e);
                 Clear();
                 return false;
             }
@@ -62,18 +62,18 @@ namespace Hoscy.Services.Api
             var identifier = "R-" + Math.Abs(content.GetHashCode());
 
             var startTime = DateTime.Now;
-            Logger.Debug($"Sending to {_preset.PostUrl} ({identifier})", "ApiClient");
+            Logger.Debug($"Sending to {_preset.PostUrl} ({identifier})");
             var response = await _client.PostAsync("", content);
             var jsonIn = await response.Content.ReadAsStringAsync();
 
             if (!response.IsSuccessStatusCode)
             {
-                Logger.Error(jsonIn, "Translation");
+                Logger.Error(jsonIn);
                 return string.Empty;
             }
 
             var result = TextProcessor.ExtractFromJson(_preset.ResultField, jsonIn);
-            Logger.Debug($"Received data from request ({(DateTime.Now - startTime).TotalMilliseconds}ms): {identifier} => {jsonIn}", "ApiClient");
+            Logger.Debug($"Received data from request ({(DateTime.Now - startTime).TotalMilliseconds}ms): {identifier} => {jsonIn}");
             return result;
         }
 
@@ -84,7 +84,7 @@ namespace Hoscy.Services.Api
             var content = new ByteArrayContent(bytes);
             if (string.IsNullOrWhiteSpace(_preset.ContentType) || !content.Headers.TryAddWithoutValidation("Content-Type", _preset.ContentType))
             {
-                Logger.Error("Unable to send data to API as ContentType is invalid, are you using the Type suggested by the API's documentation?", "ApiClient");
+                Logger.Error("Unable to send data to API as ContentType is invalid, are you using the Type suggested by the API's documentation?");
                 return string.Empty;
             }
 
@@ -98,7 +98,7 @@ namespace Hoscy.Services.Api
 
             if (_preset.JsonData == jsonOut)
             {
-                Logger.Error("Unable to send data to data to API as JSON contains no token, have you made sure the JSON option contains \"[T]\"?", "ApiClient");
+                Logger.Error("Unable to send data to data to API as JSON contains no token, have you made sure the JSON option contains \"[T]\"?");
                 return string.Empty;
             }
 

@@ -39,12 +39,15 @@ namespace Hoscy.Ui.Pages
             InitializeComponent();
             LoadBoxes();
             UpdateRecognizerSelector();
-            SetStartStopButtonText();
+            SetButtonTexts();
         }
 
         #region Loading
-        private void SetStartStopButtonText()
-            => buttonStartStop.Content = Recognition.IsRecognizerRunning ? "Stop" : "Start";
+        private void SetButtonTexts()
+        {
+            buttonStartStop.Content = Recognition.IsRecognizerRunning ? "Stop" : "Start";
+            buttonMute.Content = Recognition.IsRecognizerListening ? "Listening" : "Muted";
+        }
 
         private void LoadBoxes()
         {
@@ -111,11 +114,14 @@ namespace Hoscy.Ui.Pages
             else
                 Recognition.StartRecognizer();
 
-            SetStartStopButtonText();
+            SetButtonTexts();
         }
 
         private void Button_Mute(object sender, RoutedEventArgs e)
-            => Recognition.SetListening(!Recognition.IsRecognizerListening);
+        {
+            Recognition.SetListening(!Recognition.IsRecognizerListening);
+            SetButtonTexts();
+        }
 
         private void Button_OpenNoiseFilter(object sender, RoutedEventArgs e)
         {

@@ -1,6 +1,7 @@
 ﻿using Hoscy;
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -37,12 +38,12 @@ namespace Hoscy
             {
                 var writer = File.CreateText(Config.LogPath);
                 writer.AutoFlush = true;
-                PInfo("Created logging file at " + Config.LogPath, "Logging");
+                PInfo("Created logging file at " + Config.LogPath);
                 return writer;
             }
             catch (Exception e)
             {
-                Error(e, "Logger", false);
+                Error(e, false);
                 return null;
             }
         }
@@ -51,8 +52,12 @@ namespace Hoscy
         #region Logging Function
 
         private static readonly object _lock = new();
-        public static void Log(LogMessage message)
+
+        private static void Log(LogMessage message)
         {
+            if (message.Severity == LogSeverity.Error)
+                MessageBox.Show($"{message.Message}\n\nIf you are unsure what to do with this, please open an issue on GitHub", "Error at " + message.GetLocation(), MessageBoxButton.OK, MessageBoxImage.Error);
+
             if (!LogLevelAllowed(message.Severity)) return;
 
             lock (_lock) //Making sure log writing is not impacted by multithreading
@@ -71,30 +76,28 @@ namespace Hoscy
                 _logWriter?.WriteLine(messageString);
             }
         }
-        public static void Log(string message, string source, LogSeverity severity = LogSeverity.Log)
-            => Log(new(severity, source, message));
+        public static void Log(string message, LogSeverity severity = LogSeverity.Log, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
+            => Log(new(severity, file, member, line, message));
+
+        public static void Info(string message, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
+            => Log(message, LogSeverity.Info, file, member, line);
+        public static void PInfo(string message, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
+            => Log(message, LogSeverity.PrioInfo, file, member, line);
+        public static void Warning(string message, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
+            => Log(message, LogSeverity.Warning, file, member, line);
+        public static void Debug(string message, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
+            => Log(message, LogSeverity.Debug, file, member, line);
 
         // ERROR LOGGING
-        public static void Error(string message, string source, bool window = true) //Error with basic message
+        public static void Error(string message, bool notify = true, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0) //Error with basic message
         {
-            Log(message.Replace("[s]", " "), source, LogSeverity.Error);
-            if (window) //[s] token replaces with newlines or space
-                MessageBox.Show($"{message.Replace("[s]", "\n")}\n\nIf you are unsure what to do with this, please open an issue on GitHub", "Error at " + source, MessageBoxButton.OK, MessageBoxImage.Error);
+            var severity = notify ? LogSeverity.Error : LogSeverity.ErrSilent;
+            Log(message, severity, file, member, line);
         }
-        public static void Error(string type, string message, string source, string trace = "unspecified location", bool window = true) //Error using type
-           => Error($"A {type} has occured:[s]{message}[s][s]{trace}", source, window);
-        public static void Error(Exception error, string source, bool window = true) //Error using exception
-            => Error(error.GetType().ToString(), error.Message, source, error.StackTrace ?? "unspecified location", window);
-
-        // Other logging types
-        public static void Info(string message, string source)
-            => Log(message, source, LogSeverity.Info);
-        public static void PInfo(string message, string source)
-            => Log(message, source, LogSeverity.PrioInfo);
-        public static void Warning(string message, string source)
-            => Log(message, source, LogSeverity.Warning);
-        public static void Debug(string message, string source)
-            => Log(message, source, LogSeverity.Debug);
+        public static void Error(string type, string message, string trace, bool notify = true, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0) //Error using type
+           => Error($"A {type} has occured:[s{message}[s][s]{trace}", notify, file, member, line);
+        public static void Error(Exception error, bool notify = true, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0) //Error using exception
+            => Error(error.GetType().ToString(), error.Message, error.StackTrace ?? "unspecified location", notify, file, member, line);
         #endregion
 
         #region Utils
@@ -106,6 +109,7 @@ namespace Hoscy
         private static ConsoleColor GetLogColor(LogSeverity severity) => severity switch
         {
             LogSeverity.Error => ConsoleColor.Red,
+            LogSeverity.ErrSilent => ConsoleColor.Red,
             LogSeverity.Critical => ConsoleColor.DarkRed,
             LogSeverity.Warning => ConsoleColor.Yellow,
             LogSeverity.PrioInfo => ConsoleColor.Cyan,
@@ -123,6 +127,7 @@ namespace Hoscy
         private static bool LogLevelAllowed(LogSeverity severity) => severity switch
         {
             LogSeverity.Error => Config.Logging.Error,
+            LogSeverity.ErrSilent => Config.Logging.Error,
             LogSeverity.Warning => Config.Logging.Warning,
             LogSeverity.PrioInfo => Config.Logging.PrioInfo,
             LogSeverity.Info => Config.Logging.Info,
@@ -138,26 +143,32 @@ namespace Hoscy
     /// </summary>
     public struct LogMessage
     {
-        public static int MaxSourceLength => 12;
         public static int MaxSeverityLength => 8;
 
-        public string Source { get; private init; }
+        public string SourceFile { get; private init; }
+        public string SourceMember { get; private init; }
+        public int SourceLine { get; private init; }
         public string Message { get; private init; }
         public LogSeverity Severity { get; private init; }
         private readonly string _sevString;
         public DateTime Time { get; private init; }
 
-        public LogMessage(LogSeverity serverity, string source, string message)
+        public LogMessage(LogSeverity serverity, string sourceFile, string sourcMember, int sourceLine, string message)
         {
             Message = message;
-            Source = Pad(source, MaxSourceLength);
+            SourceFile = Path.GetFileName(sourceFile);
+            SourceMember = sourcMember;
+            SourceLine = sourceLine;
             Severity = serverity;
             _sevString = Pad(serverity.ToString(), MaxSeverityLength);
             Time = DateTime.Now;
         }
 
         public override string ToString()
-            => string.Join(' ', Time.ToString("HH:mm:ss.fff"), _sevString, Source, Message);
+            => $"{Time:HH:mm:ss.fff} {_sevString} [{GetLocation()}] {Message}";
+
+        public string GetLocation()
+            => $"{SourceFile}::{SourceMember}:{SourceLine}";
 
         /// <summary>
         /// Padding utility for log messages to have consistent width
@@ -177,6 +188,7 @@ namespace Hoscy
     public enum LogSeverity
     {
         Error,
+        ErrSilent,
         Warning,
         Info,
         Log,

@@ -29,7 +29,7 @@ namespace Hoscy.Services.Speech
         /// </summary>
         private static void Startup()
         {
-            Logger.PInfo("Attempting to start synthesizer...", "Synth");
+            Logger.PInfo("Attempting to start synthesizer...");
 
             //Synth setup
             var formatInfo = new SpeechAudioFormatInfo(16000, AudioBitsPerSample.Sixteen, AudioChannel.Mono);
@@ -52,7 +52,7 @@ namespace Hoscy.Services.Speech
             };
             speechThread.Start();
 
-            Logger.PInfo("Successfully started synthesizer thread", "Synth");
+            Logger.PInfo("Successfully started synthesizer thread");
         }
 
         #region Synth Control
@@ -69,7 +69,7 @@ namespace Hoscy.Services.Speech
             _waveOut.Stop(); //Only triggers if its not alrady playing
             _waveOut.DeviceNumber = newDeviceNumber;
             _waveOut.Init(_provider); //Redo init
-            Logger.PInfo("Changed synthesizer microphone: " + Devices.Speakers[newDeviceNumber].ProductName, "Synth");
+            Logger.PInfo("Changed synthesizer microphone: " + Devices.Speakers[newDeviceNumber].ProductName);
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace Hoscy.Services.Speech
             //Used for cancelling startup
             if (WindowsSynths.Count == 0)
             {
-                Logger.Warning("Could not find a voice to use for synthesizer", "Synth");
+                Logger.Warning("Could not find a voice to use for synthesizer");
                 return false;
             }
 
@@ -91,7 +91,7 @@ namespace Hoscy.Services.Speech
             if (voiceName != _synth.Voice.Name)
             {
                 _synth.SelectVoice(WindowsSynths[voiceIndex].Name);
-                Logger.PInfo("Changed synthesizer voice: " + WindowsSynths[voiceIndex].Description, "Synth");
+                Logger.PInfo("Changed synthesizer voice: " + WindowsSynths[voiceIndex].Description);
             }
 
             return true;
@@ -110,7 +110,7 @@ namespace Hoscy.Services.Speech
                 return;
 
             _waveOut.Volume = configVolume;
-            Logger.PInfo("Changed synthesizer volume: " + configVolume, "Synth");
+            Logger.PInfo("Changed synthesizer volume: " + configVolume);
         }
         #endregion
 
@@ -120,7 +120,7 @@ namespace Hoscy.Services.Speech
         /// </summary>
         public static void Skip()
         {
-            Logger.Log("Skipping current synth audio", "Synth");
+            Logger.Log("Skipping current synth audio");
             _waveOut.Stop();
         }
 
@@ -138,7 +138,7 @@ namespace Hoscy.Services.Speech
             {
                 if (Config.Speech.SkipLongerMessages)
                 {
-                    Logger.Log("Skipping a message from synth as it is too long", "Synth");
+                    Logger.Log("Skipping a message from synth as it is too long");
                     return;
                 }
 
@@ -171,10 +171,10 @@ namespace Hoscy.Services.Speech
                 ResetStream();
                 _waveOut.Stop(); //Might be redundant
                 _provider = GenerateProvider(); //We reset the provider for each clip as it appears to cause issues otherwise
-                Logger.Log("Creating synth audio from: " + _currentString, "Synth"); 
+                Logger.Log("Creating synth audio from: " + _currentString); 
                 _synth.Speak(_currentString); //This can lag
 
-                Logger.Info("Playing synth audio: " + _currentString, "Synth");
+                Logger.Info("Playing synth audio: " + _currentString);
                 _currentString = string.Empty;
                 _stream.Position = 0;
                 _waveOut.Play();
@@ -201,7 +201,7 @@ namespace Hoscy.Services.Speech
         public static IReadOnlyList<VoiceInfo> WindowsSynths { get; private set; } = GetWindowsSynths();
         private static IReadOnlyList<VoiceInfo> GetWindowsSynths()
         {
-            Logger.Info("Getting installed Speech Synths", "Synth");
+            Logger.Info("Getting installed Speech Synths");
             return _synth.GetInstalledVoices()
                 .Where(x => x.Enabled)
                 .Select(x => x.VoiceInfo)
