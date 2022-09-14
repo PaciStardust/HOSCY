@@ -2,6 +2,8 @@
 
 HOSCY is a free and Open-Source tool with many utilities for communication and OSC aimed at making communication and use of OSC easier
 
+If you wish to contribute or need support, join the **[Discord](https://discord.gg/pxwGHvfcxs)**
+
 ## Features
 - **Speech Recognition**
 	- Windows Speech Recognition

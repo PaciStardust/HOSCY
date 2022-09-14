@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace OscMultitool.Services.Speech
 {
-    public static class Textbox
+    public static class Textbox //todo: dynamic timeout time addition / min value
     {
         private static string _notification = string.Empty;
         private static NotificationType _notificationType = NotificationType.None;
@@ -136,22 +136,27 @@ namespace OscMultitool.Services.Speech
         /// <returns>Split message</returns>
         private static List<string> SplitMessage(string message)
         {
+            var maxLen = Config.Textbox.MaxLength;
+
             var words = message.Split(' ');
             var messages = new List<string>();
             var currentMessage = string.Empty;
             for (int i = 0; i < words.Length; i++)
             {
-                var newMessage = string.Join(" ", currentMessage, words[i]).Trim();
+                var word = words[i];
+                word = word.Length > maxLen ? word[..maxLen] : word;
+
+                var newMessage = string.Join(" ", currentMessage, word).Trim();
 
                 //Message short enough
-                if (newMessage.Length <= Config.Textbox.MaxLength)
+                if (newMessage.Length <= maxLen)
                 {
                     currentMessage = newMessage;
                     continue;
                 }
 
                 messages.Add(currentMessage + " ...");
-                currentMessage = "... " + words[i];
+                currentMessage = "... " + word;
             }
 
             if (!string.IsNullOrWhiteSpace(currentMessage))
@@ -228,7 +233,16 @@ namespace OscMultitool.Services.Speech
         /// <param name="message">Message to calculate timeout for</param>
         /// <returns>Milliseconds of timeout</returns>
         private static int GetMessageTimeout(string message)
-            => Config.Textbox.DynamicTimeout ? (int)Math.Ceiling(message.Length / 20f) * Config.Textbox.TimeoutMultiplier : Config.Textbox.DefaultTimeout;
+        {
+            if (string.IsNullOrWhiteSpace(message))
+                return 1000; //to avoid hitting ratelimit
+
+            if (!Config.Textbox.DynamicTimeout)
+                return Config.Textbox.DefaultTimeout;
+
+            var timeout = (int)(Math.Ceiling(message.Length / 20f) * Config.Textbox.TimeoutMultiplier);
+            return Math.Max(timeout, Config.Textbox.MinimumTimeout);
+        }
         #endregion
     }
 

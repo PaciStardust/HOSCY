@@ -174,6 +174,14 @@ namespace OscMultitool
                 set { _timeoutMultiplier = MinMax(value, 1000, 10000); }
             }
             private int _timeoutMultiplier = 1500;
+
+            public int MinimumTimeout
+            {
+                get { return _minimumTimeout; }
+                set { _minimumTimeout = MinMax(value, 1000, 30000); }
+            }
+            private int _minimumTimeout = 3000;
+
             public int DefaultTimeout
             {
                 get { return _defaultTimeout; }

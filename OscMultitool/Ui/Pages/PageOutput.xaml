@@ -25,18 +25,32 @@
                     <StackPanel Margin="8,4,0,0">
                         <CheckBox  x:Name="textboxDynamicTimeout" Content="Enable dynamic timeout" Foreground="White" IsChecked="{Binding Textbox.DynamicTimeout, Source={x:Static local:Config.Data}}"  FontSize="18" FontFamily="Microsoft YaHei UI" BorderBrush="White" Background="White" Click="TextboxDynamicTimeout_Checked"/>
 
-                        <WrapPanel  x:Name="optionDynamicTimeout" Margin="0,4,0,0">
-                            <TextBox x:Name="textboxTimeoutMultiplier" VerticalAlignment="Center" TextWrapping="NoWrap" Width="120" FontFamily="Microsoft YaHei UI" FontSize="18" Background="#00000000" Foreground="White" BorderBrush="White">
-                                <TextBox.Text>
-                                    <Binding Source="{x:Static local:Config.Data}" Path="Textbox.TimeoutMultiplier" UpdateSourceTrigger="PropertyChanged">
-                                        <Binding.ValidationRules>
-                                            <ui:IntegerValidationRule Min="1000" Max="10000"/>
-                                        </Binding.ValidationRules>
-                                    </Binding>
-                                </TextBox.Text>
-                            </TextBox>
-                            <Label Content ="Dynamic timeout (ms/20char)" Foreground="White" FontSize="18"  FontFamily="Microsoft YaHei UI"/>
-                        </WrapPanel>
+                        <StackPanel x:Name="optionDynamicTimeout" Margin="0,4,0,0">
+                            <WrapPanel>
+                                <TextBox x:Name="textboxTimeoutMultiplier" VerticalAlignment="Center" TextWrapping="NoWrap" Width="120" FontFamily="Microsoft YaHei UI" FontSize="18" Background="#00000000" Foreground="White" BorderBrush="White">
+                                    <TextBox.Text>
+                                        <Binding Source="{x:Static local:Config.Data}" Path="Textbox.TimeoutMultiplier" UpdateSourceTrigger="PropertyChanged">
+                                            <Binding.ValidationRules>
+                                                <ui:IntegerValidationRule Min="1000" Max="10000"/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                                <Label Content ="Dynamic timeout (ms/20char)" Foreground="White" FontSize="18"  FontFamily="Microsoft YaHei UI"/>
+                            </WrapPanel>
+                            <WrapPanel>
+                                <TextBox x:Name="textboxMinimumTimeout" VerticalAlignment="Center" TextWrapping="NoWrap" Width="120" FontFamily="Microsoft YaHei UI" FontSize="18" Background="#00000000" Foreground="White" BorderBrush="White">
+                                    <TextBox.Text>
+                                        <Binding Source="{x:Static local:Config.Data}" Path="Textbox.MinimumTimeout" UpdateSourceTrigger="PropertyChanged">
+                                            <Binding.ValidationRules>
+                                                <ui:IntegerValidationRule Min="1000" Max="30000"/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                                <Label Content ="Minimum timeout (ms)" Foreground="White" FontSize="18"  FontFamily="Microsoft YaHei UI"/>
+                            </WrapPanel>
+                        </StackPanel>
 
                         <WrapPanel x:Name="optionDefaultTimeout">
                             <TextBox x:Name="textboxDefaultTimeout" VerticalAlignment="Center" TextWrapping="NoWrap" Width="120" FontFamily="Microsoft YaHei UI" FontSize="18" Background="#00000000" Foreground="White" BorderBrush="White">

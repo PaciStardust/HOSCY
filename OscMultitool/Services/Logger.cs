@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Windows;
 
 namespace OscMultitool.Services
@@ -63,7 +64,7 @@ namespace OscMultitool.Services
                     if (lowerMessage.Contains(filter))
                         return;
 
-                var messageString = message.ToString().Replace('\n', ' ');
+                var messageString = message.ToString().Replace("\n", " ").Replace("\r", "");
                 Console.ForegroundColor = GetLogColor(message.Severity);
                 Console.WriteLine(messageString);
                 _logWriter?.WriteLine(messageString);
