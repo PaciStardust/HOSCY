@@ -190,8 +190,8 @@ namespace Hoscy.Services.Speech
         public static void Clear()
         {
             MessageQueue.Clear();
-            MessageQueue.Enqueue(string.Empty);
             ClearNotification();
+            _autocleared = false;
             Logger.Info("Clearing message queue");
         }
 
