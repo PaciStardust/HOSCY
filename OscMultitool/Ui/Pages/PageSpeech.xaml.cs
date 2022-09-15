@@ -1,5 +1,6 @@
 ﻿using Hoscy.Services.Speech;
 using Hoscy.Services.Speech.Recognizers;
+using Hoscy.Services.Speech.Utilities;
 using Hoscy.Ui.Windows;
 using System.Collections.Generic;
 using System.Linq;

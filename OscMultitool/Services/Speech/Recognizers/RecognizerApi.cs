@@ -3,6 +3,7 @@ using NAudio.Wave;
 using Hoscy.Services.Api;
 using System.IO;
 using System.Threading.Tasks;
+using Hoscy.Services.Speech.Utilities;
 
 namespace Hoscy.Services.Speech.Recognizers
 {

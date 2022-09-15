@@ -122,7 +122,8 @@ namespace Hoscy.Services
             Pause, 
             Unpause,
             Rewind,
-            Skip
+            Skip,
+            Test
         }
 
         /// <summary>
@@ -189,8 +190,6 @@ namespace Hoscy.Services
 
                 default: return;
             }
-
-            
         }
         #endregion
     }

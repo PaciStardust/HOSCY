@@ -1,4 +1,5 @@
 ﻿using Hoscy;
+using Hoscy.Services.Speech.Utilities;
 using NAudio.Wave;
 using System;
 using System.Collections.Generic;

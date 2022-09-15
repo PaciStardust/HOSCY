@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading;
 
-namespace Hoscy.Services.Speech
+namespace Hoscy.Services.Speech.Utilities
 {
     /// <summary>
     /// Class to use for windows recognizer as Stream, 

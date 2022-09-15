@@ -1,8 +1,7 @@
-﻿using Hoscy;
-using NAudio.Wave;
+﻿using NAudio.Wave;
 using System.Collections.Generic;
 
-namespace Hoscy.Services.Speech
+namespace Hoscy.Services.Speech.Utilities
 {
     public static class Devices
     {
