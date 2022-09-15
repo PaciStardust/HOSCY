@@ -183,12 +183,14 @@ namespace Hoscy.Services
                     return;
 
                 case MediaCommandType.Rewind:
-                    if (await _session.TryRewindAsync())
+                    if (await _session.TrySkipPreviousAsync())
                         Logger.Log("Rewinded media playback");
                     return;
 
                 default: return;
             }
+
+            
         }
         #endregion
     }
