@@ -1,12 +1,11 @@
-﻿using Hoscy;
-using Hoscy.Services.Speech;
+﻿using Hoscy.Services.Speech;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Media.Control;
 
-namespace Hoscy.Services
+namespace Hoscy.Services.Api
 {
     public static class Media
     {
@@ -24,7 +23,7 @@ namespace Hoscy.Services
 
             _gsmtcsm = await GlobalSystemMediaTransportControlsSessionManager.RequestAsync();
             _gsmtcsm.CurrentSessionChanged += Gsmtcsm_CurrentSessionChanged;
-            
+
             GetCurrentSession(_gsmtcsm);
         }
 
@@ -54,7 +53,7 @@ namespace Hoscy.Services
 
             if (playbackInfo == null || playbackInfo.PlaybackStatus != GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing || newPlaying.Title == null)
             {
-                ClearNowPlaying();
+                SetNotification(string.Empty);
                 return;
             }
 
@@ -69,25 +68,31 @@ namespace Hoscy.Services
 
             if (Config.Textbox.ShowMediaStatus)
             {
-                if (string.IsNullOrWhiteSpace(_nowPlaying.Title))
+                var playing = CreateCurrentMediaString();
+
+                if (string.IsNullOrWhiteSpace(playing))
                 {
-                    ClearNowPlaying();
+                    SetNotification(string.Empty);
                     return;
                 }
 
-                var playing = $"'{_nowPlaying.Title}'";
-                if (!string.IsNullOrWhiteSpace(_nowPlaying.Artist))
-                    playing += $" by '{_nowPlaying.Artist}'";
-
                 Logger.Log($"Currently playing media has changed to: {playing}");
-                Textbox.Notify($"Listening to {playing}", NotificationType.Media);
+                SetNotification($"Listening to {playing}");
             }
         }
-        private static void UpdateCurrentlyPlayingMediaProxy(GlobalSystemMediaTransportControlsSession sender)
-            => Task.Run(() => UpdateCurrentlyPlayingMedia(sender)).ConfigureAwait(false);
+        private static string? CreateCurrentMediaString()
+        {
+            if (_nowPlaying == null || string.IsNullOrWhiteSpace(_nowPlaying.Title))
+                return null;
 
-        private static void ClearNowPlaying()
-            => Textbox.Notify(string.Empty, NotificationType.Media);
+            var playing = $"'{_nowPlaying.Title}'";
+            if (!string.IsNullOrWhiteSpace(_nowPlaying.Artist))
+                playing += $" by '{_nowPlaying.Artist}'";
+            return playing;
+        }
+
+        private static void SetNotification(string text)
+            => Textbox.Notify(text, NotificationType.Media);
         #endregion
 
         #region Events
@@ -110,6 +115,9 @@ namespace Hoscy.Services
         /// <param name="args"></param>
         private static void Gsmtcsm_CurrentSessionChanged(GlobalSystemMediaTransportControlsSessionManager sender, CurrentSessionChangedEventArgs args)
             => GetCurrentSession(sender);
+
+        private static void UpdateCurrentlyPlayingMediaProxy(GlobalSystemMediaTransportControlsSession sender)
+            => Task.Run(() => UpdateCurrentlyPlayingMedia(sender)).ConfigureAwait(false);
         #endregion
 
         #region Media Control
@@ -119,11 +127,11 @@ namespace Hoscy.Services
         private enum MediaCommandType
         {
             None,
-            Pause, 
+            Pause,
             Unpause,
             Rewind,
             Skip,
-            Test
+            Info
         }
 
         /// <summary>
@@ -141,7 +149,11 @@ namespace Hoscy.Services
             { "next", MediaCommandType.Skip },
 
             { "rewind", MediaCommandType.Rewind },
-            { "back", MediaCommandType.Rewind }
+            { "back", MediaCommandType.Rewind },
+
+            { "info", MediaCommandType.Info },
+            { "current", MediaCommandType.Info },
+            { "now", MediaCommandType.Info }
         };
 
         /// <summary>
@@ -166,7 +178,7 @@ namespace Hoscy.Services
             if (_session == null)
                 return;
 
-            switch(command)
+            switch (command)
             {
                 case MediaCommandType.Pause:
                     if (await _session.TryPauseAsync())
@@ -186,6 +198,13 @@ namespace Hoscy.Services
                 case MediaCommandType.Rewind:
                     if (await _session.TrySkipPreviousAsync())
                         Logger.Log("Rewinded media playback");
+                    return;
+
+                case MediaCommandType.Info:
+                    var playing = CreateCurrentMediaString();
+                    if (string.IsNullOrWhiteSpace(playing))
+                        return;
+                    SetNotification($"Listening to {playing}");
                     return;
 
                 default: return;
