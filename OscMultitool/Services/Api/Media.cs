@@ -76,16 +76,21 @@ namespace Hoscy.Services.Api
                     return;
                 }
 
-                var playing = $"'{_nowPlaying.Title}'";
-                if (!string.IsNullOrWhiteSpace(_nowPlaying.Artist))
-                    playing += $" by '{_nowPlaying.Artist}'";
-
                 Logger.Log($"Currently playing media has changed to: {playing}");
-                Textbox.Notify($"Listening to {playing}", NotificationType.Media);
+                SetNotification($"Listening to {playing}");
             }
         }
-        private static void UpdateCurrentlyPlayingMediaProxy(GlobalSystemMediaTransportControlsSession sender)
-            => Task.Run(() => UpdateCurrentlyPlayingMedia(sender)).ConfigureAwait(false);
+
+        private static string? CreateCurrentMediaString()
+        {
+            if (_nowPlaying == null || string.IsNullOrWhiteSpace(_nowPlaying.Title))
+                return null;
+
+            var playing = $"'{_nowPlaying.Title}'";
+            if (!string.IsNullOrWhiteSpace(_nowPlaying.Artist))
+                playing += $" by '{_nowPlaying.Artist}'";
+            return playing;
+        }
 
         private static void SetNotification(string text)
             => Textbox.Notify(text, NotificationType.Media);
