@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Hoscy"
+        xmlns:locuimain="clr-namespace:Hoscy.Ui"
         xmlns:locui="clr-namespace:Hoscy.Ui.Controls"
         xmlns:Wave="clr-namespace:NAudio.Wave;assembly=NAudio.WinMM" x:Name="window" x:Class="Hoscy.MainWindow"
         mc:Ignorable="d"

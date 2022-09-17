@@ -1,10 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace Hoscy.Ui
 {
     public static class UiHelper
     {
+        public static readonly SolidColorBrush Background = new(Color.FromRgb(37, 37, 37));
+
+
         /// <summary>
         /// Loads data into a combo box
         /// </summary>
