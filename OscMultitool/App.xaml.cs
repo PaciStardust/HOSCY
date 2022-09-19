@@ -1,4 +1,5 @@
 ﻿using Hoscy.Services.Speech;
+using System;
 using System.Windows;
 
 namespace Hoscy
