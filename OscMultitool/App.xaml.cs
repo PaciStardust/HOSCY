@@ -26,6 +26,7 @@ namespace Hoscy
                 Logger.Error(e.Exception);
             }
             catch { }
+            Application.Current.Shutdown(-1);
         }
     }
 }
