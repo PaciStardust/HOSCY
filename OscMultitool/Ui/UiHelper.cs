@@ -6,8 +6,15 @@ namespace Hoscy.Ui
 {
     public static class UiHelper
     {
-        public static readonly SolidColorBrush Background = new(Color.FromRgb(37, 37, 37));
+        public static readonly SolidColorBrush ColorGrayDark = new(Color.FromRgb(37, 37, 37));
+        public static readonly SolidColorBrush ColorGray = new(Color.FromRgb(68, 68, 68));
+        public static readonly SolidColorBrush ColorGrayLight = new(Color.FromRgb(96, 96, 96));
+        public static readonly SolidColorBrush ColorWhite = new(Color.FromRgb(255, 255, 255));
+        public static readonly SolidColorBrush ColorBlack = new(Color.FromRgb(0, 0, 0));
+        public static readonly SolidColorBrush ColorAccent = new(Color.FromRgb(60, 255, 60));
+        public static readonly SolidColorBrush ColorError = new(Color.FromRgb(60, 60, 255));
 
+        public static readonly int FontSRegular = 18;
 
         /// <summary>
         /// Loads data into a combo box

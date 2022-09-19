@@ -13,30 +13,30 @@
         <StackPanel>
             <StackPanel>
                 <WrapPanel>
-                    <Label Content="API Configuration" Foreground="White" FontSize="30" FontFamily="Microsoft YaHei UI" FontWeight="Bold"/>
-                    <Button Content="Modify Presets" Margin="16,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_ModifyPresets" Background="{x:Null}" BorderBrush="White" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18" Width="139"/>
+                    <Label Content="API Configuration" FontSize="30" FontWeight="Bold"/>
+                    <Button Content="Modify Presets" Margin="16,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_ModifyPresets" Width="139"/>
                 </WrapPanel>
 
                 <!-- Translator Usage -->
                 <StackPanel>
                     <WrapPanel>
-                        <Label Content="Translation API" Foreground="White" FontSize="24" FontFamily="Microsoft YaHei UI" FontWeight="Bold"/>
-                        <Button Content="Reload" Margin="8,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_ReloadTranslation" Background="{x:Null}" BorderBrush="White" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18" Width="71.66"/>
+                        <Label Content="Translation API" FontSize="24" FontWeight="Bold"/>
+                        <Button Content="Reload" Margin="8,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_ReloadTranslation" Width="71.66"/>
                     </WrapPanel>
 
                     <StackPanel Margin="8,4,0,0">
                         <WrapPanel>
-                            <ComboBox x:Name="translatorApiBox" HorizontalAlignment="Left" Width="240" SelectionChanged="TranslatorApiBox_SelectionChanged" FontSize="14" FontFamily="Microsoft YaHei UI" BorderBrush="White" VerticalAlignment="Center"/>
-                            <Label Content="API Preset" Foreground="White" FontSize="18" FontFamily="Microsoft YaHei UI"/>
+                            <ComboBox x:Name="translatorApiBox" HorizontalAlignment="Left" Width="240" SelectionChanged="TranslatorApiBox_SelectionChanged" VerticalAlignment="Center"/>
+                            <Label Content="API Preset"/>
                         </WrapPanel>
 
-                        <CheckBox x:Name="textboxTranslate" Content="Apply translation to textbox" Foreground="White" Margin="0,4,0,0" IsChecked="{Binding Textbox.TranslateTextbox, Source={x:Static local:Config.Data}}" FontSize="18" FontFamily="Microsoft YaHei UI" BorderBrush="White" Background="White"/>
-                        <CheckBox x:Name="textboxAdditon" Content="Apply original after translation" Foreground="White" Margin="0,4,0,0" IsChecked="{Binding Textbox.AddOriginalAfterTranslate, Source={x:Static local:Config.Data}}" FontSize="18" FontFamily="Microsoft YaHei UI" BorderBrush="White" Background="White"/>
-                        <CheckBox x:Name="ttsTranslate" Content="Apply translation to text-to-speech" Foreground="White" Margin="0,4,0,0" IsChecked="{Binding Speech.TranslateTts, Source={x:Static local:Config.Data}}" FontSize="18" FontFamily="Microsoft YaHei UI" BorderBrush="White" Background="White"/>
-                        <CheckBox x:Name="translateExternal" Content="Apply translation to external input" Foreground="White" Margin="0,4,0,0" IsChecked="{Binding Api.TranslationAllowExternal, Source={x:Static local:Config.Data}}" FontSize="18" FontFamily="Microsoft YaHei UI" BorderBrush="White" Background="White"/>
+                        <CheckBox x:Name="textboxTranslate" Content="Apply translation to textbox" Margin="0,4,0,0" IsChecked="{Binding Textbox.TranslateTextbox, Source={x:Static local:Config.Data}}"/>
+                        <CheckBox x:Name="textboxAdditon" Content="Apply original after translation" Margin="0,4,0,0" IsChecked="{Binding Textbox.AddOriginalAfterTranslate, Source={x:Static local:Config.Data}}"/>
+                        <CheckBox x:Name="ttsTranslate" Content="Apply translation to text-to-speech" Margin="0,4,0,0" IsChecked="{Binding Speech.TranslateTts, Source={x:Static local:Config.Data}}"/>
+                        <CheckBox x:Name="translateExternal" Content="Apply translation to external input" Margin="0,4,0,0" IsChecked="{Binding Api.TranslationAllowExternal, Source={x:Static local:Config.Data}}"/>
 
                         <WrapPanel Margin="0,4,0,0">
-                            <TextBox x:Name="translationMaxLength" VerticalAlignment="Center" TextWrapping="NoWrap" Width="120" Background="{x:Null}" BorderBrush="White" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18">
+                            <TextBox x:Name="translationMaxLength" VerticalAlignment="Center" Width="120">
                                 <TextBox.Text>
                                     <Binding Source="{x:Static local:Config.Data}" Path="Api.TranslationMaxTextLength" UpdateSourceTrigger="PropertyChanged">
                                         <Binding.ValidationRules>
@@ -45,25 +45,25 @@
                                     </Binding>
                                 </TextBox.Text>
                             </TextBox>
-                            <Label Content="Max. Text Length" Foreground="White" FontSize="18" FontFamily="Microsoft YaHei UI"/>
+                            <Label Content="Max. Text Length"/>
                         </WrapPanel>
 
-                        <CheckBox x:Name="skipTooLong" Content="Skip too long messages" Margin="0,4,0,0" Foreground="White" IsChecked="{Binding Api.TranslationSkipLongerMessages, Source={x:Static local:Config.Data}}" BorderBrush="White" Background="White" FontFamily="Microsoft YaHei UI" FontSize="18"/>
+                        <CheckBox x:Name="skipTooLong" Content="Skip too long messages" Margin="0,4,0,0" IsChecked="{Binding Api.TranslationSkipLongerMessages, Source={x:Static local:Config.Data}}"/>
                     </StackPanel>
                 </StackPanel>
 
                 <!-- Recognizer Usage -->
                 <StackPanel Margin="0,16,0,0">
-                    <Label Content="Recognition Any-API" Foreground="White" FontSize="24" FontFamily="Microsoft YaHei UI" FontWeight="Bold"/>
+                    <Label Content="Recognition Any-API" FontSize="24" FontWeight="Bold"/>
 
                     <StackPanel Margin="8,4,0,0">
                         <WrapPanel>
-                            <ComboBox x:Name="recognitionApiBox" HorizontalAlignment="Left" Width="240" SelectionChanged="RecognitionApiBox_SelectionChanged" FontSize="14" FontFamily="Microsoft YaHei UI" BorderBrush="White" VerticalAlignment="Center"/>
-                            <Label Content="API Preset" Foreground="White" FontSize="18" FontFamily="Microsoft YaHei UI"/>
+                            <ComboBox x:Name="recognitionApiBox" HorizontalAlignment="Left" Width="240" SelectionChanged="RecognitionApiBox_SelectionChanged" VerticalAlignment="Center"/>
+                            <Label Content="API Preset"/>
                         </WrapPanel>
 
                         <WrapPanel Margin="0,4,0,0">
-                            <TextBox x:Name="recognitionMaxRecording" VerticalAlignment="Center" TextWrapping="NoWrap" Width="120" Background="{x:Null}" BorderBrush="White" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18">
+                            <TextBox x:Name="recognitionMaxRecording" VerticalAlignment="Center" Width="120">
                                 <TextBox.Text>
                                     <Binding Source="{x:Static local:Config.Data}" Path="Api.RecognitionMaxRecordingTime" UpdateSourceTrigger="PropertyChanged">
                                         <Binding.ValidationRules>
@@ -72,36 +72,36 @@
                                     </Binding>
                                 </TextBox.Text>
                             </TextBox>
-                            <Label Content="Max. recording time" Foreground="White" FontSize="18" FontFamily="Microsoft YaHei UI"/>
+                            <Label Content="Max. recording time"/>
                         </WrapPanel>
                     </StackPanel>
                 </StackPanel>
 
                 <!-- Recognition Azure -->
                 <StackPanel Margin="0,16,0,0">
-                    <Label Content="Recognition Azure API" Foreground="White" FontSize="24" FontFamily="Microsoft YaHei UI" FontWeight="Bold"/>
+                    <Label Content="Recognition Azure API" FontSize="24" FontWeight="Bold"/>
 
                     <StackPanel Margin="8,4,0,0">
                         <StackPanel>
-                            <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Text="Azure API key" Foreground="White" FontSize="18"  FontFamily="Microsoft YaHei UI"/>
-                            <TextBox x:Name="azureKey" TextWrapping="NoWrap" Text="{Binding Api.AzureKey, Source={x:Static local:Config.Data}}" Margin="0,0,32,0" FontFamily="Microsoft YaHei UI" FontSize="18" Background="#00000000" Foreground="White" BorderBrush="White"/>
+                            <TextBlock VerticalAlignment="Center" Text="Azure API key"/>
+                            <TextBox x:Name="azureKey" Text="{Binding Api.AzureKey, Source={x:Static local:Config.Data}}" Margin="0,0,32,0"/>
                         </StackPanel>
 
                         <StackPanel Margin="0,4,0,0">
-                            <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Text="Azure API region" Foreground="White" FontSize="18"  FontFamily="Microsoft YaHei UI"/>
-                            <TextBox x:Name="azureRegion" TextWrapping="NoWrap" Text="{Binding Api.AzureRegion, Source={x:Static local:Config.Data}}"  Margin="0,0,32,0" FontFamily="Microsoft YaHei UI" FontSize="18" Background="#00000000" Foreground="White" BorderBrush="White"/>
+                            <TextBlock VerticalAlignment="Center" Text="Azure API region"/>
+                            <TextBox x:Name="azureRegion" Text="{Binding Api.AzureRegion, Source={x:Static local:Config.Data}}" Margin="0,0,32,0"/>
                         </StackPanel>
 
                         <WrapPanel Margin="0,4,0,0">
-                            <TextBox x:Name="azureLanguage" HorizontalAlignment="Left" TextWrapping="NoWrap" Text="{Binding Api.AzureLanguage, Source={x:Static local:Config.Data}}" VerticalAlignment="Center" Width="120" FontFamily="Microsoft YaHei UI" FontSize="18" Background="#00000000" Foreground="White" BorderBrush="White"/>
-                            <Label Content="Input Language (Optional)" Foreground="White" FontSize="18" FontFamily="Microsoft YaHei UI"/>
+                            <TextBox x:Name="azureLanguage" HorizontalAlignment="Left" Text="{Binding Api.AzureLanguage, Source={x:Static local:Config.Data}}" VerticalAlignment="Center" Width="120"/>
+                            <Label Content="Input Language (Optional)"/>
                         </WrapPanel>
                         
-                        <CheckBox x:Name="azureRemoveFullStop" Content="Remove full stop at sentence end" Foreground="White" Margin="0,4,0,0" IsChecked="{Binding Api.AzureRemoveFullStop, Source={x:Static local:Config.Data}}" FontSize="18" FontFamily="Microsoft YaHei UI" BorderBrush="White" Background="White"/>
+                        <CheckBox x:Name="azureRemoveFullStop" Content="Remove full stop at sentence end" Margin="0,4,0,0" IsChecked="{Binding Api.AzureRemoveFullStop, Source={x:Static local:Config.Data}}"/>
 
                         <StackPanel Margin="0,4,0,0">
-                            <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Text="Custom endpoint (Optional)" Foreground="White" FontSize="18"  FontFamily="Microsoft YaHei UI"/>
-                            <TextBox x:Name="azureCustomEndpoint" TextWrapping="NoWrap" Text="{Binding Api.AzureCustomEndpoint, Source={x:Static local:Config.Data}}"  Margin="0,0,32,0" FontFamily="Microsoft YaHei UI" FontSize="18" Background="#00000000" Foreground="White" BorderBrush="White"/>
+                            <TextBlock VerticalAlignment="Center" Text="Custom endpoint (Optional)"/>
+                            <TextBox x:Name="azureCustomEndpoint" Text="{Binding Api.AzureCustomEndpoint, Source={x:Static local:Config.Data}}" Margin="0,0,32,0"/>
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>

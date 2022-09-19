@@ -4,8 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Hoscy"
+        xmlns:ui="clr-namespace:Hoscy.Ui"
         mc:Ignorable="d"
-        Title="Modify List Window" Height="300" Width="600" Background="#FF444444" ResizeMode="CanMinimize">
+        Title="Modify List Window" Height="300" Width="600" Background="{Binding Source={x:Static ui:UiHelper.ColorGray}}" ResizeMode="CanMinimize">
 
     <Grid Margin="16">
         <Grid.ColumnDefinitions>
@@ -13,8 +14,8 @@
             <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
 
-        <ListBox x:Name="listBox" Grid.Column="0" SelectionChanged ="ListBox_SelectionChanged" Background="{x:Null}" BorderBrush="White" Foreground="White" FontSize="18" FontFamily="Microsoft YaHei UI" Margin="0,0,8,0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
-        
+        <ListBox x:Name="listBox" Grid.Column="0" SelectionChanged ="ListBox_SelectionChanged" Margin="0,0,8,0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
+
         <Grid Grid.Column="1" Margin="8,0,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -23,22 +24,16 @@
 
             <StackPanel>
                 <WrapPanel HorizontalAlignment="Center">
-                    <Button Content="Add New" Click="Button_AddEntry" Background="{x:Null}" BorderBrush="White" Foreground="White" FontSize="18" FontFamily="Microsoft YaHei UI" Width="98"/>
-                    <Button Content="Remove" Margin="8,0,0,0" Click="Button_RemoveEntry" Background="{x:Null}" BorderBrush="White" Foreground="White" FontSize="18" FontFamily="Microsoft YaHei UI" Width="91"/>
+                    <Button Content="Add New" Click="Button_AddEntry" Width="98"/>
+                    <Button Content="Remove" Margin="8,0,0,0" Click="Button_RemoveEntry" Width="91"/>
                 </WrapPanel>
-                <Button Content="Modify" HorizontalAlignment="Center" Click="Button_ModifyEntry" Background="{x:Null}" BorderBrush="White" Foreground="White" FontSize="18" FontFamily="Microsoft YaHei UI" Margin="0,8,0,0" Width="78"/>
+                <Button Content="Modify" HorizontalAlignment="Center" Click="Button_ModifyEntry" Margin="0,8,0,0" Width="78"/>
             </StackPanel>
 
             <DockPanel Margin="0,16,0,0" Grid.Row="1">
-                <TextBlock Grid.Column="1" DockPanel.Dock="Top" HorizontalAlignment="Center" TextWrapping="Wrap" Text="Value" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18"/>
-                <TextBox x:Name="textValue" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="" Background="{x:Null}" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18" BorderBrush="White" Width="Auto" KeyUp="TextBox_KeyPressed"/>
+                <TextBlock Grid.Column="1" DockPanel.Dock="Top" HorizontalAlignment="Center" Text="Value"/>
+                <TextBox x:Name="textValue" HorizontalAlignment="Stretch" TextWrapping="Wrap" KeyUp="TextBox_KeyPressed"/>
             </DockPanel>
         </Grid>
-        
-        
-        
-        
-        
-        
     </Grid>
 </Window>

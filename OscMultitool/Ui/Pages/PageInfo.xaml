@@ -23,18 +23,18 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock x:Name="message" Grid.Row="1" TextAlignment="Center" Foreground="White" Text="No message sent since opening" VerticalAlignment="Center" FontFamily="Microsoft YaHei UI" FontSize="24" TextWrapping="Wrap"/>
+                <TextBlock x:Name="message" Grid.Row="1" TextAlignment="Center" Text="No message sent since opening" VerticalAlignment="Center" FontSize="24"/>
 
-                <TextBlock x:Name="sendStatus" Grid.Row="0" TextAlignment="Center" Foreground="White" Text="No message sent since opening" FontFamily="Microsoft YaHei UI" FontSize="18" TextWrapping="Wrap" Opacity="0.5"/>
+                <TextBlock x:Name="sendStatus" Grid.Row="0" TextAlignment="Center" Text="No message sent since opening" Opacity="0.5"/>
 
-                <TextBlock x:Name="notification" Grid.Row="2" TextAlignment="Center" Foreground="White" Text="No notification sent since opening" FontFamily="Microsoft YaHei UI" FontSize="18" TextWrapping="Wrap" Opacity="0.5"/>
+                <TextBlock x:Name="notification" Grid.Row="2" TextAlignment="Center" Text="No notification sent since opening" Opacity="0.5"/>
             </Grid>
         </Border>
 
         <Border Grid.Column="1" Margin="16,0,0,0" BorderBrush="White" BorderThickness="2" HorizontalAlignment="Center" VerticalAlignment="Center">
             <StackPanel>
-                <Button x:Name="muteButton" Background="{x:Null}" BorderBrush="White" Foreground="White" Content="Mute Mic" FontSize="14" FontFamily="Microsoft YaHei UI" Margin="8,8,8,16" HorizontalAlignment="Left" Width="76" Click="Button_Mute" Height="76"/>
-                <Button Background="{x:Null}" BorderBrush="White" Foreground="White" Content="Clear" FontSize="14" FontFamily="Microsoft YaHei UI" Margin="8,16,8,8" HorizontalAlignment="Left" Width="76" Click="Button_Clear" Height="76"/>
+                <Button x:Name="muteButton" Content="Mute Mic" Margin="8,8,8,16" HorizontalAlignment="Left" Width="76" Click="Button_Mute" Height="76"/>
+                <Button Content="Clear" Margin="8,16,8,8" HorizontalAlignment="Left" Width="76" Click="Button_Clear" Height="76"/>
             </StackPanel>
         </Border>
     </Grid>

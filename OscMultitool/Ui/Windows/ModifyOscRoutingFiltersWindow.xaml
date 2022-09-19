@@ -4,8 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Hoscy"
+        xmlns:ui="clr-namespace:Hoscy.Ui"
         mc:Ignorable="d"
-        Title="Modify Listener Filters" Height="300" Width="689" Background="#FF444444" ResizeMode="CanMinimize">
+        Title="Modify Listener Filters" Height="300" Width="689" Background="{Binding Source={x:Static ui:UiHelper.ColorGray}}" ResizeMode="CanMinimize">
 
     <Grid Margin="16">
         <Grid.ColumnDefinitions>
@@ -13,7 +14,7 @@
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
         
-        <ListBox x:Name="listBox" SelectionChanged ="ListBox_SelectionChanged" Background="{x:Null}" BorderBrush="White" Foreground="White" FontSize="18" FontFamily="Microsoft YaHei UI" Margin="0,0,8,0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
+        <ListBox x:Name="listBox" SelectionChanged ="ListBox_SelectionChanged" Margin="0,0,8,0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
 
         <Grid Margin="8,0,0,0" Grid.Column="1">
             <Grid.RowDefinitions>
@@ -23,34 +24,26 @@
 
             <StackPanel>
                 <WrapPanel HorizontalAlignment="Center">
-                    <Button Content="Add New" Click="Button_AddEntry" Background="{x:Null}" BorderBrush="White" Foreground="White" FontSize="18" FontFamily="Microsoft YaHei UI" Width="98"/>
-                    <Button Content="Remove" Margin="8,0,0,0" Click="Button_RemoveEntry" Background="{x:Null}" BorderBrush="White" Foreground="White" FontSize="18" FontFamily="Microsoft YaHei UI" Width="91"/>
+                    <Button Content="Add New" Click="Button_AddEntry" Width="98"/>
+                    <Button Content="Remove" Margin="8,0,0,0" Click="Button_RemoveEntry" Width="91"/>
                 </WrapPanel>
 
                 <WrapPanel Margin="0,8,0,0" HorizontalAlignment="Center">
-                    <Button Content="Modify" Click="Button_ModifyEntry" Background="{x:Null}" BorderBrush="White" Foreground="White" FontSize="18" FontFamily="Microsoft YaHei UI" Width="78"/>
-                    <Button Content="Filters" Click="Button_EditFilters" Background="{x:Null}" BorderBrush="White" Foreground="White" FontSize="18" FontFamily="Microsoft YaHei UI" Margin="8,0,0,0" Width="78"/>
+                    <Button Content="Modify" Click="Button_ModifyEntry" Width="78"/>
+                    <Button Content="Filters" Click="Button_EditFilters" Margin="8,0,0,0" Width="78"/>
                 </WrapPanel>
             </StackPanel>
 
             <StackPanel Grid.Row="1" VerticalAlignment="Bottom">
-                <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="Name" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18"/>
-                <TextBox x:Name="textName" TextWrapping="NoWrap" Background="{x:Null}" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18" BorderBrush="White" Width="Auto" KeyUp="TextBox_KeyPressed"/>
+                <TextBlock HorizontalAlignment="Center" Text="Name"/>
+                <TextBox x:Name="textName" KeyUp="TextBox_KeyPressed"/>
 
-                <TextBlock HorizontalAlignment="Center" Margin="0,8,0,0" TextWrapping="Wrap" Text="IP" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18"/>
-                <TextBox x:Name="textIp" TextWrapping="NoWrap" Background="{x:Null}" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18" BorderBrush="White" Width="Auto" KeyUp="TextBox_KeyPressed"/>
+                <TextBlock HorizontalAlignment="Center" Margin="0,8,0,0" Text="IP"/>
+                <TextBox x:Name="textIp" KeyUp="TextBox_KeyPressed"/>
 
-                <TextBlock HorizontalAlignment="Center" Margin="0,8,0,0" TextWrapping="Wrap" Text="Port" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18"/>
-                <TextBox x:Name="textPort" TextWrapping="NoWrap" Background="{x:Null}" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18" BorderBrush="White" Width="Auto" KeyUp="TextBox_KeyPressed"/>
+                <TextBlock HorizontalAlignment="Center" Margin="0,8,0,0" Text="Port"/>
+                <TextBox x:Name="textPort" KeyUp="TextBox_KeyPressed"/>
             </StackPanel>
         </Grid>
-
-        
-
-        
-        
-
-        
-        
     </Grid>
 </Window>

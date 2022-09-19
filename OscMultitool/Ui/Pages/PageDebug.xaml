@@ -10,31 +10,31 @@
 
     <ScrollViewer Margin="16,8,8,8" VerticalScrollBarVisibility="Auto">
         <StackPanel>
-            <Label Content="Debugging" Foreground="White" FontSize="30" FontFamily="Microsoft YaHei UI" FontWeight="Bold"/>
+            <Label Content="Debugging" FontSize="30" FontWeight="Bold"/>
 
             <!-- Log Levels -->
             <StackPanel>
                 <WrapPanel>
-                    <Label Content="Log Levels" Foreground="White" FontSize="24" FontFamily="Microsoft YaHei UI" FontWeight="Bold"/>
-                    <Button Content="Logging Filter" Margin="8,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_OpenLogFilter" Background="{x:Null}" BorderBrush="White" Foreground="White" FontFamily="Microsoft YaHei UI" FontSize="18" Width="132"/>
+                    <Label Content="Log Levels" FontSize="24" FontWeight="Bold"/>
+                    <Button Content="Logging Filter" Margin="8,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_OpenLogFilter" Width="132"/>
                 </WrapPanel>
 
                 <StackPanel Margin="8,4,0,0">
-                    <CheckBox x:Name="loggingLogErrors" Content="Errors" Foreground="White" IsChecked="{Binding Logging.Error, Source={x:Static local:Config.Data}}" BorderBrush="White" FontFamily="Microsoft YaHei UI" FontSize="18"/>
-                    <CheckBox x:Name="loggingLogWarning" Margin="0,4,0,0" Content="Warnings" Foreground="White" IsChecked="{Binding Logging.Warning, Source={x:Static local:Config.Data}}" BorderBrush="White" FontFamily="Microsoft YaHei UI" FontSize="18"/>
-                    <CheckBox x:Name="loggingLogPInfo" Margin="0,4,0,0" Content="Priority Infos" Foreground="White" IsChecked="{Binding Logging.PrioInfo, Source={x:Static local:Config.Data}}" BorderBrush="White" FontFamily="Microsoft YaHei UI" FontSize="18"/>
-                    <CheckBox x:Name="loggingLogInfo" Margin="0,4,0,0" Content="Infos" Foreground="White" IsChecked="{Binding Logging.Info, Source={x:Static local:Config.Data}}" BorderBrush="White" FontFamily="Microsoft YaHei UI" FontSize="18"/>
-                    <CheckBox x:Name="loggingLogLog" Margin="0,4,0,0" Content="Logs" Foreground="White" IsChecked="{Binding Logging.Log, Source={x:Static local:Config.Data}}" BorderBrush="White" FontFamily="Microsoft YaHei UI" FontSize="18"/>
-                    <CheckBox x:Name="loggingLogDebug" Margin="0,4,0,0" Content="Debugs" Foreground="White" IsChecked="{Binding Logging.Debug, Source={x:Static local:Config.Data}}" BorderBrush="White" FontFamily="Microsoft YaHei UI" FontSize="18"/>
+                    <CheckBox x:Name="loggingLogErrors" Content="Errors" IsChecked="{Binding Logging.Error, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="loggingLogWarning" Margin="0,4,0,0" Content="Warnings" IsChecked="{Binding Logging.Warning, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="loggingLogPInfo" Margin="0,4,0,0" Content="Priority Infos" IsChecked="{Binding Logging.PrioInfo, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="loggingLogInfo" Margin="0,4,0,0" Content="Infos" IsChecked="{Binding Logging.Info, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="loggingLogLog" Margin="0,4,0,0" Content="Logs" IsChecked="{Binding Logging.Log, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="loggingLogDebug" Margin="0,4,0,0" Content="Debugs" IsChecked="{Binding Logging.Debug, Source={x:Static local:Config.Data}}"/>
                 </StackPanel>
             </StackPanel>
 
             <!-- Other Options -->
             <StackPanel Margin="0,16,0,0">
-                <Label Content="Other Options" Foreground="White" FontSize="24" FontFamily="Microsoft YaHei UI" FontWeight="Bold"/>
+                <Label Content="Other Options" FontSize="24" FontWeight="Bold"/>
 
                 <StackPanel Margin="8,4,0,0">
-                    <CheckBox x:Name="loggingOpenWindow" Content="Open log window on startup" Foreground="White" IsChecked="{Binding Logging.OpenLogWindow, Source={x:Static local:Config.Data}}" BorderBrush="White" FontFamily="Microsoft YaHei UI" FontSize="18"/>
+                    <CheckBox x:Name="loggingOpenWindow" Content="Open log window on startup" IsChecked="{Binding Logging.OpenLogWindow, Source={x:Static local:Config.Data}}"/>
                 </StackPanel>
             </StackPanel>
         </StackPanel>
