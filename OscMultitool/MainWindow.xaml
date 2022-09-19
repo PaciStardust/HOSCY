@@ -14,14 +14,14 @@
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <ListBox x:Name="listBox" Grid.Column="0" Background="{x:Null}" SelectionChanged="ListBox_SelectionChanged" BorderBrush="{x:Null}" VerticalAlignment="Center">
+        <ListBox x:Name="listBox" Grid.Column="0" SelectionChanged="ListBox_SelectionChanged" BorderBrush="{x:Null}" VerticalAlignment="Center" Margin="0,0,4,0">
             <uictrl:NavigationButton Color="#FFC6FF" Title="Main" NavPage="/UI/Pages/PageInfo.xaml"/>
             <uictrl:NavigationButton Color="#FFADAD" Title="Input" NavPage="/UI/Pages/PageInput.xaml"/>
             <uictrl:NavigationButton Color="#FFD6A5" Title="Speech" NavPage="/UI/Pages/PageSpeech.xaml"/>
             <uictrl:NavigationButton Color="#FDFFB6" Title="API" NavPage="/UI/Pages/PageAPI.xaml"/>
             <uictrl:NavigationButton Color="#CAFFBF" Title="Output" NavPage="/UI/Pages/PageOutput.xaml"/>
             <uictrl:NavigationButton Color="#FFA0DAFF" Title="OSC" NavPage="/UI/Pages/PageOsc.xaml"/>
-            <uictrl:NavigationButton Color="#BDB2FF" Title="Debug" NavPage="/UI/Pages/PageDebug.xaml"/>
+            <uictrl:NavigationButton Color="#BDB2FF" Title="Config" NavPage="/UI/Pages/PageConfig.xaml"/>
         </ListBox>
 
         <Border x:Name="navBorder" Grid.Column="1" BorderBrush="#FFFFFFFF" BorderThickness="2,2,2,2" CornerRadius="8,0,0,8" Background="{Binding Source={x:Static ui:UiHelper.ColorGray}}">

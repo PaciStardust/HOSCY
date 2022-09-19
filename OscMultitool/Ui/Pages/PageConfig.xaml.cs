@@ -7,9 +7,9 @@ namespace Hoscy.Ui.Pages
     /// <summary>
     /// Interaction logic for PageDebug.xaml
     /// </summary>
-    public partial class PageDebug : Page
+    public partial class PageConfig : Page
     {
-        public PageDebug()
+        public PageConfig()
         {
             InitializeComponent();
         }

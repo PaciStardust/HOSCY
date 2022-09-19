@@ -1,5 +1,6 @@
 ﻿using Hoscy.OscControl;
 using Hoscy.Services.Api;
+using Hoscy.Ui;
 using Hoscy.Ui.Controls;
 using System.Windows;
 using System.Windows.Controls;
