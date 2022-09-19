@@ -83,12 +83,12 @@
 
                     <StackPanel Margin="8,4,0,0">
                         <StackPanel>
-                            <TextBlock VerticalAlignment="Center" Text="Azure API key"/>
+                            <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Azure API key"/>
                             <TextBox x:Name="azureKey" Text="{Binding Api.AzureKey, Source={x:Static local:Config.Data}}" Margin="0,0,32,0"/>
                         </StackPanel>
 
                         <StackPanel Margin="0,4,0,0">
-                            <TextBlock VerticalAlignment="Center" Text="Azure API region"/>
+                            <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Azure API region"/>
                             <TextBox x:Name="azureRegion" Text="{Binding Api.AzureRegion, Source={x:Static local:Config.Data}}" Margin="0,0,32,0"/>
                         </StackPanel>
 
@@ -100,7 +100,7 @@
                         <CheckBox x:Name="azureRemoveFullStop" Content="Remove full stop at sentence end" Margin="0,4,0,0" IsChecked="{Binding Api.AzureRemoveFullStop, Source={x:Static local:Config.Data}}"/>
 
                         <StackPanel Margin="0,4,0,0">
-                            <TextBlock VerticalAlignment="Center" Text="Custom endpoint (Optional)"/>
+                            <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Custom endpoint (Optional)"/>
                             <TextBox x:Name="azureCustomEndpoint" Text="{Binding Api.AzureCustomEndpoint, Source={x:Static local:Config.Data}}" Margin="0,0,32,0"/>
                         </StackPanel>
                     </StackPanel>

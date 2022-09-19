@@ -23,7 +23,7 @@
                             </Grid.ColumnDefinitions>
 
                             <Rectangle Fill="{TemplateBinding Color}" RadiusX="4" RadiusY="4"/>
-                            <TextBlock Grid.Column="1" Text="{TemplateBinding Title}" Foreground="{Binding Source={x:Static ui:UiHelper.ColorWhite}}" FontWeight="Bold" FontSize="18" Margin="4,2,0,2"/>
+                            <TextBlock Style="{DynamicResource HTextBlock}" Grid.Column="1" Text="{TemplateBinding Title}" Foreground="{Binding Source={x:Static ui:UiHelper.ColorWhite}}" FontWeight="Bold" FontSize="18" Margin="4,2,0,2"/>
                         </Grid>
                     </Border>
 

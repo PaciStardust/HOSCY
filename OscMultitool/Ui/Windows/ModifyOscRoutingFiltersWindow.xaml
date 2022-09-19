@@ -35,13 +35,13 @@
             </StackPanel>
 
             <StackPanel Grid.Row="1" VerticalAlignment="Bottom">
-                <TextBlock HorizontalAlignment="Center" Text="Name"/>
+                <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Text="Name"/>
                 <TextBox x:Name="textName" KeyUp="TextBox_KeyPressed"/>
 
-                <TextBlock HorizontalAlignment="Center" Margin="0,8,0,0" Text="IP"/>
+                <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="IP"/>
                 <TextBox x:Name="textIp" KeyUp="TextBox_KeyPressed"/>
 
-                <TextBlock HorizontalAlignment="Center" Margin="0,8,0,0" Text="Port"/>
+                <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="Port"/>
                 <TextBox x:Name="textPort" KeyUp="TextBox_KeyPressed"/>
             </StackPanel>
         </Grid>

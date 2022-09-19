@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:ui="clr-namespace:Hoscy.Ui">
 
-    <Style TargetType="{x:Type TextBox}">
+    <Style x:Key="HTextBox" TargetType="{x:Type TextBox}">
         <Setter Property="Foreground" Value="{Binding Source={x:Static ui:UiHelper.ColorWhite}}"/>
         <Setter Property="Background" Value="{x:Null}"/>
         <Setter Property="BorderBrush" Value="{Binding Source={x:Static ui:UiHelper.ColorWhite}}"/>
@@ -12,8 +12,9 @@
         <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
     </Style>
+    <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource HTextBox}"/>
 
-    <Style TargetType="{x:Type Button}">
+    <Style x:Key="HButton" TargetType="{x:Type Button}">
         <Setter Property="Foreground" Value="{Binding Source={x:Static ui:UiHelper.ColorWhite}}"/>
         <Setter Property="Background" Value="{x:Null}"/>
         <Setter Property="BorderBrush" Value="{Binding Source={x:Static ui:UiHelper.ColorWhite}}"/>
@@ -21,22 +22,25 @@
         <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
     </Style>
+    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource HButton}"/>
 
-    <Style TargetType="{x:Type Label}">
+    <Style x:Key="HLabel" TargetType="{x:Type Label}">
         <Setter Property="Foreground" Value="{Binding Source={x:Static ui:UiHelper.ColorWhite}}"/>
         <Setter Property="FontSize" Value="18"/>
         <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
     </Style>
+    <Style TargetType="{x:Type Label}" BasedOn="{StaticResource HLabel}"/>
 
-    <Style TargetType="{x:Type ComboBox}">
+    <Style x:Key="HComboBox" TargetType="{x:Type ComboBox}">
         <Setter Property="Foreground" Value="{Binding Source={x:Static ui:UiHelper.ColorBlack}}"/>
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
     </Style>
+    <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource HComboBox}"/>
 
-    <Style TargetType="{x:Type CheckBox}">
+    <Style x:Key="HCheckBox" TargetType="{x:Type CheckBox}">
         <Setter Property="Foreground" Value="{Binding Source={x:Static ui:UiHelper.ColorWhite}}"/>
         <Setter Property="FontSize" Value="18"/>
         <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
@@ -44,8 +48,10 @@
         <Setter Property="Background" Value="{Binding Source={x:Static ui:UiHelper.ColorWhite}}"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
     </Style>
+    <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource HCheckBox}"/>
 
-    <Style TargetType="{x:Type TextBlock}">
+    <!-- This does not have a direct overwrite as it causes issues -->
+    <Style x:Key="HTextBlock" TargetType="{x:Type TextBlock}">
         <Setter Property="Foreground" Value="{Binding Source={x:Static ui:UiHelper.ColorWhite}}"/>
         <Setter Property="FontSize" Value="18"/>
         <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
@@ -53,7 +59,7 @@
         <Setter Property="SnapsToDevicePixels" Value="True"/>
     </Style>
 
-    <Style TargetType="{x:Type ListBox}">
+    <Style x:Key="HListBox" TargetType="{x:Type ListBox}">
         <Setter Property="Foreground" Value="{Binding Source={x:Static ui:UiHelper.ColorWhite}}"/>
         <Setter Property="FontSize" Value="18"/>
         <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
@@ -61,4 +67,5 @@
         <Setter Property="Background" Value="{x:Null}"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
     </Style>
+    <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource HListBox}"/>
 </ResourceDictionary>

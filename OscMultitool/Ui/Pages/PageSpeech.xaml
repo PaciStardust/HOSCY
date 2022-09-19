@@ -13,7 +13,7 @@
         <StackPanel>
             <StackPanel HorizontalAlignment="Left">
                 <WrapPanel>
-                    <Label Content="Speech Recognition" FontSize="30"/>
+                    <Label Content="Speech Recognition" FontSize="30" FontWeight="Bold"/>
                     <Button x:Name="buttonStartStop" Content="Start" Margin="16,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_StartStop" Width="52.6266666666667"/>
                 </WrapPanel>
 
@@ -66,7 +66,7 @@
                             <StackPanel Margin="8,0,0,0">
                                 <StackPanel>
                                     <WrapPanel>
-                                        <TextBlock VerticalAlignment="Center" Text="Filepath"/>
+                                        <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Filepath"/>
                                         <Button Content="+" Margin="4,0,0,0" VerticalAlignment="Center" Click="Button_BrowseVoskModel" Height="22" FontWeight="Bold"/>
                                     </WrapPanel>
                                     <TextBox x:Name="speechVoskPath" Margin="0,4,32,0" Text="{Binding Speech.VoskModelPath, Source={x:Static local:Config.Data}}"/>

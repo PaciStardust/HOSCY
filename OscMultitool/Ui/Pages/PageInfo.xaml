@@ -23,11 +23,11 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock x:Name="message" Grid.Row="1" TextAlignment="Center" Text="No message sent since opening" VerticalAlignment="Center" FontSize="24"/>
+                <TextBlock Style="{DynamicResource HTextBlock}" x:Name="message" Grid.Row="1" TextAlignment="Center" Text="No message sent since opening" VerticalAlignment="Center" FontSize="24"/>
 
-                <TextBlock x:Name="sendStatus" Grid.Row="0" TextAlignment="Center" Text="No message sent since opening" Opacity="0.5"/>
+                <TextBlock Style="{DynamicResource HTextBlock}" x:Name="sendStatus" Grid.Row="0" TextAlignment="Center" Text="No message sent since opening" Opacity="0.5"/>
 
-                <TextBlock x:Name="notification" Grid.Row="2" TextAlignment="Center" Text="No notification sent since opening" Opacity="0.5"/>
+                <TextBlock Style="{DynamicResource HTextBlock}" x:Name="notification" Grid.Row="2" TextAlignment="Center" Text="No notification sent since opening" Opacity="0.5"/>
             </Grid>
         </Border>
 

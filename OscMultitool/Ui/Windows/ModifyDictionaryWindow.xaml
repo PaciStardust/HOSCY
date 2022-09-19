@@ -28,12 +28,12 @@
             </StackPanel>
 
             <DockPanel Grid.Row="1" Margin="0,16,0,0">
-                <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Text="Key" VerticalAlignment="Bottom"/>
+                <TextBlock Style="{DynamicResource HTextBlock}" DockPanel.Dock="Top" HorizontalAlignment="Center" Text="Key" VerticalAlignment="Bottom"/>
                 <TextBox x:Name="textKey" VerticalAlignment="Stretch" TextWrapping="Wrap" KeyUp="TextBox_KeyPressed"/>
             </DockPanel>
 
             <DockPanel Grid.Row="2" Margin="0,16,0,0">
-                <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Text="Value"/>
+                <TextBlock Style="{DynamicResource HTextBlock}" DockPanel.Dock="Top" HorizontalAlignment="Center" Text="Value"/>
                 <TextBox x:Name="textValue" VerticalAlignment="Stretch" TextWrapping="Wrap" KeyUp="TextBox_KeyPressed"/>
             </DockPanel>
         </Grid>

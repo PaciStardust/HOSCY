@@ -36,10 +36,10 @@
 
             <ScrollViewer Grid.Row="1" Margin="0,32,0,0">
                 <StackPanel Margin="0,0,16,0">
-                    <TextBlock HorizontalAlignment="Center" Text="Name"/>
+                    <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Text="Name"/>
                     <TextBox x:Name="textName" TextWrapping="Wrap" KeyUp="TextBox_KeyPressed"/>
 
-                    <TextBlock HorizontalAlignment="Center" Margin="0,8,0,0" Text="URL"/>
+                    <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="URL"/>
                     <TextBox x:Name="textUrl" TextWrapping="Wrap" KeyUp="TextBox_KeyPressed"/>
 
                     <Grid Margin="0,8,0,0">
@@ -49,20 +49,20 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Margin="0,0,8,0">
-                            <TextBlock HorizontalAlignment="Center" Text="Result Name"/>
+                            <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Text="Result Name"/>
                             <TextBox x:Name="textResult" KeyUp="TextBox_KeyPressed"/>
                         </StackPanel>
 
                         <StackPanel Margin="8,0,0,0" Grid.Column="1">
-                            <TextBlock HorizontalAlignment="Center" Text="Timeout (ms)"/>
+                            <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Text="Timeout (ms)"/>
                             <TextBox x:Name="textTimeout" KeyUp="TextBox_KeyPressed"/>
                         </StackPanel>
                     </Grid>
 
-                    <TextBlock HorizontalAlignment="Center" Margin="0,8,0,0" Text="Content Type (Speech Recognition)"/>
+                    <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="Content Type (Speech Recognition)"/>
                     <TextBox x:Name="textContentType" TextWrapping="Wrap" KeyUp="TextBox_KeyPressed"/>
 
-                    <TextBlock HorizontalAlignment="Center" Margin="0,8,0,0" Text="JSON (Translation, [T] gets replaced)"/>
+                    <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="JSON (Translation, [T] gets replaced)"/>
                     <TextBox x:Name="textJson" AcceptsReturn="True"/>
                 </StackPanel>
             </ScrollViewer>

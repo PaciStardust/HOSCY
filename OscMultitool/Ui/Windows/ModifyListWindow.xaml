@@ -31,7 +31,7 @@
             </StackPanel>
 
             <DockPanel Margin="0,16,0,0" Grid.Row="1">
-                <TextBlock Grid.Column="1" DockPanel.Dock="Top" HorizontalAlignment="Center" Text="Value"/>
+                <TextBlock Style="{DynamicResource HTextBlock}" Grid.Column="1" DockPanel.Dock="Top" HorizontalAlignment="Center" Text="Value"/>
                 <TextBox x:Name="textValue" HorizontalAlignment="Stretch" TextWrapping="Wrap" KeyUp="TextBox_KeyPressed"/>
             </DockPanel>
         </Grid>

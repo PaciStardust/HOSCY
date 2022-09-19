@@ -22,7 +22,7 @@
 
         <WrapPanel  Grid.Row="1" Grid.Column="0" Margin="0,8,16,0" HorizontalAlignment="Center" VerticalAlignment="Bottom">
             <CheckBox Content="Use TTS" VerticalAlignment="Center" HorizontalAlignment="Left" IsChecked="{Binding Input.UseTts, Source={x:Static local:Config.Data}}"/>
-            <Button Content="Send / Resend" Width="132.67" Click="Button_Send"/>
+            <Button Content="Send / Resend" Margin="8,0,0,0" Width="132.67" Click="Button_Send"/>
             <CheckBox Content="Use Textbox" Margin="8,0,0,0" VerticalAlignment="Center" IsChecked="{Binding Input.UseTextbox, Source={x:Static local:Config.Data}}"/>
         </WrapPanel>
 

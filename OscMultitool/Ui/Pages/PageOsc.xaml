@@ -61,37 +61,37 @@
 
                 <StackPanel Margin="8,4,0,0">
                     <StackPanel>
-                        <TextBlock VerticalAlignment="Center" Text="Manual mute address"/>
+                        <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Manual mute address"/>
                         <TextBox x:Name="oscOscMuteAddress" Text="{Binding Osc.AddressManualMute, Source={x:Static local:Config.Data}}" Margin="0,0,32,0"/>
                     </StackPanel>
 
                     <StackPanel Margin="0,4,0,0">
-                        <TextBlock VerticalAlignment="Center" Text="Microphone listening indicator address"/>
+                        <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Microphone listening indicator address"/>
                         <TextBox x:Name="oscOscListenIndicator" Text="{Binding Osc.AddressListeningIndicator, Source={x:Static local:Config.Data}}" Margin="0,0,32,0"/>
                     </StackPanel>
 
                     <StackPanel Margin="0,4,0,0">
-                        <TextBlock VerticalAlignment="Center" Text="Clear TTS address"/>
+                        <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Clear TTS address"/>
                         <TextBox x:Name="oscOscSkipTtsAddress" Text="{Binding Osc.AddressManualSkipSpeech, Source={x:Static local:Config.Data}}" Margin="0,0,32,0"/>
                     </StackPanel>
 
                     <StackPanel Margin="0,4,0,0">
-                        <TextBlock VerticalAlignment="Center" Text="Clear textbox address"/>
+                        <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Clear textbox address"/>
                         <TextBox x:Name="oscOscSkipTextAddress" Text="{Binding Osc.AddressManualSkipBox, Source={x:Static local:Config.Data}}" Margin="0,0,32,0"/>
                     </StackPanel>
 
                     <StackPanel Margin="0,4,0,0">
-                        <TextBlock VerticalAlignment="Center" Text="TTS input address"/>
+                        <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="TTS input address"/>
                         <TextBox x:Name="oscOscAddTts" Text="{Binding Osc.AddressAddTts, Source={x:Static local:Config.Data}}" Margin="0,0,32,0"/>
                     </StackPanel>
 
                     <StackPanel Margin="0,4,0,0">
-                        <TextBlock VerticalAlignment="Center" Text="Textbox input address"/>
+                        <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Textbox input address"/>
                         <TextBox x:Name="oscOscAddTextbox" Text="{Binding Osc.AddressAddTextbox, Source={x:Static local:Config.Data}}" Margin="0,0,32,0"/>
                     </StackPanel>
 
                     <StackPanel Margin="0,4,0,0">
-                        <TextBlock VerticalAlignment="Center" Text="Textbox input notification"/>
+                        <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Textbox input notification"/>
                         <TextBox x:Name="oscOscAddNotification" Text="{Binding Osc.AddressAddNotification, Source={x:Static local:Config.Data}}"  Margin="0,0,32,0"/>
                     </StackPanel>
                 </StackPanel>
