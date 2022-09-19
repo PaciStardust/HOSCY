@@ -1,4 +1,5 @@
 ﻿using Hoscy.Services.Speech;
+using System;
 using System.Windows;
 
 namespace Hoscy
@@ -26,6 +27,8 @@ namespace Hoscy
                 Logger.Error(e.Exception);
             }
             catch { }
+            Application.Current.Shutdown(-1);
+            Environment.Exit(-1);
         }
     }
 }
