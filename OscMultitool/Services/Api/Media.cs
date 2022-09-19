@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Windows.Media;
 using Windows.Media.Control;
 
 namespace Hoscy.Services.Api
@@ -51,7 +53,11 @@ namespace Hoscy.Services.Api
             var newPlaying = await sender.TryGetMediaPropertiesAsync();
             var playbackInfo = sender.GetPlaybackInfo();
 
-            if (playbackInfo == null || playbackInfo.PlaybackStatus != GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing || newPlaying.Title == null)
+            if (newPlaying == null
+                || !(newPlaying.PlaybackType == MediaPlaybackType.Video || newPlaying.PlaybackType == MediaPlaybackType.Music)
+                || playbackInfo == null
+                || playbackInfo.PlaybackStatus!= GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing
+                || newPlaying.Title == null)
             {
                 SetNotification(string.Empty);
                 return;
@@ -92,6 +98,21 @@ namespace Hoscy.Services.Api
             return playing;
         }
 
+        private static string? CreateDetailedMediaString()
+        {
+            if (_nowPlaying == null || string.IsNullOrWhiteSpace(_nowPlaying.Title))
+                return null;
+            StringBuilder sb = new($"Playing '{_nowPlaying.Title}'");
+            
+            if (!string.IsNullOrWhiteSpace(_nowPlaying.Artist))
+                sb.Append($" by {_nowPlaying.Artist}");
+
+            if (_nowPlaying.Genres != null && _nowPlaying.Genres.Count > 0)
+                sb.Append($" [{string.Join(", ", _nowPlaying.Genres)}]");
+
+            return sb.ToString();
+        }
+
         private static void SetNotification(string text)
             => Textbox.Notify(text, NotificationType.Media);
         #endregion
@@ -118,7 +139,7 @@ namespace Hoscy.Services.Api
             => GetCurrentSession(sender);
 
         private static void UpdateCurrentlyPlayingMediaProxy(GlobalSystemMediaTransportControlsSession sender)
-            => Task.Run(() => UpdateCurrentlyPlayingMedia(sender)).ConfigureAwait(false);
+            => Task.Run(async() => await UpdateCurrentlyPlayingMedia(sender)).ConfigureAwait(false);
         #endregion
 
         #region Media Control
@@ -202,10 +223,10 @@ namespace Hoscy.Services.Api
                     return;
 
                 case MediaCommandType.Info:
-                    var playing = CreateCurrentMediaString();
+                    var playing = CreateDetailedMediaString();
                     if (string.IsNullOrWhiteSpace(playing))
                         return;
-                    SetNotification($"Listening to {playing}");
+                    SetNotification(playing);
                     return;
 
                 default: return;

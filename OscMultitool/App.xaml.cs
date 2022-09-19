@@ -18,5 +18,14 @@ namespace Hoscy
             Config.SaveConfig();
             Running = false;
         }
+
+        private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            try
+            {
+                Logger.Error(e.Exception);
+            }
+            catch { }
+        }
     }
 }

@@ -15,7 +15,7 @@
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <ListBox x:Name="listBox" Grid.Column="0" Background="Transparent" SelectionChanged="ListBox_SelectionChanged" BorderBrush="{x:Null}">
+        <ListBox x:Name="listBox" Grid.Column="0" Background="Transparent" SelectionChanged="ListBox_SelectionChanged" BorderBrush="{x:Null}" VerticalAlignment="Center">
             <locui:NavigationButton Color="#FFC6FF" Title="Main" NavPage="/UI/Pages/PageInfo.xaml"/>
             <locui:NavigationButton Color="#FFADAD" Title="Input" NavPage="/UI/Pages/PageInput.xaml"/>
             <locui:NavigationButton Color="#FFD6A5" Title="Speech" NavPage="/UI/Pages/PageSpeech.xaml"/>
