@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Hoscy"
+      xmlns:ui="clr-namespace:Hoscy.Ui"
       mc:Ignorable="d" 
       d:DesignHeight="420" d:DesignWidth="689"
       Title="PageInput">
@@ -18,16 +19,16 @@
             <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
 
-        <TextBox x:Name="textBox" Grid.Row="0" Grid.Column="0" Margin="0,0,16,8" KeyUp="TextBox_KeyPressed" TextWrapping="Wrap" AcceptsReturn="True" Tag="Enter a message here..."/>
+        <TextBox x:Name="textBox" Style="{DynamicResource HTextBoxLarge}" Grid.Row="0" Grid.Column="0" Margin="0,0,16,8" KeyUp="TextBox_KeyPressed" AcceptsReturn="True" Tag="Enter a message here..."/>
 
         <WrapPanel  Grid.Row="1" Grid.Column="0" Margin="0,8,16,0" HorizontalAlignment="Center" VerticalAlignment="Bottom">
             <CheckBox Content="Use TTS" VerticalAlignment="Center" HorizontalAlignment="Left" IsChecked="{Binding Input.UseTts, Source={x:Static local:Config.Data}}"/>
-            <Button Content="Send / Resend" Margin="8,0,0,0" Width="132.67" Click="Button_Send"/>
+            <Button Content="Send / Resend" Margin="8,0,0,0" Click="Button_Send"/>
             <CheckBox Content="Use Textbox" Margin="8,0,0,0" VerticalAlignment="Center" IsChecked="{Binding Input.UseTextbox, Source={x:Static local:Config.Data}}"/>
         </WrapPanel>
 
         <ListBox x:Name="presetBox" Grid.Column="1" Grid.Row="0" Margin="16,0,0,8" SelectionChanged="PresetBox_SelectionChanged"/>
 
-        <Button Grid.Row="1" Grid.Column="1" Content="Change Presets" Margin="16,8,0,0" Click="Button_ChangePresets" HorizontalAlignment="Center" VerticalAlignment="Top" Width="140.906666666667"/>
+        <Button Grid.Row="1" Grid.Column="1" Content="Change Presets" Margin="16,8,0,0" Click="Button_ChangePresets" HorizontalAlignment="Center" VerticalAlignment="Top"/>
     </Grid>
 </Page>

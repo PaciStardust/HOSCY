@@ -26,7 +26,6 @@ namespace Hoscy
         {
             var item = (NavigationButton)listBox.Items[listBox.SelectedIndex];
             navFrame.Navigate(item.NavPage);
-            navBorder.BorderBrush = item.Color;
         }
     }
 }

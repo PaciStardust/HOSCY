@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Hoscy"
+      xmlns:ui="clr-namespace:Hoscy.Ui"
       xmlns:pages="clr-namespace:Hoscy.Ui.Pages"
       mc:Ignorable="d" 
       d:DesignHeight="420" d:DesignWidth="689"
@@ -11,31 +12,32 @@
 
     <Grid Margin="32">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" Margin="0,0,16,0" BorderBrush="White" BorderThickness="2">
+        <Border Grid.Column="0" Margin="0,0,16,0" Background="{x:Static ui:UiHelper.ColorBackDark}" Padding="4" CornerRadius="8">
             <Grid Margin="16,4,16,4">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Style="{DynamicResource HTextBlock}" x:Name="message" Grid.Row="1" TextAlignment="Center" Text="No message sent since opening" VerticalAlignment="Center" FontSize="24"/>
-
-                <TextBlock Style="{DynamicResource HTextBlock}" x:Name="sendStatus" Grid.Row="0" TextAlignment="Center" Text="No message sent since opening" Opacity="0.5"/>
-
-                <TextBlock Style="{DynamicResource HTextBlock}" x:Name="notification" Grid.Row="2" TextAlignment="Center" Text="No notification sent since opening" Opacity="0.5"/>
+                <TextBlock Style="{DynamicResource HTextBlock}" x:Name="sendStatus" Grid.Row="0" TextAlignment="Center" Text="No message sent since opening" Opacity="0.65"/>
+                <Rectangle Grid.Row="1" Height="4" Fill="{x:Static ui:UiHelper.ColorAccent}" RadiusY="2" RadiusX="4" Margin="4" Opacity="0.65"/>
+                <TextBlock Grid.Row="2" Style="{DynamicResource HTextBlock}" x:Name="message" TextAlignment="Center" Text="No message sent since opening" VerticalAlignment="Center" FontSize="24"/>
+                <Rectangle Grid.Row="3" Height="4" Fill="{x:Static ui:UiHelper.ColorAccent}" RadiusY="2" RadiusX="4" Margin="4" Opacity="0.65"/>
+                <TextBlock Style="{DynamicResource HTextBlock}" x:Name="notification" Grid.Row="4" TextAlignment="Center" Text="No notification sent since opening" Opacity="0.65"/>
             </Grid>
         </Border>
 
-        <Border Grid.Column="1" Margin="16,0,0,0" BorderBrush="White" BorderThickness="2" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <StackPanel>
-                <Button x:Name="muteButton" Content="Mute Mic" Margin="8,8,8,16" HorizontalAlignment="Left" Width="76" Click="Button_Mute" Height="76"/>
-                <Button Content="Clear" Margin="8,16,8,8" HorizontalAlignment="Left" Width="76" Click="Button_Clear" Height="76"/>
-            </StackPanel>
-        </Border>
+        <StackPanel Grid.Column="1" Margin="16,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+            <Button x:Name="muteButton" Content="Listening" Click="Button_Mute" Height="76"/>
+            <Button Content="Clear" Margin="0,16,0,0" Click="Button_Clear" Height="76"/>
+            <Button x:Name="startButton" Margin="0,16,0,0" Content="Stopped" Click="Button_Start" Height="76"/>
+        </StackPanel>
     </Grid>
 </Page>

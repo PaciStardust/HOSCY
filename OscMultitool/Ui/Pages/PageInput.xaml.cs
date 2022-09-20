@@ -57,7 +57,7 @@ namespace Hoscy.Ui.Pages
 
         private void Button_ChangePresets(object sender, RoutedEventArgs e)
         {
-            var window = new ModifyDictionaryWindow("Change Input Presets", Config.Input.Presets);
+            var window = new ModifyDictionaryWindow("Change Input Presets", "Name", "Text", Config.Input.Presets);
             window.ShowDialog();
             RefreshPresets();
         }

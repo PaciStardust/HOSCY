@@ -2,62 +2,97 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:ui="clr-namespace:Hoscy.Ui">
 
+    <!-- HTextBlock -->
+    <!-- This does not have a direct overwrite as it causes issues -->
+    <Style x:Key="HTextBlock" TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{Binding Source={x:Static ui:UiHelper.ColorFront}}"/>
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.65"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    
+    <!-- HTextBox -->
     <Style x:Key="HTextBox" TargetType="{x:Type TextBox}">
-        <Setter Property="Foreground" Value="{Binding Source={x:Static ui:UiHelper.ColorWhite}}"/>
-        <Setter Property="Background" Value="{x:Null}"/>
-        <Setter Property="BorderBrush" Value="{Binding Source={x:Static ui:UiHelper.ColorWhite}}"/>
+        <Setter Property="Foreground" Value="{x:Static ui:UiHelper.ColorFront}"/>
+        <Setter Property="Background" Value="{x:Static ui:UiHelper.ColorBackDark}"/>
+        <Setter Property="BorderBrush" Value="{x:Static ui:UiHelper.ColorBackLight}"/>
         <Setter Property="TextWrapping" Value="NoWrap"/>
         <Setter Property="FontSize" Value="18"/>
         <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
-        <Setter Property="SelectionBrush" Value="{Binding Source={x:Static ui:UiHelper.ColorAccent}}"/>
-        <Setter Property="CaretBrush" Value="{Binding Source={x:Static ui:UiHelper.ColorAccent}}"/>
+        <Setter Property="SelectionBrush" Value="{x:Static ui:UiHelper.ColorAccent}"/>
+        <Setter Property="CaretBrush" Value="{x:Static ui:UiHelper.ColorAccent}"/>
         <Setter Property="SelectionOpacity" Value="0.5"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-        <Setter Property="Padding" Value="4,4,4,4"/>
+        <Setter Property="Padding" Value="4"/>
+        <Setter Property="BorderThickness" Value="0,0,0,2"/>
 
         <Setter Property="Tag" Value=""/>
         
         <Setter Property="HorizontalScrollBarVisibility" Value="Hidden" />
         <Setter Property="VerticalScrollBarVisibility" Value="Hidden" />
+        <Setter Property="Validation.ErrorTemplate" Value="{x:Null}"/>
 
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TextBox}">
                     <Border x:Name="border" CornerRadius="4" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
                         <Grid x:Name="container">
-                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="{TemplateBinding HorizontalScrollBarVisibility}" VerticalScrollBarVisibility="{TemplateBinding VerticalScrollBarVisibility}" />
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="{TemplateBinding HorizontalScrollBarVisibility}" VerticalScrollBarVisibility="{TemplateBinding VerticalScrollBarVisibility}"/>
                             <TextBlock x:Name="placeholder" Margin="{TemplateBinding Padding}" IsHitTestVisible="False" Text="{TemplateBinding Tag}" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{TemplateBinding Foreground}" Visibility="Collapsed" />
                         </Grid>
                     </Border>
+                    
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Opacity" TargetName="border" Value="0.56"/>
+                            <Setter Property="Opacity" TargetName="border" Value="0.65"/>
                         </Trigger>
+                        
                         <Trigger Property="IsFocused" Value="True">
-                            <Setter Property="BorderBrush" TargetName="border" Value="{x:Static ui:UiHelper.ColorAccent}" />
-                            <Setter Property="Background" TargetName="border" Value="#FF1F1F1F" />
-                            <Setter Property="Foreground" Value="#FFFFFFFF" />
+                            <Setter Property="BorderBrush" TargetName="border" Value="{x:Static ui:UiHelper.ColorAccent}"/>
+                            <Setter Property="Background" TargetName="border" Value="{x:Static ui:UiHelper.ColorBackDark}"/>
+                            <Setter Property="Foreground" Value="{x:Static ui:UiHelper.ColorFront}" />
                         </Trigger>
-                        <MultiDataTrigger>
-                            <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=Text}" Value="" />
-                                <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsFocused}" Value="False" />
-                            </MultiDataTrigger.Conditions>
-                            <Setter Property="Visibility" TargetName="placeholder"  Value="Visible"/>
-                            <Setter Property="Foreground" Value="#FFCFCFCF"/>
-                        </MultiDataTrigger>
+                        
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="True"/>
+                                <Condition Property="IsFocused" Value="False"/>
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Background" TargetName="border" Value="{x:Static ui:UiHelper.ColorBack}"/>
+                        </MultiTrigger>
+                        
+                        <DataTrigger Binding="{Binding (Validation.HasError), RelativeSource={RelativeSource Self}}" Value="True">
+                            <Setter Property="BorderBrush" TargetName="border" Value="{x:Static ui:UiHelper.ColorInvalid}"/>
+                        </DataTrigger>
+                        
+                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Text}" Value="">
+                            <Setter Property="Visibility" TargetName="placeholder" Value="Visible"/>
+                            <Setter Property="Foreground" Value="{x:Static ui:UiHelper.ColorFrontDark}"/>
+                        </DataTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
     <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource HTextBox}"/>
+    <Style x:Key="HTextBoxLarge" TargetType="{x:Type TextBox}" BasedOn="{StaticResource HTextBox}">
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+    </Style>
 
+    <!-- HButton -->
     <Style x:Key="HButton" TargetType="{x:Type Button}">
-        <Setter Property="Foreground" Value="{Binding Source={x:Static ui:UiHelper.ColorWhite}}"/>
-        <Setter Property="Background" Value="{x:Null}"/>
-        <Setter Property="BorderBrush" Value="{Binding Source={x:Static ui:UiHelper.ColorWhite}}"/>
+        <Setter Property="Foreground" Value="{x:Static ui:UiHelper.ColorFront}"/>
+        <Setter Property="Background" Value="{x:Static ui:UiHelper.ColorBackDark}"/>
         <Setter Property="FontSize" Value="18"/>
         <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
@@ -65,17 +100,104 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
-                    <Border CornerRadius="4" BorderThickness="2" Background="{Binding Source={x:Static ui:UiHelper.ColorGrayLight}}" BorderBrush="{Binding Source={x:Static ui:UiHelper.ColorAccent}}">
+                    <Border x:Name="border" CornerRadius="4" Background="{TemplateBinding Background}" Padding="6,4,6,4">
                         <ContentPresenter x:Name="ButtonContentPresenter" Content="{TemplateBinding Content}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{x:Static ui:UiHelper.ColorBackLight}"/>
+                        </Trigger>
+                        
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.65"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource HButton}"/>
 
+    <!-- HBorder -->
+    <Style x:Key="HBorder" TargetType="{x:Type Border}">
+        <Setter Property="CornerRadius" Value="4"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Background" Value="{x:Static ui:UiHelper.ColorBackDark}"/>
+
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.65"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- HListBox -->
+    <Style x:Key="HListBox" TargetType="{x:Type ListBox}">
+        <Setter Property="Foreground" Value="{Binding Source={x:Static ui:UiHelper.ColorFront}}"/>
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+        <Setter Property="BorderBrush" Value="{x:Static ui:UiHelper.ColorBackLight}"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="Background" Value="{x:Static ui:UiHelper.ColorBackDark}"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Border x:Name="border" CornerRadius="4" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
+                        <ScrollViewer Margin="0" Focusable="false">
+                            <ItemsPresenter Margin="2"/>
+                        </ScrollViewer>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" TargetName="border" Value="0.65"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource HListBox}"/>
+
+    <!-- HListBoxItem -->
+    <Style x:Key="HListBoxItem" TargetType="{x:Type ListBoxItem}">
+        <Setter Property="SnapsToDevicePixels" Value="true"/>
+        <Setter Property="BorderBrush" Value="{x:Null}"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBoxItem">
+                    <Border x:Name="border" CornerRadius="2" BorderThickness="1" Padding="4,2,4,2" BorderBrush="{TemplateBinding BorderBrush}">
+                        <ContentPresenter/>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="BorderBrush" Value="{x:Static ui:UiHelper.ColorBackLight}"/>
+                        </Trigger>
+
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="BorderBrush" Value="{x:Static ui:UiHelper.ColorAccent}"/>
+                        </Trigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" TargetName="border" Value="0.65"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource HListBoxItem}"/>
+
     <Style x:Key="HLabel" TargetType="{x:Type Label}">
-        <Setter Property="Foreground" Value="{Binding Source={x:Static ui:UiHelper.ColorWhite}}"/>
+        <Setter Property="Foreground" Value="{Binding Source={x:Static ui:UiHelper.ColorFront}}"/>
         <Setter Property="FontSize" Value="18"/>
         <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
@@ -91,31 +213,154 @@
     <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource HComboBox}"/>
 
     <Style x:Key="HCheckBox" TargetType="{x:Type CheckBox}">
-        <Setter Property="Foreground" Value="{Binding Source={x:Static ui:UiHelper.ColorWhite}}"/>
+        <Setter Property="Foreground" Value="{Binding Source={x:Static ui:UiHelper.ColorFront}}"/>
         <Setter Property="FontSize" Value="18"/>
         <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
-        <Setter Property="BorderBrush" Value="{Binding Source={x:Static ui:UiHelper.ColorWhite}}"/>
-        <Setter Property="Background" Value="{Binding Source={x:Static ui:UiHelper.ColorWhite}}"/>
+        <Setter Property="BorderBrush" Value="{Binding Source={x:Static ui:UiHelper.ColorFront}}"/>
+        <Setter Property="Background" Value="{Binding Source={x:Static ui:UiHelper.ColorFront}}"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
     </Style>
     <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource HCheckBox}"/>
 
-    <!-- This does not have a direct overwrite as it causes issues -->
-    <Style x:Key="HTextBlock" TargetType="{x:Type TextBlock}">
-        <Setter Property="Foreground" Value="{Binding Source={x:Static ui:UiHelper.ColorWhite}}"/>
-        <Setter Property="FontSize" Value="18"/>
-        <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
-        <Setter Property="TextWrapping" Value="Wrap"/>
+    <!--#region Scrollbar Override, adapted from docs-->
+    <!-- LineButton -->
+    <Style x:Key="ScrollBarLineButton" TargetType="{x:Type RepeatButton}">
         <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="Focusable" Value="false"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type RepeatButton}">
+                    <Border x:Name="border" Margin="1" CornerRadius="2" BorderThickness="1" BorderBrush="Red" Background="{x:Static ui:UiHelper.ColorBackDark}">
+                        <Path x:Name="Arrow" HorizontalAlignment="Center" VerticalAlignment="Center" Data="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}" >
+                            <Path.Fill>
+                                <SolidColorBrush Color="{DynamicResource GlyphColor}"/>
+                            </Path.Fill>
+                        </Path>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.65"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Foreground" Value="Tan"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
-    <Style x:Key="HListBox" TargetType="{x:Type ListBox}">
-        <Setter Property="Foreground" Value="{Binding Source={x:Static ui:UiHelper.ColorWhite}}"/>
-        <Setter Property="FontSize" Value="18"/>
-        <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
-        <Setter Property="BorderBrush" Value="{Binding Source={x:Static ui:UiHelper.ColorWhite}}"/>
-        <Setter Property="Background" Value="{x:Null}"/>
+    <!-- PageButton -->
+    <Style x:Key="ScrollBarPageButton"
+       TargetType="{x:Type RepeatButton}">
         <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="IsTabStop" Value="false"/>
+        <Setter Property="Focusable" Value="false"/>
+        
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type RepeatButton}">
+                    <Border Background="Transparent" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
-    <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource HListBox}"/>
+
+    <!-- Thumb -->
+    <Style x:Key="ScrollBarThumb"
+       TargetType="{x:Type Thumb}">
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="IsTabStop" Value="false"/>
+        <Setter Property="Focusable" Value="false"/>
+        
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Thumb}">
+                    <Border CornerRadius="2" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Vertical -->
+    <ControlTemplate x:Key="VerticalScrollBar" TargetType="{x:Type ScrollBar}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition MaxHeight="18"/>
+                <RowDefinition Height="0.00001*"/>
+                <RowDefinition MaxHeight="18"/>
+            </Grid.RowDefinitions>
+            
+            <Border Grid.RowSpan="3" CornerRadius="2" Background="{x:Static ui:UiHelper.ColorBackDark}"/>
+            
+            <RepeatButton Grid.Row="0" Style="{StaticResource ScrollBarLineButton}" Height="18" Command="ScrollBar.LineUpCommand" Content="M 0 4 L 8 4 L 4 0 Z"/>
+            
+            <Track x:Name="PART_Track" Grid.Row="1" IsDirectionReversed="true">
+                <Track.DecreaseRepeatButton>
+                    <RepeatButton Style="{StaticResource ScrollBarPageButton}" Command="ScrollBar.PageUpCommand"/>
+                </Track.DecreaseRepeatButton>
+                
+                <Track.Thumb>
+                    <Thumb Style="{StaticResource ScrollBarThumb}" Margin="1,0,1,0" BorderThickness="0" Background="{x:Static ui:UiHelper.ColorBack}"/>
+                </Track.Thumb>
+                
+                <Track.IncreaseRepeatButton>
+                    <RepeatButton Style="{StaticResource ScrollBarPageButton}" Command="ScrollBar.PageDownCommand"/>
+                </Track.IncreaseRepeatButton>
+            </Track>
+            <RepeatButton Grid.Row="2" Style="{StaticResource ScrollBarLineButton}" Height="18" Command="ScrollBar.LineDownCommand" Content="M 0 0 L 4 4 L 8 0 Z"/>
+        </Grid>
+    </ControlTemplate>
+
+    <!-- Horizontal -->
+    <ControlTemplate x:Key="HorizontalScrollBar" TargetType="{x:Type ScrollBar}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition MaxWidth="18"/>
+                <ColumnDefinition Width="0.00001*"/>
+                <ColumnDefinition MaxWidth="18"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.ColumnSpan="3" CornerRadius="2" Background="{x:Static ui:UiHelper.ColorBackDark}"/>
+            
+            <RepeatButton Grid.Column="0" Style="{StaticResource ScrollBarLineButton}" Width="18" Command="ScrollBar.LineLeftCommand" Content="M 4 0 L 4 8 L 0 4 Z"/>
+            
+            <Track x:Name="PART_Track" Grid.Column="1" IsDirectionReversed="False">
+                <Track.DecreaseRepeatButton>
+                    <RepeatButton Style="{StaticResource ScrollBarPageButton}" Command="ScrollBar.PageLeftCommand"/>
+                </Track.DecreaseRepeatButton>
+                
+                <Track.Thumb>
+                    <Thumb Style="{StaticResource ScrollBarThumb}" Margin="0,1,0,1" BorderThickness="0" Background="{x:Static ui:UiHelper.ColorBack}"/>
+                </Track.Thumb>
+                
+                <Track.IncreaseRepeatButton>
+                    <RepeatButton Style="{StaticResource ScrollBarPageButton}" Command="ScrollBar.PageRightCommand"/>
+                </Track.IncreaseRepeatButton>
+            </Track>
+            
+            <RepeatButton Grid.Column="2" Style="{StaticResource ScrollBarLineButton}" Width="18" Command="ScrollBar.LineRightCommand" Content="M 0 0 L 4 4 L 0 8 Z" />
+        </Grid>
+    </ControlTemplate>
+
+    <!-- Main -->
+    <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+
+        <Style.Triggers>
+            <Trigger Property="Orientation" Value="Horizontal">
+                <Setter Property="Width" Value="Auto"/>
+                <Setter Property="Height" Value="18"/>
+                <Setter Property="Template" Value="{StaticResource HorizontalScrollBar}"/>
+            </Trigger>
+            
+            <Trigger Property="Orientation" Value="Vertical">
+                <Setter Property="Width" Value="18"/>
+                <Setter Property="Height" Value="Auto"/>
+                <Setter Property="Template" Value="{StaticResource VerticalScrollBar}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <!--#endregion-->
 </ResourceDictionary>

@@ -6,15 +6,23 @@ namespace Hoscy.Ui
 {
     public static class UiHelper
     {
-        public static readonly SolidColorBrush ColorGrayDark = new(Color.FromRgb(37, 37, 37));
-        public static readonly SolidColorBrush ColorGray = new(Color.FromRgb(68, 68, 68));
-        public static readonly SolidColorBrush ColorGrayLight = new(Color.FromRgb(96, 96, 96));
-        public static readonly SolidColorBrush ColorWhite = new(Color.FromRgb(255, 255, 255));
-        public static readonly SolidColorBrush ColorBlack = new(Color.FromRgb(0, 0, 0));
-        public static readonly SolidColorBrush ColorAccent = new(Color.FromRgb(60, 255, 60));
-        public static readonly SolidColorBrush ColorError = new(Color.FromRgb(60, 60, 255));
+        //Back
+        public static readonly SolidColorBrush ColorBackDark = new(Color.FromRgb(37, 37, 37));
+        public static readonly SolidColorBrush ColorBack = new(Color.FromRgb(52, 52, 52));
+        public static readonly SolidColorBrush ColorBackLight = new(Color.FromRgb(77, 77, 77));
 
-        public static readonly int FontSRegular = 18;
+        //Front
+        public static readonly SolidColorBrush ColorFront = new(Color.FromRgb(255, 255, 255));
+        public static readonly SolidColorBrush ColorFrontDark = new(Color.FromRgb(200, 200, 200));
+        public static readonly SolidColorBrush ColorAccent = new(Color.FromRgb(125, 125, 255));
+
+        //Extra
+        public static readonly SolidColorBrush ColorValid = new(Color.FromRgb(125, 255, 125));
+        public static readonly SolidColorBrush ColorInvalid = new(Color.FromRgb(255, 125, 125));
+
+        //To be replaced
+        public static readonly SolidColorBrush ColorBlack = new(Color.FromRgb(0, 0, 0));
+        public static readonly SolidColorBrush ColorError = new(Color.FromRgb(60, 60, 255));
 
         /// <summary>
         /// Loads data into a combo box

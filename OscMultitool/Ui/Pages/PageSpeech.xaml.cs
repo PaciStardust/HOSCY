@@ -126,18 +126,18 @@ namespace Hoscy.Ui.Pages
 
         private void Button_OpenNoiseFilter(object sender, RoutedEventArgs e)
         {
-            var window = new ModifyListWindow("Edit Noise Filter", Config.Speech.NoiseFilter);
+            var window = new ModifyListWindow("Edit Noise Filter", "Noise Text", Config.Speech.NoiseFilter);
             window.ShowDialog();
             RecognizerBase.UpdateDenoiseRegex();
         }
         private void Button_OpenReplacements(object sender, RoutedEventArgs e)
         {
-            var window = new ModifyDictionaryWindow("Edit Replacements", Config.Speech.Replacements);
+            var window = new ModifyDictionaryWindow("Edit Replacements", "Text", "Replacement", Config.Speech.Replacements);
             window.ShowDialog();
         }
         private void Button_OpenShortcuts(object sender, RoutedEventArgs e)
         {
-            var window = new ModifyDictionaryWindow("Edit Shortcuts", Config.Speech.Shortcuts);
+            var window = new ModifyDictionaryWindow("Edit Shortcuts", "Text", "Replacement", Config.Speech.Shortcuts);
             window.ShowDialog();
         }
         #endregion

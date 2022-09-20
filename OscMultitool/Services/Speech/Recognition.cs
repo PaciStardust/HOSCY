@@ -14,7 +14,7 @@ namespace Hoscy.Services.Speech
         #region Recognizer Control
         public static bool StartRecognizer()
         {
-            PageInfo.UpdateMicStatus();
+            PageInfo.UpdateRecognizerStatus();
 
             if (_recognizer != null || IsRecognizerRunning)
             {
@@ -46,7 +46,7 @@ namespace Hoscy.Services.Speech
                 return false;
 
             var res = _recognizer?.SetListening(enabled) ?? false;
-            PageInfo.UpdateMicStatus();
+            PageInfo.UpdateRecognizerStatus();
             return res;
         }
 
@@ -60,7 +60,7 @@ namespace Hoscy.Services.Speech
 
             _recognizer.Stop();
             _recognizer = null;
-            PageInfo.UpdateMicStatus();
+            PageInfo.UpdateRecognizerStatus();
             Logger.PInfo("Successfully stopped recognizer");
         }
         #endregion

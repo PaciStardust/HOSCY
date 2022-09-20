@@ -16,7 +16,7 @@ namespace Hoscy.Ui.Pages
 
         private void Button_OpenLogFilter(object sender, RoutedEventArgs e)
         {
-            var window = new ModifyListWindow("Edit Logging Filter", Config.Logging.LogFilter);
+            var window = new ModifyListWindow("Edit Logging Filter", "Log Text", Config.Logging.LogFilter);
             window.ShowDialog();
         }
     }
