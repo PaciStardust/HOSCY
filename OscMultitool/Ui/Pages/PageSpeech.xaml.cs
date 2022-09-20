@@ -93,9 +93,9 @@ namespace Hoscy.Ui.Pages
 
             var perms = _permDict[keys[recSelIndex]];
 
-            UiHelper.SetEnabled(optionsMic, perms.UsesMicrophone);
-            UiHelper.SetEnabled(optionsVosk, perms.UsesVoskModel);
-            UiHelper.SetEnabled(optionsWin, perms.UsesWinRecognizer);
+            optionsMic.IsEnabled = perms.UsesMicrophone;
+            optionsVosk.IsEnabled = perms.UsesVoskModel;
+            optionsWin.IsEnabled = perms.UsesWinRecognizer;
         }
         #endregion
 

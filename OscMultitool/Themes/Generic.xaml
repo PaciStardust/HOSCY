@@ -29,7 +29,10 @@
 
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" TargetName="Back" Value="{Binding Source={x:Static ui:UiHelper.ColorBackLight}}"/>
+                            <Setter Property="Background" TargetName="Back" Value="{x:Static ui:UiHelper.ColorBackLight}"/>
+                        </Trigger>
+                        <Trigger Property="IsFocused" Value="True">
+                            <Setter Property="Background" TargetName="Back" Value="{x:Static ui:UiHelper.ColorBackLight}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

@@ -27,8 +27,8 @@ namespace Hoscy.Ui.Pages
 
         private void UpdateTimeoutBoxes()
         {
-            UiHelper.SetEnabled(optionDefaultTimeout, !textboxDynamicTimeout.IsChecked ?? false);
-            UiHelper.SetEnabled(optionDynamicTimeout, textboxDynamicTimeout.IsChecked ?? false);
+            optionDefaultTimeout.IsEnabled = !textboxDynamicTimeout.IsChecked ?? false;
+            optionDynamicTimeout.IsEnabled = textboxDynamicTimeout.IsChecked ?? false;
         }
         #endregion
 

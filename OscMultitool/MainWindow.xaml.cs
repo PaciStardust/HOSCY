@@ -22,10 +22,12 @@ namespace Hoscy
             Media.StartMediaDetection();
         }
 
-        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ListBox_SelectionChanged(object? sender, SelectionChangedEventArgs? e)
         {
             var item = (NavigationButton)listBox.Items[listBox.SelectedIndex];
+            item.Focus();
             navFrame.Navigate(item.NavPage);
+            Application.Current.Resources["AccentColor"] = item.Color;
         }
     }
 }

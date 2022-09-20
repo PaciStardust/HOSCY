@@ -9,7 +9,7 @@
       d:DesignHeight="420" d:DesignWidth="689"
       Title="PageInput">
 
-    <Grid Margin="32">
+    <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>

@@ -47,19 +47,5 @@ namespace Hoscy.Ui
             box.ItemsSource = source;
             box.Items.Refresh();
         }
-
-        /// <summary>
-        /// Set a panel as active or inactive
-        /// </summary>
-        /// <param name="ctrl">Panel to set acitivity for</param>
-        /// <param name="status">Status</param>
-        public static void SetEnabled(Panel ctrl, bool status)
-        {
-            if (ctrl == null)
-                return;
-
-            ctrl.IsEnabled = status;
-            ctrl.Opacity = status ? 1 : 0.5f;
-        }
     }
 }
