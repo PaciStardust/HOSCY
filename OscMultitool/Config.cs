@@ -131,7 +131,7 @@ namespace Hoscy
             public string AddressManualSkipSpeech { get; set; } = "/avatar/parameters/ToolSkipSpeech";
             public string AddressManualSkipBox { get; set; } = "/avatar/parameters/ToolSkipBox";
             public string AddressListeningIndicator { get; set; } = "/avatar/parameters/MicListening";
-            public string AddressAddTextbox { get; set; } = "/hoscy/textbox";
+            public string AddressAddTextbox { get; set; } = "/hoscy/message";
             public string AddressAddTts { get; set; } = "/hoscy/tts";
             public string AddressAddNotification { get; set; } = "/hoscy/notification";
             public List<ConfigOscRoutingFilterModel> RoutingFilters { get; set; } = new();
@@ -204,7 +204,7 @@ namespace Hoscy
                 get { return _timeoutMultiplier; }
                 set { _timeoutMultiplier = MinMax(value, 1000, 10000); }
             }
-            private int _timeoutMultiplier = 1500;
+            private int _timeoutMultiplier = 1250;
 
             public int MinimumTimeout
             {
