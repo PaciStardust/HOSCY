@@ -99,7 +99,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
-                    <Border x:Name="border" CornerRadius="4" Background="{TemplateBinding Background}" Padding="6,4,6,4">
+                    <Border x:Name="border" CornerRadius="4" Background="{TemplateBinding Background}" Padding="6">
                         <ContentPresenter x:Name="ButtonContentPresenter" Content="{TemplateBinding Content}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     </Border>
 
@@ -407,16 +407,19 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <!--#endregion-->
 
+    <!--#region ComboBox Override -->
+    <!-- ToggleButton -->
     <ControlTemplate x:Key="ComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
-        <Border x:Name="Border" CornerRadius="2" BorderThickness="2" BorderBrush="{TemplateBinding BorderBrush}" Background="{x:Static ui:UiHelper.ColorBackDark}">
+        <Border x:Name="Border" CornerRadius="2" BorderThickness="2" BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <Border Grid.Column="0" CornerRadius="2,0,0,2" Margin="1" Background="{x:Static ui:UiHelper.ColorBackDark}"/>
+                <Border Grid.Column="0" CornerRadius="2,0,0,2" Margin="1" Background="{TemplateBinding Background}"/>
 
                 <Path x:Name="Arrow" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Data="M 0 0 L 4 4 L 8 0 Z" Fill="{DynamicResource AccentColor}" Margin="8,0,8,0">
                     <Path.LayoutTransform>
@@ -427,10 +430,12 @@
         </Border>
     </ControlTemplate>
 
+    <!-- Text Box -->
     <ControlTemplate x:Key="ComboBoxTextBox" TargetType="{x:Type TextBox}">
         <Border x:Name="PART_ContentHost" Focusable="False" Background="{TemplateBinding Background}"/>
     </ControlTemplate>
 
+    <!-- Combo Box -->
     <Style x:Key="{x:Type ComboBox}" TargetType="{x:Type ComboBox}">
         <Setter Property="SnapsToDevicePixels" Value="true"/>
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
@@ -447,7 +452,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ComboBox}">
                     <Grid>
-                        <ToggleButton x:Name="ToggleButton" Template="{StaticResource ComboBoxToggleButton}" Focusable="false" ClickMode="Press" IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"/>
+                        <ToggleButton x:Name="ToggleButton" Template="{StaticResource ComboBoxToggleButton}" Focusable="false" ClickMode="Press" IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Background="{x:Static ui:UiHelper.ColorBackDark}"/>
 
                         <ContentPresenter x:Name="ContentSite" IsHitTestVisible="False" Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" Margin="11,6,30,6" VerticalAlignment="Center" HorizontalAlignment="Left"/>
 
@@ -483,19 +488,20 @@
                         </Trigger>
 
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="BorderBrush" TargetName="ToggleButton" Value="{DynamicResource AccentColor}"/>
+                            <Setter Property="Background" TargetName="ToggleButton" Value="{x:Static ui:UiHelper.ColorBack}"/>
                         </Trigger>
 
                         <Trigger Property="IsDropDownOpen" Value="True">
-                            <Setter Property="BorderBrush" TargetName="ToggleButton" Value="{DynamicResource AccentColor}"/>
+                            <Setter Property="Background" TargetName="ToggleButton" Value="{x:Static ui:UiHelper.ColorBack}"/>
                         </Trigger>
-                       
+
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
+    <!-- ComboBoxItem -->
     <Style x:Key="{x:Type ComboBoxItem}"
        TargetType="{x:Type ComboBoxItem}">
         <Setter Property="SnapsToDevicePixels" Value="true"/>
@@ -510,7 +516,7 @@
 
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsHighlighted" Value="True">
-                            <Setter Property="BorderBrush" Value="{x:Static ui:UiHelper.ColorBack}"/>
+                            <Setter Property="BorderBrush" Value="{x:Static ui:UiHelper.ColorBackLight}"/>
                         </Trigger>
 
                         <Trigger Property="IsSelected" Value="True">
@@ -521,7 +527,5 @@
             </Setter.Value>
         </Setter>
     </Style>
-
-
     <!--#endregion-->
 </ResourceDictionary>
