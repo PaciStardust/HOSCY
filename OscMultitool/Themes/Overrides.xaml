@@ -492,7 +492,8 @@
                         </Trigger>
 
                         <Trigger Property="IsDropDownOpen" Value="True">
-                            <Setter Property="Background" TargetName="ToggleButton" Value="{x:Static ui:UiHelper.ColorBack}"/>
+                            <Setter Property="BorderBrush" TargetName="ToggleButton" Value="{DynamicResource AccentColor}"/>
+                            <Setter Property="Background" TargetName="ToggleButton" Value="{x:Static ui:UiHelper.ColorBackDark}"/>
                         </Trigger>
 
                     </ControlTemplate.Triggers>
