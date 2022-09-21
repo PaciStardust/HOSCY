@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Hoscy"
         xmlns:ui="clr-namespace:Hoscy.Ui"
         mc:Ignorable="d"
-        Title="Modify Listener Filters" Height="360" Width="689" Background="{Binding Source={x:Static ui:UiHelper.ColorGray}}" ResizeMode="CanMinimize">
+        Title="Modify Listener Filters" Height="400" Width="700" Background="{Binding Source={x:Static ui:UiHelper.ColorBack}}" ResizeMode="CanMinimize">
 
     <Grid Margin="16">
         <Grid.ColumnDefinitions>
@@ -24,23 +24,23 @@
 
             <StackPanel>
                 <WrapPanel HorizontalAlignment="Center">
-                    <Button Content="Add New" Click="Button_AddEntry" Width="98"/>
-                    <Button Content="Remove" Margin="8,0,0,0" Click="Button_RemoveEntry" Width="91"/>
+                    <Button Content="Add New" Click="Button_AddEntry"/>
+                    <Button Content="Remove" Margin="8,0,0,0" Click="Button_RemoveEntry"/>
                 </WrapPanel>
 
                 <WrapPanel Margin="0,8,0,0" HorizontalAlignment="Center">
-                    <Button Content="Modify" Click="Button_ModifyEntry" Width="78"/>
-                    <Button Content="Headers" Click="Button_EditHeaders" Margin="8,0,0,0" Width="81"/>
+                    <Button Content="Modify" Click="Button_ModifyEntry"/>
+                    <Button Content="Headers" Click="Button_EditHeaders" Margin="8,0,0,0"/>
                 </WrapPanel>
             </StackPanel>
 
             <ScrollViewer Grid.Row="1" Margin="0,32,0,0">
                 <StackPanel Margin="0,0,16,0">
                     <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Text="Name"/>
-                    <TextBox x:Name="textName" TextWrapping="Wrap" KeyUp="TextBox_KeyPressed"/>
+                    <TextBox x:Name="textName" TextWrapping="Wrap" KeyUp="TextBox_KeyPressed" Tag="Name..."/>
 
                     <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="URL"/>
-                    <TextBox x:Name="textUrl" TextWrapping="Wrap" KeyUp="TextBox_KeyPressed"/>
+                    <TextBox x:Name="textUrl" TextWrapping="Wrap" KeyUp="TextBox_KeyPressed" Tag="URL..."/>
 
                     <Grid Margin="0,8,0,0">
                         <Grid.ColumnDefinitions>
@@ -50,20 +50,20 @@
 
                         <StackPanel Margin="0,0,8,0">
                             <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Text="Result Name"/>
-                            <TextBox x:Name="textResult" KeyUp="TextBox_KeyPressed"/>
+                            <TextBox x:Name="textResult" KeyUp="TextBox_KeyPressed" Tag="Result..."/>
                         </StackPanel>
 
                         <StackPanel Margin="8,0,0,0" Grid.Column="1">
                             <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Text="Timeout (ms)"/>
-                            <TextBox x:Name="textTimeout" KeyUp="TextBox_KeyPressed"/>
+                            <TextBox x:Name="textTimeout" KeyUp="TextBox_KeyPressed" Tag="Timeout..."/>
                         </StackPanel>
                     </Grid>
 
                     <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="Content Type (Speech Recognition)"/>
-                    <TextBox x:Name="textContentType" TextWrapping="Wrap" KeyUp="TextBox_KeyPressed"/>
+                    <TextBox x:Name="textContentType" Style="{DynamicResource HTextBoxLarge}" KeyUp="TextBox_KeyPressed" Tag="Content Type..."/>
 
                     <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="JSON (Translation, [T] gets replaced)"/>
-                    <TextBox x:Name="textJson" AcceptsReturn="True"/>
+                    <TextBox x:Name="textJson" Style="{DynamicResource HTextBoxLarge}" AcceptsReturn="True" Tag="JSON..."/>
                 </StackPanel>
             </ScrollViewer>
         </Grid>

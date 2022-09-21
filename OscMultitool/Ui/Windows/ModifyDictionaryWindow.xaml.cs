@@ -13,12 +13,19 @@ namespace Hoscy.Ui.Windows
     {
         private readonly Dictionary<string, string> _dict;
 
-        public ModifyDictionaryWindow(string title, Dictionary<string, string> dict)
+        public ModifyDictionaryWindow(string title, string keyName, string valueName, Dictionary<string, string> dict)
         {
             InitializeComponent();
 
             _dict = dict;
             Title = title;
+
+            labelKey.Text = keyName;
+            labelValue.Text = valueName;
+
+            textKey.Tag = keyName + "...";
+            textValue.Tag = valueName + "...";
+
             Refresh();
         }
 

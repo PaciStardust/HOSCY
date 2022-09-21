@@ -112,7 +112,7 @@ namespace Hoscy.Ui.Windows
                 return;
 
             var selected = _list[listBox.SelectedIndex];
-            var window = new ModifyDictionaryWindow($"Header Editor: {selected.Name}", selected.HeaderValues);
+            var window = new ModifyDictionaryWindow($"Header Editor: {selected.Name}", "Name", "Value", selected.HeaderValues);
             window.ShowDialog();
             Refresh();
         }

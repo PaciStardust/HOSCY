@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Hoscy"
         xmlns:ui="clr-namespace:Hoscy.Ui"
         mc:Ignorable="d"
-        Title="Modify Listener Filters" Height="300" Width="689" Background="{Binding Source={x:Static ui:UiHelper.ColorGray}}" ResizeMode="CanMinimize">
+        Title="Modify Listener Filters" Height="400" Width="700" Background="{Binding Source={x:Static ui:UiHelper.ColorBack}}" ResizeMode="CanMinimize">
 
     <Grid Margin="16">
         <Grid.ColumnDefinitions>
@@ -24,25 +24,25 @@
 
             <StackPanel>
                 <WrapPanel HorizontalAlignment="Center">
-                    <Button Content="Add New" Click="Button_AddEntry" Width="98"/>
-                    <Button Content="Remove" Margin="8,0,0,0" Click="Button_RemoveEntry" Width="91"/>
+                    <Button Content="Add New" Click="Button_AddEntry"/>
+                    <Button Content="Remove" Margin="8,0,0,0" Click="Button_RemoveEntry"/>
                 </WrapPanel>
 
                 <WrapPanel Margin="0,8,0,0" HorizontalAlignment="Center">
-                    <Button Content="Modify" Click="Button_ModifyEntry" Width="78"/>
-                    <Button Content="Filters" Click="Button_EditFilters" Margin="8,0,0,0" Width="78"/>
+                    <Button Content="Modify" Click="Button_ModifyEntry"/>
+                    <Button Content="Filters" Click="Button_EditFilters" Margin="8,0,0,0"/>
                 </WrapPanel>
             </StackPanel>
 
             <StackPanel Grid.Row="1" VerticalAlignment="Bottom">
                 <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Text="Name"/>
-                <TextBox x:Name="textName" KeyUp="TextBox_KeyPressed"/>
+                <TextBox x:Name="textName" KeyUp="TextBox_KeyPressed" Tag="Name..."/>
 
                 <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="IP"/>
-                <TextBox x:Name="textIp" KeyUp="TextBox_KeyPressed"/>
+                <TextBox x:Name="textIp" KeyUp="TextBox_KeyPressed" Tag="IP..."/>
 
                 <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="Port"/>
-                <TextBox x:Name="textPort" KeyUp="TextBox_KeyPressed"/>
+                <TextBox x:Name="textPort" KeyUp="TextBox_KeyPressed" Tag="Port..."/>
             </StackPanel>
         </Grid>
     </Grid>

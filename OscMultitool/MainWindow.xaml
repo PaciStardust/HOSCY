@@ -8,25 +8,24 @@
         x:Name="window" x:Class="Hoscy.MainWindow"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="HOSCY - OSC and Communication Companion" Height="450" Width="800" ResizeMode="CanMinimize" WindowState="Normal" WindowStyle="SingleBorderWindow" Background="{Binding Source={x:Static ui:UiHelper.ColorGrayDark}}">
-    <Grid x:Name="MainGrid">
+        Title="HOSCY - OSC and Communication Companion" Height="450" Width="800" ResizeMode="CanMinimize" WindowState="Normal" WindowStyle="SingleBorderWindow" Background="{x:Static ui:UiHelper.ColorBackDark}">
+    <Grid x:Name="MainGrid" Margin="4,6,6,6">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <ListBox x:Name="listBox" Grid.Column="0" Background="{x:Null}" SelectionChanged="ListBox_SelectionChanged" BorderBrush="{x:Null}" VerticalAlignment="Center">
+        <ListBox x:Name="listBox" Grid.Column="0" SelectionChanged="ListBox_SelectionChanged" VerticalAlignment="Center" Margin="0,0,4,0" BorderThickness="0">
             <uictrl:NavigationButton Color="#FFC6FF" Title="Main" NavPage="/UI/Pages/PageInfo.xaml"/>
             <uictrl:NavigationButton Color="#FFADAD" Title="Input" NavPage="/UI/Pages/PageInput.xaml"/>
             <uictrl:NavigationButton Color="#FFD6A5" Title="Speech" NavPage="/UI/Pages/PageSpeech.xaml"/>
             <uictrl:NavigationButton Color="#FDFFB6" Title="API" NavPage="/UI/Pages/PageAPI.xaml"/>
             <uictrl:NavigationButton Color="#CAFFBF" Title="Output" NavPage="/UI/Pages/PageOutput.xaml"/>
             <uictrl:NavigationButton Color="#FFA0DAFF" Title="OSC" NavPage="/UI/Pages/PageOsc.xaml"/>
-            <uictrl:NavigationButton Color="#BDB2FF" Title="Debug" NavPage="/UI/Pages/PageDebug.xaml"/>
+            <uictrl:NavigationButton Color="#BDB2FF" Title="Config" NavPage="/UI/Pages/PageConfig.xaml"/>
         </ListBox>
 
-        <Border x:Name="navBorder" Grid.Column="1" BorderBrush="#FFFFFFFF" BorderThickness="2,2,2,2" CornerRadius="8,0,0,8" Background="{Binding Source={x:Static ui:UiHelper.ColorGray}}">
-            <Frame x:Name="navFrame" NavigationUIVisibility="Hidden"></Frame>
+        <Border x:Name="navBorder" Grid.Column="1" CornerRadius="8,4,4,8" Background="{x:Static ui:UiHelper.ColorBack}">
+            <Frame x:Name="navFrame" Grid.Column="1" NavigationUIVisibility="Hidden"/>
         </Border>
-        
     </Grid>
 </Window>

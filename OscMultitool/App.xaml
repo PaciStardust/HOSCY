@@ -9,6 +9,8 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Themes/Overrides.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            
+            <SolidColorBrush x:Key="AccentColor" Color="Pink"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

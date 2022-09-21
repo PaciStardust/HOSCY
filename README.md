@@ -155,7 +155,7 @@ Commands get run after replacements and are mostly hard-coded, they only trigger
 	- **Resuming:** "Play" / "Resume"
 	- **Skip:** "Next" / "Skip"
 	- **Rewind:** "Back" / "Rewind"
-	- **Info:** "Info" / "Current" / "Now"
+	- **Info:** "Info" / "Current" / "Now" / "Status"
 -  **OSC** can also executed and sent via commands, how to use this can be learnt **[here](#osc-commands)**
 
 ## OSC Commands
@@ -163,13 +163,13 @@ OSC Commands are an integrated feature to quickly trigger OSC with a single voic
 
 ### OSC Command Example
 ```
-[osc] [/hoscy/textbox [s]"Let us dance!" 127.0.0.1:9001] [/avatar/parameters/VRCEmote [i]2 w5000] [/avatar/parameters/VRCEmote [i]0]
+[osc] [/hoscy/message [s]"Let us dance!" 127.0.0.1:9001] [/avatar/parameters/VRCEmote [i]2 w5000] [/avatar/parameters/VRCEmote [i]0]
 ```
 This is an example of a more complex OSC Command, it does the following:
 1. `[osc]` 
 	- Indicates that the message is an OSC command
-2. `[/hoscy/textbox [s]"Let us dance!" 127.0.0.1:9001]`
-	- `/hoscy/textbox` is the target Address
+2. `[/hoscy/message [s]"Let us dance!" 127.0.0.1:9001]`
+	- `/hoscy/message` is the target Address
 	- `[s]` is an indicator that the following parameter will be a string
 	- `"Let us dance!"` is the parameter to be sent
 	- `127.0.0.1:9001` is the target IP and port, it needs to be added since we do not want the default output
@@ -198,7 +198,7 @@ The command then follows this pattern:
 ```
 - **Address** is the target address for the OSC Command
 	- This allows any characters that an address is allowed to contain, including wildcards
-	- Examples: `/hoscy/textbox` and `/test/*`
+	- Examples: `/hoscy/message` and `/test/*`
 - **Type and Value** specify which datatype to send and what its value is *(the type indicator is case insensitive)*
 	- **Booleans** have the indicator `[b]` and their value can either be `True`/`true` or `False`/`false`
 	- **Integers** have the indicator `[i]` and their value can be any positive or negative whole number

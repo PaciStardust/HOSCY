@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Hoscy"
         xmlns:ui="clr-namespace:Hoscy.Ui"
         mc:Ignorable="d"
-        Title="Modify List Window" Height="300" Width="600" Background="{Binding Source={x:Static ui:UiHelper.ColorGray}}" ResizeMode="CanMinimize">
+        Title="Modify List Window" Height="400" Width="700" Background="{Binding Source={x:Static ui:UiHelper.ColorBack}}" ResizeMode="CanMinimize">
 
     <Grid Margin="16">
         <Grid.ColumnDefinitions>
@@ -24,15 +24,15 @@
 
             <StackPanel>
                 <WrapPanel HorizontalAlignment="Center">
-                    <Button Content="Add New" Click="Button_AddEntry" Width="98"/>
-                    <Button Content="Remove" Margin="8,0,0,0" Click="Button_RemoveEntry" Width="91"/>
+                    <Button Content="Add New" Click="Button_AddEntry"/>
+                    <Button Content="Remove" Margin="8,0,0,0" Click="Button_RemoveEntry"/>
                 </WrapPanel>
-                <Button Content="Modify" HorizontalAlignment="Center" Click="Button_ModifyEntry" Margin="0,8,0,0" Width="78"/>
+                <Button Content="Modify" HorizontalAlignment="Center" Click="Button_ModifyEntry" Margin="0,8,0,0"/>
             </StackPanel>
 
             <DockPanel Margin="0,16,0,0" Grid.Row="1">
-                <TextBlock Style="{DynamicResource HTextBlock}" Grid.Column="1" DockPanel.Dock="Top" HorizontalAlignment="Center" Text="Value"/>
-                <TextBox x:Name="textValue" HorizontalAlignment="Stretch" TextWrapping="Wrap" KeyUp="TextBox_KeyPressed"/>
+                <TextBlock x:Name="labelValue" Style="{DynamicResource HTextBlock}" Grid.Column="1" DockPanel.Dock="Top" HorizontalAlignment="Center" Text="Value"/>
+                <TextBox x:Name="textValue" Style="{DynamicResource HTextBoxLarge}" KeyUp="TextBox_KeyPressed" Tag="Value..."/>
             </DockPanel>
         </Grid>
     </Grid>

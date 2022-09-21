@@ -13,10 +13,13 @@ namespace Hoscy.Ui.Windows
         private readonly List<string> _list;
         private readonly string _default;
 
-        public ModifyListWindow(string title, List<string> list, string defaultString = "")
+        public ModifyListWindow(string title, string valueName, List<string> list, string defaultString = "")
         {
             InitializeComponent();
-            
+
+            labelValue.Text = valueName;
+            textValue.Tag = valueName + "...";
+
             _list = list;
             Title = title;
             _default = defaultString;

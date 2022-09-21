@@ -129,6 +129,27 @@ namespace Hoscy.OscControl
 
             if (address == Config.Osc.AddressManualSkipSpeech)
                 Synthesizing.Skip();
+
+            if (address == Config.Osc.AddressEnableAutoMute)
+            {
+                bool newValue = !Config.Speech.MuteOnVrcMute;
+                Logger.Info("'Mute on VRC mute' has been changed via OSC => " + newValue);
+                Config.Speech.MuteOnVrcMute = !Config.Speech.MuteOnVrcMute;
+            }
+
+            if (address == Config.Osc.AddressEnableTextbox)
+            {
+                bool newValue = !Config.Speech.UseTextbox;
+                Logger.Info("'Textbox on Speech' has been changed via OSC => " + newValue);
+                Config.Speech.UseTextbox = newValue;
+            }
+
+            if (address == Config.Osc.AddressEnableTts)
+            {
+                bool newValue = !Config.Speech.UseTts;
+                Logger.Info("'TTS on Speech' has been changed via OSC => " + newValue);
+                Config.Speech.UseTts = !Config.Speech.UseTts;
+            }
         }
 
         /// <summary>

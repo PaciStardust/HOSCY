@@ -1,5 +1,6 @@
 ﻿using Hoscy;
 using Hoscy.Ui.Pages;
+using System;
 using System.Collections.Generic;
 using System.Speech.Recognition;
 
@@ -14,7 +15,7 @@ namespace Hoscy.Services.Speech
         #region Recognizer Control
         public static bool StartRecognizer()
         {
-            PageInfo.UpdateMicStatus();
+            TriggerRecognitionChanged();
 
             if (_recognizer != null || IsRecognizerRunning)
             {
@@ -36,7 +37,9 @@ namespace Hoscy.Services.Speech
                 _recognizer = null;
                 return false;
             }
+
             Logger.PInfo("Successfully started recognizer");
+            TriggerRecognitionChanged();
             return true;
         }
 
@@ -46,7 +49,7 @@ namespace Hoscy.Services.Speech
                 return false;
 
             var res = _recognizer?.SetListening(enabled) ?? false;
-            PageInfo.UpdateMicStatus();
+            TriggerRecognitionChanged();
             return res;
         }
 
@@ -60,9 +63,19 @@ namespace Hoscy.Services.Speech
 
             _recognizer.Stop();
             _recognizer = null;
-            PageInfo.UpdateMicStatus();
+            TriggerRecognitionChanged();
             Logger.PInfo("Successfully stopped recognizer");
         }
+        #endregion
+
+        #region Events
+        public static event EventHandler<RecognitionChangedEventArgs> RecognitionChanged = delegate { };
+
+        private static void HandleRecognitionChanged(object? sender, RecognitionChangedEventArgs e)
+            => RecognitionChanged.Invoke(sender, e);
+
+        private static void TriggerRecognitionChanged()
+            => HandleRecognitionChanged(null, new(IsRecognizerRunning, IsRecognizerListening));
         #endregion
 
         #region WinListeners
@@ -87,5 +100,17 @@ namespace Hoscy.Services.Speech
                 return 0;
         }
         #endregion
+    }
+
+    public class RecognitionChangedEventArgs : EventArgs
+    {
+        public bool Listening { get; init; }
+        public bool Running { get; init; }
+
+        public RecognitionChangedEventArgs(bool running, bool listening)
+        {
+            Listening = listening;
+            Running = running;
+        }
     }
 }

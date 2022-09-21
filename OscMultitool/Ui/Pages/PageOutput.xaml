@@ -6,142 +6,133 @@
       xmlns:local="clr-namespace:Hoscy"
       xmlns:ui="clr-namespace:Hoscy.Ui"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="4500" d:DesignWidth="800"
       Title="PageOutput">
 
     <ScrollViewer Margin="16,8,8,8" VerticalScrollBarVisibility="Auto">
-        <StackPanel>
+        <StackPanel Margin="0,0,32,0">
+            <WrapPanel>
+                <Label Content="Textbox" Style="{StaticResource HLabelL}"/>
+                <Button Content="Skip Current Queue" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_SkipBox"/>
+            </WrapPanel>
+
             <!-- Textbox -->
-            <StackPanel>
-                <WrapPanel>
-                    <Label Content="Textbox" Foreground="White" FontSize="30" FontFamily="Microsoft YaHei UI" FontWeight="Bold"/>
-                    <Button Content="Skip Current Queue" Margin="16,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_SkipBox" Width="181"/>
-                </WrapPanel>
-
+            <StackPanel Style="{StaticResource HStackIndent}">
                 <!-- Message Timeout -->
-                <StackPanel>
-                    <Label Content="Message Timeout" FontSize="24" FontWeight="Bold"/>
+                <Label Content="Message Timeout" Style="{StaticResource HLabelM}"/>
 
-                    <StackPanel Margin="8,4,0,0">
-                        <CheckBox x:Name="textboxDynamicTimeout" Content="Enable dynamic timeout" IsChecked="{Binding Textbox.DynamicTimeout, Source={x:Static local:Config.Data}}" Click="TextboxDynamicTimeout_Checked"/>
+                <StackPanel Style="{StaticResource HStackIndent}">
+                    <CheckBox x:Name="textboxDynamicTimeout" Content="Enable dynamic timeout" IsChecked="{Binding Textbox.DynamicTimeout, Source={x:Static local:Config.Data}}" Click="TextboxDynamicTimeout_Checked"/>
 
-                        <StackPanel x:Name="optionDynamicTimeout" Margin="0,4,0,0">
-                            <WrapPanel>
-                                <TextBox x:Name="textboxTimeoutMultiplier" VerticalAlignment="Center" Width="120">
-                                    <TextBox.Text>
-                                        <Binding Source="{x:Static local:Config.Data}" Path="Textbox.TimeoutMultiplier" UpdateSourceTrigger="PropertyChanged">
-                                            <Binding.ValidationRules>
-                                                <ui:IntegerValidationRule Min="1000" Max="10000"/>
-                                            </Binding.ValidationRules>
-                                        </Binding>
-                                    </TextBox.Text>
-                                </TextBox>
-                                <Label Content ="Dynamic timeout (ms/20char)"/>
-                            </WrapPanel>
-                            <WrapPanel>
-                                <TextBox x:Name="textboxMinimumTimeout" VerticalAlignment="Center" Width="120">
-                                    <TextBox.Text>
-                                        <Binding Source="{x:Static local:Config.Data}" Path="Textbox.MinimumTimeout" UpdateSourceTrigger="PropertyChanged">
-                                            <Binding.ValidationRules>
-                                                <ui:IntegerValidationRule Min="1000" Max="30000"/>
-                                            </Binding.ValidationRules>
-                                        </Binding>
-                                    </TextBox.Text>
-                                </TextBox>
-                                <Label Content ="Minimum timeout (ms)"/>
-                            </WrapPanel>
-                        </StackPanel>
-
-                        <WrapPanel x:Name="optionDefaultTimeout">
-                            <TextBox x:Name="textboxDefaultTimeout" VerticalAlignment="Center" Width="120">
+                    <StackPanel x:Name="optionDynamicTimeout" Margin="0,4,0,0">
+                        <WrapPanel>
+                            <TextBox x:Name="textboxTimeoutMultiplier" Style="{StaticResource HTextBoxShort}" Tag="Timeout...">
                                 <TextBox.Text>
-                                    <Binding Source="{x:Static local:Config.Data}" Path="Textbox.DefaultTimeout" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding Source="{x:Static local:Config.Data}" Path="Textbox.TimeoutMultiplier" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <ui:IntegerValidationRule Min="1000" Max="10000"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Label Content ="Dynamic timeout (ms/20char)" VerticalAlignment="Center"/>
+                        </WrapPanel>
+                        <WrapPanel Margin="0,4,0,0">
+                            <TextBox x:Name="textboxMinimumTimeout" Style="{StaticResource HTextBoxShort}" Tag="Timeout...">
+                                <TextBox.Text>
+                                    <Binding Source="{x:Static local:Config.Data}" Path="Textbox.MinimumTimeout" UpdateSourceTrigger="PropertyChanged">
                                         <Binding.ValidationRules>
                                             <ui:IntegerValidationRule Min="1000" Max="30000"/>
                                         </Binding.ValidationRules>
                                     </Binding>
                                 </TextBox.Text>
                             </TextBox>
-                            <Label Content="Default timeout (ms)"/>
+                            <Label Content ="Minimum timeout (ms)" VerticalAlignment="Center"/>
                         </WrapPanel>
                     </StackPanel>
+
+                    <WrapPanel x:Name="optionDefaultTimeout" Margin="0,4,0,0">
+                        <TextBox x:Name="textboxDefaultTimeout" Tag="Timeout..." Style="{StaticResource HTextBoxShort}">
+                            <TextBox.Text>
+                                <Binding Source="{x:Static local:Config.Data}" Path="Textbox.DefaultTimeout" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <ui:IntegerValidationRule Min="1000" Max="30000"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                        <Label Content="Default timeout (ms)" VerticalAlignment="Center"/>
+                    </WrapPanel>
 
                 </StackPanel>
 
                 <!-- Other -->
-                <StackPanel Margin="0,16,0,0">
-                    <Label Content="Other Options" FontSize="24" FontWeight="Bold"/>
+                <Label Margin="0,16,0,0" Content="Other Options" Style="{StaticResource HLabelM}"/>
 
-                    
-                    <StackPanel Margin="8,4,0,0">
-                        <CheckBox x:Name="textboxAutoClearMsg" Content="Clear automatically after messages" IsChecked="{Binding Textbox.AutomaticClearMessage, Source={x:Static local:Config.Data}}"/>
-                        <CheckBox x:Name="textboxAutoClearNot" Margin="0,4,0,0" Content="Clear automatically after notifications" IsChecked="{Binding Textbox.AutomaticClearNotification, Source={x:Static local:Config.Data}}"/>
-                        <CheckBox x:Name="textboxMediaStatus" Margin="0,4,0,0" Content="Show media status" IsChecked="{Binding Textbox.ShowMediaStatus, Source={x:Static local:Config.Data}}"/>
-                        
-                        <WrapPanel>
-                            <TextBox x:Name="textboxMaxTextlength" VerticalAlignment="Center" Width="120">
-                                <TextBox.Text>
-                                    <Binding Source="{x:Static local:Config.Data}" Path="Textbox.MaxLength" UpdateSourceTrigger="PropertyChanged">
-                                        <Binding.ValidationRules>
-                                            <ui:IntegerValidationRule Min="50" Max="130"/>
-                                        </Binding.ValidationRules>
-                                    </Binding>
-                                </TextBox.Text>
-                            </TextBox>
-                            <Label Content="Max. text length"/>
-                        </WrapPanel>
-                    </StackPanel>
+                <StackPanel Style="{StaticResource HStackIndent}">
+                    <CheckBox x:Name="textboxAutoClearMsg" Content="Clear automatically after messages" IsChecked="{Binding Textbox.AutomaticClearMessage, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="textboxAutoClearNot" Margin="0,4,0,0" Content="Clear automatically after notifications" IsChecked="{Binding Textbox.AutomaticClearNotification, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="textboxMediaStatus" Margin="0,4,0,0" Content="Show media status" IsChecked="{Binding Textbox.ShowMediaStatus, Source={x:Static local:Config.Data}}"/>
+
+                    <WrapPanel Margin="0,4,0,0">
+                        <TextBox x:Name="textboxMaxTextlength" Tag="MTL..." Style="{StaticResource HTextBoxShort}">
+                            <TextBox.Text>
+                                <Binding Source="{x:Static local:Config.Data}" Path="Textbox.MaxLength" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <ui:IntegerValidationRule Min="50" Max="130"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                        <Label Content="Max. text length" VerticalAlignment="Center"/>
+                    </WrapPanel>
                 </StackPanel>
             </StackPanel>
 
+            <WrapPanel Margin="0,32,0,0">
+                <Label Content="Text to Speech" Style="{StaticResource HLabelL}"/>
+                <Button Content="Skip Current Speech" Click="Button_SkipSpeech" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            </WrapPanel>
+
             <!-- STT -->
-            <StackPanel Margin="0,32,0,0">
-                <WrapPanel>
-                    <Label Content="Text to Speech" FontSize="30" FontWeight="Bold"/>
-                    <Button Content="Skip Current Speech" Margin="16,0,0,0" Click="Button_SkipSpeech" Width="186" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                </WrapPanel>
-
+            <StackPanel Style="{StaticResource HStackIndent}">
                 <!-- Audio Options -->
-                <StackPanel>
-                    <Label Content="Audio Options" FontSize="24" FontWeight="Bold"/>
+                <Label Content="Audio Options" Style="{StaticResource HLabelM}"/>
 
-                    <StackPanel Margin="8,4,0,0">
-                        <WrapPanel>
-                            <ComboBox x:Name="speechSpeakerBox" Width="240" VerticalAlignment="Center" SelectionChanged="SpeechSpeakerBox_SelectionChanged"/>
-                            <Label Content="Output speakers"/>
-                        </WrapPanel>
+                <StackPanel Style="{StaticResource HStackIndent}">
+                    <WrapPanel>
+                        <ComboBox x:Name="speechSpeakerBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="SpeechSpeakerBox_SelectionChanged"/>
+                        <Label Content="Output speakers" VerticalAlignment="Center"/>
+                        <Button x:Name="resetDeviceButton" Style="{StaticResource HButtonSmall}" Content="Reset" VerticalAlignment="Center" Click="Button_ResetDevice" Margin="4,0,0,0"/>
+                    </WrapPanel>
 
-                        <WrapPanel Margin="0,4,0,0">
-                            <ComboBox x:Name="speechWindowsSynthBox" Width="240" VerticalAlignment="Center" SelectionChanged="SpeechWindowsSynthBox_SelectionChanged"/>
-                            <Label Content="Speech voice"/>
-                        </WrapPanel>
+                    <WrapPanel Margin="0,4,0,0">
+                        <ComboBox x:Name="speechWindowsSynthBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="SpeechWindowsSynthBox_SelectionChanged"/>
+                        <Label Content="Speech voice" VerticalAlignment="Center"/>
+                    </WrapPanel>
 
-                        <WrapPanel Margin="0,4,0,0">
-                            <Slider Width="240" VerticalAlignment="Center" Minimum="0" Maximum="1" Value="{Binding Speech.SpeakerVolume, Source={x:Static local:Config.Data}}" ValueChanged="Slider_Volume" LargeChange="0.25" SmallChange="0.05" TickFrequency="0.05" IsSnapToTickEnabled="True" Height="17" FontSize="18" FontFamily="Microsoft YaHei UI"/>
-                            <Label Content="Speech volume"/>
-                        </WrapPanel>
-                    </StackPanel>
+                    <WrapPanel Margin="0,4,0,0">
+                        <Slider Width="320" x:Name="volumeSlider" VerticalAlignment="Center" Minimum="0" Maximum="1" Value="{Binding Speech.SpeakerVolume, Source={x:Static local:Config.Data}}" ValueChanged="Slider_Volume" LargeChange="0.25" SmallChange="0.05" TickFrequency="0.05" IsSnapToTickEnabled="True" Height="17" FontSize="18" FontFamily="Microsoft YaHei UI"/>
+                        <Label x:Name="volumeLabel" Content="Speech volume"/>
+                    </WrapPanel>
                 </StackPanel>
 
                 <!-- Other Options -->
-                <StackPanel Margin="0,16,0,0">
-                    <Label Content="Other Options" FontSize="24" FontWeight="Bold"/>
-
-                    <StackPanel Margin="8,4,0,0">
-                        <WrapPanel>
-                            <TextBox x:Name="oscOscIp" VerticalAlignment="Center" Width="120">
-                                <TextBox.Text>
-                                    <Binding Source="{x:Static local:Config.Data}" Path="Speech.MaxLenTtsString" UpdateSourceTrigger="PropertyChanged">
-                                        <Binding.ValidationRules>
-                                            <ui:IntegerValidationRule Min="1" Max="99999"/>
-                                        </Binding.ValidationRules>
-                                    </Binding>
-                                </TextBox.Text>
-                            </TextBox>
-                            <Label Content="Max. text length"/>
-                        </WrapPanel>
-                        <CheckBox x:Name="skipTooLong" Content="Skip too long messages" Margin="0,4,0,0" IsChecked="{Binding Speech.SkipLongerMessages, Source={x:Static local:Config.Data}}"/>
-                    </StackPanel>
+                <Label Content="Other Options" Style="{StaticResource HLabelM}" Margin="0,16,0,0"/>
+                <StackPanel Style="{StaticResource HStackIndent}">
+                    <WrapPanel>
+                        <TextBox x:Name="oscOscIp" VerticalAlignment="Center" Style="{StaticResource HTextBoxShort}" Tag="MTL...">
+                            <TextBox.Text>
+                                <Binding Source="{x:Static local:Config.Data}" Path="Speech.MaxLenTtsString" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <ui:IntegerValidationRule Min="1" Max="99999"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                        <Label Content="Max. text length" VerticalAlignment="Center"/>
+                    </WrapPanel>
+                    <CheckBox x:Name="skipTooLong" Content="Skip too long messages" Margin="0,4,0,0" IsChecked="{Binding Speech.SkipLongerMessages, Source={x:Static local:Config.Data}}"/>
                 </StackPanel>
             </StackPanel>
         </StackPanel>

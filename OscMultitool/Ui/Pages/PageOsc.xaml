@@ -6,28 +6,28 @@
       xmlns:local="clr-namespace:Hoscy"
       xmlns:ui="clr-namespace:Hoscy.Ui"
       mc:Ignorable="d" 
-      d:DesignHeight="430" d:DesignWidth="689"
+      d:DesignHeight="4300" d:DesignWidth="689"
       Title="PageOsc">
 
     <ScrollViewer Margin="16,8,8,8" VerticalScrollBarVisibility="Auto">
-        <StackPanel>
+        <StackPanel Margin="0,0,32,0">
             <WrapPanel>
-                <Label Content="Open Sound Control" FontSize="30" FontWeight="Bold"/>
-                <Button Content="Modify Routing" Margin="16,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_ModifyRouting" Width="147"/>
+                <Label Content="Open Sound Control" Style="{StaticResource HLabelL}"/>
+                <Button Content="Modify Routing" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_ModifyRouting"/>
             </WrapPanel>
 
-            <!-- Connection -->
-            <StackPanel>
-                <Label Content="Connection" FontSize="24" FontWeight="Bold"/>
+            <StackPanel Style="{StaticResource HStackIndent}">
+                <!-- Connection -->
+                <Label Content="Connection" Style="{StaticResource HLabelM}"/>
 
-                <StackPanel Margin="8,4,0,0">
+                <StackPanel Style="{StaticResource HStackIndent}">
                     <WrapPanel>
-                        <TextBox x:Name="oscOscIp" HorizontalAlignment="Left" Text="{Binding Osc.Ip, Source={x:Static local:Config.Data}}" VerticalAlignment="Center" Width="120"/>
-                        <Label Content="OSC IP out"/>
+                        <TextBox x:Name="oscOscIp" Text="{Binding Osc.Ip, Source={x:Static local:Config.Data}}" Tag="IP out..." Style="{StaticResource HTextBoxShort}"/>
+                        <Label Content="OSC IP out" VerticalAlignment="Center"/>
                     </WrapPanel>
 
-                    <WrapPanel>
-                        <TextBox x:Name="oscOscPort" HorizontalAlignment="Left" VerticalAlignment="Center" Width="120">
+                    <WrapPanel Margin="0,4,0,0">
+                        <TextBox x:Name="oscOscPort" Tag="Port out..." Style="{StaticResource HTextBoxShort}">
                             <TextBox.Text>
                                 <Binding Source="{x:Static local:Config.Data}" Path="Osc.Port" UpdateSourceTrigger="PropertyChanged">
                                     <Binding.ValidationRules>
@@ -36,11 +36,11 @@
                                 </Binding>
                             </TextBox.Text>
                         </TextBox>
-                        <Label Content="OSC port out"/>
+                        <Label Content="OSC port out" VerticalAlignment="Center"/>
                     </WrapPanel>
 
-                    <WrapPanel>
-                        <TextBox x:Name="oscOscPortIn" HorizontalAlignment="Left" VerticalAlignment="Center" Width="120">
+                    <WrapPanel Margin="0,4,0,0">
+                        <TextBox x:Name="oscOscPortIn" Tag="Port in..." Style="{StaticResource HTextBoxShort}">
                             <TextBox.Text>
                                 <Binding Source="{x:Static local:Config.Data}" Path="Osc.PortListen" UpdateSourceTrigger="PropertyChanged">
                                     <Binding.ValidationRules>
@@ -49,51 +49,45 @@
                                 </Binding>
                             </TextBox.Text>
                         </TextBox>
-                        <Label Content="OSC port in"/>
-                        <Button Content="↻" VerticalAlignment="Center" Click="Button_ReloadListener" Height="22" FontWeight="Bold"/>
+                        <Label Content="OSC port in" VerticalAlignment="Center"/>
+                        <Button Style="{StaticResource HButtonSmall}" Content="Reload" VerticalAlignment="Center" Click="Button_ReloadListener" Margin="4,0,0,0"/>
                     </WrapPanel>
                 </StackPanel>
-            </StackPanel>
 
-            <!-- Addresses -->
-            <StackPanel Margin="0,16,0,0">
-                <Label Content="Addresses" FontSize="24" FontWeight="Bold"/>
+                <!-- Addresses -->
+                <Label Content="Addresses" Style="{StaticResource HLabelM}" Margin="0,16,0,0"/>
 
-                <StackPanel Margin="8,4,0,0">
-                    <StackPanel>
-                        <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Manual mute address"/>
-                        <TextBox x:Name="oscOscMuteAddress" Text="{Binding Osc.AddressManualMute, Source={x:Static local:Config.Data}}" Margin="0,0,32,0"/>
-                    </StackPanel>
+                <StackPanel Style="{StaticResource HStackIndent}">
+                    <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Manual mute"/>
+                    <TextBox x:Name="oscOscMuteAddress" Text="{Binding Osc.AddressManualMute, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..."/>
 
-                    <StackPanel Margin="0,4,0,0">
-                        <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Microphone listening indicator address"/>
-                        <TextBox x:Name="oscOscListenIndicator" Text="{Binding Osc.AddressListeningIndicator, Source={x:Static local:Config.Data}}" Margin="0,0,32,0"/>
-                    </StackPanel>
+                    <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Microphone listening indicator" Margin="0,4,0,0"/>
+                    <TextBox x:Name="oscOscListenIndicator" Text="{Binding Osc.AddressListeningIndicator, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..."/>
 
-                    <StackPanel Margin="0,4,0,0">
-                        <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Clear TTS address"/>
-                        <TextBox x:Name="oscOscSkipTtsAddress" Text="{Binding Osc.AddressManualSkipSpeech, Source={x:Static local:Config.Data}}" Margin="0,0,32,0"/>
-                    </StackPanel>
+                    <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Clear TTS" Margin="0,4,0,0"/>
+                    <TextBox x:Name="oscOscSkipTtsAddress" Text="{Binding Osc.AddressManualSkipSpeech, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..."/>
 
-                    <StackPanel Margin="0,4,0,0">
-                        <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Clear textbox address"/>
-                        <TextBox x:Name="oscOscSkipTextAddress" Text="{Binding Osc.AddressManualSkipBox, Source={x:Static local:Config.Data}}" Margin="0,0,32,0"/>
-                    </StackPanel>
+                    <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Clear textbox" Margin="0,4,0,0"/>
+                    <TextBox x:Name="oscOscSkipTextAddress" Text="{Binding Osc.AddressManualSkipBox, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..."/>
 
-                    <StackPanel Margin="0,4,0,0">
-                        <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="TTS input address"/>
-                        <TextBox x:Name="oscOscAddTts" Text="{Binding Osc.AddressAddTts, Source={x:Static local:Config.Data}}" Margin="0,0,32,0"/>
-                    </StackPanel>
+                    <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Enable textbox for speech" Margin="0,4,0,0"/>
+                    <TextBox x:Name="oscOscEnableTextbox" Text="{Binding Osc.AddressEnableTextbox, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..."/>
 
-                    <StackPanel Margin="0,4,0,0">
-                        <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Textbox input address"/>
-                        <TextBox x:Name="oscOscAddTextbox" Text="{Binding Osc.AddressAddTextbox, Source={x:Static local:Config.Data}}" Margin="0,0,32,0"/>
-                    </StackPanel>
+                    <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Enable TTS for speech" Margin="0,4,0,0"/>
+                    <TextBox x:Name="oscOscEnableTts" Text="{Binding Osc.AddressEnableTts, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..."/>
 
-                    <StackPanel Margin="0,4,0,0">
-                        <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Textbox input notification"/>
-                        <TextBox x:Name="oscOscAddNotification" Text="{Binding Osc.AddressAddNotification, Source={x:Static local:Config.Data}}"  Margin="0,0,32,0"/>
-                    </StackPanel>
+                    <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Enable 'mute on VRC mute'" Margin="0,4,0,0"/>
+                    <TextBox x:Name="oscOscEnableAutoMute" Text="{Binding Osc.AddressEnableAutoMute, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..."/>
+
+
+                    <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="TTS input" Margin="0,4,0,0"/>
+                    <TextBox x:Name="oscOscAddTts" Text="{Binding Osc.AddressAddTts, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..."/>
+
+                    <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Textbox input message" Margin="0,4,0,0"/>
+                    <TextBox x:Name="oscOscAddTextbox" Text="{Binding Osc.AddressAddTextbox, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..."/>
+
+                    <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Textbox input notification" Margin="0,4,0,0"/>
+                    <TextBox x:Name="oscOscAddNotification" Text="{Binding Osc.AddressAddNotification, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..."/>
                 </StackPanel>
             </StackPanel>
         </StackPanel>
