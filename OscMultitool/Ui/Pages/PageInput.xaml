@@ -22,9 +22,9 @@
         <TextBox x:Name="textBox" Style="{DynamicResource HTextBoxLarge}" Grid.Row="0" Grid.Column="0" Margin="0,0,16,8" KeyUp="TextBox_KeyPressed" AcceptsReturn="True" Tag="Enter a message here..."/>
 
         <WrapPanel  Grid.Row="1" Grid.Column="0" Margin="0,8,16,0" HorizontalAlignment="Center" VerticalAlignment="Bottom">
-            <CheckBox Content="Use TTS" VerticalAlignment="Center" HorizontalAlignment="Left" IsChecked="{Binding Input.UseTts, Source={x:Static local:Config.Data}}"/>
+            <CheckBox Content="TTS" VerticalAlignment="Center" HorizontalAlignment="Left" IsChecked="{Binding Input.UseTts, Source={x:Static local:Config.Data}}"/>
             <Button Content="Send / Resend" Margin="8,0,0,0" Click="Button_Send"/>
-            <CheckBox Content="Use Textbox" Margin="8,0,0,0" VerticalAlignment="Center" IsChecked="{Binding Input.UseTextbox, Source={x:Static local:Config.Data}}"/>
+            <CheckBox Content="Textbox" Margin="8,0,0,0" VerticalAlignment="Center" IsChecked="{Binding Input.UseTextbox, Source={x:Static local:Config.Data}}"/>
         </WrapPanel>
 
         <ListBox x:Name="presetBox" Grid.Column="1" Grid.Row="0" Margin="16,0,0,8" SelectionChanged="PresetBox_SelectionChanged"/>

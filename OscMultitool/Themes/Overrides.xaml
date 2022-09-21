@@ -92,6 +92,8 @@
     <Style x:Key="HButton" TargetType="{x:Type Button}">
         <Setter Property="Foreground" Value="{x:Static ui:UiHelper.ColorFront}"/>
         <Setter Property="Background" Value="{x:Static ui:UiHelper.ColorBackDark}"/>
+        <Setter Property="BorderBrush" Value="{x:Static ui:UiHelper.ColorBackDark}"/>
+        <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="FontSize" Value="18"/>
         <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
@@ -99,13 +101,14 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
-                    <Border x:Name="border" CornerRadius="4" Background="{TemplateBinding Background}" Padding="6">
+                    <Border x:Name="border" CornerRadius="4" Background="{TemplateBinding Background}" Padding="4" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
                         <ContentPresenter x:Name="ButtonContentPresenter" Content="{TemplateBinding Content}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     </Border>
 
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="{x:Static ui:UiHelper.ColorBackLight}"/>
+                            <Setter Property="Background" Value="{x:Static ui:UiHelper.ColorBack}"/>
+                            <Setter Property="BorderBrush" Value="{x:Static ui:UiHelper.ColorBackLight}"/>
                         </Trigger>
                         
                         <Trigger Property="IsEnabled" Value="False">
@@ -210,21 +213,62 @@
     </Style>
     <Style TargetType="{x:Type Label}" BasedOn="{StaticResource HLabel}"/>
 
-    <Style x:Key="HComboBox" TargetType="{x:Type ComboBox}">
-        <Setter Property="Foreground" Value="{Binding Source={x:Static ui:UiHelper.ColorBlack}}"/>
-        <Setter Property="FontSize" Value="14"/>
-        <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
-        <Setter Property="SnapsToDevicePixels" Value="True"/>
-    </Style>
-    <!--<Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource HComboBox}"/>-->
-
+    <!-- HCheckBox -->
     <Style x:Key="HCheckBox" TargetType="{x:Type CheckBox}">
         <Setter Property="Foreground" Value="{Binding Source={x:Static ui:UiHelper.ColorFront}}"/>
         <Setter Property="FontSize" Value="18"/>
         <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
-        <Setter Property="BorderBrush" Value="{Binding Source={x:Static ui:UiHelper.ColorFront}}"/>
-        <Setter Property="Background" Value="{Binding Source={x:Static ui:UiHelper.ColorFront}}"/>
+        <Setter Property="BorderBrush" Value="{Binding Source={x:Static ui:UiHelper.ColorBackDark}}"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="Background" Value="{Binding Source={x:Static ui:UiHelper.ColorBackDark}}"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <BulletDecorator Background="Transparent">
+                        <BulletDecorator.Bullet>
+                            <Border x:Name="Border" Width="24" Height="24" CornerRadius="4" Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}">
+                                <TextBlock Name="checkboxIcon" Visibility="Hidden" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Segoe MDL2 Assets" Foreground="{DynamicResource AccentColor}">&#xE73E;</TextBlock>
+                            </Border>
+                        </BulletDecorator.Bullet>
+                        <ContentPresenter Margin="6,1,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" RecognizesAccessKey="True"/>
+                    </BulletDecorator>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="checkboxIcon" Property="Visibility" Value="Visible"/>
+                            <Setter Property="BorderBrush" Value="{DynamicResource AccentColor}"/>
+                            <Setter Property="Background" Value="{x:Static ui:UiHelper.ColorBackDark}"/>
+                        </Trigger>
+
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Opacity" Value="0.65"/>
+                        </Trigger>
+
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="true"/>
+                                <Condition Property="IsChecked" Value="false"/>
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.Setters>
+                                <Setter Property="Background" Value="{x:Static ui:UiHelper.ColorBack}"/>
+                                <Setter Property="BorderBrush" Value="{x:Static ui:UiHelper.ColorBackLight}"/>
+                            </MultiTrigger.Setters>
+                        </MultiTrigger>
+
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="true"/>
+                                <Condition Property="IsChecked" Value="true"/>
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.Setters>
+                                <Setter Property="Background" Value="{x:Static ui:UiHelper.ColorBack}"/>
+                            </MultiTrigger.Setters>
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
     <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource HCheckBox}"/>
 
@@ -233,10 +277,13 @@
     <Style x:Key="ScrollBarLineButton" TargetType="{x:Type RepeatButton}">
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="Focusable" Value="false"/>
+
+        <Setter Property="Background" Value="{x:Static ui:UiHelper.ColorBackDark}"/>
+
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
-                    <Border x:Name="border" Margin="2" CornerRadius="2" BorderThickness="2" BorderBrush="{DynamicResource AccentColor}" Background="{x:Static ui:UiHelper.ColorBackDark}">
+                    <Border x:Name="border" Margin="2" CornerRadius="2" BorderThickness="2" BorderBrush="{DynamicResource AccentColor}" Background="{TemplateBinding Background}">
                         <Path x:Name="Arrow" HorizontalAlignment="Center" VerticalAlignment="Center" Data="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}" Fill="{DynamicResource AccentColor}"/>
                     </Border>
 
@@ -452,7 +499,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ComboBox}">
                     <Grid>
-                        <ToggleButton x:Name="ToggleButton" Template="{StaticResource ComboBoxToggleButton}" Focusable="false" ClickMode="Press" IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Background="{x:Static ui:UiHelper.ColorBackDark}"/>
+                        <ToggleButton x:Name="ToggleButton" Template="{StaticResource ComboBoxToggleButton}" Focusable="false" ClickMode="Press" IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Background="{x:Static ui:UiHelper.ColorBackDark}" BorderBrush="{x:Static ui:UiHelper.ColorBackDark}"/>
 
                         <ContentPresenter x:Name="ContentSite" IsHitTestVisible="False" Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" Margin="11,6,30,6" VerticalAlignment="Center" HorizontalAlignment="Left"/>
 
@@ -475,7 +522,7 @@
                         </Trigger>
 
                         <Trigger Property="IsGrouping" Value="true">
-                            <Setter Property="ScrollViewer.CanContentScroll" Value="false" />
+                            <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
                         </Trigger>
 
                         <Trigger SourceName="Popup" Property="AllowsTransparency" Value="true">
@@ -489,13 +536,13 @@
 
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Background" TargetName="ToggleButton" Value="{x:Static ui:UiHelper.ColorBack}"/>
+                            <Setter Property="BorderBrush" TargetName="ToggleButton" Value="{x:Static ui:UiHelper.ColorBackLight}"/>
                         </Trigger>
 
                         <Trigger Property="IsDropDownOpen" Value="True">
                             <Setter Property="BorderBrush" TargetName="ToggleButton" Value="{DynamicResource AccentColor}"/>
                             <Setter Property="Background" TargetName="ToggleButton" Value="{x:Static ui:UiHelper.ColorBackDark}"/>
                         </Trigger>
-
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
