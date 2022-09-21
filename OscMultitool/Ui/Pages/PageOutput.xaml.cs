@@ -1,5 +1,6 @@
 ﻿using Hoscy.Services.Speech;
 using Hoscy.Services.Speech.Utilities;
+using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,6 +17,7 @@ namespace Hoscy.Ui.Pages
             InitializeComponent();
             UpdateTimeoutBoxes();
             LoadComboBoxes();
+            UpdateVolumeText();
         }
 
         #region Textbox
@@ -50,6 +52,12 @@ namespace Hoscy.Ui.Pages
             Synthesizing.ChangeSpeakers();
         }
 
+        private void Button_ResetDevice(object sender, RoutedEventArgs e)
+        {
+            Config.Speech.SpeakerId = string.Empty;
+            LoadComboBoxes();
+        }
+
         private void SpeechWindowsSynthBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Config.Speech.TtsId = Synthesizing.WindowsSynths[speechWindowsSynthBox.SelectedIndex].Id;
@@ -57,7 +65,16 @@ namespace Hoscy.Ui.Pages
         }
 
         private void Slider_Volume(object sender, RoutedPropertyChangedEventArgs<double> e)
-            => Synthesizing.ChangeVolume();
+        {
+            UpdateVolumeText();
+            Synthesizing.ChangeVolume();
+        }
+
+        private void UpdateVolumeText()
+        {
+            if (volumeLabel != null)
+                volumeLabel.Content = $"Speech volume ({(int)Math.Round(volumeSlider.Value * 100)}%)";
+        }
         #endregion
     }
 }

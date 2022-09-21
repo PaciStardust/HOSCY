@@ -4,22 +4,23 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Hoscy"
+      xmlns:ui="clr-namespace:Hoscy.Ui"
       mc:Ignorable="d" 
       d:DesignHeight="420" d:DesignWidth="689"
       Title="PageDebug">
 
     <ScrollViewer Margin="16,8,8,8" VerticalScrollBarVisibility="Auto">
-        <StackPanel>
-            <Label Content="Debugging" FontSize="30" FontWeight="Bold"/>
+        <StackPanel Margin="0,0,32,0">
+            <Label Content="Debugging" Style="{StaticResource HLabelL}"/>
 
-            <!-- Log Levels -->
-            <StackPanel>
+            <StackPanel Style="{StaticResource HStackIndent}">
+                <!-- Log Levels -->
                 <WrapPanel>
-                    <Label Content="Log Levels" FontSize="24" FontWeight="Bold"/>
-                    <Button Content="Logging Filter" Margin="8,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_OpenLogFilter" Width="132"/>
+                    <Label Content="Log Levels" Style="{StaticResource HLabelM}"/>
+                    <Button Content="Logging Filter" VerticalAlignment="Center" Click="Button_OpenLogFilter"/>
                 </WrapPanel>
 
-                <StackPanel Margin="8,4,0,0">
+                <StackPanel Style="{StaticResource HStackIndent}">
                     <CheckBox x:Name="loggingLogErrors" Content="Errors" IsChecked="{Binding Logging.Error, Source={x:Static local:Config.Data}}"/>
                     <CheckBox x:Name="loggingLogWarning" Margin="0,4,0,0" Content="Warnings" IsChecked="{Binding Logging.Warning, Source={x:Static local:Config.Data}}"/>
                     <CheckBox x:Name="loggingLogPInfo" Margin="0,4,0,0" Content="Priority Infos" IsChecked="{Binding Logging.PrioInfo, Source={x:Static local:Config.Data}}"/>
@@ -27,14 +28,16 @@
                     <CheckBox x:Name="loggingLogLog" Margin="0,4,0,0" Content="Logs" IsChecked="{Binding Logging.Log, Source={x:Static local:Config.Data}}"/>
                     <CheckBox x:Name="loggingLogDebug" Margin="0,4,0,0" Content="Debugs" IsChecked="{Binding Logging.Debug, Source={x:Static local:Config.Data}}"/>
                 </StackPanel>
-            </StackPanel>
 
-            <!-- Other Options -->
-            <StackPanel Margin="0,16,0,0">
-                <Label Content="Other Options" FontSize="24" FontWeight="Bold"/>
+                <!-- Other Options -->
+                <Label Content="Other Options" Style="{StaticResource HLabelM}" Margin="0,16,0,0"/>
 
-                <StackPanel Margin="8,4,0,0">
+                <StackPanel Style="{StaticResource HStackIndent}">
                     <CheckBox x:Name="loggingOpenWindow" Content="Open log window on startup" IsChecked="{Binding Logging.OpenLogWindow, Source={x:Static local:Config.Data}}"/>
+                    <WrapPanel Margin="0,4,0,0">
+                        <Button x:Name="openDocsButton" Content="Open Docs" HorizontalAlignment="Left" Click="Button_OpenDocs"/>
+                        <Button x:Name="reloadDevicesButton" Margin="8,0,0,0" Content="Reload devices" Foreground="{x:Static ui:UiHelper.ColorInvalid}" HorizontalAlignment="Left" Click="Button_ReloadDevices"/>
+                    </WrapPanel>
                 </StackPanel>
             </StackPanel>
         </StackPanel>

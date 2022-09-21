@@ -155,7 +155,7 @@ Commands get run after replacements and are mostly hard-coded, they only trigger
 	- **Resuming:** "Play" / "Resume"
 	- **Skip:** "Next" / "Skip"
 	- **Rewind:** "Back" / "Rewind"
-	- **Info:** "Info" / "Current" / "Now"
+	- **Info:** "Info" / "Current" / "Now" / "Status"
 -  **OSC** can also executed and sent via commands, how to use this can be learnt **[here](#osc-commands)**
 
 ## OSC Commands

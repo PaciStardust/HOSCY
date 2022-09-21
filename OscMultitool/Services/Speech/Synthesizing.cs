@@ -110,8 +110,8 @@ namespace Hoscy.Services.Speech
             if (configVolume + string.Empty == roundedWaveOutVolume + string.Empty)
                 return;
 
-            _waveOut.Volume = configVolume;
-            Logger.PInfo("Changed synthesizer volume: " + configVolume);
+            _waveOut.Volume = Config.Speech.SpeakerVolume;
+            Logger.PInfo("Changed synthesizer volume: " + Config.Speech.SpeakerVolume);
         }
         #endregion
 

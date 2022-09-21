@@ -17,24 +17,23 @@ namespace Hoscy.Ui.Pages
             InitializeComponent();
 
             Instance = this;
-            UpdateRecognizerStatus();
+
+            UpdateRecognizerStatus(null, new(Recognition.IsRecognizerRunning, Recognition.IsRecognizerListening));
+            Recognition.RecognitionChanged += UpdateRecognizerStatus;
         }
 
         /// <summary>
         /// Updates the mic status indicator based on the recognizer status
         /// </summary>
-        public static void UpdateRecognizerStatus()
+        private static void UpdateRecognizerStatus(object? sender, RecognitionChangedEventArgs e)
         {
-            var micStatus = Recognition.IsRecognizerListening;
-            var recStatus = Recognition.IsRecognizerRunning;
-
             Instance.Dispatcher.Invoke(() =>
             {
-                Instance.muteButton.Content = micStatus ? "Listening" : "Muted";
-                Instance.muteButton.Foreground = micStatus ? UiHelper.ColorValid : UiHelper.ColorInvalid;
+                Instance.muteButton.Content = e.Listening ? "Listening" : "Muted";
+                Instance.muteButton.Foreground = e.Listening ? UiHelper.ColorValid : UiHelper.ColorInvalid;
 
-                Instance.startButton.Content = recStatus ? "Running" : "Stopped";
-                Instance.startButton.Foreground = recStatus ? UiHelper.ColorValid : UiHelper.ColorInvalid;
+                Instance.startButton.Content = e.Running ? "Running" : "Stopped";
+                Instance.startButton.Foreground = e.Running ? UiHelper.ColorValid : UiHelper.ColorInvalid;
             });
         }
 
@@ -98,8 +97,6 @@ namespace Hoscy.Ui.Pages
                 Recognition.StopRecognizer();
             else
                 Recognition.StartRecognizer();
-
-            UpdateRecognizerStatus();
         }
     }
 }

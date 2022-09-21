@@ -6,105 +6,109 @@
       xmlns:local="clr-namespace:Hoscy"
       xmlns:ui="clr-namespace:Hoscy.Ui"
       mc:Ignorable="d" 
-      d:DesignHeight="430" d:DesignWidth="689"
+      d:DesignHeight="4430" d:DesignWidth="689"
       Title="PageSpeech">
 
     <ScrollViewer Margin="16,8,8,8">
-        <StackPanel>
-            <StackPanel HorizontalAlignment="Left">
+        <StackPanel Style="{StaticResource HStackLarge}">
+            <WrapPanel>
+                <Label Style="{StaticResource HLabelL}" Content="Speech Recognition"/>
+                <Button x:Name="buttonStartStop" Content="Start" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_StartStop"/>
+            </WrapPanel>
+
+            <!-- Speech Recognition-->
+            <StackPanel Style="{StaticResource HStackIndent}">
+                <!-- Recognizer Control -->
                 <WrapPanel>
-                    <Label Content="Speech Recognition" FontSize="30" FontWeight="Bold"/>
-                    <Button x:Name="buttonStartStop" Content="Start" Margin="16,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_StartStop" Width="52.6266666666667"/>
+                    <Label Style="{StaticResource HLabelM}" Content="Recognizer Control"/>
+                    <Button x:Name="buttonMute" Content="Muted"  HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_Mute"/>
                 </WrapPanel>
 
-                <!-- Recognizer Control -->
-                <StackPanel>
-                    <WrapPanel>
-                        <Label Content="Recognizer Control" FontSize="24" FontWeight="Bold"/>
-                        <Button x:Name="buttonMute" Content="Muted" Margin="8,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_Mute" Width="89.77"/>
-                    </WrapPanel>
-
-                    <StackPanel Margin="8,4,0,0">
-                        <CheckBox x:Name="speechUseTts" Content="Send over TTS" IsChecked="{Binding Speech.UseTts, Source={x:Static local:Config.Data}}"/>
-                        <CheckBox x:Name="speechUseTextbox" Content="Send over textbox" Margin="0,4,0,0" IsChecked="{Binding Speech.UseTextbox, Source={x:Static local:Config.Data}}"/>
-                        <CheckBox x:Name="speechStartUnmuted" Content="Start microphone unmuted" Margin="0,4,0,0" IsChecked="{Binding Speech.StartUnmuted, Source={x:Static local:Config.Data}}"/>
-                        <CheckBox x:Name="speechMuteOnVrcMute" Content="Mute microphone on VRC mute" Margin="0,4,0,0" IsChecked="{Binding Speech.MuteOnVrcMute, Source={x:Static local:Config.Data}}"/>
-                    </StackPanel>
+                <StackPanel Style="{StaticResource HStackIndent}">
+                    <CheckBox x:Name="speechUseTts" Content="Send over TTS" IsChecked="{Binding Speech.UseTts, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="speechUseTextbox" Content="Send over textbox" Margin="0,4,0,0" IsChecked="{Binding Speech.UseTextbox, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="speechStartUnmuted" Content="Start microphone unmuted" Margin="0,4,0,0" IsChecked="{Binding Speech.StartUnmuted, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="speechMuteOnVrcMute" Content="Mute microphone on VRC mute" Margin="0,4,0,0" IsChecked="{Binding Speech.MuteOnVrcMute, Source={x:Static local:Config.Data}}"/>
                 </StackPanel>
 
                 <!-- Commands & Filters -->
-                <StackPanel Margin="0,16,0,0">
-                    <Label Content="Commands + Filters" FontSize="24" FontWeight="Bold"/>
+                <Label Style="{StaticResource HLabelM}" Content="Commands + Filters" Margin="0,16,0,0"/>
 
-                    <StackPanel Margin="8,4,0,0">
-                        <WrapPanel Margin="0,0,32,0">
-                            <Button Content="Shortcuts" Click="Button_OpenShortcuts" Width="93.6566666666667"/>
-                            <Button Content="Replacements" Margin="16,0,0,0" Click="Button_OpenReplacements" Width="133"/>
-                            <Button Content="Noise Filter" Margin="16,0,0,0" Click="Button_OpenNoiseFilter" Width="109.676666666667"/>
-                        </WrapPanel>
-                        <CheckBox x:Name="speechToLower" Content="Ignore caps for list checks" Margin="0,8,0,0" IsChecked="{Binding Speech.IgnoreCaps, Source={x:Static local:Config.Data}}"/>
-                    </StackPanel>
+                <StackPanel Style="{StaticResource HStackIndent}">
+                    <WrapPanel Margin="0,0,32,0">
+                        <Button Content="Shortcuts" Click="Button_OpenShortcuts"/>
+                        <Button Content="Replacements" Margin="16,0,0,0" Click="Button_OpenReplacements"/>
+                        <Button Content="Noise Filter" Margin="16,0,0,0" Click="Button_OpenNoiseFilter"/>
+                    </WrapPanel>
+                    <CheckBox x:Name="speechToLower" Content="Ignore caps for list checks" Margin="0,8,0,0" IsChecked="{Binding Speech.IgnoreCaps, Source={x:Static local:Config.Data}}"/>
                 </StackPanel>
 
                 <!-- Recognizer Settings -->
-                <StackPanel Margin="0,16,0,0">
+                <Label Style="{StaticResource HLabelM}" Content="Recognizer Options" Margin="0,16,0,0"/>
+
+                <StackPanel Style="{StaticResource HStackIndent}">
+                    <!-- Recognizer Select -->
                     <WrapPanel>
-                        <Label Content="Recognizer Options" FontSize="24" FontWeight="Bold"/>
-                        <ComboBox x:Name="recognizerSelector" VerticalAlignment="Center" Margin="8,0,0,0" HorizontalAlignment="Left" Width="200" SelectionChanged="RecognizerSelector_SelectionChanged"/>
+                        <Label Content="Recognizer"/>
+                        <Label x:Name="changeIndicator" Foreground="{x:Static ui:UiHelper.ColorInvalid}" Content="(Unapplied changes)" FontSize="14" VerticalAlignment="Center" Visibility="Hidden"/>
                     </WrapPanel>
+                    <ComboBox x:Name="recognizerSelector" Style="{StaticResource HSettingsComboBox}" Margin="8,0,0,0" SelectionChanged="RecognizerSelector_SelectionChanged"/>
 
-                    <StackPanel Margin="8,4,0,0">
-                        <!-- Microphone Select -->
-                        <StackPanel x:Name="optionsMic">
-                            <Label Content="Microphone" FontFamily="Microsoft YaHei UI" FontWeight="Bold"/>
-                            <ComboBox x:Name="speechMicrophoneBox" Margin="8,0,0,0" HorizontalAlignment="Left" Width="240" SelectionChanged="SpeechMicrophoneBox_SelectionChanged"/>
+                    <!-- Microphone Select -->
+                    <StackPanel x:Name="optionsMic">
+                        <Label Content="Microphone"/>
+                        <WrapPanel Margin="8,0,0,0">
+                            <ComboBox x:Name="speechMicrophoneBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="SpeechMicrophoneBox_SelectionChanged"/>
+                            <Button x:Name="resetDeviceButton" Style="{StaticResource HButtonSmall}" Content="Reset" Margin="8,0,0,0" VerticalAlignment="Center" Click="Button_ResetDevice"/>
+                        </WrapPanel>
+                    </StackPanel>
+
+                    <!-- Vosk Options -->
+                    <StackPanel x:Name="optionsVosk" Margin="0,8,0,0">
+                        <Label Content="Vosk Options"/>
+
+                        <StackPanel Style="{StaticResource HStackIndent}">
+                            <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Filepath"/>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="speechVoskPath" Grid.Column="0" Style="{StaticResource HTextBoxLong}" Tag="Filepath..." Text="{Binding Speech.VoskModelPath, Source={x:Static local:Config.Data}}" PreviewKeyDown="TextPreviewKeyDown"/>
+                                <Button Grid.Column="1" Style="{StaticResource HButtonSmall}" Content="Open" Margin="8,0,0,0" Click="Button_BrowseVoskModel" VerticalAlignment="Center"/>
+                            </Grid>
+
+                            <WrapPanel Margin="0,4,0,0">
+                                <TextBox x:Name="speechVoskTimeout" Style="{StaticResource HTextBoxShort}" Tag="Timeout...">
+                                    <TextBox.Text>
+                                        <Binding Source="{x:Static local:Config.Data}" Path="Speech.VoskTimeout" UpdateSourceTrigger="PropertyChanged">
+                                            <Binding.ValidationRules>
+                                                <ui:FloatValidationRule Min="0.5" Max="30"/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                                <Label Content="Recording timeout (s)" VerticalAlignment="Center"/>
+                            </WrapPanel>
                         </StackPanel>
+                    </StackPanel>
 
-                        <!-- Vosk Options -->
-                        <StackPanel x:Name="optionsVosk" Margin="0,8,0,0">
-                            <Label Content="Vosk Options" FontWeight="Bold"/>
-                            <StackPanel Margin="8,0,0,0">
-                                <StackPanel>
-                                    <WrapPanel>
-                                        <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Filepath"/>
-                                        <Button Content="+" Margin="4,0,0,0" VerticalAlignment="Center" Click="Button_BrowseVoskModel" Height="22" FontWeight="Bold"/>
-                                    </WrapPanel>
-                                    <TextBox x:Name="speechVoskPath" Margin="0,4,32,0" Text="{Binding Speech.VoskModelPath, Source={x:Static local:Config.Data}}"/>
-                                </StackPanel>
-
-                                <WrapPanel Margin="0,4,0,0">
-                                    <TextBox x:Name="speechVoskTimeout" VerticalAlignment="Center" Width="160">
-                                        <TextBox.Text>
-                                            <Binding Source="{x:Static local:Config.Data}" Path="Speech.VoskTimeout" UpdateSourceTrigger="PropertyChanged">
-                                                <Binding.ValidationRules>
-                                                    <ui:FloatValidationRule Min="0.5" Max="30"/>
-                                                </Binding.ValidationRules>
-                                            </Binding>
-                                        </TextBox.Text>
-                                    </TextBox>
-                                    <Label Content="Recording timeout (s)"/>
-                                </WrapPanel>
-                            </StackPanel>
-                        </StackPanel>
-
-                        <!-- Windows Options -->
-                        <StackPanel x:Name="optionsWin" Margin="0,8,0,0">
-                            <Label Content="Windows recognizer" FontWeight="Bold"/>
-                            <ComboBox x:Name="speechWindowsRecognizerBox" Margin="8,0,0,0" HorizontalAlignment="Left" Width="240" SelectionChanged="SpeechWindowsRecognizerBox_SelectionChanged"/>
-                        </StackPanel>
+                    <!-- Windows Options -->
+                    <StackPanel x:Name="optionsWin" Margin="0,8,0,0">
+                        <Label Content="Windows recognizer"/>
+                        <ComboBox x:Name="speechWindowsRecognizerBox" Style="{StaticResource HSettingsComboBox}" Margin="8,0,0,0" SelectionChanged="SpeechWindowsRecognizerBox_SelectionChanged"/>
                     </StackPanel>
                 </StackPanel>
 
                 <!-- Manual Input -->
-                <StackPanel Margin="0,16,0,0">
-                    <Label Content="Manual Input" FontSize="24" FontWeight="Bold"/>
+                <Label Style="{StaticResource HLabelM}" Content="Manual Input" Margin="0,16,0,0"/>
 
-                    <StackPanel Margin="8,4,0,0">
-                        <CheckBox x:Name="inputTriggerReplace" Content="Trigger replacements" IsChecked="{Binding Input.TriggerReplace, Source={x:Static local:Config.Data}}"/>
-                        <CheckBox x:Name="inputTriggerShortcuts" Content="Trigger shortcuts" Margin="0,4,0,0" IsChecked="{Binding Input.TriggerCommands, Source={x:Static local:Config.Data}}"/>
-                        <CheckBox x:Name="inputIgnoreCaps" Content="Ignore caps for list checks" Margin="0,4,0,0" IsChecked="{Binding Input.IgnoreCaps, Source={x:Static local:Config.Data}}"/>
-                        <CheckBox x:Name="inputAllowTranslation" Content="Allow translation" Margin="0,4,0,0" IsChecked="{Binding Input.AllowTranslation, Source={x:Static local:Config.Data}}"/>
-                    </StackPanel>
+                <StackPanel Style="{StaticResource HStackIndent}">
+                    <CheckBox x:Name="inputTriggerReplace" Content="Trigger replacements" IsChecked="{Binding Input.TriggerReplace, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="inputTriggerShortcuts" Content="Trigger shortcuts" Margin="0,4,0,0" IsChecked="{Binding Input.TriggerCommands, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="inputIgnoreCaps" Content="Ignore caps for list checks" Margin="0,4,0,0" IsChecked="{Binding Input.IgnoreCaps, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="inputAllowTranslation" Content="Allow translation" Margin="0,4,0,0" IsChecked="{Binding Input.AllowTranslation, Source={x:Static local:Config.Data}}"/>
                 </StackPanel>
             </StackPanel>
         </StackPanel>

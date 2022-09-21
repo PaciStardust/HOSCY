@@ -5,6 +5,13 @@ namespace Hoscy.Services.Speech.Utilities
 {
     public static class Devices
     {
+        public static void ForceReload()
+        {
+            Logger.PInfo("Enforcing reload of Devices");
+            Microphones = GetMicrophones();
+            Speakers = GetSpeakers();
+        }
+
         #region Mics
         public static IReadOnlyList<WaveInCapabilities> Microphones { get; private set; } = GetMicrophones();
         private static IReadOnlyList<WaveInCapabilities> GetMicrophones()

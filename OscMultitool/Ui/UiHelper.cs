@@ -17,12 +17,8 @@ namespace Hoscy.Ui
         public static readonly SolidColorBrush ColorAccent = new(Color.FromRgb(125, 125, 255));
 
         //Extra
-        public static readonly SolidColorBrush ColorValid = new(Color.FromRgb(125, 255, 125));
-        public static readonly SolidColorBrush ColorInvalid = new(Color.FromRgb(255, 125, 125));
-
-        //To be replaced
-        public static readonly SolidColorBrush ColorBlack = new(Color.FromRgb(0, 0, 0));
-        public static readonly SolidColorBrush ColorError = new(Color.FromRgb(60, 60, 255));
+        public static readonly SolidColorBrush ColorValid = new(Color.FromRgb(202, 255, 191));
+        public static readonly SolidColorBrush ColorInvalid = new(Color.FromRgb(255, 173, 173));
 
         /// <summary>
         /// Loads data into a combo box

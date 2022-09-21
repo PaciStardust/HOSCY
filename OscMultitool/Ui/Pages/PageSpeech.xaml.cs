@@ -40,14 +40,25 @@ namespace Hoscy.Ui.Pages
             InitializeComponent();
             LoadBoxes();
             UpdateRecognizerSelector();
-            SetButtonTexts();
+
+            UpdateRecognizerStatus(null, new(Recognition.IsRecognizerRunning, Recognition.IsRecognizerListening));
+            Recognition.RecognitionChanged += UpdateRecognizerStatus;
         }
 
         #region Loading
-        private void SetButtonTexts()
+        private void UpdateRecognizerStatus(object? sender, RecognitionChangedEventArgs e)
         {
-            buttonStartStop.Content = Recognition.IsRecognizerRunning ? "Stop" : "Start";
-            buttonMute.Content = Recognition.IsRecognizerListening ? "Listening" : "Muted";
+            Dispatcher.Invoke(() =>
+            {
+                buttonMute.Content = e.Listening ? "Listening" : "Muted";
+                buttonMute.Foreground = e.Listening ? UiHelper.ColorValid : UiHelper.ColorInvalid;
+
+                buttonStartStop.Content = e.Running ? "Running" : "Stopped";
+                buttonStartStop.Foreground = e.Running ? UiHelper.ColorValid : UiHelper.ColorInvalid;
+
+                if (!e.Running)
+                    changeIndicator.Visibility = Visibility.Hidden;
+            });
         }
 
         private void LoadBoxes()
@@ -57,6 +68,9 @@ namespace Hoscy.Ui.Pages
             //Windows Listeners
             UiHelper.LoadComboBox(speechWindowsRecognizerBox, Recognition.WindowsRecognizers.Select(x => x.Description), Recognition.GetWindowsListenerIndex(Config.Speech.WinModelId));
         }
+
+        private void EnableChangeIndicator()
+            => changeIndicator.Visibility = Recognition.IsRecognizerRunning ? Visibility.Visible : Visibility.Hidden;
 
         /// <summary>
         /// Changes both config value and loads it, 
@@ -96,6 +110,8 @@ namespace Hoscy.Ui.Pages
             optionsMic.IsEnabled = perms.UsesMicrophone;
             optionsVosk.IsEnabled = perms.UsesVoskModel;
             optionsWin.IsEnabled = perms.UsesWinRecognizer;
+
+            EnableChangeIndicator();
         }
         #endregion
 
@@ -107,6 +123,8 @@ namespace Hoscy.Ui.Pages
             string folder = result.ToString() == "OK" ? dialog.SelectedPath : string.Empty;
             Config.Data.Speech.VoskModelPath = folder;
             speechVoskPath.Text = folder;
+
+            EnableChangeIndicator();
         }
         private void Button_StartStop(object sender, RoutedEventArgs e)
         {
@@ -114,15 +132,16 @@ namespace Hoscy.Ui.Pages
                 Recognition.StopRecognizer();
             else
                 Recognition.StartRecognizer();
+        }
 
-            SetButtonTexts();
+        private void Button_ResetDevice(object sender, RoutedEventArgs e)
+        {
+            Config.Speech.MicId = string.Empty;
+            EnableChangeIndicator();
         }
 
         private void Button_Mute(object sender, RoutedEventArgs e)
-        {
-            Recognition.SetListening(!Recognition.IsRecognizerListening);
-            SetButtonTexts();
-        }
+            => Recognition.SetListening(!Recognition.IsRecognizerListening);
 
         private void Button_OpenNoiseFilter(object sender, RoutedEventArgs e)
         {
@@ -148,6 +167,8 @@ namespace Hoscy.Ui.Pages
             var index = speechMicrophoneBox.SelectedIndex;
             if (index != -1 && index < Devices.Microphones.Count)
                 Config.Speech.MicId = Devices.Microphones[speechMicrophoneBox.SelectedIndex].ProductName;
+
+            EnableChangeIndicator();
         }
 
         private void SpeechWindowsRecognizerBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -155,10 +176,18 @@ namespace Hoscy.Ui.Pages
             var index = speechWindowsRecognizerBox.SelectedIndex;
             if (index != -1 && index < Recognition.WindowsRecognizers.Count)
                 Config.Speech.WinModelId = Recognition.WindowsRecognizers[speechWindowsRecognizerBox.SelectedIndex].Id;
+
+            EnableChangeIndicator();
         }
 
         private void RecognizerSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
             => UpdateRecognizerSelector();
+
+        private void TextPreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            EnableChangeIndicator();
+            e.Handled = true;
+        }
         #endregion
     }
 }

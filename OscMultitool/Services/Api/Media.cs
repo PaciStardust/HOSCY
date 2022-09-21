@@ -175,6 +175,7 @@ namespace Hoscy.Services.Api
 
             { "info", MediaCommandType.Info },
             { "current", MediaCommandType.Info },
+            { "status", MediaCommandType.Info },
             { "now", MediaCommandType.Info }
         };
 

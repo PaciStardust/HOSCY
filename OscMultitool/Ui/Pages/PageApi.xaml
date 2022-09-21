@@ -6,104 +6,92 @@
       xmlns:local="clr-namespace:Hoscy"
       xmlns:ui="clr-namespace:Hoscy.Ui"
       mc:Ignorable="d" 
-      d:DesignHeight="420" d:DesignWidth="689"
+      d:DesignHeight="3420" d:DesignWidth="689"
       Title="PageApi">
 
     <ScrollViewer Margin="16,8,8,8" VerticalScrollBarVisibility="Auto">
-        <StackPanel>
-            <StackPanel>
+        <StackPanel Style="{StaticResource HStackLarge}">
+            <WrapPanel>
+                <Label Style="{StaticResource HLabelL}" Content="API Options"/>
+                <Button Content="Modify Presets" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_ModifyPresets"/>
+            </WrapPanel>
+
+            <StackPanel Style="{StaticResource HStackIndent}">
+                <!-- Translator Usage -->
                 <WrapPanel>
-                    <Label Content="API Configuration" FontSize="30" FontWeight="Bold"/>
-                    <Button Content="Modify Presets" Margin="16,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_ModifyPresets" Width="139"/>
+                    <Label Style="{StaticResource HLabelM}" Content="Translation API"/>
+                    <Button Content="Reload" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_ReloadTranslation"/>
                 </WrapPanel>
 
-                <!-- Translator Usage -->
-                <StackPanel>
+                <StackPanel Style="{StaticResource HStackIndent}">
                     <WrapPanel>
-                        <Label Content="Translation API" FontSize="24" FontWeight="Bold"/>
-                        <Button Content="Reload" Margin="8,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_ReloadTranslation" Width="71.66"/>
+                        <ComboBox x:Name="translatorApiBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="TranslatorApiBox_SelectionChanged"/>
+                        <Label Content="API Preset" VerticalAlignment="Center"/>
                     </WrapPanel>
 
-                    <StackPanel Margin="8,4,0,0">
-                        <WrapPanel>
-                            <ComboBox x:Name="translatorApiBox" HorizontalAlignment="Left" Width="240" SelectionChanged="TranslatorApiBox_SelectionChanged" VerticalAlignment="Center"/>
-                            <Label Content="API Preset"/>
-                        </WrapPanel>
+                    <CheckBox x:Name="textboxTranslate" Content="Apply translation to textbox" Margin="0,4,0,0" IsChecked="{Binding Textbox.TranslateTextbox, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="textboxAdditon" Content="Apply original after translation" Margin="0,4,0,0" IsChecked="{Binding Textbox.AddOriginalAfterTranslate, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="ttsTranslate" Content="Apply translation to text-to-speech" Margin="0,4,0,0" IsChecked="{Binding Speech.TranslateTts, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="translateExternal" Content="Apply translation to external input" Margin="0,4,0,0" IsChecked="{Binding Api.TranslationAllowExternal, Source={x:Static local:Config.Data}}"/>
 
-                        <CheckBox x:Name="textboxTranslate" Content="Apply translation to textbox" Margin="0,4,0,0" IsChecked="{Binding Textbox.TranslateTextbox, Source={x:Static local:Config.Data}}"/>
-                        <CheckBox x:Name="textboxAdditon" Content="Apply original after translation" Margin="0,4,0,0" IsChecked="{Binding Textbox.AddOriginalAfterTranslate, Source={x:Static local:Config.Data}}"/>
-                        <CheckBox x:Name="ttsTranslate" Content="Apply translation to text-to-speech" Margin="0,4,0,0" IsChecked="{Binding Speech.TranslateTts, Source={x:Static local:Config.Data}}"/>
-                        <CheckBox x:Name="translateExternal" Content="Apply translation to external input" Margin="0,4,0,0" IsChecked="{Binding Api.TranslationAllowExternal, Source={x:Static local:Config.Data}}"/>
+                    <WrapPanel Margin="0,4,0,0">
+                        <TextBox x:Name="translationMaxLength" Style="{StaticResource HTextBoxShort}" VerticalAlignment="Center" Tag="MTL...">
+                            <TextBox.Text>
+                                <Binding Source="{x:Static local:Config.Data}" Path="Api.TranslationMaxTextLength" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <ui:IntegerValidationRule Min="1" Max="10000"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                        <Label Content="Max. Text Length"/>
+                    </WrapPanel>
 
-                        <WrapPanel Margin="0,4,0,0">
-                            <TextBox x:Name="translationMaxLength" VerticalAlignment="Center" Width="120">
-                                <TextBox.Text>
-                                    <Binding Source="{x:Static local:Config.Data}" Path="Api.TranslationMaxTextLength" UpdateSourceTrigger="PropertyChanged">
-                                        <Binding.ValidationRules>
-                                            <ui:IntegerValidationRule Min="1" Max="10000"/>
-                                        </Binding.ValidationRules>
-                                    </Binding>
-                                </TextBox.Text>
-                            </TextBox>
-                            <Label Content="Max. Text Length"/>
-                        </WrapPanel>
-
-                        <CheckBox x:Name="skipTooLong" Content="Skip too long messages" Margin="0,4,0,0" IsChecked="{Binding Api.TranslationSkipLongerMessages, Source={x:Static local:Config.Data}}"/>
-                    </StackPanel>
+                    <CheckBox x:Name="skipTooLong" Content="Skip too long messages" Margin="0,4,0,0" IsChecked="{Binding Api.TranslationSkipLongerMessages, Source={x:Static local:Config.Data}}"/>
                 </StackPanel>
 
                 <!-- Recognizer Usage -->
-                <StackPanel Margin="0,16,0,0">
-                    <Label Content="Recognition Any-API" FontSize="24" FontWeight="Bold"/>
+                <Label Style="{StaticResource HLabelM}" Content="Recognition Any-API" Margin="0,16,0,0"/>
 
-                    <StackPanel Margin="8,4,0,0">
-                        <WrapPanel>
-                            <ComboBox x:Name="recognitionApiBox" HorizontalAlignment="Left" Width="240" SelectionChanged="RecognitionApiBox_SelectionChanged" VerticalAlignment="Center"/>
-                            <Label Content="API Preset"/>
-                        </WrapPanel>
+                <StackPanel Style="{StaticResource HStackIndent}">
+                    <WrapPanel>
+                        <ComboBox x:Name="recognitionApiBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="RecognitionApiBox_SelectionChanged"/>
+                        <Label Content="API Preset" VerticalAlignment="Center"/>
+                    </WrapPanel>
 
-                        <WrapPanel Margin="0,4,0,0">
-                            <TextBox x:Name="recognitionMaxRecording" VerticalAlignment="Center" Width="120">
-                                <TextBox.Text>
-                                    <Binding Source="{x:Static local:Config.Data}" Path="Api.RecognitionMaxRecordingTime" UpdateSourceTrigger="PropertyChanged">
-                                        <Binding.ValidationRules>
-                                            <ui:IntegerValidationRule Min="1" Max="300"/>
-                                        </Binding.ValidationRules>
-                                    </Binding>
-                                </TextBox.Text>
-                            </TextBox>
-                            <Label Content="Max. recording time"/>
-                        </WrapPanel>
-                    </StackPanel>
+                    <WrapPanel Margin="0,4,0,0">
+                        <TextBox x:Name="recognitionMaxRecording" Style="{StaticResource HTextBoxShort}">
+                            <TextBox.Text>
+                                <Binding Source="{x:Static local:Config.Data}" Path="Api.RecognitionMaxRecordingTime" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <ui:IntegerValidationRule Min="1" Max="300"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                        <Label Content="Max. recording time" VerticalAlignment="Center"/>
+                    </WrapPanel>
                 </StackPanel>
 
                 <!-- Recognition Azure -->
-                <StackPanel Margin="0,16,0,0">
-                    <Label Content="Recognition Azure API" FontSize="24" FontWeight="Bold"/>
+                <Label Style="{StaticResource HLabelM}" Content="Recognition Azure API" Margin="0,16,0,0"/>
 
-                    <StackPanel Margin="8,4,0,0">
-                        <StackPanel>
-                            <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Azure API key"/>
-                            <TextBox x:Name="azureKey" Text="{Binding Api.AzureKey, Source={x:Static local:Config.Data}}" Margin="0,0,32,0"/>
-                        </StackPanel>
+                <StackPanel Style="{StaticResource HStackIndent}">
+                    <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Azure API key"/>
+                    <TextBox x:Name="azureKey" Text="{Binding Api.AzureKey, Source={x:Static local:Config.Data}}" Tag="Azure API key..." Style="{StaticResource HTextBoxLong}"/>
 
-                        <StackPanel Margin="0,4,0,0">
-                            <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Azure API region"/>
-                            <TextBox x:Name="azureRegion" Text="{Binding Api.AzureRegion, Source={x:Static local:Config.Data}}" Margin="0,0,32,0"/>
-                        </StackPanel>
+                    <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Azure API region" Margin="0,4,0,0"/>
+                    <TextBox x:Name="azureRegion" Text="{Binding Api.AzureRegion, Source={x:Static local:Config.Data}}" Tag="Azure API region..." Style="{StaticResource HTextBoxLong}"/>
 
-                        <WrapPanel Margin="0,4,0,0">
-                            <TextBox x:Name="azureLanguage" HorizontalAlignment="Left" Text="{Binding Api.AzureLanguage, Source={x:Static local:Config.Data}}" VerticalAlignment="Center" Width="120"/>
-                            <Label Content="Input Language (Optional)"/>
-                        </WrapPanel>
-                        
-                        <CheckBox x:Name="azureRemoveFullStop" Content="Remove full stop at sentence end" Margin="0,4,0,0" IsChecked="{Binding Api.AzureRemoveFullStop, Source={x:Static local:Config.Data}}"/>
+                    <WrapPanel Margin="0,4,0,0">
+                        <TextBox x:Name="azureLanguage" HorizontalAlignment="Left" Text="{Binding Api.AzureLanguage, Source={x:Static local:Config.Data}}" Tag="Language..." Style="{StaticResource HTextBoxShort}"/>
+                        <Label Content="Input Language (Optional)" VerticalAlignment="Center"/>
+                    </WrapPanel>
 
-                        <StackPanel Margin="0,4,0,0">
-                            <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Custom endpoint (Optional)"/>
-                            <TextBox x:Name="azureCustomEndpoint" Text="{Binding Api.AzureCustomEndpoint, Source={x:Static local:Config.Data}}" Margin="0,0,32,0"/>
-                        </StackPanel>
-                    </StackPanel>
+                    <CheckBox x:Name="azureRemoveFullStop" Content="Remove full stop at sentence end" Margin="0,4,0,0" IsChecked="{Binding Api.AzureRemoveFullStop, Source={x:Static local:Config.Data}}"/>
+
+                    <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Custom endpoint (Optional)" Margin="0,4,0,0"/>
+                    <TextBox x:Name="azureCustomEndpoint" Text="{Binding Api.AzureCustomEndpoint, Source={x:Static local:Config.Data}}" Tag="Custom endpoint..." Style="{StaticResource HTextBoxLong}"/>
                 </StackPanel>
             </StackPanel>
         </StackPanel>
