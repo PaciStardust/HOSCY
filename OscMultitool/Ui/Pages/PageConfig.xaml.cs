@@ -1,6 +1,7 @@
 ﻿using Hoscy.Services.Speech;
 using Hoscy.Services.Speech.Utilities;
 using Hoscy.Ui.Windows;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -30,10 +31,19 @@ namespace Hoscy.Ui.Pages
             Devices.ForceReload();
         }
         private void Button_OpenDocs(object sender, RoutedEventArgs e)
-            => System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+        {
+            try
             {
-                FileName = "https://github.com/PaciStardust/HOSCY",
-                UseShellExecute = true
-            });
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                {
+                    FileName = "https://github.com/PaciStardust/HOSCY",
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+        }
     }
 }

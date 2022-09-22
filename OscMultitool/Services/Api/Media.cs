@@ -83,7 +83,7 @@ namespace Hoscy.Services.Api
                 }
 
                 Logger.Log($"Currently playing media has changed to: {playing}");
-                SetNotification($"Listening to {playing}");
+                SetNotification($"Playing {playing}");
             }
         }
 

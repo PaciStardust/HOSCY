@@ -14,7 +14,6 @@ namespace Hoscy.Ui
         //Front
         public static readonly SolidColorBrush ColorFront = new(Color.FromRgb(255, 255, 255));
         public static readonly SolidColorBrush ColorFrontDark = new(Color.FromRgb(200, 200, 200));
-        public static readonly SolidColorBrush ColorAccent = new(Color.FromRgb(125, 125, 255));
 
         //Extra
         public static readonly SolidColorBrush ColorValid = new(Color.FromRgb(202, 255, 191));

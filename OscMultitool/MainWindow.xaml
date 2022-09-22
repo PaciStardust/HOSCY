@@ -8,7 +8,8 @@
         x:Name="window" x:Class="Hoscy.MainWindow"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="HOSCY - OSC and Communication Companion" Height="450" Width="800" ResizeMode="CanMinimize" WindowState="Normal" WindowStyle="SingleBorderWindow" Background="{x:Static ui:UiHelper.ColorBackDark}">
+        MinHeight="450" MinWidth="800"
+        Title="HOSCY - OSC and Communication Companion" Height="450" Width="800" ResizeMode="CanResize" WindowState="Normal" WindowStyle="SingleBorderWindow" Background="{x:Static ui:UiHelper.ColorBackDark}">
     <Grid x:Name="MainGrid" Margin="4,6,6,6">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
