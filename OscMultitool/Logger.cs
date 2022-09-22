@@ -1,4 +1,5 @@
 ﻿using Hoscy;
+using Hoscy.Ui.Windows;
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -56,7 +57,10 @@ namespace Hoscy
         private static void Log(LogMessage message)
         {
             if (message.Severity == LogSeverity.Error)
-                MessageBox.Show($"{message.Message}\n\nIf you are unsure what to do with this, please open an issue on GitHub", "Error at " + message.GetLocation(), MessageBoxButton.OK, MessageBoxImage.Error);
+            {
+                var window = new ErrorWindow("Error at " + message.GetLocation(),message.Message);
+                window.ShowDialog();
+            }
 
             if (!LogLevelAllowed(message.Severity)) return;
 

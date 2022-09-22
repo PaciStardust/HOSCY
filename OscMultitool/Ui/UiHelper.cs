@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -7,6 +8,7 @@ namespace Hoscy.Ui
 {
     public static class UiHelper
     {
+        #region Colors
         //Back
         public static readonly SolidColorBrush ColorBackDark = new(Color.FromRgb(37, 37, 37));
         public static readonly SolidColorBrush ColorBack = new(Color.FromRgb(52, 52, 52));
@@ -19,7 +21,9 @@ namespace Hoscy.Ui
         //Extra
         public static readonly SolidColorBrush ColorValid = new(Color.FromRgb(202, 255, 191));
         public static readonly SolidColorBrush ColorInvalid = new(Color.FromRgb(255, 173, 173));
+        #endregion
 
+        #region Expansion Methods
         /// <summary>
         /// Loads data into a combo box
         /// </summary>
@@ -74,5 +78,27 @@ namespace Hoscy.Ui
             list[index] = item;
             return true;
         }
+        #endregion
+
+        #region Extra
+        /// <summary>
+        /// Starts a process
+        /// </summary>
+        public static void StartProcess(string path)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo()
+                {
+                    FileName = path,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+        }
+        #endregion
     }
 }

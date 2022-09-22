@@ -1,0 +1,36 @@
+﻿<Window x:Class="Hoscy.Ui.Windows.ErrorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Hoscy"
+        xmlns:ui="clr-namespace:Hoscy.Ui"
+        mc:Ignorable="d"
+        Title="ErrorWindow" MinHeight="300" MinWidth="400" Height="300" Width="400" ResizeMode="CanResize" Background="{x:Static ui:UiHelper.ColorBack}">
+    <Grid Margin="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Border Margin="0,8,0,0" Grid.Row="1" Background="{x:Static ui:UiHelper.ColorBackDark}" CornerRadius="4">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="4">
+                <TextBlock x:Name="valueError" Style="{StaticResource HTextBlock}" FontSize="14"/> 
+            </ScrollViewer>
+        </Border>
+
+        <TextBlock Grid.Row="0" Style="{StaticResource HTextBlock}" FontSize="14" TextAlignment="Center" >
+            An error has occured
+            <LineBreak/>
+            If you are unsure why or how to handle it, 
+            <LineBreak/>
+            please open an issue on GitHub or Discord
+        </TextBlock>
+
+        <WrapPanel Grid.Row="2" HorizontalAlignment="Center" Margin="0,8,0,0">
+            <Button x:Name="buttonOpenGithub" Content="Open Github" Click="Button_OpenGithub" Style="{StaticResource HButtonSmall}"/>
+            <Button x:Name="buttonCopyClipboard" Content="Copy Error" Margin="8,0,0,0" Click="Button_OpenClipboard" Style="{StaticResource HButtonSmall}"/>
+        </WrapPanel>
+    </Grid>
+</Window>

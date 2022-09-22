@@ -11,7 +11,10 @@
 
     <ScrollViewer Margin="16,8,8,8" VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="0,0,32,0">
-            <Label Content="Debugging" Style="{StaticResource HLabelL}"/>
+            <WrapPanel>
+                <Label Content="Debugging" Style="{StaticResource HLabelL}"/>
+                <Label Content="VersionHere" x:Name="versionText" VerticalAlignment="Center"/>
+            </WrapPanel>
 
             <StackPanel Style="{StaticResource HStackIndent}">
                 <!-- Log Levels -->
