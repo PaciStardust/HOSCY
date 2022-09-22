@@ -36,8 +36,9 @@
                     <CheckBox x:Name="loggingOpenWindow" Content="Open log window on startup" IsChecked="{Binding Logging.OpenLogWindow, Source={x:Static local:Config.Data}}"/>
                     <WrapPanel Margin="0,4,0,0">
                         <Button x:Name="openDocsButton" Content="Open Docs" HorizontalAlignment="Left" Click="Button_OpenDocs"/>
-                        <Button x:Name="reloadDevicesButton" Margin="8,0,0,0" Content="Reload devices" Foreground="{x:Static ui:UiHelper.ColorInvalid}" HorizontalAlignment="Left" Click="Button_ReloadDevices"/>
+                        <Button x:Name="openConfigButton" Margin="8,0,0,0" Content="Open Config" HorizontalAlignment="Left" Click="Button_OpenConfig"/>
                     </WrapPanel>
+                    <Button x:Name="reloadDevicesButton" Margin="0,8,0,0" Content="Reload devices" Foreground="{x:Static ui:UiHelper.ColorInvalid}" HorizontalAlignment="Left" Click="Button_ReloadDevices"/>
                 </StackPanel>
             </StackPanel>
         </StackPanel>
