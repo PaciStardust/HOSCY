@@ -20,7 +20,9 @@ namespace Hoscy.Services.Speech.Recognizers
         {
             try
             {
-                _rec = new SpeechRecognitionEngine(Config.Speech.WinModelId);
+                try { _rec = new(Config.Speech.WinModelId); }
+                catch { _rec = new(); }
+
                 _rec.LoadGrammar(new DictationGrammar());
                 _rec.SpeechRecognized += Recognizer_SpeechRecognized;
                 _rec.SetInputToDefaultAudioDevice();
