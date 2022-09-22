@@ -152,7 +152,7 @@ namespace Hoscy.Services.Speech
         {
             RegexOptions opt = Config.Speech.IgnoreCaps ? RegexOptions.IgnoreCase : RegexOptions.None;
 
-            var filterWords = Config.Speech.NoiseFilter.Select(x => $"(?:{x})");
+            var filterWords = Config.Speech.NoiseFilter.Select(x => $"(?:\\b{x})\\b");
             var filterCombined = string.Join('|', filterWords);
             var regString = $"^(?:{filterCombined})?(.*?)(?:{filterCombined})?$";
             Logger.PInfo($"Updated denoiser ({regString})");
