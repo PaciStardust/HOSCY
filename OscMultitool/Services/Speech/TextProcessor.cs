@@ -83,7 +83,7 @@ namespace Hoscy.Services.Speech
                 if(!r.Enabled) continue;
 
                 RegexOptions opt = ReplaceCaseInsensitive ? RegexOptions.IgnoreCase : RegexOptions.None;
-                message = Regex.Replace(message, r.Text, r.Replacement, opt);
+                message = Regex.Replace(message, $"\\b{r.Text}\\b", r.Replacement, opt);
             }
 
             var value = message;

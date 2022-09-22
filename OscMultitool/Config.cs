@@ -114,7 +114,6 @@ namespace Hoscy
                 new("plus", "+"),
                 new("slash", "/"),
                 new("backslash", "\\"),
-                new("comma", ","),
                 new("hashtag", "#"),
                 new("asterisk", "*")
             });

@@ -90,7 +90,7 @@
                                         </Binding>
                                     </TextBox.Text>
                                 </TextBox>
-                                <Label Content="Recording timeout (s)" VerticalAlignment="Center"/>
+                                <Label Content="Recording timeout (ms)" VerticalAlignment="Center"/>
                             </WrapPanel>
                         </StackPanel>
                     </StackPanel>
