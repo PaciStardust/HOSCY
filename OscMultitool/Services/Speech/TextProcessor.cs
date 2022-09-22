@@ -70,26 +70,34 @@ namespace Hoscy.Services.Speech
             PageInfo.SetMessage(message, UseTextbox, UseTts);
         }
 
-        private static readonly Dictionary<string, string> _shortcuts = Config.Speech.Shortcuts;
-        private static readonly Dictionary<string, string> _replacements = Config.Speech.Replacements;
+        private static readonly List<Config.ReplacementModel> _shortcuts = Config.Speech.Shortcuts;
+        private static readonly List<Config.ReplacementModel> _replacements = Config.Speech.Replacements;
         /// <summary>
         /// Replaces message or parts of it
         /// </summary>
         private string ReplaceMessage(string message)
         {
             //Splitting and checking for replacements
-            foreach (var key in _replacements.Keys)
+            foreach (var r in _replacements)
             {
+                if(!r.Enabled) continue;
+
                 RegexOptions opt = ReplaceCaseInsensitive ? RegexOptions.IgnoreCase : RegexOptions.None;
-                message = Regex.Replace(message, key, _replacements[key], opt);
+                message = Regex.Replace(message, r.Text, r.Replacement, opt);
             }
 
             var value = message;
 
             //Checking for shortcuts
             var checkMessage = ReplaceCaseInsensitive ? message.ToLower() : message;
-            if (_shortcuts.ContainsKey(checkMessage))
-                value = _shortcuts[checkMessage];
+            foreach (var s in _shortcuts)
+            {
+                if (s.Enabled && checkMessage == (ReplaceCaseInsensitive ? s.GetTextLc() : s.Text))
+                {
+                    value = s.Replacement;
+                    break;
+                }
+            }
 
             if (File.Exists(value))
             {

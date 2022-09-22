@@ -30,7 +30,7 @@ namespace Hoscy.Ui.Windows
         }
 
         private void Refresh()
-            => UiHelper.RefreshListBox(listBox, _dict.Select(x => $"{x.Key} : {x.Value}"));
+            => UiHelper.ListBoxRefresh(listBox, _dict.Select(x => $"{x.Key} : {x.Value}"));
 
         private void Button_AddOrModifyEntry(object sender, RoutedEventArgs e)
             => AddOrModify();

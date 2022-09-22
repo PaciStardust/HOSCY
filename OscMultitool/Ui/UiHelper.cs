@@ -37,7 +37,7 @@ namespace Hoscy.Ui
         /// <param name="box">list box to refresh</param>
         /// <param name="source">Source of data</param>
         /// <param name="index">Preselected Index</param>
-        public static void RefreshListBox(ListBox box, IEnumerable<string> source)
+        public static void ListBoxRefresh(ListBox box, IEnumerable<string> source)
         {
             box.ItemsSource = source;
             box.Items.Refresh();

@@ -112,7 +112,7 @@ namespace Hoscy.Services.Speech
         {
             var processor = new TextProcessor()
             {
-                TriggerReplace = true,
+                TriggerReplace = Config.Speech.UseReplacements,
                 ReplaceCaseInsensitive = Config.Speech.IgnoreCaps,
 
                 TriggerCommands = true,

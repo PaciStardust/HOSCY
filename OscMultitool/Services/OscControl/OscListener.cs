@@ -150,6 +150,13 @@ namespace Hoscy.OscControl
                 Logger.Info("'TTS on Speech' has been changed via OSC => " + newValue);
                 Config.Speech.UseTts = !Config.Speech.UseTts;
             }
+
+            if (address == Config.Osc.AddressEnableReplacements)
+            {
+                bool newValue = !Config.Speech.UseReplacements;
+                Logger.Info("'Replacements and Shortcuts for Speech' has been changed via OSC => " + newValue);
+                Config.Speech.UseReplacements = !Config.Speech.UseReplacements;
+            }
         }
 
         /// <summary>

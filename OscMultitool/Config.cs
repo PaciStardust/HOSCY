@@ -100,26 +100,24 @@ namespace Hoscy
                 "_stretch"
             });
 
-            var defaultReplacements = new Dictionary<string, string>()
+            config.Speech.Replacements.AddRange(new List<ReplacementModel>()
             {
-                { "exclamation mark", "!" },
-                { "question mark", "?" },
-                { "colon", ":" },
-                { "semicolon", ";" },
-                { "open parenthesis", "(" },
-                { "closed parenthesis", ")" },
-                { "open bracket", "(" },
-                { "closed bracket", ")" },
-                { "minus", "-" },
-                { "plus", "+" },
-                { "slash", "/" },
-                { "backslash", "\\" },
-                { "comma", "," },
-                { "hashtag", "#" },
-                { "asterisk", "*" }
-            };
-            foreach (var replacement in defaultReplacements)
-                config.Speech.Replacements.Add(replacement.Key, replacement.Value);
+                new("exclamation mark", "!"),
+                new("question mark", "?"),
+                new("colon", ":"),
+                new("semicolon", ";"),
+                new("open parenthesis", "("),
+                new("closed parenthesis", ")"),
+                new("open bracket", "("),
+                new("closed bracket", ")"),
+                new("minus", "-"),
+                new("plus", "+"),
+                new("slash", "/"),
+                new("backslash", "\\"),
+                new("comma", ","),
+                new("hashtag", "#"),
+                new("asterisk", "*")
+            });
 
             return config;
         }
@@ -151,6 +149,7 @@ namespace Hoscy
             public string AddressManualMute { get; set; } = "/avatar/parameters/ToolMute";
             public string AddressManualSkipSpeech { get; set; } = "/avatar/parameters/ToolSkipSpeech";
             public string AddressManualSkipBox { get; set; } = "/avatar/parameters/ToolSkipBox";
+            public string AddressEnableReplacements { get; set; } = "/avatar/parameters/ToolEnableReplacements";
             public string AddressEnableTextbox { get; set; } = "/avatar/parameters/ToolEnableBox";
             public string AddressEnableTts { get; set; } = "/avatar/parameters/ToolEnableTts";
             public string AddressEnableAutoMute { get; set; } = "/avatar/parameters/ToolEnableAutoMute";
@@ -158,7 +157,7 @@ namespace Hoscy
             public string AddressAddTextbox { get; set; } = "/hoscy/message";
             public string AddressAddTts { get; set; } = "/hoscy/tts";
             public string AddressAddNotification { get; set; } = "/hoscy/notification";
-            public List<ConfigOscRoutingFilterModel> RoutingFilters { get; set; } = new();
+            public List<OscRoutingFilterModel> RoutingFilters { get; set; } = new();
         }
 
         /// <summary>
@@ -195,12 +194,12 @@ namespace Hoscy
 
             //Vosk
             public string VoskModelPath { get; set; } = string.Empty;
-            public float VoskTimeout
+            public int VoskTimeout
             {
                 get { return _voskTimeout; }
-                set { _voskTimeout = MinMax(value, 0.5f, 30); }
+                set { _voskTimeout = MinMax(value, 500, 30000); }
             }
-            private float _voskTimeout = 3f;
+            private int _voskTimeout = 3000;
 
             //Windows
             public string WinModelId { get; set; } = string.Empty;
@@ -208,8 +207,9 @@ namespace Hoscy
             //Replacement
             public List<string> NoiseFilter { get; set; } = new();
             public bool IgnoreCaps { get; set; } = true;
-            public Dictionary<string, string> Shortcuts { get; set; } = new();
-            public Dictionary<string, string> Replacements { get; set; } = new();
+            public bool UseReplacements { get; set; } = true;
+            public List<ReplacementModel> Shortcuts { get; set; } = new();
+            public List<ReplacementModel> Replacements { get; set; } = new();
         }
 
         /// <summary>
@@ -257,7 +257,7 @@ namespace Hoscy
         public class ConfigApiModel
         {
             //General
-            public List<ConfigApiPresetModel> Presets { get; set; } = new();
+            public List<ApiPresetModel> Presets { get; set; } = new();
 
             //Recognition
             public string RecognitionPreset { get; set; } = string.Empty;
@@ -296,7 +296,7 @@ namespace Hoscy
                 return -1;
             }
 
-            public ConfigApiPresetModel? GetPreset(string name)
+            public ApiPresetModel? GetPreset(string name)
             {
                 var presetIndex = GetIndex(name);
 
@@ -341,7 +341,7 @@ namespace Hoscy
         /// <summary>
         /// Model for storing Routing Filter data
         /// </summary>
-        public class ConfigOscRoutingFilterModel
+        public class OscRoutingFilterModel
         {
             public string Name { get; set; } = "New Filter";
             public int Port
@@ -357,7 +357,36 @@ namespace Hoscy
             => $"{Name} => {Ip}:{Port}";
         }
 
-        public class ConfigApiPresetModel
+        public class ReplacementModel
+        {
+            public string Text
+            {
+                get { return _text; }
+                set {
+                    _text = string.IsNullOrWhiteSpace(value) ? "New Value" : value;
+                    _textLc = _text.ToLower();
+                }
+            }
+            private string _text = "New Value";
+            private string _textLc = "new value";
+            public string GetTextLc() => _textLc;
+
+            public string Replacement { get; set; } = string.Empty;
+            public bool Enabled { get; set; } = true;
+
+            public ReplacementModel(string text, string replacement, bool enabled = true)
+            {
+                Text = text;
+                Replacement = replacement;
+                Enabled = enabled;
+            }
+            public ReplacementModel() { }
+
+            public override string ToString()
+                => $"{(Enabled ? "" : "[D] ")}{Text} => {Replacement}";
+        }
+
+        public class ApiPresetModel
         {
             public string Name { get; set; } = "Example Preset";
             public string PostUrl { get; set; } = "https://example.net";

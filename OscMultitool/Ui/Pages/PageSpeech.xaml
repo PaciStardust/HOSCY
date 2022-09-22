@@ -40,6 +40,7 @@
                         <Button Content="Replacements" Margin="16,0,0,0" Click="Button_OpenReplacements"/>
                         <Button Content="Noise Filter" Margin="16,0,0,0" Click="Button_OpenNoiseFilter"/>
                     </WrapPanel>
+                    <CheckBox x:Name="useReplacements" Content="Use shortcuts and replacements" Margin="0,8,0,0" IsChecked="{Binding Speech.UseReplacements, Source={x:Static local:Config.Data}}"/>
                     <CheckBox x:Name="speechToLower" Content="Ignore caps for list checks" Margin="0,8,0,0" IsChecked="{Binding Speech.IgnoreCaps, Source={x:Static local:Config.Data}}"/>
                 </StackPanel>
 
@@ -84,7 +85,7 @@
                                     <TextBox.Text>
                                         <Binding Source="{x:Static local:Config.Data}" Path="Speech.VoskTimeout" UpdateSourceTrigger="PropertyChanged">
                                             <Binding.ValidationRules>
-                                                <ui:FloatValidationRule Min="0.5" Max="30"/>
+                                                <ui:IntegerValidationRule Min="500" Max="30000"/>
                                             </Binding.ValidationRules>
                                         </Binding>
                                     </TextBox.Text>

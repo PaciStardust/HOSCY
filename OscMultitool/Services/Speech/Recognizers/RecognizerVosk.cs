@@ -168,7 +168,7 @@ namespace Hoscy.Services.Speech.Recognizers
                 return;
             }
 
-            if ((DateTime.Now - _lastChangedAt).Seconds > Config.Speech.VoskTimeout)
+            if ((DateTime.Now - _lastChangedAt).TotalMilliseconds > Config.Speech.VoskTimeout)
             {
                 Logger.Log("Got Message (T): " + result);
                 ProcessMessage(result);

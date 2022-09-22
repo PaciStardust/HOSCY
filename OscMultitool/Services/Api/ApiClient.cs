@@ -9,10 +9,10 @@ namespace Hoscy.Services.Api
 {
     public class ApiClient
     {
-        private Config.ConfigApiPresetModel? _preset;
+        private Config.ApiPresetModel? _preset;
         private HttpClient? _client;
 
-        public bool LoadPreset(Config.ConfigApiPresetModel preset)
+        public bool LoadPreset(Config.ApiPresetModel preset)
         {
             if (preset.Equals(_preset))
                 return true;

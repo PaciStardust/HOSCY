@@ -41,6 +41,9 @@
     <Compile Update="Ui\Windows\ModifyApiPresetsWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Ui\Windows\ModifyReplacementsWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Ui\Windows\ModifyOscRoutingFiltersWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -64,6 +67,10 @@
 
   <ItemGroup>
     <Page Update="Ui\Windows\ModifyApiPresetsWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Ui\Windows\ModifyReplacementsWindow.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>

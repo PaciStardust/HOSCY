@@ -70,6 +70,9 @@
                     <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Clear textbox" Margin="0,4,0,0"/>
                     <TextBox x:Name="oscOscSkipTextAddress" Text="{Binding Osc.AddressManualSkipBox, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..."/>
 
+                    <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Enable shortcuts and replacements for speech" Margin="0,4,0,0"/>
+                    <TextBox x:Name="oscOscEnableReplacement" Text="{Binding Osc.AddressEnableReplacements, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..."/>
+                    
                     <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Enable textbox for speech" Margin="0,4,0,0"/>
                     <TextBox x:Name="oscOscEnableTextbox" Text="{Binding Osc.AddressEnableTextbox, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..."/>
 

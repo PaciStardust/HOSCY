@@ -174,12 +174,12 @@ namespace Hoscy.Ui.Pages
         }
         private void Button_OpenReplacements(object sender, RoutedEventArgs e)
         {
-            var window = new ModifyDictionaryWindow("Edit Replacements", "Text", "Replacement", Config.Speech.Replacements);
+            var window = new ModifyReplacementsWindow("Edit Replacements", Config.Speech.Replacements);
             window.ShowDialog();
         }
         private void Button_OpenShortcuts(object sender, RoutedEventArgs e)
         {
-            var window = new ModifyDictionaryWindow("Edit Shortcuts", "Text", "Replacement", Config.Speech.Shortcuts);
+            var window = new ModifyReplacementsWindow("Edit Shortcuts", Config.Speech.Shortcuts);
             window.ShowDialog();
         }
         #endregion

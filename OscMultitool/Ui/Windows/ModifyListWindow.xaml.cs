@@ -13,7 +13,7 @@ namespace Hoscy.Ui.Windows
         private readonly List<string> _list;
         private readonly string _default;
 
-        public ModifyListWindow(string title, string valueName, List<string> list, string defaultString = "")
+        public ModifyListWindow(string title, string valueName, List<string> list, string defaultString = "New Value")
         {
             InitializeComponent();
 
@@ -25,15 +25,18 @@ namespace Hoscy.Ui.Windows
             _default = defaultString;
             listBox.ItemsSource = _list;
         }
+        
+        private void Refresh()
+            => UiHelper.ListBoxRefresh(listBox, _list);
 
         private void AddEntry()
         {
             string value = GetTextValue(textValue.Text);
             if (string.IsNullOrWhiteSpace(value))
                 return;
-            
+
             _list.Add(value);
-            listBox.Items.Refresh();
+            Refresh();
             listBox.SelectedIndex = _list.Count - 1;
         }
 
@@ -53,17 +56,19 @@ namespace Hoscy.Ui.Windows
 
             int index = listBox.SelectedIndex;
             _list.RemoveAt(index);
-            listBox.Items.Refresh();
+            Refresh();
             listBox.SelectedIndex = index - 1;
         }
 
         private void Button_ModifyEntry(object sender, RoutedEventArgs e)
         {
-            if (_list.Count == 0 || listBox.SelectedIndex == -1)
+            var text = GetTextValue(textValue.Text);
+
+            if (_list.Count == 0 || listBox.SelectedIndex == -1 || string.IsNullOrWhiteSpace(text))
                 return;
 
-            _list[listBox.SelectedIndex] = textValue.Text;
-            listBox.Items.Refresh();
+            _list[listBox.SelectedIndex] = text;
+            Refresh();
         }
 
         private string GetTextValue(string text)

@@ -6,11 +6,12 @@
         xmlns:local="clr-namespace:Hoscy"
         xmlns:ui="clr-namespace:Hoscy.Ui"
         mc:Ignorable="d"
-        Title="ModifyDictionaryWindow" Height="400" Width="700" Background="{Binding Source={x:Static ui:UiHelper.ColorBack}}" ResizeMode="CanMinimize">
+        MinHeight="400" MinWidth="700"
+        Title="ModifyDictionaryWindow" Height="400" Width="700" Background="{Binding Source={x:Static ui:UiHelper.ColorBack}}" ResizeMode="CanResize">
     <Grid Margin="16">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="5*"/>
-            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
 
         <ListBox x:Name="listBox" Grid.Column="0"  Margin="0,0,8,0" SelectionChanged ="ListBox_SelectionChanged" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
@@ -18,21 +19,18 @@
         <Grid Grid.Column="1" Margin="8,0,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="3*"/>
-                <RowDefinition Height="5*"/>
+                <RowDefinition/>
             </Grid.RowDefinitions>
 
             <StackPanel>
                 <Button Content="Add New / Modify" HorizontalAlignment="Center" Click="Button_AddOrModifyEntry"/>
                 <Button Content="Remove" HorizontalAlignment="Center" Margin="0,8,0,0" VerticalAlignment="Top" Click="Button_RemoveEntry"/>
+
+                <TextBlock x:Name="labelKey" Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Text="Key" Margin="0,16,0,0"/>
+                <TextBox x:Name="textKey" KeyUp="TextBox_KeyPressed" Tag="Key..."/>
             </StackPanel>
 
             <DockPanel Grid.Row="1" Margin="0,16,0,0">
-                <TextBlock x:Name="labelKey" Style="{DynamicResource HTextBlock}" DockPanel.Dock="Top" HorizontalAlignment="Center" Text="Key" VerticalAlignment="Bottom"/>
-                <TextBox x:Name="textKey" Style="{DynamicResource HTextBoxLarge}" KeyUp="TextBox_KeyPressed" Tag="Key..."/>
-            </DockPanel>
-
-            <DockPanel Grid.Row="2" Margin="0,16,0,0">
                 <TextBlock x:Name="labelValue" Style="{DynamicResource HTextBlock}" DockPanel.Dock="Top" HorizontalAlignment="Center" Text="Value"/>
                 <TextBox x:Name="textValue" Style="{DynamicResource HTextBoxLarge}" KeyUp="TextBox_KeyPressed" Tag="Value..."/>
             </DockPanel>

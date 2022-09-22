@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:Hoscy"
         xmlns:ui="clr-namespace:Hoscy.Ui"
         mc:Ignorable="d"
-        Title="Modify List Window" Height="400" Width="700" Background="{Binding Source={x:Static ui:UiHelper.ColorBack}}" ResizeMode="CanMinimize">
+        MinHeight="400" MinWidth="700"
+        Title="Modify List" Height="400" Width="700" Background="{Binding Source={x:Static ui:UiHelper.ColorBack}}" ResizeMode="CanResize">
 
     <Grid Margin="16">
         <Grid.ColumnDefinitions>

@@ -11,9 +11,9 @@ namespace Hoscy.Ui.Windows
     /// </summary>
     public partial class ModifyApiPresetsWindow : Window
     {
-        private readonly List<Config.ConfigApiPresetModel> _list;
+        private readonly List<Config.ApiPresetModel> _list;
 
-        public ModifyApiPresetsWindow(string title, List<Config.ConfigApiPresetModel> list)
+        public ModifyApiPresetsWindow(string title, List<Config.ApiPresetModel> list)
         {
             InitializeComponent();
             
@@ -23,7 +23,7 @@ namespace Hoscy.Ui.Windows
         }
 
         private void Refresh()
-            => UiHelper.RefreshListBox(listBox, _list.Select(x => x.Name));
+            => UiHelper.ListBoxRefresh(listBox, _list.Select(x => x.Name));
 
         private void AddEntry()
         {
@@ -78,9 +78,9 @@ namespace Hoscy.Ui.Windows
             textContentType.Text = selected.ContentType;
         }
 
-        private Config.ConfigApiPresetModel GetNewModel()
+        private Config.ApiPresetModel GetNewModel()
         {
-            var model = new Config.ConfigApiPresetModel();
+            var model = new Config.ApiPresetModel();
 
             if (!string.IsNullOrWhiteSpace(textName.Text))
                 model.Name = textName.Text;

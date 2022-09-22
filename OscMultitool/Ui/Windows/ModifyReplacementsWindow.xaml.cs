@@ -9,11 +9,11 @@ namespace Hoscy.Ui.Windows
     /// <summary>
     /// Interaction logic for ModifyListWindow.xaml
     /// </summary>
-    public partial class ModifyOscRoutingFiltersWindow : Window
+    public partial class ModifyReplacementsWindow : Window
     {
-        private readonly List<Config.OscRoutingFilterModel> _list;
+        private readonly List<Config.ReplacementModel> _list;
 
-        public ModifyOscRoutingFiltersWindow(string title, List<Config.OscRoutingFilterModel> list)
+        public ModifyReplacementsWindow(string title, List<Config.ReplacementModel> list)
         {
             InitializeComponent();
             
@@ -23,7 +23,7 @@ namespace Hoscy.Ui.Windows
         }
 
         private void Refresh()
-            => UiHelper.ListBoxRefresh(listBox, _list.Select(x => $"{x} ({x.Filters.Count} Filters)"));
+            => UiHelper.ListBoxRefresh(listBox, _list.Select(x => x.ToString()));
 
         private void AddEntry()
         {
@@ -69,39 +69,19 @@ namespace Hoscy.Ui.Windows
             if (listBox.SelectedIndex < 0)
                 return;
 
-            textName.Text = _list[listBox.SelectedIndex].Name;
-            textPort.Text = _list[listBox.SelectedIndex].Port.ToString();
-            textIp.Text = _list[listBox.SelectedIndex].Ip;
+            textValue.Text = _list[listBox.SelectedIndex].Text;
+            replacementValue.Text = _list[listBox.SelectedIndex].Replacement;
+            enabledCheckBox.IsChecked = _list[listBox.SelectedIndex].Enabled;
         }
 
-        private Config.OscRoutingFilterModel GetNewModel()
+        private Config.ReplacementModel GetNewModel()
         {
-            var model = new Config.OscRoutingFilterModel();
-
-            if (!string.IsNullOrWhiteSpace(textName.Text))
-                model.Name = textName.Text;
-
-            if (!string.IsNullOrWhiteSpace(textIp.Text))
-                model.Ip = textIp.Text;
-
-            if (int.TryParse(textPort.Text, out int port))
-                model.Port = port;
-
-            if (listBox.SelectedIndex != -1)
-                model.Filters = _list[listBox.SelectedIndex].Filters.ToList();
-
-            return model;
-        }
-
-        private void Button_EditFilters(object sender, RoutedEventArgs e)
-        {
-            if (_list.Count == 0 || listBox.SelectedIndex == -1)
-                return;
-
-            var selected = _list[listBox.SelectedIndex];
-            var window = new ModifyListWindow($"Filter Editor: {selected}", "OSC Filter", selected.Filters, "/");
-            window.ShowDialog();
-            Refresh();
+            return new
+            (
+                textValue.Text,
+                replacementValue.Text,
+                enabledCheckBox.IsChecked ?? false
+            );
         }
     }
 }
