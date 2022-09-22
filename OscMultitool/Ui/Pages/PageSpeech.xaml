@@ -106,8 +106,8 @@
                 <Label Style="{StaticResource HLabelM}" Content="Manual Input" Margin="0,16,0,0"/>
 
                 <StackPanel Style="{StaticResource HStackIndent}">
-                    <CheckBox x:Name="inputTriggerReplace" Content="Trigger replacements" IsChecked="{Binding Input.TriggerReplace, Source={x:Static local:Config.Data}}"/>
-                    <CheckBox x:Name="inputTriggerShortcuts" Content="Trigger shortcuts" Margin="0,4,0,0" IsChecked="{Binding Input.TriggerCommands, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="inputTriggerReplace" Content="Trigger shortcuts and replacements" IsChecked="{Binding Input.TriggerReplace, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="inputTriggerCommands" Content="Trigger commands" Margin="0,4,0,0" IsChecked="{Binding Input.TriggerCommands, Source={x:Static local:Config.Data}}"/>
                     <CheckBox x:Name="inputIgnoreCaps" Content="Ignore caps for list checks" Margin="0,4,0,0" IsChecked="{Binding Input.IgnoreCaps, Source={x:Static local:Config.Data}}"/>
                     <CheckBox x:Name="inputAllowTranslation" Content="Allow translation" Margin="0,4,0,0" IsChecked="{Binding Input.AllowTranslation, Source={x:Static local:Config.Data}}"/>
                 </StackPanel>
