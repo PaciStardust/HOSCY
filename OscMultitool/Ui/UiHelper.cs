@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -22,25 +23,56 @@ namespace Hoscy.Ui
         /// <summary>
         /// Loads data into a combo box
         /// </summary>
-        /// <param name="box">Combo box to load data for</param>
-        /// <param name="source">Source of data</param>
-        /// <param name="index">Preselected Index</param>
-        public static void LoadComboBox(ComboBox box, IEnumerable<string> source, int index)
+        public static void Load(this ComboBox box, IEnumerable<string> source, int index)
         {
             box.ItemsSource = source;
             box.SelectedIndex = index;
         }
 
         /// <summary>
-        /// Refreshes data in a list box
+        /// Refreshes the data
         /// </summary>
-        /// <param name="box">list box to refresh</param>
-        /// <param name="source">Source of data</param>
-        /// <param name="index">Preselected Index</param>
-        public static void ListBoxRefresh(ListBox box, IEnumerable<string> source)
+        public static void Refresh(this ListBox box, IEnumerable<string> source, int index)
         {
             box.ItemsSource = source;
             box.Items.Refresh();
+            box.SelectedIndex = index;
+        }
+
+        /// <summary>
+        /// Checks if a value is in bounds
+        /// </summary>
+        public static bool IsInBounds<T>(this ListBox box, ICollection<T> list)
+        {
+            int highVal = list.Count - 1;
+            if (box.SelectedIndex > highVal)
+                box.SelectedIndex = highVal;
+
+            return box.SelectedIndex > -1;
+        }
+
+        /// <summary>
+        /// Tries to remove object at index
+        /// </summary>
+        public static bool TryRemoveAt<T>(this List<T> list, int index)
+        {
+            if (index < 0 || index >= list.Count)
+                return false;
+
+            list.RemoveAt(index);
+            return true;
+        }
+
+        /// <summary>
+        /// Tries to modify object at index
+        /// </summary>
+        public static bool TryModifyAt<T>(this List<T> list, T item, int index)
+        {
+            if (index < 0 || index >= list.Count)
+                return false;
+
+            list[index] = item;
+            return true;
         }
     }
 }

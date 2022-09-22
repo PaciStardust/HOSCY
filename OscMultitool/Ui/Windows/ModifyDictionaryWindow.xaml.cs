@@ -26,11 +26,11 @@ namespace Hoscy.Ui.Windows
             textKey.Tag = keyName + "...";
             textValue.Tag = valueName + "...";
 
-            Refresh();
+            Refresh(-1);
         }
 
-        private void Refresh()
-            => UiHelper.ListBoxRefresh(listBox, _dict.Select(x => $"{x.Key} : {x.Value}"));
+        private void Refresh(int index)
+            => listBox.Refresh( _dict.Select(x => $"{x.Key} : {x.Value}"), index);
 
         private void Button_AddOrModifyEntry(object sender, RoutedEventArgs e)
             => AddOrModify();
@@ -56,8 +56,7 @@ namespace Hoscy.Ui.Windows
                 newIndex = listBox.SelectedIndex = _dict.Count - 1;
             }
 
-            Refresh();
-            listBox.SelectedIndex = newIndex;
+            Refresh(newIndex);
         }
 
         private void Button_RemoveEntry(object sender, RoutedEventArgs e)
@@ -67,8 +66,7 @@ namespace Hoscy.Ui.Windows
 
             int index = listBox.SelectedIndex;
             _dict.Remove(_dict.Keys.ToArray()[index]);
-            Refresh();
-            listBox.SelectedIndex = index - 1;
+            Refresh(index-1);
         }
 
         private static string GetTextValue(string text)
@@ -79,10 +77,7 @@ namespace Hoscy.Ui.Windows
 
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (listBox.SelectedIndex > _dict.Count - 1)
-                listBox.SelectedIndex = _dict.Count - 1;
-
-            if (listBox.SelectedIndex < 0)
+            if (!listBox.IsInBounds(_dict))
                 return;
 
             int index = listBox.SelectedIndex;

@@ -23,12 +23,13 @@ namespace Hoscy.Ui.Windows
             _list = list;
             Title = title;
             _default = defaultString;
-            listBox.ItemsSource = _list;
+            Refresh(-1);
         }
         
-        private void Refresh()
-            => UiHelper.ListBoxRefresh(listBox, _list);
+        private void Refresh(int index)
+            => listBox.Refresh(_list, index);
 
+        #region Modification
         private void AddEntry()
         {
             string value = GetTextValue(textValue.Text);
@@ -36,8 +37,7 @@ namespace Hoscy.Ui.Windows
                 return;
 
             _list.Add(value);
-            Refresh();
-            listBox.SelectedIndex = _list.Count - 1;
+            Refresh(_list.Count - 1);
         }
 
         private void TextBox_KeyPressed(object sender, KeyEventArgs e)
@@ -51,26 +51,24 @@ namespace Hoscy.Ui.Windows
 
         private void Button_RemoveEntry(object sender, RoutedEventArgs e)
         {
-            if (_list.Count == 0 || listBox.SelectedIndex == -1)
-                return;
-
             int index = listBox.SelectedIndex;
-            _list.RemoveAt(index);
-            Refresh();
-            listBox.SelectedIndex = index - 1;
+            if (_list.TryRemoveAt(index))
+                Refresh(index - 1);
         }
 
         private void Button_ModifyEntry(object sender, RoutedEventArgs e)
         {
             var text = GetTextValue(textValue.Text);
+            int index = listBox.SelectedIndex;
 
-            if (_list.Count == 0 || listBox.SelectedIndex == -1 || string.IsNullOrWhiteSpace(text))
+            if (string.IsNullOrWhiteSpace(text) || !_list.TryModifyAt(text, index))
                 return;
 
-            _list[listBox.SelectedIndex] = text;
-            Refresh();
+            Refresh(index);
         }
+        #endregion
 
+        #region Other
         private string GetTextValue(string text)
         {
             text = text.Trim();
@@ -79,13 +77,11 @@ namespace Hoscy.Ui.Windows
 
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (listBox.SelectedIndex > _list.Count - 1)
-                listBox.SelectedIndex = _list.Count - 1;
-
-            if (listBox.SelectedIndex < 0)
+            if (!listBox.IsInBounds(_list))
                 return;
 
             textValue.Text = _list[listBox.SelectedIndex];
         }
+        #endregion
     }
 }

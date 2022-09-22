@@ -63,7 +63,7 @@ namespace Hoscy.Ui.Pages
         }
 
         private void RefreshPresets()
-            => UiHelper.ListBoxRefresh(presetBox, Config.Input.Presets.Select(x => x.Key));
+            => presetBox.Refresh(Config.Input.Presets.Select(x => x.Key), -1);
 
         private void TextBox_KeyPressed(object sender, KeyEventArgs e)
         {

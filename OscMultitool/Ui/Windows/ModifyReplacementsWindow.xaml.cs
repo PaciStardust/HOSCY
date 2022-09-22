@@ -19,17 +19,17 @@ namespace Hoscy.Ui.Windows
             
             _list = list;
             Title = title;
-            Refresh();
+            Refresh(-1);
         }
 
-        private void Refresh()
-            => UiHelper.ListBoxRefresh(listBox, _list.Select(x => x.ToString()));
+        private void Refresh(int index)
+            => listBox.Refresh(_list.Select(x => x.ToString()), index);
 
+        #region Modifification
         private void AddEntry()
         {
             _list.Add(GetNewModel());
-            Refresh();
-            listBox.SelectedIndex = _list.Count - 1;
+            Refresh(_list.Count - 1);
         }
 
         private void TextBox_KeyPressed(object sender, KeyEventArgs e)
@@ -43,30 +43,24 @@ namespace Hoscy.Ui.Windows
 
         private void Button_RemoveEntry(object sender, RoutedEventArgs e)
         {
-            if (_list.Count == 0 || listBox.SelectedIndex == -1)
-                return;
-
             int index = listBox.SelectedIndex;
-            _list.RemoveAt(index);
-            Refresh();
-            listBox.SelectedIndex = index - 1;
+            if (_list.TryRemoveAt(index))
+                Refresh(index - 1);
         }
 
         private void Button_ModifyEntry(object sender, RoutedEventArgs e)
         {
-            if (_list.Count == 0 || listBox.SelectedIndex == -1)
-                return;
+            int index = listBox.SelectedIndex;
 
-            _list[listBox.SelectedIndex] = GetNewModel();
-            Refresh();
+            if (_list.TryModifyAt(GetNewModel(), index))
+                Refresh(index);
         }
+        #endregion
 
+        #region Other
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (listBox.SelectedIndex > _list.Count - 1)
-                listBox.SelectedIndex = _list.Count - 1;
-
-            if (listBox.SelectedIndex < 0)
+            if (!listBox.IsInBounds(_list))
                 return;
 
             textValue.Text = _list[listBox.SelectedIndex].Text;
@@ -83,5 +77,6 @@ namespace Hoscy.Ui.Windows
                 enabledCheckBox.IsChecked ?? false
             );
         }
+        #endregion
     }
 }

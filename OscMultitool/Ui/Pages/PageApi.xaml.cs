@@ -56,6 +56,6 @@ namespace Hoscy.Ui.Pages
         #endregion
 
         private static void LoadPresetBox(ComboBox box, string name)
-            => UiHelper.LoadComboBox(box, Config.Api.Presets.Select(x => x.Name), Config.Api.GetIndex(name));
+            => box.Load(Config.Api.Presets.Select(x => x.Name), Config.Api.GetIndex(name));
     }
 }

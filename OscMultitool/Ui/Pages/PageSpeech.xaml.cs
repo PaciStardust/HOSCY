@@ -69,9 +69,9 @@ namespace Hoscy.Ui.Pages
         private void LoadBoxes()
         {
             //Microphones
-            UiHelper.LoadComboBox(speechMicrophoneBox, Devices.Microphones.Select(x => x.ProductName), Devices.GetMicrophoneIndex(Config.Speech.MicId));
+            speechMicrophoneBox.Load(Devices.Microphones.Select(x => x.ProductName), Devices.GetMicrophoneIndex(Config.Speech.MicId));
             //Windows Listeners
-            UiHelper.LoadComboBox(speechWindowsRecognizerBox, Recognition.WindowsRecognizers.Select(x => x.Description), Recognition.GetWindowsListenerIndex(Config.Speech.WinModelId));
+            speechWindowsRecognizerBox.Load(Recognition.WindowsRecognizers.Select(x => x.Description), Recognition.GetWindowsListenerIndex(Config.Speech.WinModelId));
 
             changeIndicator.Visibility = _changedValues ? Visibility.Visible : Visibility.Hidden;
         }

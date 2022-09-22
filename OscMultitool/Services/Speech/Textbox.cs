@@ -10,7 +10,7 @@ using System.Threading;
 
 namespace Hoscy.Services.Speech
 {
-    public static class Textbox //todo: dynamic timeout time addition / min value
+    public static class Textbox
     {
         private static string _notification = string.Empty;
         private static NotificationType _notificationType = NotificationType.None;

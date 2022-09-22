@@ -19,17 +19,17 @@ namespace Hoscy.Ui.Windows
             
             _list = list;
             Title = title;
-            Refresh();
+            Refresh(-1);
         }
 
-        private void Refresh()
-            => UiHelper.ListBoxRefresh(listBox, _list.Select(x => x.Name));
+        private void Refresh(int index)
+            => listBox.Refresh( _list.Select(x => x.Name), index);
 
+        #region Modification
         private void AddEntry()
         {
             _list.Add(GetNewModel());
-            Refresh();
-            listBox.SelectedIndex = _list.Count - 1;
+            Refresh(listBox.Items.Count - 1);
         }
 
         private void TextBox_KeyPressed(object sender, KeyEventArgs e)
@@ -43,30 +43,23 @@ namespace Hoscy.Ui.Windows
 
         private void Button_RemoveEntry(object sender, RoutedEventArgs e)
         {
-            if (_list.Count == 0 || listBox.SelectedIndex == -1)
-                return;
-
             int index = listBox.SelectedIndex;
-            _list.RemoveAt(index);
-            Refresh();
-            listBox.SelectedIndex = index - 1;
+            if (_list.TryRemoveAt(index))
+                Refresh(index - 1);
         }
 
         private void Button_ModifyEntry(object sender, RoutedEventArgs e)
         {
-            if (_list.Count == 0 || listBox.SelectedIndex == -1)
-                return;
-
-            _list[listBox.SelectedIndex] = GetNewModel();
-            Refresh();
+            int index = listBox.SelectedIndex;
+            if (_list.TryModifyAt(GetNewModel(), index))
+                Refresh(index);
         }
+        #endregion
 
+        #region Other
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (listBox.SelectedIndex > _list.Count - 1)
-                listBox.SelectedIndex = _list.Count - 1;
-
-            if (listBox.SelectedIndex < 0)
+            if (!listBox.IsInBounds(_list))
                 return;
 
             var selected = _list[listBox.SelectedIndex];
@@ -108,13 +101,15 @@ namespace Hoscy.Ui.Windows
 
         private void Button_EditHeaders(object sender, RoutedEventArgs e)
         {
-            if (_list.Count == 0 || listBox.SelectedIndex == -1)
+            if (!listBox.IsInBounds(_list))
                 return;
 
-            var selected = _list[listBox.SelectedIndex];
+            var index = listBox.SelectedIndex;
+            var selected = _list[index];
             var window = new ModifyDictionaryWindow($"Header Editor: {selected.Name}", "Name", "Value", selected.HeaderValues);
             window.ShowDialog();
-            Refresh();
+            Refresh(index);
         }
+        #endregion
     }
 }

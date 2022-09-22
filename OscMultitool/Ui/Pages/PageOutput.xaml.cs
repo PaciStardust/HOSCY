@@ -38,9 +38,9 @@ namespace Hoscy.Ui.Pages
         private void LoadComboBoxes()
         {
             //Speakers
-            UiHelper.LoadComboBox(speechSpeakerBox, Devices.Speakers.Select(x => x.ProductName), Devices.GetSpeakerIndex(Config.Speech.SpeakerId));
+            speechSpeakerBox.Load(Devices.Speakers.Select(x => x.ProductName), Devices.GetSpeakerIndex(Config.Speech.SpeakerId));
             //Windows Synths
-            UiHelper.LoadComboBox(speechWindowsSynthBox, Synthesizing.WindowsSynths.Select(x => x.Description), Synthesizing.GetWindowsSynthIndex(Config.Speech.TtsId));
+            speechWindowsSynthBox.Load(Synthesizing.WindowsSynths.Select(x => x.Description), Synthesizing.GetWindowsSynthIndex(Config.Speech.TtsId));
         }
 
         private void Button_SkipSpeech(object sender, RoutedEventArgs e)
