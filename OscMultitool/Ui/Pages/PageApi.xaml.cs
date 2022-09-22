@@ -27,6 +27,7 @@ namespace Hoscy.Ui.Pages
         private void Button_ModifyPresets(object sender, RoutedEventArgs e)
         {
             var window = new ModifyApiPresetsWindow("Edit API Presets", Config.Api.Presets);
+            window.SetDarkMode(true);
             window.ShowDialog();
             LoadBoxes();
         }

@@ -107,6 +107,7 @@ namespace Hoscy.Ui.Windows
             var index = listBox.SelectedIndex;
             var selected = _list[index];
             var window = new ModifyDictionaryWindow($"Header Editor: {selected.Name}", "Name", "Value", selected.HeaderValues);
+            window.SetDarkMode(true);
             window.ShowDialog();
             Refresh(index);
         }

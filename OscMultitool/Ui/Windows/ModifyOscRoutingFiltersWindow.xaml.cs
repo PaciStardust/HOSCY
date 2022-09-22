@@ -95,6 +95,7 @@ namespace Hoscy.Ui.Windows
             var index = listBox.SelectedIndex;
             var selected = _list[index];
             var window = new ModifyListWindow($"Filter Editor: {selected}", "OSC Filter", selected.Filters, "/");
+            window.SetDarkMode(true);
             window.ShowDialog();
             Refresh(index);
         }

@@ -1,4 +1,5 @@
 ﻿using Hoscy;
+using Hoscy.Ui;
 using Hoscy.Ui.Windows;
 using System;
 using System.IO;
@@ -59,6 +60,7 @@ namespace Hoscy
             if (message.Severity == LogSeverity.Error)
             {
                 var window = new ErrorWindow("Error at " + message.GetLocation(),message.Message);
+                window.SetDarkMode(true);
                 window.ShowDialog();
             }
 

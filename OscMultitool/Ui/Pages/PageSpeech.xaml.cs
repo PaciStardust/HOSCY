@@ -169,17 +169,20 @@ namespace Hoscy.Ui.Pages
         private void Button_OpenNoiseFilter(object sender, RoutedEventArgs e)
         {
             var window = new ModifyListWindow("Edit Noise Filter", "Noise Text", Config.Speech.NoiseFilter);
+            window.SetDarkMode(true);
             window.ShowDialog();
             RecognizerBase.UpdateDenoiseRegex();
         }
         private void Button_OpenReplacements(object sender, RoutedEventArgs e)
         {
             var window = new ModifyReplacementsWindow("Edit Replacements", Config.Speech.Replacements);
+            window.SetDarkMode(true);
             window.ShowDialog();
         }
         private void Button_OpenShortcuts(object sender, RoutedEventArgs e)
         {
             var window = new ModifyReplacementsWindow("Edit Shortcuts", Config.Speech.Shortcuts);
+            window.SetDarkMode(true);
             window.ShowDialog();
         }
         #endregion

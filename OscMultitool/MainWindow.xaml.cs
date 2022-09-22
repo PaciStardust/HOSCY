@@ -16,6 +16,7 @@ namespace Hoscy
         {
             //Init
             Osc.RecreateListener();
+            this.SetDarkMode(true);
 
             InitializeComponent();
             listBox.SelectedIndex = 0;
