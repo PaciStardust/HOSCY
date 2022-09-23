@@ -105,7 +105,7 @@ namespace Hoscy.Services.Api
             StringBuilder sb = new($"Playing '{_nowPlaying.Title}'");
             
             if (!string.IsNullOrWhiteSpace(_nowPlaying.Artist))
-                sb.Append($" by {_nowPlaying.Artist}");
+                sb.Append($" by '{_nowPlaying.Artist}'");
 
             if (_nowPlaying.Genres != null && _nowPlaying.Genres.Count > 0)
                 sb.Append($" [{string.Join(", ", _nowPlaying.Genres)}]");
