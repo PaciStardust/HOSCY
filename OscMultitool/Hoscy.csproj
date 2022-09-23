@@ -7,10 +7,11 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Resources\hoscy_circle.ico</ApplicationIcon>
     <Platforms>AnyCPU;x64</Platforms>
-    <AssemblyVersion>0.2.2</AssemblyVersion>
-    <FileVersion>0.2.2</FileVersion>
+    <AssemblyVersion>0.2.3</AssemblyVersion>
+    <FileVersion>0.2.3</FileVersion>
     <RepositoryUrl>https://github.com/PaciStardust/HOSCY</RepositoryUrl>
     <PackageProjectUrl>https://github.com/PaciStardust/HOSCY</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,6 +22,13 @@
 
   <ItemGroup>
     <Content Include="Resources\hoscy_circle.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

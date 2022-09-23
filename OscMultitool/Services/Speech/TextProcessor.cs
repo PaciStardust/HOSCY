@@ -54,13 +54,13 @@ namespace Hoscy.Services.Speech
 
             if (UseTextbox)
             {
-                if (Config.Textbox.AddOriginalAfterTranslate)
-                    Textbox.Say($"{translation} <> {message}");
+                if (Config.Textbox.TranslateTextbox)
+                    Textbox.Say(translation + (Config.Textbox.AddOriginalAfterTranslate ? $" <> {message}" : string.Empty));
                 else
-                    Textbox.Say(translation);
+                    Textbox.Say(message);
             }
             if (UseTts)
-                Synthesizing.Say(translation);
+                Synthesizing.Say(Config.Speech.TranslateTts ? translation : message);
 
             if (message != translation)
                 message = $"{translation}\n\n{message}";
