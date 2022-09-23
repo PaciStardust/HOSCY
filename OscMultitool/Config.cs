@@ -206,6 +206,7 @@ namespace Hoscy
             //Replacement
             public List<string> NoiseFilter { get; set; } = new();
             public bool IgnoreCaps { get; set; } = true;
+            public bool RemoveFullStop { get; set; } = true;
             public bool UseReplacements { get; set; } = true;
             public List<ReplacementModel> Shortcuts { get; set; } = new();
             public List<ReplacementModel> Replacements { get; set; } = new();
@@ -282,7 +283,6 @@ namespace Hoscy
             //Azure Rec
             public string AzureRegion { get; set; } = string.Empty;
             public string AzureKey { get; set; } = string.Empty;
-            public bool AzureRemoveFullStop { get; set; } = true;
             public string AzureLanguage { get; set; } = string.Empty;
             public string AzureCustomEndpoint { get; set; } = string.Empty;
 

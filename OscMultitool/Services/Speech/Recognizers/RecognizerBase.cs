@@ -110,6 +110,9 @@ namespace Hoscy.Services.Speech
         /// </summary>
         public static void ProcessMessage(string message)
         {
+            if (Config.Speech.RemoveFullStop)
+                message = message.TrimEnd('.');
+
             var processor = new TextProcessor()
             {
                 TriggerReplace = Config.Speech.UseReplacements,

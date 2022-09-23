@@ -125,9 +125,6 @@ namespace Hoscy.Services.Speech.Recognizers
             if (string.IsNullOrWhiteSpace(message))
                 return;
 
-            if (Config.Api.AzureRemoveFullStop && message.EndsWith('.'))
-                message = message[..^1];
-
             ProcessMessage(message);
         }
 

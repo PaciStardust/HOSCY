@@ -88,8 +88,6 @@
                         <Label Content="Input Language (Optional)" VerticalAlignment="Center"/>
                     </WrapPanel>
 
-                    <CheckBox x:Name="azureRemoveFullStop" Content="Remove full stop at sentence end" Margin="0,4,0,0" IsChecked="{Binding Api.AzureRemoveFullStop, Source={x:Static local:Config.Data}}"/>
-
                     <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Custom endpoint (Optional)" Margin="0,4,0,0"/>
                     <TextBox x:Name="azureCustomEndpoint" Text="{Binding Api.AzureCustomEndpoint, Source={x:Static local:Config.Data}}" Tag="Custom endpoint..." Style="{StaticResource HTextBoxLong}"/>
                 </StackPanel>

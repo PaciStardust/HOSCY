@@ -29,6 +29,7 @@
                     <CheckBox x:Name="speechUseTextbox" Content="Send over textbox" Margin="0,4,0,0" IsChecked="{Binding Speech.UseTextbox, Source={x:Static local:Config.Data}}"/>
                     <CheckBox x:Name="speechStartUnmuted" Content="Start microphone unmuted" Margin="0,4,0,0" IsChecked="{Binding Speech.StartUnmuted, Source={x:Static local:Config.Data}}"/>
                     <CheckBox x:Name="speechMuteOnVrcMute" Content="Mute microphone on VRC mute" Margin="0,4,0,0" IsChecked="{Binding Speech.MuteOnVrcMute, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="speechRemoveFullStop" Content="Remove full stop at sentence end" Margin="0,4,0,0" IsChecked="{Binding Speech.RemoveFullStop, Source={x:Static local:Config.Data}}"/>
                 </StackPanel>
 
                 <!-- Commands & Filters -->

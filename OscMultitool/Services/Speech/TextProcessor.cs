@@ -41,7 +41,7 @@ namespace Hoscy.Services.Speech
             if (string.IsNullOrWhiteSpace(message))
                 return;
 
-            if (TriggerCommands && ExecuteCommands(message))
+            if (TriggerCommands && ExecuteCommands(message.TrimEnd('.')))
             {
                 PageInfo.SetCommandMessage(message);
                 return;
