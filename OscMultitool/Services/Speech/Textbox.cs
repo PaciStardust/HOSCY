@@ -206,7 +206,8 @@ namespace Hoscy.Services.Speech
         #endregion
 
         #region Utility
-        private static bool isTyping = false;
+        private static DateTime _lastEnabled = DateTime.MinValue;
+        private static bool _lastSet = false;
 
         /// <summary>
         /// Enables typing indicator for textbox
@@ -215,10 +216,18 @@ namespace Hoscy.Services.Speech
         /// <param name="mode"></param>
         public static void EnableTyping(bool mode)
         {
-            if (mode == isTyping)
+            if (!mode && !_lastSet)
                 return;
 
-            isTyping = mode;
+            if (mode)
+            {
+                if (!Config.Textbox.UseTypingIndicator || _lastEnabled + new TimeSpan(0,0,4) > DateTime.Now)
+                    return;
+
+                _lastEnabled = DateTime.Now;
+            }
+
+            _lastSet = mode;
 
             var packet = new OscPacket("/chatbox/typing", mode ? 1 : 0);
             if (!packet.IsValid)

@@ -248,6 +248,7 @@ namespace Hoscy
             public bool ShowMediaStatus { get; set; } = false;
             public bool AutomaticClearNotification { get; set; } = true;
             public bool AutomaticClearMessage { get; set; } = false;
+            public bool UseTypingIndicator { get; set; } = true;
         }
 
         /// <summary>
