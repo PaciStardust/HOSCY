@@ -226,7 +226,7 @@ namespace Hoscy
             public int TimeoutMultiplier
             {
                 get { return _timeoutMultiplier; }
-                set { _timeoutMultiplier = MinMax(value, 1000, 10000); }
+                set { _timeoutMultiplier = MinMax(value, 250, 10000); }
             }
             private int _timeoutMultiplier = 1250;
 
