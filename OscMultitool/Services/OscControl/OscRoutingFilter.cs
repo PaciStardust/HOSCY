@@ -26,6 +26,9 @@ namespace Hoscy.OscControl
         /// <returns>Matches?</returns>
         public bool Matches(string input)
         {
+            if (Filters.Count == 0)
+                return true;
+
             foreach (var filter in Filters)
                 if (input.StartsWith(filter))
                     return true;
@@ -39,7 +42,7 @@ namespace Hoscy.OscControl
         /// <returns>Success?</returns>
         public bool TestValidity()
         {
-            if (string.IsNullOrWhiteSpace(Ip) || string.IsNullOrWhiteSpace(Name) || Filters.Count == 0)
+            if (string.IsNullOrWhiteSpace(Ip) || string.IsNullOrWhiteSpace(Name))
                 return false;
 
             Logger.Log($"Performing test send of filter {ToString()}");
