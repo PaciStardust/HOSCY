@@ -143,7 +143,13 @@ namespace Hoscy
             _ => true
         };
 
-        private static void OpenNotificationWindow(string title, string subtitle, string notification)
+        /// <summary>
+        /// Creates a notification window
+        /// </summary>
+        /// <param name="title">Title of window</param>
+        /// <param name="subtitle">Text above notification</param>
+        /// <param name="notification">Contents of notification box</param>
+        public static void OpenNotificationWindow(string title, string subtitle, string notification)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {

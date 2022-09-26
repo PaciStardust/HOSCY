@@ -16,6 +16,13 @@ namespace Hoscy.Services.Api
             UseProxy = false
         });
 
+        /// <summary>
+        /// Make a post request
+        /// </summary>
+        /// <param name="url">URL of the request</param>
+        /// <param name="content">Content of the request</param>
+        /// <param name="timeout">Timeout in milliseconds</param>
+        /// <returns>Null if request failed</returns>
         public static async Task<string?> PostAsync(string url, HttpContent content, int timeout)
         {
             var identifier = GetRequestIdentifier(content);
@@ -48,6 +55,11 @@ namespace Hoscy.Services.Api
             return null;
         }
 
+        /// <summary>
+        /// Gets a unique identifier for the request
+        /// </summary>
+        /// <param name="content">Content of the request</param>
+        /// <returns>Unique identifier</returns>
         private static string GetRequestIdentifier(HttpContent content)
             => $"R-{Math.Abs(content.GetHashCode())}";
     }
