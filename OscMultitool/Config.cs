@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -18,6 +19,8 @@ namespace Hoscy
         public static ConfigInputModel Input => Data.Input;
         public static ConfigApiModel Api => Data.Api;
         public static ConfigLoggerModel Logging => Data.Logging;
+
+        public static string Github => "https://github.com/PaciStardust/HOSCY";
 
         public static string ResourcePath { get; private set; }
         public static string ConfigPath { get; private set; }
@@ -72,6 +75,11 @@ namespace Hoscy
         public static float MinMax(float value, float min, float max)
             => Math.Max(Math.Min(max, value), min);
 
+        public static string GetVersion()
+        {
+            var assembly = System.Reflection.Assembly.GetEntryAssembly();
+            return "V." + (assembly != null ? FileVersionInfo.GetVersionInfo(assembly.Location).FileVersion : "Version Unknown");
+        }
 
         /// <summary>
         /// This exists as newtonsoft seems to have an issue with my way of creating a default config

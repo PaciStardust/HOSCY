@@ -58,11 +58,12 @@ namespace Hoscy
         private static void Log(LogMessage message)
         {
             if (message.Severity == LogSeverity.Error)
-            {
-                var window = new ErrorWindow("Error at " + message.GetLocation(),message.Message);
-                window.SetDarkMode(true);
-                window.ShowDialog();
-            }
+                OpenNotificationWindow(
+                    "Error at: " + message.GetLocation(),
+                    "An error has occured\nIf you are unsure why or how to handle it,\nplease open an issue on GitHub or Discord",
+                    message.Message
+                );
+
 
             if (!LogLevelAllowed(message.Severity)) return;
 
@@ -141,6 +142,16 @@ namespace Hoscy
             LogSeverity.Debug => Config.Logging.Debug,
             _ => true
         };
+
+        private static void OpenNotificationWindow(string title, string subtitle, string notification)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                var window = new NotificationWindow(title, subtitle, notification);
+                window.SetDarkMode(true);
+                window.ShowDialog();
+            });
+        }
         #endregion
     }
 
@@ -150,7 +161,6 @@ namespace Hoscy
     public struct LogMessage
     {
         public static int MaxSeverityLength => 8;
-
         public string SourceFile { get; private init; }
         public string SourceMember { get; private init; }
         public int SourceLine { get; private init; }

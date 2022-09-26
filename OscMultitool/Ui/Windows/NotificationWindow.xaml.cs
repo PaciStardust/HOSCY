@@ -17,20 +17,23 @@ namespace Hoscy.Ui.Windows
     /// <summary>
     /// Interaction logic for ErrorWindow.xaml
     /// </summary>
-    public partial class ErrorWindow : Window
+    public partial class NotificationWindow : Window
     {
-        public ErrorWindow(string title, string error)
+        public NotificationWindow(string title, string subtitle, string notifiction)
         {
             InitializeComponent();
 
             Title = title;
-            valueError.Text = error;
+            valueNotification.Text = notifiction;
+            valueSubtitle.Text = subtitle;
+
+            System.Media.SystemSounds.Hand.Play();
         }
 
         private void Button_OpenClipboard(object sender, RoutedEventArgs e)
-            => Clipboard.SetText(valueError.Text);
+            => Clipboard.SetText(valueNotification.Text);
 
         private void Button_OpenGithub(object sender, RoutedEventArgs e)
-            => UiHelper.StartProcess("https://github.com/PaciStardust/HOSCY");
+            => UiHelper.StartProcess(Config.Github);
     }
 }

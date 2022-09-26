@@ -27,9 +27,12 @@ namespace Hoscy.Services.Api
             }
 
             Logger.Log("Requesting translation of text: " + text);
-            string result = (await _client.SendText(text));
+            var result = await _client.SendText(text);
 
-            return string.IsNullOrWhiteSpace(result) ? text : result;
+            if (result == null || string.IsNullOrWhiteSpace(result))
+                return text;
+
+            return result;
         }
 
         public static void ReloadClient()

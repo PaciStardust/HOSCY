@@ -10,76 +10,43 @@ namespace Hoscy.Services.Api
     public class ApiClient
     {
         private Config.ApiPresetModel? _preset;
-        private HttpClient? _client;
 
         public bool LoadPreset(Config.ApiPresetModel preset)
         {
             if (preset.Equals(_preset))
                 return true;
 
+            Clear();
+
             if (!preset.IsValid())
             {
                 Logger.Error($"Did not reload ApiClient as preset \"{preset.Name}\" is invalid!");
-                Clear();
                 return false;
             }
 
-            try
-            {
-                var client = new HttpClient(new SocketsHttpHandler()
-                {
-                    PooledConnectionLifetime = TimeSpan.FromMinutes(1),
-                    UseProxy = false
-                })
-                {
-                    BaseAddress = new Uri(preset.PostUrl),
-                    Timeout = TimeSpan.FromMilliseconds(preset.ConnectionTimeout)
-                };
-
-                foreach (var headerInfo in preset.HeaderValues)
-                {
-                    if (!client.DefaultRequestHeaders.TryAddWithoutValidation(headerInfo.Key, headerInfo.Value))
-                        Logger.Warning($"Skipped adding header info {headerInfo.Key} : {headerInfo.Value} as it was deemed invalid");
-                }
-
-                _client = client;
-                _preset = preset;
-                return true;
-            }
-            catch (Exception e)
-            {
-                Logger.Error(e);
-                Clear();
-                return false;
-            }
+            _preset = preset;
+            return true;
         }
 
-        private async Task<string> Send(HttpContent content)
+        private async Task<string?> Send(HttpContent content)
         {
-            if (_preset == null || _client == null || !_preset.IsValid())
-                return string.Empty;
+            if (_preset == null || !_preset.IsValid())
+                return null;
 
-            var identifier = "R-" + Math.Abs(content.GetHashCode());
+            AddHeaders(content);
 
-            var startTime = DateTime.Now;
-            Logger.Debug($"Sending to {_preset.PostUrl} ({identifier})");
-            var response = await _client.PostAsync("", content);
-            var jsonIn = await response.Content.ReadAsStringAsync();
+            var jsonIn = await HoscyClient.PostAsync(_preset.PostUrl, content, _preset.ConnectionTimeout);
 
-            if (!response.IsSuccessStatusCode)
-            {
-                Logger.Error(jsonIn);
-                return string.Empty;
-            }
+            if (jsonIn == null)
+                return null;
 
             var result = TextProcessor.ExtractFromJson(_preset.ResultField, jsonIn);
-            Logger.Debug($"Received data from request ({(DateTime.Now - startTime).TotalMilliseconds}ms): {identifier} => {jsonIn}");
             return result;
         }
 
-        public async Task<string> SendBytes(byte[] bytes)
+        public async Task<string?> SendBytes(byte[] bytes)
         {
-            if (_preset == null) return string.Empty;
+            if (_preset == null) return null;
 
             var content = new ByteArrayContent(bytes);
             if (string.IsNullOrWhiteSpace(_preset.ContentType) || !content.Headers.TryAddWithoutValidation("Content-Type", _preset.ContentType))
@@ -91,7 +58,7 @@ namespace Hoscy.Services.Api
             return await Send(content);
         }
 
-        public async Task<string> SendText(string text)
+        public async Task<string?> SendText(string text)
         {
             if (_preset == null) return string.Empty;
             var jsonOut = ReplaceToken(_preset.JsonData, "[T]", text);
@@ -105,12 +72,23 @@ namespace Hoscy.Services.Api
             return await Send(new StringContent(jsonOut, Encoding.UTF8, "application/json"));
         }
 
-        public void Clear()
+        private void AddHeaders(HttpContent content)
         {
-            _client?.Dispose();
-            _client = null;
-            _preset = null;
+            if (_preset == null)
+                return;
+
+            foreach (var headerInfo in _preset.HeaderValues)
+            {
+                if (!content.Headers.TryAddWithoutValidation(headerInfo.Key, headerInfo.Value))
+                {
+                    Logger.Error($"Skipped adding header info \"{headerInfo.Key} : {headerInfo.Value}\". As it was deemed invalid, it will be removed");
+                    _preset.HeaderValues.Remove(headerInfo.Key);
+                }
+            }
         }
+
+        public void Clear()
+            => _preset = null;
 
         private static string ReplaceToken(string text, string token, string value)
             => text.Replace(token, value);

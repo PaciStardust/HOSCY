@@ -16,8 +16,7 @@ namespace Hoscy.Ui.Pages
         public PageConfig()
         {
             InitializeComponent();
-            var assembly = System.Reflection.Assembly.GetEntryAssembly();
-            versionText.Content = "V." + (assembly != null ? FileVersionInfo.GetVersionInfo(assembly.Location).FileVersion : "Version Unknown");
+            versionText.Content = Config.GetVersion();
         }
 
         private void Button_OpenLogFilter(object sender, RoutedEventArgs e)
@@ -35,7 +34,7 @@ namespace Hoscy.Ui.Pages
             Devices.ForceReload();
         }
         private void Button_OpenDocs(object sender, RoutedEventArgs e)
-            => UiHelper.StartProcess("https://github.com/PaciStardust/HOSCY");
+            => UiHelper.StartProcess(Config.Github);
         private void Button_OpenConfig(object sender, RoutedEventArgs e)
             => UiHelper.StartProcess(Config.ResourcePath);
     }

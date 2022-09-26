@@ -106,7 +106,7 @@ namespace Hoscy.Services.Speech.Recognizers
 
             var result = await _client.SendBytes(audioData);
 
-            var message = Denoise(result);
+            var message = Denoise(result ?? string.Empty);
             if (string.IsNullOrWhiteSpace(message))
                 return;
 
