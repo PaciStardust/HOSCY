@@ -221,7 +221,7 @@ namespace Hoscy.Services.Speech
 
             if (mode)
             {
-                if (!Config.Textbox.UseTypingIndicator || _lastEnabled + new TimeSpan(0,0,4) > DateTime.Now)
+                if ((!Config.Speech.UseTextbox && !Config.Textbox.UseIndicatorWithoutBox) || _lastEnabled + new TimeSpan(0,0,4) > DateTime.Now)
                     return;
 
                 _lastEnabled = DateTime.Now;

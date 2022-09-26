@@ -14,6 +14,7 @@ namespace Hoscy.OscControl
     public static class Osc
     {
         private static OscListener? _listener;
+        public static bool HasInvalidFilters { get; private set; } = false;
 
         #region Sending
         /// <summary>
@@ -76,6 +77,8 @@ namespace Hoscy.OscControl
         private static List<OscRoutingFilter> CreateInputFilters()
         {
             Logger.PInfo("Creating input filters");
+            HasInvalidFilters = false;
+
             List<OscRoutingFilter> filters = new();
             if (Config.Osc.RoutingFilters.Count == 0)
             {
@@ -90,9 +93,12 @@ namespace Hoscy.OscControl
                 if (!newFilter.TestValidity())
                 {
                     Logger.Warning($"Skipping creation of listener \"{filter.Name}\" as its values are invalid (Name / Port / Ip / Filters)");
+                    filter.SetValidity(false);
+                    HasInvalidFilters = true;
                     continue;
                 }
 
+                filter.SetValidity(true);
                 filters.Add(newFilter);
                 Logger.Info($"Added new routing filter to listener: {newFilter}");
             }

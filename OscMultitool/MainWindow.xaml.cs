@@ -14,11 +14,11 @@ namespace Hoscy
     {
         public MainWindow()
         {
-            //Init
-            Osc.RecreateListener();
             this.SetDarkMode(true);
-
             InitializeComponent();
+
+            Osc.RecreateListener();
+
             listBox.SelectedIndex = 0;
             Media.StartMediaDetection();
         }

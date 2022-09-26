@@ -72,7 +72,7 @@
                 <StackPanel Style="{StaticResource HStackIndent}">
                     <CheckBox x:Name="textboxAutoClearMsg" Content="Clear automatically after messages" IsChecked="{Binding Textbox.AutomaticClearMessage, Source={x:Static local:Config.Data}}"/>
                     <CheckBox x:Name="textboxAutoClearNot" Margin="0,4,0,0" Content="Clear automatically after notifications" IsChecked="{Binding Textbox.AutomaticClearNotification, Source={x:Static local:Config.Data}}"/>
-                    <CheckBox x:Name="textboxUseIndicator" Margin="0,4,0,0" Content="Use typing indicator" IsChecked="{Binding Textbox.UseTypingIndicator, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="textboxToggleIndicator" Margin="0,4,0,0" Content="Typing indicator without Textbox" IsChecked="{Binding Textbox.UseIndicatorWithoutBox, Source={x:Static local:Config.Data}}"/>
                     <CheckBox x:Name="textboxMediaStatus" Margin="0,4,0,0" Content="Show media status" IsChecked="{Binding Textbox.ShowMediaStatus, Source={x:Static local:Config.Data}}"/>
 
                     <WrapPanel Margin="0,4,0,0">

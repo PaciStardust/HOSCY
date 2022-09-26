@@ -257,7 +257,7 @@ namespace Hoscy
             public bool ShowMediaStatus { get; set; } = false;
             public bool AutomaticClearNotification { get; set; } = true;
             public bool AutomaticClearMessage { get; set; } = false;
-            public bool UseTypingIndicator { get; set; } = true;
+            public bool UseIndicatorWithoutBox { get; set; } = false;
         }
 
         /// <summary>
@@ -361,8 +361,15 @@ namespace Hoscy
             public string Ip { get; set; } = "127.0.0.1";
             public List<string> Filters { get; set; } = new();
 
+            private bool _isValid = true;
             public override string ToString()
-            => $"{Name} => {Ip}:{Port}";
+            => $"{(_isValid ? "" : "[x]")}{Name} => {Ip}:{Port}";
+
+            /// <summary>
+            /// Sets validity to be displayed in filter window
+            /// </summary>
+            public void SetValidity(bool state)
+                => _isValid = state;
         }
 
         public class ReplacementModel
@@ -391,7 +398,7 @@ namespace Hoscy
             public ReplacementModel() { }
 
             public override string ToString()
-                => $"{(Enabled ? "" : "[D] ")}{Text} => {Replacement}";
+                => $"{(Enabled ? "" : "[x] ")}{Text} => {Replacement}";
         }
 
         public class ApiPresetModel
