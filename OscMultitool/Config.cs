@@ -18,9 +18,10 @@ namespace Hoscy
         public static ConfigTextboxModel Textbox => Data.Textbox;
         public static ConfigInputModel Input => Data.Input;
         public static ConfigApiModel Api => Data.Api;
-        public static ConfigLoggerModel Logging => Data.Logging;
+        public static ConfigLoggerModel Debug => Data.Debug;
 
         public static string Github => "https://github.com/PaciStardust/HOSCY";
+        public static string GithubLatest => "https://api.github.com/repos/pacistardust/hoscy/releases/latest";
 
         public static string ResourcePath { get; private set; }
         public static string ConfigPath { get; private set; }
@@ -78,7 +79,7 @@ namespace Hoscy
         public static string GetVersion()
         {
             var assembly = System.Reflection.Assembly.GetEntryAssembly();
-            return "V." + (assembly != null ? FileVersionInfo.GetVersionInfo(assembly.Location).FileVersion : "Version Unknown");
+            return "v." + (assembly != null ? FileVersionInfo.GetVersionInfo(assembly.Location).FileVersion : "Version Unknown");
         }
 
         /// <summary>
@@ -95,7 +96,7 @@ namespace Hoscy
                 "einen"
             });
 
-            config.Logging.LogFilter.AddRange(new List<string>()
+            config.Debug.LogFilter.AddRange(new List<string>()
             {
                 "/angular",
                 "/grounded",
@@ -142,7 +143,7 @@ namespace Hoscy
             public ConfigTextboxModel Textbox { get; init; } = new();
             public ConfigInputModel Input { get; init; } = new();
             public ConfigApiModel Api { get; init; } = new();
-            public ConfigLoggerModel Logging { get; init; } = new();
+            public ConfigLoggerModel Debug { get; init; } = new();
         }
 
         /// <summary>
@@ -321,6 +322,7 @@ namespace Hoscy
         public class ConfigLoggerModel
         {
             public bool OpenLogWindow { get; set; } = false;
+            public bool CheckUpdates { get; set; } = true;
             public bool Error { get; set; } = true;
             public bool Warning { get; set; } = true;
             public bool Info { get; set; } = true;

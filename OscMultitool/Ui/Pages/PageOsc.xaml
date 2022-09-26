@@ -14,7 +14,7 @@
             <WrapPanel>
                 <Label Content="Open Sound Control" Style="{StaticResource HLabelL}"/>
                 <Button Content="Modify Routing" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_ModifyRouting"/>
-                <Label x:Name="invalidFilterLabel" Content="Invalid filters" VerticalAlignment="Center" Foreground="{x:Static ui:UiHelper.ColorInvalid}" Visibility="Hidden"/>
+                <Label x:Name="invalidFilterLabel" Content="(Invalid)" VerticalAlignment="Center" Foreground="{x:Static ui:UiHelper.ColorInvalid}" Visibility="Hidden"/>
             </WrapPanel>
 
             <StackPanel Style="{StaticResource HStackIndent}">

@@ -155,12 +155,12 @@ namespace Hoscy.Services.Speech
         /// <param name="name">Name of the field to search</param>
         /// <param name="json">The text inside the field or string.Empty if unavailable</param>
         /// <returns></returns>
-        public static string ExtractFromJson(string name, string json)
+        public static string? ExtractFromJson(string name, string json)
         {
             string regstring = name + @""" *: *""(?<value>[^""]*)""";
             var regex = new Regex(regstring, RegexOptions.IgnoreCase);
 
-            return regex.Match(json)?.Groups["value"].Value ?? string.Empty;
+            return regex.Match(json)?.Groups["value"].Value ?? null;
         }
         #endregion
     }

@@ -1,4 +1,5 @@
-﻿using Hoscy.Services.Speech;
+﻿using Hoscy.Services.Api;
+using Hoscy.Services.Speech;
 using Hoscy.Services.Speech.Utilities;
 using Hoscy.Ui.Windows;
 using System;
@@ -21,7 +22,7 @@ namespace Hoscy.Ui.Pages
 
         private void Button_OpenLogFilter(object sender, RoutedEventArgs e)
         {
-            var window = new ModifyListWindow("Edit Logging Filter", "Log Text", Config.Logging.LogFilter);
+            var window = new ModifyListWindow("Edit Logging Filter", "Log Text", Config.Debug.LogFilter);
             window.SetDarkMode(true);
             window.ShowDialog();
         }
@@ -37,5 +38,7 @@ namespace Hoscy.Ui.Pages
             => UiHelper.StartProcess(Config.Github);
         private void Button_OpenConfig(object sender, RoutedEventArgs e)
             => UiHelper.StartProcess(Config.ResourcePath);
+        private void Button_CheckUpdate(object sender, RoutedEventArgs e)
+            => HoscyClient.CheckForUpdates();
     }
 }

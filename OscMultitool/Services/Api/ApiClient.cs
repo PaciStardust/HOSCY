@@ -35,7 +35,7 @@ namespace Hoscy.Services.Api
 
             AddHeaders(content);
 
-            var jsonIn = await HoscyClient.PostAsync(_preset.PostUrl, content, _preset.ConnectionTimeout);
+            var jsonIn = await HoscyClient.RequestAsync(_preset.PostUrl, content, _preset.ConnectionTimeout);
 
             if (jsonIn == null)
                 return null;

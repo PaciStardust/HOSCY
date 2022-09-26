@@ -24,7 +24,7 @@ namespace Hoscy
         #region Logger Start
         static Logger()
         {
-            if (Config.Logging.OpenLogWindow)
+            if (Config.Debug.OpenLogWindow)
                 AllocConsole();
 
             _logWriter = StartLogger();
@@ -40,6 +40,7 @@ namespace Hoscy
             {
                 var writer = File.CreateText(Config.LogPath);
                 writer.AutoFlush = true;
+                PInfo("HOSCY VERSION " + Config.GetVersion());
                 PInfo("Created logging file at " + Config.LogPath);
                 return writer;
             }
@@ -73,7 +74,7 @@ namespace Hoscy
                     return;
 
                 var lowerMessage = message.Message.ToLower();
-                foreach (var filter in Config.Logging.LogFilter)
+                foreach (var filter in Config.Debug.LogFilter)
                     if (lowerMessage.Contains(filter))
                         return;
 
@@ -133,13 +134,13 @@ namespace Hoscy
         /// <returns>Logging enabled?</returns>
         private static bool LogLevelAllowed(LogSeverity severity) => severity switch
         {
-            LogSeverity.Error => Config.Logging.Error,
-            LogSeverity.ErrSilent => Config.Logging.Error,
-            LogSeverity.Warning => Config.Logging.Warning,
-            LogSeverity.PrioInfo => Config.Logging.PrioInfo,
-            LogSeverity.Info => Config.Logging.Info,
-            LogSeverity.Log => Config.Logging.Log,
-            LogSeverity.Debug => Config.Logging.Debug,
+            LogSeverity.Error => Config.Debug.Error,
+            LogSeverity.ErrSilent => Config.Debug.Error,
+            LogSeverity.Warning => Config.Debug.Warning,
+            LogSeverity.PrioInfo => Config.Debug.PrioInfo,
+            LogSeverity.Info => Config.Debug.Info,
+            LogSeverity.Log => Config.Debug.Log,
+            LogSeverity.Debug => Config.Debug.Debug,
             _ => true
         };
 

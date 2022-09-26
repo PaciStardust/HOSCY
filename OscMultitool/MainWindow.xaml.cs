@@ -1,7 +1,11 @@
 ﻿using Hoscy.OscControl;
 using Hoscy.Services.Api;
+using Hoscy.Services.Speech;
 using Hoscy.Ui;
 using Hoscy.Ui.Controls;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -21,6 +25,9 @@ namespace Hoscy
 
             listBox.SelectedIndex = 0;
             Media.StartMediaDetection();
+
+            if (Config.Debug.CheckUpdates)
+                HoscyClient.CheckForUpdates();
         }
 
         private void ListBox_SelectionChanged(object? sender, SelectionChangedEventArgs? e)

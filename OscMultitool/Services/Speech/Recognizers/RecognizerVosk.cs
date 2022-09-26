@@ -133,7 +133,7 @@ namespace Hoscy.Services.Speech.Recognizers
                 return;
             }
 
-            string result = CleanMessage(_rec.Result());
+            var result = CleanMessage(_rec.Result());
 
             if (!string.IsNullOrWhiteSpace(result))
             {
@@ -155,7 +155,7 @@ namespace Hoscy.Services.Speech.Recognizers
                 return;
             }
 
-            string result = CleanMessage(_rec.PartialResult());
+            var result = CleanMessage(_rec.PartialResult());
 
             if (string.IsNullOrWhiteSpace(result))
                 return;
@@ -189,8 +189,14 @@ namespace Hoscy.Services.Speech.Recognizers
         #endregion
 
         #region Cleanup
-        private static string CleanMessage(string res)
-            => Denoise(TextProcessor.ExtractFromJson(string.Empty, res));
+        private static string? CleanMessage(string res)
+        {
+            var extracted = TextProcessor.ExtractFromJson(string.Empty, res);
+            if (extracted == null)
+                return null;
+
+            return Denoise(extracted);
+        }
         #endregion
     }
 }

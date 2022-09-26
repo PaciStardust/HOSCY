@@ -24,22 +24,24 @@
                 </WrapPanel>
 
                 <StackPanel Style="{StaticResource HStackIndent}">
-                    <CheckBox x:Name="loggingLogErrors" Content="Errors" IsChecked="{Binding Logging.Error, Source={x:Static local:Config.Data}}"/>
-                    <CheckBox x:Name="loggingLogWarning" Margin="0,4,0,0" Content="Warnings" IsChecked="{Binding Logging.Warning, Source={x:Static local:Config.Data}}"/>
-                    <CheckBox x:Name="loggingLogPInfo" Margin="0,4,0,0" Content="Priority Infos" IsChecked="{Binding Logging.PrioInfo, Source={x:Static local:Config.Data}}"/>
-                    <CheckBox x:Name="loggingLogInfo" Margin="0,4,0,0" Content="Infos" IsChecked="{Binding Logging.Info, Source={x:Static local:Config.Data}}"/>
-                    <CheckBox x:Name="loggingLogLog" Margin="0,4,0,0" Content="Logs" IsChecked="{Binding Logging.Log, Source={x:Static local:Config.Data}}"/>
-                    <CheckBox x:Name="loggingLogDebug" Margin="0,4,0,0" Content="Debugs" IsChecked="{Binding Logging.Debug, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="loggingLogErrors" Content="Errors" IsChecked="{Binding Debug.Error, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="loggingLogWarning" Margin="0,4,0,0" Content="Warnings" IsChecked="{Binding Debug.Warning, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="loggingLogPInfo" Margin="0,4,0,0" Content="Priority Infos" IsChecked="{Binding Debug.PrioInfo, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="loggingLogInfo" Margin="0,4,0,0" Content="Infos" IsChecked="{Binding Debug.Info, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="loggingLogLog" Margin="0,4,0,0" Content="Logs" IsChecked="{Binding Debug.Log, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="loggingLogDebug" Margin="0,4,0,0" Content="Debugs" IsChecked="{Binding Debug.Debug, Source={x:Static local:Config.Data}}"/>
                 </StackPanel>
 
                 <!-- Other Options -->
                 <Label Content="Other Options" Style="{StaticResource HLabelM}" Margin="0,16,0,0"/>
 
                 <StackPanel Style="{StaticResource HStackIndent}">
-                    <CheckBox x:Name="loggingOpenWindow" Content="Open log window on startup" IsChecked="{Binding Logging.OpenLogWindow, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="loggingOpenWindow" Content="Open log window on startup" IsChecked="{Binding Debug.OpenLogWindow, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="loggingAutoUpdate" Content="Automatically check for updates" IsChecked="{Binding Debug.CheckUpdates, Source={x:Static local:Config.Data}}" Margin="0,4,0,0"/>
                     <WrapPanel Margin="0,4,0,0">
                         <Button x:Name="openDocsButton" Content="Open Docs" HorizontalAlignment="Left" Click="Button_OpenDocs"/>
                         <Button x:Name="openConfigButton" Margin="8,0,0,0" Content="Open Config" HorizontalAlignment="Left" Click="Button_OpenConfig"/>
+                        <Button x:Name="openCheckUpdate" Margin="8,0,0,0" Content="Check Update" HorizontalAlignment="Left" Click="Button_CheckUpdate"/>
                     </WrapPanel>
                     <Button x:Name="reloadDevicesButton" Margin="0,8,0,0" Content="Reload devices" Foreground="{x:Static ui:UiHelper.ColorInvalid}" HorizontalAlignment="Left" Click="Button_ReloadDevices"/>
                 </StackPanel>
