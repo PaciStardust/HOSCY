@@ -45,7 +45,7 @@ namespace Hoscy.Services.Api
                     ? await _client.GetAsync(url, cts.Token)
                     : await _client.PostAsync(url, content, cts.Token);
 
-                var jsonIn = await response.Content.ReadAsStringAsync(CancellationToken.None);
+                var jsonIn = await response.Content.ReadAsStringAsync(cts.Token);
 
                 if (!response.IsSuccessStatusCode)
                 {
