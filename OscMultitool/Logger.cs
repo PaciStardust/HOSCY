@@ -40,7 +40,6 @@ namespace Hoscy
             {
                 var writer = File.CreateText(Config.LogPath);
                 writer.AutoFlush = true;
-                PInfo("HOSCY VERSION " + Config.GetVersion());
                 PInfo("Created logging file at " + Config.LogPath);
                 return writer;
             }

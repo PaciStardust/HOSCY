@@ -1,6 +1,7 @@
 ﻿using Hoscy.Services.Speech;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -12,7 +13,6 @@ namespace Hoscy.Services.Api
     public static class HoscyClient
     {
         private static readonly HttpClient _client;
-
         static HoscyClient()
         {
             _client = new(new SocketsHttpHandler()
@@ -25,14 +25,16 @@ namespace Hoscy.Services.Api
             _client.DefaultRequestHeaders.UserAgent.Add(new("User-Agent", "request"));
         }
 
+        #region Requests
         /// <summary>
         /// Either does a post or get
+        /// <br/><b>THESE WILL LAG ON SOME SYSTEMS, IF YOU KNOW WHY PLEASE LET ME KNOW</b>
         /// </summary>
         /// <param name="url">Target URL</param>
         /// <param name="content">Content, if this is null, a get will be performed</param>
         /// <param name="timeout">Timeout in ms</param>
         /// <returns>Response, if null this failed</returns>
-        public static async Task<string?> RequestAsync(string url, HttpContent? content, int timeout = 5000, bool notify = true)
+        public static async Task<string?> RequestAsync(string url, HttpContent? content = null, int timeout = 5000, bool notify = true)
         {
             var identifier = GetRequestIdentifier();
 
@@ -65,15 +67,23 @@ namespace Hoscy.Services.Api
             }
             return null;
         }
+        #endregion
 
+        #region Update Checking
+        /// <summary>
+        /// Checks if there is an update available, displays a window containing changelog
+        /// </summary>
         public static void CheckForUpdates()
            => Task.Run(async() => await CheckForUpdatesInternal()).ConfigureAwait(false);
+        /// <summary>
+        /// Internal version to avoid async hell
+        /// </summary>
         private static async Task CheckForUpdatesInternal()
         {
             var currVer = Config.GetVersion();
             Logger.PInfo("Attempting to check for newest HOSCY version, current is " + currVer);
 
-            var res = await RequestAsync(Config.GithubLatest, null, notify: false);
+            var res = await RequestAsync(Config.GithubLatest, notify: false);
             if (res == null)
             {
                 Logger.Warning("Failed to grab version number from GitHub");
@@ -92,12 +102,15 @@ namespace Hoscy.Services.Api
             else
                 Logger.Info("HOSCY is up to date");
         }
+        #endregion
 
+        #region Utility
         /// <summary>
         /// Gets a unique identifier for the request
         /// </summary>
         /// <returns>Unique identifier</returns>
         private static string GetRequestIdentifier()
             => "R-" + Guid.NewGuid().ToString().Split('-')[0];
+        #endregion
     }
 }
