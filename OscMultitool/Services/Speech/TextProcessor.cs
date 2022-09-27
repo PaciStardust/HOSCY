@@ -157,10 +157,10 @@ namespace Hoscy.Services.Speech
         /// <returns></returns>
         public static string? ExtractFromJson(string name, string json)
         {
-            string regstring = name + @""" *: *""(?<value>[^""]*)""";
+            string regstring = name + @""" *: *""(?<value>([^""\\]|\\.)*)""";
             var regex = new Regex(regstring, RegexOptions.IgnoreCase);
 
-            return regex.Match(json)?.Groups["value"].Value ?? null;
+            return regex.Match(json)?.Groups["value"].Value.Replace("\\\"", "\"") ?? null;
         }
         #endregion
     }

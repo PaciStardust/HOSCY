@@ -81,10 +81,13 @@ namespace Hoscy.Services.Api
             }
 
             var newVer = TextProcessor.ExtractFromJson("tag_name", res);
+            var newBody = TextProcessor.ExtractFromJson("body", res);
             if (newVer != null && currVer != newVer)
             {
                 Logger.Warning($"New version available (Latest is {newVer})");
-                Logger.OpenNotificationWindow("New version available", "A new version of HOSCY is available", $"Current: {currVer}\nLatest:{newVer}");
+
+                var notifText = $"Current: {currVer}\nLatest: {newVer}{(string.IsNullOrWhiteSpace(newBody) ? string.Empty : $"\n\n{newBody.Replace("\\r\\n", "\n")}")}";
+                Logger.OpenNotificationWindow("New version available", "A new version of HOSCY is available", notifText);
             }
             else
                 Logger.Info("HOSCY is up to date");
