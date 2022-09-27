@@ -1,5 +1,4 @@
-﻿using Hoscy;
-using Microsoft.CognitiveServices.Speech;
+﻿using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
 using NAudio.CoreAudioApi;
 using System;

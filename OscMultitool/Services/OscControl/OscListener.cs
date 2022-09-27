@@ -1,5 +1,4 @@
-﻿using Hoscy;
-using Hoscy.Services.Speech;
+﻿using Hoscy.Services.Speech;
 using SharpOSC;
 using System;
 using System.Collections.Generic;

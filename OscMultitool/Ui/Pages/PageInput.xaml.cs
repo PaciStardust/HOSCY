@@ -1,5 +1,4 @@
-﻿using Hoscy;
-using Hoscy.Services.Speech;
+﻿using Hoscy.Services.Speech;
 using Hoscy.Ui.Windows;
 using System.Linq;
 using System.Windows;

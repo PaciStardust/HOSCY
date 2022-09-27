@@ -1,6 +1,4 @@
-﻿using Hoscy;
-using Hoscy.Services.Speech;
-using System;
+﻿using Hoscy.Services.Speech;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;

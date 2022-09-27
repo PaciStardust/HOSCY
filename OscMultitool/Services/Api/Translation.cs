@@ -1,5 +1,4 @@
-﻿using Hoscy;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Hoscy.Services.Api
 {

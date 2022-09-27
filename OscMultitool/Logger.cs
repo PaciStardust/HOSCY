@@ -1,11 +1,9 @@
-﻿using Hoscy;
-using Hoscy.Ui;
+﻿using Hoscy.Ui;
 using Hoscy.Ui.Windows;
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
 using System.Windows;
 
 namespace Hoscy

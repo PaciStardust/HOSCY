@@ -2,8 +2,6 @@
 using Hoscy.Services.Speech;
 using Hoscy.Services.Speech.Utilities;
 using Hoscy.Ui.Windows;
-using System;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 

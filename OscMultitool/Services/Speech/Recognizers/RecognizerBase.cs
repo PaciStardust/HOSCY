@@ -1,5 +1,4 @@
-﻿using Hoscy;
-using Hoscy.OscControl;
+﻿using Hoscy.OscControl;
 using Hoscy.Services.Speech.Recognizers;
 using System.Linq;
 using System.Text.RegularExpressions;

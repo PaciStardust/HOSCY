@@ -1,5 +1,4 @@
-﻿using Hoscy;
-using System;
+﻿using System;
 using System.Speech.Recognition;
 
 namespace Hoscy.Services.Speech.Recognizers
