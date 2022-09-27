@@ -86,7 +86,7 @@ namespace Hoscy.Services.Api
             {
                 Logger.Warning($"New version available (Latest is {newVer})");
 
-                var notifText = $"Current: {currVer}\nLatest: {newVer}{(string.IsNullOrWhiteSpace(newBody) ? string.Empty : $"\n\n{newBody.Replace("\\r\\n", "\n")}")}";
+                var notifText = $"Current: {currVer}\nLatest: {newVer}{(string.IsNullOrWhiteSpace(newBody) ? string.Empty : $"\n\n{newBody}")}";
                 Logger.OpenNotificationWindow("New version available", "A new version of HOSCY is available", notifText);
             }
             else

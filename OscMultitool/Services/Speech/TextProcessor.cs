@@ -160,7 +160,8 @@ namespace Hoscy.Services.Speech
             string regstring = name + @""" *: *""(?<value>([^""\\]|\\.)*)""";
             var regex = new Regex(regstring, RegexOptions.IgnoreCase);
 
-            return regex.Match(json)?.Groups["value"].Value.Replace("\\\"", "\"") ?? null;
+            var result = regex.Match(json)?.Groups["value"].Value ?? null;
+            return string.IsNullOrWhiteSpace(result) ? null : Regex.Unescape(result);
         }
         #endregion
     }
