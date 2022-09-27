@@ -11,6 +11,7 @@ namespace Hoscy.OscControl
         private readonly IReadOnlyList<OscRoutingFilter> _filters;
         private UDPListener? _listener;
         private readonly int _port;
+        public int Port => _port;
 
         public OscListener(int port, List<OscRoutingFilter> filters)
         {

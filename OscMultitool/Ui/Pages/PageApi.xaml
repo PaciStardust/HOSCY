@@ -21,6 +21,7 @@
                 <WrapPanel>
                     <Label Style="{StaticResource HLabelM}" Content="Translation API"/>
                     <Button Content="Reload" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_ReloadTranslation"/>
+                    <Label x:Name="changeIndicatorTranslation" Foreground="{x:Static ui:UiHelper.ColorInvalid}" Content="(Unapplied changes)" FontSize="14" VerticalAlignment="Center" Visibility="Hidden"/>
                 </WrapPanel>
 
                 <StackPanel Style="{StaticResource HStackIndent}">

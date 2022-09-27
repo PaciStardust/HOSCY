@@ -13,13 +13,13 @@ namespace Hoscy.Ui.Pages
         public PageOsc()
         {
             InitializeComponent();
-            CheckInvalidIndicator();
+            CheckIndicators();
         }
 
         private void Button_ReloadListener(object sender, RoutedEventArgs e)
         {
             Osc.RecreateListener();
-            CheckInvalidIndicator();
+            CheckIndicators();
         }
 
         private void Button_ModifyRouting(object sender, RoutedEventArgs e)
@@ -28,10 +28,16 @@ namespace Hoscy.Ui.Pages
             window.SetDarkMode(true);
             window.ShowDialog();
             Osc.RecreateListener();
-            CheckInvalidIndicator();
+            CheckIndicators();
         }
 
-        private void CheckInvalidIndicator()
-            => invalidFilterLabel.Visibility = Osc.HasInvalidFilters ? Visibility.Visible : Visibility.Hidden;
+        private void CheckIndicators()
+        {
+            invalidFilterLabel.Visibility = Osc.HasInvalidFilters ? Visibility.Visible : Visibility.Hidden;
+            changeIndicator.Visibility = Config.Osc.PortListen != Osc.ListenerPort ? Visibility.Visible : Visibility.Hidden;
+        }
+
+        private void OscOscPortIn_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+            => CheckIndicators();
     }
 }

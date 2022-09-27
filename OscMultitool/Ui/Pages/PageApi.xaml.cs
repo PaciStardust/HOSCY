@@ -11,10 +11,12 @@ namespace Hoscy.Ui.Pages
     /// </summary>
     public partial class PageApi : Page
     {
+        private static bool _changedValuesTranslation = false;
         public PageApi()
         {
             InitializeComponent();
             LoadBoxes();
+            UpdateChangedValuesIndicator();
         }
 
         private void LoadBoxes()
@@ -23,6 +25,15 @@ namespace Hoscy.Ui.Pages
             LoadPresetBox(recognitionApiBox, Config.Api.RecognitionPreset);
         }
 
+        private void UpdateChangedValuesIndicator()
+            => changeIndicatorTranslation.Visibility = _changedValuesTranslation ? Visibility.Visible : Visibility.Hidden;
+        private void SetChangedValueTranslation(bool state)
+        {
+            _changedValuesTranslation = state;
+            UpdateChangedValuesIndicator();
+        }
+
+
         #region Buttons
         private void Button_ModifyPresets(object sender, RoutedEventArgs e)
         {
@@ -30,10 +41,14 @@ namespace Hoscy.Ui.Pages
             window.SetDarkMode(true);
             window.ShowDialog();
             LoadBoxes();
+            SetChangedValueTranslation(true);
         }
 
         private void Button_ReloadTranslation(object sender, RoutedEventArgs e)
-            => Translation.ReloadClient();
+        {
+            Translation.ReloadClient();
+            SetChangedValueTranslation(false);
+        }
         #endregion
 
         #region SelectionChanged
@@ -46,6 +61,7 @@ namespace Hoscy.Ui.Pages
             Config.Api.RecognitionPreset = Config.Api.Presets[recognitionApiBox.SelectedIndex].Name;
         }
 
+        private static bool _translatorApiBoxFirstChange = true;
         private void TranslatorApiBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             int index = translatorApiBox.SelectedIndex;
@@ -53,6 +69,11 @@ namespace Hoscy.Ui.Pages
                 return;
 
             Config.Api.TranslationPreset = Config.Api.Presets[translatorApiBox.SelectedIndex].Name;
+
+            if (_translatorApiBoxFirstChange)
+                _translatorApiBoxFirstChange = false;
+            else
+                SetChangedValueTranslation(true);
         }
         #endregion
 

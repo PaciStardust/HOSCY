@@ -41,7 +41,7 @@
                     </WrapPanel>
 
                     <WrapPanel Margin="0,4,0,0">
-                        <TextBox x:Name="oscOscPortIn" Tag="Port in..." Style="{StaticResource HTextBoxShort}">
+                        <TextBox x:Name="oscOscPortIn" Tag="Port in..." Style="{StaticResource HTextBoxShort}" PreviewKeyDown="OscOscPortIn_PreviewKeyDown">
                             <TextBox.Text>
                                 <Binding Source="{x:Static local:Config.Data}" Path="Osc.PortListen" UpdateSourceTrigger="PropertyChanged">
                                     <Binding.ValidationRules>
@@ -52,6 +52,7 @@
                         </TextBox>
                         <Label Content="OSC port in" VerticalAlignment="Center"/>
                         <Button Style="{StaticResource HButtonSmall}" Content="Reload" VerticalAlignment="Center" Click="Button_ReloadListener" Margin="4,0,0,0"/>
+                        <Label x:Name="changeIndicator" Foreground="{x:Static ui:UiHelper.ColorInvalid}" Content="(Unapplied changes)" FontSize="14" VerticalAlignment="Center" Visibility="Hidden"/>
                     </WrapPanel>
                 </StackPanel>
 

@@ -14,6 +14,7 @@ namespace Hoscy.OscControl
     public static class Osc
     {
         private static OscListener? _listener;
+        public static int? ListenerPort => _listener?.Port;
         public static bool HasInvalidFilters { get; private set; } = false;
 
         #region Sending
