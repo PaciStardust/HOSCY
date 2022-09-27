@@ -6,5 +6,6 @@
         public readonly bool UsesVoskModel { get; init; } = false;
         public readonly bool UsesWinRecognizer { get; init; } = false;
         public readonly bool UsesMicrophone { get; init; } = false;
+        public readonly string Description { get; init; } = "No info available";
     }
 }

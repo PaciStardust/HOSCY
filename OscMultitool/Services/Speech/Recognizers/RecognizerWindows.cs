@@ -8,6 +8,7 @@ namespace Hoscy.Services.Speech.Recognizers
     {
         new public static RecognizerPerms Perms => new()
         {
+            Description = "Recognizer using Windows Recognition, low quality, please avoid",
             UsesWinRecognizer = true
         };
 

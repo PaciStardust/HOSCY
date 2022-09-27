@@ -55,6 +55,7 @@
                         <Label x:Name="changeIndicator" Foreground="{x:Static ui:UiHelper.ColorInvalid}" Content="(Unapplied changes)" FontSize="14" VerticalAlignment="Center" Visibility="Hidden"/>
                     </WrapPanel>
                     <ComboBox x:Name="recognizerSelector" Style="{StaticResource HSettingsComboBox}" Margin="8,0,0,0" SelectionChanged="RecognizerSelector_SelectionChanged"/>
+                    <TextBlock Style="{StaticResource HTextBlock}" Margin="8,4,0,0" x:Name="valueRecInfo" Text="Info here" FontSize="14"/>
 
                     <!-- Microphone Select -->
                     <StackPanel x:Name="optionsMic">

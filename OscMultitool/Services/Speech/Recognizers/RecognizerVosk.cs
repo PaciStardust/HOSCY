@@ -14,6 +14,7 @@ namespace Hoscy.Services.Speech.Recognizers
     {
         new public static RecognizerPerms Perms => new()
         {
+            Description = "Local AI, quality / RAM usage varies, startup may take a while",
             UsesMicrophone = true,
             UsesVoskModel = true
         };

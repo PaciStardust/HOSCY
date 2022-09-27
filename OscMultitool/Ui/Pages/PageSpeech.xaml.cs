@@ -123,6 +123,7 @@ namespace Hoscy.Ui.Pages
 
             var perms = _permDict[keys[recSelIndex]];
 
+            valueRecInfo.Text = perms.Description;
             optionsMic.IsEnabled = perms.UsesMicrophone;
             optionsVosk.IsEnabled = perms.UsesVoskModel;
             optionsWin.IsEnabled = perms.UsesWinRecognizer;
