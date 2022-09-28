@@ -4,6 +4,7 @@ using Hoscy.Services.Speech.Utilities;
 using Hoscy.Ui.Windows;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
@@ -147,12 +148,17 @@ namespace Hoscy.Ui.Pages
             if (oldPath != Config.Speech.VoskModelPath)
                 EnableChangeIndicator();
         }
-        private void Button_StartStop(object sender, RoutedEventArgs e)
+        private async void Button_StartStop(object sender, RoutedEventArgs e)
         {
             if (Recognition.IsRecognizerRunning)
                 Recognition.StopRecognizer();
             else
+            {
+                buttonStartStop.Content = "Starting";
+                buttonStartStop.Foreground = UiHelper.ColorFront;
+                await Task.Run(async() => await Task.Delay(10));
                 Recognition.StartRecognizer();
+            }
         }
 
         private void Button_ResetDevice(object sender, RoutedEventArgs e)

@@ -1,6 +1,8 @@
 ﻿using Hoscy.Services.Speech;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 
 namespace Hoscy.Ui.Pages
 {
@@ -90,12 +92,28 @@ namespace Hoscy.Ui.Pages
             Synthesizing.Skip();
         }
 
-        private void Button_Start(object sender, RoutedEventArgs e)
+        private async void Button_Start(object sender, RoutedEventArgs e)
         {
             if (Recognition.IsRecognizerRunning)
+            {
                 Recognition.StopRecognizer();
+                SetRecStatus("Recognizer has stopped");
+            }
             else
+            {
+                startButton.Content = "Starting";
+                startButton.Foreground = UiHelper.ColorFront;
+                SetRecStatus("Recognizer is starting");
+                await Task.Run(async () => await Task.Delay(10));
                 Recognition.StartRecognizer();
+                SetRecStatus("Recognizer has started");
+            }
+        }
+
+        private void SetRecStatus(string text)
+        {
+            sendStatus.Text = "Recognition status";
+            message.Text = text;
         }
     }
 }
