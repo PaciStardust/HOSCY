@@ -61,7 +61,7 @@ namespace Hoscy.Ui.Pages
             Config.Api.RecognitionPreset = Config.Api.Presets[recognitionApiBox.SelectedIndex].Name;
         }
 
-        private static bool _translatorApiBoxFirstChange = true;
+        private bool _translatorApiBoxFirstChange = true; //This is to stop indicator from showing when page loads
         private void TranslatorApiBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             int index = translatorApiBox.SelectedIndex;

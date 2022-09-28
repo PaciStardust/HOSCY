@@ -65,6 +65,25 @@ namespace Hoscy.Services.Api
         }
         #endregion
 
+        #region Downloading
+        private static async Task DownloadFile(string url, int timeout = 5000)
+        {
+            var identifier = GetRequestIdentifier();
+
+            var startTime = DateTime.Now;
+            Logger.Debug($"Downloading {url} ({identifier})");
+            try
+            {
+                var cts = new CancellationTokenSource(timeout);
+                //await _client.DownloadAsync
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+        #endregion
+
         #region Update Checking
         /// <summary>
         /// Checks if there is an update available, displays a window containing changelog

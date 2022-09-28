@@ -100,7 +100,7 @@ namespace Hoscy
             Log(message, severity, file, member, line);
         }
         public static void Error(string type, string message, string trace, bool notify = true, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0) //Error using type
-           => Error($"A {type} has occured:[s{message}[s][s]{trace}", notify, file, member, line);
+           => Error($"A {type} has occured: {message}\n\n{trace}", notify, file, member, line);
         public static void Error(Exception error, bool notify = true, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0) //Error using exception
             => Error(error.GetType().ToString(), error.Message, error.StackTrace ?? "unspecified location", notify, file, member, line);
         #endregion
