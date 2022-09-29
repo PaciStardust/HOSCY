@@ -200,7 +200,8 @@ namespace Hoscy
             public bool TranslateTts { get; set; } = false;
 
             //Vosk
-            public string VoskModelPath { get; set; } = string.Empty;
+            public Dictionary<string, string> VoskModels { get; set; } = new();
+            public string VoskModelCurrent { get; set; } = string.Empty;
             public int VoskTimeout
             {
                 get { return _voskTimeout; }

@@ -24,7 +24,7 @@ namespace Hoscy.Ui.Pages
 
         private void Button_ModifyRouting(object sender, RoutedEventArgs e)
         {
-            var window = new ModifyOscRoutingFiltersWindow("Modify Routing Filters", Config.Osc.RoutingFilters);
+            var window = new ModifyOscRoutingFiltersWindow("Edit Routing Filters", Config.Osc.RoutingFilters);
             window.SetDarkMode(true);
             window.ShowDialog();
             Osc.RecreateListener();

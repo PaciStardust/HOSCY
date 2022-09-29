@@ -71,16 +71,12 @@
                         <Label Content="Vosk Options"/>
 
                         <StackPanel Style="{StaticResource HStackIndent}">
-                            <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Filepath"/>
+                            <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Vosk AI Model"/>
 
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBox x:Name="speechVoskPath" Grid.Column="0" Style="{StaticResource HTextBoxLong}" Tag="Filepath..." Text="{Binding Speech.VoskModelPath, Source={x:Static local:Config.Data}}" PreviewKeyDown="TextPreviewKeyDown"/>
-                                <Button Grid.Column="1" Style="{StaticResource HButtonSmall}" Content="Open" Margin="8,0,0,0" Click="Button_BrowseVoskModel" VerticalAlignment="Center"/>
-                            </Grid>
+                            <WrapPanel Margin="0,4,0,0">
+                                <ComboBox x:Name="voskModelBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="VoskModelBox_SelectionChanged"/>
+                                <Button x:Name="openVoskModelEditorButton" Style="{StaticResource HButtonSmall}" Content="Edit list" Margin="8,0,0,0" VerticalAlignment="Center" Click="Button_EditVoskModels"/>
+                            </WrapPanel>
 
                             <WrapPanel Margin="0,4,0,0">
                                 <TextBox x:Name="speechVoskTimeout" Style="{StaticResource HTextBoxShort}" Tag="Timeout...">

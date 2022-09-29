@@ -105,8 +105,10 @@ namespace Hoscy.Ui.Pages
                 startButton.Foreground = UiHelper.ColorFront;
                 SetRecStatus("Recognizer is starting");
                 await Task.Run(async () => await Task.Delay(10));
-                Recognition.StartRecognizer();
-                SetRecStatus("Recognizer has started");
+                if (Recognition.StartRecognizer())
+                    SetRecStatus("Recognizer has started");
+                else
+                    SetRecStatus("Recognizer failed to start");
             }
         }
 

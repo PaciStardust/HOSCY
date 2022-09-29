@@ -19,11 +19,7 @@ namespace Hoscy.Ui.Pages
         }
 
         private void Button_OpenLogFilter(object sender, RoutedEventArgs e)
-        {
-            var window = new ModifyListWindow("Edit Logging Filter", "Log Text", Config.Debug.LogFilter);
-            window.SetDarkMode(true);
-            window.ShowDialog();
-        }
+            => UiHelper.OpenListEditor("Edit Logging Filter", "Log Text", Config.Debug.LogFilter);
 
         private void Button_ReloadDevices(object sender, RoutedEventArgs e)
         {

@@ -3,6 +3,7 @@ using Hoscy.Services.Speech.Recognizers;
 using Hoscy.Services.Speech.Utilities;
 using Hoscy.Ui.Windows;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -43,6 +44,7 @@ namespace Hoscy.Ui.Pages
             InitializeComponent();
             LoadBoxes();
             UpdateRecognizerSelector();
+            UpdateVoskRecognizerBox();
 
             UpdateRecognizerStatus(null, new(Recognition.IsRecognizerRunning, Recognition.IsRecognizerListening));
             Recognition.RecognitionChanged += UpdateRecognizerStatus;
@@ -132,22 +134,41 @@ namespace Hoscy.Ui.Pages
             if (oldModelName != Config.Speech.ModelName)
                 EnableChangeIndicator();
         }
+
+        private void UpdateVoskRecognizerBox()
+        {
+            var models = Config.Speech.VoskModels;
+
+            //Checking if any model in list model is invalid
+            foreach(var model in models)
+            {
+                if (!Directory.Exists(model.Value))
+                    models.Remove(model.Key);
+            }
+
+            //Checking for availability of current model in dropdown
+            int index = -1;
+            var keyArray = models.Keys.ToArray();
+            for (int i = 0; i < keyArray.Length; i++)
+            {
+                if (Config.Speech.VoskModelCurrent == keyArray[i])
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            //Clearing, very cool
+            voskModelBox.ItemsSource = null;
+            foreach (var item in voskModelBox.Items)
+                voskModelBox.Items.Remove(item);
+            voskModelBox.Items.Refresh();
+            
+            voskModelBox.Load(models.Keys, index, true);
+        }
         #endregion
 
         #region Buttons
-        private void Button_BrowseVoskModel(object sender, RoutedEventArgs e)
-        {
-            var oldPath = Config.Speech.VoskModelPath;
-
-            using var dialog = new FolderBrowserDialog();
-            var result = dialog.ShowDialog();
-            string folder = result.ToString() == "OK" ? dialog.SelectedPath : string.Empty;
-            Config.Speech.VoskModelPath = folder;
-            speechVoskPath.Text = folder;
-
-            if (oldPath != Config.Speech.VoskModelPath)
-                EnableChangeIndicator();
-        }
         private async void Button_StartStop(object sender, RoutedEventArgs e)
         {
             if (Recognition.IsRecognizerRunning)
@@ -175,9 +196,7 @@ namespace Hoscy.Ui.Pages
 
         private void Button_OpenNoiseFilter(object sender, RoutedEventArgs e)
         {
-            var window = new ModifyListWindow("Edit Noise Filter", "Noise Text", Config.Speech.NoiseFilter);
-            window.SetDarkMode(true);
-            window.ShowDialog();
+            UiHelper.OpenListEditor("Edit Noise Filter", "Noise Text", Config.Speech.NoiseFilter);
             RecognizerBase.UpdateDenoiseRegex();
         }
         private void Button_OpenReplacements(object sender, RoutedEventArgs e)
@@ -191,6 +210,12 @@ namespace Hoscy.Ui.Pages
             var window = new ModifyReplacementsWindow("Edit Shortcuts", Config.Speech.Shortcuts);
             window.SetDarkMode(true);
             window.ShowDialog();
+        }
+
+        private void Button_EditVoskModels(object sender, RoutedEventArgs e)
+        {
+            UiHelper.OpenDictionaryEditor("Edit Vosk AI Models", "Model name", "Model folder", Config.Speech.VoskModels);
+            UpdateVoskRecognizerBox();
         }
         #endregion
 
@@ -222,11 +247,23 @@ namespace Hoscy.Ui.Pages
         private void RecognizerSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
             => UpdateRecognizerSelector();
 
+        private void VoskModelBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string oldModelName = Config.Speech.VoskModelCurrent;
+
+            var index = voskModelBox.SelectedIndex;
+            if (index != -1 && index < Config.Speech.VoskModels.Count)
+                Config.Speech.VoskModelCurrent = Config.Speech.VoskModels.Keys.ToArray()[index];
+
+            if (oldModelName != Config.Speech.VoskModelCurrent)
+                EnableChangeIndicator();
+        }
+        #endregion
+
         private void TextPreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             EnableChangeIndicator();
             e.Handled = true;
         }
-        #endregion
     }
 }

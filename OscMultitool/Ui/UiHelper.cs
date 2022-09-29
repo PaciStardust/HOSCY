@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hoscy.Ui.Windows;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -30,9 +31,10 @@ namespace Hoscy.Ui
         /// <summary>
         /// Loads data into a combo box
         /// </summary>
-        public static void Load(this ComboBox box, IEnumerable<string> source, int index)
+        public static void Load(this ComboBox box, IEnumerable<string> source, int index, bool refresh = false)
         {
             box.ItemsSource = source;
+            if (refresh) box.Items.Refresh();
             box.SelectedIndex = index;
         }
 
@@ -80,6 +82,22 @@ namespace Hoscy.Ui
 
             list[index] = item;
             return true;
+        }
+        #endregion
+
+        #region Opening Modify Windows
+        public static void OpenListEditor(string title, string valueName, List<string> list, string defaultString = "New Value")
+        {
+            var window = new ModifyListWindow(title, valueName, list, defaultString);
+            window.SetDarkMode(true);
+            window.ShowDialog();
+        }
+
+        public static void OpenDictionaryEditor(string title, string keyName, string valueName, Dictionary<string, string> dict)
+        {
+            var window = new ModifyDictionaryWindow(title, keyName, valueName, dict);
+            window.SetDarkMode(true);
+            window.ShowDialog();
         }
         #endregion
 

@@ -32,13 +32,13 @@ namespace Hoscy.Services.Speech.Recognizers
         {
             try
             {
-                if (!Directory.Exists(Config.Speech.VoskModelPath))
+                Config.Speech.VoskModels.TryGetValue(Config.Speech.VoskModelCurrent, out var path);
+                if (!Directory.Exists(path ?? string.Empty))
                 {
                     Logger.Error("The provided filepath for the model does not exist, did you download a model?");
                     return false;
                 }
-
-                var model = new Model(Config.Speech.VoskModelPath);
+                var model = new Model(path);
 
 #nullable disable
                 //Using reflection to get handle (Checking if fails to initalize model)
@@ -47,7 +47,7 @@ namespace Hoscy.Services.Speech.Recognizers
                 var modelhandleInternal = (System.Runtime.InteropServices.HandleRef)handleField.GetValue(model);
                 if (modelhandleInternal.Handle == IntPtr.Zero)
                 {
-                    Logger.Error("Attempted to start model but the picked recognition model file is invalid. Have you downloaded a compatible model and verified it is not corrupt?");
+                    Logger.Error("Attempted to start model but the picked recognition model file is invalid. Have you downloaded a compatible model, picked the correct folder and verified it is not corrupt?");
                     return false;
                 }
 #nullable enable
