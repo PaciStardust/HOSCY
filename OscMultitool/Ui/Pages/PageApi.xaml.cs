@@ -68,6 +68,9 @@ namespace Hoscy.Ui.Pages
             Synthesizer.ReloadClient();
             SetChangedValueSynthesizer(false);
         }
+
+        private void Button_EditPhrases(object sender, RoutedEventArgs e)
+            => UiHelper.OpenListEditor("Edit phrases", "Phrase", Config.Api.AzurePhrases, "New Phrase");
         #endregion
 
         #region SelectionChanged

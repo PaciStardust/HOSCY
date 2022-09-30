@@ -47,6 +47,10 @@ namespace Hoscy.Services.Speech.Recognizers
                     speechConfig.SpeechRecognitionLanguage = Config.Api.AzureLanguage;
 
                 rec = new(speechConfig, audioConfig);
+
+                var phraseList = PhraseListGrammar.FromRecognizer(rec);
+                foreach(var phrase in Config.Api.AzurePhrases)
+                    phraseList.AddPhrase(phrase);
             }
             catch (Exception e)
             {

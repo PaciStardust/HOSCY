@@ -285,12 +285,13 @@ namespace Hoscy
             }
             private int _translationMaxTextLength = 2000;
 
-            //Azure Rec
+            //Azure
             public string AzureRegion { get; set; } = string.Empty;
             public string AzureKey { get; set; } = string.Empty;
             public string AzureLanguage { get; set; } = string.Empty;
             public string AzureCustomEndpoint { get; set; } = string.Empty;
             public string AzureVoice { get; set; } = string.Empty;
+            public List<string> AzurePhrases { get; set; } = new();
 
             //Usage
             public bool TranslateTts { get; set; } = false;
