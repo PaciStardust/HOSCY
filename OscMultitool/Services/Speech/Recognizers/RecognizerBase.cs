@@ -154,9 +154,9 @@ namespace Hoscy.Services.Speech
         {
             RegexOptions opt = Config.Speech.IgnoreCaps ? RegexOptions.IgnoreCase : RegexOptions.None;
 
-            var filterWords = Config.Speech.NoiseFilter.Select(x => $"(?:\\b{x})\\b");
+            var filterWords = Config.Speech.NoiseFilter.Select(x => $"(?:{x})");
             var filterCombined = string.Join('|', filterWords);
-            var regString = $"^(?:{filterCombined})?(.*?)(?:{filterCombined})?$";
+            var regString = $"^(?:\\b(?:{filterCombined})\\b)?(.*?)(?:\\b(?:{filterCombined})\\b)?$";
             Logger.PInfo($"Updated denoiser ({regString})");
             _denoiseFilter = new Regex(regString, opt);
         }
