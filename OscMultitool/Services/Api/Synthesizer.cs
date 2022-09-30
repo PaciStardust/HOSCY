@@ -53,7 +53,7 @@ namespace Hoscy.Services.Api
             }
             catch (Exception e)
             {
-                Logger.Error(e); //todo: add more details to erros
+                Logger.Error(e, "Unable to connect to Azure Cognitive Services, have you used the correct credentials?");
             }
 
             _synth = synth;

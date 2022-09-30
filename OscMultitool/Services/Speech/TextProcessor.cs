@@ -105,7 +105,7 @@ namespace Hoscy.Services.Speech
                     return File.ReadAllText(value);
                 } catch (Exception e)
                 {
-                    Logger.Error(e);
+                    Logger.Error(e, "Failed to read provided file, is the path correct and does Hoscy have access?");
                     return string.Empty;
                 }
             }

@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows;
 
 namespace Hoscy
@@ -43,7 +44,7 @@ namespace Hoscy
             }
             catch (Exception e)
             {
-                Error(e, false);
+                Error(e, notify:false);
                 return null;
             }
         }
@@ -99,17 +100,23 @@ namespace Hoscy
             var severity = notify ? LogSeverity.Error : LogSeverity.ErrSilent;
             Log(message, severity, file, member, line);
         }
-        public static void Error(string type, string message, string trace, bool notify = true, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0) //Error using type
-           => Error($"A {type} has occured: {message}\n\n{trace}", notify, file, member, line);
-        public static void Error(Exception error, bool notify = true, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0) //Error using exception
+        
+        public static void Error(Exception error, string descriptiveError = "", bool notify = true, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0) //Error using exception
         {
-            var trace = error.StackTrace ?? "unspecified location";
+            var sb = new StringBuilder();
 
-            var message = error.Message;
+            if (!string.IsNullOrWhiteSpace(descriptiveError))
+                sb.AppendLine(descriptiveError + "\n\n--------------------------\nError details:\n");
+
+            sb.AppendLine(error.Message);
+
             if (error.InnerException != null)
-                message += $"\n\n(Inner {error.InnerException.GetType()}: {error.Message}{(error.Source == null ? "" : $" at {error.Source}")})";
+                sb.AppendLine($"\n(Inner {error.InnerException.GetType()}: {error.Message}{(error.Source == null ? "" : $" at {error.Source}")})");
 
-            Error(error.GetType().ToString(), message, trace, notify, file, member, line);
+            if (error.StackTrace != null)
+                sb.AppendLine("\n--------------------------\nStack trace:\n\n" + error.StackTrace);
+
+            Error(sb.ToString(), notify, file, member, line);
         }
         #endregion
 

@@ -59,7 +59,7 @@ namespace Hoscy.Services.Api
                 if ((e is TaskCanceledException tce && tce.CancellationToken.IsCancellationRequested) || e is OperationCanceledException)
                     Logger.Warning($"Request {identifier} timed out");
                 else
-                    Logger.Error(e, notify: notify);
+                    Logger.Error(e, "Failed to perform web request.", notify: notify);
             }
             return null;
         }

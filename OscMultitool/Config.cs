@@ -64,7 +64,7 @@ namespace Hoscy
             }
             catch (Exception e)
             {
-                Logger.Error(e, false);
+                Logger.Error(e, "The config file was unable to be saved.", notify:false);
             }
         }
         #endregion

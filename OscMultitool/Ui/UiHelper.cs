@@ -168,7 +168,7 @@ namespace Hoscy.Ui
             }
             catch (Exception ex)
             {
-                Logger.Error(ex);
+                Logger.Error(ex, "Failed to start process.");
             }
         }
         #endregion

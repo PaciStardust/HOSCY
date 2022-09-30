@@ -30,7 +30,7 @@ namespace Hoscy.Services.Speech.Recognizers
             }
             catch (Exception e)
             {
-                Logger.Error(e);
+                Logger.Error(e, "Failed to start windows speech recognition.");
                 return false;
             }
         }

@@ -50,7 +50,7 @@ namespace Hoscy.Services.Speech.Recognizers
             }
             catch (Exception e)
             {
-                Logger.Error(e);
+                Logger.Error(e, "Unable to connect to Azure Cognitive Services, have you used the correct credentials?");
                 return rec;
             }
 

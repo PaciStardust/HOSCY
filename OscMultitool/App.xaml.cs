@@ -24,10 +24,10 @@ namespace Hoscy
         {
             try
             {
-                Logger.Error(e.Exception);
+                Logger.Error(e.Exception, "A fatal error has occured, Hoscy will now shut down.");
             }
             catch { }
-            Application.Current.Shutdown(-1);
+            Current.Shutdown(-1);
             Environment.Exit(-1);
         }
     }

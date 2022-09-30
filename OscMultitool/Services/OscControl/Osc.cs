@@ -41,7 +41,7 @@ namespace Hoscy.OscControl
             }
             catch (Exception e)
             {
-                Logger.Error(e);
+                Logger.Error(e, "Failed to send OSC data.");
                 return false;
             }
         }
@@ -66,7 +66,7 @@ namespace Hoscy.OscControl
             }
             catch (Exception e)
             {
-                Logger.Error(e);
+                Logger.Error(e, "Failed to create OSC listener");
             }
         }
 

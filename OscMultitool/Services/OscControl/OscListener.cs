@@ -36,7 +36,7 @@ namespace Hoscy.OscControl
             }
             catch (Exception e)
             {
-                Logger.Error(e);
+                Logger.Error(e, "Failed to start OSC listener.");
                 return false;
             }
         }

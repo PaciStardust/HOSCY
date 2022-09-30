@@ -56,7 +56,7 @@ namespace Hoscy.Services.Speech.Recognizers
             }
             catch (Exception e)
             {
-                Logger.Error(e);
+                Logger.Error(e, "Failed to start Vosk speech recognition.");
                 return false;
             }
 
