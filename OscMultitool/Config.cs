@@ -197,8 +197,6 @@ namespace Hoscy
             }
             private int _maxLenTtsString = 500;
             public bool SkipLongerMessages { get; set; } = true;
-            public bool TranslateTts { get; set; } = false;
-            public bool UseAzureTts { get; set; } = false; //todo: move to api
 
             //Vosk
             public Dictionary<string, string> VoskModels { get; set; } = new();
@@ -254,8 +252,6 @@ namespace Hoscy
             }
             private int _defaultTimeout = 5000;
             public bool DynamicTimeout { get; set; } = true;
-            public bool TranslateTextbox { get; set; } = false;
-            public bool AddOriginalAfterTranslate { get; set; } = false;
             public bool ShowMediaStatus { get; set; } = false;
             public bool AutomaticClearNotification { get; set; } = true;
             public bool AutomaticClearMessage { get; set; } = false;
@@ -281,7 +277,6 @@ namespace Hoscy
 
             //Translation
             public string TranslationPreset { get; set; } = string.Empty;
-            public bool TranslationAllowExternal { get; set; } = false;
             public bool TranslationSkipLongerMessages { get; set; } = true;
             public int TranslationMaxTextLength
             {
@@ -296,6 +291,13 @@ namespace Hoscy
             public string AzureLanguage { get; set; } = string.Empty;
             public string AzureCustomEndpoint { get; set; } = string.Empty;
             public string AzureVoice { get; set; } = string.Empty;
+
+            //Usage
+            public bool TranslateTts { get; set; } = false;
+            public bool TranslateTextbox { get; set; } = false;
+            public bool TranslationAllowExternal { get; set; } = false;
+            public bool AddOriginalAfterTranslate { get; set; } = false;
+            public bool UseAzureTts { get; set; } = false;
 
             public int GetIndex(string name)
             {

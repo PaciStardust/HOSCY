@@ -174,7 +174,7 @@ namespace Hoscy.Services.Speech
                 _provider = GenerateProvider(); //We reset the provider for each clip as it appears to cause issues otherwise
                 Logger.Log("Creating synth audio from: " + _currentString);
 
-                if (Config.Speech.UseAzureTts)
+                if (Config.Api.UseAzureTts)
                 {
                     if (!await Synthesizer.SpeakAsync(_currentString, _stream))
                         return;

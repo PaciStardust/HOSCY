@@ -48,18 +48,18 @@ namespace Hoscy.Services.Speech
 
             //translation
             var translation = message;
-            if (AllowTranslate && ((UseTextbox && Config.Textbox.TranslateTextbox) || (UseTts && Config.Speech.TranslateTts)))
+            if (AllowTranslate && ((UseTextbox && Config.Api.TranslateTextbox) || (UseTts && Config.Api.TranslateTts)))
                 translation = await Translation.Translate(message);
 
             if (UseTextbox)
             {
-                if (Config.Textbox.TranslateTextbox)
-                    Textbox.Say(translation + (Config.Textbox.AddOriginalAfterTranslate ? $" <> {message}" : string.Empty));
+                if (Config.Api.TranslateTextbox)
+                    Textbox.Say(translation + (Config.Api.AddOriginalAfterTranslate ? $" <> {message}" : string.Empty));
                 else
                     Textbox.Say(message);
             }
             if (UseTts)
-                Synthesizing.Say(Config.Speech.TranslateTts ? translation : message);
+                Synthesizing.Say(Config.Api.TranslateTts ? translation : message);
 
             if (message != translation)
                 message = $"{translation}\n\n{message}";

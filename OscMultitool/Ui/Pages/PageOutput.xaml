@@ -63,9 +63,8 @@
                         </TextBox>
                         <Label Content="Default timeout (ms)" VerticalAlignment="Center"/>
                     </WrapPanel>
-
                 </StackPanel>
-
+                
                 <!-- Other -->
                 <Label Margin="0,16,0,0" Content="Other Options" Style="{StaticResource HLabelM}"/>
 
@@ -73,7 +72,6 @@
                     <CheckBox Content="Clear automatically after messages" IsChecked="{Binding Textbox.AutomaticClearMessage, Source={x:Static local:Config.Data}}"/>
                     <CheckBox Margin="0,4,0,0" Content="Clear automatically after notifications" IsChecked="{Binding Textbox.AutomaticClearNotification, Source={x:Static local:Config.Data}}"/>
                     <CheckBox Margin="0,4,0,0" Content="Typing indicator without Textbox" IsChecked="{Binding Textbox.UseIndicatorWithoutBox, Source={x:Static local:Config.Data}}"/>
-                    <CheckBox Margin="0,4,0,0" Content="Show media status" IsChecked="{Binding Textbox.ShowMediaStatus, Source={x:Static local:Config.Data}}"/>
 
                     <WrapPanel Margin="0,4,0,0">
                         <TextBox Tag="MTL..." Style="{StaticResource HTextBoxShort}">
@@ -87,6 +85,14 @@
                         </TextBox>
                         <Label Content="Max. text length" VerticalAlignment="Center"/>
                     </WrapPanel>
+
+                    <Label Margin="0,8,0,0" Content="API Options"/>
+
+                    <StackPanel Style="{StaticResource HStackIndent}">
+                        <CheckBox Content="Show media status" IsChecked="{Binding Textbox.ShowMediaStatus, Source={x:Static local:Config.Data}}"/>
+                        <CheckBox Content="Apply translation to textbox" Margin="0,4,0,0" IsChecked="{Binding Api.TranslateTextbox, Source={x:Static local:Config.Data}}"/>
+                        <CheckBox Content="Apply original after translation" Margin="0,4,0,0" IsChecked="{Binding Api.AddOriginalAfterTranslate, Source={x:Static local:Config.Data}}" IsEnabled="{Binding Api.TranslateTextbox, Source={x:Static local:Config.Data}}"/>
+                    </StackPanel>
                 </StackPanel>
             </StackPanel>
 
@@ -134,6 +140,13 @@
                         <Label Content="Max. text length" VerticalAlignment="Center"/>
                     </WrapPanel>
                     <CheckBox Content="Skip too long messages" Margin="0,4,0,0" IsChecked="{Binding Speech.SkipLongerMessages, Source={x:Static local:Config.Data}}"/>
+
+                    <Label Margin="0,8,0,0" Content="API Options"/>
+
+                    <StackPanel Style="{StaticResource HStackIndent}">
+                        <CheckBox Content="Use Azure TTS" IsChecked="{Binding Api.UseAzureTts, Source={x:Static local:Config.Data}}"/>
+                        <CheckBox Content="Apply translation to text-to-speech" Margin="0,4,0,0" IsChecked="{Binding Api.TranslateTts, Source={x:Static local:Config.Data}}"/>
+                    </StackPanel>
                 </StackPanel>
             </StackPanel>
         </StackPanel>

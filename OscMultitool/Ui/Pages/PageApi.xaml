@@ -30,9 +30,9 @@
                         <Label Content="API Preset" VerticalAlignment="Center"/>
                     </WrapPanel>
 
-                    <CheckBox Content="Apply translation to textbox" Margin="0,4,0,0" IsChecked="{Binding Textbox.TranslateTextbox, Source={x:Static local:Config.Data}}"/>
-                    <CheckBox Content="Apply original after translation" Margin="0,4,0,0" IsChecked="{Binding Textbox.AddOriginalAfterTranslate, Source={x:Static local:Config.Data}}"/>
-                    <CheckBox Content="Apply translation to text-to-speech" Margin="0,4,0,0" IsChecked="{Binding Speech.TranslateTts, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Content="Apply translation to textbox" Margin="0,4,0,0" IsChecked="{Binding Api.TranslateTextbox, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Content="Apply original after translation" Margin="0,4,0,0" IsChecked="{Binding Api.AddOriginalAfterTranslate, Source={x:Static local:Config.Data}}" IsEnabled="{Binding Api.TranslateTextbox, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Content="Apply translation to text-to-speech" Margin="0,4,0,0" IsChecked="{Binding Api.TranslateTts, Source={x:Static local:Config.Data}}"/>
                     <CheckBox Content="Apply translation to external input" Margin="0,4,0,0" IsChecked="{Binding Api.TranslationAllowExternal, Source={x:Static local:Config.Data}}"/>
 
                     <WrapPanel Margin="0,4,0,0">
@@ -98,7 +98,7 @@
 
                     <Label Content="Text-to-Speech Options (Optional)" Margin="0,8,0,0"/>
                     <StackPanel Style="{StaticResource HStackIndent}">
-                        <CheckBox Content="Use Azure TTS" IsChecked="{Binding Speech.UseAzureTts, Source={x:Static local:Config.Data}}"/>
+                        <CheckBox Content="Use Azure TTS" IsChecked="{Binding Api.UseAzureTts, Source={x:Static local:Config.Data}}"/>
                         <TextBlock Style="{DynamicResource HTextBlock}" Text="Output Speech Voice" Margin="0,4,0,0"/>
                         <TextBox Text="{Binding Api.AzureVoice, Source={x:Static local:Config.Data}}" Tag="Speech Voice..." Style="{StaticResource HTextBoxLong}" PreviewKeyDown="TextBox_PreviewKeyDown"/>
                     </StackPanel>
