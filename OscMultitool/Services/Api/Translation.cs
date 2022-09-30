@@ -36,7 +36,7 @@ namespace Hoscy.Services.Api
 
         public static void ReloadClient()
         {
-            Logger.PInfo("Creating a new ApiClient for Translation");
+            Logger.PInfo("Performing reload of Translation");
 
             var preset = Config.Api.GetPreset(Config.Api.TranslationPreset);
             if (preset == null)

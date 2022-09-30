@@ -30,10 +30,10 @@
                         <Label Content="API Preset" VerticalAlignment="Center"/>
                     </WrapPanel>
 
-                    <CheckBox x:Name="textboxTranslate" Content="Apply translation to textbox" Margin="0,4,0,0" IsChecked="{Binding Textbox.TranslateTextbox, Source={x:Static local:Config.Data}}"/>
-                    <CheckBox x:Name="textboxAdditon" Content="Apply original after translation" Margin="0,4,0,0" IsChecked="{Binding Textbox.AddOriginalAfterTranslate, Source={x:Static local:Config.Data}}"/>
-                    <CheckBox x:Name="ttsTranslate" Content="Apply translation to text-to-speech" Margin="0,4,0,0" IsChecked="{Binding Speech.TranslateTts, Source={x:Static local:Config.Data}}"/>
-                    <CheckBox x:Name="translateExternal" Content="Apply translation to external input" Margin="0,4,0,0" IsChecked="{Binding Api.TranslationAllowExternal, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Content="Apply translation to textbox" Margin="0,4,0,0" IsChecked="{Binding Textbox.TranslateTextbox, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Content="Apply original after translation" Margin="0,4,0,0" IsChecked="{Binding Textbox.AddOriginalAfterTranslate, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Content="Apply translation to text-to-speech" Margin="0,4,0,0" IsChecked="{Binding Speech.TranslateTts, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Content="Apply translation to external input" Margin="0,4,0,0" IsChecked="{Binding Api.TranslationAllowExternal, Source={x:Static local:Config.Data}}"/>
 
                     <WrapPanel Margin="0,4,0,0">
                         <TextBox x:Name="translationMaxLength" Style="{StaticResource HTextBoxShort}" VerticalAlignment="Center" Tag="MTL...">
@@ -48,7 +48,7 @@
                         <Label Content="Max. Text Length"/>
                     </WrapPanel>
 
-                    <CheckBox x:Name="skipTooLong" Content="Skip too long messages" Margin="0,4,0,0" IsChecked="{Binding Api.TranslationSkipLongerMessages, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Content="Skip too long messages" Margin="0,4,0,0" IsChecked="{Binding Api.TranslationSkipLongerMessages, Source={x:Static local:Config.Data}}"/>
                 </StackPanel>
 
                 <!-- Recognizer Usage -->
@@ -61,7 +61,7 @@
                     </WrapPanel>
 
                     <WrapPanel Margin="0,4,0,0">
-                        <TextBox x:Name="recognitionMaxRecording" Style="{StaticResource HTextBoxShort}">
+                        <TextBox Style="{StaticResource HTextBoxShort}">
                             <TextBox.Text>
                                 <Binding Source="{x:Static local:Config.Data}" Path="Api.RecognitionMaxRecordingTime" UpdateSourceTrigger="PropertyChanged">
                                     <Binding.ValidationRules>
@@ -75,22 +75,29 @@
                 </StackPanel>
 
                 <!-- Recognition Azure -->
-                <Label Style="{StaticResource HLabelM}" Content="Recognition Azure API" Margin="0,16,0,0"/>
+                <Label Style="{StaticResource HLabelM}" Content="Azure Cognitive Services" Margin="0,16,0,0"/>
 
                 <StackPanel Style="{StaticResource HStackIndent}">
-                    <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Azure API key"/>
-                    <TextBox x:Name="azureKey" Text="{Binding Api.AzureKey, Source={x:Static local:Config.Data}}" Tag="Azure API key..." Style="{StaticResource HTextBoxLong}"/>
+                    <TextBlock Style="{DynamicResource HTextBlock}" Text="API Key"/>
+                    <TextBox Text="{Binding Api.AzureKey, Source={x:Static local:Config.Data}}" Tag="API key..." Style="{StaticResource HTextBoxLong}"/>
 
-                    <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Azure API region" Margin="0,4,0,0"/>
-                    <TextBox x:Name="azureRegion" Text="{Binding Api.AzureRegion, Source={x:Static local:Config.Data}}" Tag="Azure API region..." Style="{StaticResource HTextBoxLong}"/>
+                    <TextBlock Style="{DynamicResource HTextBlock}" Text="API Region" Margin="0,4,0,0"/>
+                    <TextBox Text="{Binding Api.AzureRegion, Source={x:Static local:Config.Data}}" Tag="API Region..." Style="{StaticResource HTextBoxLong}"/>
+
+                    <TextBlock Style="{DynamicResource HTextBlock}" Text="Custom endpoint (Optional)" Margin="0,4,0,0"/>
+                    <TextBox Text="{Binding Api.AzureCustomEndpoint, Source={x:Static local:Config.Data}}" Tag="Custom endpoint..." Style="{StaticResource HTextBoxLong}"/>
 
                     <WrapPanel Margin="0,4,0,0">
-                        <TextBox x:Name="azureLanguage" HorizontalAlignment="Left" Text="{Binding Api.AzureLanguage, Source={x:Static local:Config.Data}}" Tag="Language..." Style="{StaticResource HTextBoxShort}"/>
-                        <Label Content="Input Language (Optional)" VerticalAlignment="Center"/>
+                        <TextBox HorizontalAlignment="Left" Text="{Binding Api.AzureLanguage, Source={x:Static local:Config.Data}}" Tag="Language..." Style="{StaticResource HTextBoxShort}"/>
+                        <Label Content="Used Language (Optional)" VerticalAlignment="Center"/>
                     </WrapPanel>
 
-                    <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Custom endpoint (Optional)" Margin="0,4,0,0"/>
-                    <TextBox x:Name="azureCustomEndpoint" Text="{Binding Api.AzureCustomEndpoint, Source={x:Static local:Config.Data}}" Tag="Custom endpoint..." Style="{StaticResource HTextBoxLong}"/>
+                    <Label Content="Text-to-Speech Options (Optional)" Margin="0,8,0,0"/>
+                    <StackPanel Style="{StaticResource HStackIndent}">
+                        <CheckBox Content="Use Azure TTS" IsChecked="{Binding Speech.UseAzureTts, Source={x:Static local:Config.Data}}"/>
+                        <TextBlock Style="{DynamicResource HTextBlock}" Text="Output Speech Voice" Margin="0,4,0,0"/>
+                        <TextBox Text="{Binding Api.AzureVoice, Source={x:Static local:Config.Data}}" Tag="Speech Voice..." Style="{StaticResource HTextBoxLong}"/>
+                    </StackPanel>
                 </StackPanel>
             </StackPanel>
         </StackPanel>

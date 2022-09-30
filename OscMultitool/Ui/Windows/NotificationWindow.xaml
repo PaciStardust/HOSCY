@@ -7,7 +7,7 @@
         xmlns:ui="clr-namespace:Hoscy.Ui"
         mc:Ignorable="d"
         
-        Title="NotificationWindow" MinHeight="300" MinWidth="400" Height="300" Width="400" ResizeMode="CanResize" Background="{x:Static ui:UiHelper.ColorBack}" WindowStartupLocation="CenterOwner">
+        Title="NotificationWindow" MinHeight="337" MinWidth="450" Height="300" Width="400" ResizeMode="CanResize" Background="{x:Static ui:UiHelper.ColorBack}" WindowStartupLocation="CenterOwner">
     <Grid Margin="8">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

@@ -9,7 +9,7 @@ namespace Hoscy.Ui.Pages
     /// <summary>
     /// Interaction logic for PageApi.xaml
     /// </summary>
-    public partial class PageApi : Page
+    public partial class PageApi : Page //todo: change indicator for synth
     {
         private static bool _changedValuesTranslation = false;
         public PageApi()

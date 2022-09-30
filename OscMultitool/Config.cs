@@ -198,6 +198,7 @@ namespace Hoscy
             private int _maxLenTtsString = 500;
             public bool SkipLongerMessages { get; set; } = true;
             public bool TranslateTts { get; set; } = false;
+            public bool UseAzureTts { get; set; } = false; //todo: move to api
 
             //Vosk
             public Dictionary<string, string> VoskModels { get; set; } = new();
@@ -294,6 +295,7 @@ namespace Hoscy
             public string AzureKey { get; set; } = string.Empty;
             public string AzureLanguage { get; set; } = string.Empty;
             public string AzureCustomEndpoint { get; set; } = string.Empty;
+            public string AzureVoice { get; set; } = string.Empty;
 
             public int GetIndex(string name)
             {

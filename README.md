@@ -2,6 +2,8 @@
 
 HOSCY is a free and Open-Source tool with many utilities for communication and OSC aimed at making communication and use of OSC easier
 
+Need help setting this up? Check the **[Quickstart Guide](/wiki/Quickstart-Guide)**
+
 If you wish to contribute or need support, join the **[Discord](https://discord.gg/pxwGHvfcxs)**
 
 ## Features

@@ -1,4 +1,5 @@
-﻿using Hoscy.Services.Speech.Utilities;
+﻿using Hoscy.Services.Api;
+using Hoscy.Services.Speech.Utilities;
 using NAudio.Wave;
 using System;
 using System.Collections.Generic;
@@ -158,7 +159,7 @@ namespace Hoscy.Services.Speech
         /// I have thought about using a flag for it or a sophomore but the first would kill any speech said while processing
         /// while the other would maybe build up a lot of extra speech to process that would immedeately be cancelled by the next
         /// </summary>
-        private static void SpeechLoop()
+        private async static void SpeechLoop()
         {
             while (App.Running)
             {
@@ -171,8 +172,16 @@ namespace Hoscy.Services.Speech
                 ResetStream();
                 _waveOut.Stop(); //Might be redundant
                 _provider = GenerateProvider(); //We reset the provider for each clip as it appears to cause issues otherwise
-                Logger.Log("Creating synth audio from: " + _currentString); 
-                _synth.Speak(_currentString); //This can lag
+                Logger.Log("Creating synth audio from: " + _currentString);
+
+                if (Config.Speech.UseAzureTts)
+                {
+                    if (!await Synthesizer.SpeakAsync(_currentString, _stream))
+                        return;
+                }
+                else
+                    _synth.Speak(_currentString);
+
 
                 Logger.Info("Playing synth audio: " + _currentString);
                 _currentString = string.Empty;
