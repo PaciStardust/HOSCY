@@ -91,14 +91,12 @@
                     <TextBlock Style="{DynamicResource HTextBlock}" Text="Custom endpoint (Optional)" Margin="0,4,0,0"/>
                     <TextBox Text="{Binding Api.AzureCustomEndpoint, Source={x:Static local:Config.Data}}" Tag="Custom endpoint..." Style="{StaticResource HTextBoxLong}" PreviewKeyDown="TextBox_PreviewKeyDown"/>
 
-                    <WrapPanel Margin="0,4,0,0">
-                        <TextBox HorizontalAlignment="Left" Text="{Binding Api.AzureLanguage, Source={x:Static local:Config.Data}}" Tag="Language..." Style="{StaticResource HTextBoxShort}" PreviewKeyDown="TextBox_PreviewKeyDown"/>
-                        <Label Content="Used Language (Optional)" VerticalAlignment="Center"/>
-                    </WrapPanel>
-
                     <Label Content="Speech Recognition Options (Optional)" Margin="0,8,0,0"/>
                     <StackPanel Style="{StaticResource HStackIndent}">
-                        <Button Content="Edit phrase list" Click="Button_EditPhrases" HorizontalAlignment="Left"/>
+                        <WrapPanel>
+                            <Button Content="Edit phrases" Click="Button_EditPhrases"/>
+                            <Button Content="Edit languages" Click="Button_EditLanguages" Margin="16,0,0,0"/>
+                        </WrapPanel>
                     </StackPanel>
 
                     <Label Content="Text-to-Speech Options (Optional)" Margin="0,8,0,0"/>
@@ -106,6 +104,11 @@
                         <CheckBox Content="Use Azure TTS" IsChecked="{Binding Api.UseAzureTts, Source={x:Static local:Config.Data}}"/>
                         <TextBlock Style="{DynamicResource HTextBlock}" Text="Output Speech Voice" Margin="0,4,0,0"/>
                         <TextBox Text="{Binding Api.AzureVoice, Source={x:Static local:Config.Data}}" Tag="Speech Voice..." Style="{StaticResource HTextBoxLong}" PreviewKeyDown="TextBox_PreviewKeyDown"/>
+
+                        <WrapPanel Margin="0,4,0,0">
+                            <TextBox HorizontalAlignment="Left" Text="{Binding Api.AzureSpeechLanguage, Source={x:Static local:Config.Data}}" Tag="Language..." Style="{StaticResource HTextBoxShort}" PreviewKeyDown="TextBox_PreviewKeyDown"/>
+                            <Label Content="Used Language" VerticalAlignment="Center"/>
+                        </WrapPanel>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>

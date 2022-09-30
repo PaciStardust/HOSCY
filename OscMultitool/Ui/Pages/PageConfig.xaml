@@ -40,8 +40,8 @@
                     <CheckBox Content="Automatically check for updates" IsChecked="{Binding Debug.CheckUpdates, Source={x:Static local:Config.Data}}" Margin="0,4,0,0"/>
                     <WrapPanel Margin="0,4,0,0">
                         <Button Content="Open Docs" HorizontalAlignment="Left" Click="Button_OpenDocs"/>
-                        <Button Margin="8,0,0,0" Content="Open Config" HorizontalAlignment="Left" Click="Button_OpenConfig"/>
-                        <Button Margin="8,0,0,0" Content="Check Update" HorizontalAlignment="Left" Click="Button_CheckUpdate"/>
+                        <Button Margin="16,0,0,0" Content="Open Config" HorizontalAlignment="Left" Click="Button_OpenConfig"/>
+                        <Button Margin="16,0,0,0" Content="Check Update" HorizontalAlignment="Left" Click="Button_CheckUpdate"/>
                     </WrapPanel>
                     <Button Margin="0,8,0,0" Content="Reload devices" Foreground="{x:Static ui:UiHelper.ColorInvalid}" HorizontalAlignment="Left" Click="Button_ReloadDevices"/>
                 </StackPanel>

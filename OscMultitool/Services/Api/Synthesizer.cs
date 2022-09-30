@@ -44,8 +44,8 @@ namespace Hoscy.Services.Api
                 if (!string.IsNullOrWhiteSpace(Config.Api.AzureVoice))
                     speechCfg.SpeechSynthesisVoiceName = Config.Api.AzureVoice;
 
-                if (!string.IsNullOrWhiteSpace(Config.Api.AzureLanguage))
-                    speechCfg.SpeechSynthesisLanguage = Config.Api.AzureLanguage;
+                if (!string.IsNullOrWhiteSpace(Config.Api.AzureSpeechLanguage))
+                    speechCfg.SpeechSynthesisLanguage = Config.Api.AzureSpeechLanguage;
 
                 speechCfg.SetSpeechSynthesisOutputFormat(SpeechSynthesisOutputFormat.Raw16Khz16BitMonoPcm);
 

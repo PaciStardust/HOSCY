@@ -71,6 +71,9 @@ namespace Hoscy.Ui.Pages
 
         private void Button_EditPhrases(object sender, RoutedEventArgs e)
             => UiHelper.OpenListEditor("Edit phrases", "Phrase", Config.Api.AzurePhrases, "New Phrase");
+
+        private void Button_EditLanguages(object sender, RoutedEventArgs e)
+            => UiHelper.OpenListEditor("Edit languages", "Language", Config.Api.AzureRecognitionLanguages, "New Language");
         #endregion
 
         #region SelectionChanged

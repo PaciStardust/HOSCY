@@ -43,14 +43,25 @@ namespace Hoscy.Services.Speech.Recognizers
                 if (!string.IsNullOrWhiteSpace(Config.Api.AzureCustomEndpoint))
                     speechConfig.EndpointId = Config.Api.AzureCustomEndpoint;
 
-                if (!string.IsNullOrWhiteSpace(Config.Api.AzureLanguage))
-                    speechConfig.SpeechRecognitionLanguage = Config.Api.AzureLanguage;
+                if (Config.Api.AzureRecognitionLanguages.Count > 1)
+                {
+                    speechConfig.SetProperty(PropertyId.SpeechServiceConnection_ContinuousLanguageIdPriority, "Latency");
+                    var autoDetectSourceLanguageConfig = AutoDetectSourceLanguageConfig.FromLanguages(Config.Api.AzureRecognitionLanguages.ToArray());
+                    rec = new(speechConfig, autoDetectSourceLanguageConfig, audioConfig);
+                }
+                else
+                {
+                    if (Config.Api.AzureRecognitionLanguages.Count == 1)
+                        speechConfig.SpeechRecognitionLanguage = Config.Api.AzureRecognitionLanguages[0];
+                    rec = new(speechConfig, audioConfig);
+                }      
 
-                rec = new(speechConfig, audioConfig);
-
-                var phraseList = PhraseListGrammar.FromRecognizer(rec);
-                foreach(var phrase in Config.Api.AzurePhrases)
-                    phraseList.AddPhrase(phrase);
+                if (Config.Api.AzurePhrases.Count != 0)
+                {
+                    var phraseList = PhraseListGrammar.FromRecognizer(rec);
+                    foreach (var phrase in Config.Api.AzurePhrases)
+                        phraseList.AddPhrase(phrase);
+                }
             }
             catch (Exception e)
             {
@@ -123,9 +134,13 @@ namespace Hoscy.Services.Speech.Recognizers
         #region Events
         private void OnRecognized(object? sender, SpeechRecognitionEventArgs e)
         {
-            Logger.Log("Got Message: " + e.Result.Text);
+            var result = e.Result.Text;
+            if (string.IsNullOrWhiteSpace(result))
+                return;
 
-            var message = Denoise(e.Result.Text);
+            Logger.Log("Got Message: " + result);
+
+            var message = Denoise(result);
             if (string.IsNullOrWhiteSpace(message))
                 return;
 
