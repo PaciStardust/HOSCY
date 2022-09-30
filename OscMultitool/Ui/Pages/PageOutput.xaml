@@ -26,7 +26,7 @@
 
                     <StackPanel x:Name="optionDynamicTimeout" Margin="0,4,0,0">
                         <WrapPanel>
-                            <TextBox x:Name="textboxTimeoutMultiplier" Style="{StaticResource HTextBoxShort}" Tag="Timeout...">
+                            <TextBox Style="{StaticResource HTextBoxShort}" Tag="Timeout...">
                                 <TextBox.Text>
                                     <Binding Source="{x:Static local:Config.Data}" Path="Textbox.TimeoutMultiplier" UpdateSourceTrigger="PropertyChanged">
                                         <Binding.ValidationRules>
@@ -38,7 +38,7 @@
                             <Label Content ="Dynamic timeout (ms/20char)" VerticalAlignment="Center"/>
                         </WrapPanel>
                         <WrapPanel Margin="0,4,0,0">
-                            <TextBox x:Name="textboxMinimumTimeout" Style="{StaticResource HTextBoxShort}" Tag="Timeout...">
+                            <TextBox Style="{StaticResource HTextBoxShort}" Tag="Timeout...">
                                 <TextBox.Text>
                                     <Binding Source="{x:Static local:Config.Data}" Path="Textbox.MinimumTimeout" UpdateSourceTrigger="PropertyChanged">
                                         <Binding.ValidationRules>
@@ -52,7 +52,7 @@
                     </StackPanel>
 
                     <WrapPanel x:Name="optionDefaultTimeout" Margin="0,4,0,0">
-                        <TextBox x:Name="textboxDefaultTimeout" Tag="Timeout..." Style="{StaticResource HTextBoxShort}">
+                        <TextBox Tag="Timeout..." Style="{StaticResource HTextBoxShort}">
                             <TextBox.Text>
                                 <Binding Source="{x:Static local:Config.Data}" Path="Textbox.DefaultTimeout" UpdateSourceTrigger="PropertyChanged">
                                     <Binding.ValidationRules>
@@ -70,13 +70,13 @@
                 <Label Margin="0,16,0,0" Content="Other Options" Style="{StaticResource HLabelM}"/>
 
                 <StackPanel Style="{StaticResource HStackIndent}">
-                    <CheckBox x:Name="textboxAutoClearMsg" Content="Clear automatically after messages" IsChecked="{Binding Textbox.AutomaticClearMessage, Source={x:Static local:Config.Data}}"/>
-                    <CheckBox x:Name="textboxAutoClearNot" Margin="0,4,0,0" Content="Clear automatically after notifications" IsChecked="{Binding Textbox.AutomaticClearNotification, Source={x:Static local:Config.Data}}"/>
-                    <CheckBox x:Name="textboxToggleIndicator" Margin="0,4,0,0" Content="Typing indicator without Textbox" IsChecked="{Binding Textbox.UseIndicatorWithoutBox, Source={x:Static local:Config.Data}}"/>
-                    <CheckBox x:Name="textboxMediaStatus" Margin="0,4,0,0" Content="Show media status" IsChecked="{Binding Textbox.ShowMediaStatus, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Content="Clear automatically after messages" IsChecked="{Binding Textbox.AutomaticClearMessage, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Margin="0,4,0,0" Content="Clear automatically after notifications" IsChecked="{Binding Textbox.AutomaticClearNotification, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Margin="0,4,0,0" Content="Typing indicator without Textbox" IsChecked="{Binding Textbox.UseIndicatorWithoutBox, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Margin="0,4,0,0" Content="Show media status" IsChecked="{Binding Textbox.ShowMediaStatus, Source={x:Static local:Config.Data}}"/>
 
                     <WrapPanel Margin="0,4,0,0">
-                        <TextBox x:Name="textboxMaxTextlength" Tag="MTL..." Style="{StaticResource HTextBoxShort}">
+                        <TextBox Tag="MTL..." Style="{StaticResource HTextBoxShort}">
                             <TextBox.Text>
                                 <Binding Source="{x:Static local:Config.Data}" Path="Textbox.MaxLength" UpdateSourceTrigger="PropertyChanged">
                                     <Binding.ValidationRules>
@@ -104,7 +104,7 @@
                     <WrapPanel>
                         <ComboBox x:Name="speechSpeakerBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="SpeechSpeakerBox_SelectionChanged"/>
                         <Label Content="Output speakers" VerticalAlignment="Center"/>
-                        <Button x:Name="resetDeviceButton" Style="{StaticResource HButtonSmall}" Content="Reset" VerticalAlignment="Center" Click="Button_ResetDevice" Margin="4,0,0,0"/>
+                        <Button Style="{StaticResource HButtonSmall}" Content="Reset" VerticalAlignment="Center" Click="Button_ResetDevice" Margin="4,0,0,0"/>
                     </WrapPanel>
 
                     <WrapPanel Margin="0,4,0,0">
@@ -122,7 +122,7 @@
                 <Label Content="Other Options" Style="{StaticResource HLabelM}" Margin="0,16,0,0"/>
                 <StackPanel Style="{StaticResource HStackIndent}">
                     <WrapPanel>
-                        <TextBox x:Name="oscOscIp" VerticalAlignment="Center" Style="{StaticResource HTextBoxShort}" Tag="MTL...">
+                        <TextBox VerticalAlignment="Center" Style="{StaticResource HTextBoxShort}" Tag="MTL...">
                             <TextBox.Text>
                                 <Binding Source="{x:Static local:Config.Data}" Path="Speech.MaxLenTtsString" UpdateSourceTrigger="PropertyChanged">
                                     <Binding.ValidationRules>
@@ -133,7 +133,7 @@
                         </TextBox>
                         <Label Content="Max. text length" VerticalAlignment="Center"/>
                     </WrapPanel>
-                    <CheckBox x:Name="skipTooLong" Content="Skip too long messages" Margin="0,4,0,0" IsChecked="{Binding Speech.SkipLongerMessages, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Content="Skip too long messages" Margin="0,4,0,0" IsChecked="{Binding Speech.SkipLongerMessages, Source={x:Static local:Config.Data}}"/>
                 </StackPanel>
             </StackPanel>
         </StackPanel>

@@ -25,11 +25,11 @@
                 </WrapPanel>
 
                 <StackPanel Style="{StaticResource HStackIndent}">
-                    <CheckBox x:Name="speechUseTts" Content="Send over TTS" IsChecked="{Binding Speech.UseTts, Source={x:Static local:Config.Data}}"/>
-                    <CheckBox x:Name="speechUseTextbox" Content="Send over textbox" Margin="0,4,0,0" IsChecked="{Binding Speech.UseTextbox, Source={x:Static local:Config.Data}}"/>
-                    <CheckBox x:Name="speechStartUnmuted" Content="Start microphone unmuted" Margin="0,4,0,0" IsChecked="{Binding Speech.StartUnmuted, Source={x:Static local:Config.Data}}"/>
-                    <CheckBox x:Name="speechMuteOnVrcMute" Content="Mute microphone on VRC mute" Margin="0,4,0,0" IsChecked="{Binding Speech.MuteOnVrcMute, Source={x:Static local:Config.Data}}"/>
-                    <CheckBox x:Name="speechRemoveFullStop" Content="Remove full stop at sentence end" Margin="0,4,0,0" IsChecked="{Binding Speech.RemoveFullStop, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Content="Send over TTS" IsChecked="{Binding Speech.UseTts, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Content="Send over textbox" Margin="0,4,0,0" IsChecked="{Binding Speech.UseTextbox, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Content="Start microphone unmuted" Margin="0,4,0,0" IsChecked="{Binding Speech.StartUnmuted, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Content="Mute microphone on VRC mute" Margin="0,4,0,0" IsChecked="{Binding Speech.MuteOnVrcMute, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Content="Remove full stop at sentence end" Margin="0,4,0,0" IsChecked="{Binding Speech.RemoveFullStop, Source={x:Static local:Config.Data}}"/>
                 </StackPanel>
 
                 <!-- Commands & Filters -->
@@ -41,8 +41,8 @@
                         <Button Content="Replacements" Margin="16,0,0,0" Click="Button_OpenReplacements"/>
                         <Button Content="Noise Filter" Margin="16,0,0,0" Click="Button_OpenNoiseFilter"/>
                     </WrapPanel>
-                    <CheckBox x:Name="useReplacements" Content="Use shortcuts and replacements" Margin="0,8,0,0" IsChecked="{Binding Speech.UseReplacements, Source={x:Static local:Config.Data}}"/>
-                    <CheckBox x:Name="speechToLower" Content="Ignore caps for list checks" Margin="0,8,0,0" IsChecked="{Binding Speech.IgnoreCaps, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Content="Use shortcuts and replacements" Margin="0,8,0,0" IsChecked="{Binding Speech.UseReplacements, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Content="Ignore caps for list checks" Margin="0,8,0,0" IsChecked="{Binding Speech.IgnoreCaps, Source={x:Static local:Config.Data}}"/>
                 </StackPanel>
 
                 <!-- Recognizer Settings -->
@@ -62,7 +62,7 @@
                         <Label Content="Microphone"/>
                         <WrapPanel Margin="8,0,0,0">
                             <ComboBox x:Name="speechMicrophoneBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="SpeechMicrophoneBox_SelectionChanged"/>
-                            <Button x:Name="resetDeviceButton" Style="{StaticResource HButtonSmall}" Content="Reset" Margin="8,0,0,0" VerticalAlignment="Center" Click="Button_ResetDevice"/>
+                            <Button Style="{StaticResource HButtonSmall}" Content="Reset" Margin="8,0,0,0" VerticalAlignment="Center" Click="Button_ResetDevice"/>
                         </WrapPanel>
                     </StackPanel>
 
@@ -75,11 +75,11 @@
 
                             <WrapPanel Margin="0,4,0,0">
                                 <ComboBox x:Name="voskModelBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="VoskModelBox_SelectionChanged"/>
-                                <Button x:Name="openVoskModelEditorButton" Style="{StaticResource HButtonSmall}" Content="Edit list" Margin="8,0,0,0" VerticalAlignment="Center" Click="Button_EditVoskModels"/>
+                                <Button Style="{StaticResource HButtonSmall}" Content="Edit list" Margin="8,0,0,0" VerticalAlignment="Center" Click="Button_EditVoskModels"/>
                             </WrapPanel>
 
                             <WrapPanel Margin="0,4,0,0">
-                                <TextBox x:Name="speechVoskTimeout" Style="{StaticResource HTextBoxShort}" Tag="Timeout...">
+                                <TextBox Style="{StaticResource HTextBoxShort}" Tag="Timeout...">
                                     <TextBox.Text>
                                         <Binding Source="{x:Static local:Config.Data}" Path="Speech.VoskTimeout" UpdateSourceTrigger="PropertyChanged">
                                             <Binding.ValidationRules>
@@ -104,10 +104,10 @@
                 <Label Style="{StaticResource HLabelM}" Content="Manual Input" Margin="0,16,0,0"/>
 
                 <StackPanel Style="{StaticResource HStackIndent}">
-                    <CheckBox x:Name="inputTriggerReplace" Content="Trigger shortcuts and replacements" IsChecked="{Binding Input.TriggerReplace, Source={x:Static local:Config.Data}}"/>
-                    <CheckBox x:Name="inputTriggerCommands" Content="Trigger commands" Margin="0,4,0,0" IsChecked="{Binding Input.TriggerCommands, Source={x:Static local:Config.Data}}"/>
-                    <CheckBox x:Name="inputIgnoreCaps" Content="Ignore caps for list checks" Margin="0,4,0,0" IsChecked="{Binding Input.IgnoreCaps, Source={x:Static local:Config.Data}}"/>
-                    <CheckBox x:Name="inputAllowTranslation" Content="Allow translation" Margin="0,4,0,0" IsChecked="{Binding Input.AllowTranslation, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Content="Trigger shortcuts and replacements" IsChecked="{Binding Input.TriggerReplace, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Content="Trigger commands" Margin="0,4,0,0" IsChecked="{Binding Input.TriggerCommands, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Content="Ignore caps for list checks" Margin="0,4,0,0" IsChecked="{Binding Input.IgnoreCaps, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Content="Allow translation" Margin="0,4,0,0" IsChecked="{Binding Input.AllowTranslation, Source={x:Static local:Config.Data}}"/>
                 </StackPanel>
             </StackPanel>
         </StackPanel>

@@ -3,6 +3,7 @@ using Hoscy.Ui.Windows;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Hoscy.Ui.Pages
 {
@@ -12,6 +13,7 @@ namespace Hoscy.Ui.Pages
     public partial class PageApi : Page //todo: change indicator for synth
     {
         private static bool _changedValuesTranslation = false;
+        private static bool _changedValuesSynthesizer = false;
         public PageApi()
         {
             InitializeComponent();
@@ -25,14 +27,25 @@ namespace Hoscy.Ui.Pages
             LoadPresetBox(recognitionApiBox, Config.Api.RecognitionPreset);
         }
 
+        #region Change Indicators
         private void UpdateChangedValuesIndicator()
-            => changeIndicatorTranslation.Visibility = _changedValuesTranslation ? Visibility.Visible : Visibility.Hidden;
+        {
+            changeIndicatorTranslation.Visibility = _changedValuesTranslation ? Visibility.Visible : Visibility.Hidden;
+            changeIndicatorSynthesizer.Visibility = _changedValuesSynthesizer ? Visibility.Visible : Visibility.Hidden;
+        }
+
         private void SetChangedValueTranslation(bool state)
         {
             _changedValuesTranslation = state;
             UpdateChangedValuesIndicator();
         }
 
+        private void SetChangedValueSynthesizer(bool state)
+        {
+            _changedValuesSynthesizer = state;
+            UpdateChangedValuesIndicator();
+        }
+        #endregion
 
         #region Buttons
         private void Button_ModifyPresets(object sender, RoutedEventArgs e)
@@ -48,6 +61,12 @@ namespace Hoscy.Ui.Pages
         {
             Translation.ReloadClient();
             SetChangedValueTranslation(false);
+        }
+
+        private void Button_ReloadSynthesizer(object sender, RoutedEventArgs e)
+        {
+            Synthesizer.ReloadClient();
+            SetChangedValueSynthesizer(false);
         }
         #endregion
 
@@ -79,5 +98,8 @@ namespace Hoscy.Ui.Pages
 
         private static void LoadPresetBox(ComboBox box, string name)
             => box.Load(Config.Api.Presets.Select(x => x.Name), Config.Api.GetIndex(name));
+
+        private void TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+            => SetChangedValueSynthesizer(true);
     }
 }

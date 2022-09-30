@@ -59,6 +59,12 @@ namespace Hoscy.Services.Api
             _synth = synth;
         }
 
+        /// <summary>
+        /// Writes audio data into memorystream
+        /// </summary>
+        /// <param name="text">Text to synthesize</param>
+        /// <param name="ms">Memorystream</param>
+        /// <returns>Success</returns>
         public static async Task<bool> SpeakAsync(string text, MemoryStream ms)
         {
             if (_synth == null)

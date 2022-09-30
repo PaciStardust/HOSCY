@@ -75,20 +75,24 @@
                 </StackPanel>
 
                 <!-- Recognition Azure -->
-                <Label Style="{StaticResource HLabelM}" Content="Azure Cognitive Services" Margin="0,16,0,0"/>
+                <WrapPanel Margin="0,16,0,0">
+                    <Label Style="{StaticResource HLabelM}" Content="Azure Cognitive Services"/>
+                    <Button Content="Reload TTS" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_ReloadSynthesizer"/>
+                    <Label x:Name="changeIndicatorSynthesizer" Foreground="{x:Static ui:UiHelper.ColorInvalid}" Content="(Unapplied changes)" FontSize="14" VerticalAlignment="Center" Visibility="Hidden"/>
+                </WrapPanel>
 
                 <StackPanel Style="{StaticResource HStackIndent}">
                     <TextBlock Style="{DynamicResource HTextBlock}" Text="API Key"/>
-                    <TextBox Text="{Binding Api.AzureKey, Source={x:Static local:Config.Data}}" Tag="API key..." Style="{StaticResource HTextBoxLong}"/>
+                    <TextBox Text="{Binding Api.AzureKey, Source={x:Static local:Config.Data}}" Tag="API key..." Style="{StaticResource HTextBoxLong}" PreviewKeyDown="TextBox_PreviewKeyDown"/>
 
                     <TextBlock Style="{DynamicResource HTextBlock}" Text="API Region" Margin="0,4,0,0"/>
-                    <TextBox Text="{Binding Api.AzureRegion, Source={x:Static local:Config.Data}}" Tag="API Region..." Style="{StaticResource HTextBoxLong}"/>
+                    <TextBox Text="{Binding Api.AzureRegion, Source={x:Static local:Config.Data}}" Tag="API Region..." Style="{StaticResource HTextBoxLong}" PreviewKeyDown="TextBox_PreviewKeyDown"/>
 
                     <TextBlock Style="{DynamicResource HTextBlock}" Text="Custom endpoint (Optional)" Margin="0,4,0,0"/>
-                    <TextBox Text="{Binding Api.AzureCustomEndpoint, Source={x:Static local:Config.Data}}" Tag="Custom endpoint..." Style="{StaticResource HTextBoxLong}"/>
+                    <TextBox Text="{Binding Api.AzureCustomEndpoint, Source={x:Static local:Config.Data}}" Tag="Custom endpoint..." Style="{StaticResource HTextBoxLong}" PreviewKeyDown="TextBox_PreviewKeyDown"/>
 
                     <WrapPanel Margin="0,4,0,0">
-                        <TextBox HorizontalAlignment="Left" Text="{Binding Api.AzureLanguage, Source={x:Static local:Config.Data}}" Tag="Language..." Style="{StaticResource HTextBoxShort}"/>
+                        <TextBox HorizontalAlignment="Left" Text="{Binding Api.AzureLanguage, Source={x:Static local:Config.Data}}" Tag="Language..." Style="{StaticResource HTextBoxShort}" PreviewKeyDown="TextBox_PreviewKeyDown"/>
                         <Label Content="Used Language (Optional)" VerticalAlignment="Center"/>
                     </WrapPanel>
 
@@ -96,7 +100,7 @@
                     <StackPanel Style="{StaticResource HStackIndent}">
                         <CheckBox Content="Use Azure TTS" IsChecked="{Binding Speech.UseAzureTts, Source={x:Static local:Config.Data}}"/>
                         <TextBlock Style="{DynamicResource HTextBlock}" Text="Output Speech Voice" Margin="0,4,0,0"/>
-                        <TextBox Text="{Binding Api.AzureVoice, Source={x:Static local:Config.Data}}" Tag="Speech Voice..." Style="{StaticResource HTextBoxLong}"/>
+                        <TextBox Text="{Binding Api.AzureVoice, Source={x:Static local:Config.Data}}" Tag="Speech Voice..." Style="{StaticResource HTextBoxLong}" PreviewKeyDown="TextBox_PreviewKeyDown"/>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
