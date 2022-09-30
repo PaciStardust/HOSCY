@@ -43,7 +43,7 @@ namespace Hoscy.Services.Speech.Recognizers
                 if (!string.IsNullOrWhiteSpace(Config.Api.AzureCustomEndpoint))
                     speechConfig.EndpointId = Config.Api.AzureCustomEndpoint;
 
-                if (Config.Api.AzureRecognitionLanguages.Count > 1)
+                if (Config.Api.AzureRecognitionLanguages.Count > 1) //this looks scuffed but is done as I think its quicker in api terms
                 {
                     speechConfig.SetProperty(PropertyId.SpeechServiceConnection_ContinuousLanguageIdPriority, "Latency");
                     var autoDetectSourceLanguageConfig = AutoDetectSourceLanguageConfig.FromLanguages(Config.Api.AzureRecognitionLanguages.ToArray());
