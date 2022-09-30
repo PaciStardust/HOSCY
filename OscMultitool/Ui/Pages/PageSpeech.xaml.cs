@@ -36,7 +36,7 @@ namespace Hoscy.Ui.Pages
                 "Windows Recognizer" => new RecognizerWindows(),
                 "Any-API Recognizer" => new RecognizerApi(),
                 "Azure API Recognizer" => new RecognizerAzure(),
-                _ => new RecognizerWindowsV2()
+                _ => new RecognizerVosk()
             };
 
         public PageSpeech()
