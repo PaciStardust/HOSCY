@@ -289,7 +289,8 @@ namespace Hoscy
             public string AzureRegion { get; set; } = string.Empty;
             public string AzureKey { get; set; } = string.Empty;
             public string AzureSpeechLanguage { get; set; } = string.Empty;
-            public string AzureCustomEndpoint { get; set; } = string.Empty;
+            public string AzureCustomEndpointSpeech { get; set; } = string.Empty;
+            public string AzureCustomEndpointRecognition { get; set; } = string.Empty;
             public string AzureVoice { get; set; } = string.Empty;
             public List<string> AzurePhrases { get; set; } = new();
             public List<string> AzureRecognitionLanguages { get; set; } = new();

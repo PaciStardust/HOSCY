@@ -38,8 +38,8 @@ namespace Hoscy.Services.Api
 
                 speechCfg.SetProfanity(ProfanityOption.Raw);
 
-                if (!string.IsNullOrWhiteSpace(Config.Api.AzureCustomEndpoint))
-                    speechCfg.EndpointId = Config.Api.AzureCustomEndpoint;
+                if (!string.IsNullOrWhiteSpace(Config.Api.AzureCustomEndpointSpeech))
+                    speechCfg.EndpointId = Config.Api.AzureCustomEndpointSpeech;
 
                 if (!string.IsNullOrWhiteSpace(Config.Api.AzureVoice))
                     speechCfg.SpeechSynthesisVoiceName = Config.Api.AzureVoice;
