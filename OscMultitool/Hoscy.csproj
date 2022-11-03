@@ -32,12 +32,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MeaMod.DNS" Version="1.0.70" />
-    <PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.24.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.2" />
+    <PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.24.1" />
     <PackageReference Include="NAudio" Version="2.1.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="System.Speech" Version="6.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2-beta2" />
+    <PackageReference Include="System.Speech" Version="7.0.0-rc.2.22472.3" />
     <PackageReference Include="Vosk" Version="0.3.38" />
   </ItemGroup>
 
