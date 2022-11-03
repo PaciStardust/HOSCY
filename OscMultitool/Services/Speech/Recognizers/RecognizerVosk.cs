@@ -62,7 +62,10 @@ namespace Hoscy.Services.Speech.Recognizers
 
             _microphone.DataAvailable += OnDataAvailable;
             _microphone.Start();
-            _recThread = new(new ThreadStart(HandleAvailableDataLoop));
+            _recThread = new(new ThreadStart(HandleAvailableDataLoop))
+            {
+                Priority = ThreadPriority.AboveNormal
+            };
             _recThread.Start();
             return true;
         }

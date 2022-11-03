@@ -17,7 +17,7 @@ If you wish to contribute or need support, join the **[Discord](https://discord.
 	- A customizable system for displaying Text on VRChats chatbox
 	- Integrated Text-to-Speech support
 - **Translation** of whatever you say using an external API of your choice
-- **OSC** ***(Open Sound Control)*** **Support** using [OSCSharp](https://github.com/ValdemarOrn/SharpOSC)
+- **OSC** ***(Open Sound Control)*** **Support** using [CoreOsc](https://github.com/PaciStardust/CoreOSC-UTF8)
 	- Configurable routing of incomming OSC data
 	- Sending out OSC data
 	- Creation of your own OSC command sequences
@@ -25,7 +25,7 @@ If you wish to contribute or need support, join the **[Discord](https://discord.
 	- Simple and non-intrusive "Now Playing" display 
 
 ## Credits
-- **[OSCSharp](https://github.com/ValdemarOrn/SharpOSC)** by ValdemarOrn for sending and receiving OSC Data
+- **[CoreOSC](https://github.com/PaciStardust/CoreOSC-UTF8)** by ValdemarOrn and Dalesjo for sending and receiving OSC Data
 - **[VOSK](https://alphacephei.com/vosk/)** by AlphaCephei for local AI speech recognition
 - **[Azure Cognitive Services](https://azure.microsoft.com/en-us/services/cognitive-services/)** for API speech recognition
 - **[AuroraNemoia](https://github.com/AuroraNemoia)** for branding *(Logo, Name)*

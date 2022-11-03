@@ -1,7 +1,6 @@
 ﻿using Hoscy.Services.Api;
 using Hoscy.Services.Speech;
 using Hoscy.Services.Speech.Utilities;
-using Hoscy.Ui.Windows;
 using System.Windows;
 using System.Windows.Controls;
 

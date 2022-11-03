@@ -1,9 +1,10 @@
-﻿using SharpOSC;
+﻿using CoreOSC;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Hoscy.OscControl
 {
@@ -110,7 +111,7 @@ namespace Hoscy.OscControl
 
         #region OSC Command Parsing
         //These are amazingly readable regexes, I know
-        private static readonly Regex _oscCommandIdentifier = new(@"\[ *(?<address>(?:\/[a-zA-Z0-9\{\}\-\+\[\]*]+)+)(?<values>(?: +\[(?:[fF]\]-?[0-9]+(?:\.[0-9]+)?|[iI]\]\-?[0-9]+|[sS]\]""[^""]*""|[bB]\](?:[tT]rue|[fF]alse)))+)(?: +(?<ip>(?:(?:25[0-5]|(?:2[0-4]|1\d|[1-9]|)\d)\.?\b){4}):(?<port>[0-9]{1,5}))?(?: +[wW](?<wait>[0-9]+))? *\]");
+        private static readonly Regex _oscCommandIdentifier = new(@"\[ *(?<address>(?:\/[a-zA-Z0-9\{\}\-\+\[\]*]+)+)(?<values>(?: +\[(?:[fF]\]-?[0-9]+(?:\.[0-9]+)?|[iI]\]\-?[0-9]+|[sS]\]""[^""]*""|[bB]\](?:[tT]rue|[fF]alse)))+)(?: +(?:(?<ip>(?:(?:25[0-5]|(?:2[0-4]|1\d|[1-9]|)\d)\.?\b){4}):(?<port>[0-9]{1,5})|""(?<target>[^""]*)""))?(?: +[wW](?<wait>[0-9]+))? *\]");
         private static readonly Regex _oscParameterExtractor = new(@" +\[(?<type>[iIfFbBsS])\](?:""(?<value>[^""]*)""|(?<value>[a-zA-Z]+|[0-9\.\-]*))");
         /// <summary>
         /// Checks for message to be an osc command
@@ -142,7 +143,7 @@ namespace Hoscy.OscControl
                 return;
             }
 
-            var threadId = "ST-" + Math.Abs(message.GetHashCode());
+            var threadId = "ST-" + Guid.NewGuid().ToString().Split('-')[0];
             Task.Run(() => ExecuteOscCommands(threadId, commandPackets));
         }
 
@@ -155,27 +156,40 @@ namespace Hoscy.OscControl
 
             string addressText = commandMatch.Groups["address"].Value;
             string valuesText = commandMatch.Groups["values"].Value;
+            string targetText = commandMatch.Groups["target"].Value;
             string ipText = commandMatch.Groups["ip"].Value.Length == 0 ? Config.Osc.Ip.ToString() : commandMatch.Groups["ip"].Value;
             string portText = commandMatch.Groups["port"].Value.Length == 0 ? Config.Osc.Port.ToString() : commandMatch.Groups["port"].Value;
             string waitText = commandMatch.Groups["wait"].Value.Length == 0 ? "0" : commandMatch.Groups["wait"].Value;
 
-            //Parsing Port and Wait
-            if (!int.TryParse(portText, out var parsedPort) || !int.TryParse(waitText, out var parsedWait))
+            if (!int.TryParse(waitText, out var parsedWait))
             {
-                Logger.Warning("Failed parsing osc subcommand, unable to parse port or wait");
+                Logger.Warning("Failed parsing osc subcommand, unable to parse wait");
                 return null;
             }
 
-            //Parsing packet
             var parsedVariables = ParseOscVariables(valuesText).ToArray();
-            var packet = new OscPacket(addressText, ipText, parsedPort, parsedVariables);
-            if (!packet.IsValid)
+            OscPacket? packet;
+
+            if (string.IsNullOrWhiteSpace(targetText))
+            {
+                if (!int.TryParse(portText, out var parsedPort))
+                {
+                    Logger.Warning("Failed parsing osc subcommand, unable to parse port");
+                    return null;
+                }
+
+                packet = new(addressText, ipText, parsedPort, parsedVariables);
+            }
+            else
+                packet = OscPacket.FromServiceProfile(targetText, addressText, parsedVariables);
+
+            if (!packet.HasValue || !packet.Value.IsValid)
             {
                 Logger.Warning("Failed parsing osc subcommand, packet is invalid");
                 return null;
             }
 
-            return (packet, parsedWait);
+            return (packet.Value, parsedWait);
         }
 
         /// <summary>

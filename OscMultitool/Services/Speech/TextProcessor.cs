@@ -24,7 +24,7 @@ namespace Hoscy.Services.Speech
         /// </summary>
         /// <param name="message">The message to process</param>
         public void Process(string message)
-            => Task.Run(async () => await ProcessInternal(message)).ConfigureAwait(false);
+            => App.RunWithoutAwait(ProcessInternal(message));
 
         /// <summary>
         /// Processes and sends strings with given options

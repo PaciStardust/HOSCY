@@ -7,8 +7,8 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Resources\hoscy_circle.ico</ApplicationIcon>
     <Platforms>AnyCPU;x64</Platforms>
-    <AssemblyVersion>0.3.2</AssemblyVersion>
-    <FileVersion>0.3.2</FileVersion>
+    <AssemblyVersion>0.4</AssemblyVersion>
+    <FileVersion>0.4</FileVersion>
     <RepositoryUrl>https://github.com/PaciStardust/HOSCY</RepositoryUrl>
     <PackageProjectUrl>https://github.com/PaciStardust/HOSCY</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -32,7 +32,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.23.0" />
+    <PackageReference Include="MeaMod.DNS" Version="1.0.70" />
+    <PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.24.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.2" />
     <PackageReference Include="NAudio" Version="2.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="System.Speech" Version="6.0.0" />
@@ -40,8 +42,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="SharpOSC">
-      <HintPath>Resources\SharpOSC\SharpOSC.dll</HintPath>
+    <Reference Include="CoreOSC">
+      <HintPath>Resources\CoreOsc\CoreOSC.dll</HintPath>
     </Reference>
   </ItemGroup>
 
@@ -77,6 +79,9 @@
     <Page Update="Ui\Windows\ModifyApiPresetsWindow.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Ui\Windows\DisplayListWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Ui\Windows\ModifyReplacementsWindow.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>

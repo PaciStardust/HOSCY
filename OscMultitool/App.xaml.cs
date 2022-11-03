@@ -1,5 +1,6 @@
 ﻿using Hoscy.Services.Speech;
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace Hoscy
@@ -30,5 +31,8 @@ namespace Hoscy
             Current.Shutdown(-1);
             Environment.Exit(-1);
         }
+
+        public static void RunWithoutAwait(Task function)
+            => Task.Run(async() => await function).ConfigureAwait(false);
     }
 }

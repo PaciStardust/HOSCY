@@ -14,9 +14,9 @@ namespace Hoscy.OscControl
         public OscPacket(string address, string ip, int port, params object[] variables)
         {
             Address = address;
+            Variables = variables;
             Ip = ip;
             Port = port;
-            Variables = variables;
         }
 
         public OscPacket(string address, params object[] variables)
@@ -40,6 +40,18 @@ namespace Hoscy.OscControl
                 return false;
 
             return true;
+        }
+
+        /// <summary>
+        /// This is supposed to be used for OscQuery in the future
+        /// </summary>
+        public static OscPacket? FromServiceProfile(string profile, string address, params object[] variables)
+        {
+            profile = profile.ToLower();
+            if (profile == "self")
+                return new(address, "127.0.0.1", Config.Osc.PortListen, variables);
+
+            return null;
         }
 
         /// <summary>

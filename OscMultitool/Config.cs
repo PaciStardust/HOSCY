@@ -252,10 +252,17 @@ namespace Hoscy
             }
             private int _defaultTimeout = 5000;
             public bool DynamicTimeout { get; set; } = true;
-            public bool ShowMediaStatus { get; set; } = false;
             public bool AutomaticClearNotification { get; set; } = true;
             public bool AutomaticClearMessage { get; set; } = false;
             public bool UseIndicatorWithoutBox { get; set; } = false;
+            public bool SoundOnMessage { get; set; } = true;
+            public bool SoundOnNotification { get; set; } = false;
+
+            //Media
+            public bool MediaShowStatus { get; set; } = false;
+            public string MediaPlayingVerb { get; set; } = "Playing";
+            public bool MediaAddAlbum { get; set; } = false;
+
         }
 
         /// <summary>

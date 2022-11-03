@@ -1,7 +1,9 @@
 ﻿using Hoscy.Services.Speech;
-using SharpOSC;
+using CoreOSC;
 using System;
 using System.Collections.Generic;
+using System.Timers;
+using System.Threading.Tasks;
 
 namespace Hoscy.OscControl
 {
@@ -9,6 +11,7 @@ namespace Hoscy.OscControl
     {
         private readonly IReadOnlyList<OscRoutingFilter> _filters;
         private UDPListener? _listener;
+
         private readonly int _port;
         public int Port => _port;
 
@@ -45,7 +48,7 @@ namespace Hoscy.OscControl
         /// Callback for parsing incoming osc packets
         /// </summary>
         /// <param name="packet">Incomping packet</param>
-        private void Callback(SharpOSC.OscPacket packet)
+        private void Callback(CoreOSC.OscPacket packet)
         {
             var message = (OscMessage)packet;
 

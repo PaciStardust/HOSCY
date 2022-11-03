@@ -2,8 +2,6 @@
 using Hoscy.Ui.Pages;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
 using System.Threading;
 
 namespace Hoscy.Services.Speech
@@ -41,12 +39,14 @@ namespace Hoscy.Services.Speech
             {
                 //Wait if Q empty
                 var message = string.Empty;
+                var notify = false;
                 var timeout = 10;
 
                 if (MessageQueue.Count > 0)
                 {
                     message = MessageQueue.Dequeue();
                     timeout = GetMessageTimeout(message);
+                    notify = Config.Textbox.SoundOnMessage;
                     _autocleared = !Config.Textbox.AutomaticClearMessage;
                 }
                 else if (_notificationType != NotificationType.None)
@@ -54,18 +54,19 @@ namespace Hoscy.Services.Speech
                     message = _notification;
                     ClearNotification();
                     timeout = GetMessageTimeout(message);
+                    notify = Config.Textbox.SoundOnNotification;
                     _autocleared = !Config.Textbox.AutomaticClearNotification;
                 }
                 else if (!_autocleared)
                 {
-                    SendMessage(string.Empty);
+                    SendMessage(string.Empty, false);
                     timeout = 1000;
                     _autocleared = true;
                 }
 
                 if (!string.IsNullOrWhiteSpace(message))
                 {
-                    if (!SendMessage(message))
+                    if (!SendMessage(message, notify))
                     {
                         _autocleared = true;
                         continue;
@@ -78,9 +79,9 @@ namespace Hoscy.Services.Speech
             }
         }
 
-        private static bool SendMessage(string message)
+        private static bool SendMessage(string message, bool notify)
         {
-            var packet = new OscPacket("/chatbox/input", ReplaceSpecialCharacters(message), true);
+            var packet = new OscPacket("/chatbox/input", message, true, notify);
             if (!packet.IsValid)
             {
                 Logger.Warning("Unable to send message to chatbox, packet is invalid");
@@ -122,7 +123,9 @@ namespace Hoscy.Services.Speech
                 return;
             }
 
-            input = input.Length > Config.Textbox.MaxLength ? input[..130] : input;
+            input = input.Length > Config.Textbox.MaxLength
+                ? input[..(Config.Textbox.MaxLength-3)] + "..."
+                : input;
 
             _notificationType = type;
             _notification = input;
@@ -163,23 +166,6 @@ namespace Hoscy.Services.Speech
                 messages.Add(currentMessage);
 
             return messages;
-        }
-
-        /// <summary>
-        /// Replacing special language characters for textbox
-        /// </summary>
-        private static string ReplaceSpecialCharacters(string text)
-        {
-            var normalizedString = text.Normalize(NormalizationForm.FormD);
-
-            var stringBuilder = new StringBuilder();
-            foreach (var c in normalizedString)
-            {
-                if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
-                    stringBuilder.Append(c);
-            }
-
-            return stringBuilder.ToString();
         }
 
         /// <summary>

@@ -70,7 +70,7 @@ namespace Hoscy.Services.Api
         /// Checks if there is an update available, displays a window containing changelog
         /// </summary>
         public static void CheckForUpdates()
-           => Task.Run(async() => await CheckForUpdatesInternal()).ConfigureAwait(false);
+           => App.RunWithoutAwait(CheckForUpdatesInternal());
         /// <summary>
         /// Internal version to avoid async hell
         /// </summary>

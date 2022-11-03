@@ -17,7 +17,7 @@ namespace Hoscy.Services.Api
 
         #region Startup
         public static void StartMediaDetection()
-            => Task.Run(() => StartMediaDetectionInternal()).ConfigureAwait(false);
+            => App.RunWithoutAwait(StartMediaDetectionInternal());
 
         private static async Task StartMediaDetectionInternal()
         {
@@ -53,26 +53,28 @@ namespace Hoscy.Services.Api
             var newPlaying = await sender.TryGetMediaPropertiesAsync();
             var playbackInfo = sender.GetPlaybackInfo();
 
-            if (newPlaying == null
-                || !(newPlaying.PlaybackType == MediaPlaybackType.Video || newPlaying.PlaybackType == MediaPlaybackType.Music)
-                || playbackInfo == null
-                || playbackInfo.PlaybackStatus!= GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing
-                || newPlaying.Title == null)
+            //Set notification empty if the current media is invalid
+            if (newPlaying == null //No new playing
+                || !(newPlaying.PlaybackType == MediaPlaybackType.Video || newPlaying.PlaybackType == MediaPlaybackType.Music) //Not a video or music
+                || playbackInfo == null || playbackInfo.PlaybackStatus!= GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing //No status or its not playing
+                || newPlaying.Title == null || string.IsNullOrWhiteSpace(newPlaying.Title)) //No title
             {
                 SetNotification(string.Empty);
                 return;
             }
 
-            lock (_lock) //We use this lock here as media can sometimes end up here twice at the same time
+            //Checking if the new media is the same media
+            //Locked as it sometimes happens to come here multiple times concurrently
+            lock (_lock)
             {
-                if (_nowPlaying != null)
-                    if (newPlaying.Artist == _nowPlaying.Artist && newPlaying.Title == (_nowPlaying.Title ?? ""))
+                if (_nowPlaying != null) //We skip this check if there is now now playing
+                    if (newPlaying.Title != _nowPlaying.Title && newPlaying.Artist == _nowPlaying.Artist)
                         return;
             }
 
             _nowPlaying = newPlaying;
 
-            if (Config.Textbox.ShowMediaStatus)
+            if (Config.Textbox.MediaShowStatus)
             {
                 var playing = CreateCurrentMediaString();
 
@@ -83,32 +85,38 @@ namespace Hoscy.Services.Api
                 }
 
                 Logger.Log($"Currently playing media has changed to: {playing}");
-                SetNotification($"Playing {playing}");
+                SetNotification($"{Config.Textbox.MediaPlayingVerb} {playing}");
             }
         }
 
         private static string? CreateCurrentMediaString()
         {
-            if (_nowPlaying == null || string.IsNullOrWhiteSpace(_nowPlaying.Title))
+            if (_nowPlaying == null || string.IsNullOrWhiteSpace(_nowPlaying.Title)) //This should in theory never trigger but just to be sure
                 return null;
 
-            var playing = $"'{_nowPlaying.Title}'";
+            StringBuilder sb = new($"'{_nowPlaying.Title}'");
+
             if (!string.IsNullOrWhiteSpace(_nowPlaying.Artist))
-                playing += $" by '{_nowPlaying.Artist}'";
-            return playing;
+                sb.Append($" by '{_nowPlaying.Artist}'");
+
+            if (Config.Textbox.MediaAddAlbum && !string.IsNullOrWhiteSpace(_nowPlaying.AlbumTitle) && _nowPlaying.AlbumTitle != _nowPlaying.Title)
+                sb.Append($" on '{_nowPlaying.AlbumTitle}'");
+
+            return sb.ToString();
         }
 
         private static string? CreateDetailedMediaString()
         {
-            if (_nowPlaying == null || string.IsNullOrWhiteSpace(_nowPlaying.Title))
-                return null;
-            StringBuilder sb = new($"Playing '{_nowPlaying.Title}'");
-            
-            if (!string.IsNullOrWhiteSpace(_nowPlaying.Artist))
-                sb.Append($" by '{_nowPlaying.Artist}'");
+            StringBuilder sb = new(CreateCurrentMediaString());
 
-            if (_nowPlaying.Genres != null && _nowPlaying.Genres.Count > 0)
-                sb.Append($" [{string.Join(", ", _nowPlaying.Genres)}]");
+            if (sb.Length == 0 || _nowPlaying == null)
+                return null;
+
+            if (!Config.Textbox.MediaAddAlbum && !string.IsNullOrWhiteSpace(_nowPlaying.AlbumTitle))
+                sb.Append($"on '{_nowPlaying.AlbumTitle}'");
+
+            if (_nowPlaying.Genres.Count > 0)
+                sb.Append($" ({string.Join(", ", _nowPlaying.Genres)})");
 
             return sb.ToString();
         }
@@ -139,7 +147,7 @@ namespace Hoscy.Services.Api
             => GetCurrentSession(sender);
 
         private static void UpdateCurrentlyPlayingMediaProxy(GlobalSystemMediaTransportControlsSession sender)
-            => Task.Run(async() => await UpdateCurrentlyPlayingMedia(sender)).ConfigureAwait(false);
+            => App.RunWithoutAwait(UpdateCurrentlyPlayingMedia(sender));
         #endregion
 
         #region Media Control
@@ -189,7 +197,7 @@ namespace Hoscy.Services.Api
                 return;
 
             var mediaCommand = _commandTriggers[command];
-            Task.Run(async () => await HandleMediaCommand(mediaCommand)).ConfigureAwait(false);
+            App.RunWithoutAwait(HandleMediaCommand(mediaCommand));
         }
 
         /// <summary>
