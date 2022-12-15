@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Threading.Tasks;
+using VRC.OSCQuery;
 using System.Linq;
 
 namespace Hoscy.OscControl
@@ -107,6 +108,12 @@ namespace Hoscy.OscControl
             Logger.PInfo("Created new input filters");
             return filters;
         }
+
+        public static HostInfo? GetServiceProfile(string name)
+            => _listener?.ServiceProfiles.TryGetValue(name, out var profile) ?? false ? profile : null;
+
+        public static List<string> GetServiceProfileNames()
+            => _listener?.ServiceProfiles.Values.Select(x => x.name).ToList() ?? new List<string>();
         #endregion
 
         #region OSC Command Parsing

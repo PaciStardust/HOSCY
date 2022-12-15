@@ -105,22 +105,6 @@ namespace Hoscy.Services.Api
             return sb.ToString();
         }
 
-        private static string? CreateDetailedMediaString()
-        {
-            StringBuilder sb = new(CreateCurrentMediaString());
-
-            if (sb.Length == 0 || _nowPlaying == null)
-                return null;
-
-            if (!Config.Textbox.MediaAddAlbum && !string.IsNullOrWhiteSpace(_nowPlaying.AlbumTitle))
-                sb.Append($"on '{_nowPlaying.AlbumTitle}'");
-
-            if (_nowPlaying.Genres.Count > 0)
-                sb.Append($" ({string.Join(", ", _nowPlaying.Genres)})");
-
-            return sb.ToString();
-        }
-
         private static void SetNotification(string text)
             => Textbox.Notify(text, NotificationType.Media);
         #endregion
@@ -232,10 +216,10 @@ namespace Hoscy.Services.Api
                     return;
 
                 case MediaCommandType.Info:
-                    var playing = CreateDetailedMediaString();
+                    var playing = CreateCurrentMediaString();
                     if (string.IsNullOrWhiteSpace(playing))
                         return;
-                    SetNotification(playing);
+                    SetNotification($"{Config.Textbox.MediaPlayingVerb} {playing}");
                     return;
 
                 default: return;

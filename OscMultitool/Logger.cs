@@ -1,5 +1,6 @@
 ﻿using Hoscy.Ui;
 using Hoscy.Ui.Windows;
+using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -162,13 +163,16 @@ namespace Hoscy
         /// <param name="title">Title of window</param>
         /// <param name="subtitle">Text above notification</param>
         /// <param name="notification">Contents of notification box</param>
-        public static void OpenNotificationWindow(string title, string subtitle, string notification)
+        public static void OpenNotificationWindow(string title, string subtitle, string notification, bool locking = false)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
                 var window = new NotificationWindow(title, subtitle, notification);
                 window.SetDarkMode(true);
-                window.ShowDialog();
+                if (locking)
+                    window.ShowDialog();
+                else
+                    window.Show();
             });
         }
         #endregion
@@ -177,7 +181,7 @@ namespace Hoscy
     /// <summary>
     /// Logging message class
     /// </summary>
-    public struct LogMessage
+    public readonly struct LogMessage
     {
         public static int MaxSeverityLength => 8;
         public string SourceFile { get; private init; }
@@ -220,6 +224,48 @@ namespace Hoscy
         }
     }
 
+    /// <summary>
+    /// The only reason this exists is so I can log OSCQuery
+    /// </summary>
+    public class LoggerProxy<T> : ILogger<T>
+    {
+#nullable disable
+        public IDisposable BeginScope<TState>(TState state)
+        {
+            throw new NotImplementedException();
+        }
+#nullable enable
+
+        public bool IsEnabled(LogLevel logLevel)
+            => true;
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+        {
+            string? message = state?.ToString();
+            if (string.IsNullOrWhiteSpace(message))
+                return;
+
+            switch(logLevel)
+            {
+                case LogLevel.Information:
+                    Logger.Info(message);
+                    return;
+                case LogLevel.Warning:
+                    Logger.Warning(message);
+                    return;
+                case LogLevel.Error:
+                    Logger.Error(message);
+                    return;
+                case LogLevel.Critical:
+                    Logger.Error(message);
+                    return;
+
+                default:
+                    Logger.Debug(message);
+                    return;
+            }
+        }
+    }
     public enum LogSeverity
     {
         Error,

@@ -26,6 +26,7 @@ namespace Hoscy.Services.Api
             return true;
         }
 
+        #region Sending
         private async Task<string?> Send(HttpContent content)
         {
             if (_preset == null || !_preset.IsValid())
@@ -69,7 +70,9 @@ namespace Hoscy.Services.Api
 
             return await Send(new StringContent(jsonOut, Encoding.UTF8, "application/json"));
         }
+        #endregion
 
+        #region Utils
         private void AddHeaders(HttpContent content)
         {
             if (_preset == null)
@@ -90,5 +93,6 @@ namespace Hoscy.Services.Api
 
         private static string ReplaceToken(string text, string token, string value)
             => text.Replace(token, value);
+        #endregion
     }
 }

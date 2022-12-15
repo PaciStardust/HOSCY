@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:Hoscy"
       xmlns:ui="clr-namespace:Hoscy.Ui"
       mc:Ignorable="d" 
-      d:DesignHeight="420" d:DesignWidth="689"
+      d:DesignHeight="620" d:DesignWidth="689"
       Title="PageDebug">
 
     <ScrollViewer Margin="16,8,8,8" VerticalScrollBarVisibility="Auto">
@@ -42,8 +42,13 @@
                         <Button Content="Open Docs" HorizontalAlignment="Left" Click="Button_OpenDocs"/>
                         <Button Margin="16,0,0,0" Content="Open Config" HorizontalAlignment="Left" Click="Button_OpenConfig"/>
                         <Button Margin="16,0,0,0" Content="Check Update" HorizontalAlignment="Left" Click="Button_CheckUpdate"/>
+                        <Button Margin="16,0,0,0" Content="Save Config" HorizontalAlignment="Left" Click="Button_SaveConfig"/>
                     </WrapPanel>
-                    <Button Margin="0,8,0,0" Content="Reload devices" Foreground="{x:Static ui:UiHelper.ColorInvalid}" HorizontalAlignment="Left" Click="Button_ReloadDevices"/>
+                    <WrapPanel Margin="0,8,0,0">
+                        <Button Content="Reload Media" Foreground="{x:Static ui:UiHelper.ColorInvalid}" HorizontalAlignment="Left" Click="Button_ReloadMedia"/>
+                        <Button Margin="16,0,0,0" Content="Reload Devices" Foreground="{x:Static ui:UiHelper.ColorInvalid}" HorizontalAlignment="Left" Click="Button_ReloadDevices"/>
+                    </WrapPanel>
+                    
                 </StackPanel>
             </StackPanel>
         </StackPanel>

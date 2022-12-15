@@ -65,50 +65,66 @@
                     </WrapPanel>
                 </StackPanel>
                 
-                <!-- Other -->
-                <Label Margin="0,16,0,0" Content="Other Options" Style="{StaticResource HLabelM}"/>
+                <!-- Visibility / Sound -->
+                <Label Margin="0,16,0,0" Content="Visibility / Sound" Style="{StaticResource HLabelM}"/>
 
                 <StackPanel Style="{StaticResource HStackIndent}">
-                    <CheckBox Content="Clear automatically after messages" IsChecked="{Binding Textbox.AutomaticClearMessage, Source={x:Static local:Config.Data}}"/>
-                    <CheckBox Margin="0,4,0,0" Content="Clear automatically after notifications" IsChecked="{Binding Textbox.AutomaticClearNotification, Source={x:Static local:Config.Data}}"/>
-                    <CheckBox Margin="0,4,0,0" Content="Typing indicator without Textbox" IsChecked="{Binding Textbox.UseIndicatorWithoutBox, Source={x:Static local:Config.Data}}"/>
 
-                    <WrapPanel Margin="0,4,0,0">
-                        <TextBox Tag="MTL..." Style="{StaticResource HTextBoxShort}">
-                            <TextBox.Text>
-                                <Binding Source="{x:Static local:Config.Data}" Path="Textbox.MaxLength" UpdateSourceTrigger="PropertyChanged">
-                                    <Binding.ValidationRules>
-                                        <ui:IntegerValidationRule Min="50" Max="130"/>
-                                    </Binding.ValidationRules>
-                                </Binding>
-                            </TextBox.Text>
-                        </TextBox>
-                        <Label Content="Max. text length" VerticalAlignment="Center"/>
-                    </WrapPanel>
+                    <Label Content="Visibility"/>
 
-                    <Label Margin="0,8,0,0" Content="Sound Options"/>
+                    <StackPanel Style="{StaticResource HStackIndent}">
+                        <CheckBox Content="Clear automatically after messages" IsChecked="{Binding Textbox.AutomaticClearMessage, Source={x:Static local:Config.Data}}"/>
+                        <CheckBox Margin="0,4,0,0" Content="Clear automatically after notifications" IsChecked="{Binding Textbox.AutomaticClearNotification, Source={x:Static local:Config.Data}}"/>
+                        <CheckBox Margin="0,4,0,0" Content="Typing indicator without Textbox" IsChecked="{Binding Textbox.UseIndicatorWithoutBox, Source={x:Static local:Config.Data}}"/>
+
+                        <WrapPanel Margin="0,4,0,0">
+                            <TextBox Tag="MTL..." Style="{StaticResource HTextBoxShort}">
+                                <TextBox.Text>
+                                    <Binding Source="{x:Static local:Config.Data}" Path="Textbox.MaxLength" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <ui:IntegerValidationRule Min="50" Max="130"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Label Content="Max. text length" VerticalAlignment="Center"/>
+                        </WrapPanel>
+                    </StackPanel>
+
+                    <Label Margin="0,8,0,0" Content="Sound"/>
 
                     <StackPanel Style="{StaticResource HStackIndent}">
                         <CheckBox Content="Sound on Message" IsChecked="{Binding Textbox.SoundOnMessage, Source={x:Static local:Config.Data}}"/>
                         <CheckBox Content="Sound on Notification" Margin="0,4,0,0" IsChecked="{Binding Textbox.SoundOnNotification, Source={x:Static local:Config.Data}}"/>
                     </StackPanel>
+                </StackPanel>
 
-                    <Label Margin="0,8,0,0" Content="Media Options"/>
+                <!-- Extras -->
+                <Label Margin="0,16,0,0" Content="Extra Options" Style="{StaticResource HLabelM}"/>
+
+                <StackPanel Style="{StaticResource HStackIndent}">
+                    <Label Content="Media Status"/>
 
                     <StackPanel Style="{StaticResource HStackIndent}">
                         <CheckBox Content="Show media status" IsChecked="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}"/>
                         <CheckBox Content="Also display album name" Margin="0,4,0,0" IsChecked="{Binding Textbox.MediaAddAlbum, Source={x:Static local:Config.Data}}" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}"/>
-                        <WrapPanel Margin="0,4,0,0" >
+                        <WrapPanel Margin="0,4,0,0" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}">
                             <TextBox HorizontalAlignment="Left" Text="{Binding Textbox.MediaPlayingVerb, Source={x:Static local:Config.Data}}" Tag="Verb..." Style="{StaticResource HTextBoxShort}"/>
                             <Label Content="Playing verb" VerticalAlignment="Center"/>
                         </WrapPanel>
                     </StackPanel>
 
-                    <Label Margin="0,8,0,0" Content="API Options"/>
+                    <Label Margin="0,8,0,0" Content="API Related"/>
 
                     <StackPanel Style="{StaticResource HStackIndent}" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}">
-                        <CheckBox Content="Apply translation to textbox" Margin="0,4,0,0" IsChecked="{Binding Api.TranslateTextbox, Source={x:Static local:Config.Data}}"/>
+                        <CheckBox Content="Apply translation to textbox" IsChecked="{Binding Api.TranslateTextbox, Source={x:Static local:Config.Data}}"/>
                         <CheckBox Content="Apply original after translation" Margin="0,4,0,0" IsChecked="{Binding Api.AddOriginalAfterTranslate, Source={x:Static local:Config.Data}}" IsEnabled="{Binding Api.TranslateTextbox, Source={x:Static local:Config.Data}}"/>
+                    </StackPanel>
+
+                    <Label Margin="0,8,0,0" Content="Others"/>
+
+                    <StackPanel Style="{StaticResource HStackIndent}">
+                        <CheckBox Content="Show counter notifications" IsChecked="{Binding Osc.ShowCounterNotifications, Source={x:Static local:Config.Data}}"/>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>

@@ -7,8 +7,8 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Resources\hoscy_circle.ico</ApplicationIcon>
     <Platforms>AnyCPU;x64</Platforms>
-    <AssemblyVersion>0.4.1</AssemblyVersion>
-    <FileVersion>0.4.1</FileVersion>
+    <AssemblyVersion>0.5</AssemblyVersion>
+    <FileVersion>0.5</FileVersion>
     <RepositoryUrl>https://github.com/PaciStardust/HOSCY</RepositoryUrl>
     <PackageProjectUrl>https://github.com/PaciStardust/HOSCY</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -32,10 +32,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.24.1" />
+    <PackageReference Include="MeaMod.DNS" Version="1.0.70" />
+    <PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.24.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
     <PackageReference Include="NAudio" Version="2.1.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.2-beta2" />
-    <PackageReference Include="System.Speech" Version="7.0.0-rc.2.22472.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="System.Speech" Version="7.0.0" />
     <PackageReference Include="Vosk" Version="0.3.38" />
   </ItemGroup>
 
@@ -43,10 +45,16 @@
     <Reference Include="CoreOSC">
       <HintPath>Resources\CoreOsc\CoreOSC.dll</HintPath>
     </Reference>
+    <Reference Include="vrc-oscquery-lib">
+      <HintPath>Resources\OscQuery\vrc-oscquery-lib.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
     <Compile Update="Ui\Windows\ModifyApiPresetsWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Ui\Windows\ModifyCountersWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Ui\Windows\ModifyReplacementsWindow.xaml.cs">
@@ -75,6 +83,13 @@
 
   <ItemGroup>
     <Page Update="Ui\Windows\ModifyApiPresetsWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Ui\Windows\DisplayListWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Ui\Windows\ModifyCountersWindow.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>

@@ -1,0 +1,49 @@
+﻿<Window x:Class="Hoscy.Ui.Windows.ModifyCountersWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Hoscy"
+        xmlns:ui="clr-namespace:Hoscy.Ui"
+        mc:Ignorable="d"
+        MinHeight="400" MinWidth="700"
+        Title="Modify Counters" Height="400" Width="700" Background="{Binding Source={x:Static ui:UiHelper.ColorBack}}" ResizeMode="CanResize">
+
+    <Grid Margin="16">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+        
+        <ListBox x:Name="listBox" SelectionChanged ="ListBox_SelectionChanged" Margin="0,0,8,0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
+
+        <Grid Margin="8,0,0,0" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <StackPanel>
+                <WrapPanel HorizontalAlignment="Center">
+                    <Button Content="Add New" Click="Button_AddEntry"/>
+                    <Button Content="Remove" Margin="8,0,0,0" Click="Button_RemoveEntry"/>
+                </WrapPanel>
+
+                <WrapPanel HorizontalAlignment="Center" Margin="0,8,0,0">
+                    <Button Content="Modify" Click="Button_ModifyEntry"/>
+                </WrapPanel>
+            </StackPanel>
+
+            <StackPanel Grid.Row="1" VerticalAlignment="Bottom">
+                <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Text="Name"/>
+                <TextBox x:Name="textName" KeyUp="TextBox_KeyPressed" Tag="Name..."/>
+
+                <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="Parameter"/>
+                <TextBox x:Name="textParameter" KeyUp="TextBox_KeyPressed" Tag="Parameter..."/>
+
+                <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="Count"/>
+                <TextBox x:Name="textCount" KeyUp="TextBox_KeyPressed" Tag="Count..."/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

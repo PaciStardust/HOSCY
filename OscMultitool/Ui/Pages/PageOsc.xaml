@@ -19,7 +19,10 @@
 
             <StackPanel Style="{StaticResource HStackIndent}">
                 <!-- Connection -->
-                <Label Content="Connection" Style="{StaticResource HLabelM}"/>
+                <WrapPanel>
+                    <Label Content="Connection" Style="{StaticResource HLabelM}"/>
+                    <Button Style="{StaticResource HButtonSmall}" Content="Display Services" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_DisplayServices"/>
+                </WrapPanel>
 
                 <StackPanel Style="{StaticResource HStackIndent}">
                     <WrapPanel>
@@ -56,42 +59,52 @@
                     </WrapPanel>
                 </StackPanel>
 
+                <!-- Counters -->
+                <Label Content="Counters" Style="{StaticResource HLabelM}" Margin="0,16,0,0"/>
+
+                <StackPanel Style="{StaticResource HStackIndent}">
+                    <CheckBox Content="Show counter notifications" IsChecked="{Binding Osc.ShowCounterNotifications, Source={x:Static local:Config.Data}}"/>
+                    <WrapPanel Margin="0,4,0,0">
+                        <Button Style="{StaticResource HButton}" Content="Edit Counters" VerticalAlignment="Center" Click="Button_ModifyCounters"/>
+                    </WrapPanel>
+                </StackPanel>
+
                 <!-- Addresses -->
                 <Label Content="Addresses" Style="{StaticResource HLabelM}" Margin="0,16,0,0"/>
 
                 <StackPanel Style="{StaticResource HStackIndent}">
                     <TextBlock Style="{DynamicResource HTextBlock}" Text="Manual mute"/>
-                    <TextBox Text="{Binding Osc.AddressManualMute, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..."/>
+                    <TextBox Text="{Binding Osc.AddressManualMute, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..."  PreviewKeyDown="AddressModified"/>
 
                     <TextBlock Style="{DynamicResource HTextBlock}" Text="Microphone listening indicator" Margin="0,4,0,0"/>
-                    <TextBox Text="{Binding Osc.AddressListeningIndicator, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..."/>
+                    <TextBox Text="{Binding Osc.AddressListeningIndicator, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..." PreviewKeyDown="AddressModified"/>
 
                     <TextBlock Style="{DynamicResource HTextBlock}" Text="Clear TTS" Margin="0,4,0,0"/>
-                    <TextBox Text="{Binding Osc.AddressManualSkipSpeech, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..."/>
+                    <TextBox Text="{Binding Osc.AddressManualSkipSpeech, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..." PreviewKeyDown="AddressModified"/>
 
                     <TextBlock Style="{DynamicResource HTextBlock}" Text="Clear textbox" Margin="0,4,0,0"/>
-                    <TextBox Text="{Binding Osc.AddressManualSkipBox, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..."/>
+                    <TextBox Text="{Binding Osc.AddressManualSkipBox, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..." PreviewKeyDown="AddressModified"/>
 
                     <TextBlock Style="{DynamicResource HTextBlock}" Text="Enable shortcuts and replacements for speech" Margin="0,4,0,0"/>
-                    <TextBox Text="{Binding Osc.AddressEnableReplacements, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..."/>
+                    <TextBox Text="{Binding Osc.AddressEnableReplacements, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..." PreviewKeyDown="AddressModified"/>
                     
                     <TextBlock Style="{DynamicResource HTextBlock}" Text="Enable textbox for speech" Margin="0,4,0,0"/>
-                    <TextBox Text="{Binding Osc.AddressEnableTextbox, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..."/>
+                    <TextBox Text="{Binding Osc.AddressEnableTextbox, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..." PreviewKeyDown="AddressModified"/>
 
                     <TextBlock Style="{DynamicResource HTextBlock}" Text="Enable TTS for speech" Margin="0,4,0,0"/>
-                    <TextBox Text="{Binding Osc.AddressEnableTts, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..."/>
+                    <TextBox Text="{Binding Osc.AddressEnableTts, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..." PreviewKeyDown="AddressModified"/>
 
                     <TextBlock Style="{DynamicResource HTextBlock}" Text="Enable 'mute on VRC mute'" Margin="0,4,0,0"/>
-                    <TextBox Text="{Binding Osc.AddressEnableAutoMute, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..."/>
+                    <TextBox Text="{Binding Osc.AddressEnableAutoMute, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..." PreviewKeyDown="AddressModified"/>
 
                     <TextBlock Style="{DynamicResource HTextBlock}" Text="TTS input" Margin="0,4,0,0"/>
-                    <TextBox Text="{Binding Osc.AddressAddTts, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..."/>
+                    <TextBox Text="{Binding Osc.AddressAddTts, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..." PreviewKeyDown="AddressModified"/>
 
                     <TextBlock Style="{DynamicResource HTextBlock}" Text="Textbox input message" Margin="0,4,0,0"/>
-                    <TextBox Text="{Binding Osc.AddressAddTextbox, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..."/>
+                    <TextBox Text="{Binding Osc.AddressAddTextbox, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..." PreviewKeyDown="AddressModified"/>
 
                     <TextBlock Style="{DynamicResource HTextBlock}" Text="Textbox input notification" Margin="0,4,0,0"/>
-                    <TextBox Text="{Binding Osc.AddressAddNotification, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..."/>
+                    <TextBox Text="{Binding Osc.AddressAddNotification, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..." PreviewKeyDown="AddressModified"/>
                 </StackPanel>
             </StackPanel>
         </StackPanel>

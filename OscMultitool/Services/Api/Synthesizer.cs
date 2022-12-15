@@ -19,11 +19,9 @@ namespace Hoscy.Services.Api
         /// </summary>
         public static void ReloadClient()
         {
-            if (_synth != null)
-            {
-                _synth.Dispose();
-                _synth = null;
-            }
+            _synth?.Dispose();
+            _synth = null;
+
             SpeechSynthesizer? synth = null;
 
             Logger.PInfo("Performing reload of Azure Synthesizer");
@@ -36,8 +34,8 @@ namespace Hoscy.Services.Api
                 if (!string.IsNullOrWhiteSpace(Config.Api.AzureCustomEndpointSpeech))
                     speechCfg.EndpointId = Config.Api.AzureCustomEndpointSpeech;
 
-                if (!string.IsNullOrWhiteSpace(Config.Api.AzureVoice))
-                    speechCfg.SpeechSynthesisVoiceName = Config.Api.AzureVoice;
+                if (!string.IsNullOrWhiteSpace(Config.Api.AzureVoiceCurrent))
+                    speechCfg.SpeechSynthesisVoiceName = Config.Api.AzureVoiceCurrent;
 
                 if (!string.IsNullOrWhiteSpace(Config.Api.AzureSpeechLanguage))
                     speechCfg.SpeechSynthesisLanguage = Config.Api.AzureSpeechLanguage;

@@ -1,5 +1,6 @@
 ﻿using Hoscy.Services.Api;
 using Hoscy.Ui.Windows;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -74,6 +75,12 @@ namespace Hoscy.Ui.Pages
 
         private void Button_EditLanguages(object sender, RoutedEventArgs e)
             => UiHelper.OpenListEditor("Edit languages", "Language", Config.Api.AzureRecognitionLanguages, "New Language");
+
+        private void Button_EditAzureVoices(object sender, RoutedEventArgs e)
+        {
+            UiHelper.OpenDictionaryEditor("Edit Azure Voices", "Voice Identifier", "Voice Name", Config.Api.AzureVoices);
+            UpdateAzureVoiceBox();
+        }
         #endregion
 
         #region SelectionChanged
@@ -100,6 +107,22 @@ namespace Hoscy.Ui.Pages
             else
                 SetChangedValueTranslation(true);
         }
+
+        private void AzureVoiceBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string oldVoiceName = Config.Api.AzureVoiceCurrent;
+
+            var index = azureVoiceBox.SelectedIndex;
+            if (index != -1 && index < Config.Api.AzureVoices.Count)
+                Config.Api.AzureVoiceCurrent = Config.Api.AzureVoices.Keys.ToArray()[index];
+
+            if (oldVoiceName != Config.Api.AzureVoiceCurrent)
+            {
+                _changedValuesSynthesizer = true;
+                UpdateChangedValuesIndicator();
+            }
+                
+        }
         #endregion
 
         private static void LoadPresetBox(ComboBox box, string name)
@@ -107,5 +130,30 @@ namespace Hoscy.Ui.Pages
 
         private void TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
             => SetChangedValueSynthesizer(true);
+
+        private void UpdateAzureVoiceBox()
+        {
+            var voices = Config.Api.AzureVoices;
+
+            //Checking for availability of current model in dropdown
+            int index = -1;
+            var keyArray = voices.Keys.ToArray();
+            for (int i = 0; i < keyArray.Length; i++)
+            {
+                if (Config.Api.AzureVoiceCurrent == keyArray[i])
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            //Clearing, very cool
+            azureVoiceBox.ItemsSource = null;
+            foreach (var item in azureVoiceBox.Items)
+                azureVoiceBox.Items.Remove(item);
+            azureVoiceBox.Items.Refresh();
+
+            azureVoiceBox.Load(voices.Keys, index, true);
+        }
     }
 }

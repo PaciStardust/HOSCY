@@ -123,9 +123,11 @@ namespace Hoscy.Services.Speech
                 return;
             }
 
-            input = input.Length > Config.Textbox.MaxLength
-                ? input[..(Config.Textbox.MaxLength-3)] + "..."
+            input = input.Length > Config.Textbox.MaxLength - 2
+                ? input[..(Config.Textbox.MaxLength-5)] + "..."
                 : input;
+
+            input = $"〈{input}〉";
 
             _notificationType = type;
             _notification = input;
@@ -245,6 +247,7 @@ namespace Hoscy.Services.Speech
     {
         None,
         Media,
+        Counter,
         External
     }
 }

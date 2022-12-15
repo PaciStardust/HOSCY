@@ -18,6 +18,7 @@ namespace Hoscy.Ui.Pages
             CheckIndicators();
         }
 
+        #region Buttons
         private void Button_ReloadListener(object sender, RoutedEventArgs e)
         {
             Osc.RecreateListener();
@@ -34,6 +35,22 @@ namespace Hoscy.Ui.Pages
             CheckIndicators();
         }
 
+        private void Button_ModifyCounters(object sender, RoutedEventArgs e)
+        {
+            var window = new ModifyCountersWindow("Edit Counters", Config.Osc.Counters);
+            window.SetDarkMode(true);
+            window.ShowDialog();
+        }
+
+        private void Button_DisplayServices(object sender, RoutedEventArgs e)
+        {
+            var window = new DisplayListWindow("Osc Services", Osc.GetServiceProfileNames());
+            window.SetDarkMode(true);
+            window.ShowDialog();
+        }
+        #endregion
+
+        #region Others
         private void CheckIndicators()
         {
             invalidFilterLabel.Visibility = Osc.HasInvalidFilters ? Visibility.Visible : Visibility.Hidden;
@@ -51,5 +68,6 @@ namespace Hoscy.Ui.Pages
             unappliedOscChanges = true;
             CheckIndicators();
         }
+        #endregion
     }
 }

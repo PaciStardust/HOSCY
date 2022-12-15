@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using Windows.Media.Devices;
 
 namespace Hoscy.Ui.Pages
 {
@@ -12,9 +13,17 @@ namespace Hoscy.Ui.Pages
     {
         public static PageInfo Instance { get; private set; } = new();
 
+        private static string _sendStatus = "No message sent since opening";
+        private static string _message = "No message sent since opening";
+        private static string _notification = "No notification since opening";
+
         public PageInfo()
         {
             InitializeComponent();
+
+            sendStatus.Text = _sendStatus;
+            message.Text = _message;
+            notification.Text = _notification;
 
             Instance = this;
 
@@ -22,65 +31,7 @@ namespace Hoscy.Ui.Pages
             Recognition.RecognitionChanged += UpdateRecognizerStatus;
         }
 
-        /// <summary>
-        /// Updates the mic status indicator based on the recognizer status
-        /// </summary>
-        private static void UpdateRecognizerStatus(object? sender, RecognitionChangedEventArgs e)
-        {
-            Instance.Dispatcher.Invoke(() =>
-            {
-                Instance.muteButton.Content = e.Listening ? "Listening" : "Muted";
-                Instance.muteButton.Foreground = e.Listening ? UiHelper.ColorValid : UiHelper.ColorInvalid;
-
-                Instance.startButton.Content = e.Running ? "Running" : "Stopped";
-                Instance.startButton.Foreground = e.Running ? UiHelper.ColorValid : UiHelper.ColorInvalid;
-            });
-        }
-
-        /// <summary>
-        /// Sets the message as a command
-        /// </summary>
-        /// <param name="message">Message to display</param>
-        public static void SetCommandMessage(string message)
-        {
-            Instance.Dispatcher.Invoke(() =>
-            {
-                Instance.sendStatus.Text = "Executed command";
-                Instance.message.Text = message;
-            });
-        }
-
-        /// <summary>
-        /// Sets the message as a command
-        /// </summary>
-        /// <param name="message">Message to display</param>
-        /// <param name="textbox">Did it send via Textbox</param>
-        /// <param name="tts">Did it send via TTS</param>
-        public static void SetMessage(string message, bool textbox, bool tts)
-        {
-            var add = "Nothing";
-            if (textbox && tts)
-                add = "Textbox and TTS";
-            else if (textbox)
-                add = "Textbox";
-            else if (tts)
-                add = "TTS";
-
-            Instance.Dispatcher.Invoke(() =>
-            {
-                Instance.sendStatus.Text = "Sent via " + add;
-                Instance.message.Text = message;
-            });
-        }
-
-        public static void SetNotification(string message, NotificationType type)
-        {
-            Instance.Dispatcher.Invoke(() =>
-            {
-                Instance.notification.Text = $"[{type}] {message}";
-            });
-        }
-
+        #region Buttons
         private void Button_Mute(object sender, RoutedEventArgs e)
             => Recognition.SetListening(!Recognition.IsRecognizerListening);
 
@@ -110,11 +61,84 @@ namespace Hoscy.Ui.Pages
                     SetRecStatus("Recognizer failed to start");
             }
         }
+        #endregion
+
+        #region Text Setters
+        /// <summary>
+        /// Updates the mic status indicator based on the recognizer status
+        /// </summary>
+        private static void UpdateRecognizerStatus(object? sender, RecognitionChangedEventArgs e)
+        {
+            Instance.Dispatcher.Invoke(() =>
+            {
+                Instance.muteButton.Content = e.Listening ? "Listening" : "Muted";
+                Instance.muteButton.Foreground = e.Listening ? UiHelper.ColorValid : UiHelper.ColorInvalid;
+
+                Instance.startButton.Content = e.Running ? "Running" : "Stopped";
+                Instance.startButton.Foreground = e.Running ? UiHelper.ColorValid : UiHelper.ColorInvalid;
+            });
+        }
+
+        /// <summary>
+        /// Sets the message as a command
+        /// </summary>
+        /// <param name="message">Message to display</param>
+        public static void SetCommandMessage(string message)
+        {
+            _sendStatus = "Executed command";
+            _message = message;
+
+            Instance.Dispatcher.Invoke(() =>
+            {
+                Instance.sendStatus.Text = _sendStatus;
+                Instance.message.Text = _message;
+            });
+        }
+
+        /// <summary>
+        /// Sets the message as a command
+        /// </summary>
+        /// <param name="message">Message to display</param>
+        /// <param name="textbox">Did it send via Textbox</param>
+        /// <param name="tts">Did it send via TTS</param>
+        public static void SetMessage(string message, bool textbox, bool tts)
+        {
+            var add = "Nothing";
+            if (textbox && tts)
+                add = "Textbox and TTS";
+            else if (textbox)
+                add = "Textbox";
+            else if (tts)
+                add = "TTS";
+
+            _sendStatus = "Sent via " + add;
+            _message = message;
+
+            Instance.Dispatcher.Invoke(() =>
+            {
+                Instance.sendStatus.Text = _sendStatus;
+                Instance.message.Text = _message;
+            });
+        }
+
+        public static void SetNotification(string message, NotificationType type)
+        {
+            _notification = $"[{type}] {message}";
+
+            Instance.Dispatcher.Invoke(() =>
+            {
+                Instance.notification.Text = _notification;
+            });
+        }
 
         private void SetRecStatus(string text)
         {
-            sendStatus.Text = "Recognition status";
-            message.Text = text;
+            _sendStatus = "Recognition status";
+            _message = text;
+
+            sendStatus.Text = _sendStatus;
+            message.Text = _message;
         }
+        #endregion
     }
 }

@@ -21,11 +21,14 @@ If you wish to contribute or need support, join the **[Discord](https://discord.
 	- Configurable routing of incomming OSC data
 	- Sending out OSC data
 	- Creation of your own OSC command sequences
+	- Support for **[OSCQuery](https://github.com/vrchat-community/vrc-oscquery-lib)**
+	- Counters for any parameter
 - **Media control** using Voice:
 	- Simple and non-intrusive "Now Playing" display 
 
 ## Credits
 - **[CoreOSC](https://github.com/PaciStardust/CoreOSC-UTF8)** by ValdemarOrn and Dalesjo for sending and receiving OSC Data
+- **[OSCQuery](https://github.com/vrchat-community/vrc-oscquery-lib)** by VRChat for OSC-Service communication
 - **[VOSK](https://alphacephei.com/vosk/)** by AlphaCephei for local AI speech recognition
 - **[Azure Cognitive Services](https://azure.microsoft.com/en-us/services/cognitive-services/)** for API speech recognition
 - **[AuroraNemoia](https://github.com/AuroraNemoia)** for branding *(Logo, Name)*

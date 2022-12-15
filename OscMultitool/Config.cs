@@ -70,15 +70,27 @@ namespace Hoscy
         #endregion
 
         #region Utility
-        public static int MinMax(int value, int min, int max)
-            => Math.Max(Math.Min(max, value), min);
-        public static float MinMax(float value, float min, float max)
-            => Math.Max(Math.Min(max, value), min);
+        /// <summary>
+        /// A combination of floor and ceil for comparables
+        /// </summary>
+        /// <typeparam name="T">Type to compare</typeparam>
+        /// <param name="value">Value to compare</param>
+        /// <param name="min">Minimum value</param>
+        /// <param name="max">Maximum value</param>
+        /// <returns>Value, if within bounds. Min, if value smaller than min. Max, if value larger than max. If max is smaller than min, min has priority</returns>
+        public static T MinMax<T>(T value, T min, T max) where T : IComparable
+        {
+            if (value.CompareTo(min) < 0)
+                return min;
+            if (value.CompareTo(max) > 0)
+                return max;
+            return value;
+        }
 
         public static string GetVersion()
         {
-            var assembly = System.Reflection.Assembly.GetEntryAssembly();
-            return "v." + (assembly != null ? FileVersionInfo.GetVersionInfo(assembly.Location).FileVersion : "Version Unknown");
+            var assembly = Assembly.GetEntryAssembly();
+            return "v." + (assembly != null ? FileVersionInfo.GetVersionInfo(assembly.Location).FileVersion : "???");
         }
 
         /// <summary>
@@ -128,7 +140,6 @@ namespace Hoscy
 
             return config;
         }
-
         #endregion
 
         #region Models
@@ -150,21 +161,28 @@ namespace Hoscy
         /// </summary>
         public class ConfigOscModel
         {
+            //Routing
             public string Ip { get; set; } = "127.0.0.1";
             public int Port { get; set; } = 9000;
             public int PortListen { get; set; } = 9001;
-            public string AddressManualMute { get; set; } = "/avatar/parameters/ToolMute";
-            public string AddressManualSkipSpeech { get; set; } = "/avatar/parameters/ToolSkipSpeech";
-            public string AddressManualSkipBox { get; set; } = "/avatar/parameters/ToolSkipBox";
-            public string AddressEnableReplacements { get; set; } = "/avatar/parameters/ToolEnableReplacements";
-            public string AddressEnableTextbox { get; set; } = "/avatar/parameters/ToolEnableBox";
-            public string AddressEnableTts { get; set; } = "/avatar/parameters/ToolEnableTts";
-            public string AddressEnableAutoMute { get; set; } = "/avatar/parameters/ToolEnableAutoMute";
-            public string AddressListeningIndicator { get; set; } = "/avatar/parameters/MicListening";
-            public string AddressAddTextbox { get; set; } = "/hoscy/message";
-            public string AddressAddTts { get; set; } = "/hoscy/tts";
-            public string AddressAddNotification { get; set; } = "/hoscy/notification";
             public List<OscRoutingFilterModel> RoutingFilters { get; set; } = new();
+
+            //Addresses
+            public string AddressManualMute { get; set; } =         "/avatar/parameters/ToolMute";
+            public string AddressManualSkipSpeech { get; set; } =   "/avatar/parameters/ToolSkipSpeech";
+            public string AddressManualSkipBox { get; set; } =      "/avatar/parameters/ToolSkipBox";
+            public string AddressEnableReplacements { get; set; } = "/avatar/parameters/ToolEnableReplacements";
+            public string AddressEnableTextbox { get; set; } =      "/avatar/parameters/ToolEnableBox";
+            public string AddressEnableTts { get; set; } =          "/avatar/parameters/ToolEnableTts";
+            public string AddressEnableAutoMute { get; set; } =     "/avatar/parameters/ToolEnableAutoMute";
+            public string AddressListeningIndicator { get; set; } = "/avatar/parameters/MicListening";
+            public string AddressAddTextbox { get; set; } =         "/hoscy/message";
+            public string AddressAddTts { get; set; } =             "/hoscy/tts";
+            public string AddressAddNotification { get; set; } =    "/hoscy/notification";
+
+            //Counters
+            public bool ShowCounterNotifications { get; set; } = false;
+            public List<CounterModel> Counters { get; set; } = new();
         }
 
         /// <summary>
@@ -225,6 +243,7 @@ namespace Hoscy
         /// </summary>
         public class ConfigTextboxModel
         {
+            //Timeout, Maxlen
             public int MaxLength
             {
                 get { return _maxLength; }
@@ -252,6 +271,8 @@ namespace Hoscy
             }
             private int _defaultTimeout = 5000;
             public bool DynamicTimeout { get; set; } = true;
+
+            //Notification
             public bool AutomaticClearNotification { get; set; } = true;
             public bool AutomaticClearMessage { get; set; } = false;
             public bool UseIndicatorWithoutBox { get; set; } = false;
@@ -262,7 +283,6 @@ namespace Hoscy
             public bool MediaShowStatus { get; set; } = false;
             public string MediaPlayingVerb { get; set; } = "Playing";
             public bool MediaAddAlbum { get; set; } = false;
-
         }
 
         /// <summary>
@@ -298,9 +318,10 @@ namespace Hoscy
             public string AzureSpeechLanguage { get; set; } = string.Empty;
             public string AzureCustomEndpointSpeech { get; set; } = string.Empty;
             public string AzureCustomEndpointRecognition { get; set; } = string.Empty;
-            public string AzureVoice { get; set; } = string.Empty;
+            public string AzureVoiceCurrent { get; set; } = string.Empty;
             public List<string> AzurePhrases { get; set; } = new();
             public List<string> AzureRecognitionLanguages { get; set; } = new();
+            public Dictionary<string, string> AzureVoices { get; set; } = new(); //todo: implement
 
             //Usage
             public bool TranslateTts { get; set; } = false;
@@ -436,6 +457,16 @@ namespace Hoscy
                 => !string.IsNullOrWhiteSpace(PostUrl)
                 && !string.IsNullOrWhiteSpace(JsonData)
                 && !string.IsNullOrWhiteSpace(ResultField);
+        }
+
+        public class CounterModel
+        {
+            public string Name { get; set; } = "Unnamed Counter";
+            public string Parameter { get; set; } = "Parameter";
+            public uint Count { get; set; } = 0;
+
+            public override string ToString()
+                => $"{Name}: {Count}";
         }
         #endregion
     }

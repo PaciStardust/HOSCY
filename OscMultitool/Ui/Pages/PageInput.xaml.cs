@@ -17,10 +17,18 @@ namespace Hoscy.Ui.Pages
             RefreshPresets();
         }
 
+        #region Buttons
         private void Button_Send(object sender, RoutedEventArgs e)
             => SendMessage();
 
-        private string _lastMessage = string.Empty;
+        private void Button_ChangePresets(object sender, RoutedEventArgs e)
+        {
+            UiHelper.OpenDictionaryEditor("Edit Input Presets", "Name", "Text", Config.Input.Presets);
+            RefreshPresets();
+        }
+        #endregion
+
+        private static string _lastMessage = string.Empty;
 
         /// <summary>
         /// Sends data to processor depending on checked options
@@ -53,12 +61,7 @@ namespace Hoscy.Ui.Pages
             textBox.Text = string.Empty;
         }
 
-        private void Button_ChangePresets(object sender, RoutedEventArgs e)
-        {
-            UiHelper.OpenDictionaryEditor("Edit Input Presets", "Name", "Text", Config.Input.Presets);
-            RefreshPresets();
-        }
-
+        #region Other
         private void RefreshPresets()
             => presetBox.Refresh(Config.Input.Presets.Select(x => x.Key), -1);
 
@@ -83,5 +86,6 @@ namespace Hoscy.Ui.Pages
 
             presetBox.SelectedIndex = -1;
         }
+        #endregion
     }
 }

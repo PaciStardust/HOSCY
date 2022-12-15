@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,11 +10,11 @@ namespace Hoscy.Ui.Windows
     /// <summary>
     /// Interaction logic for ModifyListWindow.xaml
     /// </summary>
-    public partial class ModifyReplacementsWindow : Window
+    public partial class ModifyCountersWindow : Window
     {
-        private readonly List<Config.ReplacementModel> _list;
+        private readonly List<Config.CounterModel> _list;
 
-        public ModifyReplacementsWindow(string title, List<Config.ReplacementModel> list)
+        public ModifyCountersWindow(string title, List<Config.CounterModel> list)
         {
             InitializeComponent();
             
@@ -63,23 +64,26 @@ namespace Hoscy.Ui.Windows
             if (!listBox.IsInBounds(_list))
                 return;
 
-            textValue.Text = _list[listBox.SelectedIndex].Text;
-            replacementValue.Text = _list[listBox.SelectedIndex].Replacement;
-            enabledCheckBox.IsChecked = _list[listBox.SelectedIndex].Enabled;
+            textName.Text = _list[listBox.SelectedIndex].Name;
+            textParameter.Text = _list[listBox.SelectedIndex].Parameter;
+            textCount.Text = _list[listBox.SelectedIndex].Count.ToString();
         }
 
-        private Config.ReplacementModel GetNewModel()
+        private Config.CounterModel GetNewModel()
         {
-            var model = new Config.ReplacementModel()
+            var model = new Config.CounterModel();
+
+            if (!string.IsNullOrWhiteSpace(textName.Text))
+                model.Name = textName.Text;
+
+            if (!string.IsNullOrWhiteSpace(textParameter.Text))
+                model.Parameter = textParameter.Text;
+
+            try
             {
-                Enabled = enabledCheckBox.IsChecked ?? false
-            };
-
-            if (!string.IsNullOrWhiteSpace(textValue.Text))
-                model.Text = textValue.Text;
-
-            if (!string.IsNullOrWhiteSpace(replacementValue.Text))
-                model.Replacement = replacementValue.Text;
+                model.Count = Convert.ToUInt32(textCount.Text);
+            }
+            catch { }
 
             return model;
         }

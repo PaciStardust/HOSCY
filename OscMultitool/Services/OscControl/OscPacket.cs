@@ -43,7 +43,7 @@ namespace Hoscy.OscControl
         }
 
         /// <summary>
-        /// This is supposed to be used for OscQuery in the future
+        /// Creates a OSCPacket using a ServiceProfile as endpoint
         /// </summary>
         public static OscPacket? FromServiceProfile(string profile, string address, params object[] variables)
         {
@@ -51,7 +51,10 @@ namespace Hoscy.OscControl
             if (profile == "self")
                 return new(address, "127.0.0.1", Config.Osc.PortListen, variables);
 
-            return null;
+            var serviceProfile = Osc.GetServiceProfile(profile);
+            if (serviceProfile == null) return null;
+
+            return new(address, serviceProfile.oscIP, serviceProfile.oscPort, variables);
         }
 
         /// <summary>
