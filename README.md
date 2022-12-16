@@ -22,7 +22,7 @@ If you wish to contribute or need support, join the **[Discord](https://discord.
 	- Sending out OSC data
 	- Creation of your own OSC command sequences
 	- Support for **[OSCQuery](https://github.com/vrchat-community/vrc-oscquery-lib)**
-	- Counters for any parameter
+	- Counters for any parameter and AFK detection
 - **Media control** using Voice:
 	- Simple and non-intrusive "Now Playing" display 
 
