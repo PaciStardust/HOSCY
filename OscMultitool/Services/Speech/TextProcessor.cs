@@ -134,6 +134,7 @@ namespace Hoscy.Services.Speech
                 Logger.Info("Executing clear command");
                 Textbox.Clear();
                 Synthesizing.Skip();
+                OscDataHandler.SetAfkTimer(false);
                 return true;
             }
 

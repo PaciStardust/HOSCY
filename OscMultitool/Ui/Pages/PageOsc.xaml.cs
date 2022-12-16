@@ -48,6 +48,9 @@ namespace Hoscy.Ui.Pages
             window.SetDarkMode(true);
             window.ShowDialog();
         }
+
+        private void Button_ResetAfk(object sender, RoutedEventArgs e)
+            => OscDataHandler.SetAfkTimer(false);
         #endregion
 
         #region Others

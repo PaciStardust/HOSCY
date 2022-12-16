@@ -136,7 +136,7 @@ namespace Hoscy.Services.OscControl
 
         private static Timer? _afkTimer;
         private static DateTime _afkStarted = DateTime.Now;
-        private static void SetAfkTimer(bool mode)
+        internal static void SetAfkTimer(bool mode)
         {
             if (Config.Osc.ShowAfkDuration && mode && _afkTimer == null)
             {

@@ -1,4 +1,5 @@
-﻿using Hoscy.Services.Speech;
+﻿using Hoscy.Services.OscControl;
+using Hoscy.Services.Speech;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -40,6 +41,7 @@ namespace Hoscy.Ui.Pages
             SetCommandMessage("Clear");
             Textbox.Clear();
             Synthesizing.Skip();
+            OscDataHandler.SetAfkTimer(false);
         }
 
         private async void Button_Start(object sender, RoutedEventArgs e)
