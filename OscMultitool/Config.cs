@@ -163,8 +163,18 @@ namespace Hoscy
         {
             //Routing
             public string Ip { get; set; } = "127.0.0.1";
-            public int Port { get; set; } = 9000;
-            public int PortListen { get; set; } = 9001;
+            public int Port
+            {
+                get { return _port; }
+                set { _port = MinMax(value, -1, 65535); }
+            }
+            private int _port = 9000;
+            public int PortListen
+            {
+                get { return _portListen; }
+                set { _portListen = MinMax(value, -1, 65535); }
+            }
+            private int _portListen = 9001;
             public List<OscRoutingFilterModel> RoutingFilters { get; set; } = new();
 
             //Addresses
@@ -176,6 +186,8 @@ namespace Hoscy
             public string AddressEnableTts { get; set; } =          "/avatar/parameters/ToolEnableTts";
             public string AddressEnableAutoMute { get; set; } =     "/avatar/parameters/ToolEnableAutoMute";
             public string AddressListeningIndicator { get; set; } = "/avatar/parameters/MicListening";
+            public string AddressGameMute { get; set; } =           "/avatar/parameters/MuteSelf";
+            public string AddressGameAfk { get; set; } =            "/avatar/parameters/AFK";
             public string AddressAddTextbox { get; set; } =         "/hoscy/message";
             public string AddressAddTts { get; set; } =             "/hoscy/tts";
             public string AddressAddNotification { get; set; } =    "/hoscy/notification";
@@ -183,6 +195,15 @@ namespace Hoscy
             //Counters
             public bool ShowCounterNotifications { get; set; } = false;
             public List<CounterModel> Counters { get; set; } = new();
+
+            //AFK
+            public bool ShowAfkDuration { get; set; } = false;
+            public int AfkDuration
+            {
+                get { return _afkDuration; }
+                set { _afkDuration = MinMax(value, 5000, 300000); }
+            }
+            private int _afkDuration = 30000;
         }
 
         /// <summary>

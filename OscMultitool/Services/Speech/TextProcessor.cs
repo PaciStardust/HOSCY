@@ -1,4 +1,4 @@
-﻿using Hoscy.OscControl;
+﻿using Hoscy.Services.OscControl;
 using Hoscy.Services.Api;
 using Hoscy.Ui.Pages;
 using System;

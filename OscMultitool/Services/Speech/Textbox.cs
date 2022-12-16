@@ -1,4 +1,4 @@
-﻿using Hoscy.OscControl;
+﻿using Hoscy.Services.OscControl;
 using Hoscy.Ui.Pages;
 using System;
 using System.Collections.Generic;
@@ -248,6 +248,7 @@ namespace Hoscy.Services.Speech
         None,
         Media,
         Counter,
+        Afk,
         External
     }
 }

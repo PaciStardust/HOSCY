@@ -125,6 +125,7 @@
 
                     <StackPanel Style="{StaticResource HStackIndent}">
                         <CheckBox Content="Show counter notifications" IsChecked="{Binding Osc.ShowCounterNotifications, Source={x:Static local:Config.Data}}"/>
+                        <CheckBox Content="Show AFK status" IsChecked="{Binding Osc.ShowAfkDuration, Source={x:Static local:Config.Data}}" Margin="0,4,0,0"/>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>

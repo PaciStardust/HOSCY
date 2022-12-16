@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using VRC.OSCQuery;
 using System.Linq;
 
-namespace Hoscy.OscControl
+namespace Hoscy.Services.OscControl
 {
     /// <summary>
     /// Static class for osc-related things

@@ -1,4 +1,4 @@
-﻿using Hoscy.OscControl;
+﻿using Hoscy.Services.OscControl;
 using Hoscy.Ui.Windows;
 using System.Windows;
 using System.Windows.Controls;

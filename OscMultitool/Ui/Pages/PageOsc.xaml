@@ -59,13 +59,27 @@
                     </WrapPanel>
                 </StackPanel>
 
-                <!-- Counters -->
-                <Label Content="Counters" Style="{StaticResource HLabelM}" Margin="0,16,0,0"/>
+                <!-- Extras -->
+                <Label Content="Extra Functionality" Style="{StaticResource HLabelM}" Margin="0,16,0,0"/>
 
                 <StackPanel Style="{StaticResource HStackIndent}">
                     <CheckBox Content="Show counter notifications" IsChecked="{Binding Osc.ShowCounterNotifications, Source={x:Static local:Config.Data}}"/>
                     <WrapPanel Margin="0,4,0,0">
                         <Button Style="{StaticResource HButton}" Content="Edit Counters" VerticalAlignment="Center" Click="Button_ModifyCounters"/>
+                    </WrapPanel>
+
+                    <CheckBox Content="Show AFK status" IsChecked="{Binding Osc.ShowAfkDuration, Source={x:Static local:Config.Data}}" Margin="0,4,0,0"/>
+                    <WrapPanel Margin="0,4,0,0">
+                        <TextBox x:Name="oscAfkDuration" Tag="Duration..." Style="{StaticResource HTextBoxShort}">
+                            <TextBox.Text>
+                                <Binding Source="{x:Static local:Config.Data}" Path="Osc.AfkDuration" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <ui:IntegerValidationRule Min="5000" Max="300000"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                        <Label Content="AFK display interval (ms)" VerticalAlignment="Center"/>
                     </WrapPanel>
                 </StackPanel>
 
@@ -96,6 +110,12 @@
 
                     <TextBlock Style="{DynamicResource HTextBlock}" Text="Enable 'mute on VRC mute'" Margin="0,4,0,0"/>
                     <TextBox Text="{Binding Osc.AddressEnableAutoMute, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..." PreviewKeyDown="AddressModified"/>
+
+                    <TextBlock Style="{DynamicResource HTextBlock}" Text="Game mute address" Margin="0,4,0,0"/>
+                    <TextBox Text="{Binding Osc.AddressGameMute, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..." PreviewKeyDown="AddressModified"/>
+
+                    <TextBlock Style="{DynamicResource HTextBlock}" Text="Game AFK address" Margin="0,4,0,0"/>
+                    <TextBox Text="{Binding Osc.AddressGameAfk, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..." PreviewKeyDown="AddressModified"/>
 
                     <TextBlock Style="{DynamicResource HTextBlock}" Text="TTS input" Margin="0,4,0,0"/>
                     <TextBox Text="{Binding Osc.AddressAddTts, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..." PreviewKeyDown="AddressModified"/>

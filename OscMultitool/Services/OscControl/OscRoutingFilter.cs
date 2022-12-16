@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Hoscy.OscControl
+namespace Hoscy.Services.OscControl
 {
     public readonly struct OscRoutingFilter
     {
