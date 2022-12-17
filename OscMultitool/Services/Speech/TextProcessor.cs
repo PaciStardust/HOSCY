@@ -85,24 +85,25 @@ namespace Hoscy.Services.Speech
                 message = Regex.Replace(message, $"\\b{r.Text}\\b", r.Replacement, opt);
             }
 
-            var value = message;
-
             //Checking for shortcuts
-            var checkMessage = ReplaceCaseInsensitive ? message.ToLower() : message;
             foreach (var s in _shortcuts)
             {
-                if (s.Enabled && checkMessage == (ReplaceCaseInsensitive ? s.GetTextLc() : s.Text))
+                if (s.Enabled && message.Equals(s.Text, ReplaceCaseInsensitive ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
                 {
-                    value = s.Replacement;
+                    message = s.Replacement;
                     break;
                 }
             }
 
-            if (File.Exists(value))
+            if (!message.StartsWith("[file]", StringComparison.OrdinalIgnoreCase))
+                return message;
+
+            var filePath = Regex.Replace(message, @"\[file\] *", "", RegexOptions.IgnoreCase);
+            if (File.Exists(filePath))
             {
                 try
                 {
-                    return File.ReadAllText(value);
+                    return File.ReadAllText(filePath);
                 } catch (Exception e)
                 {
                     Logger.Error(e, "Failed to read provided file, is the path correct and does Hoscy have access?");
@@ -110,7 +111,7 @@ namespace Hoscy.Services.Speech
                 }
             }
             else
-                return value;
+                return filePath;
         }
 
         /// <summary>

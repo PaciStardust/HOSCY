@@ -68,7 +68,7 @@ namespace Hoscy.Services.Api
             lock (_lock)
             {
                 if (_nowPlaying != null) //We skip this check if there is now now playing
-                    if (newPlaying.Title == _nowPlaying.Title && newPlaying.Artist == _nowPlaying.Artist)
+                    if (newPlaying.Title.Equals(_nowPlaying.Title, StringComparison.OrdinalIgnoreCase) && newPlaying.Artist.Equals(_nowPlaying.Artist))
                         return;
             }
 

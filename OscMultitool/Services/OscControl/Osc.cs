@@ -221,7 +221,7 @@ namespace Hoscy.Services.OscControl
                         continue;
 
                     case "b":
-                        parsedVariables.Add(value.ToLower() == "true");
+                        parsedVariables.Add(value.Equals("true", StringComparison.OrdinalIgnoreCase));
                         continue;
 
                     case "f":

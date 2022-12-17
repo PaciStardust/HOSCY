@@ -437,12 +437,9 @@ namespace Hoscy
                 get { return _text; }
                 set {
                     _text = string.IsNullOrWhiteSpace(value) ? "New Value" : value;
-                    _textLc = _text.ToLower();
                 }
             }
             private string _text = "New Value";
-            private string _textLc = "new value";
-            public string GetTextLc() => _textLc;
 
             public string Replacement { get; set; } = string.Empty;
             public bool Enabled { get; set; } = true;
