@@ -103,8 +103,9 @@ namespace Hoscy.Services.Speech
             {
                 try
                 {
-                    return File.ReadAllText(filePath);
-                } catch (Exception e)
+                    return string.Join(" ", File.ReadAllLines(filePath));
+                }
+                catch (Exception e)
                 {
                     Logger.Error(e, "Failed to read provided file, is the path correct and does Hoscy have access?");
                     return string.Empty;
