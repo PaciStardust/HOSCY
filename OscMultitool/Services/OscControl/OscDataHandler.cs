@@ -124,14 +124,33 @@ namespace Hoscy.Services.OscControl
         {
             foreach (var counter in Config.Osc.Counters)
             {
-                if (counter.Parameter != address)
+                if (!counter.Enabled || counter.Parameter != address)
                     continue;
 
-                counter.Count++;
-                Logger.Debug($"Counter \"{counter.Count}\" ({counter.Parameter}) increased to {counter.Count}");
-                Textbox.Notify(counter.ToString(), NotificationType.Counter);
+                counter.Increase();
+                Logger.Debug($"Counter \"{counter.Name}\" ({counter.Parameter}) increased to {counter.Count}");
+
+                if (Config.Osc.ShowCounterNotifications)
+                {
+                    var counterString = CreateCounterString();
+                    if (!string.IsNullOrWhiteSpace(counterString))
+                        Textbox.Notify(counterString, NotificationType.Counter);
+                }
+
                 break;
             }
+        }
+
+        private static string CreateCounterString()
+        {
+            var strings = new List<string>();
+            foreach (var counter in Config.Osc.Counters)
+            {
+                if ((DateTime.Now - counter.LastUsed).TotalSeconds <= Config.Osc.CounterDisplayDuration)
+                    strings.Add(counter.ToString());
+            }
+
+            return string.Join(", ", strings);
         }
 
         private static Timer? _afkTimer;
@@ -143,7 +162,7 @@ namespace Hoscy.Services.OscControl
                 Textbox.Notify("User now AFK", NotificationType.Afk);
                 _afkStarted = DateTime.Now;
 
-                _afkTimer = new(Config.Osc.AfkDuration);
+                _afkTimer = new(Config.Osc.AfkDuration * 1000);
                 _afkTimer.Elapsed += AfkTimerElapsed;
                 _afkTimer.Start();
 

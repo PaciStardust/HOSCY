@@ -31,6 +31,7 @@
 
                 <WrapPanel HorizontalAlignment="Center" Margin="0,8,0,0">
                     <Button Content="Modify" Click="Button_ModifyEntry"/>
+                    <CheckBox VerticalAlignment="Center" Content="Enabled" x:Name="enabledCheckBox" Margin="8,0,0,0" IsChecked="True"/>
                 </WrapPanel>
             </StackPanel>
 

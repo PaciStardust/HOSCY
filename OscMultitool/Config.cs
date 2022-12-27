@@ -194,16 +194,23 @@ namespace Hoscy
 
             //Counters
             public bool ShowCounterNotifications { get; set; } = false;
+            public float CounterDisplayDuration
+            {
+                get { return _counterDisplayDuration; }
+                set { _counterDisplayDuration = MinMax(value, 0.01f, 30); }
+            }
+            private float _counterDisplayDuration = 0.01f;
+
             public List<CounterModel> Counters { get; set; } = new();
 
             //AFK
             public bool ShowAfkDuration { get; set; } = false;
-            public int AfkDuration
+            public float AfkDuration
             {
                 get { return _afkDuration; }
-                set { _afkDuration = MinMax(value, 5000, 300000); }
+                set { _afkDuration = MinMax(value, 5, 300); }
             }
-            private int _afkDuration = 30000;
+            private float _afkDuration = 30000;
         }
 
         /// <summary>
@@ -482,9 +489,17 @@ namespace Hoscy
             public string Name { get; set; } = "Unnamed Counter";
             public string Parameter { get; set; } = "Parameter";
             public uint Count { get; set; } = 0;
+            public DateTime LastUsed { get; set; } = DateTime.MinValue;
+            public bool Enabled { get; set; } = true;
+
+            public void Increase()
+            {
+                Count++;
+                LastUsed = DateTime.Now;
+            }
 
             public override string ToString()
-                => $"{Name}: {Count}";
+                => $"{(Enabled ? "" : "[x] ")}{Name}: {Count}";
         }
         #endregion
     }

@@ -63,25 +63,42 @@
                 <Label Content="Extra Functionality" Style="{StaticResource HLabelM}" Margin="0,16,0,0"/>
 
                 <StackPanel Style="{StaticResource HStackIndent}">
-                    <CheckBox Content="Show counter notifications" IsChecked="{Binding Osc.ShowCounterNotifications, Source={x:Static local:Config.Data}}"/>
 
-                    <CheckBox Content="Show AFK status" IsChecked="{Binding Osc.ShowAfkDuration, Source={x:Static local:Config.Data}}" Margin="0,4,0,0"/>
+
+                    <WrapPanel>
+                        <CheckBox Content="Show AFK status" IsChecked="{Binding Osc.ShowAfkDuration, Source={x:Static local:Config.Data}}" VerticalAlignment="Center"/>
+                        <Button Style="{StaticResource HButtonSmall}" HorizontalAlignment="Left" Content="Reset AFK" Click="Button_ResetAfk" Margin="8,0,0,0"/>
+                    </WrapPanel>
+
                     <WrapPanel Margin="0,4,0,0">
                         <TextBox x:Name="oscAfkDuration" Tag="Duration..." Style="{StaticResource HTextBoxShort}">
                             <TextBox.Text>
                                 <Binding Source="{x:Static local:Config.Data}" Path="Osc.AfkDuration" UpdateSourceTrigger="PropertyChanged">
                                     <Binding.ValidationRules>
-                                        <ui:IntegerValidationRule Min="5000" Max="300000"/>
+                                        <ui:FloatValidationRule Min="5" Max="300"/>
                                     </Binding.ValidationRules>
                                 </Binding>
                             </TextBox.Text>
                         </TextBox>
-                        <Label Content="AFK display interval (ms)" VerticalAlignment="Center"/>
+                        <Label Content="AFK display interval (s)" VerticalAlignment="Center"/>
+                    </WrapPanel>
+
+                    <WrapPanel Margin="0,8,0,0">
+                        <CheckBox Content="Show counter notifications" IsChecked="{Binding Osc.ShowCounterNotifications, Source={x:Static local:Config.Data}}" VerticalAlignment="Center"/>
+                        <Button Style="{StaticResource HButtonSmall}" Margin="8,0,0,0" Content="Edit Counters" HorizontalAlignment="Left" Click="Button_ModifyCounters"/>
                     </WrapPanel>
 
                     <WrapPanel Margin="0,4,0,0">
-                        <Button Style="{StaticResource HButton}" Content="Edit Counters" VerticalAlignment="Center" Click="Button_ModifyCounters"/>
-                        <Button Style="{StaticResource HButton}" Content="Reset AFK" VerticalAlignment="Center" Click="Button_ResetAfk" Margin="8,0,0,0"/>
+                        <TextBox x:Name="oscCounterDuration" Tag="Duration..." Style="{StaticResource HTextBoxShort}">
+                            <TextBox.Text>
+                                <Binding Source="{x:Static local:Config.Data}" Path="Osc.CounterDisplayDuration" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <ui:FloatValidationRule Min="0.01" Max="30"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                        <Label Content="Counter display duration (s)" VerticalAlignment="Center"/>
                     </WrapPanel>
                 </StackPanel>
 

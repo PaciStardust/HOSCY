@@ -67,11 +67,15 @@ namespace Hoscy.Ui.Windows
             textName.Text = _list[listBox.SelectedIndex].Name;
             textParameter.Text = _list[listBox.SelectedIndex].Parameter;
             textCount.Text = _list[listBox.SelectedIndex].Count.ToString();
+            enabledCheckBox.IsChecked = _list[listBox.SelectedIndex].Enabled;
         }
 
         private Config.CounterModel GetNewModel()
         {
-            var model = new Config.CounterModel();
+            var model = new Config.CounterModel()
+            {
+                Enabled = enabledCheckBox.IsChecked ?? false
+            };
 
             if (!string.IsNullOrWhiteSpace(textName.Text))
                 model.Name = textName.Text;
