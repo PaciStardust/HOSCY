@@ -34,8 +34,8 @@ namespace Hoscy.Services.Api
                 if (!string.IsNullOrWhiteSpace(Config.Api.AzureCustomEndpointSpeech))
                     speechCfg.EndpointId = Config.Api.AzureCustomEndpointSpeech;
 
-                if (!string.IsNullOrWhiteSpace(Config.Api.AzureVoiceCurrent))
-                    speechCfg.SpeechSynthesisVoiceName = Config.Api.AzureVoiceCurrent;
+                if (!string.IsNullOrWhiteSpace(Config.Api.AzureVoiceCurrent) && Config.Api.AzureVoices.ContainsKey(Config.Api.AzureVoiceCurrent))
+                    speechCfg.SpeechSynthesisVoiceName = Config.Api.AzureVoices[Config.Api.AzureVoiceCurrent];
 
                 if (!string.IsNullOrWhiteSpace(Config.Api.AzureSpeechLanguage))
                     speechCfg.SpeechSynthesisLanguage = Config.Api.AzureSpeechLanguage;
