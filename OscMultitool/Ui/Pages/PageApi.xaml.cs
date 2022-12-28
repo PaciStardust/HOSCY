@@ -26,6 +26,7 @@ namespace Hoscy.Ui.Pages
         {
             LoadPresetBox(translatorApiBox, Config.Api.TranslationPreset);
             LoadPresetBox(recognitionApiBox, Config.Api.RecognitionPreset);
+            UpdateAzureVoiceBox();
         }
 
         #region Change Indicators
