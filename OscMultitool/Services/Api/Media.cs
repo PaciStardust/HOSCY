@@ -14,6 +14,7 @@ namespace Hoscy.Services.Api
         private static GlobalSystemMediaTransportControlsSessionManager? _gsmtcsm;
         private static GlobalSystemMediaTransportControlsSession? _session;
         private static GlobalSystemMediaTransportControlsSessionMediaProperties? _nowPlaying;
+        private static DateTime _mediaLastChanged =  DateTime.MinValue;
 
         #region Startup
         public static void StartMediaDetection()
@@ -68,11 +69,12 @@ namespace Hoscy.Services.Api
             lock (_lock)
             {
                 if (_nowPlaying != null) //We skip this check if there is now now playing
-                    if (newPlaying.Title.Equals(_nowPlaying.Title, StringComparison.OrdinalIgnoreCase) && newPlaying.Artist.Equals(_nowPlaying.Artist))
+                    if (newPlaying.Title.Equals(_nowPlaying.Title, StringComparison.OrdinalIgnoreCase) && newPlaying.Artist.Equals(_nowPlaying.Artist) && (DateTime.Now - _mediaLastChanged).TotalSeconds < 5)
                         return;
             }
 
             _nowPlaying = newPlaying;
+            _mediaLastChanged = DateTime.Now;
 
             if (Config.Textbox.MediaShowStatus)
             {
