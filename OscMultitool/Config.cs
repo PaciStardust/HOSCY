@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace Hoscy
@@ -491,9 +492,11 @@ namespace Hoscy
                 get { return _text; }
                 set {
                     _text = string.IsNullOrWhiteSpace(value) ? "New Value" : value;
+                    _escapeText = Regex.Escape(_text);
                 }
             }
             private string _text = "New Value";
+            private string _escapeText = "New Value";
 
             public string Replacement { get; set; } = string.Empty;
             public bool Enabled { get; set; } = true;
@@ -505,6 +508,8 @@ namespace Hoscy
                 Enabled = enabled;
             }
             public ReplacementModel() { }
+
+            public string EscapedText() => _escapeText;
 
             public override string ToString()
                 => $"{(Enabled ? "" : "[x] ")}{Text} => {Replacement}";
