@@ -25,6 +25,7 @@ namespace Hoscy
         public static string ResourcePath { get; private set; }
         public static string ConfigPath { get; private set; }
         public static string LogPath { get; private set; }
+        public static string ModelPath { get; private set; }
 
         #region Saving and Loading
         static Config()
@@ -34,14 +35,19 @@ namespace Hoscy
             ResourcePath = Path.GetFullPath(Path.Combine(assemblyDirectory, "config"));
             ConfigPath = Path.GetFullPath(Path.Combine(ResourcePath, "config.json"));
             LogPath = Path.GetFullPath(Path.Combine(ResourcePath, "log.txt"));
+            ModelPath = Path.GetFullPath(Path.Combine(ResourcePath, "models"));
 
             try
             {
                 if (!Directory.Exists(ResourcePath))
                     Directory.CreateDirectory(ResourcePath);
 
+                if (!Directory.Exists(ModelPath))
+                    Directory.CreateDirectory(ModelPath);
+
                 string configData = File.ReadAllText(ConfigPath, Encoding.UTF8);
                 Data = JsonConvert.DeserializeObject<ConfigModel>(configData) ?? new();
+                TryLoadFolderModels();
             }
             catch
             {
@@ -140,6 +146,47 @@ namespace Hoscy
 
             return config;
         }
+
+        /// <summary>
+        /// Tries loading in models from the model folder
+        /// </summary>
+        private static void TryLoadFolderModels()
+        {
+            var foldersNames = Directory.GetDirectories(ModelPath);
+
+            foreach (var folderName in foldersNames)
+            {
+                var contentFolder = GetActualModelFolder(folderName);
+
+                if (string.IsNullOrWhiteSpace(contentFolder))
+                    continue;
+
+                var folderNameSplit = folderName.Split("\\")[^1];
+                if (string.IsNullOrWhiteSpace(folderNameSplit))
+                    continue;
+
+                Speech.VoskModels[folderNameSplit] = contentFolder;
+            }
+        }
+
+        /// <summary>
+        /// Recursive function to return the folder that is likely holding the main model (More than 1 inner folder)
+        /// </summary>
+        /// <param name="folderName">Path of folder to search</param>
+        /// <returns>Innermost folder</returns>
+        private static string GetActualModelFolder(string folderName)
+        {
+            var subDirs = Directory.GetDirectories(folderName);
+            var countSub = subDirs.Length;
+
+            if (countSub == 0)
+                return string.Empty;
+            else if (countSub == 1)
+                return GetActualModelFolder(subDirs[0]);
+            else
+                return folderName;
+        }
+
         #endregion
 
         #region Models
