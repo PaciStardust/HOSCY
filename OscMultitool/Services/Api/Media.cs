@@ -187,6 +187,31 @@ namespace Hoscy.Services.Api
         }
 
         /// <summary>
+        /// Handles osc media commands
+        /// </summary>
+        /// <param name="address">Osc Address</param>
+        /// <returns>Was a command executed</returns>
+        public static bool HandleOscMediaCommands(string address)
+        {
+            //I wish this could be a switch but those expect constants
+            var command = MediaCommandType.None;
+
+            if (address == Config.Osc.AddressMediaInfo)
+                command = MediaCommandType.Info;
+            else if (address == Config.Osc.AddressMediaPause)
+                command = MediaCommandType.Pause;
+            else if (address == Config.Osc.AddressMediaRewind)
+                command = MediaCommandType.Rewind;
+            else if (address == Config.Osc.AddressMediaSkip)
+                command = MediaCommandType.Skip;
+            else if (address == Config.Osc.AddressMediaUnpause)
+                command = MediaCommandType.Unpause;
+
+            App.RunWithoutAwait(HandleMediaCommand(command));
+            return command != MediaCommandType.None;
+        }
+
+        /// <summary>
         /// Actual handling of media commands
         /// </summary>
         /// <param name="command">command type</param>

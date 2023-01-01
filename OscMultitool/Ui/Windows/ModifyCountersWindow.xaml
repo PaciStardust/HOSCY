@@ -44,6 +44,9 @@
 
                 <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="Count"/>
                 <TextBox x:Name="textCount" KeyUp="TextBox_KeyPressed" Tag="Count..."/>
+
+                <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="Cooldown (s)"/>
+                <TextBox x:Name="textCooldown" KeyUp="TextBox_KeyPressed" Tag="Cooldown..."/>
             </StackPanel>
         </Grid>
     </Grid>

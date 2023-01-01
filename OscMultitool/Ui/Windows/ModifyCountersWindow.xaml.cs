@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -68,6 +69,7 @@ namespace Hoscy.Ui.Windows
             textParameter.Text = _list[listBox.SelectedIndex].Parameter;
             textCount.Text = _list[listBox.SelectedIndex].Count.ToString();
             enabledCheckBox.IsChecked = _list[listBox.SelectedIndex].Enabled;
+            textCooldown.Text = _list[listBox.SelectedIndex].Cooldown.ToString();
         }
 
         private Config.CounterModel GetNewModel()
@@ -86,6 +88,7 @@ namespace Hoscy.Ui.Windows
             try
             {
                 model.Count = Convert.ToUInt32(textCount.Text);
+                model.Cooldown = float.Parse(textCooldown.Text, CultureInfo.InvariantCulture.NumberFormat);
             }
             catch { }
 

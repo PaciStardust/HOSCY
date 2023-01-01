@@ -239,6 +239,11 @@ namespace Hoscy
             public string AddressAddTextbox { get; set; } =         "/hoscy/message";
             public string AddressAddTts { get; set; } =             "/hoscy/tts";
             public string AddressAddNotification { get; set; } =    "/hoscy/notification";
+            public string AddressMediaPause { get; set; } =         "/avatar/parameters/MediaPause";
+            public string AddressMediaUnpause { get; set; } =       "/avatar/parameters/MediaUnpause";
+            public string AddressMediaRewind { get; set; } =        "/avatar/parameters/MediaRewind";
+            public string AddressMediaSkip { get; set; } =          "/avatar/parameters/MediaSkip";
+            public string AddressMediaInfo { get; set; } =          "/avatar/parameters/MediaInfo";
 
             //Counters
             public bool ShowCounterNotifications { get; set; } = false;
@@ -397,7 +402,7 @@ namespace Hoscy
             public string AzureVoiceCurrent { get; set; } = string.Empty;
             public List<string> AzurePhrases { get; set; } = new();
             public List<string> AzureRecognitionLanguages { get; set; } = new();
-            public Dictionary<string, string> AzureVoices { get; set; } = new(); //todo: implement
+            public Dictionary<string, string> AzureVoices { get; set; } = new();
 
             //Usage
             public bool TranslateTts { get; set; } = false;
@@ -543,6 +548,12 @@ namespace Hoscy
             public uint Count { get; set; } = 0;
             public DateTime LastUsed { get; set; } = DateTime.MinValue;
             public bool Enabled { get; set; } = true;
+            public float Cooldown
+            {
+                get { return _cooldown; }
+                set { _cooldown = MinMax(value, 0, 3600); }
+            }
+            private float _cooldown = 0;
 
             public void Increase()
             {
@@ -551,7 +562,7 @@ namespace Hoscy
             }
 
             public override string ToString()
-                => $"{(Enabled ? "" : "[x] ")}{Name}: {Count}";
+                => $"{(Enabled ? "" : "[x] ")}{Name}: {Count:N0}";
         }
         #endregion
     }

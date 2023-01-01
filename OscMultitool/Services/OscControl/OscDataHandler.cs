@@ -1,4 +1,5 @@
-﻿using Hoscy.Services.Speech;
+﻿using Hoscy.Services.Api;
+using Hoscy.Services.Speech;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,37 +49,40 @@ namespace Hoscy.Services.OscControl
             //Checking counters
             CheckForCounters(address);
 
-            if (address == Config.Osc.AddressManualMute)
+            if (Media.HandleOscMediaCommands(address))
+                return;
+
+            else if (address == Config.Osc.AddressManualMute)
                 Recognition.SetListening(!Recognition.IsRecognizerListening);
 
-            if (address == Config.Osc.AddressManualSkipBox)
+            else if (address == Config.Osc.AddressManualSkipBox)
                 Textbox.Clear();
 
-            if (address == Config.Osc.AddressManualSkipSpeech)
+            else if (address == Config.Osc.AddressManualSkipSpeech)
                 Synthesizing.Skip();
 
-            if (address == Config.Osc.AddressEnableAutoMute)
+            else if (address == Config.Osc.AddressEnableAutoMute)
             {
                 bool newValue = !Config.Speech.MuteOnVrcMute;
                 Logger.Info("'Mute on VRC mute' has been changed via OSC => " + newValue);
                 Config.Speech.MuteOnVrcMute = !Config.Speech.MuteOnVrcMute;
             }
 
-            if (address == Config.Osc.AddressEnableTextbox)
+            else if (address == Config.Osc.AddressEnableTextbox)
             {
                 bool newValue = !Config.Speech.UseTextbox;
                 Logger.Info("'Textbox on Speech' has been changed via OSC => " + newValue);
                 Config.Speech.UseTextbox = newValue;
             }
 
-            if (address == Config.Osc.AddressEnableTts)
+            else if (address == Config.Osc.AddressEnableTts)
             {
                 bool newValue = !Config.Speech.UseTts;
                 Logger.Info("'TTS on Speech' has been changed via OSC => " + newValue);
                 Config.Speech.UseTts = !Config.Speech.UseTts;
             }
 
-            if (address == Config.Osc.AddressEnableReplacements)
+            else if (address == Config.Osc.AddressEnableReplacements)
             {
                 bool newValue = !Config.Speech.UseReplacements;
                 Logger.Info("'Replacements and Shortcuts for Speech' has been changed via OSC => " + newValue);
@@ -124,7 +128,7 @@ namespace Hoscy.Services.OscControl
         {
             foreach (var counter in Config.Osc.Counters)
             {
-                if (!counter.Enabled || counter.Parameter != address)
+                if (!counter.Enabled || counter.Parameter != address || (DateTime.Now - counter.LastUsed).TotalSeconds < counter.Cooldown)
                     continue;
 
                 counter.Increase();
