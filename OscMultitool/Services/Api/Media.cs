@@ -147,7 +147,8 @@ namespace Hoscy.Services.Api
             Unpause,
             Rewind,
             Skip,
-            Info
+            Info,
+            TogglePlayback
         }
 
         /// <summary>
@@ -170,7 +171,9 @@ namespace Hoscy.Services.Api
             { "info", MediaCommandType.Info },
             { "current", MediaCommandType.Info },
             { "status", MediaCommandType.Info },
-            { "now", MediaCommandType.Info }
+            { "now", MediaCommandType.Info },
+
+            { "toggle", MediaCommandType.TogglePlayback },
         };
 
         /// <summary>
@@ -198,6 +201,8 @@ namespace Hoscy.Services.Api
 
             if (address == Config.Osc.AddressMediaInfo)
                 command = MediaCommandType.Info;
+            else if (address == Config.Osc.AddressMediaToggle)
+                command = MediaCommandType.TogglePlayback;
             else if (address == Config.Osc.AddressMediaPause)
                 command = MediaCommandType.Pause;
             else if (address == Config.Osc.AddressMediaRewind)
@@ -222,6 +227,11 @@ namespace Hoscy.Services.Api
 
             switch (command)
             {
+                case MediaCommandType.TogglePlayback:
+                    if (await _session.TryTogglePlayPauseAsync())
+                        Logger.Log("Toggled media playback");
+                    return;
+
                 case MediaCommandType.Pause:
                     if (await _session.TryPauseAsync())
                         Logger.Log("Paused media playback");

@@ -123,6 +123,9 @@
                         <TextBlock Style="{DynamicResource HTextBlock}" Text="Trigger Media Info"/>
                         <TextBox Text="{Binding Osc.AddressMediaInfo, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..." PreviewKeyDown="AddressModified"/>
 
+                        <TextBlock Style="{DynamicResource HTextBlock}" Text="Trigger Media Toggle" Margin="0,4,0,0"/>
+                        <TextBox Text="{Binding Osc.AddressMediaToggle, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..." PreviewKeyDown="AddressModified"/>
+                        
                         <TextBlock Style="{DynamicResource HTextBlock}" Text="Trigger Media Pause" Margin="0,4,0,0"/>
                         <TextBox Text="{Binding Osc.AddressMediaPause, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..." PreviewKeyDown="AddressModified"/>
 

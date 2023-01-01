@@ -244,6 +244,7 @@ namespace Hoscy
             public string AddressMediaRewind { get; set; } =        "/avatar/parameters/MediaRewind";
             public string AddressMediaSkip { get; set; } =          "/avatar/parameters/MediaSkip";
             public string AddressMediaInfo { get; set; } =          "/avatar/parameters/MediaInfo";
+            public string AddressMediaToggle { get; set; } =        "/avatar/parameters/MediaToggle";
 
             //Counters
             public bool ShowCounterNotifications { get; set; } = false;
