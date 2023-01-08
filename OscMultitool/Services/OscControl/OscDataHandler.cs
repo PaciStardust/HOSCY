@@ -128,7 +128,7 @@ namespace Hoscy.Services.OscControl
         {
             foreach (var counter in Config.Osc.Counters)
             {
-                if (!counter.Enabled || counter.Parameter != address || (DateTime.Now - counter.LastUsed).TotalSeconds < counter.Cooldown)
+                if (!counter.Enabled || counter.FullParameter() != address || (DateTime.Now - counter.LastUsed).TotalSeconds < counter.Cooldown)
                     continue;
 
                 counter.Increase();

@@ -545,7 +545,6 @@ namespace Hoscy
         public class CounterModel
         {
             public string Name { get; set; } = "Unnamed Counter";
-            public string Parameter { get; set; } = "Parameter";
             public uint Count { get; set; } = 0;
             public DateTime LastUsed { get; set; } = DateTime.MinValue;
             public bool Enabled { get; set; } = true;
@@ -556,11 +555,25 @@ namespace Hoscy
             }
             private float _cooldown = 0;
 
+            public string Parameter
+            {
+                get { return _parameter; }
+                set
+                {
+                    _parameter = value;
+                    _fullParameter = value.StartsWith("/") ? value : "/avatar/parameters/" + value;
+                }
+            }
+            private string _parameter = "Parameter";
+            private string _fullParameter = "/avatar/parameters/Parameter";
+
             public void Increase()
             {
                 Count++;
                 LastUsed = DateTime.Now;
             }
+
+            public string FullParameter() => _fullParameter;
 
             public override string ToString()
                 => $"{(Enabled ? "" : "[x] ")}{Name}: {Count:N0}";
