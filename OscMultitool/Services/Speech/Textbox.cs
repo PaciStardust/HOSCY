@@ -10,6 +10,7 @@ namespace Hoscy.Services.Speech
     {
         private static string _notification = string.Empty;
         private static NotificationType _notificationType = NotificationType.None;
+        private static NotificationType _notificationTypeLast = NotificationType.None;
 
         private static readonly Queue<string> MessageQueue = new();
 
@@ -29,53 +30,88 @@ namespace Hoscy.Services.Speech
         }
 
         #region Message Handling
+        private static readonly int _minimumTimeoutMs = 1250;
         private static bool _autocleared = true;
+        private static DateTime _intendedTimeout = DateTime.MinValue; //Used to ensure notif override
         /// <summary>
         /// Loop for sending messages
         /// </summary>
-        private static void MessageQueueLoop()
+        private static void MessageQueueLoop() //todo: test and check if works
         {
+            //Flag for checking if override behaviour is allowed
+            var lastSentNotif = false;
+
             while (App.Running)
             {
-                //Wait if Q empty
                 var message = string.Empty;
                 var notify = false;
-                var timeout = 10;
+                var threadSleep = 10;
+                var sendNotification = false;
 
-                if (MessageQueue.Count > 0)
+                //If the intended timeout has passed, messages and autoclear can happen
+                //this will only fail because of notification overwriting
+                if (DateTime.Now >= _intendedTimeout)
                 {
-                    message = MessageQueue.Dequeue();
-                    timeout = GetMessageTimeout(message);
-                    notify = Config.Textbox.SoundOnMessage;
-                    _autocleared = !Config.Textbox.AutomaticClearMessage;
+                    //Set from message
+                    if (MessageQueue.Count > 0)
+                    {
+                        message = MessageQueue.Dequeue();
+                        notify = Config.Textbox.SoundOnMessage;
+                        _autocleared = !Config.Textbox.AutomaticClearMessage;
+                    }
+                    //Allow notifcaton
+                    else if (_notificationType != NotificationType.None)
+                    {
+                        sendNotification = true;
+                    }
+                    //Autoclear
+                    else if (!_autocleared)
+                    {
+                        //Early timeout
+                        SendMessage(string.Empty, false);
+                        _autocleared = true;
+                        Thread.Sleep(_minimumTimeoutMs);
+                        continue;
+                    }
                 }
-                else if (_notificationType != NotificationType.None)
+                //Notification override is triggered
+                else if (lastSentNotif && _notificationType != NotificationType.None && _notificationType == _notificationTypeLast) 
+                {
+                    sendNotification = true;
+                    Logger.Debug("Notification timeout was shortened due to equal type");
+                }
+
+                //Notification is set, moved to not have duplicates
+                if (sendNotification)
                 {
                     message = _notification;
                     ClearNotification();
-                    timeout = GetMessageTimeout(message);
                     notify = Config.Textbox.SoundOnNotification;
                     _autocleared = !Config.Textbox.AutomaticClearNotification;
                 }
-                else if (!_autocleared)
-                {
-                    SendMessage(string.Empty, false);
-                    timeout = 1000;
-                    _autocleared = true;
-                }
 
+                //Actual sending
                 if (!string.IsNullOrWhiteSpace(message))
                 {
+                    //If failed, still set autoclear
                     if (!SendMessage(message, notify))
                     {
                         _autocleared = true;
                         continue;
                     }
 
-                    Logger.Info($"Sent message with timeout {timeout}: {message}");
+                    var msgTimeout = GetMessageTimeout(message);
+                    _intendedTimeout = DateTime.Now.AddMilliseconds(msgTimeout);
+                    threadSleep = _minimumTimeoutMs;
+                    lastSentNotif = sendNotification;
+
+                    if (sendNotification)
+                        Logger.Info($"Sent notification with timeout {threadSleep}-{msgTimeout}: {message}");
+                    else
+                        Logger.Info($"Sent message with timeout {threadSleep}: {message}");
                 }
 
-                Thread.Sleep(timeout);
+                Thread.Sleep(threadSleep);
             }
         }
 
@@ -178,6 +214,7 @@ namespace Hoscy.Services.Speech
             MessageQueue.Clear();
             ClearNotification();
             _autocleared = false;
+            _intendedTimeout = DateTime.MinValue;
             Logger.Info("Clearing message queue");
         }
 
@@ -187,6 +224,7 @@ namespace Hoscy.Services.Speech
         private static void ClearNotification()
         {
             _notification = string.Empty;
+            _notificationTypeLast = _notificationType;
             _notificationType = NotificationType.None;
         }
         #endregion

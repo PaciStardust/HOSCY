@@ -145,6 +145,8 @@ namespace Hoscy
                 new("asterisk", "*")
             });
 
+            config.Speech.Shortcuts.Add(new("box toggle", "[osc] [/avatar/parameters/ToolEnableBox [b]true \"self \"]"));
+
             return config;
         }
 

@@ -82,7 +82,7 @@ namespace Hoscy.Services.Speech
                 if(!r.Enabled) continue;
 
                 RegexOptions opt = ReplaceCaseInsensitive ? RegexOptions.IgnoreCase : RegexOptions.None;
-                message = Regex.Replace(message, $@"(?<=\A| ){r.EscapedText()}(?=$| )", r.Replacement, opt);
+                message = Regex.Replace(message, $@"(?<=\A| ){r.EscapedText()}(?=$| )", r.Replacement, opt | RegexOptions.CultureInvariant);
             }
 
             //Checking for shortcuts
