@@ -160,7 +160,7 @@ namespace Hoscy.Services.Speech
         public static string? ExtractFromJson(string name, string json)
         {
             string regstring = name + @""" *: *""(?<value>([^""\\]|\\.)*)""";
-            var regex = new Regex(regstring, RegexOptions.IgnoreCase);
+            var regex = new Regex(regstring, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
             var result = regex.Match(json)?.Groups["value"].Value ?? null;
             return string.IsNullOrWhiteSpace(result) ? null : Regex.Unescape(result);

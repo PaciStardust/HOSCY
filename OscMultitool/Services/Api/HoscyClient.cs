@@ -23,31 +23,28 @@ namespace Hoscy.Services.Api
 
         #region Requests
         /// <summary>
-        /// Either does a post or get
-        /// <br/><b>THESE WILL LAG ON SOME SYSTEMS, IF YOU KNOW WHY PLEASE LET ME KNOW</b>
+        /// Wrapper for sending with the HTTPClient
         /// </summary>
-        /// <param name="url">Target URL</param>
-        /// <param name="content">Content, if this is null, a get will be performed</param>
-        /// <param name="timeout">Timeout in ms</param>
-        /// <returns>Response, if null this failed</returns>
-        public static async Task<string?> RequestAsync(string url, HttpContent? content = null, int timeout = 5000, bool notify = true)
+        /// <param name="requestMessage">RequestMessage to send</param>
+        /// <param name="timeout">Request timeout</param>
+        /// <param name="notify">Notification window on error?</param>
+        /// <returns>JSON response on success</returns>
+        public static async Task<string?> SendAsync(HttpRequestMessage requestMessage, int timeout = 5000, bool notify = true)
         {
             var identifier = GetRequestIdentifier();
 
             var startTime = DateTime.Now;
-            Logger.Debug($"{(content == null ? "Getting from" : "Posting to")} {url} ({identifier})");
+            Logger.Debug($"Sending {requestMessage.Method} to {requestMessage.RequestUri} ({identifier})");
             try
             {
                 var cts = new CancellationTokenSource(timeout);
-                var response = content == null
-                    ? await _client.GetAsync(url, cts.Token)
-                    : await _client.PostAsync(url, content, cts.Token);
+                var response = await _client.SendAsync(requestMessage, cts.Token);
 
                 var jsonIn = await response.Content.ReadAsStringAsync(cts.Token);
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    Logger.Error($"Request {identifier} has received status code \"{response.StatusCode}\"" + (string.IsNullOrWhiteSpace(jsonIn) ? "" : $" ({jsonIn})"), notify:notify);
+                    Logger.Error($"Request {identifier} has received status code \"{response.StatusCode}\" ({(int)response.StatusCode})" + (string.IsNullOrWhiteSpace(jsonIn) ? "" : $" ({jsonIn})"), notify: notify);
                     return null;
                 }
 
@@ -79,7 +76,9 @@ namespace Hoscy.Services.Api
             var currVer = Config.GetVersion();
             Logger.PInfo("Attempting to check for newest HOSCY version, current is " + currVer);
 
-            var res = await RequestAsync(Config.GithubLatest, notify: false);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Get, Config.GithubLatest);
+
+            var res = await SendAsync(requestMessage, notify: false);
             if (res == null)
             {
                 Logger.Warning("Failed to grab version number from GitHub");

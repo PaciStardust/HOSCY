@@ -29,6 +29,7 @@ namespace Hoscy.Services.Speech
                 return false;
             }
 
+            Config.SaveConfig(); //Saving to ensure it doesnt wipe when crashing
             Logger.PInfo("Attempting to start recognizer...");
             if (!_recognizer.Start())
             {
@@ -60,6 +61,7 @@ namespace Hoscy.Services.Speech
                 return;
             }
 
+            Config.SaveConfig(); //Saving to ensure it doesnt wipe when crashing
             _recognizer.Stop();
             _recognizer = null;
             TriggerRecognitionChanged();

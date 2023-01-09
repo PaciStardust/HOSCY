@@ -32,9 +32,14 @@ namespace Hoscy.Services.Api
             if (_preset == null || !_preset.IsValid())
                 return null;
 
-            AddHeaders(content);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, _preset.TargetUrl)
+            {
+                Content = content
+            };
 
-            var jsonIn = await HoscyClient.RequestAsync(_preset.PostUrl, content, _preset.ConnectionTimeout);
+            AddHeaders(requestMessage);
+
+            var jsonIn = await HoscyClient.SendAsync(requestMessage, _preset.ConnectionTimeout);
 
             if (jsonIn == null)
                 return null;
@@ -60,23 +65,25 @@ namespace Hoscy.Services.Api
         public async Task<string?> SendText(string text)
         {
             if (_preset == null) return string.Empty;
-            var jsonOut = ReplaceToken(_preset.JsonData, "[T]", text);
+            var jsonOut = ReplaceToken(_preset.SentData, "[T]", text);
 
-            if (_preset.JsonData == jsonOut)
+            if (_preset.SentData == jsonOut)
             {
                 Logger.Error("Unable to send data to data to API as JSON contains no token, have you made sure the JSON option contains \"[T]\"?");
                 return string.Empty;
             }
 
-            return await Send(new StringContent(jsonOut, Encoding.UTF8, "application/json"));
+            return await Send(new StringContent(jsonOut, Encoding.UTF8, _preset.ContentType));
         }
         #endregion
 
         #region Utils
-        private void AddHeaders(HttpContent content)
+        private void AddHeaders(HttpRequestMessage content)
         {
             if (_preset == null)
                 return;
+
+            content.Headers.Authorization = _preset.AuthenticationHeader();
 
             foreach (var headerInfo in _preset.HeaderValues)
             {

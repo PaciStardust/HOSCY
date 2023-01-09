@@ -64,11 +64,12 @@ namespace Hoscy.Ui.Windows
 
             var selected = _list[listBox.SelectedIndex];
             textName.Text = selected.Name;
-            textUrl.Text = selected.PostUrl;
+            textUrl.Text = selected.TargetUrl;
             textResult.Text = selected.ResultField;
             textTimeout.Text = selected.ConnectionTimeout.ToString();
-            textJson.Text = selected.JsonData;
+            textJson.Text = selected.SentData;
             textContentType.Text = selected.ContentType;
+            textAuthHeader.Text = selected.Authorization;
         }
 
         private Config.ApiPresetModel GetNewModel()
@@ -79,7 +80,7 @@ namespace Hoscy.Ui.Windows
                 model.Name = textName.Text;
 
             if (!string.IsNullOrWhiteSpace(textUrl.Text))
-                model.PostUrl = textUrl.Text;
+                model.TargetUrl = textUrl.Text;
 
             if (!string.IsNullOrWhiteSpace(textResult.Text))
                 model.ResultField = textResult.Text;
@@ -88,13 +89,16 @@ namespace Hoscy.Ui.Windows
                 model.ConnectionTimeout = timeout;
 
             if (!string.IsNullOrWhiteSpace(textJson.Text))
-                model.JsonData = textJson.Text;
+                model.SentData = textJson.Text;
 
             if (!string.IsNullOrWhiteSpace(textContentType.Text))
                 model.ContentType = textContentType.Text;
 
             if (listBox.SelectedIndex != -1)
                 model.HeaderValues = _list[listBox.SelectedIndex].HeaderValues.ToDictionary(x => x.Key, x => x.Value);
+
+            if (!string.IsNullOrWhiteSpace(textAuthHeader.Text))
+                model.Authorization = textAuthHeader.Text;
 
             return model;
         }

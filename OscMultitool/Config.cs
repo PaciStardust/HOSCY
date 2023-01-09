@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -52,8 +53,10 @@ namespace Hoscy
             }
             catch
             {
-                Data = GetDefaultConfig();
+                Data = new();
             }
+
+            UpdateConfig(Data);
 
             if (!Directory.Exists(ResourcePath))
                 MessageBox.Show("Failed to create config directory, please check your antivirus and your permissions", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -66,7 +69,7 @@ namespace Hoscy
         {
             try
             {
-                File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(Data ?? new(), Formatting.Indented));
+                File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(Data ?? new(), Formatting.Indented), Encoding.UTF8);
                 Logger.PInfo("Saved config file at " + ConfigPath);
             }
             catch (Exception e)
@@ -103,51 +106,105 @@ namespace Hoscy
         /// <summary>
         /// This exists as newtonsoft seems to have an issue with my way of creating a default config
         /// </summary>
-        private static ConfigModel GetDefaultConfig()
+        private static void UpdateConfig(ConfigModel config)
         {
-            var config = new ConfigModel();
-
-            config.Speech.NoiseFilter.AddRange(new List<string>()
+            if (config.ConfigVersion < 1) //contains ifs to ensure old configs dont get these again
             {
-                "the",
-                "and",
-                "einen"
-            });
+                if (config.Speech.NoiseFilter.Count == 0)
+                {
+                    config.Speech.NoiseFilter.AddRange(new List<string>()
+                    {
+                        "the",
+                        "and",
+                        "einen"
+                    });
+                }
 
-            config.Debug.LogFilter.AddRange(new List<string>()
+                if (config.Debug.LogFilter.Count == 0)
+                {
+                    config.Debug.LogFilter.AddRange(new List<string>()
+                    {
+                        "/angular",
+                        "/grounded",
+                        "/velocity",
+                        "/upright",
+                        "/voice",
+                        "/viseme",
+                        "/gesture",
+                        "_angle",
+                        "_stretch"
+                    });
+                }
+
+                if (config.Speech.Replacements.Count == 0)
+                {
+                    config.Speech.Replacements.AddRange(new List<ReplacementModel>()
+                    {
+                        new("exclamation mark", "!"),
+                        new("question mark", "?"),
+                        new("colon", ":"),
+                        new("semicolon", ";"),
+                        new("open parenthesis", "("),
+                        new("closed parenthesis", ")"),
+                        new("open bracket", "("),
+                        new("closed bracket", ")"),
+                        new("minus", "-"),
+                        new("plus", "+"),
+                        new("slash", "/"),
+                        new("backslash", "\\"),
+                        new("hashtag", "#"),
+                        new("asterisk", "*")
+                    });
+                }
+            }
+
+            if (config.ConfigVersion < 2)
             {
-                "/angular",
-                "/grounded",
-                "/velocity",
-                "/upright",
-                "/voice",
-                "/viseme",
-                "/gesture",
-                "_angle",
-                "_stretch"
-            });
+                config.Speech.Shortcuts.Add(new("box toggle", "[osc] [/avatar/parameters/ToolEnableBox [b]true \"self\"]"));
 
-            config.Speech.Replacements.AddRange(new List<ReplacementModel>()
-            {
-                new("exclamation mark", "!"),
-                new("question mark", "?"),
-                new("colon", ":"),
-                new("semicolon", ";"),
-                new("open parenthesis", "("),
-                new("closed parenthesis", ")"),
-                new("open bracket", "("),
-                new("closed bracket", ")"),
-                new("minus", "-"),
-                new("plus", "+"),
-                new("slash", "/"),
-                new("backslash", "\\"),
-                new("hashtag", "#"),
-                new("asterisk", "*")
-            });
+                config.Api.Presets.AddRange(new List<ApiPresetModel>()
+                {
+                    new ApiPresetModel()
+                    {
+                        Name = "Example - Azure to DE",
+                        TargetUrl = "https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&to=de",
+                        ResultField = "text",
+                        SentData = @"[{""Text"" : ""[T]""}]",
+                        ContentType = "application/json",
+                        HeaderValues = new()
+                        {
+                            { "Ocp-Apim-Subscription-Key", "[YOUR KEY]" },
+                            { "Ocp-Apim-Subscription-Region", "[YOUR REGION]" }
+                        }
+                    },
 
-            config.Speech.Shortcuts.Add(new("box toggle", "[osc] [/avatar/parameters/ToolEnableBox [b]true \"self \"]"));
+                    new ApiPresetModel()
+                    {
+                        Name = "Example - Azure Recognition",
+                        TargetUrl = "https://northeurope.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1?language=en-US",
+                        ResultField = "Display Text",
+                        SentData = string.Empty,
+                        ContentType = "audio/wav; codecs=audio/pcm; samplerate=16000",
+                        HeaderValues = new()
+                        {
+                            { "Ocp-Apim-Subscription-Key", "[YOUR KEY]" },
+                            { "Accept", "true" }
+                        }
+                    },
 
-            return config;
+                    new ApiPresetModel()
+                    {
+                        Name = "Example - DeepL to DE",
+                        TargetUrl = "https://api-free.deepl.com/v2/translate",
+                        ResultField = "text",
+                        SentData = "text=[T]&target_lang=DE",
+                        ContentType = "application/x-www-form-urlencoded",
+                        Authorization = "DeepL-Auth-Key [YOUR KEY]"
+                    }
+                });
+            }
+            
+            config.ConfigVersion = 2;
         }
 
         /// <summary>
@@ -198,6 +255,8 @@ namespace Hoscy
         /// </summary>
         public class ConfigModel
         {
+            public int ConfigVersion { get; set; } = 0;
+
             public ConfigOscModel Osc { get; init; } = new();
             public ConfigSpeechModel Speech { get; init; } = new();
             public ConfigTextboxModel Textbox { get; init; } = new();
@@ -526,11 +585,49 @@ namespace Hoscy
         public class ApiPresetModel
         {
             public string Name { get; set; } = "Example Preset";
-            public string PostUrl { get; set; } = "https://example.net";
-            public string JsonData { get; set; } = @"{""data"" : ""[T]""}";
+            public string SentData { get; set; } = @"{""data"" : ""[T]""}";
             public Dictionary<string, string> HeaderValues { get; set; } = new();
-            public string ContentType { get; set; } = string.Empty;
+            public string ContentType { get; set; } = "application/json";
             public string ResultField { get; set; } = "result";
+
+            public string TargetUrl
+            {
+                get { return _targetUrl; }
+                set
+                {
+                    _targetUrl = value;
+                    _fullTargetUrl = value.StartsWith("h") ? value : "https://" + value;
+                }
+            }
+            private string _targetUrl = string.Empty;
+            private string _fullTargetUrl = string.Empty;
+
+            public string Authorization
+            {
+                get { return _authorization; }
+                set
+                {
+                    _authorization = string.Empty;
+                    _authenticationHeader = null;
+
+                    if (string.IsNullOrWhiteSpace(value))
+                        return;
+
+                    try {
+                        _authorization = value;
+                        var authSplit = value.Split(' ');
+
+                        if (authSplit.Length == 1)
+                            _authenticationHeader = new(authSplit[0]);
+                        else if (authSplit.Length > 1)
+                            _authenticationHeader = new(authSplit[0], string.Join(' ', authSplit[1..]));
+                    }
+                    catch { }
+                }
+            }
+            private string _authorization = string.Empty;
+            private AuthenticationHeaderValue? _authenticationHeader = null;
+
             public int ConnectionTimeout
             {
                 get { return _connectionTimeout; }
@@ -538,10 +635,14 @@ namespace Hoscy
             }
             private int _connectionTimeout = 3000;
 
+            public string FullTargetUrl() => _fullTargetUrl;
+            public AuthenticationHeaderValue? AuthenticationHeader() => _authenticationHeader;
+
             public bool IsValid()
-                => !string.IsNullOrWhiteSpace(PostUrl)
-                && !string.IsNullOrWhiteSpace(JsonData)
-                && !string.IsNullOrWhiteSpace(ResultField);
+                => !string.IsNullOrWhiteSpace(TargetUrl)
+                && !string.IsNullOrWhiteSpace(SentData)
+                && !string.IsNullOrWhiteSpace(ResultField)
+                && !string.IsNullOrWhiteSpace(ContentType);
         }
 
         public class CounterModel
