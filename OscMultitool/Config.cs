@@ -314,7 +314,7 @@ namespace Hoscy
                 get { return _counterDisplayDuration; }
                 set { _counterDisplayDuration = MinMax(value, 0.01f, 30); }
             }
-            private float _counterDisplayDuration = 0.01f;
+            private float _counterDisplayDuration = 10f;
 
             public List<CounterModel> Counters { get; set; } = new();
 
@@ -325,7 +325,7 @@ namespace Hoscy
                 get { return _afkDuration; }
                 set { _afkDuration = MinMax(value, 5, 300); }
             }
-            private float _afkDuration = 30000;
+            private float _afkDuration = 15;
         }
 
         /// <summary>
