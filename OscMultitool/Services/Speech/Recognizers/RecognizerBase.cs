@@ -158,7 +158,7 @@ namespace Hoscy.Services.Speech
             var filterCombined = string.Join('|', filterWords);
             var regString = $"^(?:\\b(?:{filterCombined})\\b)?(.*?)(?:\\b(?:{filterCombined})\\b)?$";
             Logger.PInfo($"Updated denoiser ({regString})");
-            _denoiseFilter = new Regex(regString, opt);
+            _denoiseFilter = new Regex(regString, opt | RegexOptions.CultureInvariant);
         }
         #endregion
     }

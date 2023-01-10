@@ -21,14 +21,6 @@ namespace Hoscy.Services.Speech.Recognizers
         private SpeechRecognizer? _rec;
         private TaskCompletionSource<int>? recognitionCompletionSource;
 
-
-        #region Starting / Stopping
-        protected override bool StartInternal()
-        {
-            _rec = TryCreateRecognizer();
-            return _rec != null;
-        }
-
         #region Setup
         private SpeechRecognizer? TryCreateRecognizer()
         {
@@ -58,7 +50,7 @@ namespace Hoscy.Services.Speech.Recognizers
                     if (Config.Api.AzureRecognitionLanguages.Count == 1)
                         speechConfig.SpeechRecognitionLanguage = Config.Api.AzureRecognitionLanguages[0];
                     rec = new(speechConfig, audioConfig);
-                }      
+                }
 
                 if (Config.Api.AzurePhrases.Count != 0)
                 {
@@ -95,6 +87,13 @@ namespace Hoscy.Services.Speech.Recognizers
             return string.Empty;
         }
         #endregion
+
+        #region Starting / Stopping
+        protected override bool StartInternal()
+        {
+            _rec = TryCreateRecognizer();
+            return _rec != null;
+        }
 
         protected override void StopInternal()
         {

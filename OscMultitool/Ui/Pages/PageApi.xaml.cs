@@ -22,12 +22,42 @@ namespace Hoscy.Ui.Pages
             UpdateChangedValuesIndicator();
         }
 
+        #region Loading
         private void LoadBoxes()
         {
             LoadPresetBox(translatorApiBox, Config.Api.TranslationPreset);
             LoadPresetBox(recognitionApiBox, Config.Api.RecognitionPreset);
             UpdateAzureVoiceBox();
         }
+
+        private static void LoadPresetBox(ComboBox box, string name)
+            => box.Load(Config.Api.Presets.Select(x => x.Name), Config.Api.GetIndex(name));
+
+        private void UpdateAzureVoiceBox()
+        {
+            var voices = Config.Api.AzureVoices;
+
+            //Checking for availability of current model in dropdown
+            int index = -1;
+            var keyArray = voices.Keys.ToArray();
+            for (int i = 0; i < keyArray.Length; i++)
+            {
+                if (Config.Api.AzureVoiceCurrent == keyArray[i])
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            //Clearing, very cool
+            azureVoiceBox.ItemsSource = null;
+            foreach (var item in azureVoiceBox.Items)
+                azureVoiceBox.Items.Remove(item);
+            azureVoiceBox.Items.Refresh();
+
+            azureVoiceBox.Load(voices.Keys, index, true);
+        }
+        #endregion
 
         #region Change Indicators
         private void UpdateChangedValuesIndicator()
@@ -47,6 +77,9 @@ namespace Hoscy.Ui.Pages
             _changedValuesSynthesizer = state;
             UpdateChangedValuesIndicator();
         }
+
+        private void TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+            => SetChangedValueSynthesizer(true);
         #endregion
 
         #region Buttons
@@ -125,36 +158,5 @@ namespace Hoscy.Ui.Pages
                 
         }
         #endregion
-
-        private static void LoadPresetBox(ComboBox box, string name)
-            => box.Load(Config.Api.Presets.Select(x => x.Name), Config.Api.GetIndex(name));
-
-        private void TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
-            => SetChangedValueSynthesizer(true);
-
-        private void UpdateAzureVoiceBox()
-        {
-            var voices = Config.Api.AzureVoices;
-
-            //Checking for availability of current model in dropdown
-            int index = -1;
-            var keyArray = voices.Keys.ToArray();
-            for (int i = 0; i < keyArray.Length; i++)
-            {
-                if (Config.Api.AzureVoiceCurrent == keyArray[i])
-                {
-                    index = i;
-                    break;
-                }
-            }
-
-            //Clearing, very cool
-            azureVoiceBox.ItemsSource = null;
-            foreach (var item in azureVoiceBox.Items)
-                azureVoiceBox.Items.Remove(item);
-            azureVoiceBox.Items.Refresh();
-
-            azureVoiceBox.Load(voices.Keys, index, true);
-        }
     }
 }

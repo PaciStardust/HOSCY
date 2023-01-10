@@ -258,11 +258,5 @@ namespace Hoscy.Ui.Pages
                 EnableChangeIndicator();
         }
         #endregion
-
-        private void TextPreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-            EnableChangeIndicator();
-            e.Handled = true;
-        }
     }
 }
