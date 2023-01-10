@@ -16,7 +16,9 @@ namespace Hoscy.Ui.Windows
         public ModifyOscRoutingFiltersWindow(string title, List<Config.OscRoutingFilterModel> list)
         {
             InitializeComponent();
-            
+
+            Closed += (s, a) => Config.SaveConfig();
+
             _list = list;
             Title = title;
             Refresh(-1);

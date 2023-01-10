@@ -367,7 +367,7 @@ namespace Hoscy
                 get { return _voskTimeout; }
                 set { _voskTimeout = MinMax(value, 500, 30000); }
             }
-            private int _voskTimeout = 3000;
+            private int _voskTimeout = 2000;
 
             //Windows
             public string WinModelId { get; set; } = string.Empty;

@@ -16,7 +16,9 @@ namespace Hoscy.Ui.Windows
         public ModifyReplacementsWindow(string title, List<Config.ReplacementModel> list)
         {
             InitializeComponent();
-            
+
+            Closed += (s, a) => Config.SaveConfig();
+
             _list = list;
             Title = title;
             Refresh(-1);

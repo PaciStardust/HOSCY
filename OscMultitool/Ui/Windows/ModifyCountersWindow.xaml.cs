@@ -18,7 +18,9 @@ namespace Hoscy.Ui.Windows
         public ModifyCountersWindow(string title, List<Config.CounterModel> list)
         {
             InitializeComponent();
-            
+
+            Closed += (s, a) => Config.SaveConfig();
+
             _list = list;
             Title = title;
             Refresh(-1);

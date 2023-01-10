@@ -128,11 +128,13 @@ namespace Hoscy.Services.OscControl
         {
             foreach (var counter in Config.Osc.Counters)
             {
-                if (!counter.Enabled || counter.FullParameter() != address || (DateTime.Now - counter.LastUsed).TotalSeconds < counter.Cooldown)
+                if (counter.FullParameter() != address || (DateTime.Now - counter.LastUsed).TotalSeconds < counter.Cooldown)
                     continue;
 
                 counter.Increase();
                 Logger.Debug($"Counter \"{counter.Name}\" ({counter.Parameter}) increased to {counter.Count}");
+
+                if (!counter.Enabled) return;
 
                 if (Config.Osc.ShowCounterNotifications)
                 {
@@ -141,7 +143,7 @@ namespace Hoscy.Services.OscControl
                         Textbox.Notify(counterString, NotificationType.Counter);
                 }
 
-                break;
+                return;
             }
         }
 

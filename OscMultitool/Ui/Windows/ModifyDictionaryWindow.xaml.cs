@@ -17,6 +17,8 @@ namespace Hoscy.Ui.Windows
         {
             InitializeComponent();
 
+            Closed += (s, a) => Config.SaveConfig();
+
             _dict = dict;
             Title = title;
 

@@ -183,7 +183,7 @@ namespace Hoscy
     /// </summary>
     public readonly struct LogMessage
     {
-        public static int MaxSeverityLength => 8;
+        private static readonly int _maxSeverityLength = 8;
         public string SourceFile { get; private init; }
         public string SourceMember { get; private init; }
         public int SourceLine { get; private init; }
@@ -199,7 +199,7 @@ namespace Hoscy
             SourceMember = sourcMember;
             SourceLine = sourceLine;
             Severity = serverity;
-            _sevString = Pad(serverity.ToString(), MaxSeverityLength);
+            _sevString = Pad(serverity.ToString(), _maxSeverityLength);
             Time = DateTime.Now;
         }
 

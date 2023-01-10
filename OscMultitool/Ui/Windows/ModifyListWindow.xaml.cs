@@ -17,6 +17,8 @@ namespace Hoscy.Ui.Windows
         {
             InitializeComponent();
 
+            Closed += (s, a) => Config.SaveConfig();
+
             labelValue.Text = valueName;
             textValue.Tag = valueName + "...";
 

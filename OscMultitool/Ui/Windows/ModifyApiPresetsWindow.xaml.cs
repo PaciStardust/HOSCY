@@ -16,7 +16,9 @@ namespace Hoscy.Ui.Windows
         public ModifyApiPresetsWindow(string title, List<Config.ApiPresetModel> list)
         {
             InitializeComponent();
-            
+
+            Closed += (s, a) => Config.SaveConfig();
+
             _list = list;
             Title = title;
             Refresh(-1);
