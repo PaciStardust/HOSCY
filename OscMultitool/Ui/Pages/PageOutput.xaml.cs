@@ -66,8 +66,11 @@ namespace Hoscy.Ui.Pages
 
         private void Slider_Volume(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            UpdateVolumeText();
-            Synthesizing.ChangeVolume();
+            if (volumeSlider != null)
+            {
+                UpdateVolumeText();
+                Synthesizing.ChangeVolume();
+            }
         }
 
         private void UpdateVolumeText()
