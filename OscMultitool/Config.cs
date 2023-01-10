@@ -70,7 +70,7 @@ namespace Hoscy
             try
             {
                 File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(Data ?? new(), Formatting.Indented), Encoding.UTF8);
-                Logger.PInfo("Saved config file at " + ConfigPath);
+                Logger.Info("Saved config file at " + ConfigPath);
             }
             catch (Exception e)
             {

@@ -12,6 +12,8 @@ namespace Hoscy
     /// </summary>
     public partial class MainWindow : Window
     {
+        private bool _firstLoad = true;
+
         public MainWindow()
         {
             this.SetDarkMode(true);
@@ -41,6 +43,11 @@ namespace Hoscy
                     navButton.Background = UiHelper.ColorBack;
                     continue;
                 }
+
+                if (!_firstLoad)
+                    Config.SaveConfig();
+                else
+                    _firstLoad = false;
 
                 navButton.Background = UiHelper.ColorBackLight;
                 navFrame.Navigate(navButton.NavPage);
