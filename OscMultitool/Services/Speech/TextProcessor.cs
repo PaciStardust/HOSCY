@@ -40,10 +40,14 @@ namespace Hoscy.Services.Speech
             if (string.IsNullOrWhiteSpace(message))
                 return;
 
-            if (TriggerCommands && ExecuteCommands(message.TrimEnd('.')))
+            if (TriggerCommands)
             {
-                PageInfo.SetCommandMessage(message);
-                return;
+                var resultMessage = ExecuteCommands(message.TrimEnd('.'));
+                if (resultMessage != null)
+                {
+                    PageInfo.SetCommandMessage(resultMessage);
+                    return;
+                }
             }
 
             //translation
@@ -61,6 +65,7 @@ namespace Hoscy.Services.Speech
             if (UseTts)
                 Synthesizing.Say(Config.Api.TranslateTts ? translation : message);
 
+            //Preprep for display in UI
             if (message != translation)
                 message = $"{translation}\n\n{message}";
             if (message.Length > 512)
@@ -77,18 +82,18 @@ namespace Hoscy.Services.Speech
         private string ReplaceMessage(string message)
         {
             //Splitting and checking for replacements
+            var regexOpt = RegexOptions.CultureInvariant | (ReplaceCaseInsensitive ? RegexOptions.IgnoreCase : RegexOptions.None);
             foreach (var r in _replacements)
             {
-                if(!r.Enabled) continue;
-
-                RegexOptions opt = ReplaceCaseInsensitive ? RegexOptions.IgnoreCase : RegexOptions.None;
-                message = Regex.Replace(message, $@"(?<=\A| ){r.EscapedText()}(?=$| )", r.Replacement, opt | RegexOptions.CultureInvariant);
+                if (r.Enabled)
+                    message = Regex.Replace(message, r.RegexPattern(), r.Replacement, regexOpt);
             }
 
             //Checking for shortcuts
+            var compareText = ReplaceCaseInsensitive ? message.ToLower() : message;
             foreach (var s in _shortcuts)
             {
-                if (s.Enabled && message.Equals(s.Text, ReplaceCaseInsensitive ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
+                if (s.Enabled && compareText == (ReplaceCaseInsensitive ? s.LowercaseText() : s.Text))
                 {
                     message = s.Replacement;
                     break;
@@ -107,7 +112,7 @@ namespace Hoscy.Services.Speech
                 }
                 catch (Exception e)
                 {
-                    Logger.Error(e, "Failed to read provided file, is the path correct and does Hoscy have access?");
+                    Logger.Error(e, "Failed to read provided file, is the path correct and does HOSCY have access?");
                     return string.Empty;
                 }
             }
@@ -119,17 +124,14 @@ namespace Hoscy.Services.Speech
         /// Checking for message to be a command
         /// </summary>
         /// <returns>Was a command executed?</returns>
-        private static bool ExecuteCommands(string message)
+        private static string? ExecuteCommands(string message)
         {
             message = message.Trim();
             var lowerMessage = message.ToLower();
 
             //Osc command handling
             if (lowerMessage.StartsWith("[osc]"))
-            {
-                Osc.ParseOscCommands(message);
-                return true;
-            }
+                return Osc.ParseOscCommands(message) ? message : "Failed to execute OSC:\n\n" + message;
 
             if (lowerMessage == "skip" || lowerMessage == "clear")
             {
@@ -137,16 +139,16 @@ namespace Hoscy.Services.Speech
                 Textbox.Clear();
                 Synthesizing.Skip();
                 OscDataHandler.SetAfkTimer(false);
-                return true;
+                return message;
             }
 
             if (lowerMessage.StartsWith("media "))
             {
                 Media.HandleRawMediaCommand(lowerMessage.Replace("media ", ""));
-                return true;
+                return message;
             }
 
-            return false;
+            return null;
         }
         #endregion
 

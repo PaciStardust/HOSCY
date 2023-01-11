@@ -3,8 +3,6 @@ using Hoscy.Services.Speech;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Timers;
 
 namespace Hoscy.Services.OscControl
@@ -150,13 +148,13 @@ namespace Hoscy.Services.OscControl
         private static string CreateCounterString()
         {
             var strings = new List<string>();
-            foreach (var counter in Config.Osc.Counters)
-            {
-                if ((DateTime.Now - counter.LastUsed).TotalSeconds <= Config.Osc.CounterDisplayDuration)
-                    strings.Add(counter.ToString());
-            }
 
-            return string.Join(", ", strings);
+            var lastUsedEarliest = DateTime.Now.AddSeconds(-Config.Osc.CounterDisplayDuration);
+            var validCounters = Config.Osc.Counters
+                .Where(x => x.LastUsed >= lastUsedEarliest)
+                .OrderByDescending(x => x.Count); 
+
+            return string.Join(", ", validCounters);
         }
 
         private static Timer? _afkTimer;

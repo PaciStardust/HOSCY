@@ -3,6 +3,7 @@ using Hoscy.Ui.Windows;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -38,6 +39,7 @@ namespace Hoscy
         {
             try
             {
+                DeleteOldLogs();
                 var writer = File.CreateText(Config.LogPath);
                 writer.AutoFlush = true;
                 PInfo("Created logging file at " + Config.LogPath);
@@ -48,6 +50,15 @@ namespace Hoscy
                 Error(e, notify:false);
                 return null;
             }
+        }
+
+        private static void DeleteOldLogs()
+        {
+            var files = Directory.GetFiles(Config.ResourcePath)
+                    .Where(x => Path.GetFileName(x).StartsWith("log"))
+                    .OrderByDescending(x => File.GetCreationTime(x)).ToArray();
+            for (var i = 0; i < files.Length; i++)
+                if (i > 1) File.Delete(files[i]);
         }
         #endregion
 
@@ -83,9 +94,9 @@ namespace Hoscy
                 _logWriter?.WriteLine(messageString);
             }
         }
+
         public static void Log(string message, LogSeverity severity = LogSeverity.Log, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
             => Log(new(severity, file, member, line, message));
-
         public static void Info(string message, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
             => Log(message, LogSeverity.Info, file, member, line);
         public static void PInfo(string message, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)

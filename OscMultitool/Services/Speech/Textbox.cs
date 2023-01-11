@@ -2,6 +2,7 @@
 using Hoscy.Ui.Pages;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 
 namespace Hoscy.Services.Speech
@@ -13,6 +14,8 @@ namespace Hoscy.Services.Speech
         private static NotificationType _notificationTypeLast = NotificationType.None;
 
         private static readonly Queue<string> MessageQueue = new();
+
+        private static readonly int _minimumTimeoutMs = 1250;
 
         /// <summary>
         /// Initializing the Message loop on first call of class
@@ -30,7 +33,6 @@ namespace Hoscy.Services.Speech
         }
 
         #region Message Handling
-        private static readonly int _minimumTimeoutMs = 1250;
         private static bool _autocleared = true;
         private static DateTime _intendedTimeout = DateTime.MinValue; //Used to ensure notif override
         /// <summary>
@@ -134,7 +136,6 @@ namespace Hoscy.Services.Speech
         /// </summary>
         public static void Say(string input)
         {
-            //Checks for disabled textbox, empty input or command
             if (string.IsNullOrWhiteSpace(input))
                 return;
 
@@ -181,27 +182,30 @@ namespace Hoscy.Services.Speech
 
             var words = message.Split(' ');
             var messages = new List<string>();
-            var currentMessage = string.Empty;
+            var currentMessage = new StringBuilder();
+
             for (int i = 0; i < words.Length; i++)
             {
                 var word = words[i];
-                word = word.Length > maxLen ? word[..maxLen] : word;
+                if (word.Length > maxLen)
+                    word = word[..maxLen];
 
-                var newMessage = string.Join(" ", currentMessage, word).Trim();
-
-                //Message short enough
-                if (newMessage.Length <= maxLen)
+                if (word.Length + currentMessage.Length <= maxLen)
                 {
-                    currentMessage = newMessage;
+                    if (currentMessage.Length != 0)
+                        currentMessage.Append(' ');
+                    currentMessage.Append(word);
                     continue;
                 }
 
-                messages.Add(currentMessage + " ...");
-                currentMessage = "... " + word;
+                currentMessage.Append(" ...");
+                messages.Add(currentMessage.ToString());
+                currentMessage.Clear().Append("... ");
             }
 
-            if (!string.IsNullOrWhiteSpace(currentMessage))
-                messages.Add(currentMessage);
+            var messageStringLast = currentMessage.ToString();
+            if (!string.IsNullOrWhiteSpace(messageStringLast))
+                messages.Add(messageStringLast);
 
             return messages;
         }
@@ -245,7 +249,7 @@ namespace Hoscy.Services.Speech
 
             if (mode)
             {
-                if ((!Config.Speech.UseTextbox && !Config.Textbox.UseIndicatorWithoutBox) || _lastEnabled + new TimeSpan(0,0,4) > DateTime.Now)
+                if ((!Config.Speech.UseTextbox && !Config.Textbox.UseIndicatorWithoutBox) || _lastEnabled.AddSeconds(4) > DateTime.Now)
                     return;
 
                 _lastEnabled = DateTime.Now;
@@ -270,7 +274,7 @@ namespace Hoscy.Services.Speech
         private static int GetMessageTimeout(string message)
         {
             if (string.IsNullOrWhiteSpace(message))
-                return 1000; //to avoid hitting ratelimit
+                return _minimumTimeoutMs; //to avoid hitting ratelimit
 
             if (!Config.Textbox.DynamicTimeout)
                 return Config.Textbox.DefaultTimeout;

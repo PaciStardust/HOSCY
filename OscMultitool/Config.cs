@@ -24,7 +24,7 @@ namespace Hoscy
         public static string Github => "https://github.com/PaciStardust/HOSCY";
         public static string GithubLatest => "https://api.github.com/repos/pacistardust/hoscy/releases/latest";
 
-        public static string ResourcePath { get; private set; }
+        public static string ResourcePath { get; private set; } //todo: maybe move these
         public static string ConfigPath { get; private set; }
         public static string LogPath { get; private set; }
         public static string ModelPath { get; private set; }
@@ -36,7 +36,7 @@ namespace Hoscy
 
             ResourcePath = Path.GetFullPath(Path.Combine(assemblyDirectory, "config"));
             ConfigPath = Path.GetFullPath(Path.Combine(ResourcePath, "config.json"));
-            LogPath = Path.GetFullPath(Path.Combine(ResourcePath, "log.txt"));
+            LogPath = Path.GetFullPath(Path.Combine(ResourcePath, $"log-{DateTime.Now:MM-dd-yyyy-HH-mm-ss}.txt"));
             ModelPath = Path.GetFullPath(Path.Combine(ResourcePath, "models"));
 
             try
@@ -76,6 +76,46 @@ namespace Hoscy
             {
                 Logger.Error(e, "The config file was unable to be saved.", notify:false);
             }
+        }
+
+        /// <summary>
+        /// Tries loading in models from the model folder
+        /// </summary>
+        private static void TryLoadFolderModels()
+        {
+            var foldersNames = Directory.GetDirectories(ModelPath);
+
+            foreach (var folderName in foldersNames)
+            {
+                var contentFolder = GetActualModelFolder(folderName);
+
+                if (string.IsNullOrWhiteSpace(contentFolder))
+                    continue;
+
+                var folderNameSplit = folderName.Split("\\")[^1];
+                if (string.IsNullOrWhiteSpace(folderNameSplit))
+                    continue;
+
+                Speech.VoskModels[folderNameSplit] = contentFolder;
+            }
+        }
+
+        /// <summary>
+        /// Recursive function to return the folder that is likely holding the main model (More than 1 inner folder)
+        /// </summary>
+        /// <param name="folderName">Path of folder to search</param>
+        /// <returns>Innermost folder</returns>
+        private static string GetActualModelFolder(string folderName)
+        {
+            var subDirs = Directory.GetDirectories(folderName);
+            var countSub = subDirs.Length;
+
+            if (countSub == 0)
+                return string.Empty;
+            else if (countSub == 1)
+                return GetActualModelFolder(subDirs[0]);
+            else
+                return folderName;
         }
         #endregion
 
@@ -206,47 +246,6 @@ namespace Hoscy
             
             config.ConfigVersion = 2;
         }
-
-        /// <summary>
-        /// Tries loading in models from the model folder
-        /// </summary>
-        private static void TryLoadFolderModels()
-        {
-            var foldersNames = Directory.GetDirectories(ModelPath);
-
-            foreach (var folderName in foldersNames)
-            {
-                var contentFolder = GetActualModelFolder(folderName);
-
-                if (string.IsNullOrWhiteSpace(contentFolder))
-                    continue;
-
-                var folderNameSplit = folderName.Split("\\")[^1];
-                if (string.IsNullOrWhiteSpace(folderNameSplit))
-                    continue;
-
-                Speech.VoskModels[folderNameSplit] = contentFolder;
-            }
-        }
-
-        /// <summary>
-        /// Recursive function to return the folder that is likely holding the main model (More than 1 inner folder)
-        /// </summary>
-        /// <param name="folderName">Path of folder to search</param>
-        /// <returns>Innermost folder</returns>
-        private static string GetActualModelFolder(string folderName)
-        {
-            var subDirs = Directory.GetDirectories(folderName);
-            var countSub = subDirs.Length;
-
-            if (countSub == 0)
-                return string.Empty;
-            else if (countSub == 1)
-                return GetActualModelFolder(subDirs[0]);
-            else
-                return folderName;
-        }
-
         #endregion
 
         #region Models
@@ -559,13 +558,15 @@ namespace Hoscy
                 get { return _text; }
                 set {
                     _text = string.IsNullOrWhiteSpace(value) ? "New Value" : value;
-                    _escapeText = Regex.Escape(_text);
+                    _regexPattern = $@"(?<=\A| ){Regex.Escape(_text)}(?=$| )";
+                    _lowercaseText = _text.ToLower();
                 }
             }
             private string _text = "New Value";
-            private string _escapeText = "New Value";
+            private string _regexPattern = $@"(?<=\A| )New\ Value(?=$| )"; //Pattern for replacing text when used as replacement
+            private string _lowercaseText = "new value"; //Lowercase version when checking for shortcuts
 
-            public string Replacement { get; set; } = string.Empty;
+            public string Replacement { get; set; } = "Example";
             public bool Enabled { get; set; } = true;
 
             public ReplacementModel(string text, string replacement, bool enabled = true)
@@ -576,7 +577,8 @@ namespace Hoscy
             }
             public ReplacementModel() { }
 
-            public string EscapedText() => _escapeText;
+            public string RegexPattern() => _regexPattern;
+            public string LowercaseText() => _lowercaseText;
 
             public override string ToString()
                 => $"{(Enabled ? "" : "[x] ")}{Text} => {Replacement}";

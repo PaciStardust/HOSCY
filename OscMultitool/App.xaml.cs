@@ -21,10 +21,12 @@ namespace Hoscy
             Running = false;
         }
 
+        //Error handling for unhandled errors
         private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             try
             {
+                Config.SaveConfig();
                 Logger.Error(e.Exception, "A fatal error has occured, Hoscy will now shut down.");
             }
             catch { }
@@ -32,7 +34,9 @@ namespace Hoscy
             Environment.Exit(-1);
         }
 
+        #region Utility
         public static void RunWithoutAwait(Task function)
             => Task.Run(async() => await function).ConfigureAwait(false);
+        #endregion
     }
 }

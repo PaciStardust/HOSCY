@@ -33,7 +33,7 @@ namespace Hoscy.Services.OscControl
         /// <returns>Valid?</returns>
         private bool ValidatePacket()
         {
-            if (string.IsNullOrWhiteSpace(Address) || string.IsNullOrWhiteSpace(Ip) || Variables.Length == 0)
+            if (!Address.StartsWith('/') || string.IsNullOrWhiteSpace(Ip) || Variables.Length == 0)
                 return false;
 
             if (Port < 1 || Port > 65535)

@@ -118,12 +118,12 @@ namespace Hoscy.Services.OscControl
 
         #region OSC Command Parsing
         //These are amazingly readable regexes, I know
-        private static readonly Regex _oscCommandIdentifier = new(@"\[ *(?<address>(?:\/[a-zA-Z0-9\{\}\-\+\[\]*]+)+)(?<values>(?: +\[(?:[fF]\]-?[0-9]+(?:\.[0-9]+)?|[iI]\]\-?[0-9]+|[sS]\]""[^""]*""|[bB]\](?:[tT]rue|[fF]alse)))+)(?: +(?:(?<ip>(?:(?:25[0-5]|(?:2[0-4]|1\d|[1-9]|)\d)\.?\b){4}):(?<port>[0-9]{1,5})|""(?<target>[^""]*)""))?(?: +[wW](?<wait>[0-9]+))? *\]", RegexOptions.CultureInvariant);
+        private static readonly Regex _oscCommandIdentifier = new(@"\[ *(?<address>(?:\/[^\ #\*,\/?\[\]\{\}]+)+)(?<values>(?: +\[(?:[fF]\]-?[0-9]+(?:\.[0-9]+)?|[iI]\]\-?[0-9]+|[sS]\]""[^""]*""|[bB]\](?:[tT]rue|[fF]alse)))+)(?: +(?:(?<ip>(?:(?:25[0-5]|(?:2[0-4]|1\d|[1-9]|)\d)\.?\b){4}):(?<port>[0-9]{1,5})|""(?<target>[^""]*)""))?(?: +[wW](?<wait>[0-9]+))? *\]", RegexOptions.CultureInvariant);
         private static readonly Regex _oscParameterExtractor = new(@" +\[(?<type>[iIfFbBsS])\](?:""(?<value>[^""]*)""|(?<value>[a-zA-Z]+|[0-9\.\-]*))", RegexOptions.CultureInvariant);
         /// <summary>
         /// Checks for message to be an osc command
         /// </summary>
-        public static void ParseOscCommands(string message)
+        public static bool ParseOscCommands(string message)
         {
             //Obtaining parsed command
             Logger.Info("Detected osc command, attempting to parse: " + message);
@@ -131,7 +131,7 @@ namespace Hoscy.Services.OscControl
             if (commandMatches == null || commandMatches.Count == 0)
             {
                 Logger.Warning("Failed parsing osc command, it did not match the filter");
-                return;
+                return false;
             }
 
             var commandPackets = new List<(OscPacket, int)>();
@@ -139,7 +139,7 @@ namespace Hoscy.Services.OscControl
             {
                 var output = ParseOscCommandString(commandMatch);
                 if (output == null)
-                    return;
+                    return false;
 
                 commandPackets.Add(output.Value);
             }
@@ -147,11 +147,12 @@ namespace Hoscy.Services.OscControl
             if (commandPackets.Count == 0)
             {
                 Logger.Warning("Failed to find any command packets to execute");
-                return;
+                return false;
             }
 
             var threadId = "ST-" + Guid.NewGuid().ToString().Split('-')[0];
             Task.Run(() => ExecuteOscCommands(threadId, commandPackets));
+            return true;
         }
 
         /// <summary>

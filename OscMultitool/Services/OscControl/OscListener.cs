@@ -1,5 +1,4 @@
-﻿using Hoscy.Services.Speech;
-using CoreOSC;
+﻿using CoreOSC;
 using System;
 using System.Collections.Generic;
 using System.Timers;

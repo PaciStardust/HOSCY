@@ -3,7 +3,6 @@ using Hoscy.Services.Speech;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using Windows.Media.Devices;
 
 namespace Hoscy.Ui.Pages
 {
