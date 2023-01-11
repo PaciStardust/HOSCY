@@ -63,14 +63,12 @@
                 <Label Content="Extra Functionality" Style="{StaticResource HLabelM}" Margin="0,16,0,0"/>
 
                 <StackPanel Style="{StaticResource HStackIndent}">
-
-
                     <WrapPanel>
                         <CheckBox Content="Show AFK status" IsChecked="{Binding Osc.ShowAfkDuration, Source={x:Static local:Config.Data}}" VerticalAlignment="Center"/>
                         <Button Style="{StaticResource HButtonSmall}" HorizontalAlignment="Left" Content="Reset AFK" Click="Button_ResetAfk" Margin="8,0,0,0"/>
                     </WrapPanel>
 
-                    <WrapPanel Margin="0,4,0,0">
+                    <WrapPanel Margin="0,4,0,0" IsEnabled="{Binding Osc.ShowAfkDuration, Source={x:Static local:Config.Data}}">
                         <TextBox x:Name="oscAfkDuration" Tag="Duration..." Style="{StaticResource HTextBoxShort}">
                             <TextBox.Text>
                                 <Binding Source="{x:Static local:Config.Data}" Path="Osc.AfkDuration" UpdateSourceTrigger="PropertyChanged">
@@ -81,6 +79,19 @@
                             </TextBox.Text>
                         </TextBox>
                         <Label Content="AFK display interval (s)" VerticalAlignment="Center"/>
+                    </WrapPanel>
+
+                    <WrapPanel Margin="0,4,0,0" IsEnabled="{Binding Osc.ShowAfkDuration, Source={x:Static local:Config.Data}}">
+                        <TextBox x:Name="oscAfkDoubleDuration" Tag=" Double..." Style="{StaticResource HTextBoxShort}">
+                            <TextBox.Text>
+                                <Binding Source="{x:Static local:Config.Data}" Path="Osc.AfkDoubleDuration" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <ui:IntegerValidationRule Min="0" Max="60"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                        <Label Content="Double after displaying ... times" VerticalAlignment="Center"/>
                     </WrapPanel>
 
                     <WrapPanel Margin="0,8,0,0">

@@ -159,12 +159,14 @@ namespace Hoscy.Services.OscControl
 
         private static Timer? _afkTimer;
         private static DateTime _afkStarted = DateTime.Now;
+        private static uint _afkTimesChecked = 0;
         internal static void SetAfkTimer(bool mode)
         {
             if (Config.Osc.ShowAfkDuration && mode && _afkTimer == null)
             {
                 Textbox.Notify("User now AFK", NotificationType.Afk);
                 _afkStarted = DateTime.Now;
+                _afkTimesChecked = 0;
 
                 _afkTimer = new(Config.Osc.AfkDuration * 1000);
                 _afkTimer.Elapsed += AfkTimerElapsed;
@@ -184,7 +186,21 @@ namespace Hoscy.Services.OscControl
         }
 
         private static void AfkTimerElapsed(object? sender, ElapsedEventArgs e)
-            => Textbox.Notify("User AFK since " + (e.SignalTime.AddMilliseconds(500) - _afkStarted).ToString(@"hh\:mm\:ss"), NotificationType.Afk);
+        {
+            if (Config.Osc.AfkDoubleDuration > 0)
+            {
+                _afkTimesChecked++;
+
+                var cycle = _afkTimesChecked / Config.Osc.AfkDoubleDuration;
+                var modulo = Math.Pow(2, (int)Math.Log(cycle, 2));
+
+                if (_afkTimesChecked % modulo != 0)
+                    return;
+            }
+            
+            Textbox.Notify("User AFK since " + (e.SignalTime.AddMilliseconds(500) - _afkStarted).ToString(@"hh\:mm\:ss"), NotificationType.Afk);
+        }
+            
         #endregion
     }
 }

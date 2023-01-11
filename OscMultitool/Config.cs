@@ -325,6 +325,13 @@ namespace Hoscy
                 set { _afkDuration = MinMax(value, 5, 300); }
             }
             private float _afkDuration = 15;
+
+            public float AfkDoubleDuration
+            {
+                get { return _afkDoubleDuration; }
+                set { _afkDoubleDuration = MinMax(value, 0, 60); }
+            }
+            private float _afkDoubleDuration = 12;
         }
 
         /// <summary>
