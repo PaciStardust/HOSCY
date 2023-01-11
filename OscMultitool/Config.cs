@@ -558,7 +558,7 @@ namespace Hoscy
                 get { return _text; }
                 set {
                     _text = string.IsNullOrWhiteSpace(value) ? "New Value" : value;
-                    _regexPattern = $@"(?<=^| |\b){Regex.Escape(_text)}(?=$| |\b)";
+                    _regexPattern = $@"(?<= |\b){Regex.Escape(_text)}(?=$| |\b)";
                     _lowercaseText = _text.ToLower();
                 }
             }
