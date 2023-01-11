@@ -24,7 +24,7 @@ namespace Hoscy
         public static string Github => "https://github.com/PaciStardust/HOSCY";
         public static string GithubLatest => "https://api.github.com/repos/pacistardust/hoscy/releases/latest";
 
-        public static string ResourcePath { get; private set; } //todo: maybe move these
+        public static string ResourcePath { get; private set; }
         public static string ConfigPath { get; private set; }
         public static string LogPath { get; private set; }
         public static string ModelPath { get; private set; }
