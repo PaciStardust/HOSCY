@@ -558,12 +558,12 @@ namespace Hoscy
                 get { return _text; }
                 set {
                     _text = string.IsNullOrWhiteSpace(value) ? "New Value" : value;
-                    _regexPattern = $@"(?<=\A| ){Regex.Escape(_text)}(?=$| )";
+                    _regexPattern = $@"(?<=^| |\b){Regex.Escape(_text)}(?=$| |\b)";
                     _lowercaseText = _text.ToLower();
                 }
             }
             private string _text = "New Value";
-            private string _regexPattern = $@"(?<=\A| )New\ Value(?=$| )"; //Pattern for replacing text when used as replacement
+            private string _regexPattern = $@"(?<= |\b)New\ Value(?= |\b)"; //Pattern for replacing text when used as replacement
             private string _lowercaseText = "new value"; //Lowercase version when checking for shortcuts
 
             public string Replacement { get; set; } = "Example";
