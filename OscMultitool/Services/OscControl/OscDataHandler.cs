@@ -151,7 +151,7 @@ namespace Hoscy.Services.OscControl
 
             var lastUsedEarliest = DateTime.Now.AddSeconds(-Config.Osc.CounterDisplayDuration);
             var validCounters = Config.Osc.Counters
-                .Where(x => x.LastUsed >= lastUsedEarliest)
+                .Where(x => x.LastUsed >= lastUsedEarliest && x.Enabled)
                 .OrderByDescending(x => x.Count); 
 
             return string.Join(", ", validCounters);
