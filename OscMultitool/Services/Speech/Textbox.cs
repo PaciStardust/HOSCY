@@ -110,7 +110,7 @@ namespace Hoscy.Services.Speech
                     if (sendNotification)
                         Logger.Info($"Sent notification with timeout {threadSleep}-{msgTimeout}: {message}");
                     else
-                        Logger.Info($"Sent message with timeout {threadSleep}: {message}");
+                        Logger.Info($"Sent message with timeout {msgTimeout}: {message}");
                 }
 
                 Thread.Sleep(threadSleep);
