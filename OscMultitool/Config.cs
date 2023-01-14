@@ -428,10 +428,58 @@ namespace Hoscy
             public bool SoundOnMessage { get; set; } = true;
             public bool SoundOnNotification { get; set; } = false;
 
+            public string NotificationIndicatorLeft
+            {
+                get { return _notificationIndicatorLeft; }
+                set
+                {
+                    _notificationIndicatorLeft = value.Length < 4 ? value : value[..3];
+                    _notificationIndicatorLength = CalcNotificationIndicatorLength();
+                }
+            }
+            private string _notificationIndicatorLeft = "〈";
+
+            public string NotificationIndicatorRight
+            {
+                get { return _notificationIndicatorRight; }
+                set
+                {
+                    _notificationIndicatorRight = value.Length < 4 ? value : value[..3];
+                    _notificationIndicatorLength = CalcNotificationIndicatorLength();
+                }
+            }
+            private string _notificationIndicatorRight = "〉";
+            private int _notificationIndicatorLength = 2;
+
             //Media
             public bool MediaShowStatus { get; set; } = false;
-            public string MediaPlayingVerb { get; set; } = "Playing";
             public bool MediaAddAlbum { get; set; } = false;
+
+            public string MediaPlayingVerb
+            {
+                get { return _mediaPlayingVerb; }
+                set { _mediaPlayingVerb = value.Length > 0 ? value : "Playing"; }
+            }
+            private string _mediaPlayingVerb = "Playing";
+
+            public string MediaArtistVerb
+            {
+                get { return _mediaArtistVerb; }
+                set { _mediaArtistVerb = value.Length > 0 ? value : "by"; }
+            }
+            private string _mediaArtistVerb = "by";
+
+            public string MediaAlbumVerb
+            {
+                get { return _mediaAlbumVerb; }
+                set { _mediaAlbumVerb = value.Length > 0 ? value : "on"; }
+            }
+            private string _mediaAlbumVerb = "on";
+
+            private int CalcNotificationIndicatorLength()
+                => _notificationIndicatorRight.Length + _notificationIndicatorLeft.Length;
+
+            public int NotificationIndicatorLength() => _notificationIndicatorLength;
         }
 
         /// <summary>

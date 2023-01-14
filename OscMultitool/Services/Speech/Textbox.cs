@@ -160,11 +160,12 @@ namespace Hoscy.Services.Speech
                 return;
             }
 
-            input = input.Length > Config.Textbox.MaxLength - 2
-                ? input[..(Config.Textbox.MaxLength-5)] + "..."
+            var indLen = Config.Textbox.NotificationIndicatorLength();
+            input = input.Length > Config.Textbox.MaxLength - indLen
+                ? input[..(Config.Textbox.MaxLength-indLen-3)] + "..."
                 : input;
 
-            input = $"〈{input}〉";
+            input = $"{Config.Textbox.NotificationIndicatorLeft}{input}{Config.Textbox.NotificationIndicatorRight}";
 
             _notificationType = type;
             _notification = input;

@@ -46,4 +46,24 @@ namespace Hoscy.Ui
             return new(true, null);
         }
     }
+
+    public class StringValidationRule : ValidationRule
+    {
+        public float Min { get; set; } = 0;
+        public float Max { get; set; } = 3;
+
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
+        {
+            string text = (string)value;
+            var strLen = text.Length;
+
+            if (text == null)
+                return new(false, "Value cannot be null");
+
+            if (strLen > Max || strLen < Min)
+                return new(false, $"Text must be at least {Min} characters and not longer than {Max}");
+
+            return new(true, null);
+        }
+    }
 }

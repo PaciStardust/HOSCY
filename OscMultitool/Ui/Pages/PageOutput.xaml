@@ -89,6 +89,29 @@
                             </TextBox>
                             <Label Content="Max. text length" VerticalAlignment="Center"/>
                         </WrapPanel>
+                        
+                        <TextBlock Style="{DynamicResource HTextBlock}" Text="Notification Text" Margin="0,4,0,0"/>
+                        <WrapPanel>
+                            <TextBox Tag="Left..." Style="{StaticResource HTextBoxTiny}">
+                                <TextBox.Text>
+                                    <Binding Source="{x:Static local:Config.Data}" Path="Textbox.NotificationIndicatorLeft" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <ui:StringValidationRule Min="0" Max="3"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Label Content=" Text " VerticalAlignment="Center"/>
+                            <TextBox Tag="Right..." Style="{StaticResource HTextBoxTiny}">
+                                <TextBox.Text>
+                                    <Binding Source="{x:Static local:Config.Data}" Path="Textbox.NotificationIndicatorRight" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <ui:StringValidationRule Min="0" Max="3"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                        </WrapPanel>
                     </StackPanel>
 
                     <Label Margin="0,8,0,0" Content="Sound"/>
@@ -108,9 +131,39 @@
                     <StackPanel Style="{StaticResource HStackIndent}">
                         <CheckBox Content="Show media status" IsChecked="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}"/>
                         <CheckBox Content="Also display album name" Margin="0,4,0,0" IsChecked="{Binding Textbox.MediaAddAlbum, Source={x:Static local:Config.Data}}" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}"/>
-                        <WrapPanel Margin="0,4,0,0" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}">
-                            <TextBox HorizontalAlignment="Left" Text="{Binding Textbox.MediaPlayingVerb, Source={x:Static local:Config.Data}}" Tag="Verb..." Style="{StaticResource HTextBoxShort}"/>
-                            <Label Content="Playing verb" VerticalAlignment="Center"/>
+
+                        <TextBlock Style="{DynamicResource HTextBlock}" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}" Text="Media Text" Margin="0,4,0,0"/>
+                        <WrapPanel IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}">
+                            <TextBox Tag="Playing..." Style="{StaticResource HTextBoxShort}">
+                                <TextBox.Text>
+                                    <Binding Source="{x:Static local:Config.Data}" Path="Textbox.MediaPlayingVerb" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <ui:StringValidationRule Min="1" Max="999"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Label Content=" 'Song' " VerticalAlignment="Center"/>
+                            <TextBox Tag="by..." Style="{StaticResource HTextBoxTiny}">
+                                <TextBox.Text>
+                                    <Binding Source="{x:Static local:Config.Data}" Path="Textbox.MediaArtistVerb" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <ui:StringValidationRule Min="1" Max="999"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Label Content=" 'Artist' " VerticalAlignment="Center"/>
+                            <TextBox Tag="on..." Style="{StaticResource HTextBoxTiny}">
+                                <TextBox.Text>
+                                    <Binding Source="{x:Static local:Config.Data}" Path="Textbox.MediaAlbumVerb" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <ui:StringValidationRule Min="1" Max="999"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Label Content=" 'Album'" VerticalAlignment="Center"/>
                         </WrapPanel>
                     </StackPanel>
 

@@ -99,10 +99,10 @@ namespace Hoscy.Services.Api
             StringBuilder sb = new($"'{_nowPlaying.Title}'");
 
             if (!string.IsNullOrWhiteSpace(_nowPlaying.Artist))
-                sb.Append($" by '{_nowPlaying.Artist}'");
+                sb.Append($" {Config.Textbox.MediaArtistVerb} '{_nowPlaying.Artist}'");
 
             if (Config.Textbox.MediaAddAlbum && !string.IsNullOrWhiteSpace(_nowPlaying.AlbumTitle) && _nowPlaying.AlbumTitle != _nowPlaying.Title)
-                sb.Append($" on '{_nowPlaying.AlbumTitle}'");
+                sb.Append($" {Config.Textbox.MediaAlbumVerb} '{_nowPlaying.AlbumTitle}'");
 
             return sb.ToString();
         }
