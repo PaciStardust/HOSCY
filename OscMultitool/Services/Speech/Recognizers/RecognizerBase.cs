@@ -5,16 +5,16 @@ using System.Text.RegularExpressions;
 
 namespace Hoscy.Services.Speech
 {
-    public abstract class RecognizerBase
+    internal abstract class RecognizerBase
     {
-        public static RecognizerPerms Perms => new();
-        public bool IsRunning { get; private set; } = false;
-        public abstract bool IsListening { get; }
+        internal static RecognizerPerms Perms => new();
+        internal bool IsRunning { get; private set; } = false;
+        internal abstract bool IsListening { get; }
 
         /// <summary>
         /// Init
         /// </summary>
-        public RecognizerBase() { }
+        internal RecognizerBase() { }
 
         #region Starting / Stopping
         /// <summary>
@@ -27,7 +27,7 @@ namespace Hoscy.Services.Speech
         /// Start the listener
         /// </summary>
         /// <returns>Success</returns>
-        public bool Start()
+        internal bool Start()
         {
             if (IsRunning)
             {
@@ -57,7 +57,7 @@ namespace Hoscy.Services.Speech
         /// <summary>
         /// Stops the listener
         /// </summary>
-        public void Stop()
+        internal void Stop()
         {
             if (!IsRunning)
             {
@@ -76,7 +76,7 @@ namespace Hoscy.Services.Speech
         /// Enables or disables listening
         /// </summary>
         /// <param name="enabled">Mode</param>
-        public bool SetListening(bool enabled)
+        internal bool SetListening(bool enabled)
         {
             if (!IsRunning || IsListening == enabled)
                 return false;
@@ -107,7 +107,7 @@ namespace Hoscy.Services.Speech
         /// <summary>
         /// Processing and sending off the message
         /// </summary>
-        public static void ProcessMessage(string message)
+        internal static void ProcessMessage(string message)
         {
             if (Config.Speech.RemoveFullStop)
                 message = message.TrimEnd('.');
@@ -150,7 +150,7 @@ namespace Hoscy.Services.Speech
         /// <summary>
         /// Generates a regex for denoising
         /// </summary>
-        public static void UpdateDenoiseRegex()
+        internal static void UpdateDenoiseRegex()
         {
             RegexOptions opt = Config.Speech.IgnoreCaps ? RegexOptions.IgnoreCase : RegexOptions.None;
 

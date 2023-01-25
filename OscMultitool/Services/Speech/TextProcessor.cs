@@ -9,22 +9,22 @@ using System.Threading.Tasks;
 
 namespace Hoscy.Services.Speech
 {
-    public class TextProcessor
+    internal class TextProcessor
     {
-        public bool UseTextbox { get; init; } = false;
-        public bool UseTts { get; init; } = false;
-        public bool TriggerCommands { get; init; } = false;
-        public bool TriggerReplace { get; init; } = false;
-        public bool ReplaceCaseInsensitive { get; init; } = false;
-        public bool AllowTranslate { get; init; } = false;
+        internal bool UseTextbox { get; init; } = false;
+        internal bool UseTts { get; init; } = false;
+        internal bool TriggerCommands { get; init; } = false;
+        internal bool TriggerReplace { get; init; } = false;
+        internal bool ReplaceCaseInsensitive { get; init; } = false;
+        internal bool AllowTranslate { get; init; } = false;
 
         #region Processing
         /// <summary>
         /// Processes and sends strings with given options
         /// </summary>
         /// <param name="message">The message to process</param>
-        public void Process(string message)
-            => App.RunWithoutAwait(ProcessInternal(message));
+        internal void Process(string message)
+            => Utils.RunWithoutAwait(ProcessInternal(message));
 
         /// <summary>
         /// Processes and sends strings with given options
@@ -149,23 +149,6 @@ namespace Hoscy.Services.Speech
             }
 
             return null;
-        }
-        #endregion
-
-        #region Static Utility
-        /// <summary>
-        /// Extracts a json field from a string
-        /// </summary>
-        /// <param name="name">Name of the field to search</param>
-        /// <param name="json">The text inside the field or string.Empty if unavailable</param>
-        /// <returns></returns>
-        public static string? ExtractFromJson(string name, string json)
-        {
-            string regstring = name + @""" *: *""(?<value>([^""\\]|\\.)*)""";
-            var regex = new Regex(regstring, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
-
-            var result = regex.Match(json)?.Groups["value"].Value ?? null;
-            return string.IsNullOrWhiteSpace(result) ? null : Regex.Unescape(result);
         }
         #endregion
     }

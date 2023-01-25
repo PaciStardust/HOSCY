@@ -1,4 +1,5 @@
 ﻿<Page x:Class="Hoscy.Ui.Pages.PageConfig"
+      x:ClassModifier="internal"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -41,8 +42,8 @@
                     <WrapPanel Margin="0,4,0,0">
                         <Button Content="Open Docs" HorizontalAlignment="Left" Click="Button_OpenDocs"/>
                         <Button Margin="8,0,0,0" Content="Open Config" HorizontalAlignment="Left" Click="Button_OpenConfig"/>
-                        <Button Margin="8,0,0,0" Content="Check Update" HorizontalAlignment="Left" Click="Button_CheckUpdate"/>
                         <Button Margin="8,0,0,0" Content="Save Config" HorizontalAlignment="Left" Click="Button_SaveConfig"/>
+                        <Button Margin="8,0,0,0" Content="Update Tool" HorizontalAlignment="Left" Click="Button_CheckUpdate"/>
                     </WrapPanel>
                     <WrapPanel Margin="0,8,0,0">
                         <Button Content="Reload Media" Foreground="{x:Static ui:UiHelper.ColorInvalid}" HorizontalAlignment="Left" Click="Button_ReloadMedia"/>

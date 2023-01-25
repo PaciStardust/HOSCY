@@ -5,7 +5,7 @@ namespace Hoscy.Ui.Windows
     /// <summary>
     /// Interaction logic for ErrorWindow.xaml
     /// </summary>
-    public partial class NotificationWindow : Window
+    internal partial class NotificationWindow : Window
     {
         public NotificationWindow(string title, string subtitle, string notifiction)
         {
@@ -22,6 +22,6 @@ namespace Hoscy.Ui.Windows
             => Clipboard.SetText(valueNotification.Text);
 
         private void Button_OpenGithub(object sender, RoutedEventArgs e)
-            => UiHelper.StartProcess(Config.Github);
+            => UiHelper.StartProcess(Utils.Github);
     }
 }

@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace Hoscy.Services.Speech
 {
-    public static class Textbox
+    internal static class Textbox
     {
         private static string _notification = string.Empty;
         private static NotificationType _notificationType = NotificationType.None;
@@ -134,7 +134,7 @@ namespace Hoscy.Services.Speech
         /// <summary>
         /// Handle splitting and adding to queue
         /// </summary>
-        public static void Say(string input)
+        internal static void Say(string input)
         {
             if (string.IsNullOrWhiteSpace(input))
                 return;
@@ -151,7 +151,7 @@ namespace Hoscy.Services.Speech
         /// </summary>
         /// <param name="input">Message</param>
         /// <param name="type">Type of Notification</param>
-        public static void Notify(string input, NotificationType type)
+        internal static void Notify(string input, NotificationType type)
         {
             if (string.IsNullOrWhiteSpace(input))
             {
@@ -214,7 +214,7 @@ namespace Hoscy.Services.Speech
         /// <summary>
         /// Clears the queue and box
         /// </summary>
-        public static void Clear()
+        internal static void Clear()
         {
             MessageQueue.Clear();
             ClearNotification();
@@ -243,7 +243,7 @@ namespace Hoscy.Services.Speech
         /// Note: This only stays on for 5 seconds ingame
         /// </summary>
         /// <param name="mode"></param>
-        public static void EnableTyping(bool mode)
+        internal static void EnableTyping(bool mode)
         {
             if (!mode && !_lastSet)
                 return;
@@ -286,7 +286,7 @@ namespace Hoscy.Services.Speech
         #endregion
     }
 
-    public enum NotificationType
+    internal enum NotificationType
     {
         None,
         Media,

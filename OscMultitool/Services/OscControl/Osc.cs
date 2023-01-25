@@ -12,11 +12,11 @@ namespace Hoscy.Services.OscControl
     /// <summary>
     /// Static class for osc-related things
     /// </summary>
-    public static class Osc
+    internal static class Osc
     {
         private static OscListener? _listener;
-        public static int? ListenerPort => _listener?.Port;
-        public static bool HasInvalidFilters { get; private set; } = false;
+        internal static int? ListenerPort => _listener?.Port;
+        internal static bool HasInvalidFilters { get; private set; } = false;
 
         #region Sending
         /// <summary>
@@ -24,7 +24,7 @@ namespace Hoscy.Services.OscControl
         /// </summary>
         /// <param name="packet">Packet</param>
         /// <returns>Success?</returns>
-        public static bool Send(OscPacket p)
+        internal static bool Send(OscPacket p)
         {
             if(!p.IsValid)
             {
@@ -49,7 +49,7 @@ namespace Hoscy.Services.OscControl
         }
 
         //Utility for splitting address
-        public static string[] SplitAddress(string address)
+        internal static string[] SplitAddress(string address)
             => address[1..].Split('/');
         #endregion
 
@@ -57,7 +57,7 @@ namespace Hoscy.Services.OscControl
         /// <summary>
         /// Recreates all osc-listeners
         /// </summary>
-        public static void RecreateListener()
+        internal static void RecreateListener()
         {
             try
             {
@@ -109,10 +109,10 @@ namespace Hoscy.Services.OscControl
             return filters;
         }
 
-        public static HostInfo? GetServiceProfile(string name)
+        internal static HostInfo? GetServiceProfile(string name)
             => _listener?.ServiceProfiles.TryGetValue(name, out var profile) ?? false ? profile : null;
 
-        public static List<string> GetServiceProfileNames()
+        internal static List<string> GetServiceProfileNames()
             => _listener?.ServiceProfiles.Values.Select(x => x.name).ToList() ?? new List<string>();
         #endregion
 
@@ -123,7 +123,7 @@ namespace Hoscy.Services.OscControl
         /// <summary>
         /// Checks for message to be an osc command
         /// </summary>
-        public static bool ParseOscCommands(string message)
+        internal static bool ParseOscCommands(string message)
         {
             //Obtaining parsed command
             Logger.Info("Detected osc command, attempting to parse: " + message);

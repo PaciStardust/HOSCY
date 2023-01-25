@@ -9,7 +9,7 @@ namespace Hoscy.Ui.Pages
     /// <summary>
     /// Interaction logic for PageDebug.xaml
     /// </summary>
-    public partial class PageConfig : Page
+    internal partial class PageConfig : Page
     {
         public PageConfig()
         {
@@ -29,11 +29,11 @@ namespace Hoscy.Ui.Pages
             Devices.ForceReload();
         }
         private void Button_OpenDocs(object sender, RoutedEventArgs e)
-            => UiHelper.StartProcess(Config.Github);
+            => UiHelper.StartProcess(Utils.Github);
         private void Button_OpenConfig(object sender, RoutedEventArgs e)
-            => UiHelper.StartProcess(Config.ResourcePath);
+            => UiHelper.StartProcess(Utils.PathConfigFolder);
         private void Button_CheckUpdate(object sender, RoutedEventArgs e)
-            => HoscyClient.CheckForUpdates();
+            => Updater.PerformUpdate();
         private void Button_SaveConfig(object sender, RoutedEventArgs e)
             => Config.SaveConfig();
         private void Button_ReloadMedia(object sender, RoutedEventArgs e)

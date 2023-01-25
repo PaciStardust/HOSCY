@@ -6,7 +6,7 @@ namespace Hoscy.Ui.Windows
     /// <summary>
     /// Interaction logic for DisplayListWindow.xaml
     /// </summary>
-    public partial class DisplayListWindow : Window
+    internal partial class DisplayListWindow : Window
     {
         private readonly List<string> _list;
 

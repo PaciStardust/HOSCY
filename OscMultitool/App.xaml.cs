@@ -1,6 +1,7 @@
 ﻿using Hoscy.Services.Speech;
+using Hoscy.Ui;
+using Hoscy.Ui.Windows;
 using System;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace Hoscy
@@ -35,8 +36,24 @@ namespace Hoscy
         }
 
         #region Utility
-        public static void RunWithoutAwait(Task function)
-            => Task.Run(async() => await function).ConfigureAwait(false);
+        /// <summary>
+        /// Creates a notification window
+        /// </summary>
+        /// <param name="title">Title of window</param>
+        /// <param name="subtitle">Text above notification</param>
+        /// <param name="notification">Contents of notification box</param>
+        public static void OpenNotificationWindow(string title, string subtitle, string notification, bool locking = false)
+        {
+            Current.Dispatcher.Invoke(() =>
+            {
+                var window = new NotificationWindow(title, subtitle, notification);
+                window.SetDarkMode(true);
+                if (locking)
+                    window.ShowDialog();
+                else
+                    window.Show();
+            });
+        }
         #endregion
     }
 }

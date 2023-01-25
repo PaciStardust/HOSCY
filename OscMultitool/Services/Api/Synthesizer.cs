@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Hoscy.Services.Api
 {
-    public static class Synthesizer
+    internal static class Synthesizer
     {
         private static SpeechSynthesizer? _synth;
 
@@ -17,7 +17,7 @@ namespace Hoscy.Services.Api
         /// <summary>
         /// Reloads the Synthesizer client
         /// </summary>
-        public static void ReloadClient()
+        internal static void ReloadClient()
         {
             _synth?.Dispose();
             _synth = null;
@@ -58,7 +58,7 @@ namespace Hoscy.Services.Api
         /// <param name="text">Text to synthesize</param>
         /// <param name="ms">Memorystream</param>
         /// <returns>Success</returns>
-        public static async Task<bool> SpeakAsync(string text, MemoryStream ms)
+        internal static async Task<bool> SpeakAsync(string text, MemoryStream ms)
         {
             if (_synth == null)
                 return false;

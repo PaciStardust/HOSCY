@@ -9,7 +9,7 @@ namespace Hoscy.Ui.Windows
     /// <summary>
     /// Interaction logic for ModifyDictionaryWindow.xaml
     /// </summary>
-    public partial class ModifyDictionaryWindow : Window
+    internal partial class ModifyDictionaryWindow : Window
     {
         private readonly Dictionary<string, string> _dict;
 

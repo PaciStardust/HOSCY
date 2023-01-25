@@ -9,7 +9,7 @@ using Windows.Media.Control;
 
 namespace Hoscy.Services.Api
 {
-    public static class Media
+    internal static class Media
     {
         private static GlobalSystemMediaTransportControlsSessionManager? _gsmtcsm;
         private static GlobalSystemMediaTransportControlsSession? _session;
@@ -17,8 +17,8 @@ namespace Hoscy.Services.Api
         private static DateTime _mediaLastChanged =  DateTime.MinValue;
 
         #region Startup
-        public static void StartMediaDetection()
-            => App.RunWithoutAwait(StartMediaDetectionInternal());
+        internal static void StartMediaDetection()
+            => Utils.RunWithoutAwait(StartMediaDetectionInternal());
 
         private static async Task StartMediaDetectionInternal()
         {
@@ -133,7 +133,7 @@ namespace Hoscy.Services.Api
             => GetCurrentSession(sender);
 
         private static void UpdateCurrentlyPlayingMediaProxy(GlobalSystemMediaTransportControlsSession sender)
-            => App.RunWithoutAwait(UpdateCurrentlyPlayingMedia(sender));
+            => Utils.RunWithoutAwait(UpdateCurrentlyPlayingMedia(sender));
         #endregion
 
         #region Media Control
@@ -180,13 +180,13 @@ namespace Hoscy.Services.Api
         /// Handles the raw media command, skips otherwise
         /// </summary>
         /// <param name="command">Raw command</param>
-        public static void HandleRawMediaCommand(string command)
+        internal static void HandleRawMediaCommand(string command)
         {
             if (!_commandTriggers.Keys.Contains(command))
                 return;
 
             var mediaCommand = _commandTriggers[command];
-            App.RunWithoutAwait(HandleMediaCommand(mediaCommand));
+            Utils.RunWithoutAwait(HandleMediaCommand(mediaCommand));
         }
 
         /// <summary>
@@ -194,7 +194,7 @@ namespace Hoscy.Services.Api
         /// </summary>
         /// <param name="address">Osc Address</param>
         /// <returns>Was a command executed</returns>
-        public static bool HandleOscMediaCommands(string address)
+        internal static bool HandleOscMediaCommands(string address)
         {
             //I wish this could be a switch but those expect constants
             var command = MediaCommandType.None;
@@ -212,7 +212,7 @@ namespace Hoscy.Services.Api
             else if (address == Config.Osc.AddressMediaUnpause)
                 command = MediaCommandType.Unpause;
 
-            App.RunWithoutAwait(HandleMediaCommand(command));
+            Utils.RunWithoutAwait(HandleMediaCommand(command));
             return command != MediaCommandType.None;
         }
 

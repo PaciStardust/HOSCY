@@ -9,7 +9,7 @@ namespace Hoscy.Ui.Pages
     /// <summary>
     /// Interaction logic for PageInput.xaml
     /// </summary>
-    public partial class PageInput : Page
+    internal partial class PageInput : Page
     {
         public PageInput()
         {

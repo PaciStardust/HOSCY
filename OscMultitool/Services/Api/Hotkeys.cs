@@ -5,7 +5,7 @@ using System.Windows.Interop;
 
 namespace Hoscy.Services.Api
 {
-    public static class Hotkeys
+    internal static class Hotkeys
     {
         [DllImport("user32.dll")]
         private static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
@@ -19,7 +19,7 @@ namespace Hoscy.Services.Api
         /// <summary>
         /// Registers all the keybinds
         /// </summary>
-        public static void Register()
+        internal static void Register()
         {
             IntPtr handle = new WindowInteropHelper(App.Current.MainWindow).Handle;
             _source = HwndSource.FromHwnd(handle);

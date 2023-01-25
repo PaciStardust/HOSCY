@@ -7,14 +7,14 @@ namespace Hoscy.Services.Speech.Utilities
     /// <summary>
     /// Proxy for mic that allows continous recording
     /// </summary>
-    public class WaveInProxy
+    internal class WaveInProxy
     {
         private readonly WaveIn _microphone;
         private static readonly WaveInEventArgs _emptyWaveInData = new(new byte[3200].Select(x => x = 0).ToArray(), 3200);
-        public bool IsRunning { get; private set; } = false;
-        public bool IsListening { get; private set; } = false;
+        internal bool IsRunning { get; private set; } = false;
+        internal bool IsListening { get; private set; } = false;
 
-        public WaveInProxy()
+        internal WaveInProxy()
         {
             int micId = Devices.GetMicrophoneIndex(Config.Speech.MicId);
             _microphone = new WaveIn()
@@ -27,11 +27,11 @@ namespace Hoscy.Services.Speech.Utilities
         }
 
         #region Stopping / Starting
-        public bool Unmute()
+        internal bool Unmute()
             => SetMuteStatus(true);
-        public bool Mute()
+        internal bool Mute()
             => SetMuteStatus(false);
-        public bool SetMuteStatus(bool enabled)
+        internal bool SetMuteStatus(bool enabled)
         {
             if (!IsRunning || enabled == IsListening)
                 return false;
@@ -41,11 +41,11 @@ namespace Hoscy.Services.Speech.Utilities
             return true;
         }
 
-        public bool Start()
+        internal bool Start()
             => SetMicStatus(true);
-        public bool Stop()
+        internal bool Stop()
             => SetMicStatus(false);
-        public bool SetMicStatus(bool enabled)
+        internal bool SetMicStatus(bool enabled)
         {
             if (enabled == IsRunning)
                 return false;
@@ -62,9 +62,9 @@ namespace Hoscy.Services.Speech.Utilities
         #endregion
 
         #region Events
-        public event EventHandler<WaveInEventArgs> DataAvailable = delegate { };
+        internal event EventHandler<WaveInEventArgs> DataAvailable = delegate { };
 
-        public event EventHandler<StoppedEventArgs> RecordingStopped = delegate { };
+        internal event EventHandler<StoppedEventArgs> RecordingStopped = delegate { };
 
         private void HandleDataAvailable(object? sender, WaveInEventArgs e)
         {
@@ -83,7 +83,7 @@ namespace Hoscy.Services.Speech.Utilities
         #endregion
 
         #region Extras
-        public void Dispose()
+        internal void Dispose()
         {
             _microphone.Dispose();
         }

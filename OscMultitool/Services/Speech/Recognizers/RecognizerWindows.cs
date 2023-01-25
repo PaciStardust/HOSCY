@@ -3,15 +3,15 @@ using System.Speech.Recognition;
 
 namespace Hoscy.Services.Speech.Recognizers
 {
-    public class RecognizerWindows : RecognizerBase
+    internal class RecognizerWindows : RecognizerBase
     {
-        new public static RecognizerPerms Perms => new()
+        new internal static RecognizerPerms Perms => new()
         {
             Description = "Recognizer using Windows Recognition, low quality, please avoid",
             UsesWinRecognizer = true
         };
 
-        public override bool IsListening => _isListening;
+        internal override bool IsListening => _isListening;
 
         private SpeechRecognitionEngine? _rec;
         private bool _isListening = false;

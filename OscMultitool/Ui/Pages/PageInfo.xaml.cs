@@ -9,9 +9,9 @@ namespace Hoscy.Ui.Pages
     /// <summary>
     /// Interaction logic for PageInfo.xaml
     /// </summary>
-    public partial class PageInfo : Page
+    internal partial class PageInfo : Page
     {
-        public static PageInfo Instance { get; private set; } = new();
+        internal static PageInfo Instance { get; private set; } = new();
 
         private static string _sendStatus = "No message sent since opening";
         private static string _message = "No message sent since opening";
@@ -84,7 +84,7 @@ namespace Hoscy.Ui.Pages
         /// Sets the message as a command
         /// </summary>
         /// <param name="message">Message to display</param>
-        public static void SetCommandMessage(string message)
+        internal static void SetCommandMessage(string message)
         {
             _sendStatus = "Executed command";
             _message = message;
@@ -102,7 +102,7 @@ namespace Hoscy.Ui.Pages
         /// <param name="message">Message to display</param>
         /// <param name="textbox">Did it send via Textbox</param>
         /// <param name="tts">Did it send via TTS</param>
-        public static void SetMessage(string message, bool textbox, bool tts)
+        internal static void SetMessage(string message, bool textbox, bool tts)
         {
             var add = "Nothing";
             if (textbox && tts)
@@ -122,7 +122,7 @@ namespace Hoscy.Ui.Pages
             });
         }
 
-        public static void SetNotification(string message, NotificationType type)
+        internal static void SetNotification(string message, NotificationType type)
         {
             _notification = $"[{type}] {message}";
 

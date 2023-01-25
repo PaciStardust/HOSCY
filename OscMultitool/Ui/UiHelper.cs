@@ -10,7 +10,7 @@ using System.Windows.Media;
 
 namespace Hoscy.Ui
 {
-    public static class UiHelper
+    internal static class UiHelper
     {
         #region Colors
         //Back
@@ -31,7 +31,7 @@ namespace Hoscy.Ui
         /// <summary>
         /// Loads data into a combo box
         /// </summary>
-        public static void Load(this ComboBox box, IEnumerable<string> source, int index, bool refresh = false)
+        internal static void Load(this ComboBox box, IEnumerable<string> source, int index, bool refresh = false)
         {
             box.ItemsSource = source;
             if (refresh) box.Items.Refresh();
@@ -41,7 +41,7 @@ namespace Hoscy.Ui
         /// <summary>
         /// Refreshes the data
         /// </summary>
-        public static void Refresh(this ListBox box, IEnumerable<string> source, int index)
+        internal static void Refresh(this ListBox box, IEnumerable<string> source, int index)
         {
             box.ItemsSource = source;
             box.Items.Refresh();
@@ -51,7 +51,7 @@ namespace Hoscy.Ui
         /// <summary>
         /// Checks if a value is in bounds
         /// </summary>
-        public static bool IsInBounds<T>(this ListBox box, ICollection<T> list)
+        internal static bool IsInBounds<T>(this ListBox box, ICollection<T> list)
         {
             int highVal = list.Count - 1;
             if (box.SelectedIndex > highVal)
@@ -63,7 +63,7 @@ namespace Hoscy.Ui
         /// <summary>
         /// Tries to remove object at index
         /// </summary>
-        public static bool TryRemoveAt<T>(this List<T> list, int index)
+        internal static bool TryRemoveAt<T>(this List<T> list, int index)
         {
             if (index < 0 || index >= list.Count)
                 return false;
@@ -75,7 +75,7 @@ namespace Hoscy.Ui
         /// <summary>
         /// Tries to modify object at index
         /// </summary>
-        public static bool TryModifyAt<T>(this List<T> list, T item, int index)
+        internal static bool TryModifyAt<T>(this List<T> list, T item, int index)
         {
             if (index < 0 || index >= list.Count)
                 return false;
@@ -86,14 +86,14 @@ namespace Hoscy.Ui
         #endregion
 
         #region Opening Modify Windows
-        public static void OpenListEditor(string title, string valueName, List<string> list, string defaultString = "New Value")
+        internal static void OpenListEditor(string title, string valueName, List<string> list, string defaultString = "New Value")
         {
             var window = new ModifyListWindow(title, valueName, list, defaultString);
             window.SetDarkMode(true);
             window.ShowDialog();
         }
 
-        public static void OpenDictionaryEditor(string title, string keyName, string valueName, Dictionary<string, string> dict)
+        internal static void OpenDictionaryEditor(string title, string keyName, string valueName, Dictionary<string, string> dict)
         {
             var window = new ModifyDictionaryWindow(title, keyName, valueName, dict);
             window.SetDarkMode(true);
@@ -136,7 +136,7 @@ namespace Hoscy.Ui
         }
 
 
-        public static bool SetDarkMode(this Window window, bool darkMode)
+        internal static bool SetDarkMode(this Window window, bool darkMode)
         {
             try
             {
@@ -156,7 +156,7 @@ namespace Hoscy.Ui
         /// <summary>
         /// Starts a process
         /// </summary>
-        public static void StartProcess(string path)
+        internal static void StartProcess(string path)
         {
             try
             {

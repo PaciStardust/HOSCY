@@ -11,14 +11,14 @@ using System.Threading;
 
 namespace Hoscy.Services.Speech
 {
-    public static class Synthesizing
+    internal static class Synthesizing
     {
         private static readonly SpeechSynthesizer _synth = new();
         private static readonly MemoryStream _stream = new();
         private static readonly WaveOut _waveOut = new();
         private static RawSourceWaveStream? _provider;
         private static string _currentString = string.Empty;
-        public static bool IsRunning => _provider != null;
+        internal static bool IsRunning => _provider != null;
 
         static Synthesizing()
         {
@@ -60,7 +60,7 @@ namespace Hoscy.Services.Speech
         /// <summary>
         /// Changers speakers based on config
         /// </summary>
-        public static void ChangeSpeakers()
+        internal static void ChangeSpeakers()
         {
             var newDeviceNumber = Devices.GetSpeakerIndex(Config.Speech.SpeakerId);
 
@@ -77,7 +77,7 @@ namespace Hoscy.Services.Speech
         /// Changes Voice based on config
         /// </summary>
         /// <returns>False if no voices exist</returns>
-        public static bool ChangeVoice()
+        internal static bool ChangeVoice()
         {
             //Used for cancelling startup
             if (WindowsSynths.Count == 0)
@@ -101,7 +101,7 @@ namespace Hoscy.Services.Speech
         /// <summary>
         /// Changes the output volume
         /// </summary>
-        public static void ChangeVolume()
+        internal static void ChangeVolume()
         {
             var configVolume = Config.Speech.SpeakerVolume;
             var roundedWaveOutVolume = Math.Ceiling(_waveOut.Volume * 20) / 20f;
@@ -119,7 +119,7 @@ namespace Hoscy.Services.Speech
         /// <summary>
         /// Skips the playback by stopping the waveout
         /// </summary>
-        public static void Skip()
+        internal static void Skip()
         {
             Logger.Log("Skipping current synth audio");
             _waveOut.Stop();
@@ -130,7 +130,7 @@ namespace Hoscy.Services.Speech
         /// This works by essentially soft resetting stream and waveOut
         /// </summary>
         /// <param name="input">Sentence to say</param>
-        public static void Say(string input)
+        internal static void Say(string input)
         {
             if (!IsRunning || string.IsNullOrWhiteSpace(input))
                 return;
@@ -207,7 +207,7 @@ namespace Hoscy.Services.Speech
         #endregion
 
         #region TTS Devices
-        public static IReadOnlyList<VoiceInfo> WindowsSynths { get; private set; } = GetWindowsSynths();
+        internal static IReadOnlyList<VoiceInfo> WindowsSynths { get; private set; } = GetWindowsSynths();
         private static IReadOnlyList<VoiceInfo> GetWindowsSynths()
         {
             Logger.Info("Getting installed Speech Synths");
@@ -217,7 +217,7 @@ namespace Hoscy.Services.Speech
                 .ToList();
         }
 
-        public static int GetWindowsSynthIndex(string id)
+        internal static int GetWindowsSynthIndex(string id)
         {
             for (int i = 0; i < WindowsSynths.Count; i++)
             {

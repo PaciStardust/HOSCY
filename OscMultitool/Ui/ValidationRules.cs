@@ -3,10 +3,10 @@ using System.Windows.Controls;
 
 namespace Hoscy.Ui
 {
-    public class IntegerValidationRule : ValidationRule
+    internal class IntegerValidationRule : ValidationRule
     {
-        public int Min { get; set; } = 0;
-        public int Max { get; set; } = 100;
+        internal int Min { get; set; } = 0;
+        internal int Max { get; set; } = 100;
 
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
@@ -25,10 +25,10 @@ namespace Hoscy.Ui
         }
     }
 
-    public class FloatValidationRule : ValidationRule
+    internal class FloatValidationRule : ValidationRule
     {
-        public float Min { get; set; } = 0;
-        public float Max { get; set; } = 100;
+        internal float Min { get; set; } = 0;
+        internal float Max { get; set; } = 100;
 
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
@@ -47,10 +47,10 @@ namespace Hoscy.Ui
         }
     }
 
-    public class StringValidationRule : ValidationRule
+    internal class StringValidationRule : ValidationRule
     {
-        public float Min { get; set; } = 0;
-        public float Max { get; set; } = 3;
+        internal float Min { get; set; } = 0;
+        internal float Max { get; set; } = 3;
 
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {

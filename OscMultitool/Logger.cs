@@ -1,20 +1,17 @@
-﻿using Hoscy.Ui;
-using Hoscy.Ui.Windows;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Windows;
 
 namespace Hoscy
 {
     /// <summary>
     /// Class for logging of information in console
     /// </summary>
-    public static class Logger
+    internal static class Logger
     {
         private static readonly StreamWriter? _logWriter;
 
@@ -40,9 +37,9 @@ namespace Hoscy
             try
             {
                 DeleteOldLogs();
-                var writer = File.CreateText(Config.LogPath);
+                var writer = File.CreateText(Utils.PathLog);
                 writer.AutoFlush = true;
-                PInfo("Created logging file at " + Config.LogPath);
+                PInfo("Created logging file at " + Utils.PathLog);
                 return writer;
             }
             catch (Exception e)
@@ -54,7 +51,7 @@ namespace Hoscy
 
         private static void DeleteOldLogs()
         {
-            var files = Directory.GetFiles(Config.ResourcePath)
+            var files = Directory.GetFiles(Utils.PathConfigFolder)
                     .Where(x => Path.GetFileName(x).StartsWith("log"))
                     .OrderByDescending(x => File.GetCreationTime(x)).ToArray();
             for (var i = 0; i < files.Length; i++)
@@ -69,7 +66,7 @@ namespace Hoscy
         private static void Log(LogMessage message)
         {
             if (message.Severity == LogSeverity.Error)
-                OpenNotificationWindow(
+                App.OpenNotificationWindow(
                     "Error at: " + message.GetLocation(),
                     "An error has occured\nIf you are unsure why or how to handle it,\nplease open an issue on GitHub or Discord",
                     message.Message
@@ -95,25 +92,25 @@ namespace Hoscy
             }
         }
 
-        public static void Log(string message, LogSeverity severity = LogSeverity.Log, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
+        internal static void Log(string message, LogSeverity severity = LogSeverity.Log, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
             => Log(new(severity, file, member, line, message));
-        public static void Info(string message, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
+        internal static void Info(string message, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
             => Log(message, LogSeverity.Info, file, member, line);
-        public static void PInfo(string message, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
+        internal static void PInfo(string message, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
             => Log(message, LogSeverity.PrioInfo, file, member, line);
-        public static void Warning(string message, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
+        internal static void Warning(string message, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
             => Log(message, LogSeverity.Warning, file, member, line);
-        public static void Debug(string message, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
+        internal static void Debug(string message, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
             => Log(message, LogSeverity.Debug, file, member, line);
 
         // ERROR LOGGING
-        public static void Error(string message, bool notify = true, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0) //Error with basic message
+        internal static void Error(string message, bool notify = true, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0) //Error with basic message
         {
             var severity = notify ? LogSeverity.Error : LogSeverity.ErrSilent;
             Log(message, severity, file, member, line);
         }
         
-        public static void Error(Exception error, string descriptiveError = "", bool notify = true, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0) //Error using exception
+        internal static void Error(Exception error, string descriptiveError = "", bool notify = true, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0) //Error using exception
         {
             var sb = new StringBuilder();
 
@@ -167,43 +164,24 @@ namespace Hoscy
             LogSeverity.Debug => Config.Debug.Debug,
             _ => true
         };
-
-        /// <summary>
-        /// Creates a notification window
-        /// </summary>
-        /// <param name="title">Title of window</param>
-        /// <param name="subtitle">Text above notification</param>
-        /// <param name="notification">Contents of notification box</param>
-        public static void OpenNotificationWindow(string title, string subtitle, string notification, bool locking = false)
-        {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                var window = new NotificationWindow(title, subtitle, notification);
-                window.SetDarkMode(true);
-                if (locking)
-                    window.ShowDialog();
-                else
-                    window.Show();
-            });
-        }
         #endregion
     }
 
     /// <summary>
     /// Logging message class
     /// </summary>
-    public readonly struct LogMessage
+    internal readonly struct LogMessage
     {
         private static readonly int _maxSeverityLength = 8;
-        public string SourceFile { get; private init; }
-        public string SourceMember { get; private init; }
-        public int SourceLine { get; private init; }
-        public string Message { get; private init; }
-        public LogSeverity Severity { get; private init; }
+        internal string SourceFile { get; private init; }
+        internal string SourceMember { get; private init; }
+        internal int SourceLine { get; private init; }
+        internal string Message { get; private init; }
+        internal LogSeverity Severity { get; private init; }
         private readonly string _sevString;
-        public DateTime Time { get; private init; }
+        internal DateTime Time { get; private init; }
 
-        public LogMessage(LogSeverity serverity, string sourceFile, string sourcMember, int sourceLine, string message)
+        internal LogMessage(LogSeverity serverity, string sourceFile, string sourcMember, int sourceLine, string message)
         {
             Message = message;
             SourceFile = Path.GetFileName(sourceFile);
@@ -217,7 +195,7 @@ namespace Hoscy
         public override string ToString()
             => $"{Time:HH:mm:ss.fff} {_sevString} [{GetLocation()}] {Message}";
 
-        public string GetLocation()
+        internal string GetLocation()
             => $"{SourceFile}::{SourceMember}:{SourceLine}";
 
         /// <summary>
@@ -238,7 +216,7 @@ namespace Hoscy
     /// <summary>
     /// The only reason this exists is so I can log OSCQuery
     /// </summary>
-    public class LoggerProxy<T> : ILogger<T>
+    internal class LoggerProxy<T> : ILogger<T>
     {
 #nullable disable
         public IDisposable BeginScope<TState>(TState state)
@@ -277,7 +255,7 @@ namespace Hoscy
             }
         }
     }
-    public enum LogSeverity
+    internal enum LogSeverity
     {
         Error,
         ErrSilent,

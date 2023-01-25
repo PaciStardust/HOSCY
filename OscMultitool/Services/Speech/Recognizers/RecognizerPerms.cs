@@ -1,11 +1,11 @@
 ﻿namespace Hoscy.Services.Speech.Recognizers
 {
-    public readonly struct RecognizerPerms
+    internal readonly struct RecognizerPerms
     {
         public RecognizerPerms() { }
-        public readonly bool UsesVoskModel { get; init; } = false;
-        public readonly bool UsesWinRecognizer { get; init; } = false;
-        public readonly bool UsesMicrophone { get; init; } = false;
-        public readonly string Description { get; init; } = "No info available";
+        internal readonly bool UsesVoskModel { get; init; } = false;
+        internal readonly bool UsesWinRecognizer { get; init; } = false;
+        internal readonly bool UsesMicrophone { get; init; } = false;
+        internal readonly string Description { get; init; } = "No info available";
     }
 }

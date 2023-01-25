@@ -9,7 +9,7 @@ namespace Hoscy.Ui.Windows
     /// <summary>
     /// Interaction logic for ModifyListWindow.xaml
     /// </summary>
-    public partial class ModifyOscRoutingFiltersWindow : Window
+    internal partial class ModifyOscRoutingFiltersWindow : Window
     {
         private readonly List<Config.OscRoutingFilterModel> _list;
 

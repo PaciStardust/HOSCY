@@ -10,7 +10,7 @@ namespace Hoscy
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    internal partial class MainWindow : Window
     {
         private bool _firstLoad = true;
 
@@ -27,7 +27,7 @@ namespace Hoscy
             Hotkeys.Register();
 
             if (Config.Debug.CheckUpdates)
-                HoscyClient.CheckForUpdates();
+                Updater.CheckForUpdates();
         }
 
         private void ListBox_SelectionChanged(object? sender, SelectionChangedEventArgs? e)

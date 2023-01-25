@@ -5,16 +5,16 @@ using System.Speech.Recognition;
 
 namespace Hoscy.Services.Speech.Recognizers
 {
-    public class RecognizerWindowsV2 : RecognizerBase
+    internal class RecognizerWindowsV2 : RecognizerBase
     {
-        new public static RecognizerPerms Perms => new()
+        new internal static RecognizerPerms Perms => new()
         {
             Description = "Recognizer using Windows Recognition, low quality, please avoid",
             UsesMicrophone = true,
             UsesWinRecognizer = true
         };
 
-        public override bool IsListening => _microphone.IsListening;
+        internal override bool IsListening => _microphone.IsListening;
 
         private SpeechRecognitionEngine? _rec;
         private readonly WaveInProxy _microphone = new();

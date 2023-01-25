@@ -7,21 +7,21 @@ using System.Threading.Tasks;
 
 namespace Hoscy.Services.OscControl
 {
-    public class OscListener
+    internal class OscListener
     {
         private readonly IReadOnlyList<OscRoutingFilter> _filters;
         private UDPListener? _listener;
 
         private readonly Dictionary<string, HostInfo> _serviceProfiles = new();
         private OSCQueryService? _queryService;
-        public IReadOnlyDictionary<string, HostInfo> ServiceProfiles => _serviceProfiles;
+        internal IReadOnlyDictionary<string, HostInfo> ServiceProfiles => _serviceProfiles;
 
         private Timer? _refreshTimer;
 
         private readonly int _port;
-        public int Port => _port;
+        internal int Port => _port;
 
-        public OscListener(int port, List<OscRoutingFilter> filters)
+        internal OscListener(int port, List<OscRoutingFilter> filters)
         {
             _filters = filters;
             _port = port;
@@ -32,7 +32,7 @@ namespace Hoscy.Services.OscControl
         /// Starts the OSC Listener
         /// </summary>
         /// <returns>Running status</returns>
-        public bool Start()
+        internal bool Start()
         {
             if (_listener != null)
                 return true;
@@ -53,8 +53,8 @@ namespace Hoscy.Services.OscControl
 
                 //Loading in serviceProfiles
                 foreach (var service in _queryService.GetOSCQueryServices())
-                    App.RunWithoutAwait(AddServiceProfile(service));
-                _queryService.OnOscQueryServiceAdded += (OSCQueryServiceProfile service) => App.RunWithoutAwait(AddServiceProfile(service));
+                    Utils.RunWithoutAwait(AddServiceProfile(service));
+                _queryService.OnOscQueryServiceAdded += (OSCQueryServiceProfile service) => Utils.RunWithoutAwait(AddServiceProfile(service));
                 SetQueryServiceRefresh(5000);
 
                 _listener = new UDPListener(_port, Callback);
@@ -93,7 +93,7 @@ namespace Hoscy.Services.OscControl
         /// <summary>
         /// Stops the listener, it should always be running but can be stopped in case it needs to be restarted
         /// </summary>
-        public void Stop()
+        internal void Stop()
         {
             _refreshTimer?.Dispose();
             _refreshTimer = null;

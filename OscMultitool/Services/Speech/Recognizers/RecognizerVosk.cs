@@ -9,16 +9,16 @@ using Vosk;
 
 namespace Hoscy.Services.Speech.Recognizers
 {
-    public class RecognizerVosk : RecognizerBase
+    internal class RecognizerVosk : RecognizerBase
     {
-        new public static RecognizerPerms Perms => new()
+        new internal static RecognizerPerms Perms => new()
         {
             Description = "Local AI, quality / RAM usage varies, startup may take a while",
             UsesMicrophone = true,
             UsesVoskModel = true
         };
 
-        public override bool IsListening => _microphone.IsListening;
+        internal override bool IsListening => _microphone.IsListening;
 
         private readonly WaveInProxy _microphone = new();
         private VoskRecognizer? _rec;
@@ -194,7 +194,7 @@ namespace Hoscy.Services.Speech.Recognizers
         #region Cleanup
         private static string? CleanMessage(string res)
         {
-            var extracted = TextProcessor.ExtractFromJson(string.Empty, res);
+            var extracted = Utils.ExtractFromJson(string.Empty, res);
             if (extracted == null)
                 return null;
 

@@ -8,7 +8,7 @@ namespace Hoscy.Ui.Pages
     /// <summary>
     /// Interaction logic for PageOsc.xaml
     /// </summary>
-    public partial class PageOsc : Page
+    internal partial class PageOsc : Page
     {
         private static bool unappliedOscChanges = false;
 

@@ -9,7 +9,7 @@ namespace Hoscy.Ui.Windows
     /// <summary>
     /// Interaction logic for ModifyListWindow.xaml
     /// </summary>
-    public partial class ModifyReplacementsWindow : Window
+    internal partial class ModifyReplacementsWindow : Window
     {
         private readonly List<Config.ReplacementModel> _list;
 

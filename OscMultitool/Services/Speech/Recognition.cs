@@ -5,14 +5,14 @@ using System.Speech.Recognition;
 
 namespace Hoscy.Services.Speech
 {
-    public static class Recognition
+    internal static class Recognition
     {
         private static RecognizerBase? _recognizer;
-        public static bool IsRecognizerRunning => _recognizer?.IsRunning ?? false;
-        public static bool IsRecognizerListening => _recognizer?.IsListening ?? false;
+        internal static bool IsRecognizerRunning => _recognizer?.IsRunning ?? false;
+        internal static bool IsRecognizerListening => _recognizer?.IsListening ?? false;
 
         #region Recognizer Control
-        public static bool StartRecognizer()
+        internal static bool StartRecognizer()
         {
             TriggerRecognitionChanged();
 
@@ -43,7 +43,7 @@ namespace Hoscy.Services.Speech
             return true;
         }
 
-        public static bool SetListening(bool enabled)
+        internal static bool SetListening(bool enabled)
         {
             if (!IsRecognizerRunning)
                 return false;
@@ -53,7 +53,7 @@ namespace Hoscy.Services.Speech
             return res;
         }
 
-        public static void StopRecognizer()
+        internal static void StopRecognizer()
         {
             if (_recognizer == null)
             {
@@ -70,7 +70,7 @@ namespace Hoscy.Services.Speech
         #endregion
 
         #region Events
-        public static event EventHandler<RecognitionChangedEventArgs> RecognitionChanged = delegate { };
+        internal static event EventHandler<RecognitionChangedEventArgs> RecognitionChanged = delegate { };
 
         private static void HandleRecognitionChanged(object? sender, RecognitionChangedEventArgs e)
             => RecognitionChanged.Invoke(sender, e);
@@ -80,14 +80,14 @@ namespace Hoscy.Services.Speech
         #endregion
 
         #region WinListeners
-        public static IReadOnlyList<RecognizerInfo> WindowsRecognizers { get; private set; } = GetWindowsRecognizers();
+        internal static IReadOnlyList<RecognizerInfo> WindowsRecognizers { get; private set; } = GetWindowsRecognizers();
         private static IReadOnlyList<RecognizerInfo> GetWindowsRecognizers()
         {
             Logger.Info("Getting installed Speech Recognizers");
             return SpeechRecognitionEngine.InstalledRecognizers();
         }
 
-        public static int GetWindowsListenerIndex(string id)
+        internal static int GetWindowsListenerIndex(string id)
         {
             for (int i = 0; i < WindowsRecognizers.Count; i++)
             {
@@ -103,12 +103,12 @@ namespace Hoscy.Services.Speech
         #endregion
     }
 
-    public class RecognitionChangedEventArgs : EventArgs
+    internal class RecognitionChangedEventArgs : EventArgs
     {
-        public bool Listening { get; init; }
-        public bool Running { get; init; }
+        internal bool Listening { get; init; }
+        internal bool Running { get; init; }
 
-        public RecognitionChangedEventArgs(bool running, bool listening)
+        internal RecognitionChangedEventArgs(bool running, bool listening)
         {
             Listening = listening;
             Running = running;

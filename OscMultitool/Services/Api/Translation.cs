@@ -2,7 +2,7 @@
 
 namespace Hoscy.Services.Api
 {
-    public static class Translation
+    internal static class Translation
     {
         private static readonly ApiClient _client = new();
 
@@ -11,7 +11,7 @@ namespace Hoscy.Services.Api
             ReloadClient();
         }
 
-        public async static Task<string> Translate(string text)
+        internal async static Task<string> Translate(string text)
         {
             text = text.Replace("\"", "");
             if (string.IsNullOrWhiteSpace(text))
@@ -34,7 +34,7 @@ namespace Hoscy.Services.Api
             return result;
         }
 
-        public static void ReloadClient()
+        internal static void ReloadClient()
         {
             Logger.PInfo("Performing reload of Translation");
 

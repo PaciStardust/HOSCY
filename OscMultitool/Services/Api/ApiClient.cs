@@ -1,15 +1,14 @@
-﻿using Hoscy.Services.Speech;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Hoscy.Services.Api
 {
-    public class ApiClient
+    internal class ApiClient
     {
         private Config.ApiPresetModel? _preset;
 
-        public bool LoadPreset(Config.ApiPresetModel preset)
+        internal bool LoadPreset(Config.ApiPresetModel preset)
         {
             if (preset.Equals(_preset))
                 return true;
@@ -44,11 +43,11 @@ namespace Hoscy.Services.Api
             if (jsonIn == null)
                 return null;
 
-            var result = TextProcessor.ExtractFromJson(_preset.ResultField, jsonIn);
+            var result = Utils.ExtractFromJson(_preset.ResultField, jsonIn);
             return result;
         }
 
-        public async Task<string?> SendBytes(byte[] bytes)
+        internal async Task<string?> SendBytes(byte[] bytes)
         {
             if (_preset == null) return null;
 
@@ -62,7 +61,7 @@ namespace Hoscy.Services.Api
             return await Send(content);
         }
 
-        public async Task<string?> SendText(string text)
+        internal async Task<string?> SendText(string text)
         {
             if (_preset == null) return string.Empty;
             var jsonOut = ReplaceToken(_preset.SentData, "[T]", text);
@@ -95,7 +94,7 @@ namespace Hoscy.Services.Api
             }
         }
 
-        public void Clear()
+        internal void Clear()
             => _preset = null;
 
         private static string ReplaceToken(string text, string token, string value)

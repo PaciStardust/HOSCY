@@ -1,12 +1,12 @@
-﻿using Hoscy.Services.Speech;
-using System;
+﻿using System;
+using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Hoscy.Services.Api
 {
-    public static class HoscyClient
+    internal static class HoscyClient
     {
         private static readonly HttpClient _client;
         static HoscyClient()
@@ -29,7 +29,7 @@ namespace Hoscy.Services.Api
         /// <param name="timeout">Request timeout</param>
         /// <param name="notify">Notification window on error?</param>
         /// <returns>JSON response on success</returns>
-        public static async Task<string?> SendAsync(HttpRequestMessage requestMessage, int timeout = 5000, bool notify = true)
+        internal static async Task<string?> SendAsync(HttpRequestMessage requestMessage, int timeout = 5000, bool notify = true)
         {
             var identifier = GetRequestIdentifier();
 
@@ -60,42 +60,38 @@ namespace Hoscy.Services.Api
             }
             return null;
         }
-        #endregion
 
-        #region Update Checking
         /// <summary>
-        /// Checks if there is an update available, displays a window containing changelog
+        /// Downloads a file and saves it to a location
         /// </summary>
-        public static void CheckForUpdates()
-           => App.RunWithoutAwait(CheckForUpdatesInternal());
-        /// <summary>
-        /// Internal version to avoid async hell
-        /// </summary>
-        private static async Task CheckForUpdatesInternal()
+        /// <param name="url">Url to download from</param>
+        /// <param name="location">Location to save file to</param>
+        /// <param name="timeout">Maximum timeout for reques</param>
+        /// <param name="notify">Notify on error</param>
+        /// <returns>Success?</returns>
+        internal static async Task<bool> DownloadAsync(string url, string location, int timeout = 5000, bool notify = true)
         {
-            var currVer = Config.GetVersion();
-            Logger.PInfo("Attempting to check for newest HOSCY version, current is " + currVer);
+            var identifier = GetRequestIdentifier();
 
-            var requestMessage = new HttpRequestMessage(HttpMethod.Get, Config.GithubLatest);
+            var startTime = DateTime.Now;
+            Logger.Debug($"Downloading file from {url} ({identifier})");
 
-            var res = await SendAsync(requestMessage, notify: false);
-            if (res == null)
+            try
             {
-                Logger.Warning("Failed to grab version number from GitHub");
-                return;
+                var cts = new CancellationTokenSource(timeout);
+                using var stream = await _client.GetStreamAsync(url, cts.Token);
+                using var fStream = new FileStream(location, FileMode.OpenOrCreate);
+                await stream.CopyToAsync(fStream);
+                Logger.Debug($"Received file from request ({(DateTime.Now - startTime).TotalMilliseconds}ms): {identifier} => {location}");
+                return true;
             }
-
-            var newVer = TextProcessor.ExtractFromJson("tag_name", res);
-            var newBody = TextProcessor.ExtractFromJson("body", res);
-            if (newVer != null && currVer != newVer)
-            {
-                Logger.Warning($"New version available (Latest is {newVer})");
-
-                var notifText = $"Please update by running the \"updater.ps1\" file in the HOSCY folder or by redownloading from GitHub\n\nCurrent: {currVer}\nLatest: {newVer}{(string.IsNullOrWhiteSpace(newBody) ? string.Empty : $"\n\n{newBody}")}";
-                Logger.OpenNotificationWindow("New version available", "A new version of HOSCY is available", notifText, true);
+            catch(Exception e) {
+                if ((e is TaskCanceledException tce && tce.CancellationToken.IsCancellationRequested) || e is OperationCanceledException)
+                    Logger.Warning($"Request {identifier} timed out");
+                else
+                    Logger.Error(e, "Failed to perform download", notify: notify);
             }
-            else
-                Logger.Info("HOSCY is up to date");
+            return false;
         }
         #endregion
 

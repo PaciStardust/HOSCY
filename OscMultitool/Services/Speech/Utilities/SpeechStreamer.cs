@@ -11,7 +11,7 @@ namespace Hoscy.Services.Speech.Utilities
     /// https://stackoverflow.com/questions/1682902/streaming-input-to-system-speech-recognition-speechrecognitionengine
     /// </summary>
 
-    public class SpeechStreamer : Stream
+    internal class SpeechStreamer : Stream
     {
         private AutoResetEvent? _writeEvent;
         private readonly List<byte> _buffer;
@@ -20,7 +20,7 @@ namespace Hoscy.Services.Speech.Utilities
         private int _writeposition;
         private bool _reset;
 
-        public SpeechStreamer(int bufferSize)
+        internal SpeechStreamer(int bufferSize)
         {
             _writeEvent = new AutoResetEvent(false);
             _buffersize = bufferSize;

@@ -6,15 +6,15 @@ using Hoscy.Services.Speech.Utilities;
 
 namespace Hoscy.Services.Speech.Recognizers
 {
-    public class RecognizerApi : RecognizerBase
+    internal class RecognizerApi : RecognizerBase
     {
-        new public static RecognizerPerms Perms => new()
+        new internal static RecognizerPerms Perms => new()
         {
             Description = "Remote recognition using Any-API, not continuous",
             UsesMicrophone = true
         };
 
-        public override bool IsListening => _isListening;
+        internal override bool IsListening => _isListening;
         private bool _isListening = false;
 
         private readonly WaveIn _microphone = new()
@@ -83,7 +83,7 @@ namespace Hoscy.Services.Speech.Recognizers
             }
 
             _stream.Position = 0;
-            App.RunWithoutAwait(RequestRecognition(_stream.GetBuffer()));
+            Utils.RunWithoutAwait(RequestRecognition(_stream.GetBuffer()));
 
             _stream.SetLength(0);
         }

@@ -12,6 +12,13 @@
     <RepositoryUrl>https://github.com/PaciStardust/HOSCY</RepositoryUrl>
     <PackageProjectUrl>https://github.com/PaciStardust/HOSCY</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Title>HOSCY</Title>
+    <Authors>Paci Stardust</Authors>
+    <Description>Companion for OSC and Communication</Description>
+    <NoWin32Manifest>true</NoWin32Manifest>
+    <SignAssembly>False</SignAssembly>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,6 +32,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
     <None Include="..\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
@@ -79,9 +90,6 @@
 
   <ItemGroup>
     <None Update="C:\Users\DE088149\.nuget\packages\vosk\0.3.38\build\lib\win-x64\libgcc_s_seh-1.dll" Link="Resources\Vosk\libgcc_s_seh-1.dll" />
-    <None Update="updater.ps1">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <ItemGroup>

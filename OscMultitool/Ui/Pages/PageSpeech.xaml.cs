@@ -12,9 +12,9 @@ using System.Windows.Controls;
 namespace Hoscy.Ui.Pages
 {
     /// <summary>
-    /// Interaction logic for TestPage.xaml
+    /// Interaction logic for TestPage.xaml8
     /// </summary>
-    public partial class PageSpeech : Page
+    internal partial class PageSpeech : Page
     {
         private static bool _changedValues = false;
 
@@ -27,7 +27,7 @@ namespace Hoscy.Ui.Pages
             { "Azure API Recognizer", RecognizerAzure.Perms }
         };
 
-        public static RecognizerBase? GetRecognizerFromUi()
+        internal static RecognizerBase? GetRecognizerFromUi()
             => Config.Speech.ModelName switch
             {
                 "Vosk AI Recognizer" => new RecognizerVosk(),

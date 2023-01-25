@@ -3,15 +3,15 @@ using System.Collections.Generic;
 
 namespace Hoscy.Services.OscControl
 {
-    public readonly struct OscPacket
+    internal readonly struct OscPacket
     {
-        public readonly string Address { get; init; } = string.Empty;
-        public readonly string Ip { get; init; } = string.Empty;
-        public readonly int Port { get; init; } = -1;
-        public readonly object[] Variables { get; init; } = Array.Empty<object>();
-        public bool IsValid => ValidatePacket();
+        internal readonly string Address { get; init; } = string.Empty;
+        internal readonly string Ip { get; init; } = string.Empty;
+        internal readonly int Port { get; init; } = -1;
+        internal readonly object[] Variables { get; init; } = Array.Empty<object>();
+        internal bool IsValid => ValidatePacket();
 
-        public OscPacket(string address, string ip, int port, params object[] variables)
+        internal OscPacket(string address, string ip, int port, params object[] variables)
         {
             Address = address;
             Variables = variables;
@@ -19,7 +19,7 @@ namespace Hoscy.Services.OscControl
             Port = port;
         }
 
-        public OscPacket(string address, params object[] variables)
+        internal OscPacket(string address, params object[] variables)
         {
             Address = address;
             Variables = variables;
@@ -45,7 +45,7 @@ namespace Hoscy.Services.OscControl
         /// <summary>
         /// Creates a OSCPacket using a ServiceProfile as endpoint
         /// </summary>
-        public static OscPacket? FromServiceProfile(string profile, string address, params object[] variables)
+        internal static OscPacket? FromServiceProfile(string profile, string address, params object[] variables)
         {
             profile = profile.ToLower();
             if (profile == "self")

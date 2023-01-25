@@ -11,7 +11,7 @@ namespace Hoscy.Ui.Windows
     /// <summary>
     /// Interaction logic for ModifyListWindow.xaml
     /// </summary>
-    public partial class ModifyCountersWindow : Window
+    internal partial class ModifyCountersWindow : Window
     {
         private readonly List<Config.CounterModel> _list;
 

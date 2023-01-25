@@ -10,7 +10,7 @@ namespace Hoscy.Ui.Pages
     /// <summary>
     /// Interaction logic for PageOutput.xaml
     /// </summary>
-    public partial class PageOutput : Page
+    internal partial class PageOutput : Page
     {
         public PageOutput()
         {

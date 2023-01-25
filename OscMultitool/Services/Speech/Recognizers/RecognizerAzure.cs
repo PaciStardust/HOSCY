@@ -7,15 +7,15 @@ using System.Threading.Tasks;
 
 namespace Hoscy.Services.Speech.Recognizers
 {
-    public class RecognizerAzure : RecognizerBase
+    internal class RecognizerAzure : RecognizerBase
     {
-        new public static RecognizerPerms Perms => new()
+        new internal static RecognizerPerms Perms => new()
         {
             Description = "Remote recognition using Azure-API",
             UsesMicrophone = true
         };
 
-        public override bool IsListening => _isListening;
+        internal override bool IsListening => _isListening;
         private bool _isListening = false;
 
         private SpeechRecognizer? _rec;
@@ -114,7 +114,7 @@ namespace Hoscy.Services.Speech.Recognizers
             _isListening = enabled;
 
             if (_isListening)
-                App.RunWithoutAwait(StartRecognizing());
+                Utils.RunWithoutAwait(StartRecognizing());
             else
                 recognitionCompletionSource?.SetResult(0);
 

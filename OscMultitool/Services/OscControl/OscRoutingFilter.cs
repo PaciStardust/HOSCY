@@ -2,14 +2,14 @@
 
 namespace Hoscy.Services.OscControl
 {
-    public readonly struct OscRoutingFilter
+    internal readonly struct OscRoutingFilter
     {
-        public readonly string Name { get; init; } = "OSC-Filter";
-        public readonly int Port { get; init; } = -1;
-        public readonly string Ip { get; init; } = string.Empty;
-        public readonly IReadOnlyList<string> Filters { get; init; } = new List<string>();
+        internal readonly string Name { get; init; } = "OSC-Filter";
+        internal readonly int Port { get; init; } = -1;
+        internal readonly string Ip { get; init; } = string.Empty;
+        internal readonly IReadOnlyList<string> Filters { get; init; } = new List<string>();
 
-        public OscRoutingFilter(string name, string ip, int port, List<string> filters)
+        internal OscRoutingFilter(string name, string ip, int port, List<string> filters)
         {
             Name = name;
             Port = port;
@@ -23,7 +23,7 @@ namespace Hoscy.Services.OscControl
         /// </summary>
         /// <param name="input">Address to check</param>
         /// <returns>Matches?</returns>
-        public bool Matches(string input)
+        internal bool Matches(string input)
         {
             if (Filters.Count == 0)
                 return true;
@@ -39,7 +39,7 @@ namespace Hoscy.Services.OscControl
         /// Checks validity of filter by attempting to send a packet to that location
         /// </summary>
         /// <returns>Success?</returns>
-        public bool TestValidity()
+        internal bool TestValidity()
         {
             if (string.IsNullOrWhiteSpace(Ip) || string.IsNullOrWhiteSpace(Name))
                 return false;
@@ -61,7 +61,7 @@ namespace Hoscy.Services.OscControl
         /// <param name="address">Target address</param>
         /// <param name="args">Arguments for the packets</param>
         /// <returns>Success?</returns>
-        public bool Send(string address, params object[] args)
+        internal bool Send(string address, params object[] args)
         {
             var packet = new OscPacket(address, Ip, Port, args);
             if (!packet.IsValid)

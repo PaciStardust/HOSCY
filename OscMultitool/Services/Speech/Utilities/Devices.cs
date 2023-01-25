@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace Hoscy.Services.Speech.Utilities
 {
-    public static class Devices
+    internal static class Devices
     {
-        public static void ForceReload()
+        internal static void ForceReload()
         {
             Logger.PInfo("Enforcing reload of Devices");
             Microphones = GetMicrophones();
@@ -13,7 +13,7 @@ namespace Hoscy.Services.Speech.Utilities
         }
 
         #region Mics
-        public static IReadOnlyList<WaveInCapabilities> Microphones { get; private set; } = GetMicrophones();
+        internal static IReadOnlyList<WaveInCapabilities> Microphones { get; private set; } = GetMicrophones();
         private static IReadOnlyList<WaveInCapabilities> GetMicrophones()
         {
             Logger.Info("Getting list of Microphones");
@@ -23,7 +23,7 @@ namespace Hoscy.Services.Speech.Utilities
 
             return list;
         }
-        public static int GetMicrophoneIndex(string guid)
+        internal static int GetMicrophoneIndex(string guid)
         {
             for (int i = 0; i < Microphones.Count; i++)
             {
@@ -39,7 +39,7 @@ namespace Hoscy.Services.Speech.Utilities
         #endregion
 
         #region Speakers
-        public static IReadOnlyList<WaveOutCapabilities> Speakers { get; private set; } = GetSpeakers();
+        internal static IReadOnlyList<WaveOutCapabilities> Speakers { get; private set; } = GetSpeakers();
         private static IReadOnlyList<WaveOutCapabilities> GetSpeakers()
         {
             Logger.Info("Getting list of Speakers");
@@ -50,7 +50,7 @@ namespace Hoscy.Services.Speech.Utilities
             return speakers;
         }
 
-        public static int GetSpeakerIndex(string guid)
+        internal static int GetSpeakerIndex(string guid)
         {
             for (int i = 0; i < Speakers.Count; i++)
             {

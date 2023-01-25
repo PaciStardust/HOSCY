@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace Hoscy
 {
-    public static class Config
+    internal static class Config
     {
         public static ConfigModel Data { get; private set; }
         public static ConfigOscModel Osc => Data.Osc;
@@ -21,33 +21,18 @@ namespace Hoscy
         public static ConfigApiModel Api => Data.Api;
         public static ConfigLoggerModel Debug => Data.Debug;
 
-        public static string Github => "https://github.com/PaciStardust/HOSCY";
-        public static string GithubLatest => "https://api.github.com/repos/pacistardust/hoscy/releases/latest";
-
-        public static string ResourcePath { get; private set; }
-        public static string ConfigPath { get; private set; }
-        public static string LogPath { get; private set; }
-        public static string ModelPath { get; private set; }
-
         #region Saving and Loading
         static Config()
         {
-            var assemblyDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? Directory.GetCurrentDirectory();
-
-            ResourcePath = Path.GetFullPath(Path.Combine(assemblyDirectory, "config"));
-            ConfigPath = Path.GetFullPath(Path.Combine(ResourcePath, "config.json"));
-            LogPath = Path.GetFullPath(Path.Combine(ResourcePath, $"log-{DateTime.Now:MM-dd-yyyy-HH-mm-ss}.txt"));
-            ModelPath = Path.GetFullPath(Path.Combine(ResourcePath, "models"));
-
             try
             {
-                if (!Directory.Exists(ResourcePath))
-                    Directory.CreateDirectory(ResourcePath);
+                if (!Directory.Exists(Utils.PathConfigFolder))
+                    Directory.CreateDirectory(Utils.PathConfigFolder);
 
-                if (!Directory.Exists(ModelPath))
-                    Directory.CreateDirectory(ModelPath);
+                if (!Directory.Exists(Utils.PathModels))
+                    Directory.CreateDirectory(Utils.PathModels);
 
-                string configData = File.ReadAllText(ConfigPath, Encoding.UTF8);
+                string configData = File.ReadAllText(Utils.PathConfigFile, Encoding.UTF8);
                 Data = JsonConvert.DeserializeObject<ConfigModel>(configData) ?? new();
                 TryLoadFolderModels();
             }
@@ -58,19 +43,22 @@ namespace Hoscy
 
             UpdateConfig(Data);
 
-            if (!Directory.Exists(ResourcePath))
+            if (!Directory.Exists(Utils.PathConfigFolder))
                 MessageBox.Show("Failed to create config directory, please check your antivirus and your permissions", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         /// <summary>
         /// Saves the config file
         /// </summary>
-        public static void SaveConfig()
+        internal static void SaveConfig(bool backup = false)
         {
             try
             {
-                File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(Data ?? new(), Formatting.Indented), Encoding.UTF8);
-                Logger.Info("Saved config file at " + ConfigPath);
+                var jsonText = JsonConvert.SerializeObject(Data ?? new(), Formatting.Indented);
+                File.WriteAllText(Utils.PathConfigFile, jsonText, Encoding.UTF8);
+                if (backup)
+                    File.WriteAllText(Utils.PathConfigFile + ".backup", jsonText, Encoding.UTF8);
+                Logger.Info($"Saved config file {(backup ? "and backup " : string.Empty)}at " + Utils.PathConfigFile);
             }
             catch (Exception e)
             {
@@ -83,11 +71,11 @@ namespace Hoscy
         /// </summary>
         private static void TryLoadFolderModels()
         {
-            var foldersNames = Directory.GetDirectories(ModelPath);
+            var foldersNames = Directory.GetDirectories(Utils.PathModels);
 
             foreach (var folderName in foldersNames)
             {
-                var contentFolder = GetActualModelFolder(folderName);
+                var contentFolder = Utils.GetActualContentFolder(folderName);
 
                 if (string.IsNullOrWhiteSpace(contentFolder))
                     continue;
@@ -98,24 +86,6 @@ namespace Hoscy
 
                 Speech.VoskModels[folderNameSplit] = contentFolder;
             }
-        }
-
-        /// <summary>
-        /// Recursive function to return the folder that is likely holding the main model (More than 1 inner folder)
-        /// </summary>
-        /// <param name="folderName">Path of folder to search</param>
-        /// <returns>Innermost folder</returns>
-        private static string GetActualModelFolder(string folderName)
-        {
-            var subDirs = Directory.GetDirectories(folderName);
-            var countSub = subDirs.Length;
-
-            if (countSub == 0)
-                return string.Empty;
-            else if (countSub == 1)
-                return GetActualModelFolder(subDirs[0]);
-            else
-                return folderName;
         }
         #endregion
 
@@ -128,7 +98,7 @@ namespace Hoscy
         /// <param name="min">Minimum value</param>
         /// <param name="max">Maximum value</param>
         /// <returns>Value, if within bounds. Min, if value smaller than min. Max, if value larger than max. If max is smaller than min, min has priority</returns>
-        public static T MinMax<T>(T value, T min, T max) where T : IComparable
+        internal static T MinMax<T>(T value, T min, T max) where T : IComparable
         {
             if (value.CompareTo(min) < 0)
                 return min;
@@ -137,7 +107,7 @@ namespace Hoscy
             return value;
         }
 
-        public static string GetVersion()
+        internal static string GetVersion()
         {
             var assembly = Assembly.GetEntryAssembly();
             return "v." + (assembly != null ? FileVersionInfo.GetVersionInfo(assembly.Location).FileVersion : "???");
@@ -252,7 +222,7 @@ namespace Hoscy
         /// <summary>
         /// Model for storing all config data
         /// </summary>
-        public class ConfigModel
+        internal class ConfigModel
         {
             public int ConfigVersion { get; set; } = 0;
 
@@ -267,7 +237,7 @@ namespace Hoscy
         /// <summary>
         /// Model for storing all OSC related data (Ports, IPs, Addresses, Filters)
         /// </summary>
-        public class ConfigOscModel
+        internal class ConfigOscModel
         {
             //Routing
             public string Ip { get; set; } = "127.0.0.1";
@@ -337,7 +307,7 @@ namespace Hoscy
         /// <summary>
         /// Model for storing all Speech related data (TTS, Models, Device Options)
         /// </summary>
-        public class ConfigSpeechModel
+        internal class ConfigSpeechModel
         {
             //Usage
             public bool UseTextbox { get; set; } = true;
@@ -390,7 +360,7 @@ namespace Hoscy
         /// <summary>
         /// Model for storing all Textbox related data (Timeouts, MaxLength)
         /// </summary>
-        public class ConfigTextboxModel
+        internal class ConfigTextboxModel
         {
             //Timeout, Maxlen
             public int MaxLength
@@ -479,13 +449,13 @@ namespace Hoscy
             private int CalcNotificationIndicatorLength()
                 => _notificationIndicatorRight.Length + _notificationIndicatorLeft.Length;
 
-            public int NotificationIndicatorLength() => _notificationIndicatorLength;
+            internal int NotificationIndicatorLength() => _notificationIndicatorLength;
         }
 
         /// <summary>
         /// Model for all API related data
         /// </summary>
-        public class ConfigApiModel
+        internal class ConfigApiModel
         {
             //General
             public List<ApiPresetModel> Presets { get; set; } = new();
@@ -527,7 +497,7 @@ namespace Hoscy
             public bool AddOriginalAfterTranslate { get; set; } = false;
             public bool UseAzureTts { get; set; } = false;
 
-            public int GetIndex(string name)
+            internal int GetIndex(string name)
             {
                 for (int i = 0; i < Presets.Count; i++)
                 {
@@ -537,7 +507,7 @@ namespace Hoscy
                 return -1;
             }
 
-            public ApiPresetModel? GetPreset(string name)
+            internal ApiPresetModel? GetPreset(string name)
             {
                 var presetIndex = GetIndex(name);
 
@@ -551,7 +521,7 @@ namespace Hoscy
         /// <summary>
         /// Model for all Logging related data, this can currently only be changed in the file
         /// </summary>
-        public class ConfigLoggerModel
+        internal class ConfigLoggerModel
         {
             public bool OpenLogWindow { get; set; } = false;
             public bool CheckUpdates { get; set; } = true;
@@ -567,7 +537,7 @@ namespace Hoscy
         /// <summary>
         /// Model for all Input related data (Presets, Sending Options)
         /// </summary>
-        public class ConfigInputModel
+        internal class ConfigInputModel
         {
             public bool UseTts { get; set; } = false;
             public bool UseTextbox { get; set; } = true;
@@ -583,7 +553,7 @@ namespace Hoscy
         /// <summary>
         /// Model for storing Routing Filter data
         /// </summary>
-        public class OscRoutingFilterModel
+        internal class OscRoutingFilterModel
         {
             public string Name { get; set; } = "New Filter";
             public int Port
@@ -602,11 +572,11 @@ namespace Hoscy
             /// <summary>
             /// Sets validity to be displayed in filter window
             /// </summary>
-            public void SetValidity(bool state)
+            internal void SetValidity(bool state)
                 => _isValid = state;
         }
 
-        public class ReplacementModel
+        internal class ReplacementModel
         {
             public string Text
             {
@@ -632,14 +602,14 @@ namespace Hoscy
             }
             public ReplacementModel() { }
 
-            public string RegexPattern() => _regexPattern;
-            public string LowercaseText() => _lowercaseText;
+            internal string RegexPattern() => _regexPattern;
+            internal string LowercaseText() => _lowercaseText;
 
             public override string ToString()
                 => $"{(Enabled ? "" : "[x] ")}{Text} => {Replacement}";
         }
 
-        public class ApiPresetModel
+        internal class ApiPresetModel
         {
             public string Name { get; set; } = "Example Preset";
             public string SentData { get; set; } = @"{""data"" : ""[T]""}";
@@ -692,17 +662,17 @@ namespace Hoscy
             }
             private int _connectionTimeout = 3000;
 
-            public string FullTargetUrl() => _fullTargetUrl;
-            public AuthenticationHeaderValue? AuthenticationHeader() => _authenticationHeader;
+            internal string FullTargetUrl() => _fullTargetUrl;
+            internal AuthenticationHeaderValue? AuthenticationHeader() => _authenticationHeader;
 
-            public bool IsValid()
+            internal bool IsValid()
                 => !string.IsNullOrWhiteSpace(TargetUrl)
                 && !string.IsNullOrWhiteSpace(SentData)
                 && !string.IsNullOrWhiteSpace(ResultField)
                 && !string.IsNullOrWhiteSpace(ContentType);
         }
 
-        public class CounterModel
+        internal class CounterModel
         {
             public string Name { get; set; } = "Unnamed Counter";
             public uint Count { get; set; } = 0;
@@ -727,13 +697,13 @@ namespace Hoscy
             private string _parameter = "Parameter";
             private string _fullParameter = "/avatar/parameters/Parameter";
 
-            public void Increase()
+            internal void Increase()
             {
                 Count++;
                 LastUsed = DateTime.Now;
             }
 
-            public string FullParameter() => _fullParameter;
+            internal string FullParameter() => _fullParameter;
 
             public override string ToString()
                 => $"{(Enabled ? "" : "[x] ")}{Name}: {Count:N0}";

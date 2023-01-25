@@ -9,7 +9,7 @@ namespace Hoscy.Ui.Windows
     /// <summary>
     /// Interaction logic for ModifyListWindow.xaml
     /// </summary>
-    public partial class ModifyApiPresetsWindow : Window
+    internal partial class ModifyApiPresetsWindow : Window
     {
         private readonly List<Config.ApiPresetModel> _list;
 
