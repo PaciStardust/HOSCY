@@ -120,13 +120,12 @@ namespace Hoscy.Services.Api
             try
             {
                 var cmdCommand = CreateCmdCommand(hoscyDirectory, downDirectory);
-                Logger.Debug(cmdCommand); //todo: remove
                 var pStartInfo = new ProcessStartInfo()
                 {
                     FileName = "cmd",
                     Arguments = cmdCommand,
-                    //CreateNoWindow = true,
-                    //WindowStyle = ProcessWindowStyle.Hidden
+                    CreateNoWindow = true,
+                    WindowStyle = ProcessWindowStyle.Hidden
                 };
                 Process.Start(pStartInfo);
             }
@@ -194,8 +193,8 @@ namespace Hoscy.Services.Api
         {
             var commands = new List<string>()
             {
-                $"/C pause 1", //Pausing
-                $"taskkill /f /im \"{Path.GetFileName(Utils.PathExecutable)}\"" //Getting current process name, killing it
+                $"/C taskkill /f /im \"{Path.GetFileName(Utils.PathExecutable)}\"", //Getting current process name, killing it
+                "timeout /t 5 /nobreak" //sleep 5s to hopefully fix any dll deletion issues
             };
 
             //adding all files and directories to be deleted from hoscy dir
@@ -208,12 +207,7 @@ namespace Hoscy.Services.Api
             }
 
             var tempDirContentPath = Utils.GetActualContentFolder(tempDirPath);
-            commands.AddRange(new string[]
-            {
-                //todo: not working?
-                $"robocopy \"{tempDirContentPath}\" \"{hoscyDir.FullName}\" /E /XC /XN /XO", //Copy over but dont overwrite
-                $"rmdir /Q /S \"{tempDirPath}\"" //Delete temp
-            });
+            commands.Add($"robocopy \"{tempDirContentPath}\" \"{hoscyDir.FullName}\" /E /XC /XN /XO & rmdir /Q /S \"{tempDirPath}\""); //Copy over but dont overwrite, Delete temp
 
             //Checking for new exe file
             var newExe = hoscyDir.GetFiles()

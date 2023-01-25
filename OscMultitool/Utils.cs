@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Hoscy
 {
-    internal static class Utils //todo: internalize?
+    internal static class Utils
     {
         internal const string Github = "https://github.com/PaciStardust/HOSCY";
         internal const string GithubLatest = "https://api.github.com/repos/pacistardust/hoscy/releases/latest";
