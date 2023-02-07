@@ -402,6 +402,7 @@ namespace Hoscy
             public bool SoundOnMessage { get; set; } = true;
             public bool SoundOnNotification { get; set; } = false;
             public bool UseNotificationPriority { get; set; } = true;
+            public bool UseNotificationSkip { get; set; } = true;
 
             public string NotificationIndicatorLeft
             {

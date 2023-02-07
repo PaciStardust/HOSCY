@@ -76,7 +76,8 @@
                     <StackPanel Style="{StaticResource HStackIndent}">
                         <CheckBox Content="Clear automatically after messages" IsChecked="{Binding Textbox.AutomaticClearMessage, Source={x:Static local:Config.Data}}"/>
                         <CheckBox Margin="0,4,0,0" Content="Clear automatically after notifications" IsChecked="{Binding Textbox.AutomaticClearNotification, Source={x:Static local:Config.Data}}"/>
-                        <CheckBox Margin="0,4,0,0" Content="Do not override higher priority notifications" IsChecked="{Binding Textbox.AutomaticClearNotification, Source={x:Static local:Config.Data}}"/>
+                        <CheckBox Margin="0,4,0,0" Content="Do not override higher priority notifications" IsChecked="{Binding Textbox.UseNotificationPriority, Source={x:Static local:Config.Data}}"/>
+                        <CheckBox Margin="0,4,0,0" Content="Skip notification timeout for messages" IsChecked="{Binding Textbox.UseNotificationSkip, Source={x:Static local:Config.Data}}"/>
                         <CheckBox Margin="0,4,0,0" Content="Typing indicator without Textbox" IsChecked="{Binding Textbox.UseIndicatorWithoutBox, Source={x:Static local:Config.Data}}"/>
 
                         <WrapPanel Margin="0,4,0,0">

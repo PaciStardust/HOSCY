@@ -38,7 +38,7 @@ namespace Hoscy.Services.Speech
         /// <summary>
         /// Loop for sending messages
         /// </summary>
-        private static void MessageQueueLoop() //todo: tidy?
+        private static void MessageQueueLoop() //todo: test
         {
             //Flag for checking if override behaviour is allowed
             var lastSentNotif = false;
@@ -50,46 +50,47 @@ namespace Hoscy.Services.Speech
                 var threadSleep = 10;
                 var sendNotification = false;
 
-                //If the intended timeout has passed, messages and autoclear can happen
-                //this will only fail because of notification overwriting
-                if (DateTime.Now >= _intendedTimeout)
+                //Messages are available, also stops notifications from loading unless there is none
+                //Only sends once timeout has passed OR the last sent was a notification and skip is enabled
+                if (MessageQueue.Count > 0)
                 {
-                    //Set from message
-                    if (MessageQueue.Count > 0)
+                    var timeoutBypass = lastSentNotif && Config.Textbox.UseNotificationSkip;
+                    if (DateTime.Now >= _intendedTimeout || timeoutBypass)
                     {
+                        if (timeoutBypass)
+                            Logger.Debug("Notification timeout was shortened due to incoming message");
+
                         message = MessageQueue.Dequeue();
                         notify = Config.Textbox.SoundOnMessage;
                         _autocleared = !Config.Textbox.AutomaticClearMessage;
                     }
-                    //Allow notifcaton
-                    else if (_notificationType != NotificationType.None)
+                }
+                //Notification is available
+                //Only sends once timeout has passed OR the last sent was a notification and of the same type
+                else if (_notificationType != NotificationType.None)
+                {
+                    var timeoutBypass = lastSentNotif && _notificationType == _notificationTypeLast;
+                    if (DateTime.Now >= _intendedTimeout || timeoutBypass)
                     {
+                        if (timeoutBypass)
+                            Logger.Debug("Notification timeout was shortened due to equal type");
+
+                        message = _notification;
+                        ClearNotification();
+                        notify = Config.Textbox.SoundOnNotification;
+                        _autocleared = !Config.Textbox.AutomaticClearNotification;
                         sendNotification = true;
                     }
-                    //Autoclear
-                    else if (!_autocleared)
-                    {
-                        //Early timeout
-                        SendMessage(string.Empty, false);
-                        _autocleared = true;
-                        Thread.Sleep(_minimumTimeoutMs);
-                        continue;
-                    }
                 }
-                //Notification override is triggered
-                else if (lastSentNotif && MessageQueue.Count == 0 && _notificationType != NotificationType.None && _notificationType == _notificationTypeLast) 
+                //Automatically clears if needed
+                //Only sends once timeout has passed
+                else if (!_autocleared && DateTime.Now >= _intendedTimeout)
                 {
-                    sendNotification = true;
-                    Logger.Debug("Notification timeout was shortened due to equal type");
-                }
-
-                //Notification is set, moved to not have duplicates
-                if (sendNotification)
-                {
-                    message = _notification;
-                    ClearNotification();
-                    notify = Config.Textbox.SoundOnNotification;
-                    _autocleared = !Config.Textbox.AutomaticClearNotification;
+                    //Early timeout
+                    SendMessage(string.Empty, false);
+                    _autocleared = true;
+                    Thread.Sleep(_minimumTimeoutMs);
+                    continue;
                 }
 
                 //Actual sending
