@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace Hoscy
 {
-    internal static class Config //todo: tidy up
+    internal static class Config
     {
         public static ConfigModel Data { get; private set; }
         public static ConfigOscModel Osc => Data.Osc;
@@ -236,23 +236,23 @@ namespace Hoscy
         /// </summary>
         internal class ConfigOscModel
         {
-            //Routing
-            public string Ip { get; set; } = "127.0.0.1";
-            public int Port
+            //Routing Related
+            public string Ip { get; set; } = "127.0.0.1"; //Target IP for sending
+            public int Port //Target port for sending
             {
                 get { return _port; }
                 set { _port = MinMax(value, -1, 65535); }
             }
             private int _port = 9000;
-            public int PortListen
+            public int PortListen //Port HOSCY listens on
             {
                 get { return _portListen; }
                 set { _portListen = MinMax(value, -1, 65535); }
             }
             private int _portListen = 9001;
-            public List<OscRoutingFilterModel> RoutingFilters { get; set; } = new();
+            public List<OscRoutingFilterModel> RoutingFilters { get; set; } = new(); //Routing
 
-            //Addresses
+            //Addresses for OSC Control
             public string AddressManualMute { get; set; } =         "/avatar/parameters/ToolMute";
             public string AddressManualSkipSpeech { get; set; } =   "/avatar/parameters/ToolSkipSpeech";
             public string AddressManualSkipBox { get; set; } =      "/avatar/parameters/ToolSkipBox";
@@ -273,16 +273,16 @@ namespace Hoscy
             public string AddressMediaInfo { get; set; } =          "/avatar/parameters/MediaInfo";
             public string AddressMediaToggle { get; set; } =        "/avatar/parameters/MediaToggle";
 
-            //Counters
-            public bool ShowCounterNotifications { get; set; } = false;
-            public float CounterDisplayDuration
+            //Counter Related
+            public bool ShowCounterNotifications { get; set; } = false; //Display in Textbox
+            public float CounterDisplayDuration //Duration (in seconds) that counters will be accounted for in display
             {
                 get { return _counterDisplayDuration; }
                 set { _counterDisplayDuration = MinMax(value, 0.01f, 30); }
             }
             private float _counterDisplayDuration = 10f;
 
-            public float CounterDisplayCooldown
+            public float CounterDisplayCooldown //Duration (in seconds) that counters cannot be displayed
             {
                 get { return _counterDisplayCooldown; }
                 set { _counterDisplayCooldown = MinMax(value, 0, 300); }
@@ -291,16 +291,16 @@ namespace Hoscy
 
             public List<CounterModel> Counters { get; set; } = new();
 
-            //AFK
-            public bool ShowAfkDuration { get; set; } = false;
-            public float AfkDuration
+            //AFK Related
+            public bool ShowAfkDuration { get; set; } = false; //Display in Textbox
+            public float AfkDuration //Duration (in seconds) between initial AFK notifications
             {
                 get { return _afkDuration; }
                 set { _afkDuration = MinMax(value, 5, 300); }
             }
             private float _afkDuration = 15;
 
-            public float AfkDoubleDuration
+            public float AfkDoubleDuration //Amount of times the duration gets displayed before duration doubles
             {
                 get { return _afkDoubleDuration; }
                 set { _afkDoubleDuration = MinMax(value, 0, 60); }
@@ -314,35 +314,34 @@ namespace Hoscy
         internal class ConfigSpeechModel
         {
             //Usage
-            public bool UseTextbox { get; set; } = true;
-            public bool UseTts { get; set; } = false;
-            public string MicId { get; set; } = string.Empty;
-            public bool StartUnmuted { get; set; } = true;
-            public bool MuteOnVrcMute { get; set; } = true;
-
-            public string ModelName { get; set; } = string.Empty;
+            public bool UseTextbox { get; set; } = true; //Result will be sent through textbox
+            public bool UseTts { get; set; } = false; //Result will be sent through TTS
+            public string MicId { get; set; } = string.Empty; //Recording microphone
+            public bool StartUnmuted { get; set; } = true; //Start recognition unmuted
+            public bool MuteOnVrcMute { get; set; } = true; //Automatically mute when muted in VRC
+            public string ModelName { get; set; } = string.Empty; //Name of used model
 
             //TTS
-            public string TtsId { get; set; } = string.Empty;
-            public string SpeakerId { get; set; } = string.Empty;
-            public float SpeakerVolume
+            public string TtsId { get; set; } = string.Empty; //Identifier for Microsoft TTS
+            public string SpeakerId { get; set; } = string.Empty; //Speaker for TTS out
+            public float SpeakerVolume //TTS volume
             {
                 get { return _speakerVolume; }
                 set { _speakerVolume = MinMax(value, 0, 1); }
             }
             private float _speakerVolume = 0.5f;
-            public int MaxLenTtsString
+            public int MaxLenTtsString //Max length of strings that get TTS
             {
                 get { return _maxLenTtsString; }
                 set { _maxLenTtsString = MinMax(value, 1, 99999); }
             }
             private int _maxLenTtsString = 500;
-            public bool SkipLongerMessages { get; set; } = true;
+            public bool SkipLongerMessages { get; set; } = true; //Skip longer messages instead of cutting off
 
             //Vosk
-            public Dictionary<string, string> VoskModels { get; set; } = new();
-            public string VoskModelCurrent { get; set; } = string.Empty;
-            public int VoskTimeout //todo: float
+            public Dictionary<string, string> VoskModels { get; set; } = new(); //Model identifiers and filepaths
+            public string VoskModelCurrent { get; set; } = string.Empty; //Identifier for current model
+            public int VoskTimeout //Time (in milliseconds) allowed to pass where no new words are identified before manually cutting off
             {
                 get { return _voskTimeout; }
                 set { _voskTimeout = MinMax(value, 500, 30000); }
@@ -350,13 +349,13 @@ namespace Hoscy
             private int _voskTimeout = 2500;
 
             //Windows
-            public string WinModelId { get; set; } = string.Empty;
+            public string WinModelId { get; set; } = string.Empty; //Identifier for Microsoft Recognizer
 
             //Replacement
-            public List<string> NoiseFilter { get; set; } = new();
-            public bool IgnoreCaps { get; set; } = true;
-            public bool RemoveFullStop { get; set; } = true;
-            public bool UseReplacements { get; set; } = true;
+            public List<string> NoiseFilter { get; set; } = new(); //List of words deemed noise
+            public bool IgnoreCaps { get; set; } = true; //Ignoring caps when testing for replacements
+            public bool RemoveFullStop { get; set; } = true; //Removing the full stop at the end of a sentence if available
+            public bool UseReplacements { get; set; } = true; //Are replacements (and shortcuts) even used?
             public List<ReplacementModel> Shortcuts { get; set; } = new();
             public List<ReplacementModel> Replacements { get; set; } = new();
         }
@@ -367,44 +366,40 @@ namespace Hoscy
         internal class ConfigTextboxModel
         {
             //Timeout, Maxlen
-            public int MaxLength
+            public int MaxLength //Max length of string displayed before cutoff
             {
                 get { return _maxLength; }
                 set { _maxLength = MinMax(value, 50, 130); }
             }
             private int _maxLength = 130;
-            public int TimeoutMultiplier
+            public int TimeoutMultiplier //Add x milliseconds to timeout per 20 characters
             {
                 get { return _timeoutMultiplier; }
                 set { _timeoutMultiplier = MinMax(value, 250, 10000); }
             }
             private int _timeoutMultiplier = 1250;
 
-            public int MinimumTimeout
+            public int MinimumTimeout //Minimum timeout (in milliseconds) that a message stays in the chatbox
             {
                 get { return _minimumTimeout; }
-                set { _minimumTimeout = MinMax(value, 1000, 30000); }
+                set { _minimumTimeout = MinMax(value, 1250, 30000); }
             }
             private int _minimumTimeout = 3000;
 
-            public int DefaultTimeout
+            public int DefaultTimeout //Default timeout (in milliseconds) that a message stays in the chatbox
             {
                 get { return _defaultTimeout; }
-                set { _defaultTimeout = MinMax(value, 1000, 30000); }
+                set { _defaultTimeout = MinMax(value, 1250, 30000); }
             }
             private int _defaultTimeout = 5000;
-            public bool DynamicTimeout { get; set; } = true;
+            public bool DynamicTimeout { get; set; } = true; //Enables the dynamic timeout
 
-            //Notification
-            public bool AutomaticClearNotification { get; set; } = true;
-            public bool AutomaticClearMessage { get; set; } = false;
-            public bool UseIndicatorWithoutBox { get; set; } = false;
-            public bool SoundOnMessage { get; set; } = true;
-            public bool SoundOnNotification { get; set; } = false;
-            public bool UseNotificationPriority { get; set; } = true;
-            public bool UseNotificationSkip { get; set; } = true;
+            //Visual
+            public bool AutomaticClearNotification { get; set; } = true; //Automatic clearing after notification timeout
+            public bool AutomaticClearMessage { get; set; } = false; //Automatic clearing after message timeout
+            public bool UseIndicatorWithoutBox { get; set; } = false; //"Typing" indicator when box is disabled
 
-            public string NotificationIndicatorLeft
+            public string NotificationIndicatorLeft //Text to the left of a notification
             {
                 get { return _notificationIndicatorLeft; }
                 set
@@ -415,7 +410,7 @@ namespace Hoscy
             }
             private string _notificationIndicatorLeft = "〈";
 
-            public string NotificationIndicatorRight
+            public string NotificationIndicatorRight //Text to the right of a notification
             {
                 get { return _notificationIndicatorRight; }
                 set
@@ -427,25 +422,33 @@ namespace Hoscy
             private string _notificationIndicatorRight = "〉";
             private int _notificationIndicatorLength = 2;
 
-            //Media
-            public bool MediaShowStatus { get; set; } = false;
-            public bool MediaAddAlbum { get; set; } = false;
+            //Sound
+            public bool SoundOnMessage { get; set; } = true; //Play sound on textbox message
+            public bool SoundOnNotification { get; set; } = false; //Play sound on textbox notification
 
-            public string MediaPlayingVerb
+            //Notification handling
+            public bool UseNotificationPriority { get; set; } = true; //Only allows overwriting notification current not of lower priority
+            public bool UseNotificationSkip { get; set; } = true; //Skip notifications if a message is available
+
+            //Media
+            public bool MediaShowStatus { get; set; } = false; //Display media information in textbox
+            public bool MediaAddAlbum { get; set; } = false; //Also add album to media information
+
+            public string MediaPlayingVerb //xyz "songname" by "artist" on "album"
             {
                 get { return _mediaPlayingVerb; }
                 set { _mediaPlayingVerb = value.Length > 0 ? value : "Playing"; }
             }
             private string _mediaPlayingVerb = "Playing";
 
-            public string MediaArtistVerb
+            public string MediaArtistVerb //Playing "songname" xyz "artist" on "album"
             {
                 get { return _mediaArtistVerb; }
                 set { _mediaArtistVerb = value.Length > 0 ? value : "by"; }
             }
             private string _mediaArtistVerb = "by";
 
-            public string MediaAlbumVerb
+            public string MediaAlbumVerb //Playing "songname" by "artist" xyz "album"
             {
                 get { return _mediaAlbumVerb; }
                 set { _mediaAlbumVerb = value.Length > 0 ? value : "on"; }
@@ -464,11 +467,11 @@ namespace Hoscy
         internal class ConfigApiModel
         {
             //General
-            public List<ApiPresetModel> Presets { get; set; } = new();
+            public List<ApiPresetModel> Presets { get; set; } = new(); 
 
             //Recognition
-            public string RecognitionPreset { get; set; } = string.Empty;
-            public int RecognitionMaxRecordingTime
+            public string RecognitionPreset { get; set; } = string.Empty; //API preset for recognition
+            public int RecognitionMaxRecordingTime //Max time (in seconds) that can be recorded at once
             {
                 get { return _recognitionMaxRecordingTime; }
                 set { _recognitionMaxRecordingTime = MinMax(value, 1, 300); }
@@ -476,9 +479,9 @@ namespace Hoscy
             private int _recognitionMaxRecordingTime = 30;
 
             //Translation
-            public string TranslationPreset { get; set; } = string.Empty;
-            public bool TranslationSkipLongerMessages { get; set; } = true;
-            public int TranslationMaxTextLength
+            public string TranslationPreset { get; set; } = string.Empty; //API preset for translation
+            public bool TranslationSkipLongerMessages { get; set; } = true; //Skipping messages that are too long instead of partial translation
+            public int TranslationMaxTextLength //Maximum length of translatable text
             {
                 get { return _translationMaxTextLength; }
                 set { _translationMaxTextLength = MinMax(value, 1, 60000); }
@@ -486,22 +489,22 @@ namespace Hoscy
             private int _translationMaxTextLength = 2000;
 
             //Azure
-            public string AzureRegion { get; set; } = string.Empty;
-            public string AzureKey { get; set; } = string.Empty;
-            public string AzureSpeechLanguage { get; set; } = string.Empty;
-            public string AzureCustomEndpointSpeech { get; set; } = string.Empty;
-            public string AzureCustomEndpointRecognition { get; set; } = string.Empty;
-            public string AzureVoiceCurrent { get; set; } = string.Empty;
-            public List<string> AzurePhrases { get; set; } = new();
-            public List<string> AzureRecognitionLanguages { get; set; } = new();
-            public Dictionary<string, string> AzureVoices { get; set; } = new();
+            public string AzureRegion { get; set; } = string.Empty; //Region for azure
+            public string AzureKey { get; set; } = string.Empty; //Cognitive services key
+            public string AzureSpeechLanguage { get; set; } = string.Empty; //Language of TTS
+            public string AzureCustomEndpointSpeech { get; set; } = string.Empty; //Custom speech endpoint
+            public string AzureCustomEndpointRecognition { get; set; } = string.Empty; //Custom recognition endpoint
+            public string AzureVoiceCurrent { get; set; } = string.Empty; //Current azure voice
+            public List<string> AzurePhrases { get; set; } = new(); //Phrases to set for improved recognition
+            public List<string> AzureRecognitionLanguages { get; set; } = new(); //All voices for speech recognition
+            public Dictionary<string, string> AzureVoices { get; set; } = new(); //All voices for TTS
 
             //Usage
-            public bool TranslateTts { get; set; } = false;
-            public bool TranslateTextbox { get; set; } = false;
-            public bool TranslationAllowExternal { get; set; } = false;
-            public bool AddOriginalAfterTranslate { get; set; } = false;
-            public bool UseAzureTts { get; set; } = false;
+            public bool TranslateTts { get; set; } = false; //Automatically translate TTS
+            public bool TranslateTextbox { get; set; } = false; //Automatically translate textbox
+            public bool TranslationAllowExternal { get; set; } = false; //Translate external
+            public bool AddOriginalAfterTranslate { get; set; } = false; //Add original version after translation
+            public bool UseAzureTts { get; set; } = false; //Use azure TTS instead of Microsoft
 
             internal int GetIndex(string name)
             {
@@ -529,15 +532,15 @@ namespace Hoscy
         /// </summary>
         internal class ConfigLoggerModel
         {
-            public bool OpenLogWindow { get; set; } = false;
-            public bool CheckUpdates { get; set; } = true;
+            public bool OpenLogWindow { get; set; } = false; //Open log window on startup
+            public bool CheckUpdates { get; set; } = true; //Automatically check for updates on startup
             public bool Error { get; set; } = true;
             public bool Warning { get; set; } = true;
             public bool Info { get; set; } = true;
             public bool PrioInfo { get; set; } = true;
             public bool Log { get; set; } = true;
             public bool Debug { get; set; } = false;
-            public List<string> LogFilter { get; set; } = new();
+            public List<string> LogFilter { get; set; } = new(); //Phrases filtered from logs
         }
 
         /// <summary>
@@ -545,13 +548,13 @@ namespace Hoscy
         /// </summary>
         internal class ConfigInputModel
         {
-            public bool UseTts { get; set; } = false;
-            public bool UseTextbox { get; set; } = true;
-            public bool TriggerCommands { get; set; } = true;
-            public bool TriggerReplace { get; set; } = true;
-            public bool IgnoreCaps { get;set; } = true;
-            public bool AllowTranslation { get; set; } = true;
-            public Dictionary<string, string> Presets { get; set; } = new();
+            public bool UseTts { get; set; } = false; //Convert input to TTS
+            public bool UseTextbox { get; set; } = true; //Convert input to textbox
+            public bool TriggerCommands { get; set; } = true; //Input triggers commands
+            public bool TriggerReplace { get; set; } = true; //Input triggers replacements
+            public bool IgnoreCaps { get;set; } = true; //Ignore caps for commands and replacements
+            public bool AllowTranslation { get; set; } = true; //Translate input
+            public Dictionary<string, string> Presets { get; set; } = new(); //Presets for quick access
         }
         #endregion
 

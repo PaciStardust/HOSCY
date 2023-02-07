@@ -71,13 +71,13 @@
 
                 <StackPanel Style="{StaticResource HStackIndent}">
 
+                    
+                    
                     <Label Content="Visibility"/>
 
                     <StackPanel Style="{StaticResource HStackIndent}">
                         <CheckBox Content="Clear automatically after messages" IsChecked="{Binding Textbox.AutomaticClearMessage, Source={x:Static local:Config.Data}}"/>
                         <CheckBox Margin="0,4,0,0" Content="Clear automatically after notifications" IsChecked="{Binding Textbox.AutomaticClearNotification, Source={x:Static local:Config.Data}}"/>
-                        <CheckBox Margin="0,4,0,0" Content="Do not override higher priority notifications" IsChecked="{Binding Textbox.UseNotificationPriority, Source={x:Static local:Config.Data}}"/>
-                        <CheckBox Margin="0,4,0,0" Content="Skip notification timeout for messages" IsChecked="{Binding Textbox.UseNotificationSkip, Source={x:Static local:Config.Data}}"/>
                         <CheckBox Margin="0,4,0,0" Content="Typing indicator without Textbox" IsChecked="{Binding Textbox.UseIndicatorWithoutBox, Source={x:Static local:Config.Data}}"/>
 
                         <WrapPanel Margin="0,4,0,0">
@@ -122,6 +122,13 @@
                     <StackPanel Style="{StaticResource HStackIndent}">
                         <CheckBox Content="Sound on Message" IsChecked="{Binding Textbox.SoundOnMessage, Source={x:Static local:Config.Data}}"/>
                         <CheckBox Content="Sound on Notification" Margin="0,4,0,0" IsChecked="{Binding Textbox.SoundOnNotification, Source={x:Static local:Config.Data}}"/>
+                    </StackPanel>
+
+                    <Label Margin="0,8,0,0" Content="Notification Overriding"/>
+
+                    <StackPanel Style="{StaticResource HStackIndent}">
+                        <CheckBox Content="Do not override higher priority notifications" IsChecked="{Binding Textbox.UseNotificationPriority, Source={x:Static local:Config.Data}}"/>
+                        <CheckBox Margin="0,4,0,0" Content="Skip notification timeout if messages available" IsChecked="{Binding Textbox.UseNotificationSkip, Source={x:Static local:Config.Data}}"/>
                     </StackPanel>
                 </StackPanel>
 
@@ -172,7 +179,7 @@
 
                     <Label Margin="0,8,0,0" Content="API Related"/>
 
-                    <StackPanel Style="{StaticResource HStackIndent}" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}">
+                    <StackPanel Style="{StaticResource HStackIndent}">
                         <CheckBox Content="Apply translation to textbox" IsChecked="{Binding Api.TranslateTextbox, Source={x:Static local:Config.Data}}"/>
                         <CheckBox Content="Apply original after translation" Margin="0,4,0,0" IsChecked="{Binding Api.AddOriginalAfterTranslate, Source={x:Static local:Config.Data}}" IsEnabled="{Binding Api.TranslateTextbox, Source={x:Static local:Config.Data}}"/>
                     </StackPanel>

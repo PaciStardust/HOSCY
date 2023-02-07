@@ -71,7 +71,7 @@
                                 </Binding>
                             </TextBox.Text>
                         </TextBox>
-                        <Label Content="Max. recording time" VerticalAlignment="Center"/>
+                        <Label Content="Max. recording time (s)" VerticalAlignment="Center"/>
                     </WrapPanel>
                 </StackPanel>
 
