@@ -51,6 +51,16 @@ namespace Hoscy
         }
 
         /// <summary>
+        /// Gets the current version from the assembly
+        /// </summary>
+        /// <returns></returns>
+        internal static string GetVersion()
+        {
+            var assembly = Assembly.GetEntryAssembly();
+            return "v." + (assembly != null ? FileVersionInfo.GetVersionInfo(assembly.Location).FileVersion : "???");
+        }
+
+        /// <summary>
         /// Recursive function to return the folder that is likely holding the main model (More than 1 inner folder)
         /// </summary>
         /// <param name="folderName">Path of folder to search</param>

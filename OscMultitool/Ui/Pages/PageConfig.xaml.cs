@@ -14,7 +14,7 @@ namespace Hoscy.Ui.Pages
         public PageConfig()
         {
             InitializeComponent();
-            versionText.Content = Config.GetVersion();
+            versionText.Content = Utils.GetVersion();
         }
 
         #region Buttons

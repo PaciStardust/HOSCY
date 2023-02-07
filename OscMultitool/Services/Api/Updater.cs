@@ -40,7 +40,7 @@ namespace Hoscy.Services.Api
         /// </summary>
         private static async Task CheckForUpdatesInternal()
         {
-            var currVer = Config.GetVersion();
+            var currVer = Utils.GetVersion();
             Logger.PInfo("Attempting to check for newest HOSCY version, current is " + currVer);
 
             var res = await GetGithubLatest();
@@ -70,7 +70,7 @@ namespace Hoscy.Services.Api
         /// </summary>
         private static async Task PerformUpdateInternal()
         {
-            var currVer = Config.GetVersion();
+            var currVer = Utils.GetVersion();
             Logger.PInfo("Attempting to update to newest HOSCY version, current is " + currVer);
 
             var res = await GetGithubLatest();

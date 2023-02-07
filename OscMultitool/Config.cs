@@ -107,12 +107,6 @@ namespace Hoscy
             return value;
         }
 
-        internal static string GetVersion()
-        {
-            var assembly = Assembly.GetEntryAssembly();
-            return "v." + (assembly != null ? FileVersionInfo.GetVersionInfo(assembly.Location).FileVersion : "???");
-        }
-
         /// <summary>
         /// This exists as newtonsoft seems to have an issue with my way of creating a default config
         /// </summary>
