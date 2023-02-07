@@ -208,7 +208,8 @@ namespace Hoscy
 
             if (config.ConfigVersion < 3)
             {
-                config.Debug.LogFilter.Add("timeout was shortened");
+                config.Debug.LogFilter.Add("notification timeout was"); //No shortened timeout notifs
+                config.Debug.LogFilter.Add("did not override"); //No priority override notifs
             }
             
             config.ConfigVersion = 3;

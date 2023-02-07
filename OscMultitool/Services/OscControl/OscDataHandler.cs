@@ -138,7 +138,7 @@ namespace Hoscy.Services.OscControl
 
                 if (!counter.Enabled) return;
 
-                if (Config.Osc.ShowCounterNotifications && (now - _counterLastDisplay).TotalSeconds > Config.Osc.CounterDisplayCooldown) //todo: test
+                if (Config.Osc.ShowCounterNotifications && (now - _counterLastDisplay).TotalSeconds > Config.Osc.CounterDisplayCooldown)
                 {
                     var counterString = CreateCounterString();
                     if (!string.IsNullOrWhiteSpace(counterString))

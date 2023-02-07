@@ -38,7 +38,7 @@ namespace Hoscy.Services.Speech
         /// <summary>
         /// Loop for sending messages
         /// </summary>
-        private static void MessageQueueLoop() //todo: test
+        private static void MessageQueueLoop()
         {
             //Flag for checking if override behaviour is allowed
             var lastSentNotif = false;
@@ -161,8 +161,11 @@ namespace Hoscy.Services.Speech
                 return;
             }
 
-            if (Config.Textbox.UseNotificationPriority && type < _notificationType) //todo: test
+            if (Config.Textbox.UseNotificationPriority && type < _notificationType)
+            {
+                Logger.Debug("Did not override notification, priority too low");
                 return;
+            }
 
             var indLen = Config.Textbox.NotificationIndicatorLength();
             input = input.Length > Config.Textbox.MaxLength - indLen
