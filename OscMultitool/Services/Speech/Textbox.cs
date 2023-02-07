@@ -77,7 +77,7 @@ namespace Hoscy.Services.Speech
                     }
                 }
                 //Notification override is triggered
-                else if (lastSentNotif && _notificationType != NotificationType.None && _notificationType == _notificationTypeLast) 
+                else if (lastSentNotif && MessageQueue.Count == 0 && _notificationType != NotificationType.None && _notificationType == _notificationTypeLast) 
                 {
                     sendNotification = true;
                     Logger.Debug("Notification timeout was shortened due to equal type");
@@ -159,6 +159,9 @@ namespace Hoscy.Services.Speech
                     ClearNotification();
                 return;
             }
+
+            if (Config.Textbox.UseNotificationPriority && type < _notificationType) //todo: test
+                return;
 
             var indLen = Config.Textbox.NotificationIndicatorLength();
             input = input.Length > Config.Textbox.MaxLength - indLen
@@ -289,8 +292,8 @@ namespace Hoscy.Services.Speech
     internal enum NotificationType
     {
         None,
-        Media,
         Counter,
+        Media,
         Afk,
         External
     }

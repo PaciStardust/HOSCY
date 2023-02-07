@@ -1,17 +1,15 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Net.Http.Headers;
-using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace Hoscy
 {
-    internal static class Config
+    internal static class Config //todo: tidy up
     {
         public static ConfigModel Data { get; private set; }
         public static ConfigOscModel Osc => Data.Osc;
@@ -207,8 +205,13 @@ namespace Hoscy
                     }
                 });
             }
+
+            if (config.ConfigVersion < 3)
+            {
+                config.Debug.LogFilter.Add("timeout was shortened");
+            }
             
-            config.ConfigVersion = 2;
+            config.ConfigVersion = 3;
         }
         #endregion
 
@@ -391,6 +394,7 @@ namespace Hoscy
             public bool UseIndicatorWithoutBox { get; set; } = false;
             public bool SoundOnMessage { get; set; } = true;
             public bool SoundOnNotification { get; set; } = false;
+            public bool UseNotificationPriority { get; set; } = true;
 
             public string NotificationIndicatorLeft
             {
