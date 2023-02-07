@@ -282,6 +282,13 @@ namespace Hoscy
             }
             private float _counterDisplayDuration = 10f;
 
+            public float CounterDisplayCooldown
+            {
+                get { return _counterDisplayCooldown; }
+                set { _counterDisplayCooldown = MinMax(value, 0, 300); }
+            }
+            private float _counterDisplayCooldown = 0f;
+
             public List<CounterModel> Counters { get; set; } = new();
 
             //AFK
@@ -335,7 +342,7 @@ namespace Hoscy
             //Vosk
             public Dictionary<string, string> VoskModels { get; set; } = new();
             public string VoskModelCurrent { get; set; } = string.Empty;
-            public int VoskTimeout
+            public int VoskTimeout //todo: float
             {
                 get { return _voskTimeout; }
                 set { _voskTimeout = MinMax(value, 500, 30000); }

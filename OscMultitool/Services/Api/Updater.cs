@@ -84,7 +84,7 @@ namespace Hoscy.Services.Api
             else if (currVer == newVer)
             {
                 Logger.Warning("Attempted to update, but already up to date!");
-                App.OpenNotificationWindow("HOSCY up to date!", "Update cancelled", "HOSCY are already up to date");
+                App.OpenNotificationWindow("HOSCY up to date!", "Update cancelled", "HOSCY is already up to date");
                 return;
             }
 

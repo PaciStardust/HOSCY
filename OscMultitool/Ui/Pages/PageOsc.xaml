@@ -100,7 +100,7 @@
                         <Button Style="{StaticResource HButtonSmall}" Margin="8,0,0,0" Content="Edit Counters" HorizontalAlignment="Left" Click="Button_ModifyCounters"/>
                     </WrapPanel>
 
-                    <WrapPanel Margin="0,4,0,0">
+                    <WrapPanel Margin="0,4,0,0" IsEnabled="{Binding Osc.ShowCounterNotifications, Source={x:Static local:Config.Data}}">
                         <TextBox x:Name="oscCounterDuration" Tag="Duration..." Style="{StaticResource HTextBoxShort}">
                             <TextBox.Text>
                                 <Binding Source="{x:Static local:Config.Data}" Path="Osc.CounterDisplayDuration" UpdateSourceTrigger="PropertyChanged">
@@ -111,6 +111,19 @@
                             </TextBox.Text>
                         </TextBox>
                         <Label Content="Counter display duration (s)" VerticalAlignment="Center"/>
+                    </WrapPanel>
+
+                    <WrapPanel Margin="0,4,0,0" IsEnabled="{Binding Osc.ShowCounterNotifications, Source={x:Static local:Config.Data}}">
+                        <TextBox x:Name="oscCounterCooldown" Tag="Cooldown..." Style="{StaticResource HTextBoxShort}">
+                            <TextBox.Text>
+                                <Binding Source="{x:Static local:Config.Data}" Path="Osc.CounterDisplayCooldown" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <ui:FloatValidationRule Min="0" Max="300"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                        <Label Content="Counter display cooldown (s)" VerticalAlignment="Center"/>
                     </WrapPanel>
                 </StackPanel>
 

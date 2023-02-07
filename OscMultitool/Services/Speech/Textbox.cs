@@ -38,7 +38,7 @@ namespace Hoscy.Services.Speech
         /// <summary>
         /// Loop for sending messages
         /// </summary>
-        private static void MessageQueueLoop()
+        private static void MessageQueueLoop() //todo: tidy?
         {
             //Flag for checking if override behaviour is allowed
             var lastSentNotif = false;

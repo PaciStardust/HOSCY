@@ -117,16 +117,20 @@ namespace Hoscy.Services.OscControl
         }
         #endregion
 
-        #region Functionality
+        #region Functionality - Counters
+        private static DateTime _counterLastDisplay = DateTime.MinValue;
+
         /// <summary>
         /// Checks for counter increases
         /// </summary>
         /// <param name="address">Osc Address</param>
         private static void CheckForCounters(string address)
         {
+            var now = DateTime.Now;
+
             foreach (var counter in Config.Osc.Counters)
             {
-                if (counter.FullParameter() != address || (DateTime.Now - counter.LastUsed).TotalSeconds < counter.Cooldown)
+                if (counter.FullParameter() != address || (now - counter.LastUsed).TotalSeconds < counter.Cooldown)
                     continue;
 
                 counter.Increase();
@@ -134,17 +138,24 @@ namespace Hoscy.Services.OscControl
 
                 if (!counter.Enabled) return;
 
-                if (Config.Osc.ShowCounterNotifications)
+                if (Config.Osc.ShowCounterNotifications && (now - _counterLastDisplay).TotalSeconds > Config.Osc.CounterDisplayCooldown) //todo: test
                 {
                     var counterString = CreateCounterString();
                     if (!string.IsNullOrWhiteSpace(counterString))
+                    {
+                        _counterLastDisplay = now;
                         Textbox.Notify(counterString, NotificationType.Counter);
+                    }
                 }
 
                 return;
             }
         }
 
+        /// <summary>
+        /// Creates a string of all recently activated counters
+        /// </summary>
+        /// <returns>The string</returns>
         private static string CreateCounterString()
         {
             var strings = new List<string>();
@@ -156,10 +167,17 @@ namespace Hoscy.Services.OscControl
 
             return string.Join(", ", validCounters);
         }
+        #endregion
 
+        #region Functionality - AFK Timer
         private static Timer? _afkTimer;
         private static DateTime _afkStarted = DateTime.Now;
         private static uint _afkTimesChecked = 0;
+
+        /// <summary>
+        /// Activates or deactivates the AFK timer
+        /// </summary>
+        /// <param name="mode">Mode to set</param>
         internal static void SetAfkTimer(bool mode)
         {
             if (Config.Osc.ShowAfkDuration && mode && _afkTimer == null)
@@ -185,6 +203,11 @@ namespace Hoscy.Services.OscControl
             }
         }
 
+        /// <summary>
+        /// Event for the AFK timer elapsing
+        /// </summary>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event args</param>
         private static void AfkTimerElapsed(object? sender, ElapsedEventArgs e)
         {
             if (Config.Osc.AfkDoubleDuration > 0)
@@ -200,7 +223,6 @@ namespace Hoscy.Services.OscControl
             
             Textbox.Notify("AFK since " + (e.SignalTime.AddMilliseconds(500) - _afkStarted).ToString(@"hh\:mm\:ss"), NotificationType.Afk);
         }
-            
         #endregion
     }
 }
