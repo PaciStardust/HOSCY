@@ -98,14 +98,15 @@ namespace Hoscy.Services.OscControl
             if (string.IsNullOrWhiteSpace(value))
                 return;
 
-            if (address == Config.Osc.AddressAddTextbox || address == Config.Osc.AddressAddTts)
+            var useTextbox = address == Config.Osc.AddressAddTextbox || address == Config.Osc.AddressGameTextbox;
+            if (useTextbox || address == Config.Osc.AddressAddTts)
             {
                 var tProcessor = new TextProcessor()
                 {
                     ReplaceCaseInsensitive = true,
                     TriggerReplace = true,
                     TriggerCommands = true,
-                    UseTextbox = address == Config.Osc.AddressAddTextbox,
+                    UseTextbox = useTextbox,
                     UseTts = address == Config.Osc.AddressAddTts,
                     AllowTranslate = Config.Api.TranslationAllowExternal
                 };

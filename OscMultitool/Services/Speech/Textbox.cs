@@ -120,7 +120,7 @@ namespace Hoscy.Services.Speech
 
         private static bool SendMessage(string message, bool notify)
         {
-            var packet = new OscPacket("/chatbox/input", message, true, notify);
+            var packet = new OscPacket(Config.Osc.AddressGameTextbox, message, true, notify);
             if (!packet.IsValid)
             {
                 Logger.Warning("Unable to send message to chatbox, packet is invalid");

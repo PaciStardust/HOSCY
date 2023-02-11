@@ -264,6 +264,7 @@ namespace Hoscy
             public string AddressListeningIndicator { get; set; } = "/avatar/parameters/MicListening";
             public string AddressGameMute { get; set; } =           "/avatar/parameters/MuteSelf";
             public string AddressGameAfk { get; set; } =            "/avatar/parameters/AFK";
+            public string AddressGameTextbox { get; set; } =        "/chatbox/input";
             public string AddressAddTextbox { get; set; } =         "/hoscy/message";
             public string AddressAddTts { get; set; } =             "/hoscy/tts";
             public string AddressAddNotification { get; set; } =    "/hoscy/notification";

@@ -176,6 +176,9 @@
                         <TextBlock Style="{DynamicResource HTextBlock}" Text="Game AFK address" Margin="0,4,0,0"/>
                         <TextBox Text="{Binding Osc.AddressGameAfk, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..." PreviewKeyDown="AddressModified"/>
 
+                        <TextBlock Style="{DynamicResource HTextBlock}" Text="Game textbox address" Margin="0,4,0,0"/>
+                        <TextBox Text="{Binding Osc.AddressGameTextbox, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..." PreviewKeyDown="AddressModified"/>
+                        
                         <TextBlock Style="{DynamicResource HTextBlock}" Text="Microphone listening indicator" Margin="0,4,0,0"/>
                         <TextBox Text="{Binding Osc.AddressListeningIndicator, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxLong}" Tag="Address..." PreviewKeyDown="AddressModified"/>
                     </StackPanel>
