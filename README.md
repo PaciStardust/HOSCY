@@ -34,4 +34,5 @@ If you wish to contribute or need support, join the **[Discord](https://discord.
 - **[AuroraNemoia](https://github.com/AuroraNemoia)** for branding *(Logo, Name)*
 - **[Hyblocker](https://github.com/hyblocker)** for providing assistance when I got stuck
 - **[Realmlist](https://linktr.ee/Realmlist)** for providing assistance and API keys for testing
+- **[M.O.O.N](https://twitter.com/MOONVRCHAT)** for creating a youtube tutorial and sfx for muting and unmuting
 - **[DrBlackRat](https://twitter.com/DrBlackRat)** for creating the Avatar 3.0 menu for VRChat use
