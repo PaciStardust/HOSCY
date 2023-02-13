@@ -15,11 +15,10 @@ namespace Hoscy
         public static bool Running { get; private set; } = true;
         protected override void OnExit(ExitEventArgs e)
         {
+            Running = false;
             if (Recognition.IsRecognizerRunning)
                 Recognition.StopRecognizer();
-
             Config.SaveConfig();
-            Running = false;
         }
 
         //Error handling for unhandled errors

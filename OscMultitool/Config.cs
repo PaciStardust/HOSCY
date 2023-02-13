@@ -320,6 +320,7 @@ namespace Hoscy
             public bool UseTts { get; set; } = false; //Result will be sent through TTS
             public string MicId { get; set; } = string.Empty; //Recording microphone
             public bool StartUnmuted { get; set; } = true; //Start recognition unmuted
+            public bool PlayMuteSound { get; set; } = false; //Play mute and unmute sounds
             public bool MuteOnVrcMute { get; set; } = true; //Automatically mute when muted in VRC
             public string ModelName { get; set; } = string.Empty; //Name of used model
 

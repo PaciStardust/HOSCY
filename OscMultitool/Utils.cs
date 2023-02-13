@@ -77,5 +77,8 @@ namespace Hoscy
             else
                 return folderName;
         }
+
+        internal static Stream? GetEmbeddedRessourceStream(string name)
+            => Assembly.GetExecutingAssembly().GetManifestResourceStream(name);
     }
 }

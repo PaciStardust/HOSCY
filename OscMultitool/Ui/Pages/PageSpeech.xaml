@@ -29,6 +29,7 @@
                     <CheckBox Content="Send over TTS" IsChecked="{Binding Speech.UseTts, Source={x:Static local:Config.Data}}"/>
                     <CheckBox Content="Send over textbox" Margin="0,4,0,0" IsChecked="{Binding Speech.UseTextbox, Source={x:Static local:Config.Data}}"/>
                     <CheckBox Content="Start microphone unmuted" Margin="0,4,0,0" IsChecked="{Binding Speech.StartUnmuted, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Content="Play sound for mute and unmute" Margin="0,4,0,0" IsChecked="{Binding Speech.PlayMuteSound, Source={x:Static local:Config.Data}}"/>
                     <CheckBox Content="Mute microphone on VRC mute" Margin="0,4,0,0" IsChecked="{Binding Speech.MuteOnVrcMute, Source={x:Static local:Config.Data}}"/>
                     <CheckBox Content="Remove full stop at sentence end" Margin="0,4,0,0" IsChecked="{Binding Speech.RemoveFullStop, Source={x:Static local:Config.Data}}"/>
                 </StackPanel>

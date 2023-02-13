@@ -131,7 +131,7 @@ namespace Hoscy.Services.Api
             }
             catch (Exception e)
             {
-                Logger.Error(e);
+                Logger.Error(e, "Failed to create and run the updating CMD command, some residue files may remain");
             }
         }
 
@@ -169,7 +169,7 @@ namespace Hoscy.Services.Api
             }
             catch (Exception e)
             {
-                Logger.Error(e);
+                Logger.Error(e, "Unable to download and unzip new version");
                 //Trying to delete old version of zip despite error
                 try
                 {
@@ -177,7 +177,7 @@ namespace Hoscy.Services.Api
                 }
                 catch (Exception e2)
                 {
-                    Logger.Error(e2);
+                    Logger.Error(e2, "Unable to delete files after error");
                 }
             }
             return false;

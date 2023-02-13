@@ -4,6 +4,7 @@ using Hoscy.Ui;
 using Hoscy.Ui.Controls;
 using System.Windows;
 using System.Windows.Controls;
+using Hoscy.Services.Speech;
 
 namespace Hoscy
 {
@@ -28,6 +29,8 @@ namespace Hoscy
 
             if (Config.Debug.CheckUpdates)
                 Updater.CheckForUpdates();
+
+            Recognition.RecognitionChanged += PlayMuteSound;
         }
 
         private void ListBox_SelectionChanged(object? sender, SelectionChangedEventArgs? e)
@@ -53,6 +56,14 @@ namespace Hoscy
                 navFrame.Navigate(navButton.NavPage);
                 Application.Current.Resources["AccentColor"] = navButton.Color;
             }
+        }
+
+        private bool _currentListenStatus = false;
+        private void PlayMuteSound(object? sender, RecognitionChangedEventArgs e)
+        {
+            if (_currentListenStatus != e.Listening && Config.Speech.PlayMuteSound && App.Running)
+                SoundPlayer.Play(e.Listening ? SoundPlayer.Sound.Unmute : SoundPlayer.Sound.Mute);
+            _currentListenStatus = e.Listening;
         }
     }
 }
