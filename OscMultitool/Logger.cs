@@ -42,9 +42,8 @@ namespace Hoscy
                 PInfo("Created logging file at " + Utils.PathLog);
                 return writer;
             }
-            catch (Exception e)
+            catch
             {
-                Error(e, notify:false);
                 return null;
             }
         }
