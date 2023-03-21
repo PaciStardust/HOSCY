@@ -116,10 +116,10 @@ namespace Hoscy
             if (!string.IsNullOrWhiteSpace(descriptiveError))
                 sb.AppendLine(descriptiveError + "\n\n--------------------------\nError details:\n");
 
-            sb.AppendLine(error.Message);
+            sb.AppendLine($"{error.GetType().Name} at {error.Source}: {error.Message}");
 
             if (error.InnerException != null)
-                sb.AppendLine($"\n(Inner {error.InnerException.GetType()}: {error.Message}{(error.Source == null ? "" : $" at {error.Source}")})");
+                sb.AppendLine($"\n(Inner {error.InnerException.GetType()}: {error.InnerException.Message}{(error.InnerException.Source == null ? "" : $" at {error.InnerException.Source}")})");
 
             if (error.StackTrace != null)
                 sb.AppendLine("\n--------------------------\nStack trace:\n\n" + error.StackTrace);
