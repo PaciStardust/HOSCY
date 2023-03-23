@@ -86,6 +86,14 @@ namespace Hoscy.Services.Api
                     return;
                 }
 
+                var lowerPlaying = playing.ToLower();
+                foreach (var filter in Config.Textbox.MediaFilter)
+                    if (lowerPlaying.Contains(filter.ToLower()))
+                    {
+                        SetNotification(string.Empty);
+                        return;
+                    }
+
                 Logger.Log($"Currently playing media has changed to: {playing}");
                 SetNotification($"{Config.Textbox.MediaPlayingVerb} {playing}");
             }
@@ -103,6 +111,9 @@ namespace Hoscy.Services.Api
 
             if (Config.Textbox.MediaAddAlbum && !string.IsNullOrWhiteSpace(_nowPlaying.AlbumTitle) && _nowPlaying.AlbumTitle != _nowPlaying.Title)
                 sb.Append($" {Config.Textbox.MediaAlbumVerb} '{_nowPlaying.AlbumTitle}'");
+
+            if (!string.IsNullOrWhiteSpace(Config.Textbox.MediaExtra))
+                sb.Append($" {Config.Textbox.MediaExtra}");
 
             return sb.ToString();
         }

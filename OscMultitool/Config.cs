@@ -458,6 +458,10 @@ namespace Hoscy
             }
             private string _mediaAlbumVerb = "on";
 
+            public string MediaExtra { get; set; } = string.Empty;
+
+            public List<string> MediaFilter { get; set; } = new(); //Phrases filtered from media
+
             private int CalcNotificationIndicatorLength()
                 => _notificationIndicatorRight.Length + _notificationIndicatorLeft.Length;
 

@@ -136,13 +136,16 @@
                 <Label Margin="0,16,0,0" Content="Extra Options" Style="{StaticResource HLabelM}"/>
 
                 <StackPanel Style="{StaticResource HStackIndent}">
-                    <Label Content="Media Status"/>
+                    <WrapPanel>
+                        <Label Content="Media Status"/>
+                        <Button Content="Media Filter" HorizontalAlignment="Left" VerticalAlignment="Center" Style="{StaticResource HButtonSmall}" Click="Button_ModifyMediaFilter"/>
+                    </WrapPanel>
 
                     <StackPanel Style="{StaticResource HStackIndent}">
                         <CheckBox Content="Show media status" IsChecked="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}"/>
                         <CheckBox Content="Also display album name" Margin="0,4,0,0" IsChecked="{Binding Textbox.MediaAddAlbum, Source={x:Static local:Config.Data}}" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}"/>
 
-                        <TextBlock Style="{DynamicResource HTextBlock}" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}" Text="Media Text" Margin="0,4,0,0"/>
+                        <TextBlock Style="{DynamicResource HTextBlock}" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}" Text="Text Configuration" Margin="0,8,0,4"/>
                         <WrapPanel IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}">
                             <TextBox Tag="Playing..." Style="{StaticResource HTextBoxShort}">
                                 <TextBox.Text>
@@ -154,6 +157,7 @@
                                 </TextBox.Text>
                             </TextBox>
                             <Label Content=" 'Song' " VerticalAlignment="Center"/>
+
                             <TextBox Tag="by..." Style="{StaticResource HTextBoxTiny}">
                                 <TextBox.Text>
                                     <Binding Source="{x:Static local:Config.Data}" Path="Textbox.MediaArtistVerb" UpdateSourceTrigger="PropertyChanged">
@@ -164,16 +168,24 @@
                                 </TextBox.Text>
                             </TextBox>
                             <Label Content=" 'Artist' " VerticalAlignment="Center"/>
-                            <TextBox Tag="on..." Style="{StaticResource HTextBoxTiny}">
-                                <TextBox.Text>
-                                    <Binding Source="{x:Static local:Config.Data}" Path="Textbox.MediaAlbumVerb" UpdateSourceTrigger="PropertyChanged">
-                                        <Binding.ValidationRules>
-                                            <ui:StringValidationRule Min="1" Max="999"/>
-                                        </Binding.ValidationRules>
-                                    </Binding>
-                                </TextBox.Text>
-                            </TextBox>
-                            <Label Content=" 'Album'" VerticalAlignment="Center"/>
+
+                            <WrapPanel IsEnabled="{Binding Textbox.MediaAddAlbum, Source={x:Static local:Config.Data}}">
+                                <TextBox Tag="on..." Style="{StaticResource HTextBoxTiny}">
+                                    <TextBox.Text>
+                                        <Binding Source="{x:Static local:Config.Data}" Path="Textbox.MediaAlbumVerb" UpdateSourceTrigger="PropertyChanged">
+                                            <Binding.ValidationRules>
+                                                <ui:StringValidationRule Min="1" Max="999"/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                                <Label Content=" 'Album'" VerticalAlignment="Center"/>
+                            </WrapPanel>
+                        </WrapPanel>
+
+                        <WrapPanel Margin="0,4,0,0" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}">
+                            <TextBox HorizontalAlignment="Left" Text="{Binding Textbox.MediaExtra, Source={x:Static local:Config.Data}}" Tag="Extra text..." Style="{StaticResource HTextBoxShort}"/>
+                            <Label Content="(Extra text)" VerticalAlignment="Center"/>
                         </WrapPanel>
                     </StackPanel>
 

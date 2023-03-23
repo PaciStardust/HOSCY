@@ -1,5 +1,7 @@
-﻿using Hoscy.Services.Speech;
+﻿using Hoscy.Services.OscControl;
+using Hoscy.Services.Speech;
 using Hoscy.Services.Speech.Utilities;
+using Hoscy.Ui.Windows;
 using System;
 using System.Linq;
 using System.Windows;
@@ -77,6 +79,15 @@ namespace Hoscy.Ui.Pages
         {
             if (volumeLabel != null)
                 volumeLabel.Content = $"Speech volume ({(int)Math.Round(volumeSlider.Value * 100)}%)";
+        }
+        #endregion
+
+        #region Other
+        private void Button_ModifyMediaFilter(object sender, RoutedEventArgs e)
+        {
+            var window = new ModifyListWindow("Edit Media Filters", "Filter", Config.Textbox.MediaFilter);
+            window.SetDarkMode(true);
+            window.ShowDialog();
         }
         #endregion
     }
