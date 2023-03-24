@@ -43,7 +43,8 @@
                 <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="Filter Text"/>
                 <TextBox x:Name="textFilterText" KeyUp="TextBox_KeyPressed" Tag="Filter text..."/>
 
-                <WrapPanel HorizontalAlignment="Center" Margin="0,8,0,8">
+                <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,4" Text="Comparison Options"/>
+                <WrapPanel HorizontalAlignment="Center" Margin="0,0,0,8">
                     <CheckBox VerticalAlignment="Center" Content="Ignore Case" x:Name="ignoreCaseCheckBox"/>
                     <CheckBox VerticalAlignment="Center" Content="Regex" x:Name="regexCheckBox" Margin="8,0,0,0"/>
                 </WrapPanel>
