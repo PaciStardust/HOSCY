@@ -792,9 +792,6 @@ namespace Hoscy
 
             internal bool Matches(string compare)
             {
-                if (!Enabled)
-                    return false;
-
                 if (_filterRegex == null)
                     return compare.Contains(_filterString, _ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
 

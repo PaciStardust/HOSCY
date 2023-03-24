@@ -87,7 +87,7 @@ namespace Hoscy.Services.Api
                 }
 
                 foreach (var filter in Config.Textbox.MediaFilters)
-                    if (filter.Matches(playing))
+                    if (filter.Enabled && filter.Matches(playing))
                     {
                         SetNotification(string.Empty);
                         return;

@@ -80,7 +80,7 @@ namespace Hoscy
                     return;
 
                 foreach (var filter in Config.Debug.LogFilters)
-                    if (filter.Matches(message.Message))
+                    if (filter.Enabled && filter.Matches(message.Message))
                         return;
 
                 var messageString = message.ToString().Replace("\n", " ").Replace("\r", "");
