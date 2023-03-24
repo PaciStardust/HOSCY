@@ -739,7 +739,7 @@ namespace Hoscy
                 => $"{(Enabled ? "" : "[x] ")}{Name}: {Count:N0}";
         }
 
-        internal class FilterModel //todo: case sensitivity flag?
+        internal class FilterModel
         {
             public string Name
             {
