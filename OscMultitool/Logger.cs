@@ -79,9 +79,8 @@ namespace Hoscy
                 if (!App.Running)
                     return;
 
-                var lowerMessage = message.Message.ToLower();
-                foreach (var filter in Config.Debug.LogFilter)
-                    if (lowerMessage.Contains(filter.ToLower()))
+                foreach (var filter in Config.Debug.LogFilters)
+                    if (filter.Matches(message.Message))
                         return;
 
                 var messageString = message.ToString().Replace("\n", " ").Replace("\r", "");

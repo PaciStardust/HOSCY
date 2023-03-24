@@ -86,9 +86,8 @@ namespace Hoscy.Services.Api
                     return;
                 }
 
-                var lowerPlaying = playing.ToLower();
-                foreach (var filter in Config.Textbox.MediaFilter)
-                    if (lowerPlaying.Contains(filter.ToLower()))
+                foreach (var filter in Config.Textbox.MediaFilters)
+                    if (filter.Matches(playing))
                     {
                         SetNotification(string.Empty);
                         return;

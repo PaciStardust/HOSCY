@@ -1,8 +1,10 @@
 ﻿using Hoscy.Services.Api;
 using Hoscy.Services.Speech;
 using Hoscy.Services.Speech.Utilities;
+using Hoscy.Ui.Windows;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Animation;
 
 namespace Hoscy.Ui.Pages
 {
@@ -19,7 +21,11 @@ namespace Hoscy.Ui.Pages
 
         #region Buttons
         private void Button_OpenLogFilter(object sender, RoutedEventArgs e)
-            => UiHelper.OpenListEditor("Edit Logging Filter", "Log Text", Config.Debug.LogFilter);
+        {
+            var window = new ModifyFiltersWindow("Edit Logging Filter", Config.Debug.LogFilters);
+            window.SetDarkMode(true);
+            window.ShowDialog();
+        }
 
         private void Button_ReloadDevices(object sender, RoutedEventArgs e)
         {

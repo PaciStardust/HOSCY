@@ -85,7 +85,7 @@ namespace Hoscy.Ui.Pages
         #region Other
         private void Button_ModifyMediaFilter(object sender, RoutedEventArgs e)
         {
-            var window = new ModifyListWindow("Edit Media Filters", "Filter", Config.Textbox.MediaFilter);
+            var window = new ModifyFiltersWindow("Edit Media Filter", Config.Textbox.MediaFilters);
             window.SetDarkMode(true);
             window.ShowDialog();
         }

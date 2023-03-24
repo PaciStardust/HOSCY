@@ -122,22 +122,6 @@ namespace Hoscy
                     });
                 }
 
-                if (config.Debug.LogFilter.Count == 0)
-                {
-                    config.Debug.LogFilter.AddRange(new List<string>()
-                    {
-                        "/angular",
-                        "/grounded",
-                        "/velocity",
-                        "/upright",
-                        "/voice",
-                        "/viseme",
-                        "/gesture",
-                        "_angle",
-                        "_stretch"
-                    });
-                }
-
                 if (config.Speech.Replacements.Count == 0)
                 {
                     config.Speech.Replacements.AddRange(new List<ReplacementModel>()
@@ -206,13 +190,28 @@ namespace Hoscy
                 });
             }
 
-            if (config.ConfigVersion < 3)
+            if (config.ConfigVersion < 4)
             {
-                config.Debug.LogFilter.Add("notification timeout was"); //No shortened timeout notifs
-                config.Debug.LogFilter.Add("did not override"); //No priority override notifs
+                if (config.Debug.LogFilters.Count == 0)
+                {
+                    config.Debug.LogFilters.AddRange(new List<FilterModel>()
+                    {
+                        new("VRC Angular", "/Angular"),
+                        new("VRC Grounded", "/Grounded"),
+                        new("VRC Velocity", "/Velocity"),
+                        new("VRC Upright", "/Upright"),
+                        new("VRC Voice", "/Voice"),
+                        new("VRC Viseme", "/Viseme"),
+                        new("VRC Gesture", "/Gesture"),
+                        new("VRC Angle", "_Angle"),
+                        new("VRC Stretch", "_Stretch"),
+                        new("Notification Timeout", "Notification timeout was"),
+                        new("Notification Override", "Did not override")
+                    });
+                }
             }
             
-            config.ConfigVersion = 3;
+            config.ConfigVersion = 4;
         }
         #endregion
 
@@ -241,13 +240,13 @@ namespace Hoscy
             public string Ip { get; set; } = "127.0.0.1"; //Target IP for sending
             public int Port //Target port for sending
             {
-                get { return _port; }
+                get => _port;
                 set { _port = MinMax(value, -1, 65535); }
             }
             private int _port = 9000;
             public int PortListen //Port HOSCY listens on
             {
-                get { return _portListen; }
+                get => _portListen;
                 set { _portListen = MinMax(value, -1, 65535); }
             }
             private int _portListen = 9001;
@@ -279,14 +278,14 @@ namespace Hoscy
             public bool ShowCounterNotifications { get; set; } = false; //Display in Textbox
             public float CounterDisplayDuration //Duration (in seconds) that counters will be accounted for in display
             {
-                get { return _counterDisplayDuration; }
+                get => _counterDisplayDuration;
                 set { _counterDisplayDuration = MinMax(value, 0.01f, 30); }
             }
             private float _counterDisplayDuration = 10f;
 
             public float CounterDisplayCooldown //Duration (in seconds) that counters cannot be displayed
             {
-                get { return _counterDisplayCooldown; }
+                get => _counterDisplayCooldown;
                 set { _counterDisplayCooldown = MinMax(value, 0, 300); }
             }
             private float _counterDisplayCooldown = 0f;
@@ -297,14 +296,14 @@ namespace Hoscy
             public bool ShowAfkDuration { get; set; } = false; //Display in Textbox
             public float AfkDuration //Duration (in seconds) between initial AFK notifications
             {
-                get { return _afkDuration; }
+                get => _afkDuration;
                 set { _afkDuration = MinMax(value, 5, 300); }
             }
             private float _afkDuration = 15;
 
             public float AfkDoubleDuration //Amount of times the duration gets displayed before duration doubles
             {
-                get { return _afkDoubleDuration; }
+                get => _afkDoubleDuration;
                 set { _afkDoubleDuration = MinMax(value, 0, 60); }
             }
             private float _afkDoubleDuration = 12;
@@ -329,13 +328,13 @@ namespace Hoscy
             public string SpeakerId { get; set; } = string.Empty; //Speaker for TTS out
             public float SpeakerVolume //TTS volume
             {
-                get { return _speakerVolume; }
+                get => _speakerVolume;
                 set { _speakerVolume = MinMax(value, 0, 1); }
             }
             private float _speakerVolume = 0.5f;
             public int MaxLenTtsString //Max length of strings that get TTS
             {
-                get { return _maxLenTtsString; }
+                get => _maxLenTtsString;
                 set { _maxLenTtsString = MinMax(value, 1, 99999); }
             }
             private int _maxLenTtsString = 500;
@@ -346,7 +345,7 @@ namespace Hoscy
             public string VoskModelCurrent { get; set; } = string.Empty; //Identifier for current model
             public int VoskTimeout //Time (in milliseconds) allowed to pass where no new words are identified before manually cutting off
             {
-                get { return _voskTimeout; }
+                get => _voskTimeout;
                 set { _voskTimeout = MinMax(value, 500, 30000); }
             }
             private int _voskTimeout = 2500;
@@ -371,27 +370,27 @@ namespace Hoscy
             //Timeout, Maxlen
             public int MaxLength //Max length of string displayed before cutoff
             {
-                get { return _maxLength; }
+                get => _maxLength;
                 set { _maxLength = MinMax(value, 50, 130); }
             }
             private int _maxLength = 130;
             public int TimeoutMultiplier //Add x milliseconds to timeout per 20 characters
             {
-                get { return _timeoutMultiplier; }
+                get => _timeoutMultiplier;
                 set { _timeoutMultiplier = MinMax(value, 250, 10000); }
             }
             private int _timeoutMultiplier = 1250;
 
             public int MinimumTimeout //Minimum timeout (in milliseconds) that a message stays in the chatbox
             {
-                get { return _minimumTimeout; }
+                get => _minimumTimeout;
                 set { _minimumTimeout = MinMax(value, 1250, 30000); }
             }
             private int _minimumTimeout = 3000;
 
             public int DefaultTimeout //Default timeout (in milliseconds) that a message stays in the chatbox
             {
-                get { return _defaultTimeout; }
+                get => _defaultTimeout;
                 set { _defaultTimeout = MinMax(value, 1250, 30000); }
             }
             private int _defaultTimeout = 5000;
@@ -404,7 +403,7 @@ namespace Hoscy
 
             public string NotificationIndicatorLeft //Text to the left of a notification
             {
-                get { return _notificationIndicatorLeft; }
+                get => _notificationIndicatorLeft;
                 set
                 {
                     _notificationIndicatorLeft = value.Length < 4 ? value : value[..3];
@@ -415,7 +414,7 @@ namespace Hoscy
 
             public string NotificationIndicatorRight //Text to the right of a notification
             {
-                get { return _notificationIndicatorRight; }
+                get => _notificationIndicatorRight;
                 set
                 {
                     _notificationIndicatorRight = value.Length < 4 ? value : value[..3];
@@ -439,28 +438,28 @@ namespace Hoscy
 
             public string MediaPlayingVerb //xyz "songname" by "artist" on "album"
             {
-                get { return _mediaPlayingVerb; }
+                get => _mediaPlayingVerb;
                 set { _mediaPlayingVerb = value.Length > 0 ? value : "Playing"; }
             }
             private string _mediaPlayingVerb = "Playing";
 
             public string MediaArtistVerb //Playing "songname" xyz "artist" on "album"
             {
-                get { return _mediaArtistVerb; }
+                get => _mediaArtistVerb;
                 set { _mediaArtistVerb = value.Length > 0 ? value : "by"; }
             }
             private string _mediaArtistVerb = "by";
 
             public string MediaAlbumVerb //Playing "songname" by "artist" xyz "album"
             {
-                get { return _mediaAlbumVerb; }
+                get => _mediaAlbumVerb;
                 set { _mediaAlbumVerb = value.Length > 0 ? value : "on"; }
             }
             private string _mediaAlbumVerb = "on";
 
             public string MediaExtra { get; set; } = string.Empty;
 
-            public List<string> MediaFilter { get; set; } = new(); //Phrases filtered from media
+            public List<FilterModel> MediaFilters { get; set; } = new(); //Phrases filtered from media
 
             private int CalcNotificationIndicatorLength()
                 => _notificationIndicatorRight.Length + _notificationIndicatorLeft.Length;
@@ -480,7 +479,7 @@ namespace Hoscy
             public string RecognitionPreset { get; set; } = string.Empty; //API preset for recognition
             public int RecognitionMaxRecordingTime //Max time (in seconds) that can be recorded at once
             {
-                get { return _recognitionMaxRecordingTime; }
+                get => _recognitionMaxRecordingTime;
                 set { _recognitionMaxRecordingTime = MinMax(value, 1, 300); }
             }
             private int _recognitionMaxRecordingTime = 30;
@@ -490,7 +489,7 @@ namespace Hoscy
             public bool TranslationSkipLongerMessages { get; set; } = true; //Skipping messages that are too long instead of partial translation
             public int TranslationMaxTextLength //Maximum length of translatable text
             {
-                get { return _translationMaxTextLength; }
+                get => _translationMaxTextLength;
                 set { _translationMaxTextLength = MinMax(value, 1, 60000); }
             }
             private int _translationMaxTextLength = 2000;
@@ -547,7 +546,7 @@ namespace Hoscy
             public bool PrioInfo { get; set; } = true;
             public bool Log { get; set; } = true;
             public bool Debug { get; set; } = false;
-            public List<string> LogFilter { get; set; } = new(); //Phrases filtered from logs
+            public List<FilterModel> LogFilters { get; set; } = new(); //Phrases filtered from logs
         }
 
         /// <summary>
@@ -571,10 +570,15 @@ namespace Hoscy
         /// </summary>
         internal class OscRoutingFilterModel
         {
-            public string Name { get; set; } = "New Filter";
+            public string Name
+            {
+                get => _name;
+                set { _name = string.IsNullOrWhiteSpace(value) ? "Unnamed Filter" : value; }
+            }
+            private string _name = "Unnamed Filter";
             public int Port
             {
-                get { return _port; }
+                get => _port;
                 set { _port = MinMax(value, -1, 65535); }
             }
             private int _port = -1;
@@ -596,7 +600,7 @@ namespace Hoscy
         {
             public string Text
             {
-                get { return _text; }
+                get => _text;
                 set {
                     _text = string.IsNullOrWhiteSpace(value) ? "New Value" : value;
                     _regexPattern = $@"(?<= |\b){Regex.Escape(_text)}(?=$| |\b)";
@@ -627,7 +631,12 @@ namespace Hoscy
 
         internal class ApiPresetModel
         {
-            public string Name { get; set; } = "Example Preset";
+            public string Name
+            {
+                get => _name;
+                set { _name = string.IsNullOrWhiteSpace(value) ? "Unnamed Preset" : value; }
+            }
+            private string _name = "Unnamed Preset";
             public string SentData { get; set; } = @"{""data"" : ""[T]""}";
             public Dictionary<string, string> HeaderValues { get; set; } = new();
             public string ContentType { get; set; } = "application/json";
@@ -635,7 +644,7 @@ namespace Hoscy
 
             public string TargetUrl
             {
-                get { return _targetUrl; }
+                get => _targetUrl;
                 set
                 {
                     _targetUrl = value;
@@ -647,7 +656,7 @@ namespace Hoscy
 
             public string Authorization
             {
-                get { return _authorization; }
+                get => _authorization;
                 set
                 {
                     _authorization = string.Empty;
@@ -673,7 +682,7 @@ namespace Hoscy
 
             public int ConnectionTimeout
             {
-                get { return _connectionTimeout; }
+                get => _connectionTimeout;
                 set { _connectionTimeout = MinMax(value, 25, 60000); }
             }
             private int _connectionTimeout = 3000;
@@ -690,20 +699,25 @@ namespace Hoscy
 
         internal class CounterModel
         {
-            public string Name { get; set; } = "Unnamed Counter";
+            public string Name
+            {
+                get => _name;
+                set { _name = string.IsNullOrWhiteSpace(value) ? "Unnamed Counter" : value; }
+            }
+            private string _name = "Unnamed Counter";
             public uint Count { get; set; } = 0;
             public DateTime LastUsed { get; set; } = DateTime.MinValue;
             public bool Enabled { get; set; } = true;
             public float Cooldown
             {
-                get { return _cooldown; }
+                get => _cooldown;
                 set { _cooldown = MinMax(value, 0, 3600); }
             }
             private float _cooldown = 0;
 
             public string Parameter
             {
-                get { return _parameter; }
+                get => _parameter;
                 set
                 {
                     _parameter = value;
@@ -723,6 +737,72 @@ namespace Hoscy
 
             public override string ToString()
                 => $"{(Enabled ? "" : "[x] ")}{Name}: {Count:N0}";
+        }
+
+        internal class FilterModel //todo: case sensitivity flag?
+        {
+            public string Name
+            {
+                get => _name;
+                set { _name = string.IsNullOrWhiteSpace(value) ? "Unnamed Filter" : value; }
+            }
+            private string _name = "Unnamed Filter";
+            public string FilterString
+            {
+                get => _filterString;
+                set
+                {
+                    _filterString = string.IsNullOrWhiteSpace(value) ? "Filter Text" : value;
+                    UpdateRegex();
+                }
+            }
+            private string _filterString = "Filter Text";
+            public bool Enabled { get; set; } = true;
+            public bool IgnoreCase
+            {
+                get => _ignoreCase;
+                set
+                {
+                    _ignoreCase = value;
+                    UpdateRegex();
+                }
+            }
+            private bool _ignoreCase = false;
+            public bool UseRegex
+            {
+                get => _useRegex;
+                set
+                {
+                    _useRegex = value;
+                    UpdateRegex();
+                }
+            }
+            private bool _useRegex = false;
+            private Regex? _filterRegex;
+
+            public FilterModel(string name, string filterString)
+            {
+                Name = name;
+                FilterString = filterString;
+            }
+            public FilterModel() { }
+
+            private void UpdateRegex()
+                => _filterRegex = _useRegex ? new(_filterString, _ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None | RegexOptions.CultureInvariant) : null;
+
+            internal bool Matches(string compare)
+            {
+                if (!Enabled)
+                    return false;
+
+                if (_filterRegex == null)
+                    return compare.Contains(_filterString, _ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+
+                return _filterRegex.IsMatch(compare);
+            }
+
+            public override string ToString()
+                => $"{(Enabled ? "" : "[x] ")}{_name} ={(_useRegex ? "R" : string.Empty)}{(_ignoreCase ? "C" : string.Empty)}> {_filterString}";
         }
         #endregion
     }
