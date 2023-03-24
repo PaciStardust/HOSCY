@@ -70,7 +70,7 @@ namespace Hoscy.Models
         }
 
         public override string ToString()
-            => $"{(Enabled ? "" : "[x] ")}{_name} ={(_useRegex ? "[R]" : string.Empty)}{(_ignoreCase ? string.Empty : "[C]")}> {_filterString}";
+            => $"{(Enabled ? "" : "[x] ")}{_name} ={(_useRegex ? "R" : string.Empty)}{(_ignoreCase ? string.Empty : "C")}> {_filterString}";
     }
 
     internal abstract class RegexTextChangingModelBase : RegexFilteredModelBase
@@ -99,7 +99,7 @@ namespace Hoscy.Models
         }
 
         public override string ToString()
-            => $"{(Enabled ? "" : "[x] ")}{Text} ={(_useRegex ? "[R]" : string.Empty)}{(_ignoreCase ? string.Empty : "[C]")}> {Replacement}";
+            => $"{(Enabled ? "" : "[x] ")}{Text} ={(_useRegex ? "R" : string.Empty)}{(_ignoreCase ? string.Empty : "C")}> {Replacement}";
     }
 
     internal class ReplacementModel : RegexTextChangingModelBase //todo: test
