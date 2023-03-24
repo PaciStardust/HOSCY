@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hoscy.Models;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -13,9 +14,9 @@ namespace Hoscy.Ui.Windows
     /// </summary>
     internal partial class ModifyCountersWindow : Window
     {
-        private readonly List<Config.CounterModel> _list;
+        private readonly List<CounterModel> _list;
 
-        public ModifyCountersWindow(string title, List<Config.CounterModel> list)
+        public ModifyCountersWindow(string title, List<CounterModel> list)
         {
             InitializeComponent();
 
@@ -74,9 +75,9 @@ namespace Hoscy.Ui.Windows
             textCooldown.Text = _list[listBox.SelectedIndex].Cooldown.ToString();
         }
 
-        private Config.CounterModel GetNewModel()
+        private CounterModel GetNewModel()
         {
-            var model = new Config.CounterModel()
+            var model = new CounterModel()
             {
                 Enabled = enabledCheckBox.IsChecked ?? false
             };

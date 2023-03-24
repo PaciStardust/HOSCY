@@ -78,6 +78,28 @@ namespace Hoscy
                 return folderName;
         }
 
+        /// <summary>
+        /// A combination of floor and ceil for comparables
+        /// </summary>
+        /// <typeparam name="T">Type to compare</typeparam>
+        /// <param name="value">Value to compare</param>
+        /// <param name="min">Minimum value</param>
+        /// <param name="max">Maximum value</param>
+        /// <returns>Value, if within bounds. Min, if value smaller than min. Max, if value larger than max. If max is smaller than min, min has priority</returns>
+        internal static T MinMax<T>(T value, T min, T max) where T : IComparable
+        {
+            if (value.CompareTo(min) < 0)
+                return min;
+            if (value.CompareTo(max) > 0)
+                return max;
+            return value;
+        }
+
+        /// <summary>
+        /// Gets the emedded ressource stream from the assembly by name
+        /// </summary>
+        /// <param name="name">Name of ressource</param>
+        /// <returns>Stream of ressource</returns>
         internal static Stream? GetEmbeddedRessourceStream(string name)
             => Assembly.GetExecutingAssembly().GetManifestResourceStream(name);
     }

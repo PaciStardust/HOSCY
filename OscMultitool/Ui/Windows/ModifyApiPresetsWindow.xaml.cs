@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Hoscy.Models;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,9 +12,9 @@ namespace Hoscy.Ui.Windows
     /// </summary>
     internal partial class ModifyApiPresetsWindow : Window
     {
-        private readonly List<Config.ApiPresetModel> _list;
+        private readonly List<ApiPresetModel> _list;
 
-        public ModifyApiPresetsWindow(string title, List<Config.ApiPresetModel> list)
+        public ModifyApiPresetsWindow(string title, List<ApiPresetModel> list)
         {
             InitializeComponent();
 
@@ -74,9 +75,9 @@ namespace Hoscy.Ui.Windows
             textAuthHeader.Text = selected.Authorization;
         }
 
-        private Config.ApiPresetModel GetNewModel()
+        private ApiPresetModel GetNewModel()
         {
-            var model = new Config.ApiPresetModel();
+            var model = new ApiPresetModel();
 
             if (!string.IsNullOrWhiteSpace(textName.Text))
                 model.Name = textName.Text;

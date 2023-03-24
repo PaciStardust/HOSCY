@@ -4,7 +4,6 @@ using Hoscy.Services.Speech.Utilities;
 using Hoscy.Ui.Windows;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Animation;
 
 namespace Hoscy.Ui.Pages
 {

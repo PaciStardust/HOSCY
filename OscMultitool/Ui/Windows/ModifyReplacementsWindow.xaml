@@ -22,6 +22,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <StackPanel>
@@ -38,11 +39,19 @@
                 <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Text="Text" Margin="0,16,0,0"/>
                 <TextBox x:Name="textValue" KeyUp="TextBox_KeyPressed" Tag="Text..."/>
             </StackPanel>
-            
+
             <DockPanel Grid.Row="1" Margin="0,16,0,0">
                 <TextBlock Style="{DynamicResource HTextBlock}" DockPanel.Dock="Top" HorizontalAlignment="Center" Text="Replacement"/>
                 <TextBox x:Name="replacementValue" Style="{DynamicResource HTextBoxLarge}" KeyUp="TextBox_KeyPressed" Tag="Replacement..."/>
             </DockPanel>
+
+            <StackPanel  Grid.Row="2">
+                <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,4" Text="Comparison Options"/>
+                <WrapPanel HorizontalAlignment="Center">
+                    <CheckBox VerticalAlignment="Center" Content="Ignore Case" x:Name="ignoreCaseCheckBox" IsChecked="True"/>
+                    <CheckBox VerticalAlignment="Center" Content="Regex" x:Name="regexCheckBox" Margin="8,0,0,0"/>
+                </WrapPanel>
+            </StackPanel>
         </Grid>
     </Grid>
 </Window>

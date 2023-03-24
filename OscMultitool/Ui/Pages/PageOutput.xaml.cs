@@ -1,5 +1,4 @@
-﻿using Hoscy.Services.OscControl;
-using Hoscy.Services.Speech;
+﻿using Hoscy.Services.Speech;
 using Hoscy.Services.Speech.Utilities;
 using Hoscy.Ui.Windows;
 using System;

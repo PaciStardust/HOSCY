@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using Hoscy.Models;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -6,9 +7,9 @@ namespace Hoscy.Services.Api
 {
     internal class ApiClient
     {
-        private Config.ApiPresetModel? _preset;
+        private ApiPresetModel? _preset;
 
-        internal bool LoadPreset(Config.ApiPresetModel preset)
+        internal bool LoadPreset(ApiPresetModel preset)
         {
             if (preset.Equals(_preset))
                 return true;

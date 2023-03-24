@@ -206,7 +206,7 @@ namespace Hoscy.Ui.Pages
         }
         private void Button_OpenShortcuts(object sender, RoutedEventArgs e)
         {
-            var window = new ModifyReplacementsWindow("Edit Shortcuts", Config.Speech.Shortcuts);
+            var window = new ModifyShortcutsWindow("Edit Shortcuts", Config.Speech.Shortcuts);
             window.SetDarkMode(true);
             window.ShowDialog();
         }

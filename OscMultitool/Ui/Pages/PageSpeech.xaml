@@ -44,7 +44,6 @@
                         <Button Content="Noise Filter" Margin="16,0,0,0" Click="Button_OpenNoiseFilter"/>
                     </WrapPanel>
                     <CheckBox Content="Use shortcuts and replacements" Margin="0,8,0,0" IsChecked="{Binding Speech.UseReplacements, Source={x:Static local:Config.Data}}"/>
-                    <CheckBox Content="Ignore caps for list checks" Margin="0,8,0,0" IsChecked="{Binding Speech.IgnoreCaps, Source={x:Static local:Config.Data}}"/>
                 </StackPanel>
 
                 <!-- Recognizer Settings -->
@@ -109,7 +108,6 @@
             <StackPanel Style="{StaticResource HStackIndent}">
                 <CheckBox Content="Trigger shortcuts and replacements" IsChecked="{Binding Input.TriggerReplace, Source={x:Static local:Config.Data}}"/>
                 <CheckBox Content="Trigger commands" Margin="0,4,0,0" IsChecked="{Binding Input.TriggerCommands, Source={x:Static local:Config.Data}}"/>
-                <CheckBox Content="Ignore caps for list checks" Margin="0,4,0,0" IsChecked="{Binding Input.IgnoreCaps, Source={x:Static local:Config.Data}}"/>
                 <CheckBox Content="Allow translation" Margin="0,4,0,0" IsChecked="{Binding Input.AllowTranslation, Source={x:Static local:Config.Data}}"/>
             </StackPanel>
         </StackPanel>

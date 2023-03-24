@@ -7,8 +7,8 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Resources\hoscy_circle.ico</ApplicationIcon>
     <Platforms>AnyCPU;x64</Platforms>
-    <AssemblyVersion>0.6.8</AssemblyVersion>
-    <FileVersion>0.6.8</FileVersion>
+    <AssemblyVersion>0.7</AssemblyVersion>
+	<FileVersion>0.7</FileVersion>
     <RepositoryUrl>https://github.com/PaciStardust/HOSCY</RepositoryUrl>
     <PackageProjectUrl>https://github.com/PaciStardust/HOSCY</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -78,6 +78,9 @@
     <Compile Update="Ui\Windows\ModifyCountersWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Ui\Windows\ModifyShortcutsWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Ui\Windows\ModifyReplacementsWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -116,6 +119,9 @@
     <Page Update="Ui\Windows\ModifyCountersWindow.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Ui\Windows\ModifyShortcutsWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Ui\Windows\ModifyReplacementsWindow.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>

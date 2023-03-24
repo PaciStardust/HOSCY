@@ -2,7 +2,6 @@
 using Hoscy.Services.Api;
 using Hoscy.Ui.Pages;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -15,7 +14,6 @@ namespace Hoscy.Services.Speech
         internal bool UseTts { get; init; } = false;
         internal bool TriggerCommands { get; init; } = false;
         internal bool TriggerReplace { get; init; } = false;
-        internal bool ReplaceCaseInsensitive { get; init; } = false;
         internal bool AllowTranslate { get; init; } = false;
 
         #region Processing
@@ -74,26 +72,22 @@ namespace Hoscy.Services.Speech
             PageInfo.SetMessage(message, UseTextbox, UseTts);
         }
 
-        private static readonly List<Config.ReplacementModel> _shortcuts = Config.Speech.Shortcuts;
-        private static readonly List<Config.ReplacementModel> _replacements = Config.Speech.Replacements;
         /// <summary>
         /// Replaces message or parts of it
         /// </summary>
         private string ReplaceMessage(string message)
         {
             //Splitting and checking for replacements
-            var regexOpt = RegexOptions.CultureInvariant | (ReplaceCaseInsensitive ? RegexOptions.IgnoreCase : RegexOptions.None);
-            foreach (var r in _replacements)
+            foreach (var r in Config.Speech.Replacements)
             {
                 if (r.Enabled)
-                    message = Regex.Replace(message, r.RegexPattern(), r.Replacement, regexOpt);
+                    message = r.Replace(message);
             }
 
             //Checking for shortcuts
-            var compareText = ReplaceCaseInsensitive ? message.ToLower() : message;
-            foreach (var s in _shortcuts)
+            foreach (var s in Config.Speech.Shortcuts)
             {
-                if (s.Enabled && compareText == (ReplaceCaseInsensitive ? s.LowercaseText() : s.Text))
+                if (s.Enabled && s.Compare(message))
                 {
                     message = s.Replacement;
                     break;

@@ -8,13 +8,13 @@ using System.Windows.Input;
 namespace Hoscy.Ui.Windows
 {
     /// <summary>
-    /// Interaction logic for ModifyFiltersWindow.xaml
+    /// Interaction logic for ModifyShortcutsWindow.xaml
     /// </summary>
-    internal partial class ModifyFiltersWindow : Window
+    internal partial class ModifyShortcutsWindow : Window
     {
-        private readonly List<FilterModel> _list;
+        private readonly List<ShortcutModel> _list;
 
-        public ModifyFiltersWindow(string title, List<FilterModel> list)
+        public ModifyShortcutsWindow(string title, List<ShortcutModel> list)
         {
             InitializeComponent();
 
@@ -66,27 +66,27 @@ namespace Hoscy.Ui.Windows
             if (!listBox.IsInBounds(_list))
                 return;
 
-            textName.Text = _list[listBox.SelectedIndex].Name;
-            textFilterText.Text = _list[listBox.SelectedIndex].FilterString;
+            textValue.Text = _list[listBox.SelectedIndex].Text;
+            replacementValue.Text = _list[listBox.SelectedIndex].Replacement;
             enabledCheckBox.IsChecked = _list[listBox.SelectedIndex].Enabled;
             regexCheckBox.IsChecked = _list[listBox.SelectedIndex].UseRegex;
             ignoreCaseCheckBox.IsChecked = _list[listBox.SelectedIndex].IgnoreCase;
         }
 
-        private FilterModel GetNewModel()
+        private ShortcutModel GetNewModel()
         {
-            var model = new FilterModel()
+            var model = new ShortcutModel()
             {
                 Enabled = enabledCheckBox.IsChecked ?? false,
                 UseRegex = regexCheckBox.IsChecked ?? false,
-                IgnoreCase = ignoreCaseCheckBox.IsChecked ?? false,
+                IgnoreCase = ignoreCaseCheckBox.IsChecked ?? false
             };
 
-            if (!string.IsNullOrWhiteSpace(textName.Text))
-                model.Name = textName.Text;
+            if (!string.IsNullOrWhiteSpace(textValue.Text))
+                model.Text = textValue.Text;
 
-            if (!string.IsNullOrWhiteSpace(textFilterText.Text))
-                model.FilterString = textFilterText.Text;
+            if (!string.IsNullOrWhiteSpace(replacementValue.Text))
+                model.Replacement = replacementValue.Text;
 
             return model;
         }

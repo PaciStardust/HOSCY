@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Hoscy.Models;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,9 +12,9 @@ namespace Hoscy.Ui.Windows
     /// </summary>
     internal partial class ModifyReplacementsWindow : Window
     {
-        private readonly List<Config.ReplacementModel> _list;
+        private readonly List<ReplacementModel> _list;
 
-        public ModifyReplacementsWindow(string title, List<Config.ReplacementModel> list)
+        public ModifyReplacementsWindow(string title, List<ReplacementModel> list)
         {
             InitializeComponent();
 
@@ -68,13 +69,17 @@ namespace Hoscy.Ui.Windows
             textValue.Text = _list[listBox.SelectedIndex].Text;
             replacementValue.Text = _list[listBox.SelectedIndex].Replacement;
             enabledCheckBox.IsChecked = _list[listBox.SelectedIndex].Enabled;
+            regexCheckBox.IsChecked = _list[listBox.SelectedIndex].UseRegex;
+            ignoreCaseCheckBox.IsChecked = _list[listBox.SelectedIndex].IgnoreCase;
         }
 
-        private Config.ReplacementModel GetNewModel()
+        private ReplacementModel GetNewModel()
         {
-            var model = new Config.ReplacementModel()
+            var model = new ReplacementModel()
             {
-                Enabled = enabledCheckBox.IsChecked ?? false
+                Enabled = enabledCheckBox.IsChecked ?? false,
+                UseRegex = regexCheckBox.IsChecked ?? false,
+                IgnoreCase = ignoreCaseCheckBox.IsChecked ?? false
             };
 
             if (!string.IsNullOrWhiteSpace(textValue.Text))

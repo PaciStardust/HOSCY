@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Hoscy.Models;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,9 +12,9 @@ namespace Hoscy.Ui.Windows
     /// </summary>
     internal partial class ModifyOscRoutingFiltersWindow : Window
     {
-        private readonly List<Config.OscRoutingFilterModel> _list;
+        private readonly List<OscRoutingFilterModel> _list;
 
-        public ModifyOscRoutingFiltersWindow(string title, List<Config.OscRoutingFilterModel> list)
+        public ModifyOscRoutingFiltersWindow(string title, List<OscRoutingFilterModel> list)
         {
             InitializeComponent();
 
@@ -70,9 +71,9 @@ namespace Hoscy.Ui.Windows
             textIp.Text = _list[listBox.SelectedIndex].Ip;
         }
 
-        private Config.OscRoutingFilterModel GetNewModel()
+        private OscRoutingFilterModel GetNewModel()
         {
-            var model = new Config.OscRoutingFilterModel();
+            var model = new OscRoutingFilterModel();
 
             if (!string.IsNullOrWhiteSpace(textName.Text))
                 model.Name = textName.Text;
