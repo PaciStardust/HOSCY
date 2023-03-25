@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace Hoscy.Services.Speech.Utilities
 {
-    internal readonly struct ReplacementHandler
+    internal class ReplacementHandler
     {
         private readonly Regex _regex;
         private readonly string _replacement;
@@ -23,16 +23,16 @@ namespace Hoscy.Services.Speech.Utilities
             => _regex?.Replace(text, _replacement) ?? text;
     }
 
-    internal readonly struct ShortcutHandler
+    internal class ShortcutHandler
     {
         private readonly Regex? _regex;
         private readonly string _text;
         private readonly bool _ignoreCase;
-        internal readonly string Replacement { get; private init; }
+        private readonly string _replacement;
 
         internal ShortcutHandler(ReplacementDataModel replacementData)
         {
-            Replacement = replacementData.Replacement;
+            _replacement = replacementData.Replacement;
             _text = replacementData.Text;
             _ignoreCase = replacementData.IgnoreCase;
 
@@ -50,5 +50,8 @@ namespace Hoscy.Services.Speech.Utilities
 
             return _regex.IsMatch(text);
         }
+
+        internal string GetReplacement()
+            => _replacement;
     }
 }

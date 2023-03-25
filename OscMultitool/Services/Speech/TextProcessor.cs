@@ -13,8 +13,8 @@ namespace Hoscy.Services.Speech
     internal class TextProcessor
     {
         #region Static
-        private static List<ReplacementHandler> _replacements = new();
-        private static List<ShortcutHandler> _shortcuts = new();
+        private static IReadOnlyList<ReplacementHandler> _replacements = new List<ReplacementHandler>();
+        private static IReadOnlyList<ShortcutHandler> _shortcuts = new List<ShortcutHandler>();
 
         static TextProcessor()
         {
@@ -108,7 +108,7 @@ namespace Hoscy.Services.Speech
         /// <summary>
         /// Replaces message or parts of it
         /// </summary>
-        private string ReplaceMessage(string message)
+        private static string ReplaceMessage(string message)
         {
             //Splitting and checking for replacements
             foreach (var r in _replacements)
@@ -119,7 +119,7 @@ namespace Hoscy.Services.Speech
             {
                 if (s.Compare(message))
                 {
-                    message = s.Replacement;
+                    message = s.GetReplacement();
                     break;
                 }
             }
