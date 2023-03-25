@@ -78,10 +78,7 @@
     <Compile Update="Ui\Windows\ModifyCountersWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Ui\Windows\ModifyShortcutsWindow.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Ui\Windows\ModifyReplacementsWindow.xaml.cs">
+    <Compile Update="Ui\Windows\ModifyReplacementDataWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Ui\Windows\ModifyOscRoutingFiltersWindow.xaml.cs">
@@ -120,10 +117,7 @@
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Ui\Windows\ModifyShortcutsWindow.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
-    <Page Update="Ui\Windows\ModifyReplacementsWindow.xaml">
+    <Page Update="Ui\Windows\ModifyReplacementDataWindow.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>

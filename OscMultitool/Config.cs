@@ -106,22 +106,22 @@ namespace Hoscy
 
                 if (config.Speech.Replacements.Count == 0)
                 {
-                    config.Speech.Replacements.AddRange(new List<ReplacementModel>()
+                    config.Speech.Replacements.AddRange(new List<ReplacementDataModel>()
                     {
-                        new("exclamation mark", "!"),
-                        new("question mark", "?"),
-                        new("colon", ":"),
-                        new("semicolon", ";"),
-                        new("open parenthesis", "("),
-                        new("closed parenthesis", ")"),
-                        new("open bracket", "("),
-                        new("closed bracket", ")"),
-                        new("minus", "-"),
-                        new("plus", "+"),
-                        new("slash", "/"),
-                        new("backslash", "\\"),
-                        new("hashtag", "#"),
-                        new("asterisk", "*")
+                        new("exclamation mark", "!", false),
+                        new("question mark", "?", false),
+                        new("colon", ":", false),
+                        new("semicolon", ";", false),
+                        new("open parenthesis", "(", false),
+                        new("closed parenthesis", ")", false),
+                        new("open bracket", "(", false),
+                        new("closed bracket", ")", false),
+                        new("minus", "-", false),
+                        new("plus", "+", false),
+                        new("slash", "/", false),
+                        new("backslash", "\\", false),
+                        new("hashtag", "#", false),
+                        new("asterisk", "*", false)
                     });
                 }
             }

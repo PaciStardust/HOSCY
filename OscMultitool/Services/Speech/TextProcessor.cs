@@ -5,11 +5,44 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using Hoscy.Services.Speech.Utilities;
 
 namespace Hoscy.Services.Speech
 {
     internal class TextProcessor
     {
+        #region Static
+        private static List<ReplacementHandler> _replacements = new();
+        private static List<ShortcutHandler> _shortcuts = new();
+
+        static TextProcessor()
+        {
+            UpdateReplacementDataHandlers();
+        }
+
+        internal static void UpdateReplacementDataHandlers()
+        {
+            var replacements = new List<ReplacementHandler>();
+            foreach (var replacementData in Config.Speech.Replacements)
+            {
+                if (replacementData.Enabled)
+                    replacements.Add(new(replacementData));
+            }
+            
+            var shortcuts = new List<ShortcutHandler>();
+            foreach (var replacementData in Config.Speech.Shortcuts)
+            {
+                if (replacementData.Enabled)
+                    shortcuts.Add(new(replacementData));
+            }
+
+            _replacements = replacements;
+            _shortcuts = shortcuts;
+            Logger.PInfo($"Reloaded ReplacementDataHandlers ({_replacements.Count} Replacements, {_shortcuts.Count} Shortcuts)");
+        }
+        #endregion
+
         internal bool UseTextbox { get; init; } = false;
         internal bool UseTts { get; init; } = false;
         internal bool TriggerCommands { get; init; } = false;
@@ -78,16 +111,13 @@ namespace Hoscy.Services.Speech
         private string ReplaceMessage(string message)
         {
             //Splitting and checking for replacements
-            foreach (var r in Config.Speech.Replacements)
-            {
-                if (r.Enabled)
-                    message = r.Replace(message);
-            }
+            foreach (var r in _replacements)
+                message = r.Replace(message);
 
             //Checking for shortcuts
-            foreach (var s in Config.Speech.Shortcuts)
+            foreach (var s in _shortcuts)
             {
-                if (s.Enabled && s.Compare(message))
+                if (s.Compare(message))
                 {
                     message = s.Replacement;
                     break;

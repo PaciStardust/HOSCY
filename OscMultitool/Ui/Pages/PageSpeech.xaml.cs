@@ -200,15 +200,17 @@ namespace Hoscy.Ui.Pages
         }
         private void Button_OpenReplacements(object sender, RoutedEventArgs e)
         {
-            var window = new ModifyReplacementsWindow("Edit Replacements", Config.Speech.Replacements);
+            var window = new ModifyReplacementDataWindow("Edit Replacements", Config.Speech.Replacements);
             window.SetDarkMode(true);
             window.ShowDialog();
+            TextProcessor.UpdateReplacementDataHandlers();
         }
         private void Button_OpenShortcuts(object sender, RoutedEventArgs e)
         {
-            var window = new ModifyShortcutsWindow("Edit Shortcuts", Config.Speech.Shortcuts);
+            var window = new ModifyReplacementDataWindow("Edit Shortcuts", Config.Speech.Shortcuts);
             window.SetDarkMode(true);
             window.ShowDialog();
+            TextProcessor.UpdateReplacementDataHandlers();
         }
 
         private void Button_EditVoskModels(object sender, RoutedEventArgs e)

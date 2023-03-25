@@ -8,13 +8,13 @@ using System.Windows.Input;
 namespace Hoscy.Ui.Windows
 {
     /// <summary>
-    /// Interaction logic for ModifyShortcutsWindow.xaml
+    /// Interaction logic for ModifyListWindow.xaml
     /// </summary>
-    internal partial class ModifyShortcutsWindow : Window
+    internal partial class ModifyReplacementDataWindow : Window
     {
-        private readonly List<ShortcutModel> _list;
+        private readonly List<ReplacementDataModel> _list;
 
-        public ModifyShortcutsWindow(string title, List<ShortcutModel> list)
+        public ModifyReplacementDataWindow(string title, List<ReplacementDataModel> list)
         {
             InitializeComponent();
 
@@ -73,9 +73,9 @@ namespace Hoscy.Ui.Windows
             ignoreCaseCheckBox.IsChecked = _list[listBox.SelectedIndex].IgnoreCase;
         }
 
-        private ShortcutModel GetNewModel()
+        private ReplacementDataModel GetNewModel()
         {
-            var model = new ShortcutModel()
+            var model = new ReplacementDataModel()
             {
                 Enabled = enabledCheckBox.IsChecked ?? false,
                 UseRegex = regexCheckBox.IsChecked ?? false,
