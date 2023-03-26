@@ -5,12 +5,6 @@ namespace Hoscy.Models
 {
     internal class CounterModel
     {
-        private static readonly NumberFormatInfo _nfi = new()
-        {
-            NumberDecimalDigits = 0,
-            NumberGroupSeparator = "."
-        };
-
         public string Name
         {
             get => _name;
@@ -48,6 +42,6 @@ namespace Hoscy.Models
         internal string FullParameter() => _fullParameter;
 
         public override string ToString()
-            => $"{(Enabled ? "" : "[x] ")}{Name}: {Count.ToString("N", _nfi)}";
+            => $"{(Enabled ? "" : "[x] ")}{Name}: {Count:N0}";
     }
 }
