@@ -1,7 +1,4 @@
-﻿using System;
-using System.Text.RegularExpressions;
-
-namespace Hoscy.Models
+﻿namespace Hoscy.Models
 {
     internal class ReplacementDataModel
     {
@@ -10,7 +7,7 @@ namespace Hoscy.Models
             get => _text;
             set => _text = string.IsNullOrWhiteSpace(value) ? "New Text" : value;
         }
-        protected string _text = "New Text";
+        private string _text = "New Text";
 
         public string Replacement { get; set; } = "Example";
 
@@ -27,6 +24,6 @@ namespace Hoscy.Models
         public ReplacementDataModel() { }
 
         public override string ToString()
-            => $"{(Enabled ? "" : "[x] ")}{Text} ={(UseRegex ? "R" : string.Empty)}{(IgnoreCase ? string.Empty : "C")}> {Replacement}";
+            => $"{(Enabled ? string.Empty : "[x] ")}{Text} ={(UseRegex ? "R" : string.Empty)}{(IgnoreCase ? string.Empty : "C")}> {Replacement}";
     }
 }

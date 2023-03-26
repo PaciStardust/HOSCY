@@ -23,30 +23,43 @@ namespace Hoscy.Services.Speech
 
         internal static void UpdateReplacementDataHandlers()
         {
-            try
+            var replacements = new List<ReplacementHandler>();
+            foreach (var replacementData in Config.Speech.Replacements)
             {
-                var replacements = new List<ReplacementHandler>();
-                foreach (var replacementData in Config.Speech.Replacements)
-                {
-                    if (replacementData.Enabled)
-                        replacements.Add(new(replacementData));
-                }
+                if (!replacementData.Enabled)
+                    continue;
 
-                var shortcuts = new List<ShortcutHandler>();
-                foreach (var replacementData in Config.Speech.Shortcuts)
+                try
                 {
-                    if (replacementData.Enabled)
-                        shortcuts.Add(new(replacementData));
+                    replacements.Add(new(replacementData));
                 }
-
-                _replacements = replacements;
-                _shortcuts = shortcuts;
-                Logger.PInfo($"Reloaded ReplacementDataHandlers ({_replacements.Count} Replacements, {_shortcuts.Count} Shortcuts)");
+                catch (Exception ex)
+                {
+                    Logger.Error(ex, $"Could not instantiate ReplacementHandler \"{replacementData.Text}\", RegEx might be broken");
+                    replacementData.Enabled = false;
+                }
             }
-            catch (Exception ex)
+
+            var shortcuts = new List<ShortcutHandler>();
+            foreach (var replacementData in Config.Speech.Shortcuts)
             {
-                Logger.Error(ex, "Failed reloading ReplacementDataHandlers, a RegEx may be broken");
+                if (!replacementData.Enabled)
+                    continue;
+
+                try
+                {
+                    shortcuts.Add(new(replacementData));
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex, $"Could not instantiate ShortcutHandler \"{replacementData.Text}\", RegEx might be broken");
+                    replacementData.Enabled = false;
+                }
             }
+
+            _replacements = replacements;
+            _shortcuts = shortcuts;
+            Logger.PInfo($"Reloaded ReplacementDataHandlers ({_replacements.Count} Replacements, {_shortcuts.Count} Shortcuts)");
         }
         #endregion
 

@@ -22,7 +22,17 @@ namespace Hoscy.Models
         }
         private string _filterString = "Filter Text";
 
-        public bool Enabled { get; set; } = true;
+        public bool Enabled
+        {
+            get => _enabled;
+            set
+            {
+                _enabled = value;
+                UpdateRegex();
+            }
+        }
+        private bool _enabled = true;
+
         public bool IgnoreCase
         {
             get => _ignoreCase;
@@ -32,7 +42,8 @@ namespace Hoscy.Models
                 UpdateRegex();
             }
         }
-        protected bool _ignoreCase = true;
+        private bool _ignoreCase = true;
+
         public bool UseRegex
         {
             get => _useRegex;
@@ -42,9 +53,9 @@ namespace Hoscy.Models
                 UpdateRegex();
             }
         }
-        protected bool _useRegex = false;
+        private bool _useRegex = false;
 
-        protected Regex? _regex;
+        private Regex? _regex;
 
         public FilterModel(string name, string filterString)
         {
@@ -54,10 +65,26 @@ namespace Hoscy.Models
         public FilterModel() { }
 
         protected void UpdateRegex()
-            => _regex = _useRegex ? new(_filterString, _ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None | RegexOptions.CultureInvariant) : null;
+        {
+            try
+            {
+                _regex = _useRegex
+                    ? new(_filterString, _ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None | RegexOptions.CultureInvariant)
+                    : null;
+            }
+            catch
+            {
+                //Cannot log error as init would break
+                _regex = null;
+                _enabled = false;
+            }
+        }
 
         internal bool Matches(string compare)
         {
+            if (!_enabled)
+                return false;
+
             if (_regex == null)
                 return compare.Contains(_filterString, _ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
 
@@ -65,6 +92,6 @@ namespace Hoscy.Models
         }
 
         public override string ToString()
-            => $"{(Enabled ? "" : "[x] ")}{_name} ={(_useRegex ? "R" : string.Empty)}{(_ignoreCase ? string.Empty : "C")}> {_filterString}";
+            => $"{(Enabled ? string.Empty : "[x] ")}{_name} ={(_useRegex ? "R" : string.Empty)}{(_ignoreCase ? string.Empty : "C")}> {_filterString}";
     }
 }
