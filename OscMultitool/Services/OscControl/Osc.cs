@@ -43,7 +43,7 @@ namespace Hoscy.Services.OscControl
             }
             catch (Exception e)
             {
-                Logger.Error(e, "Failed to send OSC data.");
+                Logger.Error(e, "Failed to send OSC data.", false);
                 return false;
             }
         }
