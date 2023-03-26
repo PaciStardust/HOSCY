@@ -211,7 +211,7 @@ namespace Hoscy.Services.Speech
 
                 currentMessage.Append(" ...");
                 messages.Add(currentMessage.ToString());
-                currentMessage.Clear().Append($"... {word}"); //todo: word doesnt get added?
+                currentMessage.Clear().Append($"... {word}");
             }
 
             var messageStringLast = currentMessage.ToString();

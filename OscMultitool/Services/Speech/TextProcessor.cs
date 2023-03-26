@@ -23,23 +23,30 @@ namespace Hoscy.Services.Speech
 
         internal static void UpdateReplacementDataHandlers()
         {
-            var replacements = new List<ReplacementHandler>();
-            foreach (var replacementData in Config.Speech.Replacements)
+            try
             {
-                if (replacementData.Enabled)
-                    replacements.Add(new(replacementData));
-            }
-            
-            var shortcuts = new List<ShortcutHandler>();
-            foreach (var replacementData in Config.Speech.Shortcuts)
-            {
-                if (replacementData.Enabled)
-                    shortcuts.Add(new(replacementData));
-            }
+                var replacements = new List<ReplacementHandler>();
+                foreach (var replacementData in Config.Speech.Replacements)
+                {
+                    if (replacementData.Enabled)
+                        replacements.Add(new(replacementData));
+                }
 
-            _replacements = replacements;
-            _shortcuts = shortcuts;
-            Logger.PInfo($"Reloaded ReplacementDataHandlers ({_replacements.Count} Replacements, {_shortcuts.Count} Shortcuts)");
+                var shortcuts = new List<ShortcutHandler>();
+                foreach (var replacementData in Config.Speech.Shortcuts)
+                {
+                    if (replacementData.Enabled)
+                        shortcuts.Add(new(replacementData));
+                }
+
+                _replacements = replacements;
+                _shortcuts = shortcuts;
+                Logger.PInfo($"Reloaded ReplacementDataHandlers ({_replacements.Count} Replacements, {_shortcuts.Count} Shortcuts)");
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Failed reloading ReplacementDataHandlers, a RegEx may be broken");
+            }
         }
         #endregion
 

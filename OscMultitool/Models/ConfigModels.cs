@@ -236,7 +236,7 @@ namespace Hoscy.Models
 
         //Replacement
         public List<string> NoiseFilter { get; set; } = new(); //List of words deemed noise
-        public bool RemoveFullStop { get; set; } = true; //todo: make default option
+        public bool RemoveFullStop { get; set; } = true; 
         public bool UseReplacements { get; set; } = true; //Are replacements (and shortcuts) even used?
         public List<ReplacementDataModel> Shortcuts { get; set; } = new();
         public List<ReplacementDataModel> Replacements { get; set; } = new();
