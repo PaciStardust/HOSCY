@@ -2,20 +2,51 @@
 using Hoscy.Services.Api;
 using Hoscy.Ui.Pages;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using Hoscy.Services.Speech.Utilities;
 
 namespace Hoscy.Services.Speech
 {
     internal class TextProcessor
     {
+        #region Static
+        private static IReadOnlyList<ReplacementHandler> _replacements = new List<ReplacementHandler>();
+        private static IReadOnlyList<ShortcutHandler> _shortcuts = new List<ShortcutHandler>();
+
+        static TextProcessor()
+        {
+            UpdateReplacementDataHandlers();
+        }
+
+        internal static void UpdateReplacementDataHandlers()
+        {
+            var replacements = new List<ReplacementHandler>();
+            foreach (var replacementData in Config.Speech.Replacements)
+            {
+                if (replacementData.Enabled)
+                    replacements.Add(new(replacementData));
+            }
+            
+            var shortcuts = new List<ShortcutHandler>();
+            foreach (var replacementData in Config.Speech.Shortcuts)
+            {
+                if (replacementData.Enabled)
+                    shortcuts.Add(new(replacementData));
+            }
+
+            _replacements = replacements;
+            _shortcuts = shortcuts;
+            Logger.PInfo($"Reloaded ReplacementDataHandlers ({_replacements.Count} Replacements, {_shortcuts.Count} Shortcuts)");
+        }
+        #endregion
+
         internal bool UseTextbox { get; init; } = false;
         internal bool UseTts { get; init; } = false;
         internal bool TriggerCommands { get; init; } = false;
         internal bool TriggerReplace { get; init; } = false;
-        internal bool ReplaceCaseInsensitive { get; init; } = false;
         internal bool AllowTranslate { get; init; } = false;
 
         #region Processing
@@ -74,28 +105,21 @@ namespace Hoscy.Services.Speech
             PageInfo.SetMessage(message, UseTextbox, UseTts);
         }
 
-        private static readonly List<Config.ReplacementModel> _shortcuts = Config.Speech.Shortcuts;
-        private static readonly List<Config.ReplacementModel> _replacements = Config.Speech.Replacements;
         /// <summary>
         /// Replaces message or parts of it
         /// </summary>
-        private string ReplaceMessage(string message)
+        private static string ReplaceMessage(string message)
         {
             //Splitting and checking for replacements
-            var regexOpt = RegexOptions.CultureInvariant | (ReplaceCaseInsensitive ? RegexOptions.IgnoreCase : RegexOptions.None);
             foreach (var r in _replacements)
-            {
-                if (r.Enabled)
-                    message = Regex.Replace(message, r.RegexPattern(), r.Replacement, regexOpt);
-            }
+                message = r.Replace(message);
 
             //Checking for shortcuts
-            var compareText = ReplaceCaseInsensitive ? message.ToLower() : message;
             foreach (var s in _shortcuts)
             {
-                if (s.Enabled && compareText == (ReplaceCaseInsensitive ? s.LowercaseText() : s.Text))
+                if (s.Compare(message))
                 {
-                    message = s.Replacement;
+                    message = s.GetReplacement();
                     break;
                 }
             }

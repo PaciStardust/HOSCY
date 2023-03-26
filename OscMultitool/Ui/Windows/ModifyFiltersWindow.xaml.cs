@@ -1,6 +1,5 @@
-﻿using System;
+﻿using Hoscy.Models;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,9 +12,9 @@ namespace Hoscy.Ui.Windows
     /// </summary>
     internal partial class ModifyFiltersWindow : Window
     {
-        private readonly List<Config.FilterModel> _list;
+        private readonly List<FilterModel> _list;
 
-        public ModifyFiltersWindow(string title, List<Config.FilterModel> list)
+        public ModifyFiltersWindow(string title, List<FilterModel> list)
         {
             InitializeComponent();
 
@@ -74,9 +73,9 @@ namespace Hoscy.Ui.Windows
             ignoreCaseCheckBox.IsChecked = _list[listBox.SelectedIndex].IgnoreCase;
         }
 
-        private Config.FilterModel GetNewModel()
+        private FilterModel GetNewModel()
         {
-            var model = new Config.FilterModel()
+            var model = new FilterModel()
             {
                 Enabled = enabledCheckBox.IsChecked ?? false,
                 UseRegex = regexCheckBox.IsChecked ?? false,

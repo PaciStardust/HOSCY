@@ -1,4 +1,4 @@
-﻿<Window x:Class="Hoscy.Ui.Windows.ModifyReplacementsWindow"
+﻿<Window x:Class="Hoscy.Ui.Windows.ModifyReplacementDataWindow"
         x:ClassModifier="internal"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -8,7 +8,7 @@
         xmlns:ui="clr-namespace:Hoscy.Ui"
         mc:Ignorable="d"
         MinHeight="400" MinWidth="700"
-        Title="Modify Replacements" Height="400" Width="700" Background="{Binding Source={x:Static ui:UiHelper.ColorBack}}" ResizeMode="CanResize">
+        Title="Modify Replacement Data" Height="400" Width="700" Background="{Binding Source={x:Static ui:UiHelper.ColorBack}}" ResizeMode="CanResize">
 
     <Grid Margin="16">
         <Grid.ColumnDefinitions>
@@ -21,7 +21,9 @@
         <Grid Margin="8,0,0,0" Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <StackPanel>
@@ -34,15 +36,25 @@
                     <Button Content="Modify" Click="Button_ModifyEntry"/>
                     <CheckBox VerticalAlignment="Center" Content="Enabled" x:Name="enabledCheckBox" Margin="8,0,0,0" IsChecked="True"/>
                 </WrapPanel>
-
-                <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Text="Text" Margin="0,16,0,0"/>
-                <TextBox x:Name="textValue" KeyUp="TextBox_KeyPressed" Tag="Text..."/>
             </StackPanel>
+
+            <DockPanel Grid.Row="1" Margin="0,8,0,0">
+                <TextBlock Style="{DynamicResource HTextBlock}" DockPanel.Dock="Top" HorizontalAlignment="Center" Text="Text"/>
+                <TextBox x:Name="textValue" Style="{DynamicResource HTextBoxLarge}" KeyUp="TextBox_KeyPressed" Tag="Text..."/>
+            </DockPanel>
             
-            <DockPanel Grid.Row="1" Margin="0,16,0,0">
+            <DockPanel Grid.Row="2" Margin="0,8,0,0">
                 <TextBlock Style="{DynamicResource HTextBlock}" DockPanel.Dock="Top" HorizontalAlignment="Center" Text="Replacement"/>
                 <TextBox x:Name="replacementValue" Style="{DynamicResource HTextBoxLarge}" KeyUp="TextBox_KeyPressed" Tag="Replacement..."/>
             </DockPanel>
+
+            <StackPanel  Grid.Row="3">
+                <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,4" Text="Comparison Options"/>
+                <WrapPanel HorizontalAlignment="Center">
+                    <CheckBox VerticalAlignment="Center" Content="Ignore Case" x:Name="ignoreCaseCheckBox" IsChecked="True"/>
+                    <CheckBox VerticalAlignment="Center" Content="Regex" x:Name="regexCheckBox" Margin="8,0,0,0"/>
+                </WrapPanel>
+            </StackPanel>
         </Grid>
     </Grid>
 </Window>

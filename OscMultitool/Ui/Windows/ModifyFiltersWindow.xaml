@@ -22,6 +22,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <StackPanel>
@@ -34,17 +35,19 @@
                     <Button Content="Modify" Click="Button_ModifyEntry"/>
                     <CheckBox VerticalAlignment="Center" Content="Enabled" x:Name="enabledCheckBox" Margin="8,0,0,0" IsChecked="True"/>
                 </WrapPanel>
+
+                <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Text="Name" Margin="0,8,0,0"/>
+                <TextBox x:Name="textName" KeyUp="TextBox_KeyPressed" Tag="Name..."/>
             </StackPanel>
 
-            <StackPanel Grid.Row="1" VerticalAlignment="Bottom">
-                <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Text="Name"/>
-                <TextBox x:Name="textName" KeyUp="TextBox_KeyPressed" Tag="Name..."/>
+            <DockPanel Grid.Row="1" Margin="0,8,0,0">
+                <TextBlock Style="{DynamicResource HTextBlock}" DockPanel.Dock="Top" HorizontalAlignment="Center" Text="Filter Text"/>
+                <TextBox x:Name="textFilterText" Style="{DynamicResource HTextBoxLarge}" KeyUp="TextBox_KeyPressed" Tag="Filter text..."/>
+            </DockPanel>
 
-                <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="Filter Text"/>
-                <TextBox x:Name="textFilterText" KeyUp="TextBox_KeyPressed" Tag="Filter text..."/>
-
+            <StackPanel Grid.Row="2" VerticalAlignment="Bottom">
                 <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,4" Text="Comparison Options"/>
-                <WrapPanel HorizontalAlignment="Center" Margin="0,0,0,8">
+                <WrapPanel HorizontalAlignment="Center">
                     <CheckBox VerticalAlignment="Center" Content="Ignore Case" x:Name="ignoreCaseCheckBox"/>
                     <CheckBox VerticalAlignment="Center" Content="Regex" x:Name="regexCheckBox" Margin="8,0,0,0"/>
                 </WrapPanel>

@@ -120,6 +120,9 @@ namespace Hoscy.Services.Speech
 
         private static bool SendMessage(string message, bool notify)
         {
+            if (message.Length > 140)
+                message = message[..140];
+
             var packet = new OscPacket(Config.Osc.AddressGameTextbox, message, true, notify);
             if (!packet.IsValid)
             {
@@ -208,7 +211,7 @@ namespace Hoscy.Services.Speech
 
                 currentMessage.Append(" ...");
                 messages.Add(currentMessage.ToString());
-                currentMessage.Clear().Append("... ");
+                currentMessage.Clear().Append($"... {word}"); //todo: word doesnt get added?
             }
 
             var messageStringLast = currentMessage.ToString();

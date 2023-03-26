@@ -48,7 +48,6 @@ namespace Hoscy.Ui.Pages
 
             var tProcessor = new TextProcessor()
             {
-                ReplaceCaseInsensitive = Config.Input.IgnoreCaps,
                 TriggerCommands = Config.Input.TriggerCommands,
                 TriggerReplace = Config.Input.TriggerReplace,
                 UseTextbox = Config.Input.UseTextbox,

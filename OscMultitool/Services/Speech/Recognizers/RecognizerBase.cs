@@ -115,7 +115,6 @@ namespace Hoscy.Services.Speech
             var processor = new TextProcessor()
             {
                 TriggerReplace = Config.Speech.UseReplacements,
-                ReplaceCaseInsensitive = Config.Speech.IgnoreCaps,
 
                 TriggerCommands = true,
 
@@ -152,13 +151,11 @@ namespace Hoscy.Services.Speech
         /// </summary>
         internal static void UpdateDenoiseRegex()
         {
-            RegexOptions opt = Config.Speech.IgnoreCaps ? RegexOptions.IgnoreCase : RegexOptions.None;
-
             var filterWords = Config.Speech.NoiseFilter.Select(x => $"(?:{x})");
             var filterCombined = string.Join('|', filterWords);
             var regString = $"^(?:\\b(?:{filterCombined})\\b)?(.*?)(?:\\b(?:{filterCombined})\\b)?$";
             Logger.PInfo($"Updated denoiser ({regString})");
-            _denoiseFilter = new Regex(regString, opt | RegexOptions.CultureInvariant);
+            _denoiseFilter = new Regex(regString, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         }
         #endregion
     }

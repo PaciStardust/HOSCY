@@ -103,7 +103,6 @@ namespace Hoscy.Services.OscControl
             {
                 var tProcessor = new TextProcessor()
                 {
-                    ReplaceCaseInsensitive = true,
                     TriggerReplace = true,
                     TriggerCommands = true,
                     UseTextbox = useTextbox,
