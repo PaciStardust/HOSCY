@@ -20,7 +20,7 @@ namespace Hoscy
             this.SetDarkMode(true);
             InitializeComponent();
 
-            Logger.PInfo("HOSCY VERSION " + Utils.GetVersion());
+            Logger.PInfo("HOSCY VERSION " + App.Version);
             Osc.RecreateListener();
 
             listBox.SelectedIndex = 0;

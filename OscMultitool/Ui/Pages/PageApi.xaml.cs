@@ -1,4 +1,5 @@
 ﻿using Hoscy.Services.Api;
+using Hoscy.Services.Speech;
 using Hoscy.Ui.Windows;
 using System.Linq;
 using System.Windows;
@@ -85,21 +86,20 @@ namespace Hoscy.Ui.Pages
         private void Button_ModifyPresets(object sender, RoutedEventArgs e)
         {
             var window = new ModifyApiPresetsWindow("Edit API Presets", Config.Api.Presets);
-            window.SetDarkMode(true);
-            window.ShowDialog();
+            window.ShowDialogDark();
             LoadBoxes();
             SetChangedValueTranslation(true);
         }
 
         private void Button_ReloadTranslation(object sender, RoutedEventArgs e)
         {
-            Translation.ReloadClient();
+            Translator.ReloadClient();
             SetChangedValueTranslation(false);
         }
 
         private void Button_ReloadSynthesizer(object sender, RoutedEventArgs e)
         {
-            Synthesizer.ReloadClient();
+            Synthesizing.ReloadSynth();
             SetChangedValueSynthesizer(false);
         }
 
@@ -154,7 +154,6 @@ namespace Hoscy.Ui.Pages
                 _changedValuesSynthesizer = true;
                 UpdateChangedValuesIndicator();
             }
-                
         }
         #endregion
     }

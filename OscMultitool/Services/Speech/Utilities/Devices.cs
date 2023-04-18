@@ -1,5 +1,8 @@
 ﻿using NAudio.Wave;
 using System.Collections.Generic;
+using System.Linq;
+using System.Speech.Recognition;
+using System.Speech.Synthesis;
 
 namespace Hoscy.Services.Speech.Utilities
 {
@@ -10,6 +13,8 @@ namespace Hoscy.Services.Speech.Utilities
             Logger.PInfo("Enforcing reload of Devices");
             Microphones = GetMicrophones();
             Speakers = GetSpeakers();
+            WindowsRecognizers = GetWindowsRecognizers();
+            WindowsVoices = GetWindowsVoices();
         }
 
         #region Mics
@@ -59,6 +64,56 @@ namespace Hoscy.Services.Speech.Utilities
             }
 
             if (Speakers.Count == 0)
+                return -1;
+            else
+                return 0;
+        }
+        #endregion
+
+        #region WinListeners
+        internal static IReadOnlyList<RecognizerInfo> WindowsRecognizers { get; private set; } = GetWindowsRecognizers();
+        private static IReadOnlyList<RecognizerInfo> GetWindowsRecognizers()
+        {
+            Logger.Info("Getting installed Speech Recognizers");
+            return SpeechRecognitionEngine.InstalledRecognizers();
+        }
+
+        internal static int GetWindowsListenerIndex(string id)
+        {
+            for (int i = 0; i < WindowsRecognizers.Count; i++)
+            {
+                if (WindowsRecognizers[i].Id == id)
+                    return i;
+            }
+
+            if (WindowsRecognizers.Count == 0)
+                return -1;
+            else
+                return 0;
+        }
+        #endregion
+
+        #region Windows Voices
+        internal static IReadOnlyList<VoiceInfo> WindowsVoices { get; private set; } = GetWindowsVoices();
+        private static IReadOnlyList<VoiceInfo> GetWindowsVoices()
+        {
+            Logger.Info("Getting installed Windows Voices");
+            using var _synth = new SpeechSynthesizer();
+            return _synth.GetInstalledVoices()
+                .Where(x => x.Enabled)
+                .Select(x => x.VoiceInfo)
+                .ToList();
+        }
+
+        internal static int GetWindowsVoiceIndex(string id)
+        {
+            for (int i = 0; i < WindowsVoices.Count; i++)
+            {
+                if (WindowsVoices[i].Id == id)
+                    return i;
+            }
+
+            if (WindowsVoices.Count == 0)
                 return -1;
             else
                 return 0;

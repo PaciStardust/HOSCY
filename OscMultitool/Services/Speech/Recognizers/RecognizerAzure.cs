@@ -114,7 +114,7 @@ namespace Hoscy.Services.Speech.Recognizers
             _isListening = enabled;
 
             if (_isListening)
-                Utils.RunWithoutAwait(StartRecognizing());
+                StartRecognizing().RunWithoutAwait();
             else
                 recognitionCompletionSource?.SetResult(0);
 

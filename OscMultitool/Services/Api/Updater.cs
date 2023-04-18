@@ -34,13 +34,13 @@ namespace Hoscy.Services.Api
         /// Checks if there is an update available, displays a window containing changelog
         /// </summary>
         internal static void CheckForUpdates()
-           => Utils.RunWithoutAwait(CheckForUpdatesInternal());
+           => CheckForUpdatesInternal().RunWithoutAwait();
         /// <summary>
         /// Internal version to avoid async hell
         /// </summary>
         private static async Task CheckForUpdatesInternal()
         {
-            var currVer = Utils.GetVersion();
+            var currVer = App.Version;
             Logger.PInfo("Attempting to check for newest HOSCY version, current is " + currVer);
 
             var res = await GetGithubLatest();
@@ -64,13 +64,13 @@ namespace Hoscy.Services.Api
         /// Updates the tool
         /// </summary>
         internal static void PerformUpdate()
-           => Utils.RunWithoutAwait(PerformUpdateInternal());
+           => PerformUpdateInternal().RunWithoutAwait();
         /// <summary>
         /// Internal version to avoid async hell
         /// </summary>
         private static async Task PerformUpdateInternal()
         {
-            var currVer = Utils.GetVersion();
+            var currVer = App.Version;
             Logger.PInfo("Attempting to update to newest HOSCY version, current is " + currVer);
 
             var res = await GetGithubLatest();

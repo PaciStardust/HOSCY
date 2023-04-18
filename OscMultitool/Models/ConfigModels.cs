@@ -3,7 +3,7 @@
 namespace Hoscy.Models
 {
     /// <summary>
-    /// Model for storing all config data
+    /// Model for storing all config data, they can not log
     /// </summary>
     internal class ConfigModel
     {
@@ -103,12 +103,7 @@ namespace Hoscy.Models
     {
         public bool OpenLogWindow { get; set; } = false; //Open log window on startup
         public bool CheckUpdates { get; set; } = true; //Automatically check for updates on startup
-        public bool Error { get; set; } = true;
-        public bool Warning { get; set; } = true;
-        public bool Info { get; set; } = true;
-        public bool PrioInfo { get; set; } = true;
-        public bool Log { get; set; } = true;
-        public bool Debug { get; set; } = false;
+        public LogSeverity MinimumLogSeverity { get; set; } = LogSeverity.Log;
         public List<FilterModel> LogFilters { get; set; } = new(); //Phrases filtered from logs
     }
 
@@ -315,6 +310,7 @@ namespace Hoscy.Models
         //Media
         public bool MediaShowStatus { get; set; } = false; //Display media information in textbox
         public bool MediaAddAlbum { get; set; } = false; //Also add album to media information
+        public bool MediaSwapArtistAndSong { get; set; } = false; //Swaps order of artist and song
 
         public string MediaPlayingVerb //xyz "songname" by "artist" on "album"
         {

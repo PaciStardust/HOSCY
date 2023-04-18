@@ -1,7 +1,6 @@
 ﻿using Hoscy.Ui.Windows;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -83,21 +82,28 @@ namespace Hoscy.Ui
             list[index] = item;
             return true;
         }
+
+        /// <summary>
+        /// Sets window to dark mode and calls ShowDialog
+        /// </summary>
+        internal static void ShowDialogDark(this Window window)
+        {
+            window.SetDarkMode(true);
+            window.ShowDialog();
+        }
         #endregion
 
         #region Opening Modify Windows
         internal static void OpenListEditor(string title, string valueName, List<string> list, string defaultString = "New Value")
         {
             var window = new ModifyListWindow(title, valueName, list, defaultString);
-            window.SetDarkMode(true);
-            window.ShowDialog();
+            window.ShowDialogDark();
         }
 
         internal static void OpenDictionaryEditor(string title, string keyName, string valueName, Dictionary<string, string> dict)
         {
             var window = new ModifyDictionaryWindow(title, keyName, valueName, dict);
-            window.SetDarkMode(true);
-            window.ShowDialog();
+            window.ShowDialogDark();
         }
         #endregion
 
@@ -135,7 +141,6 @@ namespace Hoscy.Ui
             DWMWA_MICA_EFFECT = 1029,
         }
 
-
         internal static bool SetDarkMode(this Window window, bool darkMode)
         {
             try
@@ -148,27 +153,6 @@ namespace Hoscy.Ui
             catch (Exception)
             {
                 return false;
-            }
-        }
-        #endregion
-
-        #region Extra
-        /// <summary>
-        /// Starts a process
-        /// </summary>
-        internal static void StartProcess(string path)
-        {
-            try
-            {
-                Process.Start(new ProcessStartInfo()
-                {
-                    FileName = path,
-                    UseShellExecute = true
-                });
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "Failed to start process.");
             }
         }
         #endregion

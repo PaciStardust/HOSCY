@@ -53,8 +53,8 @@ namespace Hoscy.Services.OscControl
 
                 //Loading in serviceProfiles
                 foreach (var service in _queryService.GetOSCQueryServices())
-                    Utils.RunWithoutAwait(AddServiceProfile(service));
-                _queryService.OnOscQueryServiceAdded += (OSCQueryServiceProfile service) => Utils.RunWithoutAwait(AddServiceProfile(service));
+                    AddServiceProfile(service).RunWithoutAwait();
+                _queryService.OnOscQueryServiceAdded += (OSCQueryServiceProfile service) => AddServiceProfile(service).RunWithoutAwait();
                 SetQueryServiceRefresh(5000);
 
                 _listener = new UDPListener(_port, Callback);

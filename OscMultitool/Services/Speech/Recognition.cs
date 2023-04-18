@@ -1,22 +1,20 @@
 ﻿using Hoscy.Ui.Pages;
 using System;
-using System.Collections.Generic;
-using System.Speech.Recognition;
 
 namespace Hoscy.Services.Speech
 {
     internal static class Recognition
     {
         private static RecognizerBase? _recognizer;
-        internal static bool IsRecognizerRunning => _recognizer?.IsRunning ?? false;
-        internal static bool IsRecognizerListening => _recognizer?.IsListening ?? false;
+        internal static bool GetRunningStatus() => _recognizer?.IsRunning ?? false;
+        internal static bool GetListeningStatus() => _recognizer?.IsListening ?? false;
 
         #region Recognizer Control
         internal static bool StartRecognizer()
         {
             TriggerRecognitionChanged();
 
-            if (_recognizer != null || IsRecognizerRunning)
+            if (_recognizer != null || GetRunningStatus())
             {
                 Logger.Warning("Attempted to start recognizer while one already was initialized");
                 return true;
@@ -45,7 +43,7 @@ namespace Hoscy.Services.Speech
 
         internal static bool SetListening(bool enabled)
         {
-            if (!IsRecognizerRunning)
+            if (!GetRunningStatus())
                 return false;
 
             var res = _recognizer?.SetListening(enabled) ?? false;
@@ -76,30 +74,7 @@ namespace Hoscy.Services.Speech
             => RecognitionChanged.Invoke(sender, e);
 
         private static void TriggerRecognitionChanged()
-            => HandleRecognitionChanged(null, new(IsRecognizerRunning, IsRecognizerListening));
-        #endregion
-
-        #region WinListeners
-        internal static IReadOnlyList<RecognizerInfo> WindowsRecognizers { get; private set; } = GetWindowsRecognizers();
-        private static IReadOnlyList<RecognizerInfo> GetWindowsRecognizers()
-        {
-            Logger.Info("Getting installed Speech Recognizers");
-            return SpeechRecognitionEngine.InstalledRecognizers();
-        }
-
-        internal static int GetWindowsListenerIndex(string id)
-        {
-            for (int i = 0; i < WindowsRecognizers.Count; i++)
-            {
-                if (WindowsRecognizers[i].Id == id)
-                    return i;
-            }
-
-            if (WindowsRecognizers.Count == 0)
-                return -1;
-            else
-                return 0;
-        }
+            => HandleRecognitionChanged(null, new(GetRunningStatus(), GetListeningStatus()));
         #endregion
     }
 

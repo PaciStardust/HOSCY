@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace Hoscy
 {
-    internal static class Config
+    internal static class Config //todo: backup on startup, reorg
     {
         public static ConfigModel Data { get; private set; }
         public static ConfigOscModel Osc => Data.Osc;
@@ -59,7 +59,7 @@ namespace Hoscy
             }
             catch (Exception e)
             {
-                Logger.Error(e, "The config file was unable to be saved.", notify:false);
+                Logger.Error(e, "The config file was unable to be saved.", notify: false);
             }
         }
 
@@ -192,9 +192,9 @@ namespace Hoscy
                     });
                 }
             }
-            
+
             config.ConfigVersion = 4;
         }
-    #endregion
+        #endregion
     }
 }

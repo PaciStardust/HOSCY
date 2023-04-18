@@ -51,7 +51,7 @@ namespace Hoscy.Services.OscControl
                 return;
 
             else if (address == Config.Osc.AddressManualMute)
-                Recognition.SetListening(!Recognition.IsRecognizerListening);
+                Recognition.SetListening(!Recognition.GetListeningStatus());
 
             else if (address == Config.Osc.AddressManualSkipBox)
                 Textbox.Clear();

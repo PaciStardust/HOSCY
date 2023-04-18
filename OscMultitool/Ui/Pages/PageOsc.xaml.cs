@@ -10,7 +10,7 @@ namespace Hoscy.Ui.Pages
     /// </summary>
     internal partial class PageOsc : Page
     {
-        private static bool unappliedOscChanges = false;
+        private static bool _unappliedOscChanges = false;
 
         public PageOsc()
         {
@@ -22,15 +22,14 @@ namespace Hoscy.Ui.Pages
         private void Button_ReloadListener(object sender, RoutedEventArgs e)
         {
             Osc.RecreateListener();
-            unappliedOscChanges = false;
+            _unappliedOscChanges = false;
             CheckIndicators();
         }
 
         private void Button_ModifyRouting(object sender, RoutedEventArgs e)
         {
             var window = new ModifyOscRoutingFiltersWindow("Edit Routing Filters", Config.Osc.RoutingFilters);
-            window.SetDarkMode(true);
-            window.ShowDialog();
+            window.ShowDialogDark();
             Osc.RecreateListener();
             CheckIndicators();
         }
@@ -38,15 +37,13 @@ namespace Hoscy.Ui.Pages
         private void Button_ModifyCounters(object sender, RoutedEventArgs e)
         {
             var window = new ModifyCountersWindow("Edit Counters", Config.Osc.Counters);
-            window.SetDarkMode(true);
-            window.ShowDialog();
+            window.ShowDialogDark();
         }
 
         private void Button_DisplayServices(object sender, RoutedEventArgs e)
         {
             var window = new DisplayListWindow("Osc Services", Osc.GetServiceProfileNames());
-            window.SetDarkMode(true);
-            window.ShowDialog();
+            window.ShowDialogDark();
         }
 
         private void Button_ResetAfk(object sender, RoutedEventArgs e)
@@ -57,18 +54,18 @@ namespace Hoscy.Ui.Pages
         private void CheckIndicators()
         {
             invalidFilterLabel.Visibility = Osc.HasInvalidFilters ? Visibility.Visible : Visibility.Hidden;
-            changeIndicator.Visibility = unappliedOscChanges ? Visibility.Visible : Visibility.Hidden;
+            changeIndicator.Visibility = _unappliedOscChanges ? Visibility.Visible : Visibility.Hidden;
         }
 
         private void OscOscPortIn_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            unappliedOscChanges = Config.Osc.PortListen != Osc.ListenerPort;
+            _unappliedOscChanges = Config.Osc.PortListen != Osc.ListenerPort;
             CheckIndicators();
         }
 
         private void AddressModified(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            unappliedOscChanges = true;
+            _unappliedOscChanges = true;
             CheckIndicators();
         }
         #endregion

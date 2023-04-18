@@ -2,6 +2,9 @@
 using Hoscy.Ui;
 using Hoscy.Ui.Windows;
 using System;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 using System.Windows;
 
 namespace Hoscy
@@ -11,12 +14,14 @@ namespace Hoscy
     /// </summary>
     public partial class App : Application
     {
+        public static string Version { get; private set; } = GetVersion();
+
         //Indicator for threads to stop
         public static bool Running { get; private set; } = true;
         protected override void OnExit(ExitEventArgs e)
         {
             Running = false;
-            if (Recognition.IsRecognizerRunning)
+            if (Recognition.GetRunningStatus())
                 Recognition.StopRecognizer();
             Config.SaveConfig();
         }
@@ -41,7 +46,7 @@ namespace Hoscy
         /// <param name="title">Title of window</param>
         /// <param name="subtitle">Text above notification</param>
         /// <param name="notification">Contents of notification box</param>
-        public static void OpenNotificationWindow(string title, string subtitle, string notification, bool locking = false)
+        internal static void OpenNotificationWindow(string title, string subtitle, string notification, bool locking = false)
         {
             Current.Dispatcher.Invoke(() =>
             {
@@ -53,6 +58,24 @@ namespace Hoscy
                     window.Show();
             });
         }
+
+        /// <summary>
+        /// Gets the current version from the assembly
+        /// </summary>
+        /// <returns></returns>
+        private static string GetVersion()
+        {
+            var assembly = Assembly.GetEntryAssembly();
+            return "v." + (assembly != null ? FileVersionInfo.GetVersionInfo(assembly.Location).FileVersion : "???");
+        }
+
+        /// <summary>
+        /// Gets the emedded ressource stream from the assembly by name
+        /// </summary>
+        /// <param name="name">Name of ressource</param>
+        /// <returns>Stream of ressource</returns>
+        internal static Stream? GetEmbeddedRessourceStream(string name)
+            => Assembly.GetExecutingAssembly().GetManifestResourceStream(name);
         #endregion
     }
 }

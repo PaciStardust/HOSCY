@@ -41,7 +41,7 @@ namespace Hoscy.Ui.Pages
             //Speakers
             speechSpeakerBox.Load(Devices.Speakers.Select(x => x.ProductName), Devices.GetSpeakerIndex(Config.Speech.SpeakerId));
             //Windows Synths
-            speechWindowsSynthBox.Load(Synthesizing.WindowsSynths.Select(x => x.Description), Synthesizing.GetWindowsSynthIndex(Config.Speech.TtsId));
+            speechWindowsSynthBox.Load(Devices.WindowsVoices.Select(x => x.Description), Devices.GetWindowsVoiceIndex(Config.Speech.TtsId));
         }
 
         private void Button_SkipSpeech(object sender, RoutedEventArgs e)
@@ -61,8 +61,13 @@ namespace Hoscy.Ui.Pages
 
         private void SpeechWindowsSynthBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Config.Speech.TtsId = Synthesizing.WindowsSynths[speechWindowsSynthBox.SelectedIndex].Id;
-            Synthesizing.ChangeVoice();
+            Config.Speech.TtsId = Devices.WindowsVoices[speechWindowsSynthBox.SelectedIndex].Id;
+        }
+
+        private void Button_ReloadSynthesizer(object sender, RoutedEventArgs e)
+        {
+            Synthesizing.ReloadSynth();
+            //todo: indicator
         }
 
         private void Slider_Volume(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -85,8 +90,7 @@ namespace Hoscy.Ui.Pages
         private void Button_ModifyMediaFilter(object sender, RoutedEventArgs e)
         {
             var window = new ModifyFiltersWindow("Edit Media Filter", Config.Textbox.MediaFilters);
-            window.SetDarkMode(true);
-            window.ShowDialog();
+            window.ShowDialogDark();
         }
         #endregion
     }

@@ -143,6 +143,7 @@
 
                     <StackPanel Style="{StaticResource HStackIndent}">
                         <CheckBox Content="Show media status" IsChecked="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}"/>
+                        <CheckBox Content="Swap artist and song name" Margin="0,4,0,0" IsChecked="{Binding Textbox.MediaSwapArtistAndSong, Source={x:Static local:Config.Data}}" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}"/>
                         <CheckBox Content="Also display album name" Margin="0,4,0,0" IsChecked="{Binding Textbox.MediaAddAlbum, Source={x:Static local:Config.Data}}" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}"/>
 
                         <TextBlock Style="{DynamicResource HTextBlock}" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}" Text="Text Configuration" Margin="0,8,0,4"/>
@@ -207,7 +208,8 @@
 
             <WrapPanel Margin="0,32,0,0">
                 <Label Content="Text to Speech" Style="{StaticResource HLabelL}"/>
-                <Button Content="Skip Current Speech" Click="Button_SkipSpeech" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Button Content="Reload TTS" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_ReloadSynthesizer"/>
+                <Button Content="Skip Current Speech" Click="Button_SkipSpeech" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="8,0,0,0"/>
             </WrapPanel>
 
             <!-- STT -->

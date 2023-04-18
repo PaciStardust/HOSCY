@@ -18,7 +18,7 @@ namespace Hoscy.Ui.Pages
     {
         private static bool _changedValues = false;
 
-        private static readonly Dictionary<string, RecognizerPerms> _permDict = new()
+        private static readonly IReadOnlyDictionary<string, RecognizerPerms> _permDict = new Dictionary<string, RecognizerPerms>()
         {
             { "Vosk AI Recognizer", RecognizerVosk.Perms },
             { "Windows Recognizer V2", RecognizerWindowsV2.Perms },
@@ -45,7 +45,7 @@ namespace Hoscy.Ui.Pages
             UpdateRecognizerSelector();
             UpdateVoskRecognizerBox();
 
-            UpdateRecognizerStatus(null, new(Recognition.IsRecognizerRunning, Recognition.IsRecognizerListening));
+            UpdateRecognizerStatus(null, new(Recognition.GetRunningStatus(), Recognition.GetListeningStatus()));
             Recognition.RecognitionChanged += UpdateRecognizerStatus;
         }
 
@@ -73,14 +73,14 @@ namespace Hoscy.Ui.Pages
             //Microphones
             speechMicrophoneBox.Load(Devices.Microphones.Select(x => x.ProductName), Devices.GetMicrophoneIndex(Config.Speech.MicId));
             //Windows Listeners
-            speechWindowsRecognizerBox.Load(Recognition.WindowsRecognizers.Select(x => x.Description), Recognition.GetWindowsListenerIndex(Config.Speech.WinModelId));
+            speechWindowsRecognizerBox.Load(Devices.WindowsRecognizers.Select(x => x.Description), Devices.GetWindowsListenerIndex(Config.Speech.WinModelId));
 
             changeIndicator.Visibility = _changedValues ? Visibility.Visible : Visibility.Hidden;
         }
 
         private void EnableChangeIndicator()
         {
-            if (!Recognition.IsRecognizerRunning)
+            if (!Recognition.GetRunningStatus())
                 return;
 
             changeIndicator.Visibility = Visibility.Visible;
@@ -170,7 +170,7 @@ namespace Hoscy.Ui.Pages
         #region Buttons
         private async void Button_StartStop(object sender, RoutedEventArgs e)
         {
-            if (Recognition.IsRecognizerRunning)
+            if (Recognition.GetRunningStatus())
                 Recognition.StopRecognizer();
             else
             {
@@ -191,7 +191,7 @@ namespace Hoscy.Ui.Pages
         }
 
         private void Button_Mute(object sender, RoutedEventArgs e)
-            => Recognition.SetListening(!Recognition.IsRecognizerListening);
+            => Recognition.SetListening(!Recognition.GetListeningStatus());
 
         private void Button_OpenNoiseFilter(object sender, RoutedEventArgs e)
         {
@@ -201,15 +201,13 @@ namespace Hoscy.Ui.Pages
         private void Button_OpenReplacements(object sender, RoutedEventArgs e)
         {
             var window = new ModifyReplacementDataWindow("Edit Replacements", Config.Speech.Replacements);
-            window.SetDarkMode(true);
-            window.ShowDialog();
+            window.ShowDialogDark();
             TextProcessor.UpdateReplacementDataHandlers();
         }
         private void Button_OpenShortcuts(object sender, RoutedEventArgs e)
         {
             var window = new ModifyReplacementDataWindow("Edit Shortcuts", Config.Speech.Shortcuts);
-            window.SetDarkMode(true);
-            window.ShowDialog();
+            window.ShowDialogDark();
             TextProcessor.UpdateReplacementDataHandlers();
         }
 
@@ -238,8 +236,8 @@ namespace Hoscy.Ui.Pages
             var oldId = Config.Speech.WinModelId;
 
             var index = speechWindowsRecognizerBox.SelectedIndex;
-            if (index != -1 && index < Recognition.WindowsRecognizers.Count)
-                Config.Speech.WinModelId = Recognition.WindowsRecognizers[speechWindowsRecognizerBox.SelectedIndex].Id;
+            if (index != -1 && index < Devices.WindowsRecognizers.Count)
+                Config.Speech.WinModelId = Devices.WindowsRecognizers[speechWindowsRecognizerBox.SelectedIndex].Id;
 
             if (oldId != Config.Speech.WinModelId)
                 EnableChangeIndicator();

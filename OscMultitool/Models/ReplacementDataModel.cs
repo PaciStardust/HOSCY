@@ -1,5 +1,8 @@
 ﻿namespace Hoscy.Models
 {
+    /// <summary>
+    /// THIS CLASS IS USED IN CONFIG - IT CAN NOT LOG
+    /// </summary>
     internal class ReplacementDataModel
     {
         public string Text

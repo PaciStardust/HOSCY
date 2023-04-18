@@ -10,16 +10,17 @@ using Hoscy.Services.Speech.Utilities;
 
 namespace Hoscy.Services.Speech
 {
-    internal class TextProcessor
+    internal readonly struct TextProcessor
     {
-        #region Static
-        private static IReadOnlyList<ReplacementHandler> _replacements = new List<ReplacementHandler>();
-        private static IReadOnlyList<ShortcutHandler> _shortcuts = new List<ShortcutHandler>();
-
         static TextProcessor()
         {
             UpdateReplacementDataHandlers();
         }
+        public TextProcessor() { }
+
+        #region Replacements and Shortcuts
+        private static IReadOnlyList<ReplacementHandler> _replacements = new List<ReplacementHandler>();
+        private static IReadOnlyList<ShortcutHandler> _shortcuts = new List<ShortcutHandler>();
 
         internal static void UpdateReplacementDataHandlers()
         {
@@ -63,19 +64,19 @@ namespace Hoscy.Services.Speech
         }
         #endregion
 
+        #region Processing
         internal bool UseTextbox { get; init; } = false;
         internal bool UseTts { get; init; } = false;
         internal bool TriggerCommands { get; init; } = false;
         internal bool TriggerReplace { get; init; } = false;
         internal bool AllowTranslate { get; init; } = false;
 
-        #region Processing
         /// <summary>
         /// Processes and sends strings with given options
         /// </summary>
         /// <param name="message">The message to process</param>
         internal void Process(string message)
-            => Utils.RunWithoutAwait(ProcessInternal(message));
+            => ProcessInternal(message).RunWithoutAwait();
 
         /// <summary>
         /// Processes and sends strings with given options
@@ -104,7 +105,7 @@ namespace Hoscy.Services.Speech
             //translation
             var translation = message;
             if (AllowTranslate && ((UseTextbox && Config.Api.TranslateTextbox) || (UseTts && Config.Api.TranslateTts)))
-                translation = await Translation.Translate(message);
+                translation = await Translator.Translate(message);
 
             if (UseTextbox)
             {
@@ -168,7 +169,7 @@ namespace Hoscy.Services.Speech
         /// Checking for message to be a command
         /// </summary>
         /// <returns>Was a command executed?</returns>
-        private static string? ExecuteCommands(string message)
+        private static string? ExecuteCommands(string message) //todo: rewrite
         {
             message = message.Trim();
             var lowerMessage = message.ToLower();
@@ -188,7 +189,7 @@ namespace Hoscy.Services.Speech
 
             if (lowerMessage.StartsWith("media "))
             {
-                Media.HandleRawMediaCommand(lowerMessage.Replace("media ", ""));
+                Media.HandleRawMediaCommand(message);
                 return message;
             }
 

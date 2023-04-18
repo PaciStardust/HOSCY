@@ -28,12 +28,36 @@ namespace Hoscy
             PathModels = Path.GetFullPath(Path.Combine(PathConfigFolder, "models"));
         }
 
+        #region Extention Methods
         /// <summary>
         /// Runs an async Task without awaiting
         /// </summary>
-        /// <param name="function">Task to be run</param>
-        internal static void RunWithoutAwait(Task function)
-            => Task.Run(async () => await function).ConfigureAwait(false);
+        /// <param name="task">Task to be run</param>
+        internal static void RunWithoutAwait(this Task task)
+            => Task.Run(async () => await task).ConfigureAwait(false);
+        #endregion
+
+        #region Extra functions
+        /// <summary>
+        /// Starts a process
+        /// </summary>
+        internal static bool StartProcess(string path)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo()
+                {
+                    FileName = path,
+                    UseShellExecute = true
+                });
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Failed to start process.");
+                return false;
+            }
+        }
 
         /// <summary>
         /// Extracts a json field from a string
@@ -48,16 +72,6 @@ namespace Hoscy
 
             var result = regex.Match(json)?.Groups["value"].Value ?? null;
             return string.IsNullOrWhiteSpace(result) ? null : Regex.Unescape(result);
-        }
-
-        /// <summary>
-        /// Gets the current version from the assembly
-        /// </summary>
-        /// <returns></returns>
-        internal static string GetVersion()
-        {
-            var assembly = Assembly.GetEntryAssembly();
-            return "v." + (assembly != null ? FileVersionInfo.GetVersionInfo(assembly.Location).FileVersion : "???");
         }
 
         /// <summary>
@@ -94,13 +108,6 @@ namespace Hoscy
                 return max;
             return value;
         }
-
-        /// <summary>
-        /// Gets the emedded ressource stream from the assembly by name
-        /// </summary>
-        /// <param name="name">Name of ressource</param>
-        /// <returns>Stream of ressource</returns>
-        internal static Stream? GetEmbeddedRessourceStream(string name)
-            => Assembly.GetExecutingAssembly().GetManifestResourceStream(name);
+        #endregion
     }
 }

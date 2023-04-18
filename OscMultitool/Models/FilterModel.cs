@@ -3,6 +3,9 @@ using System.Text.RegularExpressions;
 
 namespace Hoscy.Models
 {
+    /// <summary>
+    /// THIS CLASS IS USED IN CONFIG - IT CAN NOT LOG
+    /// </summary>
     internal class FilterModel
     {
         public string Name
@@ -74,7 +77,6 @@ namespace Hoscy.Models
             }
             catch
             {
-                //Cannot log error as init would break
                 _regex = null;
                 _enabled = false;
             }

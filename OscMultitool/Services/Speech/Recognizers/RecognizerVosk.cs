@@ -32,7 +32,7 @@ namespace Hoscy.Services.Speech.Recognizers
         {
             try
             {
-                Config.Speech.VoskModels.TryGetValue(Config.Speech.VoskModelCurrent, out var path);
+                var path = Config.Speech.VoskModels[Config.Speech.VoskModelCurrent];
                 if (!Directory.Exists(path ?? string.Empty))
                 {
                     Logger.Error("A Vosk AI model has not been picked or it's path is invalid.\n\nTo use Vosk speech recognition please provide an AI model. Information can be found in the quickstart guide on GitHub\n\nIf you do not want to use Vosk, please change the recognizer type on the speech page");

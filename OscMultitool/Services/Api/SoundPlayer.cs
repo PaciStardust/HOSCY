@@ -12,7 +12,7 @@ namespace Hoscy.Services.Api
             try
             {
                 Logger.Debug($"Attempting to load and play sound  \"{resName}\"");
-                _player.Stream = Utils.GetEmbeddedRessourceStream(resName);
+                _player.Stream = App.GetEmbeddedRessourceStream(resName);
                 _player.Load();
                 _player.Play();
             }

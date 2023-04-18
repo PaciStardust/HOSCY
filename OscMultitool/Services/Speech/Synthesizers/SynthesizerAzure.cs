@@ -3,28 +3,18 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Hoscy.Services.Api
+namespace Hoscy.Services.Speech.Synthesizers
 {
-    internal static class Synthesizer
+    internal class SynthesizerAzure : SynthesizerBase
     {
-        private static SpeechSynthesizer? _synth;
+        #region Functionality
+        private readonly SpeechSynthesizer? _synth;
 
-        static Synthesizer()
+        internal SynthesizerAzure(MemoryStream stream) : base(stream)
         {
-            ReloadClient();
-        }
-
-        /// <summary>
-        /// Reloads the Synthesizer client
-        /// </summary>
-        internal static void ReloadClient()
-        {
-            _synth?.Dispose();
-            _synth = null;
-
             SpeechSynthesizer? synth = null;
 
-            Logger.PInfo("Performing reload of Azure Synthesizer");
+            Logger.PInfo("Performing load of Azure Synthesizer");
             try
             {
                 var speechCfg = SpeechConfig.FromSubscription(Config.Api.AzureKey, Config.Api.AzureRegion);
@@ -51,16 +41,17 @@ namespace Hoscy.Services.Api
 
             _synth = synth;
         }
+        #endregion
 
-        /// <summary>
-        /// Writes audio data into memorystream
-        /// </summary>
-        /// <param name="text">Text to synthesize</param>
-        /// <param name="ms">Memorystream</param>
-        /// <returns>Success</returns>
-        internal static async Task<bool> SpeakAsync(string text, MemoryStream ms)
+        #region Overrides
+        internal override bool IsAsync => true;
+
+        internal override bool Speak(string text)
+            => throw new NotImplementedException();
+
+        internal override async Task<bool> SpeakAsync(string text)
         {
-            if (_synth == null)
+            if (_synth == null || _stream == null)
                 return false;
 
             var startTime = DateTime.Now;
@@ -70,7 +61,7 @@ namespace Hoscy.Services.Api
             {
                 case ResultReason.SynthesizingAudioCompleted:
                     Logger.Log($"Received TTS audio for \"{text}\" ({(DateTime.Now - startTime).TotalMilliseconds}ms) => {result.AudioDuration:mm\\:ss\\.fff}");
-                    ms.Write(result.AudioData);
+                    _stream.Write(result.AudioData);
                     return true;
 
                 case ResultReason.Canceled:
@@ -86,5 +77,6 @@ namespace Hoscy.Services.Api
                     return false;
             }
         }
+        #endregion
     }
 }

@@ -18,7 +18,7 @@ namespace Hoscy.Services.Api
 
         #region Startup
         internal static void StartMediaDetection()
-            => Utils.RunWithoutAwait(StartMediaDetectionInternal());
+            => StartMediaDetectionInternal().RunWithoutAwait();
 
         private static async Task StartMediaDetectionInternal()
         {
@@ -103,10 +103,17 @@ namespace Hoscy.Services.Api
             if (_nowPlaying == null || string.IsNullOrWhiteSpace(_nowPlaying.Title)) //This should in theory never trigger but just to be sure
                 return null;
 
-            StringBuilder sb = new($"'{_nowPlaying.Title}'");
+            StringBuilder sb = new();
 
-            if (!string.IsNullOrWhiteSpace(_nowPlaying.Artist))
-                sb.Append($" {Config.Textbox.MediaArtistVerb} '{_nowPlaying.Artist}'");
+            if (string.IsNullOrWhiteSpace(_nowPlaying.Artist)) //todo: test
+                sb.Append($"'{_nowPlaying.Title}'");
+            else
+            {
+                string appendText = Config.Textbox.MediaSwapArtistAndSong
+                    ? $"{_nowPlaying.Artist} {Config.Textbox.MediaArtistVerb} {_nowPlaying.Title}"
+                    : $"{_nowPlaying.Title} {Config.Textbox.MediaArtistVerb} {_nowPlaying.Artist}";
+                sb.Append(appendText);
+            }
 
             if (Config.Textbox.MediaAddAlbum && !string.IsNullOrWhiteSpace(_nowPlaying.AlbumTitle) && _nowPlaying.AlbumTitle != _nowPlaying.Title)
                 sb.Append($" {Config.Textbox.MediaAlbumVerb} '{_nowPlaying.AlbumTitle}'");
@@ -143,7 +150,7 @@ namespace Hoscy.Services.Api
             => GetCurrentSession(sender);
 
         private static void UpdateCurrentlyPlayingMediaProxy(GlobalSystemMediaTransportControlsSession sender)
-            => Utils.RunWithoutAwait(UpdateCurrentlyPlayingMedia(sender));
+            => UpdateCurrentlyPlayingMedia(sender).RunWithoutAwait();
         #endregion
 
         #region Media Control
@@ -187,16 +194,18 @@ namespace Hoscy.Services.Api
         };
 
         /// <summary>
-        /// Handles the raw media command, skips otherwise
+        /// Handles the lowercase raw media command, skips otherwise
         /// </summary>
         /// <param name="command">Raw command</param>
-        internal static void HandleRawMediaCommand(string command)
+        internal static void HandleRawMediaCommand(string command) //todo: test
         {
+            command = command.Replace("media ", string.Empty);
+
             if (!_commandTriggers.Keys.Contains(command))
                 return;
 
             var mediaCommand = _commandTriggers[command];
-            Utils.RunWithoutAwait(HandleMediaCommand(mediaCommand));
+            HandleMediaCommand(mediaCommand).RunWithoutAwait();
         }
 
         /// <summary>
@@ -222,7 +231,7 @@ namespace Hoscy.Services.Api
             else if (address == Config.Osc.AddressMediaUnpause)
                 command = MediaCommandType.Unpause;
 
-            Utils.RunWithoutAwait(HandleMediaCommand(command));
+            HandleMediaCommand(command).RunWithoutAwait();
             return command != MediaCommandType.None;
         }
 

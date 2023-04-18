@@ -11,7 +11,7 @@ namespace Hoscy.Ui.Pages
     /// </summary>
     internal partial class PageInfo : Page
     {
-        internal static PageInfo Instance { get; private set; } = new();
+        internal static PageInfo? Instance { get; private set; } = null;
 
         private static string _sendStatus = "No message sent since opening";
         private static string _message = "No message sent since opening";
@@ -27,13 +27,13 @@ namespace Hoscy.Ui.Pages
 
             Instance = this;
 
-            UpdateRecognizerStatus(null, new(Recognition.IsRecognizerRunning, Recognition.IsRecognizerListening));
+            UpdateRecognizerStatus(null, new(Recognition.GetRunningStatus(), Recognition.GetListeningStatus()));
             Recognition.RecognitionChanged += UpdateRecognizerStatus;
         }
 
         #region Buttons
         private void Button_Mute(object sender, RoutedEventArgs e)
-            => Recognition.SetListening(!Recognition.IsRecognizerListening);
+            => Recognition.SetListening(!Recognition.GetListeningStatus());
 
         private void Button_Clear(object sender, RoutedEventArgs e)
         {
@@ -45,7 +45,7 @@ namespace Hoscy.Ui.Pages
 
         private async void Button_Start(object sender, RoutedEventArgs e)
         {
-            if (Recognition.IsRecognizerRunning)
+            if (Recognition.GetRunningStatus())
             {
                 Recognition.StopRecognizer();
                 SetRecStatus("Recognizer has stopped");
@@ -70,7 +70,7 @@ namespace Hoscy.Ui.Pages
         /// </summary>
         private static void UpdateRecognizerStatus(object? sender, RecognitionChangedEventArgs e)
         {
-            Instance.Dispatcher.Invoke(() =>
+            Instance?.Dispatcher.Invoke(() =>
             {
                 Instance.muteButton.Content = e.Listening ? "Listening" : "Muted";
                 Instance.muteButton.Foreground = e.Listening ? UiHelper.ColorValid : UiHelper.ColorInvalid;
@@ -89,7 +89,7 @@ namespace Hoscy.Ui.Pages
             _sendStatus = "Executed command";
             _message = message;
 
-            Instance.Dispatcher.Invoke(() =>
+            Instance?.Dispatcher.Invoke(() =>
             {
                 Instance.sendStatus.Text = _sendStatus;
                 Instance.message.Text = _message;
@@ -115,7 +115,7 @@ namespace Hoscy.Ui.Pages
             _sendStatus = "Sent via " + add;
             _message = message;
 
-            Instance.Dispatcher.Invoke(() =>
+            Instance?.Dispatcher.Invoke(() =>
             {
                 Instance.sendStatus.Text = _sendStatus;
                 Instance.message.Text = _message;
@@ -126,7 +126,7 @@ namespace Hoscy.Ui.Pages
         {
             _notification = $"[{type}] {message}";
 
-            Instance.Dispatcher.Invoke(() =>
+            Instance?.Dispatcher.Invoke(() =>
             {
                 Instance.notification.Text = _notification;
             });

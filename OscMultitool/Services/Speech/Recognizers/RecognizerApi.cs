@@ -83,7 +83,7 @@ namespace Hoscy.Services.Speech.Recognizers
             }
 
             _stream.Position = 0;
-            Utils.RunWithoutAwait(RequestRecognition(_stream.GetBuffer()));
+            RequestRecognition(_stream.GetBuffer()).RunWithoutAwait();
 
             _stream.SetLength(0);
         }
