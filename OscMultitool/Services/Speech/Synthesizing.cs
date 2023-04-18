@@ -14,7 +14,7 @@ namespace Hoscy.Services.Speech
         private static readonly WaveOut _waveOut = new();
         private static RawSourceWaveStream? _provider;
         private static string _currentString = string.Empty;
-        internal static bool IsRunning => _provider != null;
+        internal static bool IsRunning() => _provider != null;
 
         static Synthesizing()
         {
@@ -104,7 +104,7 @@ namespace Hoscy.Services.Speech
         /// <param name="input">Sentence to say</param>
         internal static void Say(string input)
         {
-            if (!IsRunning || string.IsNullOrWhiteSpace(input))
+            if (!IsRunning() || string.IsNullOrWhiteSpace(input))
                 return;
 
             if (input.Length > Config.Speech.MaxLenTtsString)

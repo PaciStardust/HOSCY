@@ -84,9 +84,9 @@ namespace Hoscy.Ui.Pages
         /// Sets the message as a command
         /// </summary>
         /// <param name="message">Message to display</param>
-        internal static void SetCommandMessage(string message)
+        internal static void SetCommandMessage(string message, bool success = true)
         {
-            _sendStatus = "Executed command";
+            _sendStatus = success ? "Executed command" : "Failed to execute command";
             _message = message;
 
             Instance?.Dispatcher.Invoke(() =>

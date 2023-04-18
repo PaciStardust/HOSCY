@@ -21,6 +21,7 @@ namespace Hoscy
             InitializeComponent();
 
             Logger.PInfo("HOSCY VERSION " + App.Version);
+            Config.BackupFile(Utils.PathConfigFile); //todo: move this when dependency in logger is fixed
             Osc.RecreateListener();
 
             listBox.SelectedIndex = 0;

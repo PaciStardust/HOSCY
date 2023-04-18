@@ -105,13 +105,13 @@ namespace Hoscy.Services.Api
 
             StringBuilder sb = new();
 
-            if (string.IsNullOrWhiteSpace(_nowPlaying.Artist)) //todo: test
+            if (string.IsNullOrWhiteSpace(_nowPlaying.Artist))
                 sb.Append($"'{_nowPlaying.Title}'");
             else
             {
                 string appendText = Config.Textbox.MediaSwapArtistAndSong
-                    ? $"{_nowPlaying.Artist} {Config.Textbox.MediaArtistVerb} {_nowPlaying.Title}"
-                    : $"{_nowPlaying.Title} {Config.Textbox.MediaArtistVerb} {_nowPlaying.Artist}";
+                    ? $"'{_nowPlaying.Artist}' {Config.Textbox.MediaArtistVerb} '{_nowPlaying.Title}'"
+                    : $"'{_nowPlaying.Title}' {Config.Textbox.MediaArtistVerb} '{_nowPlaying.Artist}'";
                 sb.Append(appendText);
             }
 
@@ -197,15 +197,16 @@ namespace Hoscy.Services.Api
         /// Handles the lowercase raw media command, skips otherwise
         /// </summary>
         /// <param name="command">Raw command</param>
-        internal static void HandleRawMediaCommand(string command) //todo: test
+        internal static bool HandleRawMediaCommand(string command)
         {
             command = command.Replace("media ", string.Empty);
 
             if (!_commandTriggers.Keys.Contains(command))
-                return;
+                return false;
 
             var mediaCommand = _commandTriggers[command];
             HandleMediaCommand(mediaCommand).RunWithoutAwait();
+            return true;
         }
 
         /// <summary>

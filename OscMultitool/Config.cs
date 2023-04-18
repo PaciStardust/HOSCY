@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace Hoscy
 {
-    internal static class Config //todo: backup on startup, reorg
+    internal static class Config
     {
         public static ConfigModel Data { get; private set; }
         public static ConfigOscModel Osc => Data.Osc;
@@ -47,19 +47,31 @@ namespace Hoscy
         /// <summary>
         /// Saves the config file
         /// </summary>
-        internal static void SaveConfig(bool backup = false)
+        internal static void SaveConfig()
         {
             try
             {
                 var jsonText = JsonConvert.SerializeObject(Data ?? new(), Formatting.Indented);
                 File.WriteAllText(Utils.PathConfigFile, jsonText, Encoding.UTF8);
-                if (backup)
-                    File.WriteAllText(Utils.PathConfigFile + ".backup", jsonText, Encoding.UTF8);
-                Logger.Info($"Saved config file {(backup ? "and backup " : string.Empty)}at " + Utils.PathConfigFile);
+                Logger.Info($"Saved config file at " + Utils.PathConfigFile);
             }
             catch (Exception e)
             {
                 Logger.Error(e, "The config file was unable to be saved.", notify: false);
+            }
+        }
+
+        internal static void BackupFile(string path)
+        {
+            try
+            {
+                var fileText = File.ReadAllText(path, Encoding.UTF8);
+                File.WriteAllText(path + ".backup", fileText, Encoding.UTF8);
+                Logger.Info($"Backed up file {path}");
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e, $"Failed to backe up file {path}", notify: false);
             }
         }
 

@@ -113,7 +113,8 @@ namespace Hoscy.Services.Api
                 return;
 
             //Saving file and backing up
-            Config.SaveConfig(true);
+            Config.SaveConfig();
+            Config.BackupFile(Utils.PathConfigFile);
 
             //Creates and runs CMD
             Logger.PInfo("Creating and running update CMD command, HOSCY will now shutdown");

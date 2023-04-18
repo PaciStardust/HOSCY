@@ -94,10 +94,10 @@ namespace Hoscy.Services.Speech
 
             if (TriggerCommands)
             {
-                var resultMessage = ExecuteCommands(message.TrimEnd('.'));
-                if (resultMessage != null)
+                var result = ExecuteCommands(message.TrimEnd('.'));
+                if (result != null)
                 {
-                    PageInfo.SetCommandMessage(resultMessage);
+                    PageInfo.SetCommandMessage(message, result.Value);
                     return;
                 }
             }
@@ -168,15 +168,15 @@ namespace Hoscy.Services.Speech
         /// <summary>
         /// Checking for message to be a command
         /// </summary>
-        /// <returns>Was a command executed?</returns>
-        private static string? ExecuteCommands(string message) //todo: rewrite
+        /// <returns>Success, null if no commands were ran</returns>
+        private static bool? ExecuteCommands(string message)
         {
             message = message.Trim();
             var lowerMessage = message.ToLower();
 
             //Osc command handling
             if (lowerMessage.StartsWith("[osc]"))
-                return Osc.ParseOscCommands(message) ? message : "Failed to execute OSC:\n\n" + message;
+                return Osc.ParseOscCommands(message);
 
             if (lowerMessage == "skip" || lowerMessage == "clear")
             {
@@ -184,14 +184,11 @@ namespace Hoscy.Services.Speech
                 Textbox.Clear();
                 Synthesizing.Skip();
                 OscDataHandler.SetAfkTimer(false);
-                return message;
+                return true;
             }
 
             if (lowerMessage.StartsWith("media "))
-            {
-                Media.HandleRawMediaCommand(message);
-                return message;
-            }
+                return Media.HandleRawMediaCommand(message);
 
             return null;
         }
