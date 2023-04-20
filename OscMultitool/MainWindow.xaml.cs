@@ -21,8 +21,8 @@ namespace Hoscy
             InitializeComponent();
 
             Logger.PInfo("HOSCY VERSION " + App.Version);
-            Config.BackupFile(Utils.PathConfigFile); //todo: move this when dependency in logger is fixed
-            Osc.RecreateListener();
+            Config.BackupFile(Utils.PathConfigFile);
+            Osc.RecreateListener(); //This also loads the config
 
             listBox.SelectedIndex = 0;
             Media.StartMediaDetection();
