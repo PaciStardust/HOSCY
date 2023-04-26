@@ -12,7 +12,8 @@ namespace Hoscy.Services.Speech.Recognizers
         new internal static RecognizerPerms Perms => new()
         {
             Description = "Remote recognition using Azure-API",
-            UsesMicrophone = true
+            UsesMicrophone = true,
+            UsesAzureApi = true,
         };
 
         internal override bool IsListening => _isListening;

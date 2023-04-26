@@ -11,72 +11,56 @@ namespace Hoscy.Ui.Pages
     /// <summary>
     /// Interaction logic for PageOutput.xaml
     /// </summary>
-    internal partial class PageOutput : Page
+    internal partial class PageOutput : Page //todo: change indicator for azure text
     {
         public PageOutput()
         {
             InitializeComponent();
             UpdateTimeoutBoxes();
-            LoadComboBoxes();
+            LoadBoxes();
             UpdateVolumeText();
         }
 
-        #region Textbox
-        private void Button_SkipBox(object sender, RoutedEventArgs e)
-            => Textbox.Clear();
+        #region Loading
+        private void LoadBoxes()
+        {
+            //Speakers
+            speechSpeakerBox.Load(Devices.Speakers.Select(x => x.ProductName), Devices.GetSpeakerIndex(Config.Speech.SpeakerId));
+            //Windows Synths
+            speechWindowsSynthBox.Load(Devices.WindowsVoices.Select(x => x.Description), Devices.GetWindowsVoiceIndex(Config.Speech.TtsId));
 
-        private void TextboxDynamicTimeout_Checked(object sender, RoutedEventArgs e)
-            => UpdateTimeoutBoxes();
+            UpdateAzureVoiceBox();
+        }
 
         private void UpdateTimeoutBoxes()
         {
             optionDefaultTimeout.IsEnabled = !textboxDynamicTimeout.IsChecked ?? false;
             optionDynamicTimeout.IsEnabled = textboxDynamicTimeout.IsChecked ?? false;
         }
-        #endregion
 
-        #region TTS
-        private void LoadComboBoxes()
+        private void UpdateAzureVoiceBox()
         {
-            //Speakers
-            speechSpeakerBox.Load(Devices.Speakers.Select(x => x.ProductName), Devices.GetSpeakerIndex(Config.Speech.SpeakerId));
-            //Windows Synths
-            speechWindowsSynthBox.Load(Devices.WindowsVoices.Select(x => x.Description), Devices.GetWindowsVoiceIndex(Config.Speech.TtsId));
-        }
+            var voices = Config.Api.AzureVoices;
 
-        private void Button_SkipSpeech(object sender, RoutedEventArgs e)
-            => Synthesizing.Skip();
-
-        private void SpeechSpeakerBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            Config.Speech.SpeakerId = Devices.Speakers[speechSpeakerBox.SelectedIndex].ProductName;
-            Synthesizing.ChangeSpeakers();
-        }
-
-        private void Button_ResetDevice(object sender, RoutedEventArgs e)
-        {
-            Config.Speech.SpeakerId = string.Empty;
-            LoadComboBoxes();
-        }
-
-        private void SpeechWindowsSynthBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            Config.Speech.TtsId = Devices.WindowsVoices[speechWindowsSynthBox.SelectedIndex].Id;
-        }
-
-        private void Button_ReloadSynthesizer(object sender, RoutedEventArgs e)
-        {
-            Synthesizing.ReloadSynth();
-            //todo: indicator
-        }
-
-        private void Slider_Volume(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (volumeSlider != null)
+            //Checking for availability of current model in dropdown
+            int index = -1;
+            var keyArray = voices.Keys.ToArray();
+            for (int i = 0; i < keyArray.Length; i++)
             {
-                UpdateVolumeText();
-                Synthesizing.ChangeVolume();
+                if (Config.Api.AzureVoiceCurrent == keyArray[i])
+                {
+                    index = i;
+                    break;
+                }
             }
+
+            //Clearing, very cool
+            azureVoiceBox.ItemsSource = null;
+            foreach (var item in azureVoiceBox.Items)
+                azureVoiceBox.Items.Remove(item);
+            azureVoiceBox.Items.Refresh();
+
+            azureVoiceBox.Load(voices.Keys, index, true);
         }
 
         private void UpdateVolumeText()
@@ -86,12 +70,73 @@ namespace Hoscy.Ui.Pages
         }
         #endregion
 
-        #region Other
-        private void Button_ModifyMediaFilter(object sender, RoutedEventArgs e)
+        #region Buttons
+        private void Button_SkipBox(object sender, RoutedEventArgs e)
+            => Textbox.Clear();
+
+        private void Button_SkipSpeech(object sender, RoutedEventArgs e)
+            => Synthesizing.Skip();
+
+        private void Button_ResetDevice(object sender, RoutedEventArgs e)
         {
-            var window = new ModifyFiltersWindow("Edit Media Filter", Config.Textbox.MediaFilters);
-            window.ShowDialogDark();
+            Config.Speech.SpeakerId = string.Empty;
+            LoadBoxes();
         }
+
+        private void Button_ReloadSynthesizer(object sender, RoutedEventArgs e)
+        {
+            Synthesizing.ReloadSynth();
+            //todo: indicator
+        }
+
+        private void Button_EditAzureVoices(object sender, RoutedEventArgs e)
+        {
+            UiHelper.OpenDictionaryEditor("Edit Azure Voices", "Voice Identifier", "Voice Name", Config.Api.AzureVoices);
+            UpdateAzureVoiceBox();
+        }
+        #endregion
+
+        #region SelectionChanged
+        private void SpeechSpeakerBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Config.Speech.SpeakerId = Devices.Speakers[speechSpeakerBox.SelectedIndex].ProductName;
+            Synthesizing.ChangeSpeakers();
+        }
+
+        private void SpeechWindowsSynthBox_SelectionChanged(object sender, SelectionChangedEventArgs e) //todo: indicator
+        {
+            Config.Speech.TtsId = Devices.WindowsVoices[speechWindowsSynthBox.SelectedIndex].Id;
+        }
+
+        private void AzureVoiceBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string oldVoiceName = Config.Api.AzureVoiceCurrent;
+
+            var index = azureVoiceBox.SelectedIndex;
+            if (index != -1 && index < Config.Api.AzureVoices.Count)
+                Config.Api.AzureVoiceCurrent = Config.Api.AzureVoices.Keys.ToArray()[index];
+
+            if (oldVoiceName != Config.Api.AzureVoiceCurrent)
+            {
+                //_changedValuesSynthesizer = true;
+                //UpdateChangedValuesIndicator();
+                //todo: change indicator
+            }
+        }
+        #endregion
+
+        #region Other
+        private void Slider_Volume(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (volumeSlider != null)
+            {
+                UpdateVolumeText();
+                Synthesizing.ChangeVolume();
+            }
+        }
+
+        private void TextboxDynamicTimeout_Checked(object sender, RoutedEventArgs e)
+            => UpdateTimeoutBoxes();
         #endregion
     }
 }

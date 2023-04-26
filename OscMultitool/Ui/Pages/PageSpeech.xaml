@@ -24,7 +24,6 @@
                     <Label Style="{StaticResource HLabelM}" Content="Recognizer Control"/>
                     <Button x:Name="buttonMute" Content="Muted"  HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_Mute"/>
                 </WrapPanel>
-
                 <StackPanel Style="{StaticResource HStackIndent}">
                     <CheckBox Content="Send over TTS" IsChecked="{Binding Speech.UseTts, Source={x:Static local:Config.Data}}"/>
                     <CheckBox Content="Send over textbox" Margin="0,4,0,0" IsChecked="{Binding Speech.UseTextbox, Source={x:Static local:Config.Data}}"/>
@@ -36,7 +35,6 @@
 
                 <!-- Commands & Filters -->
                 <Label Style="{StaticResource HLabelM}" Content="Commands + Filters" Margin="0,16,0,0"/>
-
                 <StackPanel Style="{StaticResource HStackIndent}">
                     <WrapPanel Margin="0,0,32,0">
                         <Button Content="Shortcuts" Click="Button_OpenShortcuts"/>
@@ -48,7 +46,6 @@
 
                 <!-- Recognizer Settings -->
                 <Label Style="{StaticResource HLabelM}" Content="Recognizer Options" Margin="0,16,0,0"/>
-
                 <StackPanel Style="{StaticResource HStackIndent}">
                     <!-- Recognizer Select -->
                     <WrapPanel>
@@ -72,7 +69,7 @@
                         <Label Content="Vosk Options"/>
 
                         <StackPanel Style="{StaticResource HStackIndent}">
-                            <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Vosk AI Model"/>
+                            <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Vosk AI model"/>
 
                             <WrapPanel Margin="0,4,0,0">
                                 <ComboBox x:Name="voskModelBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="VoskModelBox_SelectionChanged"/>
@@ -97,7 +94,46 @@
                     <!-- Windows Options -->
                     <StackPanel x:Name="optionsWin" Margin="0,8,0,0">
                         <Label Content="Windows recognizer"/>
-                        <ComboBox x:Name="speechWindowsRecognizerBox" Style="{StaticResource HSettingsComboBox}" Margin="8,0,0,0" SelectionChanged="SpeechWindowsRecognizerBox_SelectionChanged"/>
+                        <ComboBox x:Name="windowsRecognizerBox" Style="{StaticResource HSettingsComboBox}" Margin="8,0,0,0" SelectionChanged="WindowsRecognizerBox_SelectionChanged"/>
+                    </StackPanel>
+
+                    <!-- Any-API Options -->
+                    <StackPanel x:Name="optionsAnyApi" Margin="0,8,0,0">
+                        <Label Content="Any-API Options"/>
+
+                        <StackPanel Style="{StaticResource HStackIndent}">
+                            <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="API Preset"/>
+
+                            <ComboBox x:Name="anyApiBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="AnyApiBox_SelectionChanged" Margin="0,4,0,0"/>
+
+                            <WrapPanel Margin="0,4,0,0">
+                                <TextBox Style="{StaticResource HTextBoxShort}">
+                                    <TextBox.Text>
+                                        <Binding Source="{x:Static local:Config.Data}" Path="Api.RecognitionMaxRecordingTime" UpdateSourceTrigger="PropertyChanged">
+                                            <Binding.ValidationRules>
+                                                <ui:IntegerValidationRule Min="1" Max="300"/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                                <Label Content="Max. recording time (s)" VerticalAlignment="Center"/>
+                            </WrapPanel>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Azure Options -->
+                    <StackPanel x:Name="optionsAzure" Margin="0,8,0,0">
+                        <Label Content="Azure Options"/>
+
+                        <StackPanel Style="{StaticResource HStackIndent}">
+                            <TextBlock Style="{DynamicResource HTextBlock}" Text="Custom endpoint"/>
+                            <TextBox Margin="0,4,0,0" Text="{Binding Api.AzureCustomEndpointRecognition, Source={x:Static local:Config.Data}}" Tag="Custom endpoint..." Style="{StaticResource HTextBoxLong}"/>
+
+                            <WrapPanel Margin="0,4,0,0">
+                                <Button Content="Edit phrases" Click="Button_EditPhrases"/>
+                                <Button Content="Edit languages" Click="Button_EditAzureLanguages" Margin="8,0,0,0"/>
+                            </WrapPanel>
+                        </StackPanel>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>

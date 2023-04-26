@@ -11,7 +11,7 @@ namespace Hoscy
     /// <summary>
     /// Class for logging of information in console
     /// </summary>
-    internal static class Logger //todo: rid of config dependency?
+    internal static class Logger
     {
         private static readonly StreamWriter? _logWriter;
 

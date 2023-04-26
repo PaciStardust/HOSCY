@@ -11,7 +11,8 @@ namespace Hoscy.Services.Speech.Recognizers
         new internal static RecognizerPerms Perms => new()
         {
             Description = "Remote recognition using Any-API, not continuous",
-            UsesMicrophone = true
+            UsesMicrophone = true,
+            UsesAnyApi = true,
         };
 
         internal override bool IsListening => _isListening;

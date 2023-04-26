@@ -12,9 +12,9 @@ using System.Windows.Controls;
 namespace Hoscy.Ui.Pages
 {
     /// <summary>
-    /// Interaction logic for TestPage.xaml8
+    /// Interaction logic for TestPage.xaml
     /// </summary>
-    internal partial class PageSpeech : Page
+    internal partial class PageSpeech : Page //todo: change indicator for azure text
     {
         private static bool _changedValues = false;
 
@@ -47,6 +47,8 @@ namespace Hoscy.Ui.Pages
 
             UpdateRecognizerStatus(null, new(Recognition.GetRunningStatus(), Recognition.GetListeningStatus()));
             Recognition.RecognitionChanged += UpdateRecognizerStatus;
+
+            changeIndicator.Visibility = _changedValues ? Visibility.Visible : Visibility.Hidden;
         }
 
         #region Loading
@@ -73,9 +75,9 @@ namespace Hoscy.Ui.Pages
             //Microphones
             speechMicrophoneBox.Load(Devices.Microphones.Select(x => x.ProductName), Devices.GetMicrophoneIndex(Config.Speech.MicId));
             //Windows Listeners
-            speechWindowsRecognizerBox.Load(Devices.WindowsRecognizers.Select(x => x.Description), Devices.GetWindowsListenerIndex(Config.Speech.WinModelId));
-
-            changeIndicator.Visibility = _changedValues ? Visibility.Visible : Visibility.Hidden;
+            windowsRecognizerBox.Load(Devices.WindowsRecognizers.Select(x => x.Description), Devices.GetWindowsListenerIndex(Config.Speech.WinModelId));
+            //AnyAPI presrt
+            anyApiBox.Load(Config.Api.Presets.Select(x => x.Name), Config.Api.GetIndex(Config.Api.RecognitionPreset));
         }
 
         private void EnableChangeIndicator()
@@ -126,9 +128,11 @@ namespace Hoscy.Ui.Pages
             var perms = _permDict[keys[recSelIndex]];
 
             valueRecInfo.Text = perms.Description;
-            optionsMic.IsEnabled = perms.UsesMicrophone;
-            optionsVosk.IsEnabled = perms.UsesVoskModel;
-            optionsWin.IsEnabled = perms.UsesWinRecognizer;
+            optionsMic.Visibility = perms.UsesMicrophone ? Visibility.Visible : Visibility.Collapsed;
+            optionsVosk.Visibility = perms.UsesVoskModel ? Visibility.Visible : Visibility.Collapsed;
+            optionsWin.Visibility = perms.UsesWinRecognizer ? Visibility.Visible : Visibility.Collapsed;
+            optionsAnyApi.Visibility = perms.UsesAnyApi ? Visibility.Visible : Visibility.Collapsed;
+            optionsAzure.Visibility = perms.UsesAzureApi ? valueRecInfo.Visibility : Visibility.Collapsed;
 
             if (oldModelName != Config.Speech.ModelName)
                 EnableChangeIndicator();
@@ -216,9 +220,24 @@ namespace Hoscy.Ui.Pages
             UiHelper.OpenDictionaryEditor("Edit Vosk AI Models", "Model name", "Model folder", Config.Speech.VoskModels);
             UpdateVoskRecognizerBox();
         }
+
+        private void Button_EditAzurePhrases(object sender, RoutedEventArgs e)
+        {
+            UiHelper.OpenListEditor("Edit phrases", "Phrase", Config.Api.AzurePhrases, "New Phrase");
+            EnableChangeIndicator();
+        }
+
+        private void Button_EditAzureLanguages(object sender, RoutedEventArgs e)
+        {
+            UiHelper.OpenListEditor("Edit languages", "Language", Config.Api.AzureRecognitionLanguages, "New Language");
+            EnableChangeIndicator();
+        }
         #endregion
 
         #region SelectionChanged
+        private void RecognizerSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+            => UpdateRecognizerSelector();
+
         private void SpeechMicrophoneBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var oldId = Config.Speech.MicId;
@@ -231,20 +250,17 @@ namespace Hoscy.Ui.Pages
                 EnableChangeIndicator();
         }
 
-        private void SpeechWindowsRecognizerBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void WindowsRecognizerBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var oldId = Config.Speech.WinModelId;
 
-            var index = speechWindowsRecognizerBox.SelectedIndex;
+            var index = windowsRecognizerBox.SelectedIndex;
             if (index != -1 && index < Devices.WindowsRecognizers.Count)
-                Config.Speech.WinModelId = Devices.WindowsRecognizers[speechWindowsRecognizerBox.SelectedIndex].Id;
+                Config.Speech.WinModelId = Devices.WindowsRecognizers[windowsRecognizerBox.SelectedIndex].Id;
 
             if (oldId != Config.Speech.WinModelId)
                 EnableChangeIndicator();
         }
-
-        private void RecognizerSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
-            => UpdateRecognizerSelector();
 
         private void VoskModelBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -255,6 +271,20 @@ namespace Hoscy.Ui.Pages
                 Config.Speech.VoskModelCurrent = Config.Speech.VoskModels.Keys.ToArray()[index];
 
             if (oldModelName != Config.Speech.VoskModelCurrent)
+                EnableChangeIndicator();
+        }
+
+        private void AnyApiBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string oldAnyApiName = Config.Api.RecognitionPreset;
+
+            int index = anyApiBox.SelectedIndex;
+            if (index == -1 || index >= Config.Api.Presets.Count)
+                return;
+
+            Config.Api.RecognitionPreset = Config.Api.Presets[anyApiBox.SelectedIndex].Name;
+
+            if (oldAnyApiName != Config.Api.RecognitionPreset)
                 EnableChangeIndicator();
         }
         #endregion
