@@ -1,6 +1,5 @@
 ﻿using Hoscy.Services.Speech;
 using Hoscy.Services.Speech.Utilities;
-using Hoscy.Ui.Windows;
 using System;
 using System.Linq;
 using System.Windows;
@@ -11,14 +10,17 @@ namespace Hoscy.Ui.Pages
     /// <summary>
     /// Interaction logic for PageOutput.xaml
     /// </summary>
-    internal partial class PageOutput : Page //todo: change indicator for azure text
+    internal partial class PageOutput : Page
     {
+        private bool _changedValuesSynth = false;
+
         public PageOutput()
         {
             InitializeComponent();
             UpdateTimeoutBoxes();
             LoadBoxes();
             UpdateVolumeText();
+            UpdateChangeIndicatorSynth();
         }
 
         #region Loading
@@ -68,6 +70,9 @@ namespace Hoscy.Ui.Pages
             if (volumeLabel != null)
                 volumeLabel.Content = $"Speech volume ({(int)Math.Round(volumeSlider.Value * 100)}%)";
         }
+
+        private void UpdateChangeIndicatorSynth()
+            => changeIndicatorSynth.Visibility = _changedValuesSynth ? Visibility.Visible : Visibility.Hidden;
         #endregion
 
         #region Buttons
@@ -86,7 +91,8 @@ namespace Hoscy.Ui.Pages
         private void Button_ReloadSynthesizer(object sender, RoutedEventArgs e)
         {
             Synthesizing.ReloadSynth();
-            //todo: indicator
+            _changedValuesSynth = false;
+            UpdateChangeIndicatorSynth();
         }
 
         private void Button_EditAzureVoices(object sender, RoutedEventArgs e)
@@ -103,9 +109,16 @@ namespace Hoscy.Ui.Pages
             Synthesizing.ChangeSpeakers();
         }
 
-        private void SpeechWindowsSynthBox_SelectionChanged(object sender, SelectionChangedEventArgs e) //todo: indicator
+        private void SpeechWindowsSynthBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            var oldId = Config.Speech.TtsId;
             Config.Speech.TtsId = Devices.WindowsVoices[speechWindowsSynthBox.SelectedIndex].Id;
+
+            if (oldId != Config.Speech.TtsId)
+            {
+                _changedValuesSynth = true;
+                UpdateChangeIndicatorSynth();
+            }
         }
 
         private void AzureVoiceBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -118,9 +131,8 @@ namespace Hoscy.Ui.Pages
 
             if (oldVoiceName != Config.Api.AzureVoiceCurrent)
             {
-                //_changedValuesSynthesizer = true;
-                //UpdateChangedValuesIndicator();
-                //todo: change indicator
+                _changedValuesSynth = true;
+                UpdateChangeIndicatorSynth();
             }
         }
         #endregion
@@ -137,6 +149,12 @@ namespace Hoscy.Ui.Pages
 
         private void TextboxDynamicTimeout_Checked(object sender, RoutedEventArgs e)
             => UpdateTimeoutBoxes();
+
+        private void SynthTextBox_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e) //todo: synth status
+        {
+            _changedValuesSynth = true;
+            UpdateChangeIndicatorSynth();
+        }
         #endregion
     }
 }

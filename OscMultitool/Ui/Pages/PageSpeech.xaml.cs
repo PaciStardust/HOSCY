@@ -14,7 +14,7 @@ namespace Hoscy.Ui.Pages
     /// <summary>
     /// Interaction logic for TestPage.xaml
     /// </summary>
-    internal partial class PageSpeech : Page //todo: change indicator for azure text
+    internal partial class PageSpeech : Page
     {
         private static bool _changedValues = false;
 
@@ -287,6 +287,10 @@ namespace Hoscy.Ui.Pages
             if (oldAnyApiName != Config.Api.RecognitionPreset)
                 EnableChangeIndicator();
         }
+
+
+        private void TextBox_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+            => EnableChangeIndicator();
         #endregion
     }
 }

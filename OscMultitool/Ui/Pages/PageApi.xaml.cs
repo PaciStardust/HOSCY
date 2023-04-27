@@ -9,7 +9,7 @@ namespace Hoscy.Ui.Pages
     /// <summary>
     /// Interaction logic for PageApi.xaml
     /// </summary>
-    internal partial class PageApi : Page //todo: tweak headings?
+    internal partial class PageApi : Page
     {
         private static bool _changedValuesTranslation = false;
         public PageApi()

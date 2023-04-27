@@ -127,10 +127,10 @@
 
                         <StackPanel Style="{StaticResource HStackIndent}">
                             <TextBlock Style="{DynamicResource HTextBlock}" Text="Custom endpoint"/>
-                            <TextBox Margin="0,4,0,0" Text="{Binding Api.AzureCustomEndpointRecognition, Source={x:Static local:Config.Data}}" Tag="Custom endpoint..." Style="{StaticResource HTextBoxLong}"/>
+                            <TextBox Margin="0,4,0,0" Text="{Binding Api.AzureCustomEndpointRecognition, Source={x:Static local:Config.Data}}" Tag="Custom endpoint..." Style="{StaticResource HTextBoxLong}" PreviewKeyDown="TextBox_PreviewKeyDown"/>
 
                             <WrapPanel Margin="0,4,0,0">
-                                <Button Content="Edit phrases" Click="Button_EditPhrases"/>
+                                <Button Content="Edit phrases" Click="Button_EditAzurePhrases"/>
                                 <Button Content="Edit languages" Click="Button_EditAzureLanguages" Margin="8,0,0,0"/>
                             </WrapPanel>
                         </StackPanel>

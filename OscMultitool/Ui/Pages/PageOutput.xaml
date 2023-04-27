@@ -14,7 +14,7 @@
         <StackPanel Margin="0,0,32,0">
             <WrapPanel>
                 <Label Content="Textbox" Style="{StaticResource HLabelL}"/>
-                <Button Content="Skip Current Queue" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_SkipBox"/>
+                <Button Content="Skip" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_SkipBox"/>
             </WrapPanel>
 
             <!-- Textbox -->
@@ -135,8 +135,9 @@
 
             <WrapPanel Margin="0,16,0,0">
                 <Label Content="Text to Speech" Style="{StaticResource HLabelL}"/>
-                <Button Content="Reload TTS" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_ReloadSynthesizer"/>
-                <Button Content="Skip Current Speech" Click="Button_SkipSpeech" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                <Button Content="Skip" Click="Button_SkipSpeech" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Button Content="Reload" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_ReloadSynthesizer" Margin="8,0,0,0"/>
+                <Label x:Name="changeIndicatorSynth" Foreground="{x:Static ui:UiHelper.ColorInvalid}" Content="(Unapplied changes)" FontSize="14" VerticalAlignment="Center" Margin="8,0,0,0" Visibility="Hidden"/>
             </WrapPanel>
 
             <!-- STT -->
@@ -193,10 +194,10 @@
                         </WrapPanel>
 
                         <TextBlock Style="{DynamicResource HTextBlock}" Text="Custom endpoint" Margin="0,4,0,0"/>
-                        <TextBox Text="{Binding Api.AzureCustomEndpointSpeech, Source={x:Static local:Config.Data}}" Tag="Custom endpoint..." Style="{StaticResource HTextBoxLong}" Margin="0,4,0,0"/>
+                        <TextBox Text="{Binding Api.AzureCustomEndpointSpeech, Source={x:Static local:Config.Data}}" Tag="Custom endpoint..." Style="{StaticResource HTextBoxLong}" Margin="0,4,0,0" PreviewKeyDown="SynthTextBox_PreviewKeyDown"/>
 
                         <WrapPanel Margin="0,4,0,0">
-                            <TextBox HorizontalAlignment="Left" Text="{Binding Api.AzureSpeechLanguage, Source={x:Static local:Config.Data}}" Tag="Language..." Style="{StaticResource HTextBoxShort}"/>
+                            <TextBox HorizontalAlignment="Left" Text="{Binding Api.AzureSpeechLanguage, Source={x:Static local:Config.Data}}" Tag="Language..." Style="{StaticResource HTextBoxShort}" PreviewKeyDown="SynthTextBox_PreviewKeyDown"/>
                             <Label Content="Used Language" VerticalAlignment="Center"/>
                         </WrapPanel>
                     </StackPanel>
