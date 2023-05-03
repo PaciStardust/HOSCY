@@ -7,25 +7,37 @@ using System.Threading;
 
 namespace Hoscy.Services.Speech
 {
-    internal static class Synthesizing //todo: implement status? Not immedeate start
+    internal static class Synthesizing //todo: test
     {
-        private static SynthesizerBase _synth;
+        private static SynthesizerBase? _synth;
         private static readonly MemoryStream _stream = new();
         private static readonly WaveOut _waveOut = new();
         private static RawSourceWaveStream? _provider;
         private static string _currentString = string.Empty;
-        internal static bool IsRunning() => _provider != null;
+        private static bool _hasInitialized = false;
+
+        internal static bool GetRunningStatus() => _synth != null;
 
         static Synthesizing()
         {
-            _synth = CreateSynth();
-
             //Mic Setup
             _provider = GenerateProvider();
             _waveOut.Init(_provider);
 
             ChangeSpeakers();
             ChangeVolume(); //Turns out the default for this somehow gets saved
+
+            Logger.PInfo("Successfully prepared synth essentials");
+        }
+
+        /// <summary>
+        /// Initialization function, stops the synth from loading when the Output page is opened
+        /// </summary>
+        private static void Initialize()
+        {
+            if (_hasInitialized) return;
+
+            _synth = CreateSynth();
 
             Thread speechThread = new(new ThreadStart(SpeechLoop))
             {
@@ -34,9 +46,14 @@ namespace Hoscy.Services.Speech
             };
             speechThread.Start();
 
+            _hasInitialized = true;
             Logger.PInfo("Successfully started synthesizer thread");
         }
 
+        /// <summary>
+        /// Creates a synth based on config
+        /// </summary>
+        /// <returns>Synth of correct type</returns>
         private static SynthesizerBase CreateSynth()
         {
             Logger.PInfo("Attempting to create synthesizer...");
@@ -104,7 +121,10 @@ namespace Hoscy.Services.Speech
         /// <param name="input">Sentence to say</param>
         internal static void Say(string input)
         {
-            if (!IsRunning() || string.IsNullOrWhiteSpace(input))
+            if (!_hasInitialized)
+                Initialize();
+
+            if (string.IsNullOrWhiteSpace(input))
                 return;
 
             if (input.Length > Config.Speech.MaxLenTtsString)
@@ -146,7 +166,7 @@ namespace Hoscy.Services.Speech
                 _provider = GenerateProvider(); //We reset the provider for each clip as it appears to cause issues otherwise
                 Logger.Log("Creating synth audio from: " + _currentString);
 
-                var speakSuccess = _synth.IsAsync
+                var speakSuccess = _synth!.IsAsync //Synth should never be null at this point as this thread is called by init
                     ? await _synth.SpeakAsync(_currentString)
                     : _synth.Speak(_currentString);
 

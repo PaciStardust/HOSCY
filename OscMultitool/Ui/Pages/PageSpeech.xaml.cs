@@ -52,6 +52,9 @@ namespace Hoscy.Ui.Pages
         }
 
         #region Loading
+        /// <summary>
+        /// Updates the recognizer status if it is changed in the recognizer
+        /// </summary>
         private void UpdateRecognizerStatus(object? sender, RecognitionChangedEventArgs e)
         {
             Dispatcher.Invoke(() =>
@@ -70,6 +73,9 @@ namespace Hoscy.Ui.Pages
             });
         }
 
+        /// <summary>
+        /// Loads data into UI boxes
+        /// </summary>
         private void LoadBoxes()
         {
             //Microphones
@@ -80,7 +86,10 @@ namespace Hoscy.Ui.Pages
             anyApiBox.Load(Config.Api.Presets.Select(x => x.Name), Config.Api.GetIndex(Config.Api.RecognitionPreset));
         }
 
-        private void EnableChangeIndicator()
+        /// <summary>
+        /// Tries to enable the UI change indicator, will fail if recognizer is not running
+        /// </summary>
+        private void TryEnableChangeIndicator()
         {
             if (!Recognition.GetRunningStatus())
                 return;
@@ -135,9 +144,12 @@ namespace Hoscy.Ui.Pages
             optionsAzure.Visibility = perms.UsesAzureApi ? valueRecInfo.Visibility : Visibility.Collapsed;
 
             if (oldModelName != Config.Speech.ModelName)
-                EnableChangeIndicator();
+                TryEnableChangeIndicator();
         }
 
+        /// <summary>
+        /// Updates contents of the Vosk Recognizer dropdown
+        /// </summary>
         private void UpdateVoskRecognizerBox()
         {
             var models = Config.Speech.VoskModels;
@@ -191,7 +203,7 @@ namespace Hoscy.Ui.Pages
             Config.Speech.MicId = string.Empty;
 
             if (Config.Speech.MicId != oldId)
-                EnableChangeIndicator();
+                TryEnableChangeIndicator();
         }
 
         private void Button_Mute(object sender, RoutedEventArgs e)
@@ -224,13 +236,13 @@ namespace Hoscy.Ui.Pages
         private void Button_EditAzurePhrases(object sender, RoutedEventArgs e)
         {
             UiHelper.OpenListEditor("Edit phrases", "Phrase", Config.Api.AzurePhrases, "New Phrase");
-            EnableChangeIndicator();
+            TryEnableChangeIndicator();
         }
 
         private void Button_EditAzureLanguages(object sender, RoutedEventArgs e)
         {
             UiHelper.OpenListEditor("Edit languages", "Language", Config.Api.AzureRecognitionLanguages, "New Language");
-            EnableChangeIndicator();
+            TryEnableChangeIndicator();
         }
         #endregion
 
@@ -247,7 +259,7 @@ namespace Hoscy.Ui.Pages
                 Config.Speech.MicId = Devices.Microphones[speechMicrophoneBox.SelectedIndex].ProductName;
 
             if (oldId != Config.Speech.MicId)
-                EnableChangeIndicator();
+                TryEnableChangeIndicator();
         }
 
         private void WindowsRecognizerBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -259,7 +271,7 @@ namespace Hoscy.Ui.Pages
                 Config.Speech.WinModelId = Devices.WindowsRecognizers[windowsRecognizerBox.SelectedIndex].Id;
 
             if (oldId != Config.Speech.WinModelId)
-                EnableChangeIndicator();
+                TryEnableChangeIndicator();
         }
 
         private void VoskModelBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -271,7 +283,7 @@ namespace Hoscy.Ui.Pages
                 Config.Speech.VoskModelCurrent = Config.Speech.VoskModels.Keys.ToArray()[index];
 
             if (oldModelName != Config.Speech.VoskModelCurrent)
-                EnableChangeIndicator();
+                TryEnableChangeIndicator();
         }
 
         private void AnyApiBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -285,12 +297,12 @@ namespace Hoscy.Ui.Pages
             Config.Api.RecognitionPreset = Config.Api.Presets[anyApiBox.SelectedIndex].Name;
 
             if (oldAnyApiName != Config.Api.RecognitionPreset)
-                EnableChangeIndicator();
+                TryEnableChangeIndicator();
         }
 
 
         private void TextBox_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
-            => EnableChangeIndicator();
+            => TryEnableChangeIndicator();
         #endregion
     }
 }

@@ -10,7 +10,7 @@ namespace Hoscy.Ui.Pages
     /// </summary>
     internal partial class PageOsc : Page
     {
-        private static bool _unappliedOscChanges = false;
+        private static bool _unappliedChangesOsc = false;
 
         public PageOsc()
         {
@@ -22,7 +22,7 @@ namespace Hoscy.Ui.Pages
         private void Button_ReloadListener(object sender, RoutedEventArgs e)
         {
             Osc.RecreateListener();
-            _unappliedOscChanges = false;
+            _unappliedChangesOsc = false;
             CheckIndicators();
         }
 
@@ -54,18 +54,18 @@ namespace Hoscy.Ui.Pages
         private void CheckIndicators()
         {
             invalidFilterLabel.Visibility = Osc.HasInvalidFilters ? Visibility.Visible : Visibility.Hidden;
-            changeIndicator.Visibility = _unappliedOscChanges ? Visibility.Visible : Visibility.Hidden;
+            changeIndicator.Visibility = _unappliedChangesOsc ? Visibility.Visible : Visibility.Hidden;
         }
 
         private void OscOscPortIn_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            _unappliedOscChanges = Config.Osc.PortListen != Osc.ListenerPort;
+            _unappliedChangesOsc = Config.Osc.PortListen != Osc.ListenerPort;
             CheckIndicators();
         }
 
         private void AddressModified(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            _unappliedOscChanges = true;
+            _unappliedChangesOsc = true;
             CheckIndicators();
         }
         #endregion

@@ -66,6 +66,8 @@ namespace Hoscy.Ui.Pages
 
         private void TextBox_KeyPressed(object sender, KeyEventArgs e)
         {
+            Textbox.EnableTyping(e.Key != Key.Enter);
+
             if (e.Key == Key.Enter)
                 SendMessage();
         }

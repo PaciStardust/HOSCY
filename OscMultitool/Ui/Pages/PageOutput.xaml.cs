@@ -10,7 +10,7 @@ namespace Hoscy.Ui.Pages
     /// <summary>
     /// Interaction logic for PageOutput.xaml
     /// </summary>
-    internal partial class PageOutput : Page
+    internal partial class PageOutput : Page //todo: test change indicator
     {
         private bool _changedValuesSynth = false;
 
@@ -24,6 +24,9 @@ namespace Hoscy.Ui.Pages
         }
 
         #region Loading
+        /// <summary>
+        /// Loads data into UI boxes
+        /// </summary>
         private void LoadBoxes()
         {
             //Speakers
@@ -34,12 +37,18 @@ namespace Hoscy.Ui.Pages
             UpdateAzureVoiceBox();
         }
 
+        /// <summary>
+        /// Updates the availability of timeout fields in the UI
+        /// </summary>
         private void UpdateTimeoutBoxes()
         {
             optionDefaultTimeout.IsEnabled = !textboxDynamicTimeout.IsChecked ?? false;
             optionDynamicTimeout.IsEnabled = textboxDynamicTimeout.IsChecked ?? false;
         }
 
+        /// <summary>
+        /// Reloads the azure voice dropdown UI, this appears to be the only way I could make it work
+        /// </summary>
         private void UpdateAzureVoiceBox()
         {
             var voices = Config.Api.AzureVoices;
@@ -65,14 +74,32 @@ namespace Hoscy.Ui.Pages
             azureVoiceBox.Load(voices.Keys, index, true);
         }
 
+        /// <summary>
+        /// Updates the UI text for the volume slider
+        /// </summary>
         private void UpdateVolumeText()
         {
             if (volumeLabel != null)
                 volumeLabel.Content = $"Speech volume ({(int)Math.Round(volumeSlider.Value * 100)}%)";
         }
 
+        /// <summary>
+        /// Changes visibility of the UI change indicator for the synth
+        /// </summary>
         private void UpdateChangeIndicatorSynth()
             => changeIndicatorSynth.Visibility = _changedValuesSynth ? Visibility.Visible : Visibility.Hidden;
+
+        /// <summary>
+        /// Tries to enable the change indicator for the synth, will fail if it is not running
+        /// </summary>
+        private void TryEnableChangeIndicatorSynth()
+        {
+            if (!Synthesizing.GetRunningStatus())
+                return;
+
+            _changedValuesSynth = true;
+            UpdateChangeIndicatorSynth();
+        }
         #endregion
 
         #region Buttons
@@ -115,10 +142,7 @@ namespace Hoscy.Ui.Pages
             Config.Speech.TtsId = Devices.WindowsVoices[speechWindowsSynthBox.SelectedIndex].Id;
 
             if (oldId != Config.Speech.TtsId)
-            {
-                _changedValuesSynth = true;
-                UpdateChangeIndicatorSynth();
-            }
+                TryEnableChangeIndicatorSynth();
         }
 
         private void AzureVoiceBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -130,10 +154,7 @@ namespace Hoscy.Ui.Pages
                 Config.Api.AzureVoiceCurrent = Config.Api.AzureVoices.Keys.ToArray()[index];
 
             if (oldVoiceName != Config.Api.AzureVoiceCurrent)
-            {
-                _changedValuesSynth = true;
-                UpdateChangeIndicatorSynth();
-            }
+                TryEnableChangeIndicatorSynth();
         }
         #endregion
 
@@ -150,11 +171,8 @@ namespace Hoscy.Ui.Pages
         private void TextboxDynamicTimeout_Checked(object sender, RoutedEventArgs e)
             => UpdateTimeoutBoxes();
 
-        private void SynthTextBox_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e) //todo: synth status
-        {
-            _changedValuesSynth = true;
-            UpdateChangeIndicatorSynth();
-        }
+        private void SynthTextBox_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+            => TryEnableChangeIndicatorSynth();
         #endregion
     }
 }
