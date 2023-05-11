@@ -12,7 +12,7 @@ namespace Hoscy.Ui.Pages
     /// <summary>
     /// Interaction logic for PageDebug.xaml
     /// </summary>
-    internal partial class PageConfig : Page //todo: fix dropdown label inconsistency
+    internal partial class PageConfig : Page //todo: [UI TWEAK] fix dropdown label inconsistency
     {
         public PageConfig()
         {

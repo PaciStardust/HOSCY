@@ -91,6 +91,20 @@
                         </StackPanel>
                     </StackPanel>
 
+                    <!-- Whisper Options -->
+                    <StackPanel x:Name="optionsWhisper" Margin="0,8,0,0">
+                        <Label Content="Whisper Options"/>
+
+                        <StackPanel Style="{StaticResource HStackIndent}">
+                            <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Whisper AI model"/>
+
+                            <WrapPanel Margin="0,4,0,0">
+                                <ComboBox x:Name="whisperModelBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="WhisperModelBox_SelectionChanged"/>
+                                <Button Style="{StaticResource HButtonSmall}" Content="Edit list" Margin="8,0,0,0" VerticalAlignment="Center" Click="Button_EditWhisperModels"/>
+                            </WrapPanel>
+                        </StackPanel>
+                    </StackPanel>
+
                     <!-- Windows Options -->
                     <StackPanel x:Name="optionsWin" Margin="0,8,0,0">
                         <Label Content="Windows recognizer"/>

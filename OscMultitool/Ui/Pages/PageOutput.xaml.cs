@@ -10,7 +10,7 @@ namespace Hoscy.Ui.Pages
     /// <summary>
     /// Interaction logic for PageOutput.xaml
     /// </summary>
-    internal partial class PageOutput : Page //todo: test change indicator
+    internal partial class PageOutput : Page //todo: [TESTING] test change indicator
     {
         private bool _changedValuesSynth = false;
 
@@ -47,32 +47,10 @@ namespace Hoscy.Ui.Pages
         }
 
         /// <summary>
-        /// Reloads the azure voice dropdown UI, this appears to be the only way I could make it work
+        /// Reloads the azure voice dropdown UI
         /// </summary>
         private void UpdateAzureVoiceBox()
-        {
-            var voices = Config.Api.AzureVoices;
-
-            //Checking for availability of current model in dropdown
-            int index = -1;
-            var keyArray = voices.Keys.ToArray();
-            for (int i = 0; i < keyArray.Length; i++)
-            {
-                if (Config.Api.AzureVoiceCurrent == keyArray[i])
-                {
-                    index = i;
-                    break;
-                }
-            }
-
-            //Clearing, very cool
-            azureVoiceBox.ItemsSource = null;
-            foreach (var item in azureVoiceBox.Items)
-                azureVoiceBox.Items.Remove(item);
-            azureVoiceBox.Items.Refresh();
-
-            azureVoiceBox.Load(voices.Keys, index, true);
-        }
+            => azureVoiceBox.UpdateModelBox(Config.Api.AzureVoices, Config.Api.AzureVoiceCurrent);
 
         /// <summary>
         /// Updates the UI text for the volume slider

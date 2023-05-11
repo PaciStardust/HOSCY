@@ -18,7 +18,7 @@ namespace Hoscy.Services.Speech.Recognizers
         internal override bool IsListening => _isListening;
         private bool _isListening = false;
 
-        private readonly WaveIn _microphone = new()
+        private readonly WaveIn _microphone = new() //todo: [REFACTOR] why is this not a proxy?
         {
             DeviceNumber = Devices.GetMicrophoneIndex(Config.Speech.MicId),
             WaveFormat = new(sampleRate: 16000, 1)

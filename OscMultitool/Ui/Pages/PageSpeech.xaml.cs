@@ -24,7 +24,8 @@ namespace Hoscy.Ui.Pages
             { "Windows Recognizer V2", RecognizerWindowsV2.Perms },
             { "Windows Recognizer", RecognizerWindows.Perms },
             { "Any-API Recognizer", RecognizerApi.Perms },
-            { "Azure API Recognizer", RecognizerAzure.Perms }
+            { "Azure API Recognizer", RecognizerAzure.Perms },
+            { "WHISPER TEST RECOG", RecognizerWhisper.Perms }
         };
 
         internal static RecognizerBase? GetRecognizerFromUi()
@@ -35,6 +36,7 @@ namespace Hoscy.Ui.Pages
                 "Windows Recognizer" => new RecognizerWindows(),
                 "Any-API Recognizer" => new RecognizerApi(),
                 "Azure API Recognizer" => new RecognizerAzure(),
+                "WHISPER TEST RECOG" => new RecognizerWhisper(),
                 _ => new RecognizerVosk()
             };
 
@@ -141,7 +143,8 @@ namespace Hoscy.Ui.Pages
             optionsVosk.Visibility = perms.UsesVoskModel ? Visibility.Visible : Visibility.Collapsed;
             optionsWin.Visibility = perms.UsesWinRecognizer ? Visibility.Visible : Visibility.Collapsed;
             optionsAnyApi.Visibility = perms.UsesAnyApi ? Visibility.Visible : Visibility.Collapsed;
-            optionsAzure.Visibility = perms.UsesAzureApi ? valueRecInfo.Visibility : Visibility.Collapsed;
+            optionsAzure.Visibility = perms.UsesAzureApi ? Visibility.Visible : Visibility.Collapsed;
+            optionsWhisper.Visibility = perms.UsesWhisperModel ? Visibility.Visible : Visibility.Collapsed;
 
             if (oldModelName != Config.Speech.ModelName)
                 TryEnableChangeIndicator();
@@ -151,36 +154,7 @@ namespace Hoscy.Ui.Pages
         /// Updates contents of the Vosk Recognizer dropdown
         /// </summary>
         private void UpdateVoskRecognizerBox()
-        {
-            var models = Config.Speech.VoskModels;
-
-            //Checking if any model in list model is invalid
-            foreach(var model in models)
-            {
-                if (!Directory.Exists(model.Value))
-                    models.Remove(model.Key);
-            }
-
-            //Checking for availability of current model in dropdown
-            int index = -1;
-            var keyArray = models.Keys.ToArray();
-            for (int i = 0; i < keyArray.Length; i++)
-            {
-                if (Config.Speech.VoskModelCurrent == keyArray[i])
-                {
-                    index = i;
-                    break;
-                }
-            }
-
-            //Clearing, very cool
-            voskModelBox.ItemsSource = null;
-            foreach (var item in voskModelBox.Items)
-                voskModelBox.Items.Remove(item);
-            voskModelBox.Items.Refresh();
-            
-            voskModelBox.Load(models.Keys, index, true);
-        }
+            => voskModelBox.UpdateModelBox(Config.Speech.VoskModels, Config.Speech.VoskModelCurrent);
         #endregion
 
         #region Buttons
@@ -247,6 +221,7 @@ namespace Hoscy.Ui.Pages
         #endregion
 
         #region SelectionChanged
+        //todo: [REFACTOR] repetitive
         private void RecognizerSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
             => UpdateRecognizerSelector();
 
@@ -283,6 +258,18 @@ namespace Hoscy.Ui.Pages
                 Config.Speech.VoskModelCurrent = Config.Speech.VoskModels.Keys.ToArray()[index];
 
             if (oldModelName != Config.Speech.VoskModelCurrent)
+                TryEnableChangeIndicator();
+        }
+
+        private void WhisperModelBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string oldModelName = Config.Speech.WhisperModelCurrent;
+
+            var index = whisperModelBox.SelectedIndex;
+            if (index != -1 && index < Config.Speech.WhisperModels.Count)
+                Config.Speech.WhisperModelCurrent = Config.Speech.WhisperModels.Keys.ToArray()[index];
+
+            if (oldModelName != Config.Speech.WhisperModelCurrent)
                 TryEnableChangeIndicator();
         }
 

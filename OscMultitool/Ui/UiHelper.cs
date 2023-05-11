@@ -1,6 +1,8 @@
 ﻿using Hoscy.Ui.Windows;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -90,6 +92,42 @@ namespace Hoscy.Ui
         {
             window.SetDarkMode(true);
             window.ShowDialog();
+        }
+
+        /// <summary>
+        /// Updates a AI models ComboBox
+        /// </summary>
+        /// <param name="box"></param>
+        /// <param name="models"></param>
+        /// <param name="currentModel"></param>
+        internal static void UpdateModelBox(this ComboBox box, Dictionary<string, string> models, string currentModel) //todo: [TESTING] test
+        {
+            //Checking if any model in list model is invalid
+            foreach (var model in models)
+            {
+                if (!Directory.Exists(model.Value))
+                    models.Remove(model.Key);
+            }
+
+            //Checking for availability of current model in dropdown
+            int index = -1;
+            var keyArray = models.Keys.ToArray();
+            for (int i = 0; i < keyArray.Length; i++)
+            {
+                if (currentModel == keyArray[i])
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            //Clearing, very cool
+            box.ItemsSource = null;
+            foreach (var item in box.Items)
+                box.Items.Remove(item);
+            box.Items.Refresh();
+
+            box.Load(models.Keys, index, true);
         }
         #endregion
 

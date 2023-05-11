@@ -6,7 +6,7 @@ namespace Hoscy.Services.Speech
     internal static class Recognition
     {
         private static RecognizerBase? _recognizer;
-        internal static bool GetRunningStatus() => _recognizer?.IsRunning ?? false;
+        internal static bool GetRunningStatus() => _recognizer?.IsRunning ?? false; //todo: [REFACTOR] should these be properties?
         internal static bool GetListeningStatus() => _recognizer?.IsListening ?? false;
 
         #region Recognizer Control

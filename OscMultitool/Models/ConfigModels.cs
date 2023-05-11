@@ -5,7 +5,7 @@ namespace Hoscy.Models
     /// <summary>
     /// Model for storing all config data, they can not log
     /// </summary>
-    internal class ConfigModel
+    internal class ConfigModel //todo: [REFACTOR] this might need a redo
     {
         public int ConfigVersion { get; set; } = 0;
 
@@ -225,6 +225,11 @@ namespace Hoscy.Models
             set => _voskTimeout = Utils.MinMax(value, 500, 30000);
         }
         private int _voskTimeout = 2500;
+
+        //Whisper
+        //todo: [WHISPER] impl
+        public Dictionary<string, string> WhisperModels { get; set; } = new(); //Model identifiers and filepaths
+        public string WhisperModelCurrent { get; set; } = string.Empty; //Identifier for current model
 
         //Windows
         public string WinModelId { get; set; } = string.Empty; //Identifier for Microsoft Recognizer

@@ -78,7 +78,7 @@ namespace Hoscy
         /// <summary>
         /// Tries loading in models from the model folder
         /// </summary>
-        private static void TryLoadFolderModels()
+        private static void TryLoadFolderModels() //todo: [WHISPER] add whisper loading
         {
             var foldersNames = Directory.GetDirectories(Utils.PathModels);
 
