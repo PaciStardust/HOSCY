@@ -59,6 +59,10 @@ namespace Hoscy
             }
         }
 
+        /// <summary>
+        /// Back up a specified file by creating a .backup file
+        /// </summary>
+        /// <param name="path">File to back up</param>
         internal static void BackupFile(string path)
         {
             try

@@ -73,10 +73,13 @@ namespace Hoscy.Services.Speech.Utilities
             catch (Exception ex)
             {
                 _edi = ExceptionDispatchInfo.Capture(ex);
-                Logger.Error(ex); //todo: [WHISPER] Error does not get output otherwise
             }
         }
 
+        /// <summary>
+        /// Returns an error if one has happened during startup
+        /// </summary>
+        /// <returns>The exception / null</returns>
         internal ExceptionDispatchInfo? GetError()
             => _edi;
         #endregion

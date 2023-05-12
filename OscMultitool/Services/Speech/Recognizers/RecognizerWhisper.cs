@@ -20,26 +20,28 @@ namespace Hoscy.Services.Speech.Recognizers
         #region Start / Stop and Muting
         protected override bool StartInternal()
         {
-            var model = Library.loadModel(Config.Speech.WhisperModels[Config.Speech.WhisperModelCurrent]); //todo: [WHISPER] error handling
-            //todo: [WHISPER] options
-
-            var captureDevice = GetCaptureDevice();
-            if (captureDevice == null)
-                return false;
-
-            var ctx = model.createContext();
-            ApplyParameters(ref ctx.parameters);
-
-            CaptureThread thread = new(ctx, captureDevice);
-
-            var error = thread.GetError();
-            if (error != null)
+            try
             {
-                Logger.Error(error.SourceException);
+                var model = Library.loadModel(Config.Speech.WhisperModels[Config.Speech.WhisperModelCurrent]);
+
+                var captureDevice = GetCaptureDevice();
+                if (captureDevice == null)
+                    return false;
+
+                var ctx = model.createContext();
+                ApplyParameters(ref ctx.parameters); //todo: [WHISPER] Options
+
+                CaptureThread thread = new(ctx, captureDevice);
+                var error = thread.GetError();
+                error?.Throw();
+
+                _cptThread = thread;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
                 return false;
             }
-            _cptThread = thread;
-
             return true;
         }
 
@@ -87,7 +89,7 @@ namespace Hoscy.Services.Speech.Recognizers
                 return null;
             }
 
-            sCaptureParams cp = new()
+            sCaptureParams cp = new() //todo: [WHISPER] Configure
             {
                 dropStartSilence = 0.25f,
                 minDuration = 1.0f,
