@@ -227,7 +227,6 @@ namespace Hoscy.Models
         private int _voskTimeout = 2500;
 
         //Whisper
-        //todo: [WHISPER] impl
         public Dictionary<string, string> WhisperModels { get; set; } = new(); //Model identifiers and filepaths
         public string WhisperModelCurrent { get; set; } = string.Empty; //Identifier for current model
 

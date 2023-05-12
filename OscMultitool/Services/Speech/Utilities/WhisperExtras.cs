@@ -1,13 +1,8 @@
 ﻿using Hoscy.Ui.Pages;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Runtime.ExceptionServices;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using Whisper;
 
 namespace Hoscy.Services.Speech.Utilities
@@ -25,23 +20,16 @@ namespace Hoscy.Services.Speech.Utilities
         private Regex _filterRegex = new(@"(?:\[.*\] )?(.*)\[.*\]");
         protected override void onNewSegment(Context sender, int countNew) //todo: [WHISPER] implement actual transcription, muting, differentiating between sounds and text
         {
-            //todo: [WHISPER] pack in try
-            TranscribeResult res = sender.results();
-            ReadOnlySpan<sToken> tokens = res.tokens;
-            var testing = res.segments.Length;
-            int counter = 1;
+            var results = sender.results();
+            int segmentCount = results.segments.Length;
+            int firstNewSegment = segmentCount - countNew;
 
-            int s0 = res.segments.Length - countNew;
-            if (s0 == 0)
-                Debug.WriteLine("");
-            string text = "";
-            string stuff = "";
-            for (int i = s0; i < res.segments.Length; i++)
+            for (int i = firstNewSegment; i < segmentCount; i++)
             {
-                sSegment seg = res.segments[i];
+                var segment = results.segments[i];
 
-                stuff = seg.text.ToString().Trim();
-                Logger.Debug($"segment {s0}: {stuff}");
+                var stuff = segment.text.ToString().Trim();
+                Logger.Debug($"segment {firstNewSegment}: {stuff}");
 
                 stuff = _filterRegex.Match(stuff).Groups[1].Value;
                 if (stuff != "[BLANK_AUDIO]")

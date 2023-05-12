@@ -18,7 +18,7 @@ namespace Hoscy
         public static ConfigApiModel Api => Data.Api;
         public static ConfigLoggerModel Debug => Data.Debug;
 
-        #region Saving and Loading
+        #region Loading
         static Config()
         {
             try
@@ -26,12 +26,8 @@ namespace Hoscy
                 if (!Directory.Exists(Utils.PathConfigFolder))
                     Directory.CreateDirectory(Utils.PathConfigFolder);
 
-                if (!Directory.Exists(Utils.PathModels))
-                    Directory.CreateDirectory(Utils.PathModels);
-
                 string configData = File.ReadAllText(Utils.PathConfigFile, Encoding.UTF8);
                 Data = JsonConvert.DeserializeObject<ConfigModel>(configData) ?? new();
-                TryLoadFolderModels();
             }
             catch
             {
@@ -43,7 +39,9 @@ namespace Hoscy
             if (!Directory.Exists(Utils.PathConfigFolder))
                 MessageBox.Show("Failed to create config directory, please check your antivirus and your permissions", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
+        #endregion
 
+        #region Saving
         /// <summary>
         /// Saves the config file
         /// </summary>
@@ -72,28 +70,6 @@ namespace Hoscy
             catch (Exception e)
             {
                 Logger.Error(e, $"Failed to backe up file {path}", notify: false);
-            }
-        }
-
-        /// <summary>
-        /// Tries loading in models from the model folder
-        /// </summary>
-        private static void TryLoadFolderModels() //todo: [WHISPER] add whisper loading
-        {
-            var foldersNames = Directory.GetDirectories(Utils.PathModels);
-
-            foreach (var folderName in foldersNames)
-            {
-                var contentFolder = Utils.GetActualContentFolder(folderName);
-
-                if (string.IsNullOrWhiteSpace(contentFolder))
-                    continue;
-
-                var folderNameSplit = folderName.Split("\\")[^1];
-                if (string.IsNullOrWhiteSpace(folderNameSplit))
-                    continue;
-
-                Speech.VoskModels[folderNameSplit] = contentFolder;
             }
         }
         #endregion

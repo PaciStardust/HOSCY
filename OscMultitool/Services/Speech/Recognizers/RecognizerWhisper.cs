@@ -1,9 +1,6 @@
-﻿using Hoscy.Services.Api;
-using Hoscy.Services.Speech.Utilities;
-using NAudio.Wave;
+﻿using Hoscy.Services.Speech.Utilities;
 using System;
 using Whisper;
-using Windows.Globalization;
 
 namespace Hoscy.Services.Speech.Recognizers
 {
@@ -90,7 +87,7 @@ namespace Hoscy.Services.Speech.Recognizers
                 return null;
             }
 
-            sCaptureParams cp = new sCaptureParams()
+            sCaptureParams cp = new()
             {
                 dropStartSilence = 0.25f,
                 minDuration = 1.0f,

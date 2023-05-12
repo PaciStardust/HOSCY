@@ -16,7 +16,6 @@ namespace Hoscy
         internal static string PathConfigFolder { get; private set; }
         internal static string PathConfigFile { get; private set; }
         internal static string PathLog { get; private set; }
-        internal static string PathModels { get; private set; }
 
         static Utils()
         {
@@ -25,7 +24,6 @@ namespace Hoscy
             PathConfigFolder = Path.GetFullPath(Path.Combine(exeFolder, "config"));
             PathConfigFile = Path.GetFullPath(Path.Combine(PathConfigFolder, "config.json"));
             PathLog = Path.GetFullPath(Path.Combine(PathConfigFolder, $"log-{DateTime.Now:MM-dd-yyyy-HH-mm-ss}.txt"));
-            PathModels = Path.GetFullPath(Path.Combine(PathConfigFolder, "models"));
         }
 
         #region Extention Methods
