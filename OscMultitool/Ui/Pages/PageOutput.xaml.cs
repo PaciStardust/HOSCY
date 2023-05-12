@@ -10,7 +10,7 @@ namespace Hoscy.Ui.Pages
     /// <summary>
     /// Interaction logic for PageOutput.xaml
     /// </summary>
-    internal partial class PageOutput : Page //todo: [TESTING] test change indicator
+    internal partial class PageOutput : Page //todo: change indicator for "useAzure" box
     {
         private bool _changedValuesSynth = false;
 

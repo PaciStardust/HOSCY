@@ -45,7 +45,6 @@ namespace Hoscy.Ui.Pages
             InitializeComponent();
             LoadBoxes();
             UpdateRecognizerSelector();
-            UpdateVoskRecognizerBox();
 
             UpdateRecognizerStatus(null, new(Recognition.GetRunningStatus(), Recognition.GetListeningStatus()));
             Recognition.RecognitionChanged += UpdateRecognizerStatus;
@@ -86,6 +85,9 @@ namespace Hoscy.Ui.Pages
             windowsRecognizerBox.Load(Devices.WindowsRecognizers.Select(x => x.Description), Devices.GetWindowsListenerIndex(Config.Speech.WinModelId));
             //AnyAPI presrt
             anyApiBox.Load(Config.Api.Presets.Select(x => x.Name), Config.Api.GetIndex(Config.Api.RecognitionPreset));
+
+            UpdateVoskRecognizerBox();
+            UpdateWhisperRecognizerBox();
         }
 
         /// <summary>
@@ -155,6 +157,12 @@ namespace Hoscy.Ui.Pages
         /// </summary>
         private void UpdateVoskRecognizerBox()
             => voskModelBox.UpdateModelBox(Config.Speech.VoskModels, Config.Speech.VoskModelCurrent);
+
+        /// <summary>
+        /// Updates contents of the Whisper Recognizer dropdown
+        /// </summary>
+        private void UpdateWhisperRecognizerBox()
+            => whisperModelBox.UpdateModelBox(Config.Speech.WhisperModels, Config.Speech.WhisperModelCurrent, false);
         #endregion
 
         #region Buttons
@@ -205,6 +213,12 @@ namespace Hoscy.Ui.Pages
         {
             UiHelper.OpenDictionaryEditor("Edit Vosk AI Models", "Model name", "Model folder", Config.Speech.VoskModels);
             UpdateVoskRecognizerBox();
+        }
+
+        private void Button_EditWhisperModels(object sender, RoutedEventArgs e)
+        {
+            UiHelper.OpenDictionaryEditor("Edit Whisper AI Models", "Model name", "Model folder", Config.Speech.WhisperModels);
+            UpdateWhisperRecognizerBox();
         }
 
         private void Button_EditAzurePhrases(object sender, RoutedEventArgs e)

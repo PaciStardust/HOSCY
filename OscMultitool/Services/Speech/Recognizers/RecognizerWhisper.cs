@@ -1,6 +1,9 @@
-﻿using Hoscy.Services.Speech.Utilities;
+﻿using Hoscy.Services.Api;
+using Hoscy.Services.Speech.Utilities;
 using NAudio.Wave;
+using System;
 using Whisper;
+using Windows.Globalization;
 
 namespace Hoscy.Services.Speech.Recognizers
 {
@@ -20,7 +23,7 @@ namespace Hoscy.Services.Speech.Recognizers
         #region Start / Stop and Muting
         protected override bool StartInternal()
         {
-            var model = Library.loadModel(Config.Speech.VoskModelCurrent); //todo: [WHISPER] error handling
+            var model = Library.loadModel(Config.Speech.WhisperModels[Config.Speech.WhisperModelCurrent]); //todo: [WHISPER] error handling
             //todo: [WHISPER] options
 
             var captureDevice = GetCaptureDevice();
@@ -28,6 +31,8 @@ namespace Hoscy.Services.Speech.Recognizers
                 return false;
 
             var ctx = model.createContext();
+            ApplyParameters(ref ctx.parameters);
+
             CaptureThread thread = new(ctx, captureDevice);
 
             var error = thread.GetError();
@@ -45,7 +50,7 @@ namespace Hoscy.Services.Speech.Recognizers
         {
             Textbox.EnableTyping(false);
             _cptThread?.Stop();
-            _cptThread = null; //todo: [WHISPER] test if this null breaks anything?
+            _cptThread = null;
         }
 
         protected override bool SetListeningInternal(bool enabled)
@@ -85,7 +90,52 @@ namespace Hoscy.Services.Speech.Recognizers
                 return null;
             }
 
-            return medf.openCaptureDevice(deviceId.Value);
+            sCaptureParams cp = new sCaptureParams()
+            {
+                dropStartSilence = 0.25f,
+                minDuration = 1.0f,
+                maxDuration = 8f,
+                pauseDuration = 1.0f
+            };
+
+            return medf.openCaptureDevice(deviceId.Value,cp);
+        }
+
+        private int n_threads = Environment.ProcessorCount;
+        private int offset_t_ms = 0;
+        private int duration_ms = 0;
+        private int max_context = 0;
+        private int max_len = 0;
+
+        private float word_thold = 0.01f;
+
+        private bool speed_up = false;
+        private bool translate = false;
+        private bool print_special = true;
+        private bool print_progress = true;
+        private bool no_timestamps = false;
+
+        private eLanguage language = eLanguage.English;
+
+        const bool output_wts = false;
+
+        private void ApplyParameters(ref Parameters p)
+        {
+            p.setFlag(eFullParamsFlags.PrintRealtime, true);
+            p.setFlag(eFullParamsFlags.PrintProgress, print_progress);
+            p.setFlag(eFullParamsFlags.PrintTimestamps, !no_timestamps);
+            p.setFlag(eFullParamsFlags.PrintSpecial, print_special);
+            p.setFlag(eFullParamsFlags.Translate, translate);
+            p.language = language;
+            p.cpuThreads = n_threads;
+            if (max_context >= 0)
+                p.n_max_text_ctx = max_context;
+            p.offset_ms = offset_t_ms;
+            p.duration_ms = duration_ms;
+            p.setFlag(eFullParamsFlags.TokenTimestamps, output_wts || max_len > 0);
+            p.thold_pt = word_thold;
+            p.max_len = output_wts && max_len == 0 ? 60 : max_len;
+            p.setFlag(eFullParamsFlags.SpeedupAudio, speed_up);
         }
         #endregion
     }

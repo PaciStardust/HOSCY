@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace Hoscy.Services.Speech
 {
-    internal static class Synthesizing //todo: [TESTING] test
+    internal static class Synthesizing
     {
         private static SynthesizerBase? _synth;
         private static readonly MemoryStream _stream = new();
