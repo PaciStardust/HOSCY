@@ -45,7 +45,7 @@ namespace Hoscy.Ui.Pages
             LoadBoxes();
             UpdateRecognizerSelector();
 
-            UpdateRecognizerStatus(null, new(Recognition.GetRunningStatus(), Recognition.GetListeningStatus()));
+            UpdateRecognizerStatus(null, new(Recognition.IsRunning, Recognition.IsListening));
             Recognition.RecognitionChanged += UpdateRecognizerStatus;
 
             changeIndicator.Visibility = _changedValues ? Visibility.Visible : Visibility.Hidden;
@@ -94,7 +94,7 @@ namespace Hoscy.Ui.Pages
         /// </summary>
         private void TryEnableChangeIndicator()
         {
-            if (!Recognition.GetRunningStatus())
+            if (!Recognition.IsRunning)
                 return;
 
             changeIndicator.Visibility = Visibility.Visible;
@@ -141,11 +141,11 @@ namespace Hoscy.Ui.Pages
 
             valueRecInfo.Text = perms.Description;
             optionsMic.Visibility = perms.UsesMicrophone ? Visibility.Visible : Visibility.Collapsed;
-            optionsVosk.Visibility = perms.UsesVoskModel ? Visibility.Visible : Visibility.Collapsed;
-            optionsWin.Visibility = perms.UsesWinRecognizer ? Visibility.Visible : Visibility.Collapsed;
-            optionsAnyApi.Visibility = perms.UsesAnyApi ? Visibility.Visible : Visibility.Collapsed;
-            optionsAzure.Visibility = perms.UsesAzureApi ? Visibility.Visible : Visibility.Collapsed;
-            optionsWhisper.Visibility = perms.UsesWhisperModel ? Visibility.Visible : Visibility.Collapsed;
+            optionsVosk.Visibility = perms.Type == RecognizerType.Vosk ? Visibility.Visible : Visibility.Collapsed;
+            optionsWin.Visibility = perms.Type == RecognizerType.Windows ? Visibility.Visible : Visibility.Collapsed;
+            optionsAnyApi.Visibility = perms.Type == RecognizerType.AnyApi ? Visibility.Visible : Visibility.Collapsed;
+            optionsAzure.Visibility = perms.Type == RecognizerType.Azure ? Visibility.Visible : Visibility.Collapsed;
+            optionsWhisper.Visibility = perms.Type == RecognizerType.Whisper ? Visibility.Visible : Visibility.Collapsed;
 
             if (oldModelName != Config.Speech.ModelName)
                 TryEnableChangeIndicator();
@@ -167,7 +167,7 @@ namespace Hoscy.Ui.Pages
         #region Buttons
         private async void Button_StartStop(object sender, RoutedEventArgs e)
         {
-            if (Recognition.GetRunningStatus())
+            if (Recognition.IsRunning)
                 Recognition.StopRecognizer();
             else
             {
@@ -188,7 +188,7 @@ namespace Hoscy.Ui.Pages
         }
 
         private void Button_Mute(object sender, RoutedEventArgs e)
-            => Recognition.SetListening(!Recognition.GetListeningStatus());
+            => Recognition.SetListening(!Recognition.IsListening);
 
         private void Button_OpenNoiseFilter(object sender, RoutedEventArgs e)
         {

@@ -12,7 +12,7 @@ namespace Hoscy.Services.Speech.Recognizers
         {
             Description = "Remote recognition using Any-API, not continuous",
             UsesMicrophone = true,
-            UsesAnyApi = true,
+            Type = RecognizerType.AnyApi
         };
 
         internal override bool IsListening => _isListening;

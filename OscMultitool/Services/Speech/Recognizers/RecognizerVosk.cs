@@ -15,7 +15,7 @@ namespace Hoscy.Services.Speech.Recognizers
         {
             Description = "Local AI, quality / RAM usage varies, startup may take a while",
             UsesMicrophone = true,
-            UsesVoskModel = true
+            Type = RecognizerType.Vosk
         };
 
         internal override bool IsListening => _microphone.IsListening;

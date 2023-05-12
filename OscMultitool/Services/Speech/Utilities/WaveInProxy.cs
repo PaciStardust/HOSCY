@@ -7,7 +7,7 @@ namespace Hoscy.Services.Speech.Utilities
     /// <summary>
     /// Proxy for mic that allows continous recording
     /// </summary>
-    internal class WaveInProxy //todo: [REFACTOR] fields
+    internal class WaveInProxy
     {
         private readonly WaveIn _microphone;
         private static readonly WaveInEventArgs _emptyWaveInData = new(new byte[3200].Select(x => x = 0).ToArray(), 3200);
@@ -27,7 +27,6 @@ namespace Hoscy.Services.Speech.Utilities
         }
 
         #region Stopping / Starting
-        //todo: [REFACTOR] cleanup
         internal bool Unmute()
             => SetMuteStatus(true);
         internal bool Mute()

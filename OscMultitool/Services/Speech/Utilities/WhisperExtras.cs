@@ -1,7 +1,7 @@
 ﻿using Hoscy.Ui.Pages;
 using System;
 using System.Runtime.ExceptionServices;
-using System.Text.RegularExpressions;
+using System.Text;
 using System.Threading;
 using Whisper;
 
@@ -9,32 +9,24 @@ namespace Hoscy.Services.Speech.Utilities
 {
     internal class TranscribeCallbacks : Callbacks
     {
-        private bool _isListening = false;
-        internal bool GetListeningStatus() => _isListening;
-        internal bool SetListening(bool enabled)
-        {
-            //todo: [WHISPER] implement
-            return false;
-        }
-
-        private Regex _filterRegex = new(@"(?:\[.*\] )?(.*)\[.*\]");
         protected override void onNewSegment(Context sender, int countNew) //todo: [WHISPER] implement actual transcription, muting, differentiating between sounds and text
         {
             var results = sender.results();
             int segmentCount = results.segments.Length;
             int firstNewSegment = segmentCount - countNew;
 
+            StringBuilder sb = new();
+            Logger.PInfo("A");
+
             for (int i = firstNewSegment; i < segmentCount; i++)
             {
                 var segment = results.segments[i];
+                var segmentText = segment.text?.ToString().Trim();
 
-                var stuff = segment.text.ToString().Trim();
-                Logger.Debug($"segment {firstNewSegment}: {stuff}");
-
-                stuff = _filterRegex.Match(stuff).Groups[1].Value;
-                if (stuff != "[BLANK_AUDIO]")
+                Logger.Debug($"segment {firstNewSegment}: {segmentText}");
+                if (segmentText != "[BLANK_AUDIO]")
                 {
-                    PageInfo.SetMessage(stuff, false, false);
+                    PageInfo.SetMessage(segmentText, false, false);
                 }
             }
         }
@@ -62,8 +54,6 @@ namespace Hoscy.Services.Speech.Utilities
             _thread.Start();
         }
 
-        private ExceptionDispatchInfo? _edi;
-
         private void ThreadRunCapture()
         {
             try
@@ -72,16 +62,10 @@ namespace Hoscy.Services.Speech.Utilities
             }
             catch (Exception ex)
             {
-                _edi = ExceptionDispatchInfo.Capture(ex);
+                //StartupException = ExceptionDispatchInfo.Capture(ex);
+                Logger.Error(ex); //Todo: [WHISPER] Actually catch the exception and fail startup
             }
         }
-
-        /// <summary>
-        /// Returns an error if one has happened during startup
-        /// </summary>
-        /// <returns>The exception / null</returns>
-        internal ExceptionDispatchInfo? GetError()
-            => _edi;
         #endregion
 
         #region Control
@@ -91,11 +75,6 @@ namespace Hoscy.Services.Speech.Utilities
             => _shouldQuit = true;
         protected override bool shouldCancel(Context sender) =>
             _shouldQuit;
-
-        internal bool GetListeningStatus()
-            => _callbacks.GetListeningStatus();
-        internal bool SetListening(bool enabled)
-            => _callbacks.SetListening(enabled);
         #endregion
 
         #region Other

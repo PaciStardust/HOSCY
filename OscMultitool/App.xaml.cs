@@ -21,7 +21,7 @@ namespace Hoscy
         protected override void OnExit(ExitEventArgs e)
         {
             Running = false;
-            if (Recognition.GetRunningStatus())
+            if (Recognition.IsRunning)
                 Recognition.StopRecognizer();
             Config.SaveConfig();
         }

@@ -72,7 +72,7 @@ namespace Hoscy.Ui.Pages
         /// </summary>
         private void TryEnableChangeIndicatorSynth()
         {
-            if (!Synthesizing.GetRunningStatus())
+            if (!Synthesizing.IsRunning)
                 return;
 
             _changedValuesSynth = true;

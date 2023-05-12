@@ -63,7 +63,7 @@ namespace Hoscy.Ui.Pages
 
         private void Button_ReloadDevices(object sender, RoutedEventArgs e)
         {
-            if (Recognition.GetRunningStatus())
+            if (Recognition.IsRunning)
                 Recognition.StopRecognizer();
 
             Devices.ForceReload();

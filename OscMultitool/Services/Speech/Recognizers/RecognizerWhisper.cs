@@ -1,5 +1,6 @@
 ﻿using Hoscy.Services.Speech.Utilities;
 using System;
+using System.Threading;
 using Whisper;
 
 namespace Hoscy.Services.Speech.Recognizers
@@ -12,10 +13,10 @@ namespace Hoscy.Services.Speech.Recognizers
         {
             Description = "Local AI, quality / RAM usage varies, startup may take a while",
             UsesMicrophone = true,
-            UsesWhisperModel = true
+            Type = RecognizerType.Whisper
         };
 
-        internal override bool IsListening => _cptThread?.GetListeningStatus() ?? false;
+        internal override bool IsListening => false; //_cptThread?.GetListeningStatus() ?? false;
 
         #region Start / Stop and Muting
         protected override bool StartInternal()
@@ -32,8 +33,6 @@ namespace Hoscy.Services.Speech.Recognizers
                 ApplyParameters(ref ctx.parameters); //todo: [WHISPER] Options
 
                 CaptureThread thread = new(ctx, captureDevice);
-                var error = thread.GetError();
-                error?.Throw();
 
                 _cptThread = thread;
             }
@@ -53,7 +52,7 @@ namespace Hoscy.Services.Speech.Recognizers
         }
 
         protected override bool SetListeningInternal(bool enabled)
-            => _cptThread?.SetListening(enabled) ?? false;
+            => false; //_cptThread?.SetListening(enabled) ?? false;
         #endregion
 
         #region Extra
@@ -110,8 +109,6 @@ namespace Hoscy.Services.Speech.Recognizers
 
         private bool speed_up = false;
         private bool translate = false;
-        private bool print_special = true;
-        private bool print_progress = true;
         private bool no_timestamps = false;
 
         private eLanguage language = eLanguage.English;
@@ -121,9 +118,7 @@ namespace Hoscy.Services.Speech.Recognizers
         private void ApplyParameters(ref Parameters p)
         {
             p.setFlag(eFullParamsFlags.PrintRealtime, true);
-            p.setFlag(eFullParamsFlags.PrintProgress, print_progress);
             p.setFlag(eFullParamsFlags.PrintTimestamps, !no_timestamps);
-            p.setFlag(eFullParamsFlags.PrintSpecial, print_special);
             p.setFlag(eFullParamsFlags.Translate, translate);
             p.language = language;
             p.cpuThreads = n_threads;

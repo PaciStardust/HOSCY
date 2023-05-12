@@ -8,7 +8,7 @@ namespace Hoscy.Services.Speech.Recognizers
         new internal static RecognizerPerms Perms => new()
         {
             Description = "Recognizer using Windows Recognition, low quality, please avoid",
-            UsesWinRecognizer = true
+            Type = RecognizerType.Windows
         };
 
         internal override bool IsListening => _isListening;

@@ -13,10 +13,10 @@ namespace Hoscy.Services.Speech.Recognizers
         {
             Description = "Remote recognition using Azure-API",
             UsesMicrophone = true,
-            UsesAzureApi = true,
+            Type = RecognizerType.Azure
         };
 
-        internal override bool IsListening => _isListening; //todo: [REFACTOR] field?
+        internal override bool IsListening => _isListening;
         private bool _isListening = false;
 
         private SpeechRecognizer? _rec;
@@ -42,8 +42,7 @@ namespace Hoscy.Services.Speech.Recognizers
 
                 if (multLang) //this looks scuffed but is done as I think its quicker in api terms
                 {
-                    //todo: [ERROR] fix error
-                    //speechConfig.SetProperty(PropertyId.SpeechServiceConnection_ContinuousLanguageIdPriority, "Latency");
+                    speechConfig.SetProperty(PropertyId.SpeechServiceConnection_LanguageIdMode, "Continuous");
                     var autoDetectSourceLanguageConfig = AutoDetectSourceLanguageConfig.FromLanguages(Config.Api.AzureRecognitionLanguages.ToArray());
                     rec = new(speechConfig, autoDetectSourceLanguageConfig, audioConfig);
                 }

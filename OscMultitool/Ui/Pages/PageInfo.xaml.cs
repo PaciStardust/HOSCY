@@ -27,13 +27,13 @@ namespace Hoscy.Ui.Pages
 
             Instance = this;
 
-            UpdateRecognizerStatus(null, new(Recognition.GetRunningStatus(), Recognition.GetListeningStatus()));
+            UpdateRecognizerStatus(null, new(Recognition.IsRunning, Recognition.IsListening));
             Recognition.RecognitionChanged += UpdateRecognizerStatus;
         }
 
         #region Buttons
         private void Button_Mute(object sender, RoutedEventArgs e)
-            => Recognition.SetListening(!Recognition.GetListeningStatus());
+            => Recognition.SetListening(!Recognition.IsListening);
 
         private void Button_Clear(object sender, RoutedEventArgs e)
         {
@@ -45,7 +45,7 @@ namespace Hoscy.Ui.Pages
 
         private async void Button_Start(object sender, RoutedEventArgs e)
         {
-            if (Recognition.GetRunningStatus())
+            if (Recognition.IsRunning)
             {
                 Recognition.StopRecognizer();
                 SetRecStatus("Recognizer has stopped");

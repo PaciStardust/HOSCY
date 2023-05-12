@@ -6,15 +6,15 @@ namespace Hoscy.Services.Speech
     internal static class Recognition
     {
         private static RecognizerBase? _recognizer;
-        internal static bool GetRunningStatus() => _recognizer?.IsRunning ?? false; //todo: [REFACTOR] should these be properties?
-        internal static bool GetListeningStatus() => _recognizer?.IsListening ?? false;
+        internal static bool IsRunning => _recognizer?.IsRunning ?? false;
+        internal static bool IsListening => _recognizer?.IsListening ?? false;
 
         #region Recognizer Control
         internal static bool StartRecognizer()
         {
             TriggerRecognitionChanged();
 
-            if (_recognizer != null || GetRunningStatus())
+            if (_recognizer != null || IsRunning)
             {
                 Logger.Warning("Attempted to start recognizer while one already was initialized");
                 return true;
@@ -43,7 +43,7 @@ namespace Hoscy.Services.Speech
 
         internal static bool SetListening(bool enabled)
         {
-            if (!GetRunningStatus())
+            if (!IsRunning)
                 return false;
 
             var res = _recognizer?.SetListening(enabled) ?? false;
@@ -74,7 +74,7 @@ namespace Hoscy.Services.Speech
             => RecognitionChanged.Invoke(sender, e);
 
         private static void TriggerRecognitionChanged()
-            => HandleRecognitionChanged(null, new(GetRunningStatus(), GetListeningStatus()));
+            => HandleRecognitionChanged(null, new(IsRunning, IsListening));
         #endregion
     }
 

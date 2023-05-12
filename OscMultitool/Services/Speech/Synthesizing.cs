@@ -16,7 +16,7 @@ namespace Hoscy.Services.Speech
         private static string _currentString = string.Empty;
         private static bool _hasInitialized = false;
 
-        internal static bool GetRunningStatus() => _synth != null;
+        internal static bool IsRunning => _synth != null;
 
         static Synthesizing()
         {

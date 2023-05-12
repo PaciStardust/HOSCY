@@ -11,7 +11,7 @@ namespace Hoscy.Services.Speech.Recognizers
         {
             Description = "Recognizer using Windows Recognition, low quality, please avoid",
             UsesMicrophone = true,
-            UsesWinRecognizer = true
+            Type = RecognizerType.Windows
         };
 
         internal override bool IsListening => _microphone.IsListening;
