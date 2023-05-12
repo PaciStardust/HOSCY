@@ -10,7 +10,7 @@ namespace Hoscy.Ui.Pages
     /// <summary>
     /// Interaction logic for PageOutput.xaml
     /// </summary>
-    internal partial class PageOutput : Page //todo: change indicator for "useAzure" box
+    internal partial class PageOutput : Page
     {
         private bool _changedValuesSynth = false;
 
@@ -148,6 +148,9 @@ namespace Hoscy.Ui.Pages
 
         private void TextboxDynamicTimeout_Checked(object sender, RoutedEventArgs e)
             => UpdateTimeoutBoxes();
+
+        private void SynthUseAzure_Checked(object sender, RoutedEventArgs e)
+            => TryEnableChangeIndicatorSynth();
 
         private void SynthTextBox_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
             => TryEnableChangeIndicatorSynth();

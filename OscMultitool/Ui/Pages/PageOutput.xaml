@@ -184,7 +184,7 @@
                 <!-- Azure Options -->
                 <Label Content="Azure Options" Style="{StaticResource HLabelM}" Margin="0,16,0,0"/>
                 <StackPanel Style="{StaticResource HStackIndent}">
-                    <CheckBox Content="Use Azure TTS" IsChecked="{Binding Api.UseAzureTts, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox x:Name="SynthUseAzure" Content="Use Azure TTS" IsChecked="{Binding Api.UseAzureTts, Source={x:Static local:Config.Data}}" Checked="SynthUseAzure_Checked"/>
 
                     <StackPanel Margin="0,4,0,0" IsEnabled="{Binding Api.UseAzureTts, Source={x:Static local:Config.Data}}">
                         <TextBlock Style="{DynamicResource HTextBlock}" Text="Output Speech Voice"/>
