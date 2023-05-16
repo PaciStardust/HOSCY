@@ -234,7 +234,6 @@ namespace Hoscy.Ui.Pages
         #endregion
 
         #region SelectionChanged
-        //todo: [REFACTOR] repetitive
         private void RecognizerSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
             => UpdateRecognizerSelector();
 
@@ -299,7 +298,6 @@ namespace Hoscy.Ui.Pages
             if (oldAnyApiName != Config.Api.RecognitionPreset)
                 TryEnableChangeIndicator();
         }
-
 
         private void TextBox_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
             => TryEnableChangeIndicator();

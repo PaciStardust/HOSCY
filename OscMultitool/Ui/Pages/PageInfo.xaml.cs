@@ -102,7 +102,7 @@ namespace Hoscy.Ui.Pages
         /// <param name="message">Message to display</param>
         /// <param name="textbox">Did it send via Textbox</param>
         /// <param name="tts">Did it send via TTS</param>
-        internal static void SetMessage(string message, bool textbox, bool tts) //todo: [REFACTOR] replace with event maybe
+        internal static void SetMessage(string message, bool textbox, bool tts) 
         {
             var add = "Nothing";
             if (textbox && tts)

@@ -5,7 +5,7 @@ namespace Hoscy.Models
     /// <summary>
     /// Model for storing all config data, they can not log
     /// </summary>
-    internal class ConfigModel //todo: [REFACTOR] this might need a redo
+    internal class ConfigModel
     {
         public int ConfigVersion { get; set; } = 0;
 

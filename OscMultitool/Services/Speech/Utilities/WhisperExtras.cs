@@ -11,23 +11,33 @@ namespace Hoscy.Services.Speech.Utilities
     {
         protected override void onNewSegment(Context sender, int countNew) //todo: [WHISPER] implement actual transcription, muting, differentiating between sounds and text
         {
-            var results = sender.results();
+            var results = sender.results(eResultFlags.Tokens);
             int segmentCount = results.segments.Length;
             int firstNewSegment = segmentCount - countNew;
 
-            StringBuilder sb = new();
-            Logger.PInfo("A");
+            Logger.Debug($"Segments: {segmentCount}, New: {countNew}, FirstNew: {firstNewSegment}");
 
             for (int i = firstNewSegment; i < segmentCount; i++)
             {
                 var segment = results.segments[i];
                 var segmentText = segment.text?.ToString().Trim();
 
-                Logger.Debug($"segment {firstNewSegment}: {segmentText}");
-                if (segmentText != "[BLANK_AUDIO]")
+                Logger.Debug($"Segment {i}: {segmentText}");
+
+                var tokens = results.getTokens(segment);
+                
+                for (int j = 0; j < tokens.Length; j++)
                 {
-                    PageInfo.SetMessage(segmentText, false, false);
+                    Logger.Debug($"Token {j}: {tokens[i].text} {(tokens[i].hasFlag(eTokenFlags.Special) ? "N" : "S")}");
                 }
+
+                var speaker = sender.detectSpeaker(segment.time);
+                Logger.Debug("Speaker: " + speaker.ToString());
+
+                //if (segmentText != "[BLANK_AUDIO]")
+                //{
+                //    PageInfo.SetMessage(segmentText, false, false);
+                //}
             }
         }
     }
@@ -54,6 +64,7 @@ namespace Hoscy.Services.Speech.Utilities
             _thread.Start();
         }
 
+        private ExceptionDispatchInfo? _edi;
         private void ThreadRunCapture()
         {
             try
@@ -62,15 +73,27 @@ namespace Hoscy.Services.Speech.Utilities
             }
             catch (Exception ex)
             {
-                //StartupException = ExceptionDispatchInfo.Capture(ex);
-                Logger.Error(ex); //Todo: [WHISPER] Actually catch the exception and fail startup
+                _edi = ExceptionDispatchInfo.Capture(ex);
             }
         }
+
+        /// <summary>
+        /// Joins the thread, required for detecting errors
+        /// </summary>
+        internal void Join()
+        {
+            _thread.Join();
+            _edi?.Throw();
+        }
+
         #endregion
 
-        #region Control
+        #region Stopping
         private volatile bool _shouldQuit = false;
 
+        /// <summary>
+        /// Stops the CaptureThread
+        /// </summary>
         internal void Stop() //todo: [WHISPER] ensure mute on stop?
             => _shouldQuit = true;
         protected override bool shouldCancel(Context sender) =>

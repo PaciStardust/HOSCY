@@ -33,7 +33,7 @@ namespace Hoscy.Services.Speech.Recognizers
                 ApplyParameters(ref ctx.parameters); //todo: [WHISPER] Options
 
                 CaptureThread thread = new(ctx, captureDevice);
-
+                thread.Join(); //todo: [WHISPER] Test if this causes any lag
                 _cptThread = thread;
             }
             catch (Exception ex)
@@ -100,36 +100,33 @@ namespace Hoscy.Services.Speech.Recognizers
         }
 
         private int n_threads = Environment.ProcessorCount;
-        private int offset_t_ms = 0;
-        private int duration_ms = 0;
-        private int max_context = 0;
-        private int max_len = 0;
+        private int max_context = 0; //Could either be 0 or -1
+        private int max_len = 0; //max seg length
 
-        private float word_thold = 0.01f;
+        private bool speed_up = false; //double speed -> lower quality
+        private bool translate = false; //translate to english
 
-        private bool speed_up = false;
-        private bool translate = false;
-        private bool no_timestamps = false;
-
-        private eLanguage language = eLanguage.English;
-
-        const bool output_wts = false;
+        private eLanguage language = eLanguage.English; //spoken lang
 
         private void ApplyParameters(ref Parameters p)
         {
-            p.setFlag(eFullParamsFlags.PrintRealtime, true);
-            p.setFlag(eFullParamsFlags.PrintTimestamps, !no_timestamps);
+
             p.setFlag(eFullParamsFlags.Translate, translate);
             p.language = language;
             p.cpuThreads = n_threads;
             if (max_context >= 0)
                 p.n_max_text_ctx = max_context;
-            p.offset_ms = offset_t_ms;
-            p.duration_ms = duration_ms;
-            p.setFlag(eFullParamsFlags.TokenTimestamps, output_wts || max_len > 0);
-            p.thold_pt = word_thold;
-            p.max_len = output_wts && max_len == 0 ? 60 : max_len;
+            p.setFlag(eFullParamsFlags.TokenTimestamps, max_len > 0);
+            
+            p.max_len = max_len;
             p.setFlag(eFullParamsFlags.SpeedupAudio, speed_up);
+
+            //Hardcoded
+            p.thold_pt = 0.01f;
+            p.duration_ms = 0;
+            p.offset_ms = 0;
+            p.setFlag(eFullParamsFlags.PrintRealtime, false); //todo: [WHISPER] Will this disable transcript info?
+            p.setFlag(eFullParamsFlags.PrintTimestamps, false); //todo: [WHISPER] Could this help for mute detection?
         }
         #endregion
     }
