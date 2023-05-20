@@ -1,12 +1,7 @@
-﻿using Hoscy.Ui.Pages;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Timers;
-using System.Windows.Controls;
 using Whisper;
 
 namespace Hoscy.Services.Speech.Utilities
@@ -26,9 +21,10 @@ namespace Hoscy.Services.Speech.Utilities
         #region Recognition
         internal List<sSegment> Segments = new();
 
-        protected override void onNewSegment(Context sender, int countNew) //todo: [WHISPER] implement actual transcription, muting, differentiating between sounds and text
+        protected override void onNewSegment(Context sender, int countNew)
         {
-            var results = sender.results();
+            var results = sender.results(eResultFlags.Timestamps);
+
             int segmentCount = results.segments.Length;
             int firstNewSegment = segmentCount - countNew;
 
@@ -54,6 +50,7 @@ namespace Hoscy.Services.Speech.Utilities
         private readonly Context _context;
         private readonly iAudioCapture _capture;
         internal ExceptionDispatchInfo? StartException { get; private set; }
+        internal DateTime StartTime { get; init; }
 
         #region Startup
         internal CaptureThread(Context ctx, iAudioCapture capture)
@@ -68,6 +65,7 @@ namespace Hoscy.Services.Speech.Utilities
                 IsBackground = true
             };
             _thread.Start();
+            StartTime = DateTime.Now;
 
             var loopCounter = 0;
             while (!_callbacks.HasStarted)
@@ -126,15 +124,15 @@ namespace Hoscy.Services.Speech.Utilities
                 if (seg.Count == 0)
                     return;
 
-                HandleSpeechRecognized(this, seg.ToArray());
+                HandleSpeechRecognized(seg.ToArray());
                 seg.Clear();
             }
         }
 
         internal event EventHandler<sSegment[]> SpeechRecognized = delegate { };
 
-        private void HandleSpeechRecognized(object? sender, sSegment[] e)
-            => SpeechRecognized.Invoke(sender, e);
+        private void HandleSpeechRecognized(sSegment[] e)
+            => SpeechRecognized.Invoke(null, e);
         #endregion
     }
 }

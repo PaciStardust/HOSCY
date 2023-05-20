@@ -1,14 +1,20 @@
 ﻿using Hoscy.Services.Speech.Utilities;
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Windows.Documents;
 using Whisper;
 
 namespace Hoscy.Services.Speech.Recognizers
 {
-    internal class RecognizerWhisper : RecognizerBase //todo: [WHISPER] test
+    internal class RecognizerWhisper : RecognizerBase //todo: [WHISPER] test, cleanup
     {
         private CaptureThread? _cptThread;
+
+        private DateTime _listenStart = DateTime.MinValue;
+        private DateTime _muteStart = DateTime.MinValue;
 
         new internal static RecognizerPerms Perms => new()
         {
@@ -17,7 +23,7 @@ namespace Hoscy.Services.Speech.Recognizers
             Type = RecognizerType.Whisper
         };
 
-        internal override bool IsListening => false; //_cptThread?.GetListeningStatus() ?? false;
+        internal override bool IsListening => _listenStart > _muteStart;
 
         #region Start / Stop and Muting
         protected override bool StartInternal()
@@ -31,10 +37,11 @@ namespace Hoscy.Services.Speech.Recognizers
                     return false;
 
                 var ctx = model.createContext();
-                ApplyParameters(ref ctx.parameters); //todo: [WHISPER] Options
+                ApplyParameters(ref ctx.parameters);
 
                 CaptureThread thread = new(ctx, captureDevice);
                 thread.StartException?.Throw();
+                thread.SpeechRecognized += OnSpeechRecognized;
                 _cptThread = thread;
             }
             catch (Exception ex)
@@ -53,7 +60,56 @@ namespace Hoscy.Services.Speech.Recognizers
         }
 
         protected override bool SetListeningInternal(bool enabled)
-            => false; //_cptThread?.SetListening(enabled) ?? false;
+        {
+            if (IsListening == enabled)
+                return false;
+
+            if (enabled)
+                _listenStart = DateTime.Now;
+            else
+                _muteStart = DateTime.Now;
+
+            return true;
+        }
+        #endregion
+
+        #region Transcription
+
+        private void OnSpeechRecognized(object? sender, sSegment[] segments)  //todo: [WHISPER] muting, differentiating between sounds and text
+        {
+            var strings = new List<string>();
+
+            foreach (var segment in segments)
+            {
+                var start = _cptThread.StartTime + segment.time.begin;
+                var end = _cptThread.StartTime + segment.time.begin;
+
+                var text = segment.text ?? string.Empty;
+                text = text.TrimStart(' ', '-').TrimEnd(' ');
+
+                text = DetectAction(text) ?? text;
+
+                if (!string.IsNullOrWhiteSpace(text))
+                {
+                    text += $" {_cptThread.StartTime + segment.time.end} {DateTime.Now}";
+                    strings.Add(text);
+                }
+            }
+
+            //todo: null check
+            ProcessMessage(string.Join(' ', strings));
+        }
+
+        private static readonly Regex _actionDetector = new(@"^[\[\(\*](.+)[\*\)\]]$");
+        private static string? DetectAction(string text) //todo: [WHISPER] Filter Actions
+        {
+            var match = _actionDetector.Match(text);
+            if (!match.Success)
+                return null;
+
+            var actionText = match.Groups[1].Value;
+            return $"*{actionText.ToLower()}*";
+        }
         #endregion
 
         #region Extra
@@ -89,45 +145,45 @@ namespace Hoscy.Services.Speech.Recognizers
                 return null;
             }
 
-            sCaptureParams cp = new() //todo: [WHISPER] Configure
+            sCaptureParams cp = new()
             {
-                dropStartSilence = 0.25f,
-                minDuration = 1.0f,
-                maxDuration = 8f,
-                pauseDuration = 1.0f
+                dropStartSilence = Config.Speech.WhisperRecDropStartSilence,
+                minDuration = Config.Speech.WhisperRecMinDuration,
+                maxDuration = Config.Speech.WhisperRecMaxDuration,
+                pauseDuration = Config.Speech.WhisperRecPauseDuration
             };
 
             return medf.openCaptureDevice(deviceId.Value,cp);
         }
 
-        private int n_threads = Environment.ProcessorCount;
-        private int max_context = 0; //Could either be 0 or -1
-        private int max_len = 0; //max seg length
-
-        private bool speed_up = false; //double speed -> lower quality
-        private bool translate = false; //translate to english
-
-        private eLanguage language = eLanguage.English; //spoken lang
+        private eLanguage language = eLanguage.English; //todo: [WHISPER] Language setting
 
         private void ApplyParameters(ref Parameters p)
         {
+            //Threads
+            var maxThreads = Environment.ProcessorCount;
+            var cfgThreads = Config.Speech.WhisperThreads;
+            p.cpuThreads = cfgThreads > maxThreads || cfgThreads == 0 ? maxThreads : cfgThreads;
 
-            p.setFlag(eFullParamsFlags.Translate, translate);
+            //Normal Flags
+            p.setFlag(eFullParamsFlags.SingleSegment, Config.Speech.WhisperSingleSegment);
+            p.setFlag(eFullParamsFlags.Translate, Config.Speech.WhisperToEnglish);
+            p.setFlag(eFullParamsFlags.SpeedupAudio, Config.Speech.WhisperSpeedup);
+
+            //Number Flags
+            if (Config.Speech.WhisperMaxContext >= 0)
+                p.n_max_text_ctx = Config.Speech.WhisperMaxContext;
+            p.setFlag(eFullParamsFlags.TokenTimestamps, Config.Speech.WhisperMaxSegLen > 0);
+            p.max_len = Config.Speech.WhisperMaxSegLen;
+
             p.language = language;
-            p.cpuThreads = n_threads;
-            if (max_context >= 0)
-                p.n_max_text_ctx = max_context;
-            p.setFlag(eFullParamsFlags.TokenTimestamps, max_len > 0);
             
-            p.max_len = max_len;
-            p.setFlag(eFullParamsFlags.SpeedupAudio, speed_up);
-
             //Hardcoded
             p.thold_pt = 0.01f;
             p.duration_ms = 0;
             p.offset_ms = 0;
-            p.setFlag(eFullParamsFlags.PrintRealtime, false); //todo: [WHISPER] Will this disable transcript info?
-            p.setFlag(eFullParamsFlags.PrintTimestamps, false); //todo: [WHISPER] Could this help for mute detection?
+            p.setFlag(eFullParamsFlags.PrintRealtime, false);
+            p.setFlag(eFullParamsFlags.PrintTimestamps, false);
         }
         #endregion
     }

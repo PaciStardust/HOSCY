@@ -96,12 +96,18 @@
                         <Label Content="Whisper Options"/>
 
                         <StackPanel Style="{StaticResource HStackIndent}">
-                            <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Whisper AI model"/>
-
+                            <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="AI model"/>
                             <WrapPanel Margin="0,4,0,0">
                                 <ComboBox x:Name="whisperModelBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="WhisperModelBox_SelectionChanged"/>
                                 <Button Style="{StaticResource HButtonSmall}" Content="Edit list" Margin="8,0,0,0" VerticalAlignment="Center" Click="Button_EditWhisperModels"/>
                             </WrapPanel>
+
+                            <TextBlock Style="{DynamicResource HTextBlock}" Text="General options" Margin="0,4,0,0"/>
+                            <StackPanel Style="{StaticResource HStackIndent}">
+                                <CheckBox Content="Single Segment (More accurate, less detail)" IsChecked="{Binding Speech.WhisperSingleSegment, Source={x:Static local:Config.Data}}" Checked="CheckBox_Checked"/>
+                                <CheckBox Content="Speedup Audio (More speed, less accurate)" Margin="0,4,0,0" IsChecked="{Binding Speech.WhisperSpeedup, Source={x:Static local:Config.Data}}" Checked="CheckBox_Checked"/>
+                                <CheckBox Content="Translate to English" Margin="0,4,0,0" IsChecked="{Binding Speech.WhisperToEnglish, Source={x:Static local:Config.Data}}" Checked="CheckBox_Checked"/>
+                            </StackPanel>
                         </StackPanel>
                     </StackPanel>
 

@@ -301,6 +301,9 @@ namespace Hoscy.Ui.Pages
 
         private void TextBox_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
             => TryEnableChangeIndicator();
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+            => TryEnableChangeIndicator();
         #endregion
     }
 }

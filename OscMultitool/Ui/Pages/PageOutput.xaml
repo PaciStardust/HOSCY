@@ -43,7 +43,7 @@
                                 <TextBox.Text>
                                     <Binding Source="{x:Static local:Config.Data}" Path="Textbox.MinimumTimeout" UpdateSourceTrigger="PropertyChanged">
                                         <Binding.ValidationRules>
-                                            <ui:IntegerValidationRule Min="1000" Max="30000"/>
+                                            <ui:IntegerValidationRule Min="1000" Max="32767"/>
                                         </Binding.ValidationRules>
                                     </Binding>
                                 </TextBox.Text>

@@ -40,7 +40,7 @@ namespace Hoscy.Models
         public int TranslationMaxTextLength //Maximum length of translatable text
         {
             get => _translationMaxTextLength;
-            set => _translationMaxTextLength = Utils.MinMax(value, 1, 60000);
+            set => _translationMaxTextLength = Utils.MinMax(value, 1, short.MaxValue);
         }
         private int _translationMaxTextLength = 2000;
 
@@ -211,7 +211,7 @@ namespace Hoscy.Models
         public int MaxLenTtsString //Max length of strings that get TTS
         {
             get => _maxLenTtsString;
-            set => _maxLenTtsString = Utils.MinMax(value, 1, 99999);
+            set => _maxLenTtsString = Utils.MinMax(value, 1, short.MaxValue);
         }
         private int _maxLenTtsString = 500;
         public bool SkipLongerMessages { get; set; } = true; //Skip longer messages instead of cutting off
@@ -229,6 +229,59 @@ namespace Hoscy.Models
         //Whisper
         public Dictionary<string, string> WhisperModels { get; set; } = new(); //Model identifiers and filepaths
         public string WhisperModelCurrent { get; set; } = string.Empty; //Identifier for current model
+
+        public bool WhisperSingleSegment { get; set; } = false; //Enables single segment mode (Higher accuracy, reduced functionality)
+        public bool WhisperSpeedup { get; set; } = false; //Enables speedup (Higher speed, lower accuracy)
+        public bool WhisperToEnglish { get; set; } = false; //Translates to english
+
+        public int WhisperThreads //Threads for whisper to use, 0 = infinite
+        {
+            get => _whisperThreads;
+            set => _whisperThreads = Utils.MinMax(value, 0, short.MaxValue);
+        }
+        private int _whisperThreads = 0;//todo: [WHISPER] Implement in UI
+
+        public int WhisperMaxContext //Max context for whisper to use, -1 = infinite
+        {
+            get => _whisperMaxContext;
+            set => _whisperMaxContext = Utils.MinMax(value, -1, short.MaxValue);
+        }
+        private int _whisperMaxContext = 0;//todo: [WHISPER] Implement in UI
+
+        public int WhisperMaxSegLen //Max segment length for whisper, 0 = infinite
+        {
+            get => _whisperMaxSegLen;
+            set => _whisperMaxSegLen = Utils.MinMax(value, 0, short.MaxValue);
+        }
+        private int _whisperMaxSegLen = 0;//todo: [WHISPER] Implement in UI
+
+        public float WhisperRecDropStartSilence //Drops x seconds of intial silence?
+        {
+            get => _whisperRecDropStartSilence;
+            set => _whisperRecDropStartSilence = Utils.MinMax(value, 0.05f, short.MaxValue);
+        }
+        private float _whisperRecDropStartSilence = 0.25f;//todo: [WHISPER] Implement in UI
+
+        public float WhisperRecMinDuration //Minimum duration for recognition
+        {
+            get => _whisperRecMinDuration;
+            set => _whisperRecMinDuration = Utils.MinMax(value, 0.05f, short.MaxValue);
+        }
+        private float _whisperRecMinDuration = 1;//todo: [WHISPER] Implement in UI
+
+        public float WhisperRecMaxDuration //Maximum duration for recognition
+        {
+            get => _whisperRecMaxDuration;
+            set => _whisperRecMaxDuration = Utils.MinMax(value, 1, short.MaxValue);
+        }
+        private float _whisperRecMaxDuration = 1;//todo: [WHISPER] Implement in UI
+
+        public float WhisperRecPauseDuration //Duration for pauses
+        {
+            get => _whisperRecPauseDuration;
+            set => _whisperRecPauseDuration = Utils.MinMax(value, 0.05f, short.MaxValue);
+        }
+        private float _whisperRecPauseDuration = 1;//todo: [WHISPER] Implement in UI
 
         //Windows
         public string WinModelId { get; set; } = string.Empty; //Identifier for Microsoft Recognizer
