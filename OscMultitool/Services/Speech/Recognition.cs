@@ -80,8 +80,8 @@ namespace Hoscy.Services.Speech
 
     internal class RecognitionChangedEventArgs : EventArgs
     {
-        internal bool Listening { get; init; }
-        internal bool Running { get; init; }
+        internal bool Listening { get; init; } = false;
+        internal bool Running { get; init; } = false;
 
         internal RecognitionChangedEventArgs(bool running, bool listening)
         {

@@ -1,5 +1,6 @@
 ﻿using Hoscy.Services.Speech.Utilities;
 using System;
+using System.Linq;
 using System.Threading;
 using Whisper;
 
@@ -33,7 +34,7 @@ namespace Hoscy.Services.Speech.Recognizers
                 ApplyParameters(ref ctx.parameters); //todo: [WHISPER] Options
 
                 CaptureThread thread = new(ctx, captureDevice);
-                thread.Join(); //todo: [WHISPER] Test if this causes any lag
+                thread.StartException?.Throw();
                 _cptThread = thread;
             }
             catch (Exception ex)

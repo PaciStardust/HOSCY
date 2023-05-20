@@ -1,45 +1,50 @@
 ﻿using Hoscy.Ui.Pages;
 using System;
+using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Timers;
+using System.Windows.Controls;
 using Whisper;
 
 namespace Hoscy.Services.Speech.Utilities
 {
     internal class TranscribeCallbacks : Callbacks
     {
+        #region Startup
+        internal bool HasStarted { get; private set; } = false;
+        //This is an insanely jank way to detect proper startup lmfao
+        protected override bool onEncoderBegin(Context sender)
+        {
+            HasStarted = true;
+            return true;
+        }
+        #endregion
+
+        #region Recognition
+        internal List<sSegment> Segments = new();
+
         protected override void onNewSegment(Context sender, int countNew) //todo: [WHISPER] implement actual transcription, muting, differentiating between sounds and text
         {
-            var results = sender.results(eResultFlags.Tokens);
+            var results = sender.results();
             int segmentCount = results.segments.Length;
             int firstNewSegment = segmentCount - countNew;
-
-            Logger.Debug($"Segments: {segmentCount}, New: {countNew}, FirstNew: {firstNewSegment}");
 
             for (int i = firstNewSegment; i < segmentCount; i++)
             {
                 var segment = results.segments[i];
                 var segmentText = segment.text?.ToString().Trim();
 
-                Logger.Debug($"Segment {i}: {segmentText}");
+                if (string.IsNullOrWhiteSpace(segmentText))
+                    continue;
 
-                var tokens = results.getTokens(segment);
-                
-                for (int j = 0; j < tokens.Length; j++)
-                {
-                    Logger.Debug($"Token {j}: {tokens[i].text} {(tokens[i].hasFlag(eTokenFlags.Special) ? "N" : "S")}");
-                }
-
-                var speaker = sender.detectSpeaker(segment.time);
-                Logger.Debug("Speaker: " + speaker.ToString());
-
-                //if (segmentText != "[BLANK_AUDIO]")
-                //{
-                //    PageInfo.SetMessage(segmentText, false, false);
-                //}
+                Logger.Debug($"{i}: {segmentText}");
+                Segments.Add(segment);
             }
         }
+        #endregion
     }
 
     internal class CaptureThread : CaptureCallbacks
@@ -48,6 +53,7 @@ namespace Hoscy.Services.Speech.Utilities
         private readonly Thread _thread;
         private readonly Context _context;
         private readonly iAudioCapture _capture;
+        internal ExceptionDispatchInfo? StartException { get; private set; }
 
         #region Startup
         internal CaptureThread(Context ctx, iAudioCapture capture)
@@ -62,9 +68,20 @@ namespace Hoscy.Services.Speech.Utilities
                 IsBackground = true
             };
             _thread.Start();
+
+            var loopCounter = 0;
+            while (!_callbacks.HasStarted)
+            {
+                if (++loopCounter > 6000) //60 seconds have passed
+                {
+                    var ex = new ApplicationException("Whisper startup taken over 60 seconds, cancelling");
+                    StartException = ExceptionDispatchInfo.Capture(ex);
+                    break;
+                }
+                Thread.Sleep(10);
+            }
         }
 
-        private ExceptionDispatchInfo? _edi;
         private void ThreadRunCapture()
         {
             try
@@ -73,19 +90,9 @@ namespace Hoscy.Services.Speech.Utilities
             }
             catch (Exception ex)
             {
-                _edi = ExceptionDispatchInfo.Capture(ex);
+                StartException = ExceptionDispatchInfo.Capture(ex);
             }
         }
-
-        /// <summary>
-        /// Joins the thread, required for detecting errors
-        /// </summary>
-        internal void Join()
-        {
-            _thread.Join();
-            _edi?.Throw();
-        }
-
         #endregion
 
         #region Stopping
@@ -94,18 +101,40 @@ namespace Hoscy.Services.Speech.Utilities
         /// <summary>
         /// Stops the CaptureThread
         /// </summary>
-        internal void Stop() //todo: [WHISPER] ensure mute on stop?
+        internal void Stop()
             => _shouldQuit = true;
         protected override bool shouldCancel(Context sender) =>
             _shouldQuit;
         #endregion
 
-        #region Other
-        //todo: [WHISPER] is this needed?
+        #region Event
+        private bool _lastTranscribing = false;
         protected override void captureStatusChanged(Context sender, eCaptureStatus status)
         {
             Logger.Debug($"CaptureStatusChanged: {status}");
+            if ((eCaptureStatus.Transcribing & status) != 0)
+            {
+                _lastTranscribing = true;
+                return;
+            }
+                
+            if (_lastTranscribing)
+            {
+                _lastTranscribing = false;
+
+                var seg = _callbacks.Segments;
+                if (seg.Count == 0)
+                    return;
+
+                HandleSpeechRecognized(this, seg.ToArray());
+                seg.Clear();
+            }
         }
+
+        internal event EventHandler<sSegment[]> SpeechRecognized = delegate { };
+
+        private void HandleSpeechRecognized(object? sender, sSegment[] e)
+            => SpeechRecognized.Invoke(sender, e);
         #endregion
     }
 }

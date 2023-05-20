@@ -107,7 +107,7 @@ namespace Hoscy.Services.Speech
         /// <summary>
         /// Processing and sending off the message
         /// </summary>
-        internal static void ProcessMessage(string message)
+        internal static void ProcessMessage(string message) //todo: [REFACTOR] Make an event
         {
             if (Config.Speech.RemoveFullStop)
                 message = message.TrimEnd('.');
