@@ -53,7 +53,7 @@
                         <Label x:Name="changeIndicator" Foreground="{x:Static ui:UiHelper.ColorInvalid}" Content="(Unapplied changes)" FontSize="14" VerticalAlignment="Center" Visibility="Hidden"/>
                     </WrapPanel>
                     <ComboBox x:Name="recognizerSelector" Style="{StaticResource HSettingsComboBox}" Margin="8,0,0,0" SelectionChanged="RecognizerSelector_SelectionChanged"/>
-                    <TextBlock Style="{StaticResource HTextBlock}" Margin="8,4,0,0" x:Name="valueRecInfo" Text="Info here" FontSize="14"/>
+                    <TextBlock Style="{StaticResource HTextBlock}" Margin="8,0,0,0" x:Name="valueRecInfo" Text="Info here" FontSize="14"/>
 
                     <!-- Microphone Select -->
                     <StackPanel x:Name="optionsMic">
@@ -71,7 +71,7 @@
                         <StackPanel Style="{StaticResource HStackIndent}">
                             <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Vosk AI model"/>
 
-                            <WrapPanel Margin="0,4,0,0">
+                            <WrapPanel >
                                 <ComboBox x:Name="voskModelBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="VoskModelBox_SelectionChanged"/>
                                 <Button Style="{StaticResource HButtonSmall}" Content="Edit list" Margin="8,0,0,0" VerticalAlignment="Center" Click="Button_EditVoskModels"/>
                             </WrapPanel>
@@ -97,7 +97,7 @@
 
                         <StackPanel Style="{StaticResource HStackIndent}">
                             <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="AI model"/>
-                            <WrapPanel Margin="0,4,0,0">
+                            <WrapPanel>
                                 <ComboBox x:Name="whisperModelBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="WhisperModelBox_SelectionChanged"/>
                                 <Button Style="{StaticResource HButtonSmall}" Content="Edit list" Margin="8,0,0,0" VerticalAlignment="Center" Click="Button_EditWhisperModels"/>
                             </WrapPanel>
@@ -123,8 +123,7 @@
 
                         <StackPanel Style="{StaticResource HStackIndent}">
                             <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="API Preset"/>
-
-                            <ComboBox x:Name="anyApiBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="AnyApiBox_SelectionChanged" Margin="0,4,0,0"/>
+                            <ComboBox x:Name="anyApiBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="AnyApiBox_SelectionChanged"/>
 
                             <WrapPanel Margin="0,4,0,0">
                                 <TextBox Style="{StaticResource HTextBoxShort}">
@@ -147,7 +146,7 @@
 
                         <StackPanel Style="{StaticResource HStackIndent}">
                             <TextBlock Style="{DynamicResource HTextBlock}" Text="Custom endpoint"/>
-                            <TextBox Margin="0,4,0,0" Text="{Binding Api.AzureCustomEndpointRecognition, Source={x:Static local:Config.Data}}" Tag="Custom endpoint..." Style="{StaticResource HTextBoxLong}" PreviewKeyDown="TextBox_PreviewKeyDown"/>
+                            <TextBox Text="{Binding Api.AzureCustomEndpointRecognition, Source={x:Static local:Config.Data}}" Tag="Custom endpoint..." Style="{StaticResource HTextBoxLong}" PreviewKeyDown="TextBox_PreviewKeyDown"/>
 
                             <WrapPanel Margin="0,4,0,0">
                                 <Button Content="Edit phrases" Click="Button_EditAzurePhrases"/>

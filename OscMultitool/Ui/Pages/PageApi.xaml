@@ -29,7 +29,7 @@
                     <CheckBox Content="Swap artist and song name" Margin="0,4,0,0" IsChecked="{Binding Textbox.MediaSwapArtistAndSong, Source={x:Static local:Config.Data}}" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}"/>
                     <CheckBox Content="Also display album name" Margin="0,4,0,0" IsChecked="{Binding Textbox.MediaAddAlbum, Source={x:Static local:Config.Data}}" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}"/>
 
-                    <TextBlock Style="{DynamicResource HTextBlock}" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}" Text="Text Configuration" Margin="0,8,0,4"/>
+                    <TextBlock Style="{DynamicResource HTextBlock}" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}" Text="Text Configuration" Margin="0,8,0,0"/>
                     <WrapPanel IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}">
                         <TextBox Tag="Playing..." Style="{StaticResource HTextBoxShort}">
                             <TextBox.Text>

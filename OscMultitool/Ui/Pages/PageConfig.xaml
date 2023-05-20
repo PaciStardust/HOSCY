@@ -20,13 +20,14 @@
             <StackPanel Style="{StaticResource HStackIndent}">
 
                 <TextBlock Style="{DynamicResource HTextBlock}" Text="Logging Level"/>
-                <WrapPanel Margin="0,4,0,0">
+                <WrapPanel>
                     <ComboBox x:Name="loggingLevelBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="LoggingLevelBox_SelectionChanged"/>
                     <Button Style="{StaticResource HButtonSmall}" Content="Edit filters" Margin="8,0,0,0" VerticalAlignment="Center" Click="Button_OpenLogFilter"/>
                 </WrapPanel>
 
                 <CheckBox Content="Open log window on startup" IsChecked="{Binding Debug.OpenLogWindow, Source={x:Static local:Config.Data}}" Margin="0,8,0,0"/>
                 <CheckBox Content="Automatically check for updates" IsChecked="{Binding Debug.CheckUpdates, Source={x:Static local:Config.Data}}" Margin="0,4,0,0"/>
+                
                 <WrapPanel Margin="0,8,0,0">
                     <Button Content="Open Docs" HorizontalAlignment="Left" Click="Button_OpenDocs"/>
                     <Button Margin="8,0,0,0" Content="Open Config" HorizontalAlignment="Left" Click="Button_OpenConfig"/>
