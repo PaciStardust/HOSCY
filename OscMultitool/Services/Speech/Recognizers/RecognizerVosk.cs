@@ -32,6 +32,7 @@ namespace Hoscy.Services.Speech.Recognizers
         {
             try
             {
+                Logger.Info("Attempting to load vosk model, this might take a while");
                 var path = Config.Speech.VoskModels[Config.Speech.VoskModelCurrent];
                 if (!Directory.Exists(path ?? string.Empty))
                 {

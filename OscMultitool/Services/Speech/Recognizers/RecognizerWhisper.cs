@@ -7,7 +7,7 @@ using Whisper;
 
 namespace Hoscy.Services.Speech.Recognizers
 {
-    internal class RecognizerWhisper : RecognizerBase //todo: [WHISPER] test, cleanup, logging
+    internal class RecognizerWhisper : RecognizerBase
     {
         new internal static RecognizerPerms Perms => new()
         {
@@ -29,6 +29,7 @@ namespace Hoscy.Services.Speech.Recognizers
         {
             try
             {
+                Logger.Info("Attempting to load whisper model");
                 var model = Library.loadModel(Config.Speech.WhisperModels[Config.Speech.WhisperModelCurrent]);
 
                 var captureDevice = GetCaptureDevice();
@@ -38,6 +39,7 @@ namespace Hoscy.Services.Speech.Recognizers
                 var ctx = model.createContext();
                 ApplyParameters(ref ctx.parameters);
 
+                Logger.Info("Starting whisper thread, this might take a while");
                 CaptureThread thread = new(ctx, captureDevice);
                 thread.StartException?.Throw();
                 thread.SpeechRecognized += OnSpeechRecognized;
@@ -118,7 +120,7 @@ namespace Hoscy.Services.Speech.Recognizers
         }
 
         /// <summary>
-        /// Determines if a segment has been spoken while muted
+        /// Determines if a segment has been spoken while muted, also clears all unneeded values
         /// </summary>
         /// <param name="startTime">CaptureThread start time</param>
         /// <param name="segment">Segment to check</param>
@@ -131,16 +133,12 @@ namespace Hoscy.Services.Speech.Recognizers
             //Remove all unneeded values
             _muteTimes.RemoveAll(x => x.End <= start);
 
-            //Check if spoken while unmuted
-            var valid = true;
-            foreach (var interval in _muteTimes)
+            if (_muteTimes.Any())
             {
-                valid = end < interval.Start || start > interval.End;
-                if (!valid)
-                    break;
+                var first = _muteTimes.First();
+                if (end > first.Start || start < first.End)
+                    return true;
             }
-            if (!valid) return true;
-
             return false;
         }
 
@@ -164,6 +162,7 @@ namespace Hoscy.Services.Speech.Recognizers
         #region Setup
         private static iAudioCapture? GetCaptureDevice()
         {
+            Logger.Info("Attempting to grab capture device for whisper");
             var medf = Library.initMediaFoundation();
             if (medf == null)
             {
@@ -223,7 +222,7 @@ namespace Hoscy.Services.Speech.Recognizers
             p.setFlag(eFullParamsFlags.TokenTimestamps, Config.Speech.WhisperMaxSegLen > 0);
             p.max_len = Config.Speech.WhisperMaxSegLen;
 
-            p.language = Config.Speech.WhisperLanguage; //todo: [WHISPER] Sort languages
+            p.language = Config.Speech.WhisperLanguage;
             
             //Hardcoded
             p.thold_pt = 0.01f;

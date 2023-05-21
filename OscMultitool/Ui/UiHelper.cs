@@ -32,7 +32,7 @@ namespace Hoscy.Ui
         /// <summary>
         /// Loads data into a combo box
         /// </summary>
-        internal static void Load(this ComboBox box, IEnumerable<string> source, int index, bool refresh = false)
+        internal static void Load<T>(this ComboBox box, IEnumerable<T> source, int index, bool refresh = false)
         {
             box.ItemsSource = source;
             if (refresh) box.Items.Refresh();

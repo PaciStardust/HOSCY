@@ -175,14 +175,15 @@ namespace Hoscy.Ui.Pages
                 return;
             }
 
-            var languageIndex = languages.IndexOf(Config.Speech.WhisperLanguage);
+            var sortedLanguages = languages.OrderBy(x => x.ToString()).ToList();
+            var languageIndex = sortedLanguages.IndexOf(Config.Speech.WhisperLanguage);
             if (languageIndex == -1)
             {
                 Logger.Error("Failed to grab whisper language index corresponding to config value", false);
                 return;
             }
 
-            whisperLanguageBox.Load(languages.Select(x => x.ToString()), languageIndex);
+            whisperLanguageBox.Load(sortedLanguages, languageIndex);
         }
         #endregion
 
@@ -336,15 +337,15 @@ namespace Hoscy.Ui.Pages
         private void WhisperLanguageBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var oldLanguage = Config.Speech.WhisperLanguage;
-            var languages = Enum.GetValues(typeof(eLanguage)).Cast<eLanguage>().ToList();
+            eLanguage? newLanguage = (eLanguage)whisperLanguageBox.SelectedItem;
 
-            if (languages == null || languages.Count <= whisperLanguageBox.SelectedIndex)
+            if (newLanguage == null)
             {
                 Logger.Error("Failed to assign selected whisper language to config");
                 return;
             }
 
-            Config.Speech.WhisperLanguage = languages[whisperLanguageBox.SelectedIndex];
+            Config.Speech.WhisperLanguage = newLanguage.Value;
 
             if (oldLanguage != Config.Speech.WhisperLanguage)
                 TryEnableChangeIndicator();
