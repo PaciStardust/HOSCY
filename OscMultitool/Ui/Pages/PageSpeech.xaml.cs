@@ -216,7 +216,7 @@ namespace Hoscy.Ui.Pages
         private void Button_OpenNoiseFilter(object sender, RoutedEventArgs e)
         {
             UiHelper.OpenListEditor("Edit Noise Filter", "Noise Text", Config.Speech.NoiseFilter);
-            RecognizerBase.UpdateDenoiseRegex();
+            Recognition.UpdateDenoiseRegex();
         }
         private void Button_OpenReplacements(object sender, RoutedEventArgs e)
         {

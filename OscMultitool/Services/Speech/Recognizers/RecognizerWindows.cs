@@ -58,15 +58,10 @@ namespace Hoscy.Services.Speech.Recognizers
             _rec = null;
         }
 
-        private static void Recognizer_SpeechRecognized(object? sender, SpeechRecognizedEventArgs e)
+        private void Recognizer_SpeechRecognized(object? sender, SpeechRecognizedEventArgs e)
         {
             Logger.Log("Got Message: " + e.Result.Text);
-
-            var message = Denoise(e.Result.Text);
-            if (string.IsNullOrWhiteSpace(message))
-                return;
-
-            ProcessMessage(message);
+            HandleSpeechRecognized(e.Result.Text);
         }
     }
 }

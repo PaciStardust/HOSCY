@@ -144,7 +144,7 @@ namespace Hoscy.Services.Speech.Recognizers
             if (!string.IsNullOrWhiteSpace(result))
             {
                 Logger.Log("Got Message: " + result);
-                ProcessMessage(result);
+                HandleSpeechRecognized(result);
             }
 
             ClearLastChanged();
@@ -177,8 +177,8 @@ namespace Hoscy.Services.Speech.Recognizers
             if ((DateTime.Now - _lastChangedAt).TotalMilliseconds > Config.Speech.VoskTimeout)
             {
                 Logger.Log("Got Message (T): " + result);
-                ProcessMessage(result);
                 ClearLastChanged();
+                HandleSpeechRecognized(result);
             }
         }
 
@@ -201,7 +201,7 @@ namespace Hoscy.Services.Speech.Recognizers
             if (extracted == null)
                 return null;
 
-            return Denoise(extracted);
+            return extracted;
         }
         #endregion
     }

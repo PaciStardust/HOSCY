@@ -107,11 +107,8 @@ namespace Hoscy.Services.Speech.Recognizers
 
             var result = await _client.SendBytes(audioData);
 
-            var message = Denoise(result ?? string.Empty);
-            if (string.IsNullOrWhiteSpace(message))
-                return;
-
-            ProcessMessage(message);
+            if (!string.IsNullOrWhiteSpace(result))
+                HandleSpeechRecognized(result);
         }
         #endregion
     }

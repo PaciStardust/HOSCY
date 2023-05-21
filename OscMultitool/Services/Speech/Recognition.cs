@@ -1,5 +1,7 @@
 ﻿using Hoscy.Ui.Pages;
 using System;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Hoscy.Services.Speech
 {
@@ -36,6 +38,8 @@ namespace Hoscy.Services.Speech
                 return false;
             }
 
+            UpdateDenoiseRegex();
+            _recognizer.SpeechRecognized += OnSpeechRecognized;
             Logger.PInfo("Successfully started recognizer");
             TriggerRecognitionChanged();
             return true;
@@ -64,6 +68,60 @@ namespace Hoscy.Services.Speech
             _recognizer = null;
             TriggerRecognitionChanged();
             Logger.PInfo("Successfully stopped recognizer");
+        }
+        #endregion
+
+        #region Result Handling
+        /// <summary>
+        /// Processing and sending off the message
+        /// </summary>
+        private static void OnSpeechRecognized(object? sender, string message)
+        {
+            var cleanedMessage = CleanMessage(message);
+
+            if (string.IsNullOrWhiteSpace(message))
+                return;
+
+            var processor = new TextProcessor()
+            {
+                TriggerReplace = Config.Speech.UseReplacements,
+                TriggerCommands = true,
+                UseTextbox = Config.Speech.UseTextbox,
+                UseTts = Config.Speech.UseTts,
+                AllowTranslate = true
+            };
+
+            processor.Process(cleanedMessage);
+        }
+
+        private static Regex _denoiseFilter = new(" *");
+        /// <summary>
+        /// Removes "noise" from message
+        /// </summary>
+        private static string CleanMessage(string message)
+        {
+            message = message.Trim();
+            if (Config.Speech.RemoveFullStop)
+                message = message.TrimEnd('.');
+
+            if (!_denoiseFilter.IsMatch(message))
+                return string.Empty;
+
+            message = _denoiseFilter.Match(message).Groups[1].Value.Trim();
+
+            return message;
+        }
+
+        /// <summary>
+        /// Generates a regex for denoising
+        /// </summary>
+        internal static void UpdateDenoiseRegex()
+        {
+            var filterWords = Config.Speech.NoiseFilter.Select(x => $"(?:{x})");
+            var filterCombined = string.Join('|', filterWords);
+            var regString = $"^(?:\\b(?:{filterCombined})\\b)?(.*?)(?:\\b(?:{filterCombined})\\b)?$";
+            Logger.PInfo($"Updated denoiser ({regString})");
+            _denoiseFilter = new Regex(regString, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         }
         #endregion
 

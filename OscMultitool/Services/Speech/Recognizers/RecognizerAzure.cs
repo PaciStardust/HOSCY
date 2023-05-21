@@ -143,12 +143,7 @@ namespace Hoscy.Services.Speech.Recognizers
                 return;
 
             Logger.Log("Got Message: " + result);
-
-            var message = Denoise(result);
-            if (string.IsNullOrWhiteSpace(message))
-                return;
-
-            ProcessMessage(message);
+            HandleSpeechRecognized(result);
         }
 
         private void OnCanceled(object? sender, SpeechRecognitionCanceledEventArgs e)
