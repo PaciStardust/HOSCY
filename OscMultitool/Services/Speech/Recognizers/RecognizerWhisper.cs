@@ -149,7 +149,7 @@ namespace Hoscy.Services.Speech.Recognizers
             return false;
         }
 
-        private static readonly Regex _actionDetector = new(@"^[\[\(\*](.+)[\*\)\]]$");
+        private static readonly Regex _actionDetector = new(@"^[\[\(\*] *(.+) *[\*\)\]]$");
         /// <summary>
         /// Tries to detect if a text is an "action"
         /// </summary>

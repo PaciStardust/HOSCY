@@ -191,6 +191,11 @@ namespace Hoscy
                 {
                     new("Laughing", "laugh")
                 });
+
+                config.Speech.NoiseFilter.AddRange(new List<string>
+                {
+                    "(", "[", "*"
+                });
             }
 
             config.ConfigVersion = 5;

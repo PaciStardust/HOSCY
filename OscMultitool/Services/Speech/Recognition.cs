@@ -117,7 +117,7 @@ namespace Hoscy.Services.Speech
         /// </summary>
         internal static void UpdateDenoiseRegex()
         {
-            var filterWords = Config.Speech.NoiseFilter.Select(x => $"(?:{x})");
+            var filterWords = Config.Speech.NoiseFilter.Select(x => $"(?:{Regex.Escape(x)})");
             var filterCombined = string.Join('|', filterWords);
             var regString = $"^(?:\\b(?:{filterCombined})\\b)?(.*?)(?:\\b(?:{filterCombined})\\b)?$";
             Logger.PInfo($"Updated denoiser ({regString})");
