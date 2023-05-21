@@ -185,7 +185,15 @@ namespace Hoscy
                 }
             }
 
-            config.ConfigVersion = 4;
+            if (config.ConfigVersion < 5)
+            {
+                config.Speech.WhisperNoiseWhitelist.AddRange(new List<FilterModel>()
+                {
+                    new("Laughing", "laugh")
+                });
+            }
+
+            config.ConfigVersion = 5;
         }
         #endregion
     }

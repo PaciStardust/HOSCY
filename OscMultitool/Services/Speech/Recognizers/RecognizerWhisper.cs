@@ -114,9 +114,9 @@ namespace Hoscy.Services.Speech.Recognizers
                 //Does nothing if action has no match, if more has to be added, code above needs to be adjusted
             }
 
-            var joinedText = string.Join(' ', strings);
-            if (!string.IsNullOrWhiteSpace(joinedText))
-                ProcessMessage(joinedText);
+            var denoised = Denoise(string.Join(' ', strings));
+            if (!string.IsNullOrWhiteSpace(denoised))
+                ProcessMessage(denoised);
         }
 
         /// <summary>

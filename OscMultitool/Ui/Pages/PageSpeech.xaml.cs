@@ -26,7 +26,7 @@ namespace Hoscy.Ui.Pages
             { "Windows Recognizer", RecognizerWindows.Perms },
             { "Any-API Recognizer", RecognizerApi.Perms },
             { "Azure API Recognizer", RecognizerAzure.Perms },
-            { "WHISPER TEST RECOG", RecognizerWhisper.Perms }
+            { "Whisper Recognizer", RecognizerWhisper.Perms }
         };
 
         internal static RecognizerBase? GetRecognizerFromUi()
@@ -37,7 +37,7 @@ namespace Hoscy.Ui.Pages
                 "Windows Recognizer" => new RecognizerWindows(),
                 "Any-API Recognizer" => new RecognizerApi(),
                 "Azure API Recognizer" => new RecognizerAzure(),
-                "WHISPER TEST RECOG" => new RecognizerWhisper(),
+                "Whisper Recognizer" => new RecognizerWhisper(),
                 _ => new RecognizerVosk()
             };
 
