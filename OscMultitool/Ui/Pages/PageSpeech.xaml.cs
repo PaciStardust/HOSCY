@@ -2,11 +2,13 @@
 using Hoscy.Services.Speech.Recognizers;
 using Hoscy.Services.Speech.Utilities;
 using Hoscy.Ui.Windows;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using Whisper;
 
 namespace Hoscy.Ui.Pages
 {
@@ -87,6 +89,7 @@ namespace Hoscy.Ui.Pages
 
             UpdateVoskRecognizerBox();
             UpdateWhisperRecognizerBox();
+            LoadWhisperLanguageBox();
         }
 
         /// <summary>
@@ -162,6 +165,25 @@ namespace Hoscy.Ui.Pages
         /// </summary>
         private void UpdateWhisperRecognizerBox()
             => whisperModelBox.UpdateModelBox(Config.Speech.WhisperModels, Config.Speech.WhisperModelCurrent, false);
+
+        private void LoadWhisperLanguageBox()
+        {
+            var languages = Enum.GetValues(typeof(eLanguage)).Cast<eLanguage>().ToList();
+            if (languages == null)
+            {
+                Logger.Error("Failed to grab enum values for whisper languages", false);
+                return;
+            }
+
+            var languageIndex = languages.IndexOf(Config.Speech.WhisperLanguage);
+            if (languageIndex == -1)
+            {
+                Logger.Error("Failed to grab whisper language index corresponding to config value", false);
+                return;
+            }
+
+            whisperLanguageBox.Load(languages.Select(x => x.ToString()), languageIndex);
+        }
         #endregion
 
         #region Buttons
@@ -222,14 +244,20 @@ namespace Hoscy.Ui.Pages
 
         private void Button_EditAzurePhrases(object sender, RoutedEventArgs e)
         {
-            UiHelper.OpenListEditor("Edit phrases", "Phrase", Config.Api.AzurePhrases, "New Phrase");
+            UiHelper.OpenListEditor("Edit Phrases", "Phrase", Config.Api.AzurePhrases, "New Phrase");
             TryEnableChangeIndicator();
         }
 
         private void Button_EditAzureLanguages(object sender, RoutedEventArgs e)
         {
-            UiHelper.OpenListEditor("Edit languages", "Language", Config.Api.AzureRecognitionLanguages, "New Language");
+            UiHelper.OpenListEditor("Edit Languages", "Language", Config.Api.AzureRecognitionLanguages, "New Language");
             TryEnableChangeIndicator();
+        }
+
+        private void Button_EditWhisperNoiseWhitelist(object sender, RoutedEventArgs e)
+        {
+            var window = new ModifyFiltersWindow("Edit Noise Whitelist", Config.Speech.WhisperNoiseWhitelist);
+            window.ShowDialogDark();
         }
         #endregion
 
@@ -304,6 +332,23 @@ namespace Hoscy.Ui.Pages
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
             => TryEnableChangeIndicator();
+
+        private void WhisperLanguageBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var oldLanguage = Config.Speech.WhisperLanguage;
+            var languages = Enum.GetValues(typeof(eLanguage)).Cast<eLanguage>().ToList();
+
+            if (languages == null || languages.Count <= whisperLanguageBox.SelectedIndex)
+            {
+                Logger.Error("Failed to assign selected whisper language to config");
+                return;
+            }
+
+            Config.Speech.WhisperLanguage = languages[whisperLanguageBox.SelectedIndex];
+
+            if (oldLanguage != Config.Speech.WhisperLanguage)
+                TryEnableChangeIndicator();
+        }
         #endregion
     }
 }

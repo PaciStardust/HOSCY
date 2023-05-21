@@ -64,6 +64,7 @@ namespace Hoscy.Services.Speech.Recognizers
             _microphone.Start();
             _recThread = new(new ThreadStart(HandleAvailableDataLoop))
             {
+                Name = "Vosk Data Handler",
                 Priority = ThreadPriority.AboveNormal
             };
             _recThread.Start();
@@ -84,6 +85,7 @@ namespace Hoscy.Services.Speech.Recognizers
             _rec?.Dispose();
             _rec = null;
         }
+
         protected override bool SetListeningInternal(bool enabled)
             => _microphone.SetMuteStatus(enabled);
         #endregion

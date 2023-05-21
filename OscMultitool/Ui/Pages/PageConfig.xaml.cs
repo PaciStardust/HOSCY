@@ -38,7 +38,7 @@ namespace Hoscy.Ui.Pages
                 return;
             }
 
-            loggingLevelBox.Load(loglevels.Select(x => $"{(int)x} - {x}"), logLevelIndex == -1 ? 1 : logLevelIndex); 
+            loggingLevelBox.Load(loglevels.Select(x => $"{(int)x} - {x}"), logLevelIndex);
         }
 
         private void LoggingLevelBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

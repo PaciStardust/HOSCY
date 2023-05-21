@@ -102,18 +102,92 @@
                                 <Button Style="{StaticResource HButtonSmall}" Content="Edit list" Margin="8,0,0,0" VerticalAlignment="Center" Click="Button_EditWhisperModels"/>
                             </WrapPanel>
 
-                            <TextBlock Style="{DynamicResource HTextBlock}" Text="General options" Margin="0,4,0,0"/>
+                            <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Input language" Margin="0,4,0,0"/>
+                            <WrapPanel>
+                                <ComboBox x:Name="whisperLanguageBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="WhisperLanguageBox_SelectionChanged"/>
+                                <Button Style="{StaticResource HButtonSmall}" Content="Edit noise whitelist" Margin="8,0,0,0" VerticalAlignment="Center" Click="Button_EditWhisperNoiseWhitelist"/>
+                            </WrapPanel>
+
+                            <Label Content="Additional Options" Margin="0,4,0,0"/>
                             <StackPanel Style="{StaticResource HStackIndent}">
                                 <CheckBox Content="Single Segment (More accurate, less detail)" IsChecked="{Binding Speech.WhisperSingleSegment, Source={x:Static local:Config.Data}}" Checked="CheckBox_Checked"/>
                                 <CheckBox Content="Speedup Audio (More speed, less accurate)" Margin="0,4,0,0" IsChecked="{Binding Speech.WhisperSpeedup, Source={x:Static local:Config.Data}}" Checked="CheckBox_Checked"/>
                                 <CheckBox Content="Translate to English" Margin="0,4,0,0" IsChecked="{Binding Speech.WhisperToEnglish, Source={x:Static local:Config.Data}}" Checked="CheckBox_Checked"/>
+
+                                <WrapPanel>
+                                    <TextBox Style="{StaticResource HTextBoxShort}" PreviewKeyDown="TextBox_PreviewKeyDown" Margin="0,4,0,0">
+                                        <TextBox.Text>
+                                            <Binding Source="{x:Static local:Config.Data}" Path="Speech.WhisperThreads" UpdateSourceTrigger="PropertyChanged">
+                                                <Binding.ValidationRules>
+                                                    <ui:IntegerValidationRule Min="0" Max="32767"/>
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </TextBox.Text>
+                                    </TextBox>
+                                    <Label Content="Threads (0 = Max)" VerticalAlignment="Center"/>
+                                </WrapPanel>
+                            </StackPanel>
+
+                            <Label Content="Experimental Options" Margin="0,4,0,0"/>
+                            <StackPanel Style="{StaticResource HStackIndent}">
+                                <WrapPanel>
+                                    <TextBox Style="{StaticResource HTextBoxShort}" PreviewKeyDown="TextBox_PreviewKeyDown">
+                                        <TextBox.Text>
+                                            <Binding Source="{x:Static local:Config.Data}" Path="Speech.WhisperRecMaxDuration" UpdateSourceTrigger="PropertyChanged">
+                                                <Binding.ValidationRules>
+                                                    <ui:FloatValidationRule Min="2" Max="32767"/>
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </TextBox.Text>
+                                    </TextBox>
+                                    <Label Content="Rec maximum duration (s)" VerticalAlignment="Center"/>
+                                </WrapPanel>
+
+                                <WrapPanel>
+                                    <TextBox Style="{StaticResource HTextBoxShort}" PreviewKeyDown="TextBox_PreviewKeyDown" Margin="0,4,0,0">
+                                        <TextBox.Text>
+                                            <Binding Source="{x:Static local:Config.Data}" Path="Speech.WhisperRecPauseDuration" UpdateSourceTrigger="PropertyChanged">
+                                                <Binding.ValidationRules>
+                                                    <ui:FloatValidationRule Min="0.05" Max="32767"/>
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </TextBox.Text>
+                                    </TextBox>
+                                    <Label Content="Rec pause duration (s)" VerticalAlignment="Center"/>
+                                </WrapPanel>
+
+                                <WrapPanel>
+                                    <TextBox Style="{StaticResource HTextBoxShort}" PreviewKeyDown="TextBox_PreviewKeyDown" Margin="0,4,0,0">
+                                        <TextBox.Text>
+                                            <Binding Source="{x:Static local:Config.Data}" Path="Speech.WhisperMaxContext" UpdateSourceTrigger="PropertyChanged">
+                                                <Binding.ValidationRules>
+                                                    <ui:IntegerValidationRule Min="-1" Max="32767"/>
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </TextBox.Text>
+                                    </TextBox>
+                                    <Label Content="Maximum context (-1 = Inf)" VerticalAlignment="Center"/>
+                                </WrapPanel>
+
+                                <WrapPanel>
+                                    <TextBox Style="{StaticResource HTextBoxShort}" PreviewKeyDown="TextBox_PreviewKeyDown" Margin="0,4,0,0">
+                                        <TextBox.Text>
+                                            <Binding Source="{x:Static local:Config.Data}" Path="Speech.WhisperMaxSegLen" UpdateSourceTrigger="PropertyChanged">
+                                                <Binding.ValidationRules>
+                                                    <ui:IntegerValidationRule Min="0" Max="32767"/>
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </TextBox.Text>
+                                    </TextBox>
+                                    <Label Content="Maximum segment length (0 = Inf)" VerticalAlignment="Center"/>
+                                </WrapPanel>
                             </StackPanel>
                         </StackPanel>
                     </StackPanel>
 
                     <!-- Windows Options -->
                     <StackPanel x:Name="optionsWin" Margin="0,8,0,0">
-                        <Label Content="Windows recognizer"/>
+                        <Label Content="Windows Recognizer"/>
                         <ComboBox x:Name="windowsRecognizerBox" Style="{StaticResource HSettingsComboBox}" Margin="8,0,0,0" SelectionChanged="WindowsRecognizerBox_SelectionChanged"/>
                     </StackPanel>
 

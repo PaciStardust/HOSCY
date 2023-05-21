@@ -1,21 +1,14 @@
-﻿using Hoscy.Services.Speech.Utilities;
+﻿using Hoscy.Services.Speech.Utilities.Whisper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows.Documents;
 using Whisper;
 
 namespace Hoscy.Services.Speech.Recognizers
 {
-    internal class RecognizerWhisper : RecognizerBase //todo: [WHISPER] test, cleanup
+    internal class RecognizerWhisper : RecognizerBase //todo: [WHISPER] test, cleanup, logging
     {
-        private CaptureThread? _cptThread;
-
-        private DateTime _listenStart = DateTime.MinValue;
-        private DateTime _muteStart = DateTime.MinValue;
-
         new internal static RecognizerPerms Perms => new()
         {
             Description = "Local AI, quality / RAM usage varies, startup may take a while",
@@ -23,9 +16,15 @@ namespace Hoscy.Services.Speech.Recognizers
             Type = RecognizerType.Whisper
         };
 
-        internal override bool IsListening => _listenStart > _muteStart;
+        internal override bool IsListening => _muteTimes.Count == 0 || _muteTimes[^1].End < DateTime.Now;
 
-        #region Start / Stop and Muting
+        private CaptureThread? _cptThread;
+        private readonly List<TimeInterval> _muteTimes = new()
+        {
+            new(DateTime.MinValue, DateTime.MaxValue) //Default value - indefinite mute
+        };
+
+        #region Starting / Stopping
         protected override bool StartInternal()
         {
             try
@@ -65,54 +64,104 @@ namespace Hoscy.Services.Speech.Recognizers
                 return false;
 
             if (enabled)
-                _listenStart = DateTime.Now;
+            {
+                //Set mute records last time to not be indefinite
+                if (_muteTimes.Count > 0)
+                    _muteTimes[^1] = new(_muteTimes[^1].Start, DateTime.Now);
+            }
             else
-                _muteStart = DateTime.Now;
+                //Add new indefinite mute record
+                _muteTimes.Add(new(DateTime.Now, DateTime.MaxValue));
 
             return true;
         }
         #endregion
 
         #region Transcription
-
-        private void OnSpeechRecognized(object? sender, sSegment[] segments)  //todo: [WHISPER] muting, differentiating between sounds and text
+        private void OnSpeechRecognized(object? sender, sSegment[] segments)
         {
+            if (_cptThread == null || segments.Length == 0) return;
+
+            //Ensure segments are ordered correctly
+            var sortedSegments = segments.OrderBy(x => x.time.begin);
             var strings = new List<string>();
 
-            foreach (var segment in segments)
+            foreach (var segment in sortedSegments)
             {
-                var start = _cptThread.StartTime + segment.time.begin;
-                var end = _cptThread.StartTime + segment.time.begin;
+                if (string.IsNullOrWhiteSpace(segment.text) || IsSpokenWhileMuted(_cptThread.StartTime, segment))
+                    continue;
 
-                var text = segment.text ?? string.Empty;
-                text = text.TrimStart(' ', '-').TrimEnd(' ');
+                var trimmedText = segment.text.TrimStart(' ', '-').TrimEnd(' ');
 
-                text = DetectAction(text) ?? text;
-
-                if (!string.IsNullOrWhiteSpace(text))
+                var action = TryGetAction(trimmedText);
+                if (action == null)
                 {
-                    text += $" {_cptThread.StartTime + segment.time.end} {DateTime.Now}";
-                    strings.Add(text);
+                    strings.Add(trimmedText);
+                    continue;
                 }
+
+                //Adding action
+                foreach (var filter in Config.Speech.WhisperNoiseWhitelist) //todo: [WHISPER] display with filtered actions too
+                {
+                    if (filter.Matches(action))
+                    {
+                        strings.Add($"*{action}*");
+                        break;
+                    }
+                }
+                //Does nothing if action has no match, if more has to be added, code above needs to be adjusted
             }
 
-            //todo: null check
-            ProcessMessage(string.Join(' ', strings));
+            var joinedText = string.Join(' ', strings);
+            if (!string.IsNullOrWhiteSpace(joinedText))
+                ProcessMessage(joinedText);
+        }
+
+        /// <summary>
+        /// Determines if a segment has been spoken while muted
+        /// </summary>
+        /// <param name="startTime">CaptureThread start time</param>
+        /// <param name="segment">Segment to check</param>
+        /// <returns>Was spoken while muted?</returns>
+        private bool IsSpokenWhileMuted(DateTime startTime, sSegment segment)
+        {
+            var start = startTime + segment.time.begin;
+            var end = startTime + segment.time.end;
+
+            //Remove all unneeded values
+            _muteTimes.RemoveAll(x => x.End <= start);
+
+            //Check if spoken while unmuted
+            var valid = true;
+            foreach (var interval in _muteTimes)
+            {
+                valid = end < interval.Start || start > interval.End;
+                if (!valid)
+                    break;
+            }
+            if (!valid) return true;
+
+            return false;
         }
 
         private static readonly Regex _actionDetector = new(@"^[\[\(\*](.+)[\*\)\]]$");
-        private static string? DetectAction(string text) //todo: [WHISPER] Filter Actions
+        /// <summary>
+        /// Tries to detect if a text is an "action"
+        /// </summary>
+        /// <param name="text">Text to check</param>
+        /// <returns>Formatted action / null</returns>
+        private static string? TryGetAction(string text)
         {
             var match = _actionDetector.Match(text);
             if (!match.Success)
                 return null;
 
             var actionText = match.Groups[1].Value;
-            return $"*{actionText.ToLower()}*";
+            return actionText.ToLower();
         }
         #endregion
 
-        #region Extra
+        #region Setup
         private static iAudioCapture? GetCaptureDevice()
         {
             var medf = Library.initMediaFoundation();
@@ -147,8 +196,8 @@ namespace Hoscy.Services.Speech.Recognizers
 
             sCaptureParams cp = new()
             {
-                dropStartSilence = Config.Speech.WhisperRecDropStartSilence,
-                minDuration = Config.Speech.WhisperRecMinDuration,
+                dropStartSilence = 0.25f,
+                minDuration = 1,
                 maxDuration = Config.Speech.WhisperRecMaxDuration,
                 pauseDuration = Config.Speech.WhisperRecPauseDuration
             };
@@ -156,9 +205,7 @@ namespace Hoscy.Services.Speech.Recognizers
             return medf.openCaptureDevice(deviceId.Value,cp);
         }
 
-        private eLanguage language = eLanguage.English; //todo: [WHISPER] Language setting
-
-        private void ApplyParameters(ref Parameters p)
+        private static void ApplyParameters(ref Parameters p)
         {
             //Threads
             var maxThreads = Environment.ProcessorCount;
@@ -176,7 +223,7 @@ namespace Hoscy.Services.Speech.Recognizers
             p.setFlag(eFullParamsFlags.TokenTimestamps, Config.Speech.WhisperMaxSegLen > 0);
             p.max_len = Config.Speech.WhisperMaxSegLen;
 
-            p.language = language;
+            p.language = Config.Speech.WhisperLanguage; //todo: [WHISPER] Sort languages
             
             //Hardcoded
             p.thold_pt = 0.01f;

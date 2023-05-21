@@ -112,10 +112,10 @@
 
                 <StackPanel Style="{StaticResource HStackIndent}">
                     <TextBlock Style="{DynamicResource HTextBlock}" Text="API Key"/>
-                    <TextBox Text="{Binding Api.AzureKey, Source={x:Static local:Config.Data}}" Tag="API key..." Style="{StaticResource HTextBoxLong}" Margin="0,4,0,0"/>
+                    <TextBox Text="{Binding Api.AzureKey, Source={x:Static local:Config.Data}}" Tag="API key..." Style="{StaticResource HTextBoxLong}"/>
 
                     <TextBlock Style="{DynamicResource HTextBlock}" Text="API Region" Margin="0,4,0,0"/>
-                    <TextBox Text="{Binding Api.AzureRegion, Source={x:Static local:Config.Data}}" Tag="API Region..." Style="{StaticResource HTextBoxLong}" Margin="0,4,0,0"/>
+                    <TextBox Text="{Binding Api.AzureRegion, Source={x:Static local:Config.Data}}" Tag="API Region..." Style="{StaticResource HTextBoxLong}"/>
                 </StackPanel>
             </StackPanel>
         </StackPanel>
