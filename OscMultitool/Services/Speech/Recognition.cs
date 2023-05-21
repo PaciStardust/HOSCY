@@ -79,7 +79,7 @@ namespace Hoscy.Services.Speech
         {
             var cleanedMessage = CleanMessage(message);
 
-            if (string.IsNullOrWhiteSpace(message))
+            if (string.IsNullOrWhiteSpace(cleanedMessage))
                 return;
 
             var processor = new TextProcessor()
@@ -119,7 +119,7 @@ namespace Hoscy.Services.Speech
         {
             var filterWords = Config.Speech.NoiseFilter.Select(x => $"(?:{Regex.Escape(x)})");
             var filterCombined = string.Join('|', filterWords);
-            var regString = $"^(?:\\b(?:{filterCombined})\\b)?(.*?)(?:\\b(?:{filterCombined})\\b)?$";
+            var regString = $"^(?:(?<= |\\b)(?:{filterCombined})(?= |\\b))?(.*?)(?:(?<= |\\b)(?:{filterCombined})(?= |\\b))?$";
             Logger.PInfo($"Updated denoiser ({regString})");
             _denoiseFilter = new Regex(regString, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         }
