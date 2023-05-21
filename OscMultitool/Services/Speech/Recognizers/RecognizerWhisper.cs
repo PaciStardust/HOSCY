@@ -1,6 +1,7 @@
 ﻿using Hoscy.Services.Speech.Utilities.Whisper;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Whisper;
@@ -11,7 +12,7 @@ namespace Hoscy.Services.Speech.Recognizers
     {
         new internal static RecognizerPerms Perms => new()
         {
-            Description = "Local AI, quality / RAM usage varies, startup may take a while",
+            Description = "Local AI, quality / RAM, VRAM usage varies, startup may take a while",
             UsesMicrophone = true,
             Type = RecognizerType.Whisper
         };
@@ -30,7 +31,13 @@ namespace Hoscy.Services.Speech.Recognizers
             try
             {
                 Logger.Info("Attempting to load whisper model");
-                var model = Library.loadModel(Config.Speech.WhisperModels[Config.Speech.WhisperModelCurrent]);
+                var valid = Config.Speech.WhisperModels.TryGetValue(Config.Speech.WhisperModelCurrent, out var path);
+                if (!valid || !File.Exists(path))
+                {
+                    Logger.Error("A Whisper AI model has not been picked or it's path is invalid.\n\nTo use Whisper speech recognition please provide an AI model. Information can be found in the quickstart guide on GitHub\n\nIf you do not want to use Whisper, please change the recognizer type on the speech page");
+                    return false;
+                }
+                var model = Library.loadModel(path);
 
                 var captureDevice = GetCaptureDevice();
                 if (captureDevice == null)
