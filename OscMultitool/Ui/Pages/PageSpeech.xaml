@@ -119,12 +119,12 @@
                                         <TextBox.Text>
                                             <Binding Source="{x:Static local:Config.Data}" Path="Speech.WhisperThreads" UpdateSourceTrigger="PropertyChanged">
                                                 <Binding.ValidationRules>
-                                                    <ui:IntegerValidationRule Min="0" Max="32767"/>
+                                                    <ui:IntegerValidationRule Min="-32767" Max="32767"/>
                                                 </Binding.ValidationRules>
                                             </Binding>
                                         </TextBox.Text>
                                     </TextBox>
-                                    <Label Content="Threads (0 = Max)" VerticalAlignment="Center"/>
+                                    <Label Content="Threads (0 = Max, Neg = Max - X)" VerticalAlignment="Center"/>
                                 </WrapPanel>
                             </StackPanel>
 

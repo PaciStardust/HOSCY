@@ -92,15 +92,23 @@ namespace Hoscy.Services.Speech
         /// </summary>
         internal static void ChangeVolume()
         {
-            var configVolume = Config.Speech.SpeakerVolume;
-            var roundedWaveOutVolume = Math.Ceiling(_waveOut.Volume * 20) / 20f;
+            //This is an attempt at trying to make the speech page not crash randomly
+            try
+            {
+                var configVolume = Config.Speech.SpeakerVolume;
+                var roundedWaveOutVolume = Math.Ceiling(_waveOut.Volume * 20) / 20f;
 
-            //Floating points messed with this so its strings now
-            if (configVolume + string.Empty == roundedWaveOutVolume + string.Empty)
-                return;
+                //Floating points messed with this so its strings now
+                if (configVolume + string.Empty == roundedWaveOutVolume + string.Empty)
+                    return;
 
-            _waveOut.Volume = Config.Speech.SpeakerVolume;
-            Logger.PInfo("Changed synthesizer volume: " + Config.Speech.SpeakerVolume);
+                _waveOut.Volume = Config.Speech.SpeakerVolume;
+                Logger.PInfo("Changed synthesizer volume: " + Config.Speech.SpeakerVolume);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Failed to change synth volume", false);
+            }
         }
         #endregion
 

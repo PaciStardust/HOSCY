@@ -231,7 +231,7 @@ namespace Hoscy.Models
         public Dictionary<string, string> WhisperModels { get; set; } = new(); //Model identifiers and filepaths
         public string WhisperModelCurrent { get; set; } = string.Empty; //Identifier for current model
 
-        public bool WhisperSingleSegment { get; set; } = false; //Enables single segment mode (Higher accuracy, reduced functionality)
+        public bool WhisperSingleSegment { get; set; } = true; //Enables single segment mode (Higher accuracy, reduced functionality)
         public bool WhisperSpeedup { get; set; } = false; //Enables speedup (Higher speed, lower accuracy)
         public bool WhisperToEnglish { get; set; } = false; //Translates to english
 
@@ -242,9 +242,9 @@ namespace Hoscy.Models
         public int WhisperThreads //Threads for whisper to use, 0 = infinite
         {
             get => _whisperThreads;
-            set => _whisperThreads = Utils.MinMax(value, 0, short.MaxValue);
+            set => _whisperThreads = Utils.MinMax(value, short.MinValue, short.MaxValue);
         }
-        private int _whisperThreads = 0;
+        private int _whisperThreads = -4;
 
         public int WhisperMaxContext //Max context for whisper to use, -1 = infinite
         {

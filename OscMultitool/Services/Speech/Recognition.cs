@@ -115,7 +115,7 @@ namespace Hoscy.Services.Speech
         /// <summary>
         /// Generates a regex for denoising
         /// </summary>
-        internal static void UpdateDenoiseRegex()
+        internal static void UpdateDenoiseRegex() //todo: works bad w bracket (noise test), blank audio bug *...] [...*, cap first letter, "Okay"
         {
             var filterWords = Config.Speech.NoiseFilter.Select(x => $"(?:{Regex.Escape(x)})");
             var filterCombined = string.Join('|', filterWords);

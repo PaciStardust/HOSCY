@@ -1,9 +1,6 @@
 ﻿using Hoscy.Services.OscControl;
 using Hoscy.Services.Speech.Recognizers;
 using System;
-using System.Linq;
-using System.Text.RegularExpressions;
-using Whisper;
 
 namespace Hoscy.Services.Speech
 {

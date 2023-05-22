@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using Whisper;
 
@@ -51,10 +52,18 @@ namespace Hoscy.Services.Speech.Recognizers
                 thread.StartException?.Throw();
                 thread.SpeechRecognized += OnSpeechRecognized;
                 _cptThread = thread;
+
+                TestAbc("[ [ ");
+                TestAbc("TestABC.[laughs][pop] [pop][pop][pop].");
+                TestAbc("TestABC.[laughs][po] [pop][po][pop].");
+                TestAbc("A *lau* B");
+                TestAbc("A *lau*B");
+                TestAbc("A*lau* B");
+                TestAbc("A*lau*B");
             }
             catch (Exception ex)
             {
-                Logger.Error(ex);
+                Logger.Error(ex, "Failed to start whisper recognizer");
                 return false;
             }
             return true;
@@ -100,30 +109,20 @@ namespace Hoscy.Services.Speech.Recognizers
                 if (string.IsNullOrWhiteSpace(segment.text) || IsSpokenWhileMuted(_cptThread.StartTime, segment))
                     continue;
 
-                var trimmedText = segment.text.TrimStart(' ', '-').TrimEnd(' ');
+                var fixedActionText = ReplaceActions(segment.text);
 
-                var action = TryGetAction(trimmedText);
-                if (action == null)
-                {
-                    strings.Add(trimmedText);
-                    continue;
-                }
-
-                //Adding action
-                foreach (var filter in Config.Speech.WhisperNoiseWhitelist) //todo: [WHISPER] display with filtered actions too
-                {
-                    if (filter.Matches(action))
-                    {
-                        strings.Add($"*{action}*");
-                        break;
-                    }
-                }
-                //Does nothing if action has no match, if more has to be added, code above needs to be adjusted
+                strings.Add(fixedActionText.TrimStart(' ', '-', '(', '[').TrimEnd(' '));
             }
 
             var joined = string.Join(' ', strings);
             if (!string.IsNullOrWhiteSpace(joined))
                 HandleSpeechRecognized(joined);
+        }
+
+        private void TestAbc(string text)
+        {
+            var fixedActionText = ReplaceActions(text);
+            Logger.Warning($"Test \"{fixedActionText.TrimStart(' ', '-', '(', '[').TrimEnd(' ')}\"");
         }
 
         /// <summary>
@@ -149,20 +148,39 @@ namespace Hoscy.Services.Speech.Recognizers
             return false;
         }
 
-        private static readonly Regex _actionDetector = new(@"^[\[\(\*] *(.+) *[\*\)\]]$");
+        private static readonly Regex _actionDetector = new(@"[\[\(\*] *([^\]\*\)]+) *[\*\)\]]( *)");
         /// <summary>
-        /// Tries to detect if a text is an "action"
+        /// Replaces all actions if valid
         /// </summary>
-        /// <param name="text">Text to check</param>
-        /// <returns>Formatted action / null</returns>
-        private static string? TryGetAction(string text)
+        /// <param name="text">Text to replace actions in</param>
+        /// <returns>Replaced text</returns>
+        private static string ReplaceActions(string text) //todo: fix odd spacing
         {
-            var match = _actionDetector.Match(text);
-            if (!match.Success)
-                return null;
+            var matches = _actionDetector.Matches(text);
+            if ((matches?.Count ?? 0) == 0)
+                return text;
 
-            var actionText = match.Groups[1].Value;
-            return actionText.ToLower();
+            var sb = new StringBuilder(text);
+            var reverseMatches = matches!.Reverse();
+            foreach (var match in reverseMatches)
+            {
+                var groupText = match.Groups[1].Value;
+                sb.Remove(match.Index, match.Length);
+
+                bool valid = false;
+                foreach (var filter in Config.Speech.WhisperNoiseWhitelist)
+                {
+                    if (filter.Matches(groupText))
+                    {
+                        valid = true;
+                        break;
+                    }
+                }
+
+                sb.Insert(match.Index, valid ? $"*{groupText}*{match.Groups[2].Value}" : " ");
+            }
+
+            return sb.ToString();
         }
         #endregion
 
@@ -216,7 +234,11 @@ namespace Hoscy.Services.Speech.Recognizers
             //Threads
             var maxThreads = Environment.ProcessorCount;
             var cfgThreads = Config.Speech.WhisperThreads;
-            p.cpuThreads = cfgThreads > maxThreads || cfgThreads == 0 ? maxThreads : cfgThreads;
+
+            if (cfgThreads < 0)
+                p.cpuThreads = Utils.MinMax(maxThreads - cfgThreads, 1, maxThreads);
+            else
+                p.cpuThreads = cfgThreads > maxThreads || cfgThreads == 0 ? maxThreads : cfgThreads;
 
             //Normal Flags
             p.setFlag(eFullParamsFlags.SingleSegment, Config.Speech.WhisperSingleSegment);
