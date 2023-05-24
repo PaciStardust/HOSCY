@@ -30,18 +30,19 @@
                     <CheckBox Content="Start microphone unmuted" Margin="0,4,0,0" IsChecked="{Binding Speech.StartUnmuted, Source={x:Static local:Config.Data}}"/>
                     <CheckBox Content="Play sound for mute and unmute" Margin="0,4,0,0" IsChecked="{Binding Speech.PlayMuteSound, Source={x:Static local:Config.Data}}"/>
                     <CheckBox Content="Mute microphone on VRC mute" Margin="0,4,0,0" IsChecked="{Binding Speech.MuteOnVrcMute, Source={x:Static local:Config.Data}}"/>
-                    <CheckBox Content="Remove full stop at sentence end" Margin="0,4,0,0" IsChecked="{Binding Speech.RemoveFullStop, Source={x:Static local:Config.Data}}"/>
                 </StackPanel>
 
-                <!-- Commands & Filters -->
-                <Label Style="{StaticResource HLabelM}" Content="Commands + Filters" Margin="0,16,0,0"/>
+                <!-- Commands, Filters, Modifications -->
+                <Label Style="{StaticResource HLabelM}" Content="Commands, Filters, Modifications" Margin="0,16,0,0"/>
                 <StackPanel Style="{StaticResource HStackIndent}">
                     <WrapPanel Margin="0,0,32,0">
                         <Button Content="Shortcuts" Click="Button_OpenShortcuts"/>
                         <Button Content="Replacements" Margin="16,0,0,0" Click="Button_OpenReplacements"/>
                         <Button Content="Noise Filter" Margin="16,0,0,0" Click="Button_OpenNoiseFilter"/>
                     </WrapPanel>
-                    <CheckBox Content="Use shortcuts and replacements" Margin="0,8,0,0" IsChecked="{Binding Speech.UseReplacements, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Content="Use shortcuts and replacements" Margin="0,4,0,0" IsChecked="{Binding Speech.UseReplacements, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Content="Remove last period" Margin="0,4,0,0" IsChecked="{Binding Speech.RemovePeriod, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Content="Capitalize first letter" Margin="0,4,0,0" IsChecked="{Binding Speech.CapitalizeFirst, Source={x:Static local:Config.Data}}"/>
                 </StackPanel>
 
                 <!-- Recognizer Settings -->
@@ -110,9 +111,10 @@
 
                             <Label Content="Additional Options" Margin="0,4,0,0"/>
                             <StackPanel Style="{StaticResource HStackIndent}">
-                                <CheckBox Content="Single Segment (More accurate, less detail)" IsChecked="{Binding Speech.WhisperSingleSegment, Source={x:Static local:Config.Data}}" Checked="CheckBox_Checked"/>
-                                <CheckBox Content="Speedup Audio (More speed, less accurate)" Margin="0,4,0,0" IsChecked="{Binding Speech.WhisperSpeedup, Source={x:Static local:Config.Data}}" Checked="CheckBox_Checked"/>
+                                <CheckBox Content="Single segment (More accurate, less detail)" IsChecked="{Binding Speech.WhisperSingleSegment, Source={x:Static local:Config.Data}}" Checked="CheckBox_Checked"/>
+                                <CheckBox Content="Speedup audio (More speed, less accurate)" Margin="0,4,0,0" IsChecked="{Binding Speech.WhisperSpeedup, Source={x:Static local:Config.Data}}" Checked="CheckBox_Checked"/>
                                 <CheckBox Content="Translate to English" Margin="0,4,0,0" IsChecked="{Binding Speech.WhisperToEnglish, Source={x:Static local:Config.Data}}" Checked="CheckBox_Checked"/>
+                                <CheckBox Content="Bracket fix (Avoids occurances like '( ( ')" Margin="0,4,0,0" IsChecked="{Binding Speech.WhisperBracketFix, Source={x:Static local:Config.Data}}"/>
 
                                 <WrapPanel>
                                     <TextBox Style="{StaticResource HTextBoxShort}" PreviewKeyDown="TextBox_PreviewKeyDown" Margin="0,4,0,0">

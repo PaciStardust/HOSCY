@@ -234,6 +234,7 @@ namespace Hoscy.Models
         public bool WhisperSingleSegment { get; set; } = true; //Enables single segment mode (Higher accuracy, reduced functionality)
         public bool WhisperSpeedup { get; set; } = false; //Enables speedup (Higher speed, lower accuracy)
         public bool WhisperToEnglish { get; set; } = false; //Translates to english
+        public bool WhisperBracketFix { get; set; } = true; //Fixes the bracket issue ('( ( (')
 
         public eLanguage WhisperLanguage { get; set; } = eLanguage.English;
 
@@ -279,7 +280,8 @@ namespace Hoscy.Models
 
         //Replacement
         public List<string> NoiseFilter { get; set; } = new(); //List of words deemed noise
-        public bool RemoveFullStop { get; set; } = true; 
+        public bool RemovePeriod { get; set; } = true; //Removes period at end
+        public bool CapitalizeFirst { get; set; } = true; //Capitalizes first letter
         public bool UseReplacements { get; set; } = true; //Are replacements (and shortcuts) even used?
         public List<ReplacementDataModel> Shortcuts { get; set; } = new();
         public List<ReplacementDataModel> Replacements { get; set; } = new();

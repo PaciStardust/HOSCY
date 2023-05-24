@@ -5,7 +5,7 @@ using Whisper;
 
 namespace Hoscy.Services.Speech.Utilities.Whisper
 {
-    internal class CaptureThread : CaptureCallbacks
+    internal class CaptureThread : CaptureCallbacks //todo: [WHISPER] OnSpeech event
     {
         private readonly TranscribeCallbacks _callbacks;
         private readonly Thread _thread;

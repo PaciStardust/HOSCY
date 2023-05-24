@@ -52,14 +52,6 @@ namespace Hoscy.Services.Speech.Recognizers
                 thread.StartException?.Throw();
                 thread.SpeechRecognized += OnSpeechRecognized;
                 _cptThread = thread;
-
-                TestAbc("[ [ ");
-                TestAbc("TestABC.[laughs][pop] [pop][pop][pop].");
-                TestAbc("TestABC.[laughs][po] [pop][po][pop].");
-                TestAbc("A *lau* B");
-                TestAbc("A *lau*B");
-                TestAbc("A*lau* B");
-                TestAbc("A*lau*B");
             }
             catch (Exception ex)
             {
@@ -111,18 +103,16 @@ namespace Hoscy.Services.Speech.Recognizers
 
                 var fixedActionText = ReplaceActions(segment.text);
 
-                strings.Add(fixedActionText.TrimStart(' ', '-', '(', '[').TrimEnd(' '));
+                fixedActionText = Config.Speech.WhisperBracketFix
+                    ? fixedActionText.TrimStart(' ', '-', '(', '[').TrimEnd()
+                    : fixedActionText.TrimStart(' ', '-').TrimEnd();
+
+                strings.Add(fixedActionText);
             }
 
             var joined = string.Join(' ', strings);
             if (!string.IsNullOrWhiteSpace(joined))
                 HandleSpeechRecognized(joined);
-        }
-
-        private void TestAbc(string text)
-        {
-            var fixedActionText = ReplaceActions(text);
-            Logger.Warning($"Test \"{fixedActionText.TrimStart(' ', '-', '(', '[').TrimEnd(' ')}\"");
         }
 
         /// <summary>
@@ -148,27 +138,27 @@ namespace Hoscy.Services.Speech.Recognizers
             return false;
         }
 
-        private static readonly Regex _actionDetector = new(@"[\[\(\*] *([^\]\*\)]+) *[\*\)\]]( *)");
+        private static readonly Regex _actionDetector = new(@"( *)[\[\(\*] *([^\]\*\)]+) *[\*\)\]]");
         /// <summary>
         /// Replaces all actions if valid
         /// </summary>
         /// <param name="text">Text to replace actions in</param>
         /// <returns>Replaced text</returns>
-        private static string ReplaceActions(string text) //todo: fix odd spacing
+        private static string ReplaceActions(string text) //todo: [TESTING] Test spacing
         {
             var matches = _actionDetector.Matches(text);
             if ((matches?.Count ?? 0) == 0)
                 return text;
 
             var sb = new StringBuilder(text);
-            var reverseMatches = matches!.Reverse();
-            foreach (var match in reverseMatches)
+            //Reversed so we can use sb.Remove()
+            foreach (var match in matches!.Reverse()) 
             {
-                var groupText = match.Groups[1].Value;
+                var groupText = match.Groups[2].Value;
                 sb.Remove(match.Index, match.Length);
 
                 bool valid = false;
-                foreach (var filter in Config.Speech.WhisperNoiseWhitelist)
+                foreach (var filter in Config.Speech.WhisperNoiseWhitelist) //todo: [WHISPER] action display
                 {
                     if (filter.Matches(groupText))
                     {
@@ -177,7 +167,14 @@ namespace Hoscy.Services.Speech.Recognizers
                     }
                 }
 
-                sb.Insert(match.Index, valid ? $"*{groupText}*{match.Groups[2].Value}" : " ");
+                if (valid)
+                {
+                    var outputText = match.Groups[1].Value.ToLower();
+                    if (Config.Speech.CapitalizeFirst)
+                        outputText = outputText.FirstCharToUpper();
+
+                    sb.Insert(match.Index, $"{match.Groups[1].Value}*{outputText}*");
+                }
             }
 
             return sb.ToString();

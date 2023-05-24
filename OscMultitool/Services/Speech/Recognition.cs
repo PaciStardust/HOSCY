@@ -100,14 +100,17 @@ namespace Hoscy.Services.Speech
         /// </summary>
         private static string CleanMessage(string message)
         {
-            message = message.Trim();
-            if (Config.Speech.RemoveFullStop)
-                message = message.TrimEnd('.');
+            message = Config.Speech.RemovePeriod
+                ? message.TrimStart().TrimEnd(' ', '.')
+                : message.Trim();
 
-            if (!_denoiseFilter.IsMatch(message))
+            var denoiseMatch = _denoiseFilter.Match(message);
+            if (!denoiseMatch.Success)
                 return string.Empty;
+            message = denoiseMatch.Groups[1].Value.Trim();
 
-            message = _denoiseFilter.Match(message).Groups[1].Value.Trim();
+            if (Config.Speech.CapitalizeFirst) //todo: [TESTING] Test caps
+                message = message.FirstCharToUpper();
 
             return message;
         }
@@ -115,7 +118,7 @@ namespace Hoscy.Services.Speech
         /// <summary>
         /// Generates a regex for denoising
         /// </summary>
-        internal static void UpdateDenoiseRegex() //todo: works bad w bracket (noise test), blank audio bug *...] [...*, cap first letter, "Okay"
+        internal static void UpdateDenoiseRegex()
         {
             var filterWords = Config.Speech.NoiseFilter.Select(x => $"(?:{Regex.Escape(x)})");
             var filterCombined = string.Join('|', filterWords);
