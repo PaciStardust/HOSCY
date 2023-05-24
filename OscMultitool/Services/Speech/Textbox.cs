@@ -253,19 +253,15 @@ namespace Hoscy.Services.Speech
         /// Note: This only stays on for 5 seconds ingame
         /// </summary>
         /// <param name="mode"></param>
-        internal static void EnableTyping(bool mode)
+        internal static void EnableTyping(bool mode) //todo: [TESTING] Test typing indicator change
         {
             if (!mode && !_lastSet)
                 return;
 
-            if (mode)
-            {
-                if ((!Config.Speech.UseTextbox && !Config.Textbox.UseIndicatorWithoutBox) || _lastEnabled.AddSeconds(4) > DateTime.Now)
+            if (mode && (_lastEnabled.AddSeconds(4) > DateTime.Now || (!Config.Speech.UseTextbox && !Config.Textbox.UseIndicatorWithoutBox)))
                     return;
 
-                _lastEnabled = DateTime.Now;
-            }
-
+            _lastEnabled = mode ? DateTime.Now : DateTime.MinValue;
             _lastSet = mode;
 
             var packet = new OscPacket("/chatbox/typing", mode ? 1 : 0);
