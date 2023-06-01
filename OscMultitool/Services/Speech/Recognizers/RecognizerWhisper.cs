@@ -167,9 +167,9 @@ namespace Hoscy.Services.Speech.Recognizers
                     }
                 }
 
-                if (valid)
+                if (valid) //todo: [REFACTOR] Redundancy?
                 {
-                    var outputText = match.Groups[1].Value.ToLower();
+                    var outputText = match.Groups[2].Value.ToLower();
                     if (Config.Speech.CapitalizeFirst)
                         outputText = outputText.FirstCharToUpper();
 

@@ -100,7 +100,7 @@ namespace Hoscy.Ui
         /// <param name="box"></param>
         /// <param name="models"></param>
         /// <param name="currentModel"></param>
-        internal static void UpdateModelBox(this ComboBox box, Dictionary<string, string> models, string currentModel, bool folder = true) //todo: [TESTING] test, refactor? => Does not clear correctly it seems
+        internal static void UpdateModelBox(this ComboBox box, Dictionary<string, string> models, string currentModel, bool folder = true) //todo: [BUG] test, refactor? => Does not clear correctly it seems
         {
             //Checking if any model in list model is invalid
             foreach (var model in models)
