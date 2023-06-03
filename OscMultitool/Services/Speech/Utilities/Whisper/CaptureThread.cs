@@ -24,7 +24,9 @@ namespace Hoscy.Services.Speech.Utilities.Whisper
             _thread = new(ThreadRunCapture)
             {
                 Name = "Whisper Capture Thread",
-                Priority = ThreadPriority.AboveNormal //todo: [WHISPER] Make this a toggle
+                Priority = Config.Speech.WhisperHighPerformance
+                    ? ThreadPriority.AboveNormal
+                    : ThreadPriority.Normal
             };
             _thread.Start();
             StartTime = DateTime.Now;
