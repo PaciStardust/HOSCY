@@ -28,6 +28,12 @@ namespace Hoscy.Services.Speech.Utilities
 
             return list;
         }
+
+        /// <summary>
+        /// Returns the microphone list index for a given GUID
+        /// </summary>
+        /// <param name="guid">GUID of microphone</param>
+        /// <returns>On match => Index, No match => 0, Empty list => -1</returns>
         internal static int GetMicrophoneIndex(string guid)
         {
             for (int i = 0; i < Microphones.Count; i++)
@@ -37,9 +43,13 @@ namespace Hoscy.Services.Speech.Utilities
             }
 
             if (Microphones.Count == 0)
+            {
+                Logger.Error("No microphones available in list, this will cause some major issues", false);
                 return -1;
-            else
-                return 0;
+            }
+
+            Logger.Warning("No matching microphone found, defaulting to first in list...");
+            return 0;
         }
         #endregion
 
@@ -55,6 +65,11 @@ namespace Hoscy.Services.Speech.Utilities
             return speakers;
         }
 
+        /// <summary>
+        /// Returns the speaker list index for a given GUID
+        /// </summary>
+        /// <param name="guid">GUID of speaker</param>
+        /// <returns>On match => Index, No match => 0, Empty list => -1</returns>
         internal static int GetSpeakerIndex(string guid)
         {
             for (int i = 0; i < Speakers.Count; i++)
@@ -64,9 +79,13 @@ namespace Hoscy.Services.Speech.Utilities
             }
 
             if (Speakers.Count == 0)
+            {
+                Logger.Error("No speakers available in list, this might cause some issues", false);
                 return -1;
-            else
-                return 0;
+            }
+
+            Logger.Warning("No matching speaker found, defaulting to first in list...");
+            return 0;
         }
         #endregion
 
@@ -78,6 +97,11 @@ namespace Hoscy.Services.Speech.Utilities
             return SpeechRecognitionEngine.InstalledRecognizers();
         }
 
+        /// <summary>
+        /// Returns the listener list index for a given id
+        /// </summary>
+        /// <param name="id">ID of listener</param>
+        /// <returns>On match => Index, No match => 0, Empty list => -1</returns>
         internal static int GetWindowsListenerIndex(string id)
         {
             for (int i = 0; i < WindowsRecognizers.Count; i++)
@@ -87,9 +111,13 @@ namespace Hoscy.Services.Speech.Utilities
             }
 
             if (WindowsRecognizers.Count == 0)
+            {
+                Logger.Error("No windows recognizers available in list, this might cause some issues", false);
                 return -1;
-            else
-                return 0;
+            }
+
+            Logger.Warning("No matching windows recognizer found, defaulting to first in list...");
+            return 0;
         }
         #endregion
 
@@ -105,6 +133,11 @@ namespace Hoscy.Services.Speech.Utilities
                 .ToList();
         }
 
+        /// <summary>
+        /// Returns the voice list index for a given ID
+        /// </summary>
+        /// <param name="id">ID of voice</param>
+        /// <returns>On match => Index, No match => 0, Empty list => -1</returns>
         internal static int GetWindowsVoiceIndex(string id)
         {
             for (int i = 0; i < WindowsVoices.Count; i++)
@@ -114,9 +147,13 @@ namespace Hoscy.Services.Speech.Utilities
             }
 
             if (WindowsVoices.Count == 0)
+            {
+                Logger.Error("No windows voices available in list, this might cause some issues", false);
                 return -1;
-            else
-                return 0;
+            }
+
+            Logger.Warning("No matching windows voice found, defaulting to first in list...");
+            return 0;
         }
         #endregion
     }

@@ -31,7 +31,7 @@ namespace Hoscy.Services.Speech.Recognizers
             {
                 bool multLang = Config.Api.AzureRecognitionLanguages.Count > 1;
 
-                var audioConfig = AudioConfig.FromMicrophoneInput(GetMicId());
+                var audioConfig = AudioConfig.FromMicrophoneInput(TryGetMicId());
                 var speechConfig = multLang //Config has to be adapted if using multiple languages
                     ? SpeechConfig.FromEndpoint(new($"wss://{Config.Api.AzureRegion}.stt.speech.microsoft.com/speech/universal/v2"), Config.Api.AzureKey)
                     : SpeechConfig.FromSubscription(Config.Api.AzureKey, Config.Api.AzureRegion);
@@ -74,7 +74,7 @@ namespace Hoscy.Services.Speech.Recognizers
             return rec;
         }
 
-        private static string GetMicId() //todo: [REFACTOR] Implement default
+        private static string? TryGetMicId()
         {
             using (var enumerator = new MMDeviceEnumerator())
             {
@@ -85,7 +85,7 @@ namespace Hoscy.Services.Speech.Recognizers
                 }
             }
 
-            return string.Empty;
+            return null;
         }
         #endregion
 

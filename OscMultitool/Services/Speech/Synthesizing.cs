@@ -81,10 +81,17 @@ namespace Hoscy.Services.Speech
             if (newDeviceNumber == _waveOut.DeviceNumber)
                 return;
             
-            _waveOut.Stop(); //Only triggers if its not alrady playing
-            _waveOut.DeviceNumber = newDeviceNumber;
-            _waveOut.Init(_provider); //Redo init
-            Logger.PInfo("Changed synthesizer microphone: " + Devices.Speakers[newDeviceNumber].ProductName);
+            try
+            {
+                _waveOut.Stop(); //Only triggers if its not alrady playing
+                _waveOut.DeviceNumber = newDeviceNumber;
+                _waveOut.Init(_provider); //Redo init
+                Logger.PInfo("Changed synthesizer microphone: " + Devices.Speakers[newDeviceNumber].ProductName);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Unable to change synth microphone");
+            }
         }
 
         /// <summary>
