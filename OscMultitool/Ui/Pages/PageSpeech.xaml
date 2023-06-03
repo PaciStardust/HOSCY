@@ -115,6 +115,7 @@
                                 <CheckBox Content="Speedup audio (More speed, less accurate)" Margin="0,4,0,0" IsChecked="{Binding Speech.WhisperSpeedup, Source={x:Static local:Config.Data}}" Checked="CheckBox_Checked"/>
                                 <CheckBox Content="Translate to English" Margin="0,4,0,0" IsChecked="{Binding Speech.WhisperToEnglish, Source={x:Static local:Config.Data}}" Checked="CheckBox_Checked"/>
                                 <CheckBox Content="Bracket fix (Avoids occurances like '( ( ')" Margin="0,4,0,0" IsChecked="{Binding Speech.WhisperBracketFix, Source={x:Static local:Config.Data}}"/>
+                                <CheckBox Content="Log by whitelist filtered noises" Margin="0,4,0,0" IsChecked="{Binding Speech.WhisperLogFilteredNoises, Source={x:Static local:Config.Data}}"/>
 
                                 <WrapPanel Margin="0,4,0,0">
                                     <TextBox Style="{StaticResource HTextBoxShort}" PreviewKeyDown="TextBox_PreviewKeyDown">

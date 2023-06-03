@@ -66,7 +66,7 @@ namespace Hoscy.Services.Speech.Recognizers
         protected override void StopInternal()
         {
             HandleSpeechChanged(false);
-            if (_filteredActions.Count > 0)
+            if (Config.Speech.WhisperLogFilteredNoises && _filteredActions.Count > 0)
                 LogFilteredActions();
             _cptThread?.Stop();
             _cptThread = null;
@@ -93,7 +93,7 @@ namespace Hoscy.Services.Speech.Recognizers
         /// <summary>
         /// Logs all filtered actions
         /// </summary>
-        private void LogFilteredActions() //todo: [REFACTOR] Find alternative
+        private void LogFilteredActions()
         {
             var sortedActions = _filteredActions.Select(x => (x.Key, x.Value))
                                                 .OrderByDescending(x => x.Value)
@@ -190,13 +190,14 @@ namespace Hoscy.Services.Speech.Recognizers
 
                     sb.Insert(match.Index, $"{match.Groups[1].Value}*{outputText}*");
                 }
-                else
+                else if (Config.Speech.WhisperLogFilteredNoises && groupText != "BLANK_AUDIO")
                 {
                     //Adding it to the filtered list
                     if (_filteredActions.TryGetValue(groupText, out var key))
                         _filteredActions[groupText] = key + 1;
                     else
                         _filteredActions[groupText] = 1;
+                    Logger.Log($"Noise \"{groupText}\" filtered out by whisper noise whitelist");
                 }
             }
 
