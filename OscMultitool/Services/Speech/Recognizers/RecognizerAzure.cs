@@ -74,7 +74,7 @@ namespace Hoscy.Services.Speech.Recognizers
             return rec;
         }
 
-        private static string GetMicId()
+        private static string GetMicId() //todo: [REFACTOR] Implement default
         {
             using (var enumerator = new MMDeviceEnumerator())
             {

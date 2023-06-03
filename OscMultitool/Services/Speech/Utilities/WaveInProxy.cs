@@ -16,7 +16,7 @@ namespace Hoscy.Services.Speech.Utilities
 
         internal WaveInProxy()
         {
-            int micId = Devices.GetMicrophoneIndex(Config.Speech.MicId);
+            int micId = Devices.GetMicrophoneIndex(Config.Speech.MicId); //todo: [REFACTOR] This could cause issues and should not default
             _microphone = new WaveIn()
             {
                 DeviceNumber = micId,

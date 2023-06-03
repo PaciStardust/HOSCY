@@ -24,7 +24,7 @@ namespace Hoscy.Services.Speech.Utilities.Whisper
             _thread = new(ThreadRunCapture)
             {
                 Name = "Whisper Capture Thread",
-                Priority = ThreadPriority.AboveNormal
+                Priority = ThreadPriority.AboveNormal //todo: [WHISPER] Make this a toggle
             };
             _thread.Start();
             StartTime = DateTime.Now;
@@ -32,9 +32,9 @@ namespace Hoscy.Services.Speech.Utilities.Whisper
             var loopCounter = 0;
             while (!_callbacks.HasStarted)
             {
-                if (++loopCounter > 6000) //60 seconds have passed
+                if (++loopCounter > 9000) //90 seconds have passed
                 {
-                    var ex = new ApplicationException("Whisper startup taken over 60 seconds, cancelling");
+                    var ex = new ApplicationException("Whisper startup taken over 90 seconds, cancelling");
                     StartException = ExceptionDispatchInfo.Capture(ex);
                     break;
                 }

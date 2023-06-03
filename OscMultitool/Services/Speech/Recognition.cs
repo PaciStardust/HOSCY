@@ -109,7 +109,7 @@ namespace Hoscy.Services.Speech
                 return string.Empty;
             message = denoiseMatch.Groups[1].Value.Trim();
 
-            if (Config.Speech.CapitalizeFirst) //todo: [TESTING] Test caps
+            if (Config.Speech.CapitalizeFirst)
                 message = message.FirstCharToUpper();
 
             return message;

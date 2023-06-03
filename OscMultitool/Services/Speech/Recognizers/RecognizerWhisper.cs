@@ -25,6 +25,7 @@ namespace Hoscy.Services.Speech.Recognizers
         {
             new(DateTime.MinValue, DateTime.MaxValue) //Default value - indefinite mute
         };
+        private readonly Dictionary<string, int> _filteredActions = new();
 
         #region Starting / Stopping
         protected override bool StartInternal()
@@ -64,6 +65,8 @@ namespace Hoscy.Services.Speech.Recognizers
         protected override void StopInternal()
         {
             Textbox.EnableTyping(false);
+            if (_filteredActions.Count > 0)
+                LogFilteredActions();
             _cptThread?.Stop();
             _cptThread = null;
         }
@@ -84,6 +87,17 @@ namespace Hoscy.Services.Speech.Recognizers
                 _muteTimes.Add(new(DateTime.Now, DateTime.MaxValue));
 
             return true;
+        }
+
+        /// <summary>
+        /// Logs all filtered actions
+        /// </summary>
+        private void LogFilteredActions() //todo: [REFACTOR] Find alternative
+        {
+            var sortedActions = _filteredActions.Select(x => (x.Key, x.Value))
+                                                .OrderByDescending(x => x.Value)
+                                                .Select(x => $"\"{x.Key}\" ({x.Value}x)");
+            Logger.PInfo("Filtered actions by Whisper: " + string.Join(", ", sortedActions));
         }
         #endregion
 
@@ -144,7 +158,7 @@ namespace Hoscy.Services.Speech.Recognizers
         /// </summary>
         /// <param name="text">Text to replace actions in</param>
         /// <returns>Replaced text</returns>
-        private static string ReplaceActions(string text) //todo: [TESTING] Test spacing
+        private string ReplaceActions(string text)
         {
             var matches = _actionDetector.Matches(text);
             if ((matches?.Count ?? 0) == 0)
@@ -158,7 +172,7 @@ namespace Hoscy.Services.Speech.Recognizers
                 sb.Remove(match.Index, match.Length);
 
                 bool valid = false;
-                foreach (var filter in Config.Speech.WhisperNoiseWhitelist) //todo: [WHISPER] action display
+                foreach (var filter in Config.Speech.WhisperNoiseWhitelist) //todo: [WHISPER] adjust filter
                 {
                     if (filter.Matches(groupText))
                     {
@@ -167,13 +181,21 @@ namespace Hoscy.Services.Speech.Recognizers
                     }
                 }
 
-                if (valid) //todo: [REFACTOR] Redundancy?
+                if (valid)
                 {
-                    var outputText = match.Groups[2].Value.ToLower();
+                    var outputText = groupText.ToLower();
                     if (Config.Speech.CapitalizeFirst)
                         outputText = outputText.FirstCharToUpper();
 
                     sb.Insert(match.Index, $"{match.Groups[1].Value}*{outputText}*");
+                }
+                else
+                {
+                    //Adding it to the filtered list
+                    if (_filteredActions.TryGetValue(groupText, out var key))
+                        _filteredActions[groupText] = key + 1;
+                    else
+                        _filteredActions[groupText] = 1;
                 }
             }
 
@@ -193,7 +215,7 @@ namespace Hoscy.Services.Speech.Recognizers
             }
 
             var devices = medf.listCaptureDevices();
-            if (devices == null)
+            if (devices == null || devices.Length == 0)
             {
                 Logger.Error("No audio devices could be found");
                 return null;
@@ -208,11 +230,10 @@ namespace Hoscy.Services.Speech.Recognizers
                     continue;
                 }
             }
-
             if (deviceId == null)
             {
-                Logger.Error("No matching audio device could be found");
-                return null;
+                Logger.Warning("No matching audio device could be found, using default");
+                deviceId = devices[0];
             }
 
             sCaptureParams cp = new()
@@ -226,7 +247,7 @@ namespace Hoscy.Services.Speech.Recognizers
             return medf.openCaptureDevice(deviceId.Value,cp);
         }
 
-        private static void ApplyParameters(ref Parameters p)
+        private static void ApplyParameters(ref Parameters p) //todo: [WHISPER] Could these be changed dynamically?
         {
             //Threads
             var maxThreads = Environment.ProcessorCount;
