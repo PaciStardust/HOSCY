@@ -244,26 +244,36 @@ namespace Hoscy.Services.Speech
         }
         #endregion
 
-        #region Utility
-        private static DateTime _lastEnabled = DateTime.MinValue;
-        private static bool _lastSet = false;
-
-        /// <summary>
-        /// Enables typing indicator for textbox
-        /// Note: This only stays on for 5 seconds ingame
-        /// </summary>
-        /// <param name="mode"></param>
-        internal static void EnableTyping(bool mode) //todo: [TESTING] Test typing indicator change
+        #region Typing Indicator
+        private static System.Timers.Timer? _typingTimer;
+        internal static void EnableTyping(bool mode)
         {
-            if (!mode && !_lastSet)
+            //Checking if change is needed
+            if (_typingTimer == null == !mode)
                 return;
 
-            if (mode && (_lastEnabled.AddSeconds(4) > DateTime.Now || (!Config.Speech.UseTextbox && !Config.Textbox.UseIndicatorWithoutBox)))
-                    return;
+            if (mode)
+            {
+                SetTextboxTyping(true);
+                _typingTimer = new(4000);
+                _typingTimer.Elapsed += (s, e) => SetTextboxTyping(true);
+                _typingTimer.Start();
+            }
+            else
+            {
+                _typingTimer?.Stop();
+                _typingTimer?.Dispose();
+                _typingTimer = null;
+                SetTextboxTyping(false);
+            }
+        }
 
-            _lastEnabled = mode ? DateTime.Now : DateTime.MinValue;
-            _lastSet = mode;
-
+        /// <summary>
+        /// Sends the OSC for textbox typing
+        /// </summary>
+        /// <param name="mode">Enabled?</param>
+        private static void SetTextboxTyping(bool mode)
+        {
             var packet = new OscPacket("/chatbox/typing", mode ? 1 : 0);
             if (!packet.IsValid)
             {
@@ -272,7 +282,9 @@ namespace Hoscy.Services.Speech
             }
             Osc.Send(packet);
         }
+        #endregion
 
+        #region Utility
         /// <summary>
         /// Calculates the dynamic timeout or returns the default timeout
         /// </summary>

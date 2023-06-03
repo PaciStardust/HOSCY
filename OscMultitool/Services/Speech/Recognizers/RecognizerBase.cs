@@ -101,9 +101,17 @@ namespace Hoscy.Services.Speech
 
         #region Events
         internal event EventHandler<string> SpeechRecognized = delegate { };
-
         protected void HandleSpeechRecognized(string text)
             => SpeechRecognized.Invoke(null, text);
+
+        internal event EventHandler<bool> SpeechChanged = delegate { };
+        protected void HandleSpeechChanged(bool mode)
+        {
+            if (mode && (!Config.Speech.UseTextbox && !Config.Textbox.UseIndicatorWithoutBox))
+                return;
+
+            SpeechChanged.Invoke(null, mode);
+        }
         #endregion
     }
 }

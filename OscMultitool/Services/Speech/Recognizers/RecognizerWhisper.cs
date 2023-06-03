@@ -52,6 +52,7 @@ namespace Hoscy.Services.Speech.Recognizers
                 CaptureThread thread = new(ctx, captureDevice);
                 thread.StartException?.Throw();
                 thread.SpeechRecognized += OnSpeechRecognized;
+                thread.SpeechChanged += (s, o) => HandleSpeechChanged(o);
                 _cptThread = thread;
             }
             catch (Exception ex)
@@ -64,7 +65,7 @@ namespace Hoscy.Services.Speech.Recognizers
 
         protected override void StopInternal()
         {
-            Textbox.EnableTyping(false);
+            HandleSpeechChanged(false);
             if (_filteredActions.Count > 0)
                 LogFilteredActions();
             _cptThread?.Stop();
@@ -118,7 +119,7 @@ namespace Hoscy.Services.Speech.Recognizers
                 var fixedActionText = ReplaceActions(segment.text);
 
                 fixedActionText = Config.Speech.WhisperBracketFix
-                    ? fixedActionText.TrimStart(' ', '-', '(', '[').TrimEnd()
+                    ? fixedActionText.TrimStart(' ', '-', '(', '[', '*').TrimEnd()
                     : fixedActionText.TrimStart(' ', '-').TrimEnd();
 
                 strings.Add(fixedActionText);
@@ -172,7 +173,7 @@ namespace Hoscy.Services.Speech.Recognizers
                 sb.Remove(match.Index, match.Length);
 
                 bool valid = false;
-                foreach (var filter in Config.Speech.WhisperNoiseWhitelist) //todo: [WHISPER] adjust filter
+                foreach (var filter in Config.Speech.WhisperNoiseWhitelist)
                 {
                     if (filter.Matches(groupText))
                     {

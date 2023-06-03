@@ -64,9 +64,13 @@ namespace Hoscy.Ui.Pages
         private void RefreshPresets()
             => presetBox.Refresh(Config.Input.Presets.Select(x => x.Key), -1);
 
+        private bool _lastTyping = false;
         private void TextBox_KeyPressed(object sender, KeyEventArgs e)
         {
-            Textbox.EnableTyping(e.Key != Key.Enter);
+            bool typing = e.Key != Key.Enter;
+            if (typing != _lastTyping)
+                Textbox.EnableTyping(typing);
+            _lastTyping = typing;
 
             if (e.Key == Key.Enter)
                 SendMessage();

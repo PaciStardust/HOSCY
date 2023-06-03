@@ -5,7 +5,7 @@ using Whisper;
 
 namespace Hoscy.Services.Speech.Utilities.Whisper
 {
-    internal class CaptureThread : CaptureCallbacks //todo: [WHISPER] OnSpeech event
+    internal class CaptureThread : CaptureCallbacks
     {
         private readonly TranscribeCallbacks _callbacks;
         private readonly Thread _thread;
@@ -71,8 +71,14 @@ namespace Hoscy.Services.Speech.Utilities.Whisper
 
         #region Event
         private bool _lastTranscribing = false;
+        private bool _lastVoice = false;
         protected override void captureStatusChanged(Context sender, eCaptureStatus status)
         {
+            bool voice = (eCaptureStatus.Voice & status) != 0;
+            if (voice != _lastVoice)
+                HandleSpeechChanged(voice);
+            _lastVoice = voice;
+
             if ((eCaptureStatus.Transcribing & status) != 0)
             {
                 _lastTranscribing = true;
@@ -93,9 +99,12 @@ namespace Hoscy.Services.Speech.Utilities.Whisper
         }
 
         internal event EventHandler<sSegment[]> SpeechRecognized = delegate { };
+        private void HandleSpeechRecognized(sSegment[] segments)
+            => SpeechRecognized.Invoke(null, segments);
 
-        private void HandleSpeechRecognized(sSegment[] e)
-            => SpeechRecognized.Invoke(null, e);
+        internal event EventHandler<bool> SpeechChanged = delegate { };
+        private void HandleSpeechChanged(bool mode)
+            => SpeechChanged.Invoke(null, mode);
         #endregion
     }
 }

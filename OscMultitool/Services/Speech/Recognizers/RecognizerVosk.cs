@@ -26,7 +26,7 @@ namespace Hoscy.Services.Speech.Recognizers
         //Used for stopping thread
         private Thread? _recThread;
         private bool _threadStop = false;
-
+            
         #region Start / Stop and Muting
         protected override bool StartInternal()
         {
@@ -74,7 +74,7 @@ namespace Hoscy.Services.Speech.Recognizers
 
         protected override void StopInternal()
         {
-            Textbox.EnableTyping(false);
+            HandleSpeechChanged(false);
             _microphone.Dispose();
 
             //Stopping thread
@@ -170,7 +170,7 @@ namespace Hoscy.Services.Speech.Recognizers
             {
                 _lastChangedString = result;
                 _lastChangedAt = DateTime.Now;
-                Textbox.EnableTyping(true);
+                HandleSpeechChanged(true);
                 return;
             }
 
@@ -187,7 +187,7 @@ namespace Hoscy.Services.Speech.Recognizers
         /// </summary>
         private void ClearLastChanged()
         {
-            Textbox.EnableTyping(false);
+            HandleSpeechChanged(false);
             _lastChangedString = string.Empty;
             _lastChangedAt = DateTime.MaxValue;
             _rec?.Reset();
@@ -201,7 +201,7 @@ namespace Hoscy.Services.Speech.Recognizers
             if (extracted == null)
                 return null;
 
-            return extracted;
+            return extracted; //todo: [BUG] Missing denoise causes issues here?
         }
         #endregion
     }
