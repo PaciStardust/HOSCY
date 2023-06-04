@@ -118,8 +118,9 @@ namespace Hoscy.Services.Speech.Recognizers
 
                 var fixedActionText = ReplaceActions(segment.text);
 
+                //todo: [BUG] Move trim to no action text?
                 fixedActionText = Config.Speech.WhisperBracketFix
-                    ? fixedActionText.TrimStart(' ', '-', '(', '[', '*').TrimEnd()
+                    ? fixedActionText.TrimStart(' ', '-', '(', '[').TrimEnd()
                     : fixedActionText.TrimStart(' ', '-').TrimEnd();
 
                 strings.Add(fixedActionText);
@@ -263,7 +264,7 @@ namespace Hoscy.Services.Speech.Recognizers
             //Normal Flags
             p.setFlag(eFullParamsFlags.SingleSegment, Config.Speech.WhisperSingleSegment);
             p.setFlag(eFullParamsFlags.Translate, Config.Speech.WhisperToEnglish);
-            p.setFlag(eFullParamsFlags.SpeedupAudio, Config.Speech.WhisperSpeedup);
+            //p.setFlag(eFullParamsFlags.SpeedupAudio, Config.Speech.WhisperSpeedup); Disabled due to library issues
 
             //Number Flags
             if (Config.Speech.WhisperMaxContext >= 0)

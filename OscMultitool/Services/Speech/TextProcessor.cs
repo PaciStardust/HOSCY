@@ -188,7 +188,7 @@ namespace Hoscy.Services.Speech
             }
 
             if (lowerMessage.StartsWith("media "))
-                return Media.HandleRawMediaCommand(message);
+                return Media.HandleRawMediaCommand(lowerMessage);
 
             return null;
         }

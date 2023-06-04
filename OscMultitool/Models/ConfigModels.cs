@@ -232,7 +232,7 @@ namespace Hoscy.Models
         public string WhisperModelCurrent { get; set; } = string.Empty; //Identifier for current model
 
         public bool WhisperSingleSegment { get; set; } = true; //Enables single segment mode (Higher accuracy, reduced functionality)
-        public bool WhisperSpeedup { get; set; } = false; //Enables speedup (Higher speed, lower accuracy)
+        //public bool WhisperSpeedup { get; set; } = false; //Enables speedup (Higher speed, lower accuracy), disabled for now due to library issues
         public bool WhisperToEnglish { get; set; } = false; //Translates to english
         public bool WhisperBracketFix { get; set; } = true; //Fixes the bracket issue ('( ( (')
         public bool WhisperHighPerformance { get; set; } = false; //Enables heightened thread priority

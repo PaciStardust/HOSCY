@@ -43,23 +43,24 @@ namespace Hoscy.Ui.Pages
             OscDataHandler.SetAfkTimer(false);
         }
 
+        private const string _perfTip = "\n\nTip: Unfocus HOSCY for better performance";
         private async void Button_Start(object sender, RoutedEventArgs e)
         {
             if (Recognition.IsRunning)
             {
                 Recognition.StopRecognizer();
-                SetRecStatus("Recognizer has stopped");
+                SetRecStatus("Recognizer has stopped" + _perfTip);
             }
             else
             {
                 startButton.Content = "Starting";
                 startButton.Foreground = UiHelper.ColorFront;
-                SetRecStatus("Recognizer is starting");
+                SetRecStatus("Recognizer is starting" + _perfTip);
                 await Task.Run(async () => await Task.Delay(10));
                 if (Recognition.StartRecognizer())
-                    SetRecStatus("Recognizer has started");
+                    SetRecStatus("Recognizer has started" + _perfTip);
                 else
-                    SetRecStatus("Recognizer failed to start");
+                    SetRecStatus("Recognizer failed to start" + _perfTip);
             }
         }
         #endregion
