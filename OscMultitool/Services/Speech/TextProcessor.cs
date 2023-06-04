@@ -129,7 +129,7 @@ namespace Hoscy.Services.Speech
         /// <summary>
         /// Replaces message or parts of it
         /// </summary>
-        private static string ReplaceMessage(string message)
+        private static string ReplaceMessage(string message) //todo: [NEW] Remove special chars for shortcuts?
         {
             //Splitting and checking for replacements
             foreach (var r in _replacements)

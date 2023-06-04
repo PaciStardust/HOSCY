@@ -107,7 +107,7 @@ namespace Hoscy.Services.Speech
         internal event EventHandler<bool> SpeechChanged = delegate { };
         protected void HandleSpeechChanged(bool mode)
         {
-            if (mode && (!Config.Speech.UseTextbox && !Config.Textbox.UseIndicatorWithoutBox))
+            if (mode && ((!Config.Speech.UseTextbox && !Config.Textbox.UseIndicatorWithoutBox) || !IsListening))
                 return;
 
             SpeechChanged.Invoke(null, mode);
