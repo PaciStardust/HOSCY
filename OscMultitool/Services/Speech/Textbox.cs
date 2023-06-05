@@ -246,6 +246,7 @@ namespace Hoscy.Services.Speech
 
         #region Typing Indicator
         private static System.Timers.Timer? _typingTimer;
+        //todo: [TEST] Can this get stuck? If yes, is a "failsafe" needed?
         internal static void EnableTyping(bool mode)
         {
             //Checking if change is needed

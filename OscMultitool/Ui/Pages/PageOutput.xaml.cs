@@ -49,7 +49,7 @@ namespace Hoscy.Ui.Pages
         /// <summary>
         /// Reloads the azure voice dropdown UI
         /// </summary>
-        private void UpdateAzureVoiceBox()
+        private void UpdateAzureVoiceBox() //todo: [BUG] No work
             => azureVoiceBox.UpdateModelBox(Config.Api.AzureVoices, Config.Api.AzureVoiceCurrent);
 
         /// <summary>

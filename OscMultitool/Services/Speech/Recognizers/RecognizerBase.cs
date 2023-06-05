@@ -82,6 +82,10 @@ namespace Hoscy.Services.Speech
                 Logger.Warning("Failed to change mic status");
             else
             {
+                //todo: [TEST] Does this stop the talking indicator on mute? Is this even needed?
+                if (!enabled)
+                    HandleSpeechChanged(false);
+
                 var packet = new OscPacket(Config.Osc.AddressListeningIndicator, enabled);//Ingame listening indicator
                 if (!packet.IsValid)
                     Logger.Warning("Unable to send data to ingame listening indicator, packet is invalid");

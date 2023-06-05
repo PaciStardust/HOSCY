@@ -163,7 +163,8 @@ namespace Hoscy.Services.Speech.Recognizers
 
             var result = CleanMessage(_rec.PartialResult());
 
-            if (string.IsNullOrWhiteSpace(result))
+            //todo: [TEST] Does this avoid noise causing a typing indicator?
+            if (string.IsNullOrWhiteSpace(result) || Config.Speech.NoiseFilter.Contains(result))
                 return;
 
             if (_lastChangedString != result)
@@ -201,7 +202,7 @@ namespace Hoscy.Services.Speech.Recognizers
             if (extracted == null)
                 return null;
 
-            return extracted; //todo: [BUG] Missing denoise causes issues here?
+            return extracted;
         }
         #endregion
     }

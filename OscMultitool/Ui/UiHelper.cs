@@ -32,17 +32,16 @@ namespace Hoscy.Ui
         /// <summary>
         /// Loads data into a combo box
         /// </summary>
-        internal static void Load<T>(this ComboBox box, IEnumerable<T> source, int index, bool refresh = false)
+        internal static void Load<T>(this ComboBox box, IEnumerable<T> source, int index)
         {
-            box.ItemsSource = source;
-            if (refresh) box.Items.Refresh();
+            box.ItemsSource = source.ToArray();
             box.SelectedIndex = index;
         }
 
         /// <summary>
         /// Refreshes the data
         /// </summary>
-        internal static void Refresh(this ListBox box, IEnumerable<string> source, int index)
+        internal static void Refresh(this ListBox box, IEnumerable<string> source, int index) //todo: [REFACTOR] What is the point of this?
         {
             box.ItemsSource = source;
             box.Items.Refresh();
@@ -100,7 +99,7 @@ namespace Hoscy.Ui
         /// <param name="box"></param>
         /// <param name="models"></param>
         /// <param name="currentModel"></param>
-        internal static void UpdateModelBox(this ComboBox box, Dictionary<string, string> models, string currentModel, bool folder = true) //todo: [BUG] test, refactor? => Does not clear correctly it seems
+        internal static void UpdateModelBox(this ComboBox box, Dictionary<string, string> models, string currentModel, bool folder = true)
         {
             //Checking if any model in list model is invalid
             foreach (var model in models)
@@ -117,6 +116,7 @@ namespace Hoscy.Ui
                 }
             }
 
+            //todo: [REFACTOR] TryGetIndex function?
             //Checking for availability of current model in dropdown
             int index = -1;
             var keyArray = models.Keys.ToArray();
@@ -129,13 +129,7 @@ namespace Hoscy.Ui
                 }
             }
 
-            //Clearing, very cool
-            box.ItemsSource = null;
-            foreach (var item in box.Items)
-                box.Items.Remove(item);
-            box.Items.Refresh();
-
-            box.Load(models.Keys, index, true);
+            box.Load(models.Keys, index);
         }
         #endregion
 
