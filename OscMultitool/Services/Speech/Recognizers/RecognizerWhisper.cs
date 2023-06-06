@@ -117,12 +117,7 @@ namespace Hoscy.Services.Speech.Recognizers
                     continue;
 
                 var fixedActionText = ReplaceActions(segment.text);
-
-                //todo: [BUG] Move trim to no action text?
-                fixedActionText = Config.Speech.WhisperBracketFix
-                    ? fixedActionText.TrimStart(' ', '-', '(', '[').TrimEnd()
-                    : fixedActionText.TrimStart(' ', '-').TrimEnd();
-
+                fixedActionText = CleanText(fixedActionText);
                 strings.Add(fixedActionText);
             }
 
@@ -189,7 +184,7 @@ namespace Hoscy.Services.Speech.Recognizers
                     if (Config.Speech.CapitalizeFirst)
                         outputText = outputText.FirstCharToUpper();
 
-                    sb.Insert(match.Index, $"{match.Groups[1].Value}*{outputText}*");
+                    sb.Insert(match.Index, $"{match.Groups[1].Value}|{outputText}|");
                 }
                 else if (Config.Speech.WhisperLogFilteredNoises && groupText != "BLANK_AUDIO")
                 {
@@ -203,6 +198,19 @@ namespace Hoscy.Services.Speech.Recognizers
             }
 
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Removes odd AI noise and replaces action indicator with an asterisk
+        /// </summary>
+        /// <param name="text">Text to clean</param>
+        private static string CleanText(string text) //todo: [TEST] Does this cleanup process work?
+        {
+            text = Config.Speech.WhisperBracketFix
+                ? text.TrimStart(' ', '-', '(', '[', '*').TrimEnd()
+                : text.TrimStart(' ', '-').TrimEnd();
+
+            return text.Replace('|', '*');
         }
         #endregion
 
