@@ -165,13 +165,13 @@ namespace Hoscy.Services.Speech.Recognizers
             //Reversed so we can use sb.Remove()
             foreach (var match in matches!.Reverse()) 
             {
-                var groupText = match.Groups[2].Value;
+                var groupText = match.Groups[2].Value.ToLower(); //todo:[TEST] Does new filter work?
                 sb.Remove(match.Index, match.Length);
 
                 bool valid = false;
-                foreach (var filter in Config.Speech.WhisperNoiseWhitelist)
+                foreach (var filter in Config.Speech.WhisperNoiseWhitelist.Values)
                 {
-                    if (filter.Matches(groupText))
+                    if (groupText.StartsWith(filter))
                     {
                         valid = true;
                         break;
@@ -180,11 +180,10 @@ namespace Hoscy.Services.Speech.Recognizers
 
                 if (valid)
                 {
-                    var outputText = groupText.ToLower();
                     if (Config.Speech.CapitalizeFirst)
-                        outputText = outputText.FirstCharToUpper();
+                        groupText = groupText.FirstCharToUpper();
 
-                    sb.Insert(match.Index, $"{match.Groups[1].Value}|{outputText}|");
+                    sb.Insert(match.Index, $"{match.Groups[1].Value}|{groupText}|");
                 }
                 else if (Config.Speech.WhisperLogFilteredNoises && groupText != "BLANK_AUDIO")
                 {

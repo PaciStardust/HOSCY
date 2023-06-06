@@ -257,7 +257,7 @@ namespace Hoscy.Ui.Pages
 
         private void Button_EditWhisperNoiseWhitelist(object sender, RoutedEventArgs e)
         {
-            var window = new ModifyFiltersWindow("Edit Noise Whitelist", Config.Speech.WhisperNoiseWhitelist);
+            var window = new ModifyDictionaryWindow("Edit Noise Whitelist", "Identifier", "Noise start", Config.Speech.WhisperNoiseWhitelist);
             window.ShowDialogDark();
         }
         #endregion

@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace Hoscy
 {
-    internal static class Config //todo: [WHISPER] Add defaults for whisper noises?
+    internal static class Config
     {
         public static ConfigModel Data { get; private set; }
         public static ConfigOscModel Osc => Data.Osc;
@@ -187,10 +187,17 @@ namespace Hoscy
 
             if (config.ConfigVersion < 5)
             {
-                config.Speech.WhisperNoiseWhitelist.AddRange(new List<FilterModel>()
+                if (config.Speech.WhisperNoiseWhitelist.Count == 0)
                 {
-                    new("Laughing", "laugh")
-                });
+                    config.Speech.WhisperNoiseWhitelist = new()
+                    {
+                        { "Laughing", "laugh" },
+                        { "Popping", "pop" },
+                        { "Whistling", "whistl" },
+                        { "Sighing", "sigh" },
+                        { "Humming", "hum" }
+                    };
+                }
             }
 
             config.ConfigVersion = 5;

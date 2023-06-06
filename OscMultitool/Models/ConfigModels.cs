@@ -240,7 +240,7 @@ namespace Hoscy.Models
 
         public eLanguage WhisperLanguage { get; set; } = eLanguage.English;
 
-        public List<FilterModel> WhisperNoiseWhitelist { get; set; } = new();
+        public Dictionary<string,string> WhisperNoiseWhitelist { get; set; } = new();
 
         public int WhisperThreads //Threads for whisper to use, 0 = infinite
         {
