@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Hoscy.Services.Speech.Utilities;
 using System.Text;
+using System.Linq;
 
 namespace Hoscy.Services.Speech
 {
@@ -137,16 +138,9 @@ namespace Hoscy.Services.Speech
                 message = r.Replace(message);
 
             var oldMessage = message;
+            message = new string(message.Where(x => !Config.Speech.ShortcutIgnoredCharacters.Contains(x)).ToArray()); //todo: [TEST] Test if this works
             var shortcutTriggered = false;
-            
-            var shortcutSb = new StringBuilder();
-            foreach (char c in message)
-            {
-                if (!Config.Speech.ShortcutIgnoredCharacters.Contains(c)) //todo: [TEST] Test if this works and is performant
-                    shortcutSb.Append(c);
-            }
-            message = shortcutSb.ToString();
-            
+
             //Checking for shortcuts
             foreach (var s in _shortcuts)
             {
