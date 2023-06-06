@@ -83,7 +83,7 @@ namespace Hoscy.Services.Speech
             else
             {
                 if (!enabled)
-                    HandleSpeechChanged(false);
+                    HandleSpeechActivityUpdated(false);
 
                 var packet = new OscPacket(Config.Osc.AddressListeningIndicator, enabled);//Ingame listening indicator
                 if (!packet.IsValid)
@@ -107,13 +107,13 @@ namespace Hoscy.Services.Speech
         protected void HandleSpeechRecognized(string text)
             => SpeechRecognized.Invoke(null, text);
 
-        internal event EventHandler<bool> SpeechChanged = delegate { };
-        protected void HandleSpeechChanged(bool mode)
+        internal event EventHandler<bool> SpeechActivityUpdated = delegate { };
+        protected void HandleSpeechActivityUpdated(bool mode)
         {
             if (mode && (!IsListening || (!Config.Speech.UseTextbox && !Config.Textbox.UseIndicatorWithoutBox)))
                 return;
 
-            SpeechChanged.Invoke(null, mode);
+            SpeechActivityUpdated.Invoke(null, mode);
         }
         #endregion
     }

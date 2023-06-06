@@ -10,7 +10,7 @@ namespace Hoscy.Ui.Pages
     /// <summary>
     /// Interaction logic for PageOutput.xaml
     /// </summary>
-    internal partial class PageOutput : Page //todo: [REFACTOR] Can UI be cleaned?
+    internal partial class PageOutput : Page
     {
         private bool _changedValuesSynth = false;
 

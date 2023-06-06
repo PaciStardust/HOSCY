@@ -40,7 +40,7 @@ namespace Hoscy.Services.Speech
 
             UpdateDenoiseRegex();
             _recognizer.SpeechRecognized += OnSpeechRecognized;
-            _recognizer.SpeechChanged += (s, o) => Textbox.EnableTyping(o);
+            _recognizer.SpeechActivityUpdated += (s, o) => Textbox.EnableTyping(o);
             Logger.PInfo("Successfully started recognizer");
             TriggerRecognitionChanged();
             return true;

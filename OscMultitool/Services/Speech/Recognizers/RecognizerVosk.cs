@@ -74,7 +74,7 @@ namespace Hoscy.Services.Speech.Recognizers
 
         protected override void StopInternal()
         {
-            HandleSpeechChanged(false);
+            HandleSpeechActivityUpdated(false);
             _microphone.Dispose();
 
             //Stopping thread
@@ -168,7 +168,7 @@ namespace Hoscy.Services.Speech.Recognizers
             {
                 _lastChangedString = result;
                 _lastChangedAt = DateTime.Now;
-                HandleSpeechChanged(true);
+                HandleSpeechActivityUpdated(true);
                 return;
             }
 
@@ -185,7 +185,7 @@ namespace Hoscy.Services.Speech.Recognizers
         /// </summary>
         private void ClearLastChanged()
         {
-            HandleSpeechChanged(false);
+            HandleSpeechActivityUpdated(false);
             _lastChangedString = string.Empty;
             _lastChangedAt = DateTime.MaxValue;
             _rec?.Reset();

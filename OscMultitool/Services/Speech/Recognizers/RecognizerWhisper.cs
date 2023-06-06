@@ -52,7 +52,7 @@ namespace Hoscy.Services.Speech.Recognizers
                 CaptureThread thread = new(ctx, captureDevice);
                 thread.StartException?.Throw();
                 thread.SpeechRecognized += OnSpeechRecognized;
-                thread.SpeechChanged += (s, o) => HandleSpeechChanged(o);
+                thread.SpeechActivityUpdated += (s, o) => HandleSpeechActivityUpdated(o);
                 _cptThread = thread;
             }
             catch (Exception ex)
@@ -65,7 +65,7 @@ namespace Hoscy.Services.Speech.Recognizers
 
         protected override void StopInternal()
         {
-            HandleSpeechChanged(false);
+            HandleSpeechActivityUpdated(false);
             if (Config.Speech.WhisperLogFilteredNoises && _filteredActions.Count > 0)
                 LogFilteredActions();
             _cptThread?.Stop();

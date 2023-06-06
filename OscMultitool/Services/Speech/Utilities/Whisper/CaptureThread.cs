@@ -71,13 +71,9 @@ namespace Hoscy.Services.Speech.Utilities.Whisper
 
         #region Event
         private bool _lastTranscribing = false;
-        private bool _lastVoice = false;
         protected override void captureStatusChanged(Context sender, eCaptureStatus status)
         {
-            bool voice = (eCaptureStatus.Voice & status) != 0;
-            if (voice != _lastVoice)
-                HandleSpeechChanged(voice);
-            _lastVoice = voice;
+            HandleSpeechActivityUpdated((eCaptureStatus.Voice & status) != 0); //todo: [TEST] Test typing indicator
 
             if ((eCaptureStatus.Transcribing & status) != 0)
             {
@@ -102,9 +98,9 @@ namespace Hoscy.Services.Speech.Utilities.Whisper
         private void HandleSpeechRecognized(sSegment[] segments)
             => SpeechRecognized.Invoke(null, segments);
 
-        internal event EventHandler<bool> SpeechChanged = delegate { };
-        private void HandleSpeechChanged(bool mode)
-            => SpeechChanged.Invoke(null, mode);
+        internal event EventHandler<bool> SpeechActivityUpdated = delegate { };
+        private void HandleSpeechActivityUpdated(bool mode)
+            => SpeechActivityUpdated.Invoke(null, mode);
         #endregion
     }
 }
