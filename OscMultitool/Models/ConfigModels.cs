@@ -237,6 +237,7 @@ namespace Hoscy.Models
         public bool WhisperBracketFix { get; set; } = true; //Fixes the bracket issue ('( ( (')
         public bool WhisperHighPerformance { get; set; } = false; //Enables heightened thread priority
         public bool WhisperLogFilteredNoises { get; set; } = false; //Logging of filtered noises
+        public bool WhisperCpuOnly { get; set;} = false; //Enables CPU Only mode
 
         public eLanguage WhisperLanguage { get; set; } = eLanguage.English;
 

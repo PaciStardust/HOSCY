@@ -9,7 +9,7 @@ using Whisper;
 
 namespace Hoscy.Services.Speech.Recognizers
 {
-    internal class RecognizerWhisper : RecognizerBase //todo: [WHISPER] CPU Only mode?
+    internal class RecognizerWhisper : RecognizerBase
     {
         new internal static RecognizerPerms Perms => new()
         {
@@ -39,7 +39,7 @@ namespace Hoscy.Services.Speech.Recognizers
                     Logger.Error("A Whisper AI model has not been picked or it's path is invalid.\n\nTo use Whisper speech recognition please provide an AI model. Information can be found in the quickstart guide on GitHub\n\nIf you do not want to use Whisper, please change the recognizer type on the speech page");
                     return false;
                 }
-                var model = Library.loadModel(path);
+                var model = Library.loadModel(path, impl: Config.Speech.WhisperCpuOnly ? eModelImplementation.Reference : eModelImplementation.GPU); //todo: [TEST] Does CPU work?
 
                 var captureDevice = GetCaptureDevice();
                 if (captureDevice == null)

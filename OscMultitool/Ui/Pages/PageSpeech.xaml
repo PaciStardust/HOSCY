@@ -141,6 +141,7 @@
                             <Label Content="Experimental Options" Margin="0,4,0,0"/>
                             <StackPanel Style="{StaticResource HStackIndent}">
                                 <CheckBox Content="High performance (More speed, more lag)" IsChecked="{Binding Speech.WhisperHighPerformance, Source={x:Static local:Config.Data}}" Checked="CheckBox_Checked"/>
+                                <CheckBox Content="CPU only mode (Less speed, less lag)" IsChecked="{Binding Speech.WhisperCpuOnly, Source={x:Static local:Config.Data}}" Checked="CheckBox_Checked" Margin="0,4,0,0"/>
                                 
                                 <WrapPanel Margin="0,4,0,0">
                                     <TextBox Style="{StaticResource HTextBoxShort}" PreviewKeyDown="TextBox_PreviewKeyDown">
