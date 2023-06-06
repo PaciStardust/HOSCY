@@ -82,7 +82,6 @@ namespace Hoscy.Services.Speech
                 Logger.Warning("Failed to change mic status");
             else
             {
-                //todo: [TEST] Does this stop the talking indicator on mute? Is this even needed?
                 if (!enabled)
                     HandleSpeechChanged(false);
 

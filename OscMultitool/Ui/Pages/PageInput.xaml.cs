@@ -62,7 +62,7 @@ namespace Hoscy.Ui.Pages
 
         #region Other
         private void RefreshPresets()
-            => presetBox.Refresh(Config.Input.Presets.Select(x => x.Key), -1);
+            => presetBox.Load(Config.Input.Presets.Select(x => x.Key), -1);
 
         private bool _lastTyping = false;
         private void TextBox_KeyPressed(object sender, KeyEventArgs e)

@@ -20,6 +20,6 @@ namespace Hoscy.Ui.Windows
         }
         
         private void Refresh(int index)
-            => listBox.Refresh(_list, index);
+            => listBox.Load(_list, index);
     }
 }

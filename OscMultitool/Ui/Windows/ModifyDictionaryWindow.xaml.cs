@@ -32,7 +32,7 @@ namespace Hoscy.Ui.Windows
         }
 
         private void Refresh(int index)
-            => listBox.Refresh( _dict.Select(x => $"{x.Key} : {x.Value}"), index);
+            => listBox.Load( _dict.Select(x => $"{x.Key} : {x.Value}"), index);
 
         private void Button_AddOrModifyEntry(object sender, RoutedEventArgs e)
             => AddOrModify();

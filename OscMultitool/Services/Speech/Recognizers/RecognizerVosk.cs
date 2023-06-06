@@ -140,7 +140,6 @@ namespace Hoscy.Services.Speech.Recognizers
             }
 
             var result = CleanMessage(_rec.Result());
-
             if (!string.IsNullOrWhiteSpace(result))
             {
                 Logger.Log("Got Message: " + result);
@@ -162,9 +161,7 @@ namespace Hoscy.Services.Speech.Recognizers
             }
 
             var result = CleanMessage(_rec.PartialResult());
-
-            //todo: [TEST] Does this avoid noise causing a typing indicator?
-            if (string.IsNullOrWhiteSpace(result) || Config.Speech.NoiseFilter.Contains(result))
+            if (string.IsNullOrWhiteSpace(result))
                 return;
 
             if (_lastChangedString != result)
@@ -199,7 +196,8 @@ namespace Hoscy.Services.Speech.Recognizers
         private static string? CleanMessage(string res)
         {
             var extracted = Utils.ExtractFromJson(string.Empty, res);
-            if (extracted == null)
+            //todo: [TEST] Does this avoid noise causing a typing indicator?
+            if (extracted == null || Config.Speech.NoiseFilter.Contains(extracted))
                 return null;
 
             return extracted;

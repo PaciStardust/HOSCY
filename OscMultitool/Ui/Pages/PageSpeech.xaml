@@ -70,7 +70,7 @@
                         <Label Content="Vosk Options"/>
 
                         <StackPanel Style="{StaticResource HStackIndent}">
-                            <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Vosk AI model"/>
+                            <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="AI model"/>
 
                             <WrapPanel>
                                 <ComboBox x:Name="voskModelBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="VoskModelBox_SelectionChanged"/>

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -34,6 +36,11 @@ namespace Hoscy
         internal static void RunWithoutAwait(this Task task)
             => Task.Run(async () => await task).ConfigureAwait(false);
 
+        /// <summary>
+        /// Makes the first character of a string into an uppercase char
+        /// </summary>
+        /// <param name="input">String to modify</param>
+        /// <returns>Modified string</returns>
         internal static string FirstCharToUpper(this string input) =>
             string.IsNullOrEmpty(input) ? input : string.Concat(input[0].ToString().ToUpper(), input.AsSpan(1));
         #endregion

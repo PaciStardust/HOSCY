@@ -21,7 +21,7 @@ namespace Hoscy.Ui.Pages
 
         private static readonly IReadOnlyDictionary<string, RecognizerPerms> _permDict = new Dictionary<string, RecognizerPerms>()
         {
-            { "Whisper Recognizer", RecognizerWhisper.Perms },
+            { "Whisper AI Recognizer", RecognizerWhisper.Perms },
             { "Vosk AI Recognizer", RecognizerVosk.Perms },
             { "Azure API Recognizer", RecognizerAzure.Perms },
             { "Windows Recognizer V2", RecognizerWindowsV2.Perms },
@@ -32,7 +32,7 @@ namespace Hoscy.Ui.Pages
         internal static RecognizerBase? GetRecognizerFromUi()
             => Config.Speech.ModelName switch
             {
-                "Whisper Recognizer" => new RecognizerWhisper(),
+                "Whisper AI Recognizer" => new RecognizerWhisper(),
                 "Vosk AI Recognizer" => new RecognizerVosk(),
                 "Azure API Recognizer" => new RecognizerAzure(),
                 "Windows Recognizer V2" => new RecognizerWindowsV2(),
@@ -158,13 +158,13 @@ namespace Hoscy.Ui.Pages
         /// Updates contents of the Vosk Recognizer dropdown
         /// </summary>
         private void UpdateVoskRecognizerBox()
-            => voskModelBox.UpdateModelBox(Config.Speech.VoskModels, Config.Speech.VoskModelCurrent);
+            => voskModelBox.LoadDictionary(Config.Speech.VoskModels, Config.Speech.VoskModelCurrent);
 
         /// <summary>
         /// Updates contents of the Whisper Recognizer dropdown
         /// </summary>
         private void UpdateWhisperRecognizerBox()
-            => whisperModelBox.UpdateModelBox(Config.Speech.WhisperModels, Config.Speech.WhisperModelCurrent, false);
+            => whisperModelBox.LoadDictionary(Config.Speech.WhisperModels, Config.Speech.WhisperModelCurrent);
 
         private void LoadWhisperLanguageBox()
         {

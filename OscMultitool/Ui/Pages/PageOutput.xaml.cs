@@ -10,7 +10,7 @@ namespace Hoscy.Ui.Pages
     /// <summary>
     /// Interaction logic for PageOutput.xaml
     /// </summary>
-    internal partial class PageOutput : Page
+    internal partial class PageOutput : Page //todo: [REFACTOR] Can UI be cleaned?
     {
         private bool _changedValuesSynth = false;
 
@@ -49,8 +49,8 @@ namespace Hoscy.Ui.Pages
         /// <summary>
         /// Reloads the azure voice dropdown UI
         /// </summary>
-        private void UpdateAzureVoiceBox() //todo: [BUG] No work
-            => azureVoiceBox.UpdateModelBox(Config.Api.AzureVoices, Config.Api.AzureVoiceCurrent);
+        private void UpdateAzureVoiceBox()
+            => azureVoiceBox.LoadDictionary(Config.Api.AzureVoices, Config.Api.AzureVoiceCurrent);
 
         /// <summary>
         /// Updates the UI text for the volume slider

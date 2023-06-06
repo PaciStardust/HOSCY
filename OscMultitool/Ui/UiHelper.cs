@@ -39,12 +39,29 @@ namespace Hoscy.Ui
         }
 
         /// <summary>
-        /// Refreshes the data
+        /// Loads dictionary data into a combo box
         /// </summary>
-        internal static void Refresh(this ListBox box, IEnumerable<string> source, int index) //todo: [REFACTOR] What is the point of this?
+        internal static void LoadDictionary(this ComboBox box, Dictionary<string, string> dict, string indexKey)
         {
-            box.ItemsSource = source;
-            box.Items.Refresh();
+            int index = -1;
+            var keyArray = dict.Keys.ToArray();
+            for (int i = 0; i < keyArray.Length; i++)
+            {
+                if (indexKey == keyArray[i])
+                {
+                    index = i;
+                    break;
+                }
+            }
+            box.Load(keyArray, index);
+        }
+
+        /// <summary>
+        /// Loads data into a ListBox
+        /// </summary>
+        internal static void Load<T>(this ListBox box, IEnumerable<T> source, int index)
+        {
+            box.ItemsSource = source.ToArray();
             box.SelectedIndex = index;
         }
 
@@ -91,45 +108,6 @@ namespace Hoscy.Ui
         {
             window.SetDarkMode(true);
             window.ShowDialog();
-        }
-
-        /// <summary>
-        /// Updates a AI models ComboBox
-        /// </summary>
-        /// <param name="box"></param>
-        /// <param name="models"></param>
-        /// <param name="currentModel"></param>
-        internal static void UpdateModelBox(this ComboBox box, Dictionary<string, string> models, string currentModel, bool folder = true)
-        {
-            //Checking if any model in list model is invalid
-            foreach (var model in models)
-            {
-                if (folder)
-                {
-                    if (!Directory.Exists(model.Value))
-                        models.Remove(model.Key);
-                }
-                else
-                {
-                     if (!File.Exists(model.Value))
-                        models.Remove(model.Key);
-                }
-            }
-
-            //todo: [REFACTOR] TryGetIndex function?
-            //Checking for availability of current model in dropdown
-            int index = -1;
-            var keyArray = models.Keys.ToArray();
-            for (int i = 0; i < keyArray.Length; i++)
-            {
-                if (currentModel == keyArray[i])
-                {
-                    index = i;
-                    break;
-                }
-            }
-
-            box.Load(models.Keys, index);
         }
         #endregion
 
