@@ -275,7 +275,7 @@ namespace Hoscy.Models
             get => _whisperRecPauseDuration;
             set => _whisperRecPauseDuration = Utils.MinMax(value, 0.05f, short.MaxValue);
         }
-        private float _whisperRecPauseDuration = 1;
+        private float _whisperRecPauseDuration = 0.5f; //todo: [TEST] Test effect of this value
 
         //Windows
         public string WinModelId { get; set; } = string.Empty; //Identifier for Microsoft Recognizer
@@ -287,6 +287,7 @@ namespace Hoscy.Models
         public bool UseReplacements { get; set; } = true; //Are replacements (and shortcuts) even used?
         public List<ReplacementDataModel> Shortcuts { get; set; } = new();
         public List<ReplacementDataModel> Replacements { get; set; } = new();
+        public string ShortcutIgnoredCharacters { get; set; } = ".?!,。、！？";
     }
 
     /// <summary>

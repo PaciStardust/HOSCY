@@ -9,7 +9,7 @@ using Whisper;
 
 namespace Hoscy.Services.Speech.Recognizers
 {
-    internal class RecognizerWhisper : RecognizerBase
+    internal class RecognizerWhisper : RecognizerBase //todo: [WHISPER] CPU Only mode?
     {
         new internal static RecognizerPerms Perms => new()
         {

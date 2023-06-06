@@ -40,7 +40,14 @@
                         <Button Content="Replacements" Margin="16,0,0,0" Click="Button_OpenReplacements"/>
                         <Button Content="Noise Filter" Margin="16,0,0,0" Click="Button_OpenNoiseFilter"/>
                     </WrapPanel>
+                    
                     <CheckBox Content="Use shortcuts and replacements" Margin="0,4,0,0" IsChecked="{Binding Speech.UseReplacements, Source={x:Static local:Config.Data}}"/>
+
+                    <WrapPanel Margin="0,4,0,0" IsEnabled="{Binding Speech.UseReplacements, Source={x:Static local:Config.Data}}">
+                        <TextBox Text="{Binding Speech.ShortcutIgnoredCharacters, Source={x:Static local:Config.Data}}" Style="{StaticResource HTextBoxShort}" Tag="Ignored..."/>
+                        <Label Content="Ignored characters for shortcuts" VerticalAlignment="Center"/>
+                    </WrapPanel>
+
                     <CheckBox Content="Remove last period" Margin="0,4,0,0" IsChecked="{Binding Speech.RemovePeriod, Source={x:Static local:Config.Data}}"/>
                     <CheckBox Content="Capitalize first letter" Margin="0,4,0,0" IsChecked="{Binding Speech.CapitalizeFirst, Source={x:Static local:Config.Data}}"/>
                 </StackPanel>

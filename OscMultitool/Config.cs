@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace Hoscy
 {
-    internal static class Config
+    internal static class Config //todo: [WHISPER] Add defaults for whisper noises?
     {
         public static ConfigModel Data { get; private set; }
         public static ConfigOscModel Osc => Data.Osc;

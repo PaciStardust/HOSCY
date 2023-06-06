@@ -102,7 +102,7 @@ namespace Hoscy.Services.Speech
         private static string CleanMessage(string message)
         {
             message = Config.Speech.RemovePeriod
-                ? message.TrimStart().TrimEnd(' ', '.')
+                ? message.TrimStart().TrimEnd(' ', '.', '。')
                 : message.Trim();
 
             var denoiseMatch = _denoiseFilter.Match(message);

@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Hoscy.Services.Speech.Utilities;
+using System.Text;
 
 namespace Hoscy.Services.Speech
 {
@@ -129,40 +130,59 @@ namespace Hoscy.Services.Speech
         /// <summary>
         /// Replaces message or parts of it
         /// </summary>
-        private static string ReplaceMessage(string message) //todo: [NEW] Remove special chars for shortcuts?
+        private static string ReplaceMessage(string message)
         {
             //Splitting and checking for replacements
             foreach (var r in _replacements)
                 message = r.Replace(message);
 
+            var oldMessage = message;
+            var shortcutTriggered = false;
+            
+            var shortcutSb = new StringBuilder();
+            foreach (char c in message)
+            {
+                if (!Config.Speech.ShortcutIgnoredCharacters.Contains(c)) //todo: [TEST] Test if this works and is performant
+                    shortcutSb.Append(c);
+            }
+            message = shortcutSb.ToString();
+            
             //Checking for shortcuts
             foreach (var s in _shortcuts)
             {
                 if (s.Compare(message))
                 {
                     message = s.GetReplacement();
+                    shortcutTriggered = true;
                     break;
                 }
             }
 
+            if (!shortcutTriggered)
+                message = oldMessage;
+
             if (!message.StartsWith("[file]", StringComparison.OrdinalIgnoreCase))
                 return message;
 
-            var filePath = Regex.Replace(message, @"\[file\] *", "", RegexOptions.IgnoreCase);
-            if (File.Exists(filePath))
+            return ExecuteFileCommand(message);
+        }
+
+        /// <summary>
+        /// Executes "[file] ..." messages
+        /// </summary>
+        /// <param name="message">A message starting with "[file]"</param>
+        private static string ExecuteFileCommand(string message)
+        {
+            var filePath = Regex.Replace(message, @"\[file\] *", string.Empty, RegexOptions.IgnoreCase);
+            try
             {
-                try
-                {
-                    return string.Join(" ", File.ReadAllLines(filePath));
-                }
-                catch (Exception e)
-                {
-                    Logger.Error(e, "Failed to read provided file, is the path correct and does HOSCY have access?");
-                    return string.Empty;
-                }
+                return string.Join(" ", File.ReadAllLines(filePath));
             }
-            else
-                return filePath;
+            catch (Exception e)
+            {
+                Logger.Error(e, "Failed to read provided file, is the path correct and does HOSCY have access?");
+                return string.Empty;
+            }
         }
 
         /// <summary>
