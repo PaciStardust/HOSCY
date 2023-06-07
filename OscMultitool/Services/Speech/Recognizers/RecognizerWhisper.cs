@@ -257,7 +257,7 @@ namespace Hoscy.Services.Speech.Recognizers
             return medf.openCaptureDevice(deviceId.Value,cp);
         }
 
-        private static void ApplyParameters(ref Parameters p) //todo: [WHISPER] Could these be changed dynamically?
+        private static void ApplyParameters(ref Parameters p)
         {
             //Threads
             var maxThreads = Environment.ProcessorCount;
@@ -287,6 +287,14 @@ namespace Hoscy.Services.Speech.Recognizers
             p.offset_ms = 0;
             p.setFlag(eFullParamsFlags.PrintRealtime, false);
             p.setFlag(eFullParamsFlags.PrintTimestamps, false);
+        }
+
+        internal override bool UpdateSettings() //todo: [TEST] Does this work?
+        {
+            if (_cptThread == null) 
+                return false;
+            ApplyParameters(ref _cptThread.Context.parameters);
+            return true;
         }
         #endregion
     }

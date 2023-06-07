@@ -12,6 +12,10 @@ namespace Hoscy.Services.Speech
         internal static bool IsListening => _recognizer?.IsListening ?? false;
 
         #region Recognizer Control
+        /// <summary>
+        /// Starts the recognizer
+        /// </summary>
+        /// <returns>Success?</returns>
         internal static bool StartRecognizer()
         {
             TriggerRecognitionChanged();
@@ -46,6 +50,11 @@ namespace Hoscy.Services.Speech
             return true;
         }
 
+        /// <summary>
+        /// Sets the listening status of the recognizer
+        /// </summary>
+        /// <param name="enabled">Status to set</param>
+        /// <returns>Success?</returns>
         internal static bool SetListening(bool enabled)
         {
             if (!IsRunning)
@@ -56,6 +65,9 @@ namespace Hoscy.Services.Speech
             return res;
         }
 
+        /// <summary>
+        /// Stops the recognizer
+        /// </summary>
         internal static void StopRecognizer()
         {
             if (_recognizer == null)
@@ -69,6 +81,28 @@ namespace Hoscy.Services.Speech
             _recognizer = null;
             TriggerRecognitionChanged();
             Logger.PInfo("Successfully stopped recognizer");
+        }
+
+        /// <summary>
+        /// Updates the recognizer settings, if failed will stop the recognizer
+        /// </summary>
+        /// <returns>Success?</returns>
+        internal static bool UpdateRecognizerSettings()
+        {
+            if (_recognizer == null)
+            {
+                Logger.Warning("Unable to update recognizer settings as there is no recognizer currently available");
+                return false;
+            }
+
+            if (!_recognizer.UpdateSettings())
+            {
+                Logger.Warning("Failed to update recognizer settings, the recognizer will now stop");
+                StopRecognizer();
+                return false;
+            }
+
+            return true;
         }
         #endregion
 

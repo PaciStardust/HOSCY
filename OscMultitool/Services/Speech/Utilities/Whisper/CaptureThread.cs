@@ -9,16 +9,17 @@ namespace Hoscy.Services.Speech.Utilities.Whisper
     {
         private readonly TranscribeCallbacks _callbacks;
         private readonly Thread _thread;
-        private readonly Context _context;
         private readonly iAudioCapture _capture;
+
+        internal Context Context { get; private init; }
         internal ExceptionDispatchInfo? StartException { get; private set; }
-        internal DateTime StartTime { get; init; }
+        internal DateTime StartTime { get; private init; }
 
         #region Startup
         internal CaptureThread(Context ctx, iAudioCapture capture)
         {
             _callbacks = new();
-            _context = ctx;
+            Context = ctx;
             _capture = capture;
 
             _thread = new(ThreadRunCapture)
@@ -48,7 +49,7 @@ namespace Hoscy.Services.Speech.Utilities.Whisper
         {
             try
             {
-                _context.runCapture(_capture, _callbacks, this);
+                Context.runCapture(_capture, _callbacks, this);
             }
             catch (Exception ex)
             {

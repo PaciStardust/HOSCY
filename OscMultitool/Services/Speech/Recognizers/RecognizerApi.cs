@@ -29,14 +29,7 @@ namespace Hoscy.Services.Speech.Recognizers
         #region Starting / Stopping
         protected override bool StartInternal()
         {
-            var preset = Config.Api.GetPreset(Config.Api.RecognitionPreset);
-            if (preset == null)
-            {
-                Logger.Warning("Attempted to use a non existant preset");
-                return false;
-            }
-
-            if (!_client.LoadPreset(preset))
+            if (!LoadApiClientPreset())
                 return false;
 
             _microphone.DataAvailable += OnDataAvailable;
@@ -68,6 +61,24 @@ namespace Hoscy.Services.Speech.Recognizers
             _stream?.Dispose();
             _stream = null;
         }
+
+        private bool LoadApiClientPreset()
+        {
+            var preset = Config.Api.GetPreset(Config.Api.RecognitionPreset);
+            if (preset == null)
+            {
+                Logger.Warning("Attempted to use a non existant preset");
+                return false;
+            }
+
+            if (!_client.LoadPreset(preset))
+                return false;
+
+            return true;
+        }
+
+        internal override bool UpdateSettings()
+            => LoadApiClientPreset();
         #endregion
 
         #region Events

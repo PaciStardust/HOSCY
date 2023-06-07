@@ -60,7 +60,10 @@
                         <Label Content="Recognizer"/>
                         <Label x:Name="changeIndicator" Foreground="{x:Static ui:UiHelper.ColorInvalid}" Content="(Unapplied changes)" FontSize="14" VerticalAlignment="Center" Visibility="Hidden"/>
                     </WrapPanel>
-                    <ComboBox x:Name="recognizerSelector" Style="{StaticResource HSettingsComboBox}" Margin="8,0,0,0" SelectionChanged="RecognizerSelector_SelectionChanged"/>
+                    <WrapPanel Margin="8,0,0,0">
+                        <ComboBox x:Name="recognizerSelector" Style="{StaticResource HSettingsComboBox}" SelectionChanged="RecognizerSelector_SelectionChanged"/>
+                        <Button Style="{StaticResource HButtonSmall}" Content="Update settings" Margin="8,0,0,0" VerticalAlignment="Center" Click="Button_UpdateSettings"/>
+                    </WrapPanel>
                     <TextBlock Style="{StaticResource HTextBlock}" Margin="8,0,0,0" x:Name="valueRecInfo" Text="Info here" FontSize="14"/>
 
                     <!-- Microphone Select -->

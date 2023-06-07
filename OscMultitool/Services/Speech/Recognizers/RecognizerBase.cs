@@ -65,6 +65,11 @@ namespace Hoscy.Services.Speech
             StopInternal();
             IsRunning = false;
         }
+
+        /// <summary>
+        /// Update some internal settings after starting
+        /// </summary>
+        internal virtual bool UpdateSettings() => true;
         #endregion
 
         #region Mic
@@ -85,7 +90,7 @@ namespace Hoscy.Services.Speech
                 if (!enabled)
                     HandleSpeechActivityUpdated(false);
 
-                var packet = new OscPacket(Config.Osc.AddressListeningIndicator, enabled);//Ingame listening indicator
+                var packet = new OscPacket(Config.Osc.AddressListeningIndicator, enabled); //Ingame listening indicator
                 if (!packet.IsValid)
                     Logger.Warning("Unable to send data to ingame listening indicator, packet is invalid");
                 else
@@ -103,10 +108,16 @@ namespace Hoscy.Services.Speech
         #endregion
 
         #region Events
+        /// <summary>
+        /// Event gets triggered whenever speech is recognized, is preprocessed a little depending on recognizer
+        /// </summary>
         internal event EventHandler<string> SpeechRecognized = delegate { };
         protected void HandleSpeechRecognized(string text)
             => SpeechRecognized.Invoke(null, text);
 
+        /// <summary>
+        /// Event gets triggered each time speech activity is updated, might happen multiple times a second using the same value, depends on recognizer
+        /// </summary>
         internal event EventHandler<bool> SpeechActivityUpdated = delegate { };
         protected void HandleSpeechActivityUpdated(bool mode)
         {

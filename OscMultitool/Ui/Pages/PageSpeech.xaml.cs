@@ -210,6 +210,9 @@ namespace Hoscy.Ui.Pages
                 TryEnableChangeIndicator();
         }
 
+        private void Button_UpdateSettings(object sender, RoutedEventArgs e) //todo: [UPDATE] Change indicator if this works
+            => Recognition.UpdateRecognizerSettings();
+
         private void Button_Mute(object sender, RoutedEventArgs e)
             => Recognition.SetListening(!Recognition.IsListening);
 
