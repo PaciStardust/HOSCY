@@ -64,7 +64,7 @@ namespace Hoscy.Ui.Pages
         private void RefreshPresets()
             => presetBox.Load(Config.Input.Presets.Select(x => x.Key), -1);
 
-        private void TextBox_KeyPressed(object sender, KeyEventArgs e) //todo: [TEST] Test typing indicator
+        private void TextBox_KeyPressed(object sender, KeyEventArgs e)
         {
             bool typing = e.Key != Key.Enter && textBox.Text.Length != 0;
             Textbox.EnableTyping(typing);

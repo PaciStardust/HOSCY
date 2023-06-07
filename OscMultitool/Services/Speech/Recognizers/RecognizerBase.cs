@@ -65,11 +65,6 @@ namespace Hoscy.Services.Speech
             StopInternal();
             IsRunning = false;
         }
-
-        /// <summary>
-        /// Update some internal settings after starting
-        /// </summary>
-        internal virtual bool UpdateSettings() => true;
         #endregion
 
         #region Mic

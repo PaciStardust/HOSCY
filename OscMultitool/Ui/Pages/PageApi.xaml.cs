@@ -63,7 +63,6 @@ namespace Hoscy.Ui.Pages
 
         #region SelectionChanged
 
-        private bool _translatorApiBoxFirstChange = true; //This is to stop indicator from showing when page loads
         private void TranslatorApiBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             int index = translatorApiBox.SelectedIndex;
@@ -72,9 +71,7 @@ namespace Hoscy.Ui.Pages
 
             Config.Api.TranslationPreset = Config.Api.Presets[translatorApiBox.SelectedIndex].Name;
 
-            if (_translatorApiBoxFirstChange)
-                _translatorApiBoxFirstChange = false;
-            else
+            if (IsLoaded)
                 SetChangedValueTranslation(true);
         }
         #endregion

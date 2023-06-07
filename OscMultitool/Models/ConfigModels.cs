@@ -237,11 +237,11 @@ namespace Hoscy.Models
         public bool WhisperBracketFix { get; set; } = true; //Fixes the bracket issue ('( ( (')
         public bool WhisperHighPerformance { get; set; } = false; //Enables heightened thread priority
         public bool WhisperLogFilteredNoises { get; set; } = false; //Logging of filtered noises
-        public bool WhisperCpuOnly { get; set;} = false; //Enables CPU Only mode
+        //public bool WhisperCpuOnly { get; set;} = false; //Enables CPU Only mode, disabled for now due to library issues
 
         public eLanguage WhisperLanguage { get; set; } = eLanguage.English;
 
-        public Dictionary<string,string> WhisperNoiseWhitelist { get; set; } = new();
+        public Dictionary<string,string> WhisperNoiseFilter { get; set; } = new();
 
         public int WhisperThreads //Threads for whisper to use, 0 = infinite
         {
@@ -276,7 +276,7 @@ namespace Hoscy.Models
             get => _whisperRecPauseDuration;
             set => _whisperRecPauseDuration = Utils.MinMax(value, 0.05f, short.MaxValue);
         }
-        private float _whisperRecPauseDuration = 0.5f; //todo: [TEST] Test effect of this value
+        private float _whisperRecPauseDuration = 0.5f;
 
         //Windows
         public string WinModelId { get; set; } = string.Empty; //Identifier for Microsoft Recognizer

@@ -187,9 +187,9 @@ namespace Hoscy
 
             if (config.ConfigVersion < 5)
             {
-                if (config.Speech.WhisperNoiseWhitelist.Count == 0)
+                if (config.Speech.WhisperNoiseFilter.Count == 0)
                 {
-                    config.Speech.WhisperNoiseWhitelist = new()
+                    config.Speech.WhisperNoiseFilter = new()
                     {
                         { "Laughing", "laugh" },
                         { "Popping", "pop" },

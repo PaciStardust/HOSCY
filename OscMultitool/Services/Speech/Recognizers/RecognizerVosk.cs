@@ -196,7 +196,6 @@ namespace Hoscy.Services.Speech.Recognizers
         private static string? CleanMessage(string res)
         {
             var extracted = Utils.ExtractFromJson(string.Empty, res);
-            //todo: [TEST] Does this avoid noise causing a typing indicator?
             if (extracted == null || Config.Speech.NoiseFilter.Contains(extracted))
                 return null;
 

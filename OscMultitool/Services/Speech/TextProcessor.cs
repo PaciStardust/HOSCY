@@ -138,7 +138,7 @@ namespace Hoscy.Services.Speech
                 message = r.Replace(message);
 
             var oldMessage = message;
-            message = new string(message.Where(x => !Config.Speech.ShortcutIgnoredCharacters.Contains(x)).ToArray()); //todo: [TEST] Test if this works
+            message = new string(message.Where(x => !Config.Speech.ShortcutIgnoredCharacters.Contains(x)).ToArray());
             var shortcutTriggered = false;
 
             //Checking for shortcuts

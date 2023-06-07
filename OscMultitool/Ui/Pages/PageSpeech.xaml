@@ -60,10 +60,7 @@
                         <Label Content="Recognizer"/>
                         <Label x:Name="changeIndicator" Foreground="{x:Static ui:UiHelper.ColorInvalid}" Content="(Unapplied changes)" FontSize="14" VerticalAlignment="Center" Visibility="Hidden"/>
                     </WrapPanel>
-                    <WrapPanel Margin="8,0,0,0">
-                        <ComboBox x:Name="recognizerSelector" Style="{StaticResource HSettingsComboBox}" SelectionChanged="RecognizerSelector_SelectionChanged"/>
-                        <Button Style="{StaticResource HButtonSmall}" Content="Update settings" Margin="8,0,0,0" VerticalAlignment="Center" Click="Button_UpdateSettings"/>
-                    </WrapPanel>
+                    <ComboBox x:Name="recognizerSelector" Margin="8,0,0,0" Style="{StaticResource HSettingsComboBox}" SelectionChanged="RecognizerSelector_SelectionChanged"/>
                     <TextBlock Style="{StaticResource HTextBlock}" Margin="8,0,0,0" x:Name="valueRecInfo" Text="Info here" FontSize="14"/>
 
                     <!-- Microphone Select -->
@@ -144,7 +141,7 @@
                             <Label Content="Experimental Options" Margin="0,4,0,0"/>
                             <StackPanel Style="{StaticResource HStackIndent}">
                                 <CheckBox Content="High performance (More speed, more lag)" IsChecked="{Binding Speech.WhisperHighPerformance, Source={x:Static local:Config.Data}}" Checked="CheckBox_Checked"/>
-                                <CheckBox Content="CPU only mode (Less speed, less lag)" IsChecked="{Binding Speech.WhisperCpuOnly, Source={x:Static local:Config.Data}}" Checked="CheckBox_Checked" Margin="0,4,0,0"/>
+                                <!-- <CheckBox Content="CPU only mode (Less speed, less lag)" IsChecked="{Binding Speech.WhisperCpuOnly, Source={x:Static local:Config.Data}}" Checked="CheckBox_Checked" Margin="0,4,0,0"/> Disabled due to library issues -->
                                 
                                 <WrapPanel Margin="0,4,0,0">
                                     <TextBox Style="{StaticResource HTextBoxShort}" PreviewKeyDown="TextBox_PreviewKeyDown">

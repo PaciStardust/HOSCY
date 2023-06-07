@@ -10,8 +10,8 @@ namespace Hoscy.Services.Speech.Utilities.Whisper
         private readonly TranscribeCallbacks _callbacks;
         private readonly Thread _thread;
         private readonly iAudioCapture _capture;
+        private readonly Context _context;
 
-        internal Context Context { get; private init; }
         internal ExceptionDispatchInfo? StartException { get; private set; }
         internal DateTime StartTime { get; private init; }
 
@@ -19,7 +19,7 @@ namespace Hoscy.Services.Speech.Utilities.Whisper
         internal CaptureThread(Context ctx, iAudioCapture capture)
         {
             _callbacks = new();
-            Context = ctx;
+            _context = ctx;
             _capture = capture;
 
             _thread = new(ThreadRunCapture)
@@ -49,7 +49,7 @@ namespace Hoscy.Services.Speech.Utilities.Whisper
         {
             try
             {
-                Context.runCapture(_capture, _callbacks, this);
+                _context.runCapture(_capture, _callbacks, this);
             }
             catch (Exception ex)
             {
@@ -74,7 +74,7 @@ namespace Hoscy.Services.Speech.Utilities.Whisper
         private bool _lastTranscribing = false;
         protected override void captureStatusChanged(Context sender, eCaptureStatus status)
         {
-            HandleSpeechActivityUpdated((eCaptureStatus.Voice & status) != 0); //todo: [TEST] Test typing indicator
+            HandleSpeechActivityUpdated((eCaptureStatus.Voice & status) != 0);
 
             if ((eCaptureStatus.Transcribing & status) != 0)
             {

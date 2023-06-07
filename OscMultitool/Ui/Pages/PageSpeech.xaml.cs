@@ -15,7 +15,7 @@ namespace Hoscy.Ui.Pages
     /// <summary>
     /// Interaction logic for TestPage.xaml
     /// </summary>
-    internal partial class PageSpeech : Page
+    internal partial class PageSpeech : Page //todo: [BUG] Change indicator reset issues
     {
         private static bool _changedValues = false;
 
@@ -210,9 +210,6 @@ namespace Hoscy.Ui.Pages
                 TryEnableChangeIndicator();
         }
 
-        private void Button_UpdateSettings(object sender, RoutedEventArgs e) //todo: [UPDATE] Change indicator if this works
-            => Recognition.UpdateRecognizerSettings();
-
         private void Button_Mute(object sender, RoutedEventArgs e)
             => Recognition.SetListening(!Recognition.IsListening);
 
@@ -260,7 +257,7 @@ namespace Hoscy.Ui.Pages
 
         private void Button_EditWhisperNoiseWhitelist(object sender, RoutedEventArgs e)
         {
-            var window = new ModifyDictionaryWindow("Edit Noise Whitelist", "Identifier", "Noise start", Config.Speech.WhisperNoiseWhitelist);
+            var window = new ModifyDictionaryWindow("Edit Noise Whitelist", "Identifier", "Noise start", Config.Speech.WhisperNoiseFilter);
             window.ShowDialogDark();
         }
         #endregion
@@ -335,7 +332,10 @@ namespace Hoscy.Ui.Pages
             => TryEnableChangeIndicator();
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
-            => TryEnableChangeIndicator();
+        {
+            if (IsLoaded)
+                TryEnableChangeIndicator();
+        }
 
         private void WhisperLanguageBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

@@ -39,7 +39,9 @@ namespace Hoscy.Services.Speech.Recognizers
                     Logger.Error("A Whisper AI model has not been picked or it's path is invalid.\n\nTo use Whisper speech recognition please provide an AI model. Information can be found in the quickstart guide on GitHub\n\nIf you do not want to use Whisper, please change the recognizer type on the speech page");
                     return false;
                 }
-                var model = Library.loadModel(path, impl: Config.Speech.WhisperCpuOnly ? eModelImplementation.Reference : eModelImplementation.GPU); //todo: [TEST] Does CPU work?
+
+                //var model = Library.loadModel(path, impl: Config.Speech.WhisperCpuOnly ? eModelImplementation.Reference : eModelImplementation.GPU); Disabled due to library issues
+                var model = Library.loadModel(path);
 
                 var captureDevice = GetCaptureDevice();
                 if (captureDevice == null)
@@ -165,11 +167,11 @@ namespace Hoscy.Services.Speech.Recognizers
             //Reversed so we can use sb.Remove()
             foreach (var match in matches!.Reverse()) 
             {
-                var groupText = match.Groups[2].Value.ToLower(); //todo:[TEST] Does new filter work?
+                var groupText = match.Groups[2].Value.ToLower();
                 sb.Remove(match.Index, match.Length);
 
                 bool valid = false;
-                foreach (var filter in Config.Speech.WhisperNoiseWhitelist.Values)
+                foreach (var filter in Config.Speech.WhisperNoiseFilter.Values)
                 {
                     if (groupText.StartsWith(filter))
                     {
@@ -203,7 +205,7 @@ namespace Hoscy.Services.Speech.Recognizers
         /// Removes odd AI noise and replaces action indicator with an asterisk
         /// </summary>
         /// <param name="text">Text to clean</param>
-        private static string CleanText(string text) //todo: [TEST] Does this cleanup process work?
+        private static string CleanText(string text)
         {
             text = Config.Speech.WhisperBracketFix
                 ? text.TrimStart(' ', '-', '(', '[', '*').TrimEnd()
@@ -287,14 +289,6 @@ namespace Hoscy.Services.Speech.Recognizers
             p.offset_ms = 0;
             p.setFlag(eFullParamsFlags.PrintRealtime, false);
             p.setFlag(eFullParamsFlags.PrintTimestamps, false);
-        }
-
-        internal override bool UpdateSettings() //todo: [TEST] Does this work?
-        {
-            if (_cptThread == null) 
-                return false;
-            ApplyParameters(ref _cptThread.Context.parameters);
-            return true;
         }
         #endregion
     }

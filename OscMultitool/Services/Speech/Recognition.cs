@@ -82,28 +82,6 @@ namespace Hoscy.Services.Speech
             TriggerRecognitionChanged();
             Logger.PInfo("Successfully stopped recognizer");
         }
-
-        /// <summary>
-        /// Updates the recognizer settings, if failed will stop the recognizer
-        /// </summary>
-        /// <returns>Success?</returns>
-        internal static bool UpdateRecognizerSettings()
-        {
-            if (_recognizer == null)
-            {
-                Logger.Warning("Unable to update recognizer settings as there is no recognizer currently available");
-                return false;
-            }
-
-            if (!_recognizer.UpdateSettings())
-            {
-                Logger.Warning("Failed to update recognizer settings, the recognizer will now stop");
-                StopRecognizer();
-                return false;
-            }
-
-            return true;
-        }
         #endregion
 
         #region Result Handling
