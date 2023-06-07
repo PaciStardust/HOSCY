@@ -26,7 +26,7 @@ namespace Hoscy.Ui.Windows
         }
 
         private void Refresh(int index)
-            => listBox.Refresh(_list.Select(x => x.ToString()), index);
+            => listBox.Load(_list.Select(x => x.ToString()), index);
 
         #region Modifification
         private void AddEntry()

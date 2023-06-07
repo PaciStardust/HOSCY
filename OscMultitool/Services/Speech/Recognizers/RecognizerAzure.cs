@@ -12,7 +12,8 @@ namespace Hoscy.Services.Speech.Recognizers
         new internal static RecognizerPerms Perms => new()
         {
             Description = "Remote recognition using Azure-API",
-            UsesMicrophone = true
+            UsesMicrophone = true,
+            Type = RecognizerType.Azure
         };
 
         internal override bool IsListening => _isListening;
@@ -30,7 +31,7 @@ namespace Hoscy.Services.Speech.Recognizers
             {
                 bool multLang = Config.Api.AzureRecognitionLanguages.Count > 1;
 
-                var audioConfig = AudioConfig.FromMicrophoneInput(GetMicId());
+                var audioConfig = AudioConfig.FromMicrophoneInput(TryGetMicId());
                 var speechConfig = multLang //Config has to be adapted if using multiple languages
                     ? SpeechConfig.FromEndpoint(new($"wss://{Config.Api.AzureRegion}.stt.speech.microsoft.com/speech/universal/v2"), Config.Api.AzureKey)
                     : SpeechConfig.FromSubscription(Config.Api.AzureKey, Config.Api.AzureRegion);
@@ -41,7 +42,7 @@ namespace Hoscy.Services.Speech.Recognizers
 
                 if (multLang) //this looks scuffed but is done as I think its quicker in api terms
                 {
-                    speechConfig.SetProperty(PropertyId.SpeechServiceConnection_ContinuousLanguageIdPriority, "Latency");
+                    speechConfig.SetProperty(PropertyId.SpeechServiceConnection_LanguageIdMode, "Continuous");
                     var autoDetectSourceLanguageConfig = AutoDetectSourceLanguageConfig.FromLanguages(Config.Api.AzureRecognitionLanguages.ToArray());
                     rec = new(speechConfig, autoDetectSourceLanguageConfig, audioConfig);
                 }
@@ -73,7 +74,7 @@ namespace Hoscy.Services.Speech.Recognizers
             return rec;
         }
 
-        private static string GetMicId()
+        private static string? TryGetMicId()
         {
             using (var enumerator = new MMDeviceEnumerator())
             {
@@ -84,7 +85,7 @@ namespace Hoscy.Services.Speech.Recognizers
                 }
             }
 
-            return string.Empty;
+            return null;
         }
         #endregion
 
@@ -114,7 +115,7 @@ namespace Hoscy.Services.Speech.Recognizers
             _isListening = enabled;
 
             if (_isListening)
-                Utils.RunWithoutAwait(StartRecognizing());
+                StartRecognizing().RunWithoutAwait();
             else
                 recognitionCompletionSource?.SetResult(0);
 
@@ -142,12 +143,7 @@ namespace Hoscy.Services.Speech.Recognizers
                 return;
 
             Logger.Log("Got Message: " + result);
-
-            var message = Denoise(result);
-            if (string.IsNullOrWhiteSpace(message))
-                return;
-
-            ProcessMessage(message);
+            HandleSpeechRecognized(result);
         }
 
         private void OnCanceled(object? sender, SpeechRecognitionCanceledEventArgs e)

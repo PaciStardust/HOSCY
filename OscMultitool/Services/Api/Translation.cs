@@ -2,11 +2,11 @@
 
 namespace Hoscy.Services.Api
 {
-    internal static class Translation
+    internal static class Translator
     {
         private static readonly ApiClient _client = new();
 
-        static Translation()
+        static Translator()
         {
             ReloadClient();
         }

@@ -62,10 +62,13 @@ namespace Hoscy.Ui.Pages
 
         #region Other
         private void RefreshPresets()
-            => presetBox.Refresh(Config.Input.Presets.Select(x => x.Key), -1);
+            => presetBox.Load(Config.Input.Presets.Select(x => x.Key), -1);
 
         private void TextBox_KeyPressed(object sender, KeyEventArgs e)
         {
+            bool typing = e.Key != Key.Enter && textBox.Text.Length != 0;
+            Textbox.EnableTyping(typing);
+
             if (e.Key == Key.Enter)
                 SendMessage();
         }

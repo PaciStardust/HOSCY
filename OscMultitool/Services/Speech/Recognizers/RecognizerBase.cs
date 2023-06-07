@@ -1,7 +1,6 @@
 ﻿using Hoscy.Services.OscControl;
 using Hoscy.Services.Speech.Recognizers;
-using System.Linq;
-using System.Text.RegularExpressions;
+using System;
 
 namespace Hoscy.Services.Speech
 {
@@ -39,9 +38,6 @@ namespace Hoscy.Services.Speech
 
             if (!IsRunning)
                 return false;
-
-            //Reloading Denoiser
-            UpdateDenoiseRegex();
 
             if (Config.Speech.StartUnmuted)
                 SetListening(true);
@@ -86,7 +82,10 @@ namespace Hoscy.Services.Speech
                 Logger.Warning("Failed to change mic status");
             else
             {
-                var packet = new OscPacket(Config.Osc.AddressListeningIndicator, enabled);//Ingame listening indicator
+                if (!enabled)
+                    HandleSpeechActivityUpdated(false);
+
+                var packet = new OscPacket(Config.Osc.AddressListeningIndicator, enabled); //Ingame listening indicator
                 if (!packet.IsValid)
                     Logger.Warning("Unable to send data to ingame listening indicator, packet is invalid");
                 else
@@ -103,59 +102,24 @@ namespace Hoscy.Services.Speech
         protected abstract bool SetListeningInternal(bool enabled);
         #endregion
 
-        #region Processing
+        #region Events
         /// <summary>
-        /// Processing and sending off the message
+        /// Event gets triggered whenever speech is recognized, is preprocessed a little depending on recognizer
         /// </summary>
-        internal static void ProcessMessage(string message)
-        {
-            if (Config.Speech.RemoveFullStop)
-                message = message.TrimEnd('.');
-
-            var processor = new TextProcessor()
-            {
-                TriggerReplace = Config.Speech.UseReplacements,
-
-                TriggerCommands = true,
-
-                UseTextbox = Config.Speech.UseTextbox,
-                UseTts = Config.Speech.UseTts,
-
-                AllowTranslate = true
-            };
-
-            processor.Process(message);
-        }
-        #endregion
-
-        #region Denoising
-        private static Regex _denoiseFilter = new(" *");
+        internal event EventHandler<string> SpeechRecognized = delegate { };
+        protected void HandleSpeechRecognized(string text)
+            => SpeechRecognized.Invoke(null, text);
 
         /// <summary>
-        /// Removes "noise" from message
+        /// Event gets triggered each time speech activity is updated, might happen multiple times a second using the same value, depends on recognizer
         /// </summary>
-        protected static string Denoise(string message)
+        internal event EventHandler<bool> SpeechActivityUpdated = delegate { };
+        protected void HandleSpeechActivityUpdated(bool mode)
         {
-            message = message.Trim();
+            if (mode && (!IsListening || (!Config.Speech.UseTextbox && !Config.Textbox.UseIndicatorWithoutBox)))
+                return;
 
-            if (!_denoiseFilter.IsMatch(message))
-                return string.Empty;
-
-            message = _denoiseFilter.Match(message).Groups[1].Value.Trim();
-
-            return message;
-        }
-
-        /// <summary>
-        /// Generates a regex for denoising
-        /// </summary>
-        internal static void UpdateDenoiseRegex()
-        {
-            var filterWords = Config.Speech.NoiseFilter.Select(x => $"(?:{x})");
-            var filterCombined = string.Join('|', filterWords);
-            var regString = $"^(?:\\b(?:{filterCombined})\\b)?(.*?)(?:\\b(?:{filterCombined})\\b)?$";
-            Logger.PInfo($"Updated denoiser ({regString})");
-            _denoiseFilter = new Regex(regString, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+            SpeechActivityUpdated.Invoke(null, mode);
         }
         #endregion
     }

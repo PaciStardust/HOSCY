@@ -20,8 +20,9 @@ namespace Hoscy
             this.SetDarkMode(true);
             InitializeComponent();
 
-            Logger.PInfo("HOSCY VERSION " + Utils.GetVersion());
-            Osc.RecreateListener();
+            Logger.PInfo("HOSCY VERSION " + App.Version);
+            Config.BackupFile(Utils.PathConfigFile);
+            Osc.RecreateListener(); //This also loads the config
 
             listBox.SelectedIndex = 0;
             Media.StartMediaDetection();

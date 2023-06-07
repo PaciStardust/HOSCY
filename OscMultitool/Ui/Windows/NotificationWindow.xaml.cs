@@ -22,6 +22,6 @@ namespace Hoscy.Ui.Windows
             => Clipboard.SetText(valueNotification.Text);
 
         private void Button_OpenGithub(object sender, RoutedEventArgs e)
-            => UiHelper.StartProcess(Utils.Github);
+            => Utils.StartProcess(Utils.Github);
     }
 }

@@ -1,50 +1,43 @@
-﻿using Hoscy.Services.Api;
+﻿using Hoscy.Services.Speech.Synthesizers;
 using Hoscy.Services.Speech.Utilities;
 using NAudio.Wave;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Speech.AudioFormat;
-using System.Speech.Synthesis;
 using System.Threading;
 
 namespace Hoscy.Services.Speech
 {
     internal static class Synthesizing
     {
-        private static readonly SpeechSynthesizer _synth = new();
+        private static SynthesizerBase? _synth;
         private static readonly MemoryStream _stream = new();
         private static readonly WaveOut _waveOut = new();
         private static RawSourceWaveStream? _provider;
         private static string _currentString = string.Empty;
-        internal static bool IsRunning => _provider != null;
+        private static bool _hasInitialized = false;
+
+        internal static bool IsRunning => _synth != null;
 
         static Synthesizing()
         {
-            Startup();
-        }
-
-        /// <summary>
-        /// Handles all startup things on load and fails if no voices are available
-        /// </summary>
-        private static void Startup()
-        {
-            Logger.PInfo("Attempting to start synthesizer...");
-
-            //Synth setup
-            var formatInfo = new SpeechAudioFormatInfo(16000, AudioBitsPerSample.Sixteen, AudioChannel.Mono);
-            _synth.SetOutputToAudioStream(_stream, formatInfo);
-
-            if (!ChangeVoice())
-                return;
-
             //Mic Setup
             _provider = GenerateProvider();
             _waveOut.Init(_provider);
 
             ChangeSpeakers();
             ChangeVolume(); //Turns out the default for this somehow gets saved
+
+            Logger.PInfo("Successfully prepared synth essentials");
+        }
+
+        /// <summary>
+        /// Initialization function, stops the synth from loading when the Output page is opened
+        /// </summary>
+        private static void Initialize()
+        {
+            if (_hasInitialized) return;
+
+            _synth = CreateSynth();
 
             Thread speechThread = new(new ThreadStart(SpeechLoop))
             {
@@ -53,10 +46,31 @@ namespace Hoscy.Services.Speech
             };
             speechThread.Start();
 
+            _hasInitialized = true;
             Logger.PInfo("Successfully started synthesizer thread");
         }
 
+        /// <summary>
+        /// Creates a synth based on config
+        /// </summary>
+        /// <returns>Synth of correct type</returns>
+        private static SynthesizerBase CreateSynth()
+        {
+            Logger.PInfo("Attempting to create synthesizer...");
+
+            if (Config.Api.UseAzureTts)
+                return new SynthesizerAzure(_stream);
+
+            return new SynthesizerWindows(_stream);
+        }
+
         #region Synth Control
+        /// <summary>
+        /// Reloads the synthesizer
+        /// </summary>
+        internal static void ReloadSynth()
+            => _synth = CreateSynth();
+
         /// <summary>
         /// Changers speakers based on config
         /// </summary>
@@ -67,35 +81,17 @@ namespace Hoscy.Services.Speech
             if (newDeviceNumber == _waveOut.DeviceNumber)
                 return;
             
-            _waveOut.Stop(); //Only triggers if its not alrady playing
-            _waveOut.DeviceNumber = newDeviceNumber;
-            _waveOut.Init(_provider); //Redo init
-            Logger.PInfo("Changed synthesizer microphone: " + Devices.Speakers[newDeviceNumber].ProductName);
-        }
-
-        /// <summary>
-        /// Changes Voice based on config
-        /// </summary>
-        /// <returns>False if no voices exist</returns>
-        internal static bool ChangeVoice()
-        {
-            //Used for cancelling startup
-            if (WindowsSynths.Count == 0)
+            try
             {
-                Logger.Warning("Could not find a voice to use for synthesizer");
-                return false;
+                _waveOut.Stop(); //Only triggers if its not alrady playing
+                _waveOut.DeviceNumber = newDeviceNumber;
+                _waveOut.Init(_provider); //Redo init
+                Logger.PInfo("Changed synthesizer microphone: " + Devices.Speakers[newDeviceNumber].ProductName);
             }
-
-            var voiceIndex = Math.Max(GetWindowsSynthIndex(Config.Speech.TtsId), 0);
-            var voiceName = WindowsSynths[voiceIndex].Name;
-
-            if (voiceName != _synth.Voice.Name)
+            catch (Exception ex)
             {
-                _synth.SelectVoice(WindowsSynths[voiceIndex].Name);
-                Logger.PInfo("Changed synthesizer voice: " + WindowsSynths[voiceIndex].Description);
+                Logger.Error(ex, "Unable to change synth microphone");
             }
-
-            return true;
         }
 
         /// <summary>
@@ -103,15 +99,23 @@ namespace Hoscy.Services.Speech
         /// </summary>
         internal static void ChangeVolume()
         {
-            var configVolume = Config.Speech.SpeakerVolume;
-            var roundedWaveOutVolume = Math.Ceiling(_waveOut.Volume * 20) / 20f;
+            //This is an attempt at trying to make the speech page not crash randomly
+            try
+            {
+                var configVolume = Config.Speech.SpeakerVolume;
+                var roundedWaveOutVolume = Math.Ceiling(_waveOut.Volume * 20) / 20f;
 
-            //Floating points messed with this so its strings now
-            if (configVolume + string.Empty == roundedWaveOutVolume + string.Empty)
-                return;
+                //Floating points messed with this so its strings now
+                if (configVolume + string.Empty == roundedWaveOutVolume + string.Empty)
+                    return;
 
-            _waveOut.Volume = Config.Speech.SpeakerVolume;
-            Logger.PInfo("Changed synthesizer volume: " + Config.Speech.SpeakerVolume);
+                _waveOut.Volume = Config.Speech.SpeakerVolume;
+                Logger.PInfo("Changed synthesizer volume: " + Config.Speech.SpeakerVolume);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Failed to change synth volume", false);
+            }
         }
         #endregion
 
@@ -132,7 +136,10 @@ namespace Hoscy.Services.Speech
         /// <param name="input">Sentence to say</param>
         internal static void Say(string input)
         {
-            if (!IsRunning || string.IsNullOrWhiteSpace(input))
+            if (!_hasInitialized)
+                Initialize();
+
+            if (string.IsNullOrWhiteSpace(input))
                 return;
 
             if (input.Length > Config.Speech.MaxLenTtsString)
@@ -174,14 +181,12 @@ namespace Hoscy.Services.Speech
                 _provider = GenerateProvider(); //We reset the provider for each clip as it appears to cause issues otherwise
                 Logger.Log("Creating synth audio from: " + _currentString);
 
-                if (Config.Api.UseAzureTts)
-                {
-                    if (!await Synthesizer.SpeakAsync(_currentString, _stream))
-                        return;
-                }
-                else
-                    _synth.Speak(_currentString);
+                var speakSuccess = _synth!.IsAsync //Synth should never be null at this point as this thread is called by init
+                    ? await _synth.SpeakAsync(_currentString)
+                    : _synth.Speak(_currentString);
 
+                if (!speakSuccess)
+                    continue;
 
                 Logger.Info("Playing synth audio: " + _currentString);
                 _currentString = string.Empty;
@@ -204,32 +209,6 @@ namespace Hoscy.Services.Speech
         /// </summary>
         private static RawSourceWaveStream GenerateProvider()
             => new (_stream, new(16000, 16, 1));
-        #endregion
-
-        #region TTS Devices
-        internal static IReadOnlyList<VoiceInfo> WindowsSynths { get; private set; } = GetWindowsSynths();
-        private static IReadOnlyList<VoiceInfo> GetWindowsSynths()
-        {
-            Logger.Info("Getting installed Speech Synths");
-            return _synth.GetInstalledVoices()
-                .Where(x => x.Enabled)
-                .Select(x => x.VoiceInfo)
-                .ToList();
-        }
-
-        internal static int GetWindowsSynthIndex(string id)
-        {
-            for (int i = 0; i < WindowsSynths.Count; i++)
-            {
-                if (WindowsSynths[i].Id == id)
-                    return i;
-            }
-
-            if (WindowsSynths.Count == 0)
-                return -1;
-            else
-                return 0;
-        }
         #endregion
     }
 }

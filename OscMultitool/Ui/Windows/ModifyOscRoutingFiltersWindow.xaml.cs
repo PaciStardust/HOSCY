@@ -26,7 +26,7 @@ namespace Hoscy.Ui.Windows
         }
 
         private void Refresh(int index)
-            => listBox.Refresh( _list.Select(x => $"{x} ({x.Filters.Count} Filters)"), index);
+            => listBox.Load( _list.Select(x => $"{x} ({x.Filters.Count} Filters)"), index);
 
         #region Modification
         private void AddEntry()

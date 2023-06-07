@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using Whisper;
 
 namespace Hoscy.Models
 {
     /// <summary>
-    /// Model for storing all config data
+    /// Model for storing all config data, they can not log
     /// </summary>
     internal class ConfigModel
     {
@@ -40,7 +41,7 @@ namespace Hoscy.Models
         public int TranslationMaxTextLength //Maximum length of translatable text
         {
             get => _translationMaxTextLength;
-            set => _translationMaxTextLength = Utils.MinMax(value, 1, 60000);
+            set => _translationMaxTextLength = Utils.MinMax(value, 1, short.MaxValue);
         }
         private int _translationMaxTextLength = 2000;
 
@@ -103,12 +104,7 @@ namespace Hoscy.Models
     {
         public bool OpenLogWindow { get; set; } = false; //Open log window on startup
         public bool CheckUpdates { get; set; } = true; //Automatically check for updates on startup
-        public bool Error { get; set; } = true;
-        public bool Warning { get; set; } = true;
-        public bool Info { get; set; } = true;
-        public bool PrioInfo { get; set; } = true;
-        public bool Log { get; set; } = true;
-        public bool Debug { get; set; } = false;
+        public LogSeverity MinimumLogSeverity { get; set; } = LogSeverity.Log;
         public List<FilterModel> LogFilters { get; set; } = new(); //Phrases filtered from logs
     }
 
@@ -216,7 +212,7 @@ namespace Hoscy.Models
         public int MaxLenTtsString //Max length of strings that get TTS
         {
             get => _maxLenTtsString;
-            set => _maxLenTtsString = Utils.MinMax(value, 1, 99999);
+            set => _maxLenTtsString = Utils.MinMax(value, 1, short.MaxValue);
         }
         private int _maxLenTtsString = 500;
         public bool SkipLongerMessages { get; set; } = true; //Skip longer messages instead of cutting off
@@ -231,15 +227,68 @@ namespace Hoscy.Models
         }
         private int _voskTimeout = 2500;
 
+        //Whisper
+        public Dictionary<string, string> WhisperModels { get; set; } = new(); //Model identifiers and filepaths
+        public string WhisperModelCurrent { get; set; } = string.Empty; //Identifier for current model
+
+        public bool WhisperSingleSegment { get; set; } = true; //Enables single segment mode (Higher accuracy, reduced functionality)
+        //public bool WhisperSpeedup { get; set; } = false; //Enables speedup (Higher speed, lower accuracy), disabled for now due to library issues
+        public bool WhisperToEnglish { get; set; } = false; //Translates to english
+        public bool WhisperBracketFix { get; set; } = true; //Fixes the bracket issue ('( ( (')
+        public bool WhisperHighPerformance { get; set; } = false; //Enables heightened thread priority
+        public bool WhisperLogFilteredNoises { get; set; } = false; //Logging of filtered noises
+        //public bool WhisperCpuOnly { get; set;} = false; //Enables CPU Only mode, disabled for now due to library issues
+
+        public eLanguage WhisperLanguage { get; set; } = eLanguage.English;
+
+        public Dictionary<string,string> WhisperNoiseFilter { get; set; } = new();
+
+        public int WhisperThreads //Threads for whisper to use, 0 = infinite
+        {
+            get => _whisperThreads;
+            set => _whisperThreads = Utils.MinMax(value, short.MinValue, short.MaxValue);
+        }
+        private int _whisperThreads = -4;
+
+        public int WhisperMaxContext //Max context for whisper to use, -1 = infinite
+        {
+            get => _whisperMaxContext;
+            set => _whisperMaxContext = Utils.MinMax(value, -1, short.MaxValue);
+        }
+        private int _whisperMaxContext = 0;
+
+        public int WhisperMaxSegLen //Max segment length for whisper, 0 = infinite
+        {
+            get => _whisperMaxSegLen;
+            set => _whisperMaxSegLen = Utils.MinMax(value, 0, short.MaxValue);
+        }
+        private int _whisperMaxSegLen = 0;
+
+        public float WhisperRecMaxDuration //Maximum duration for recognition
+        {
+            get => _whisperRecMaxDuration;
+            set => _whisperRecMaxDuration = Utils.MinMax(value, 2, short.MaxValue);
+        }
+        private float _whisperRecMaxDuration = 16;
+
+        public float WhisperRecPauseDuration //Duration for pauses
+        {
+            get => _whisperRecPauseDuration;
+            set => _whisperRecPauseDuration = Utils.MinMax(value, 0.05f, short.MaxValue);
+        }
+        private float _whisperRecPauseDuration = 0.5f;
+
         //Windows
         public string WinModelId { get; set; } = string.Empty; //Identifier for Microsoft Recognizer
 
         //Replacement
         public List<string> NoiseFilter { get; set; } = new(); //List of words deemed noise
-        public bool RemoveFullStop { get; set; } = true; 
+        public bool RemovePeriod { get; set; } = true; //Removes period at end
+        public bool CapitalizeFirst { get; set; } = true; //Capitalizes first letter
         public bool UseReplacements { get; set; } = true; //Are replacements (and shortcuts) even used?
         public List<ReplacementDataModel> Shortcuts { get; set; } = new();
         public List<ReplacementDataModel> Replacements { get; set; } = new();
+        public string ShortcutIgnoredCharacters { get; set; } = ".?!,。、！？";
     }
 
     /// <summary>
@@ -315,6 +364,7 @@ namespace Hoscy.Models
         //Media
         public bool MediaShowStatus { get; set; } = false; //Display media information in textbox
         public bool MediaAddAlbum { get; set; } = false; //Also add album to media information
+        public bool MediaSwapArtistAndSong { get; set; } = false; //Swaps order of artist and song
 
         public string MediaPlayingVerb //xyz "songname" by "artist" on "album"
         {

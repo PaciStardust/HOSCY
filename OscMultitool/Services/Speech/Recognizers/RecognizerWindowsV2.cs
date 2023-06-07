@@ -11,7 +11,7 @@ namespace Hoscy.Services.Speech.Recognizers
         {
             Description = "Recognizer using Windows Recognition, low quality, please avoid",
             UsesMicrophone = true,
-            UsesWinRecognizer = true
+            Type = RecognizerType.Windows
         };
 
         internal override bool IsListening => _microphone.IsListening;
@@ -62,12 +62,7 @@ namespace Hoscy.Services.Speech.Recognizers
         private void OnSpeechRecognized(object? sender, SpeechRecognizedEventArgs e)
         {
             Logger.Log("Got Message: " + e.Result.Text);
-
-            var message = Denoise(e.Result.Text);
-            if (string.IsNullOrWhiteSpace(message))
-                return;
-
-            ProcessMessage(message);
+            HandleSpeechRecognized(e.Result.Text);
         }
         #endregion
     }

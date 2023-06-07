@@ -64,15 +64,14 @@ namespace Hoscy
 
         private static void Log(LogMessage message)
         {
-            if (message.Severity == LogSeverity.Error)
+            if (message.Severity >= LogSeverity.Error)
                 App.OpenNotificationWindow(
                     "Error at: " + message.GetLocation(),
                     "An error has occured\nIf you are unsure why or how to handle it,\nplease open an issue on GitHub or Discord",
                     message.Message
                 );
 
-
-            if (!LogLevelAllowed(message.Severity)) return;
+            if (message.Severity < Config.Debug.MinimumLogSeverity) return;
 
             lock (_lock) //Making sure log writing is not impacted by multithreading
             {
@@ -107,7 +106,7 @@ namespace Hoscy
             var severity = notify ? LogSeverity.Error : LogSeverity.ErrSilent;
             Log(message, severity, file, member, line);
         }
-        
+
         internal static void Error(Exception error, string descriptiveError = "", bool notify = true, [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0) //Error using exception
         {
             var sb = new StringBuilder();
@@ -137,30 +136,12 @@ namespace Hoscy
         {
             LogSeverity.Error => ConsoleColor.Red,
             LogSeverity.ErrSilent => ConsoleColor.Red,
-            LogSeverity.Critical => ConsoleColor.DarkRed,
             LogSeverity.Warning => ConsoleColor.Yellow,
             LogSeverity.PrioInfo => ConsoleColor.Cyan,
             LogSeverity.Log => ConsoleColor.DarkGray,
             LogSeverity.Info => ConsoleColor.White,
             LogSeverity.Debug => ConsoleColor.DarkGray,
             _ => ConsoleColor.White
-        };
-
-        /// <summary>
-        /// Check if logging is allowed for severity
-        /// </summary>
-        /// <param name="severity">Severity of log</param>
-        /// <returns>Logging enabled?</returns>
-        private static bool LogLevelAllowed(LogSeverity severity) => severity switch
-        {
-            LogSeverity.Error => Config.Debug.Error,
-            LogSeverity.ErrSilent => Config.Debug.Error,
-            LogSeverity.Warning => Config.Debug.Warning,
-            LogSeverity.PrioInfo => Config.Debug.PrioInfo,
-            LogSeverity.Info => Config.Debug.Info,
-            LogSeverity.Log => Config.Debug.Log,
-            LogSeverity.Debug => Config.Debug.Debug,
-            _ => true
         };
         #endregion
     }
@@ -232,7 +213,7 @@ namespace Hoscy
             if (string.IsNullOrWhiteSpace(message))
                 return;
 
-            switch(logLevel)
+            switch (logLevel)
             {
                 case LogLevel.Information:
                     Logger.Info(message);
@@ -255,13 +236,12 @@ namespace Hoscy
     }
     internal enum LogSeverity
     {
-        Error,
-        ErrSilent,
-        Warning,
-        Info,
-        Log,
         Debug,
-        Critical,
-        PrioInfo
+        Log,
+        Info,
+        PrioInfo,
+        Warning,
+        ErrSilent,
+        Error
     }
 }

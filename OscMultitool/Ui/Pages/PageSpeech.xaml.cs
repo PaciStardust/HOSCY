@@ -2,40 +2,43 @@
 using Hoscy.Services.Speech.Recognizers;
 using Hoscy.Services.Speech.Utilities;
 using Hoscy.Ui.Windows;
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using Whisper;
 
 namespace Hoscy.Ui.Pages
 {
     /// <summary>
-    /// Interaction logic for TestPage.xaml8
+    /// Interaction logic for TestPage.xaml
     /// </summary>
-    internal partial class PageSpeech : Page
+    internal partial class PageSpeech : Page //todo: [BUG] Change indicator reset issues
     {
         private static bool _changedValues = false;
 
-        private static readonly Dictionary<string, RecognizerPerms> _permDict = new()
+        private static readonly IReadOnlyDictionary<string, RecognizerPerms> _permDict = new Dictionary<string, RecognizerPerms>()
         {
+            { "Whisper AI Recognizer", RecognizerWhisper.Perms },
             { "Vosk AI Recognizer", RecognizerVosk.Perms },
+            { "Azure API Recognizer", RecognizerAzure.Perms },
             { "Windows Recognizer V2", RecognizerWindowsV2.Perms },
             { "Windows Recognizer", RecognizerWindows.Perms },
-            { "Any-API Recognizer", RecognizerApi.Perms },
-            { "Azure API Recognizer", RecognizerAzure.Perms }
+            { "Any-API Recognizer", RecognizerApi.Perms }
         };
 
         internal static RecognizerBase? GetRecognizerFromUi()
             => Config.Speech.ModelName switch
             {
+                "Whisper AI Recognizer" => new RecognizerWhisper(),
                 "Vosk AI Recognizer" => new RecognizerVosk(),
+                "Azure API Recognizer" => new RecognizerAzure(),
                 "Windows Recognizer V2" => new RecognizerWindowsV2(),
                 "Windows Recognizer" => new RecognizerWindows(),
                 "Any-API Recognizer" => new RecognizerApi(),
-                "Azure API Recognizer" => new RecognizerAzure(),
-                _ => new RecognizerVosk()
+                _ => new RecognizerWindowsV2()
             };
 
         public PageSpeech()
@@ -43,13 +46,17 @@ namespace Hoscy.Ui.Pages
             InitializeComponent();
             LoadBoxes();
             UpdateRecognizerSelector();
-            UpdateVoskRecognizerBox();
 
-            UpdateRecognizerStatus(null, new(Recognition.IsRecognizerRunning, Recognition.IsRecognizerListening));
+            UpdateRecognizerStatus(null, new(Recognition.IsRunning, Recognition.IsListening));
             Recognition.RecognitionChanged += UpdateRecognizerStatus;
+
+            changeIndicator.Visibility = _changedValues ? Visibility.Visible : Visibility.Hidden;
         }
 
         #region Loading
+        /// <summary>
+        /// Updates the recognizer status if it is changed in the recognizer
+        /// </summary>
         private void UpdateRecognizerStatus(object? sender, RecognitionChangedEventArgs e)
         {
             Dispatcher.Invoke(() =>
@@ -68,19 +75,29 @@ namespace Hoscy.Ui.Pages
             });
         }
 
+        /// <summary>
+        /// Loads data into UI boxes
+        /// </summary>
         private void LoadBoxes()
         {
             //Microphones
             speechMicrophoneBox.Load(Devices.Microphones.Select(x => x.ProductName), Devices.GetMicrophoneIndex(Config.Speech.MicId));
             //Windows Listeners
-            speechWindowsRecognizerBox.Load(Recognition.WindowsRecognizers.Select(x => x.Description), Recognition.GetWindowsListenerIndex(Config.Speech.WinModelId));
+            windowsRecognizerBox.Load(Devices.WindowsRecognizers.Select(x => x.Description), Devices.GetWindowsListenerIndex(Config.Speech.WinModelId));
+            //AnyAPI presrt
+            anyApiBox.Load(Config.Api.Presets.Select(x => x.Name), Config.Api.GetIndex(Config.Api.RecognitionPreset));
 
-            changeIndicator.Visibility = _changedValues ? Visibility.Visible : Visibility.Hidden;
+            UpdateVoskRecognizerBox();
+            UpdateWhisperRecognizerBox();
+            LoadWhisperLanguageBox();
         }
 
-        private void EnableChangeIndicator()
+        /// <summary>
+        /// Tries to enable the UI change indicator, will fail if recognizer is not running
+        /// </summary>
+        private void TryEnableChangeIndicator()
         {
-            if (!Recognition.IsRecognizerRunning)
+            if (!Recognition.IsRunning)
                 return;
 
             changeIndicator.Visibility = Visibility.Visible;
@@ -126,51 +143,54 @@ namespace Hoscy.Ui.Pages
             var perms = _permDict[keys[recSelIndex]];
 
             valueRecInfo.Text = perms.Description;
-            optionsMic.IsEnabled = perms.UsesMicrophone;
-            optionsVosk.IsEnabled = perms.UsesVoskModel;
-            optionsWin.IsEnabled = perms.UsesWinRecognizer;
+            optionsMic.Visibility = perms.UsesMicrophone ? Visibility.Visible : Visibility.Collapsed;
+            optionsVosk.Visibility = perms.Type == RecognizerType.Vosk ? Visibility.Visible : Visibility.Collapsed;
+            optionsWin.Visibility = perms.Type == RecognizerType.Windows ? Visibility.Visible : Visibility.Collapsed;
+            optionsAnyApi.Visibility = perms.Type == RecognizerType.AnyApi ? Visibility.Visible : Visibility.Collapsed;
+            optionsAzure.Visibility = perms.Type == RecognizerType.Azure ? Visibility.Visible : Visibility.Collapsed;
+            optionsWhisper.Visibility = perms.Type == RecognizerType.Whisper ? Visibility.Visible : Visibility.Collapsed;
 
             if (oldModelName != Config.Speech.ModelName)
-                EnableChangeIndicator();
+                TryEnableChangeIndicator();
         }
 
+        /// <summary>
+        /// Updates contents of the Vosk Recognizer dropdown
+        /// </summary>
         private void UpdateVoskRecognizerBox()
+            => voskModelBox.LoadDictionary(Config.Speech.VoskModels, Config.Speech.VoskModelCurrent);
+
+        /// <summary>
+        /// Updates contents of the Whisper Recognizer dropdown
+        /// </summary>
+        private void UpdateWhisperRecognizerBox()
+            => whisperModelBox.LoadDictionary(Config.Speech.WhisperModels, Config.Speech.WhisperModelCurrent);
+
+        private void LoadWhisperLanguageBox()
         {
-            var models = Config.Speech.VoskModels;
-
-            //Checking if any model in list model is invalid
-            foreach(var model in models)
+            var languages = Enum.GetValues(typeof(eLanguage)).Cast<eLanguage>().ToList();
+            if (languages == null)
             {
-                if (!Directory.Exists(model.Value))
-                    models.Remove(model.Key);
+                Logger.Error("Failed to grab enum values for whisper languages", false);
+                return;
             }
 
-            //Checking for availability of current model in dropdown
-            int index = -1;
-            var keyArray = models.Keys.ToArray();
-            for (int i = 0; i < keyArray.Length; i++)
+            var sortedLanguages = languages.OrderBy(x => x.ToString()).ToList();
+            var languageIndex = sortedLanguages.IndexOf(Config.Speech.WhisperLanguage);
+            if (languageIndex == -1)
             {
-                if (Config.Speech.VoskModelCurrent == keyArray[i])
-                {
-                    index = i;
-                    break;
-                }
+                Logger.Error("Failed to grab whisper language index corresponding to config value", false);
+                return;
             }
 
-            //Clearing, very cool
-            voskModelBox.ItemsSource = null;
-            foreach (var item in voskModelBox.Items)
-                voskModelBox.Items.Remove(item);
-            voskModelBox.Items.Refresh();
-            
-            voskModelBox.Load(models.Keys, index, true);
+            whisperLanguageBox.Load(sortedLanguages, languageIndex);
         }
         #endregion
 
         #region Buttons
         private async void Button_StartStop(object sender, RoutedEventArgs e)
         {
-            if (Recognition.IsRecognizerRunning)
+            if (Recognition.IsRunning)
                 Recognition.StopRecognizer();
             else
             {
@@ -187,29 +207,27 @@ namespace Hoscy.Ui.Pages
             Config.Speech.MicId = string.Empty;
 
             if (Config.Speech.MicId != oldId)
-                EnableChangeIndicator();
+                TryEnableChangeIndicator();
         }
 
         private void Button_Mute(object sender, RoutedEventArgs e)
-            => Recognition.SetListening(!Recognition.IsRecognizerListening);
+            => Recognition.SetListening(!Recognition.IsListening);
 
         private void Button_OpenNoiseFilter(object sender, RoutedEventArgs e)
         {
             UiHelper.OpenListEditor("Edit Noise Filter", "Noise Text", Config.Speech.NoiseFilter);
-            RecognizerBase.UpdateDenoiseRegex();
+            Recognition.UpdateDenoiseRegex();
         }
         private void Button_OpenReplacements(object sender, RoutedEventArgs e)
         {
             var window = new ModifyReplacementDataWindow("Edit Replacements", Config.Speech.Replacements);
-            window.SetDarkMode(true);
-            window.ShowDialog();
+            window.ShowDialogDark();
             TextProcessor.UpdateReplacementDataHandlers();
         }
         private void Button_OpenShortcuts(object sender, RoutedEventArgs e)
         {
             var window = new ModifyReplacementDataWindow("Edit Shortcuts", Config.Speech.Shortcuts);
-            window.SetDarkMode(true);
-            window.ShowDialog();
+            window.ShowDialogDark();
             TextProcessor.UpdateReplacementDataHandlers();
         }
 
@@ -218,9 +236,36 @@ namespace Hoscy.Ui.Pages
             UiHelper.OpenDictionaryEditor("Edit Vosk AI Models", "Model name", "Model folder", Config.Speech.VoskModels);
             UpdateVoskRecognizerBox();
         }
+
+        private void Button_EditWhisperModels(object sender, RoutedEventArgs e)
+        {
+            UiHelper.OpenDictionaryEditor("Edit Whisper AI Models", "Model name", "Model folder", Config.Speech.WhisperModels);
+            UpdateWhisperRecognizerBox();
+        }
+
+        private void Button_EditAzurePhrases(object sender, RoutedEventArgs e)
+        {
+            UiHelper.OpenListEditor("Edit Phrases", "Phrase", Config.Api.AzurePhrases, "New Phrase");
+            TryEnableChangeIndicator();
+        }
+
+        private void Button_EditAzureLanguages(object sender, RoutedEventArgs e)
+        {
+            UiHelper.OpenListEditor("Edit Languages", "Language", Config.Api.AzureRecognitionLanguages, "New Language");
+            TryEnableChangeIndicator();
+        }
+
+        private void Button_EditWhisperNoiseWhitelist(object sender, RoutedEventArgs e)
+        {
+            var window = new ModifyDictionaryWindow("Edit Noise Whitelist", "Identifier", "Noise start", Config.Speech.WhisperNoiseFilter);
+            window.ShowDialogDark();
+        }
         #endregion
 
         #region SelectionChanged
+        private void RecognizerSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+            => UpdateRecognizerSelector();
+
         private void SpeechMicrophoneBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var oldId = Config.Speech.MicId;
@@ -230,23 +275,20 @@ namespace Hoscy.Ui.Pages
                 Config.Speech.MicId = Devices.Microphones[speechMicrophoneBox.SelectedIndex].ProductName;
 
             if (oldId != Config.Speech.MicId)
-                EnableChangeIndicator();
+                TryEnableChangeIndicator();
         }
 
-        private void SpeechWindowsRecognizerBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void WindowsRecognizerBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var oldId = Config.Speech.WinModelId;
 
-            var index = speechWindowsRecognizerBox.SelectedIndex;
-            if (index != -1 && index < Recognition.WindowsRecognizers.Count)
-                Config.Speech.WinModelId = Recognition.WindowsRecognizers[speechWindowsRecognizerBox.SelectedIndex].Id;
+            var index = windowsRecognizerBox.SelectedIndex;
+            if (index != -1 && index < Devices.WindowsRecognizers.Count)
+                Config.Speech.WinModelId = Devices.WindowsRecognizers[windowsRecognizerBox.SelectedIndex].Id;
 
             if (oldId != Config.Speech.WinModelId)
-                EnableChangeIndicator();
+                TryEnableChangeIndicator();
         }
-
-        private void RecognizerSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
-            => UpdateRecognizerSelector();
 
         private void VoskModelBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -257,7 +299,59 @@ namespace Hoscy.Ui.Pages
                 Config.Speech.VoskModelCurrent = Config.Speech.VoskModels.Keys.ToArray()[index];
 
             if (oldModelName != Config.Speech.VoskModelCurrent)
-                EnableChangeIndicator();
+                TryEnableChangeIndicator();
+        }
+
+        private void WhisperModelBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string oldModelName = Config.Speech.WhisperModelCurrent;
+
+            var index = whisperModelBox.SelectedIndex;
+            if (index != -1 && index < Config.Speech.WhisperModels.Count)
+                Config.Speech.WhisperModelCurrent = Config.Speech.WhisperModels.Keys.ToArray()[index];
+
+            if (oldModelName != Config.Speech.WhisperModelCurrent)
+                TryEnableChangeIndicator();
+        }
+
+        private void AnyApiBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string oldAnyApiName = Config.Api.RecognitionPreset;
+
+            int index = anyApiBox.SelectedIndex;
+            if (index == -1 || index >= Config.Api.Presets.Count)
+                return;
+
+            Config.Api.RecognitionPreset = Config.Api.Presets[anyApiBox.SelectedIndex].Name;
+
+            if (oldAnyApiName != Config.Api.RecognitionPreset)
+                TryEnableChangeIndicator();
+        }
+
+        private void TextBox_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+            => TryEnableChangeIndicator();
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            if (IsLoaded)
+                TryEnableChangeIndicator();
+        }
+
+        private void WhisperLanguageBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var oldLanguage = Config.Speech.WhisperLanguage;
+            eLanguage? newLanguage = (eLanguage)whisperLanguageBox.SelectedItem;
+
+            if (newLanguage == null)
+            {
+                Logger.Error("Failed to assign selected whisper language to config");
+                return;
+            }
+
+            Config.Speech.WhisperLanguage = newLanguage.Value;
+
+            if (oldLanguage != Config.Speech.WhisperLanguage)
+                TryEnableChangeIndicator();
         }
         #endregion
     }

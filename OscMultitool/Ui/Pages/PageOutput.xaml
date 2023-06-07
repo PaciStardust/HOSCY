@@ -14,7 +14,7 @@
         <StackPanel Margin="0,0,32,0">
             <WrapPanel>
                 <Label Content="Textbox" Style="{StaticResource HLabelL}"/>
-                <Button Content="Skip Current Queue" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_SkipBox"/>
+                <Button Content="Skip" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_SkipBox"/>
             </WrapPanel>
 
             <!-- Textbox -->
@@ -43,7 +43,7 @@
                                 <TextBox.Text>
                                     <Binding Source="{x:Static local:Config.Data}" Path="Textbox.MinimumTimeout" UpdateSourceTrigger="PropertyChanged">
                                         <Binding.ValidationRules>
-                                            <ui:IntegerValidationRule Min="1000" Max="30000"/>
+                                            <ui:IntegerValidationRule Min="1000" Max="32767"/>
                                         </Binding.ValidationRules>
                                     </Binding>
                                 </TextBox.Text>
@@ -71,8 +71,8 @@
 
                 <StackPanel Style="{StaticResource HStackIndent}">
 
-                    
-                    
+
+
                     <Label Content="Visibility"/>
 
                     <StackPanel Style="{StaticResource HStackIndent}">
@@ -92,7 +92,7 @@
                             </TextBox>
                             <Label Content="Max. text length" VerticalAlignment="Center"/>
                         </WrapPanel>
-                        
+
                         <TextBlock Style="{DynamicResource HTextBlock}" Text="Notification Text" Margin="0,4,0,0"/>
                         <WrapPanel>
                             <TextBox Tag="Left..." Style="{StaticResource HTextBoxTiny}">
@@ -131,83 +131,13 @@
                         <CheckBox Margin="0,4,0,0" Content="Skip notification timeout if messages available" IsChecked="{Binding Textbox.UseNotificationSkip, Source={x:Static local:Config.Data}}"/>
                     </StackPanel>
                 </StackPanel>
-
-                <!-- Extras -->
-                <Label Margin="0,16,0,0" Content="Extra Options" Style="{StaticResource HLabelM}"/>
-
-                <StackPanel Style="{StaticResource HStackIndent}">
-                    <WrapPanel>
-                        <Label Content="Media Status"/>
-                        <Button Content="Media Filter" HorizontalAlignment="Left" VerticalAlignment="Center" Style="{StaticResource HButtonSmall}" Click="Button_ModifyMediaFilter"/>
-                    </WrapPanel>
-
-                    <StackPanel Style="{StaticResource HStackIndent}">
-                        <CheckBox Content="Show media status" IsChecked="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}"/>
-                        <CheckBox Content="Also display album name" Margin="0,4,0,0" IsChecked="{Binding Textbox.MediaAddAlbum, Source={x:Static local:Config.Data}}" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}"/>
-
-                        <TextBlock Style="{DynamicResource HTextBlock}" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}" Text="Text Configuration" Margin="0,8,0,4"/>
-                        <WrapPanel IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}">
-                            <TextBox Tag="Playing..." Style="{StaticResource HTextBoxShort}">
-                                <TextBox.Text>
-                                    <Binding Source="{x:Static local:Config.Data}" Path="Textbox.MediaPlayingVerb" UpdateSourceTrigger="PropertyChanged">
-                                        <Binding.ValidationRules>
-                                            <ui:StringValidationRule Min="1" Max="999"/>
-                                        </Binding.ValidationRules>
-                                    </Binding>
-                                </TextBox.Text>
-                            </TextBox>
-                            <Label Content=" 'Song' " VerticalAlignment="Center"/>
-
-                            <TextBox Tag="by..." Style="{StaticResource HTextBoxTiny}">
-                                <TextBox.Text>
-                                    <Binding Source="{x:Static local:Config.Data}" Path="Textbox.MediaArtistVerb" UpdateSourceTrigger="PropertyChanged">
-                                        <Binding.ValidationRules>
-                                            <ui:StringValidationRule Min="1" Max="999"/>
-                                        </Binding.ValidationRules>
-                                    </Binding>
-                                </TextBox.Text>
-                            </TextBox>
-                            <Label Content=" 'Artist' " VerticalAlignment="Center"/>
-
-                            <WrapPanel IsEnabled="{Binding Textbox.MediaAddAlbum, Source={x:Static local:Config.Data}}">
-                                <TextBox Tag="on..." Style="{StaticResource HTextBoxTiny}">
-                                    <TextBox.Text>
-                                        <Binding Source="{x:Static local:Config.Data}" Path="Textbox.MediaAlbumVerb" UpdateSourceTrigger="PropertyChanged">
-                                            <Binding.ValidationRules>
-                                                <ui:StringValidationRule Min="1" Max="999"/>
-                                            </Binding.ValidationRules>
-                                        </Binding>
-                                    </TextBox.Text>
-                                </TextBox>
-                                <Label Content=" 'Album'" VerticalAlignment="Center"/>
-                            </WrapPanel>
-                        </WrapPanel>
-
-                        <WrapPanel Margin="0,4,0,0" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}">
-                            <TextBox HorizontalAlignment="Left" Text="{Binding Textbox.MediaExtra, Source={x:Static local:Config.Data}}" Tag="Extra text..." Style="{StaticResource HTextBoxShort}"/>
-                            <Label Content="(Extra text)" VerticalAlignment="Center"/>
-                        </WrapPanel>
-                    </StackPanel>
-
-                    <Label Margin="0,8,0,0" Content="API Related"/>
-
-                    <StackPanel Style="{StaticResource HStackIndent}">
-                        <CheckBox Content="Apply translation to textbox" IsChecked="{Binding Api.TranslateTextbox, Source={x:Static local:Config.Data}}"/>
-                        <CheckBox Content="Apply original after translation" Margin="0,4,0,0" IsChecked="{Binding Api.AddOriginalAfterTranslate, Source={x:Static local:Config.Data}}" IsEnabled="{Binding Api.TranslateTextbox, Source={x:Static local:Config.Data}}"/>
-                    </StackPanel>
-
-                    <Label Margin="0,8,0,0" Content="Others"/>
-
-                    <StackPanel Style="{StaticResource HStackIndent}">
-                        <CheckBox Content="Show counter notifications" IsChecked="{Binding Osc.ShowCounterNotifications, Source={x:Static local:Config.Data}}"/>
-                        <CheckBox Content="Show AFK status" IsChecked="{Binding Osc.ShowAfkDuration, Source={x:Static local:Config.Data}}" Margin="0,4,0,0"/>
-                    </StackPanel>
-                </StackPanel>
             </StackPanel>
 
-            <WrapPanel Margin="0,32,0,0">
+            <WrapPanel Margin="0,16,0,0">
                 <Label Content="Text to Speech" Style="{StaticResource HLabelL}"/>
-                <Button Content="Skip Current Speech" Click="Button_SkipSpeech" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Button Content="Skip" Click="Button_SkipSpeech" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Button Content="Reload" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_ReloadSynthesizer" Margin="8,0,0,0"/>
+                <Label x:Name="changeIndicatorSynth" Foreground="{x:Static ui:UiHelper.ColorInvalid}" Content="(Unapplied changes)" FontSize="14" VerticalAlignment="Center" Margin="8,0,0,0" Visibility="Hidden"/>
             </WrapPanel>
 
             <!-- STT -->
@@ -233,8 +163,8 @@
                     </WrapPanel>
                 </StackPanel>
 
-                <!-- Other Options -->
-                <Label Content="Other Options" Style="{StaticResource HLabelM}" Margin="0,16,0,0"/>
+                <!-- Length Options -->
+                <Label Content="Length Options" Style="{StaticResource HLabelM}" Margin="0,16,0,0"/>
                 <StackPanel Style="{StaticResource HStackIndent}">
                     <WrapPanel>
                         <TextBox VerticalAlignment="Center" Style="{StaticResource HTextBoxShort}" Tag="MTL...">
@@ -249,12 +179,27 @@
                         <Label Content="Max. text length" VerticalAlignment="Center"/>
                     </WrapPanel>
                     <CheckBox Content="Skip too long messages" Margin="0,4,0,0" IsChecked="{Binding Speech.SkipLongerMessages, Source={x:Static local:Config.Data}}"/>
+                </StackPanel>
 
-                    <Label Margin="0,8,0,0" Content="API Options"/>
+                <!-- Azure Options -->
+                <Label Content="Azure Options" Style="{StaticResource HLabelM}" Margin="0,16,0,0"/>
+                <StackPanel Style="{StaticResource HStackIndent}">
+                    <CheckBox x:Name="SynthUseAzure" Content="Use Azure TTS" IsChecked="{Binding Api.UseAzureTts, Source={x:Static local:Config.Data}}" Checked="SynthUseAzure_Checked"/>
 
-                    <StackPanel Style="{StaticResource HStackIndent}">
-                        <CheckBox Content="Use Azure TTS" IsChecked="{Binding Api.UseAzureTts, Source={x:Static local:Config.Data}}"/>
-                        <CheckBox Content="Apply translation to text-to-speech" Margin="0,4,0,0" IsChecked="{Binding Api.TranslateTts, Source={x:Static local:Config.Data}}"/>
+                    <StackPanel Margin="0,4,0,0" IsEnabled="{Binding Api.UseAzureTts, Source={x:Static local:Config.Data}}">
+                        <TextBlock Style="{DynamicResource HTextBlock}" Text="Output Speech Voice"/>
+                        <WrapPanel>
+                            <ComboBox x:Name="azureVoiceBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="AzureVoiceBox_SelectionChanged"/>
+                            <Button Style="{StaticResource HButtonSmall}" Content="Edit list" Margin="8,0,0,0" VerticalAlignment="Center" Click="Button_EditAzureVoices"/>
+                        </WrapPanel>
+
+                        <TextBlock Style="{DynamicResource HTextBlock}" Text="Custom endpoint" Margin="0,4,0,0"/>
+                        <TextBox Text="{Binding Api.AzureCustomEndpointSpeech, Source={x:Static local:Config.Data}}" Tag="Custom endpoint..." Style="{StaticResource HTextBoxLong}" PreviewKeyDown="SynthTextBox_PreviewKeyDown"/>
+
+                        <WrapPanel Margin="0,4,0,0">
+                            <TextBox HorizontalAlignment="Left" Text="{Binding Api.AzureSpeechLanguage, Source={x:Static local:Config.Data}}" Tag="Language..." Style="{StaticResource HTextBoxShort}" PreviewKeyDown="SynthTextBox_PreviewKeyDown"/>
+                            <Label Content="Used Language" VerticalAlignment="Center"/>
+                        </WrapPanel>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>

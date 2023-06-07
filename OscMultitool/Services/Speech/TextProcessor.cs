@@ -7,19 +7,22 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Hoscy.Services.Speech.Utilities;
+using System.Text;
+using System.Linq;
 
 namespace Hoscy.Services.Speech
 {
-    internal class TextProcessor
+    internal readonly struct TextProcessor
     {
-        #region Static
-        private static IReadOnlyList<ReplacementHandler> _replacements = new List<ReplacementHandler>();
-        private static IReadOnlyList<ShortcutHandler> _shortcuts = new List<ShortcutHandler>();
-
         static TextProcessor()
         {
             UpdateReplacementDataHandlers();
         }
+        public TextProcessor() { }
+
+        #region Replacements and Shortcuts
+        private static IReadOnlyList<ReplacementHandler> _replacements = new List<ReplacementHandler>();
+        private static IReadOnlyList<ShortcutHandler> _shortcuts = new List<ShortcutHandler>();
 
         internal static void UpdateReplacementDataHandlers()
         {
@@ -63,19 +66,19 @@ namespace Hoscy.Services.Speech
         }
         #endregion
 
+        #region Processing
         internal bool UseTextbox { get; init; } = false;
         internal bool UseTts { get; init; } = false;
         internal bool TriggerCommands { get; init; } = false;
         internal bool TriggerReplace { get; init; } = false;
         internal bool AllowTranslate { get; init; } = false;
 
-        #region Processing
         /// <summary>
         /// Processes and sends strings with given options
         /// </summary>
         /// <param name="message">The message to process</param>
         internal void Process(string message)
-            => Utils.RunWithoutAwait(ProcessInternal(message));
+            => ProcessInternal(message).RunWithoutAwait();
 
         /// <summary>
         /// Processes and sends strings with given options
@@ -93,10 +96,10 @@ namespace Hoscy.Services.Speech
 
             if (TriggerCommands)
             {
-                var resultMessage = ExecuteCommands(message.TrimEnd('.'));
-                if (resultMessage != null)
+                var result = ExecuteCommands(message.TrimEnd('.'));
+                if (result != null)
                 {
-                    PageInfo.SetCommandMessage(resultMessage);
+                    PageInfo.SetCommandMessage(message, result.Value);
                     return;
                 }
             }
@@ -104,7 +107,7 @@ namespace Hoscy.Services.Speech
             //translation
             var translation = message;
             if (AllowTranslate && ((UseTextbox && Config.Api.TranslateTextbox) || (UseTts && Config.Api.TranslateTts)))
-                translation = await Translation.Translate(message);
+                translation = await Translator.Translate(message);
 
             if (UseTextbox)
             {
@@ -134,48 +137,60 @@ namespace Hoscy.Services.Speech
             foreach (var r in _replacements)
                 message = r.Replace(message);
 
+            var oldMessage = message;
+            message = new string(message.Where(x => !Config.Speech.ShortcutIgnoredCharacters.Contains(x)).ToArray());
+            var shortcutTriggered = false;
+
             //Checking for shortcuts
             foreach (var s in _shortcuts)
             {
                 if (s.Compare(message))
                 {
                     message = s.GetReplacement();
+                    shortcutTriggered = true;
                     break;
                 }
             }
 
+            if (!shortcutTriggered)
+                message = oldMessage;
+
             if (!message.StartsWith("[file]", StringComparison.OrdinalIgnoreCase))
                 return message;
 
-            var filePath = Regex.Replace(message, @"\[file\] *", "", RegexOptions.IgnoreCase);
-            if (File.Exists(filePath))
+            return ExecuteFileCommand(message);
+        }
+
+        /// <summary>
+        /// Executes "[file] ..." messages
+        /// </summary>
+        /// <param name="message">A message starting with "[file]"</param>
+        private static string ExecuteFileCommand(string message)
+        {
+            var filePath = Regex.Replace(message, @"\[file\] *", string.Empty, RegexOptions.IgnoreCase);
+            try
             {
-                try
-                {
-                    return string.Join(" ", File.ReadAllLines(filePath));
-                }
-                catch (Exception e)
-                {
-                    Logger.Error(e, "Failed to read provided file, is the path correct and does HOSCY have access?");
-                    return string.Empty;
-                }
+                return string.Join(" ", File.ReadAllLines(filePath));
             }
-            else
-                return filePath;
+            catch (Exception e)
+            {
+                Logger.Error(e, "Failed to read provided file, is the path correct and does HOSCY have access?");
+                return string.Empty;
+            }
         }
 
         /// <summary>
         /// Checking for message to be a command
         /// </summary>
-        /// <returns>Was a command executed?</returns>
-        private static string? ExecuteCommands(string message)
+        /// <returns>Success, null if no commands were ran</returns>
+        private static bool? ExecuteCommands(string message)
         {
             message = message.Trim();
             var lowerMessage = message.ToLower();
 
             //Osc command handling
             if (lowerMessage.StartsWith("[osc]"))
-                return Osc.ParseOscCommands(message) ? message : "Failed to execute OSC:\n\n" + message;
+                return Osc.ParseOscCommands(message);
 
             if (lowerMessage == "skip" || lowerMessage == "clear")
             {
@@ -183,14 +198,11 @@ namespace Hoscy.Services.Speech
                 Textbox.Clear();
                 Synthesizing.Skip();
                 OscDataHandler.SetAfkTimer(false);
-                return message;
+                return true;
             }
 
             if (lowerMessage.StartsWith("media "))
-            {
-                Media.HandleRawMediaCommand(lowerMessage.Replace("media ", ""));
-                return message;
-            }
+                return Media.HandleRawMediaCommand(lowerMessage);
 
             return null;
         }

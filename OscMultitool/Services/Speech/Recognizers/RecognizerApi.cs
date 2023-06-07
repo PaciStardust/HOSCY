@@ -11,7 +11,8 @@ namespace Hoscy.Services.Speech.Recognizers
         new internal static RecognizerPerms Perms => new()
         {
             Description = "Remote recognition using Any-API, not continuous",
-            UsesMicrophone = true
+            UsesMicrophone = true,
+            Type = RecognizerType.AnyApi
         };
 
         internal override bool IsListening => _isListening;
@@ -83,7 +84,7 @@ namespace Hoscy.Services.Speech.Recognizers
             }
 
             _stream.Position = 0;
-            Utils.RunWithoutAwait(RequestRecognition(_stream.GetBuffer()));
+            RequestRecognition(_stream.GetBuffer()).RunWithoutAwait();
 
             _stream.SetLength(0);
         }
@@ -106,11 +107,8 @@ namespace Hoscy.Services.Speech.Recognizers
 
             var result = await _client.SendBytes(audioData);
 
-            var message = Denoise(result ?? string.Empty);
-            if (string.IsNullOrWhiteSpace(message))
-                return;
-
-            ProcessMessage(message);
+            if (!string.IsNullOrWhiteSpace(result))
+                HandleSpeechRecognized(result);
         }
         #endregion
     }

@@ -5,6 +5,9 @@ namespace Hoscy.Models
 {
     internal class ApiPresetModel
     {
+        /// <summary>
+        /// THIS CLASS IS USED IN CONFIG - IT CAN NOT LOG
+        /// </summary>
         public string Name
         {
             get => _name;
@@ -23,7 +26,7 @@ namespace Hoscy.Models
             set
             {
                 _targetUrl = value;
-                _fullTargetUrl = value.StartsWith("h") ? value : "https://" + value;
+                _fullTargetUrl = value.StartsWith("http") ? value : "https://" + value;
             }
         }
         private string _targetUrl = string.Empty;

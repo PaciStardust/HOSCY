@@ -1,8 +1,10 @@
 ﻿using System;
-using System.Globalization;
 
 namespace Hoscy.Models
 {
+    /// <summary>
+    /// THIS CLASS IS USED IN CONFIG - IT CAN NOT LOG
+    /// </summary>
     internal class CounterModel
     {
         public string Name

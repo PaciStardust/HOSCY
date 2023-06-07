@@ -18,7 +18,7 @@ namespace Hoscy
         public static ConfigApiModel Api => Data.Api;
         public static ConfigLoggerModel Debug => Data.Debug;
 
-        #region Saving and Loading
+        #region Loading
         static Config()
         {
             try
@@ -26,12 +26,8 @@ namespace Hoscy
                 if (!Directory.Exists(Utils.PathConfigFolder))
                     Directory.CreateDirectory(Utils.PathConfigFolder);
 
-                if (!Directory.Exists(Utils.PathModels))
-                    Directory.CreateDirectory(Utils.PathModels);
-
                 string configData = File.ReadAllText(Utils.PathConfigFile, Encoding.UTF8);
                 Data = JsonConvert.DeserializeObject<ConfigModel>(configData) ?? new();
-                TryLoadFolderModels();
             }
             catch
             {
@@ -43,45 +39,41 @@ namespace Hoscy
             if (!Directory.Exists(Utils.PathConfigFolder))
                 MessageBox.Show("Failed to create config directory, please check your antivirus and your permissions", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
+        #endregion
 
+        #region Saving
         /// <summary>
         /// Saves the config file
         /// </summary>
-        internal static void SaveConfig(bool backup = false)
+        internal static void SaveConfig()
         {
             try
             {
                 var jsonText = JsonConvert.SerializeObject(Data ?? new(), Formatting.Indented);
                 File.WriteAllText(Utils.PathConfigFile, jsonText, Encoding.UTF8);
-                if (backup)
-                    File.WriteAllText(Utils.PathConfigFile + ".backup", jsonText, Encoding.UTF8);
-                Logger.Info($"Saved config file {(backup ? "and backup " : string.Empty)}at " + Utils.PathConfigFile);
+                Logger.Info($"Saved config file at " + Utils.PathConfigFile);
             }
             catch (Exception e)
             {
-                Logger.Error(e, "The config file was unable to be saved.", notify:false);
+                Logger.Error(e, "The config file was unable to be saved.", notify: false);
             }
         }
 
         /// <summary>
-        /// Tries loading in models from the model folder
+        /// Back up a specified file by creating a .backup file
         /// </summary>
-        private static void TryLoadFolderModels()
+        /// <param name="path">File to back up</param>
+        internal static void BackupFile(string path)
         {
-            var foldersNames = Directory.GetDirectories(Utils.PathModels);
-
-            foreach (var folderName in foldersNames)
+            try
             {
-                var contentFolder = Utils.GetActualContentFolder(folderName);
-
-                if (string.IsNullOrWhiteSpace(contentFolder))
-                    continue;
-
-                var folderNameSplit = folderName.Split("\\")[^1];
-                if (string.IsNullOrWhiteSpace(folderNameSplit))
-                    continue;
-
-                Speech.VoskModels[folderNameSplit] = contentFolder;
+                var fileText = File.ReadAllText(path, Encoding.UTF8);
+                File.WriteAllText(path + ".backup", fileText, Encoding.UTF8);
+                Logger.Info($"Backed up file {path}");
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e, $"Failed to backe up file {path}", notify: false);
             }
         }
         #endregion
@@ -192,9 +184,24 @@ namespace Hoscy
                     });
                 }
             }
-            
-            config.ConfigVersion = 4;
+
+            if (config.ConfigVersion < 5)
+            {
+                if (config.Speech.WhisperNoiseFilter.Count == 0)
+                {
+                    config.Speech.WhisperNoiseFilter = new()
+                    {
+                        { "Laughing", "laugh" },
+                        { "Popping", "pop" },
+                        { "Whistling", "whistl" },
+                        { "Sighing", "sigh" },
+                        { "Humming", "hum" }
+                    };
+                }
+            }
+
+            config.ConfigVersion = 5;
         }
-    #endregion
+        #endregion
     }
 }

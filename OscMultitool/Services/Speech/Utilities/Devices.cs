@@ -1,5 +1,8 @@
 ﻿using NAudio.Wave;
 using System.Collections.Generic;
+using System.Linq;
+using System.Speech.Recognition;
+using System.Speech.Synthesis;
 
 namespace Hoscy.Services.Speech.Utilities
 {
@@ -10,6 +13,8 @@ namespace Hoscy.Services.Speech.Utilities
             Logger.PInfo("Enforcing reload of Devices");
             Microphones = GetMicrophones();
             Speakers = GetSpeakers();
+            WindowsRecognizers = GetWindowsRecognizers();
+            WindowsVoices = GetWindowsVoices();
         }
 
         #region Mics
@@ -23,6 +28,12 @@ namespace Hoscy.Services.Speech.Utilities
 
             return list;
         }
+
+        /// <summary>
+        /// Returns the microphone list index for a given GUID
+        /// </summary>
+        /// <param name="guid">GUID of microphone</param>
+        /// <returns>On match => Index, No match => 0, Empty list => -1</returns>
         internal static int GetMicrophoneIndex(string guid)
         {
             for (int i = 0; i < Microphones.Count; i++)
@@ -32,9 +43,13 @@ namespace Hoscy.Services.Speech.Utilities
             }
 
             if (Microphones.Count == 0)
+            {
+                Logger.Error("No microphones available in list, this will cause some major issues", false);
                 return -1;
-            else
-                return 0;
+            }
+
+            Logger.Warning("No matching microphone found, defaulting to first in list...");
+            return 0;
         }
         #endregion
 
@@ -50,6 +65,11 @@ namespace Hoscy.Services.Speech.Utilities
             return speakers;
         }
 
+        /// <summary>
+        /// Returns the speaker list index for a given GUID
+        /// </summary>
+        /// <param name="guid">GUID of speaker</param>
+        /// <returns>On match => Index, No match => 0, Empty list => -1</returns>
         internal static int GetSpeakerIndex(string guid)
         {
             for (int i = 0; i < Speakers.Count; i++)
@@ -59,9 +79,81 @@ namespace Hoscy.Services.Speech.Utilities
             }
 
             if (Speakers.Count == 0)
+            {
+                Logger.Error("No speakers available in list, this might cause some issues", false);
                 return -1;
-            else
-                return 0;
+            }
+
+            Logger.Warning("No matching speaker found, defaulting to first in list...");
+            return 0;
+        }
+        #endregion
+
+        #region WinListeners
+        internal static IReadOnlyList<RecognizerInfo> WindowsRecognizers { get; private set; } = GetWindowsRecognizers();
+        private static IReadOnlyList<RecognizerInfo> GetWindowsRecognizers()
+        {
+            Logger.Info("Getting installed Speech Recognizers");
+            return SpeechRecognitionEngine.InstalledRecognizers();
+        }
+
+        /// <summary>
+        /// Returns the listener list index for a given id
+        /// </summary>
+        /// <param name="id">ID of listener</param>
+        /// <returns>On match => Index, No match => 0, Empty list => -1</returns>
+        internal static int GetWindowsListenerIndex(string id)
+        {
+            for (int i = 0; i < WindowsRecognizers.Count; i++)
+            {
+                if (WindowsRecognizers[i].Id == id)
+                    return i;
+            }
+
+            if (WindowsRecognizers.Count == 0)
+            {
+                Logger.Error("No windows recognizers available in list, this might cause some issues", false);
+                return -1;
+            }
+
+            Logger.Warning("No matching windows recognizer found, defaulting to first in list...");
+            return 0;
+        }
+        #endregion
+
+        #region Windows Voices
+        internal static IReadOnlyList<VoiceInfo> WindowsVoices { get; private set; } = GetWindowsVoices();
+        private static IReadOnlyList<VoiceInfo> GetWindowsVoices()
+        {
+            Logger.Info("Getting installed Windows Voices");
+            using var _synth = new SpeechSynthesizer();
+            return _synth.GetInstalledVoices()
+                .Where(x => x.Enabled)
+                .Select(x => x.VoiceInfo)
+                .ToList();
+        }
+
+        /// <summary>
+        /// Returns the voice list index for a given ID
+        /// </summary>
+        /// <param name="id">ID of voice</param>
+        /// <returns>On match => Index, No match => 0, Empty list => -1</returns>
+        internal static int GetWindowsVoiceIndex(string id)
+        {
+            for (int i = 0; i < WindowsVoices.Count; i++)
+            {
+                if (WindowsVoices[i].Id == id)
+                    return i;
+            }
+
+            if (WindowsVoices.Count == 0)
+            {
+                Logger.Error("No windows voices available in list, this might cause some issues", false);
+                return -1;
+            }
+
+            Logger.Warning("No matching windows voice found, defaulting to first in list...");
+            return 0;
         }
         #endregion
     }

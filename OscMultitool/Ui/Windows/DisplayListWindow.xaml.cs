@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 
 namespace Hoscy.Ui.Windows
@@ -16,10 +17,7 @@ namespace Hoscy.Ui.Windows
 
             _list = list;
             Title = title;
-            Refresh(-1);
+            listBox.Load(_list, -1);
         }
-        
-        private void Refresh(int index)
-            => listBox.Refresh(_list, index);
     }
 }

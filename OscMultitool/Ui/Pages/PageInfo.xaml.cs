@@ -11,7 +11,7 @@ namespace Hoscy.Ui.Pages
     /// </summary>
     internal partial class PageInfo : Page
     {
-        internal static PageInfo Instance { get; private set; } = new();
+        internal static PageInfo? Instance { get; private set; } = null;
 
         private static string _sendStatus = "No message sent since opening";
         private static string _message = "No message sent since opening";
@@ -27,13 +27,13 @@ namespace Hoscy.Ui.Pages
 
             Instance = this;
 
-            UpdateRecognizerStatus(null, new(Recognition.IsRecognizerRunning, Recognition.IsRecognizerListening));
+            UpdateRecognizerStatus(null, new(Recognition.IsRunning, Recognition.IsListening));
             Recognition.RecognitionChanged += UpdateRecognizerStatus;
         }
 
         #region Buttons
         private void Button_Mute(object sender, RoutedEventArgs e)
-            => Recognition.SetListening(!Recognition.IsRecognizerListening);
+            => Recognition.SetListening(!Recognition.IsListening);
 
         private void Button_Clear(object sender, RoutedEventArgs e)
         {
@@ -43,23 +43,24 @@ namespace Hoscy.Ui.Pages
             OscDataHandler.SetAfkTimer(false);
         }
 
+        private const string _perfTip = "\n\nTip: Unfocus HOSCY for better performance";
         private async void Button_Start(object sender, RoutedEventArgs e)
         {
-            if (Recognition.IsRecognizerRunning)
+            if (Recognition.IsRunning)
             {
                 Recognition.StopRecognizer();
-                SetRecStatus("Recognizer has stopped");
+                SetRecStatus("Recognizer has stopped" + _perfTip);
             }
             else
             {
                 startButton.Content = "Starting";
                 startButton.Foreground = UiHelper.ColorFront;
-                SetRecStatus("Recognizer is starting");
+                SetRecStatus("Recognizer is starting" + _perfTip);
                 await Task.Run(async () => await Task.Delay(10));
                 if (Recognition.StartRecognizer())
-                    SetRecStatus("Recognizer has started");
+                    SetRecStatus("Recognizer has started" + _perfTip);
                 else
-                    SetRecStatus("Recognizer failed to start");
+                    SetRecStatus("Recognizer failed to start" + _perfTip);
             }
         }
         #endregion
@@ -70,7 +71,7 @@ namespace Hoscy.Ui.Pages
         /// </summary>
         private static void UpdateRecognizerStatus(object? sender, RecognitionChangedEventArgs e)
         {
-            Instance.Dispatcher.Invoke(() =>
+            Instance?.Dispatcher.Invoke(() =>
             {
                 Instance.muteButton.Content = e.Listening ? "Listening" : "Muted";
                 Instance.muteButton.Foreground = e.Listening ? UiHelper.ColorValid : UiHelper.ColorInvalid;
@@ -84,12 +85,12 @@ namespace Hoscy.Ui.Pages
         /// Sets the message as a command
         /// </summary>
         /// <param name="message">Message to display</param>
-        internal static void SetCommandMessage(string message)
+        internal static void SetCommandMessage(string message, bool success = true)
         {
-            _sendStatus = "Executed command";
+            _sendStatus = success ? "Executed command" : "Failed to execute command";
             _message = message;
 
-            Instance.Dispatcher.Invoke(() =>
+            Instance?.Dispatcher.Invoke(() =>
             {
                 Instance.sendStatus.Text = _sendStatus;
                 Instance.message.Text = _message;
@@ -102,7 +103,7 @@ namespace Hoscy.Ui.Pages
         /// <param name="message">Message to display</param>
         /// <param name="textbox">Did it send via Textbox</param>
         /// <param name="tts">Did it send via TTS</param>
-        internal static void SetMessage(string message, bool textbox, bool tts)
+        internal static void SetMessage(string message, bool textbox, bool tts) 
         {
             var add = "Nothing";
             if (textbox && tts)
@@ -115,7 +116,7 @@ namespace Hoscy.Ui.Pages
             _sendStatus = "Sent via " + add;
             _message = message;
 
-            Instance.Dispatcher.Invoke(() =>
+            Instance?.Dispatcher.Invoke(() =>
             {
                 Instance.sendStatus.Text = _sendStatus;
                 Instance.message.Text = _message;
@@ -126,7 +127,7 @@ namespace Hoscy.Ui.Pages
         {
             _notification = $"[{type}] {message}";
 
-            Instance.Dispatcher.Invoke(() =>
+            Instance?.Dispatcher.Invoke(() =>
             {
                 Instance.notification.Text = _notification;
             });

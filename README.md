@@ -9,7 +9,7 @@ If you wish to contribute or need support, join the **[Discord](https://discord.
 ## Features
 - **Speech Recognition**
 	- Windows Speech Recognition
-	- Locally running AI *(Thanks to [VOSK](https://alphacephei.com/vosk/))*
+	- Locally running AI *(Thanks to [WHISPER](https://github.com/Const-me/Whisper) & [VOSK](https://alphacephei.com/vosk/))*
 	- Azure Cognitive Services
 	- Most external APIs *(Provided they use raw audio data)*
 - **Utility for communicating**
@@ -31,6 +31,7 @@ If you wish to contribute or need support, join the **[Discord](https://discord.
 - **[OSCQuery](https://github.com/vrchat-community/vrc-oscquery-lib)** by VRChat for OSC-Service communication
 - **[VOSK](https://alphacephei.com/vosk/)** by AlphaCephei for local AI speech recognition
 - **[Azure Cognitive Services](https://azure.microsoft.com/en-us/services/cognitive-services/)** for API speech recognition
+- **[Const-me](https://github.com/Const-me)** for creating a usable C# whisper wrapper
 - **[AuroraNemoia](https://github.com/AuroraNemoia)** for branding *(Logo, Name)*
 - **[Hyblocker](https://github.com/hyblocker)** for providing assistance when I got stuck
 - **[Realmlist](https://linktr.ee/Realmlist)** for providing assistance and API keys for testing

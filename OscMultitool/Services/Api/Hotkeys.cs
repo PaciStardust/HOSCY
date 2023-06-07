@@ -46,7 +46,7 @@ namespace Hoscy.Services.Api
                             if (vkey == KEY_M)
                             {
                                 Logger.Log("Mute keybind has been hit");
-                                Recognition.SetListening(!Recognition.IsRecognizerListening);
+                                Recognition.SetListening(!Recognition.IsListening);
                             }
                             //handled = true;
                             break;

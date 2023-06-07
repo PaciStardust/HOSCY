@@ -14,13 +14,68 @@
         <StackPanel Style="{StaticResource HStackLarge}">
             <WrapPanel>
                 <Label Style="{StaticResource HLabelL}" Content="API Options"/>
-                <Button Content="Modify Presets" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_ModifyPresets"/>
+                <Button Content="Modify API Presets" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_ModifyPresets"/>
             </WrapPanel>
 
             <StackPanel Style="{StaticResource HStackIndent}">
-                <!-- Translator Usage -->
+                <!-- Media Display -->
                 <WrapPanel>
-                    <Label Style="{StaticResource HLabelM}" Content="Translation API"/>
+                    <Label Style="{StaticResource HLabelM}" Content="Media Display"/>
+                    <Button Content="Media Filter" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_ModifyMediaFilter"/>
+                </WrapPanel>
+
+                <StackPanel Style="{StaticResource HStackIndent}">
+                    <CheckBox Content="Show media status" IsChecked="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Content="Swap artist and song name" Margin="0,4,0,0" IsChecked="{Binding Textbox.MediaSwapArtistAndSong, Source={x:Static local:Config.Data}}" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}"/>
+                    <CheckBox Content="Also display album name" Margin="0,4,0,0" IsChecked="{Binding Textbox.MediaAddAlbum, Source={x:Static local:Config.Data}}" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}"/>
+
+                    <TextBlock Style="{DynamicResource HTextBlock}" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}" Text="Text Configuration" Margin="0,8,0,0"/>
+                    <WrapPanel IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}">
+                        <TextBox Tag="Playing..." Style="{StaticResource HTextBoxShort}">
+                            <TextBox.Text>
+                                <Binding Source="{x:Static local:Config.Data}" Path="Textbox.MediaPlayingVerb" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <ui:StringValidationRule Min="1" Max="999"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                        <Label Content=" 'Song' " VerticalAlignment="Center"/>
+
+                        <TextBox Tag="by..." Style="{StaticResource HTextBoxTiny}">
+                            <TextBox.Text>
+                                <Binding Source="{x:Static local:Config.Data}" Path="Textbox.MediaArtistVerb" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <ui:StringValidationRule Min="1" Max="999"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                        <Label Content=" 'Artist' " VerticalAlignment="Center"/>
+
+                        <WrapPanel IsEnabled="{Binding Textbox.MediaAddAlbum, Source={x:Static local:Config.Data}}">
+                            <TextBox Tag="on..." Style="{StaticResource HTextBoxTiny}">
+                                <TextBox.Text>
+                                    <Binding Source="{x:Static local:Config.Data}" Path="Textbox.MediaAlbumVerb" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <ui:StringValidationRule Min="1" Max="999"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Label Content=" 'Album'" VerticalAlignment="Center"/>
+                        </WrapPanel>
+                    </WrapPanel>
+
+                    <WrapPanel Margin="0,4,0,0" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}">
+                        <TextBox HorizontalAlignment="Left" Text="{Binding Textbox.MediaExtra, Source={x:Static local:Config.Data}}" Tag="Extra text..." Style="{StaticResource HTextBoxShort}"/>
+                        <Label Content="(Extra text)" VerticalAlignment="Center"/>
+                    </WrapPanel>
+                </StackPanel>
+                
+                <!-- Translator Usage -->
+                <WrapPanel Margin="0,16,0,0">
+                    <Label Style="{StaticResource HLabelM}" Content="Translation"/>
                     <Button Content="Reload" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_ReloadTranslation"/>
                     <Label x:Name="changeIndicatorTranslation" Foreground="{x:Static ui:UiHelper.ColorInvalid}" Content="(Unapplied changes)" FontSize="14" VerticalAlignment="Center" Visibility="Hidden"/>
                 </WrapPanel>
@@ -41,7 +96,7 @@
                             <TextBox.Text>
                                 <Binding Source="{x:Static local:Config.Data}" Path="Api.TranslationMaxTextLength" UpdateSourceTrigger="PropertyChanged">
                                     <Binding.ValidationRules>
-                                        <ui:IntegerValidationRule Min="1" Max="10000"/>
+                                        <ui:IntegerValidationRule Min="1" Max="32767"/>
                                     </Binding.ValidationRules>
                                 </Binding>
                             </TextBox.Text>
@@ -52,73 +107,15 @@
                     <CheckBox Content="Skip too long messages" Margin="0,4,0,0" IsChecked="{Binding Api.TranslationSkipLongerMessages, Source={x:Static local:Config.Data}}"/>
                 </StackPanel>
 
-                <!-- Recognizer Usage -->
-                <Label Style="{StaticResource HLabelM}" Content="Recognition Any-API" Margin="0,16,0,0"/>
-
-                <StackPanel Style="{StaticResource HStackIndent}">
-                    <WrapPanel>
-                        <ComboBox x:Name="recognitionApiBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="RecognitionApiBox_SelectionChanged"/>
-                        <Label Content="API Preset" VerticalAlignment="Center"/>
-                    </WrapPanel>
-
-                    <WrapPanel Margin="0,4,0,0">
-                        <TextBox Style="{StaticResource HTextBoxShort}">
-                            <TextBox.Text>
-                                <Binding Source="{x:Static local:Config.Data}" Path="Api.RecognitionMaxRecordingTime" UpdateSourceTrigger="PropertyChanged">
-                                    <Binding.ValidationRules>
-                                        <ui:IntegerValidationRule Min="1" Max="300"/>
-                                    </Binding.ValidationRules>
-                                </Binding>
-                            </TextBox.Text>
-                        </TextBox>
-                        <Label Content="Max. recording time (s)" VerticalAlignment="Center"/>
-                    </WrapPanel>
-                </StackPanel>
-
-                <!-- Recognition Azure -->
-                <WrapPanel Margin="0,16,0,0">
-                    <Label Style="{StaticResource HLabelM}" Content="Azure Cognitive Services"/>
-                    <Button Content="Reload TTS" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Button_ReloadSynthesizer"/>
-                    <Label x:Name="changeIndicatorSynthesizer" Foreground="{x:Static ui:UiHelper.ColorInvalid}" Content="(Unapplied changes)" FontSize="14" VerticalAlignment="Center" Visibility="Hidden"/>
-                </WrapPanel>
+                <!-- Azure -->
+                <Label Style="{StaticResource HLabelM}" Content="Azure Cognitive Services" Margin="0,16,0,0"/>
 
                 <StackPanel Style="{StaticResource HStackIndent}">
                     <TextBlock Style="{DynamicResource HTextBlock}" Text="API Key"/>
-                    <TextBox Text="{Binding Api.AzureKey, Source={x:Static local:Config.Data}}" Tag="API key..." Style="{StaticResource HTextBoxLong}" PreviewKeyDown="TextBox_PreviewKeyDown" Margin="0,4,0,0"/>
+                    <TextBox Text="{Binding Api.AzureKey, Source={x:Static local:Config.Data}}" Tag="API key..." Style="{StaticResource HTextBoxLong}"/>
 
                     <TextBlock Style="{DynamicResource HTextBlock}" Text="API Region" Margin="0,4,0,0"/>
-                    <TextBox Text="{Binding Api.AzureRegion, Source={x:Static local:Config.Data}}" Tag="API Region..." Style="{StaticResource HTextBoxLong}" PreviewKeyDown="TextBox_PreviewKeyDown" Margin="0,4,0,0"/>
-
-                    
-
-                    <Label Content="Speech Recognition Options (Optional)" Margin="0,8,0,0"/>
-                    <StackPanel Style="{StaticResource HStackIndent}">
-                        <TextBlock Style="{DynamicResource HTextBlock}" Text="Custom endpoint"/>
-                        <TextBox Margin="0,4,0,0" Text="{Binding Api.AzureCustomEndpointRecognition, Source={x:Static local:Config.Data}}" Tag="Custom endpoint..." Style="{StaticResource HTextBoxLong}"/>
-                        
-                        <WrapPanel Margin="0,4,0,0">
-                            <Button Content="Edit phrases" Click="Button_EditPhrases"/>
-                            <Button Content="Edit languages" Click="Button_EditLanguages" Margin="16,0,0,0"/>
-                        </WrapPanel>
-                    </StackPanel>
-
-                    <Label Content="Text-to-Speech Options (Optional)" Margin="0,8,0,0"/>
-                    <StackPanel Style="{StaticResource HStackIndent}">
-                        <CheckBox Content="Use Azure TTS" IsChecked="{Binding Api.UseAzureTts, Source={x:Static local:Config.Data}}"/>
-                        <TextBlock Style="{DynamicResource HTextBlock}" Text="Output Speech Voice" Margin="0,4,0,0"/>
-                        <WrapPanel Margin="0,4,0,0">
-                            <ComboBox x:Name="azureVoiceBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="AzureVoiceBox_SelectionChanged"/>
-                            <Button Style="{StaticResource HButtonSmall}" Content="Edit list" Margin="8,0,0,0" VerticalAlignment="Center" Click="Button_EditAzureVoices"/>
-                        </WrapPanel>
-
-                        <TextBlock Style="{DynamicResource HTextBlock}" Text="Custom endpoint" Margin="0,4,0,0"/>
-                        <TextBox Text="{Binding Api.AzureCustomEndpointSpeech, Source={x:Static local:Config.Data}}" Tag="Custom endpoint..." Style="{StaticResource HTextBoxLong}" PreviewKeyDown="TextBox_PreviewKeyDown" Margin="0,4,0,0"/>
-
-                        <WrapPanel Margin="0,4,0,0">
-                            <TextBox HorizontalAlignment="Left" Text="{Binding Api.AzureSpeechLanguage, Source={x:Static local:Config.Data}}" Tag="Language..." Style="{StaticResource HTextBoxShort}" PreviewKeyDown="TextBox_PreviewKeyDown"/>
-                            <Label Content="Used Language" VerticalAlignment="Center"/>
-                        </WrapPanel>
-                    </StackPanel>
+                    <TextBox Text="{Binding Api.AzureRegion, Source={x:Static local:Config.Data}}" Tag="API Region..." Style="{StaticResource HTextBoxLong}"/>
                 </StackPanel>
             </StackPanel>
         </StackPanel>

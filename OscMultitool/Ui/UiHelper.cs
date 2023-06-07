@@ -1,7 +1,8 @@
 ﻿using Hoscy.Ui.Windows;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -31,20 +32,36 @@ namespace Hoscy.Ui
         /// <summary>
         /// Loads data into a combo box
         /// </summary>
-        internal static void Load(this ComboBox box, IEnumerable<string> source, int index, bool refresh = false)
+        internal static void Load<T>(this ComboBox box, IEnumerable<T> source, int index)
         {
-            box.ItemsSource = source;
-            if (refresh) box.Items.Refresh();
+            box.ItemsSource = source.ToArray();
             box.SelectedIndex = index;
         }
 
         /// <summary>
-        /// Refreshes the data
+        /// Loads dictionary data into a combo box
         /// </summary>
-        internal static void Refresh(this ListBox box, IEnumerable<string> source, int index)
+        internal static void LoadDictionary(this ComboBox box, Dictionary<string, string> dict, string indexKey)
         {
-            box.ItemsSource = source;
-            box.Items.Refresh();
+            int index = -1;
+            var keyArray = dict.Keys.ToArray();
+            for (int i = 0; i < keyArray.Length; i++)
+            {
+                if (indexKey == keyArray[i])
+                {
+                    index = i;
+                    break;
+                }
+            }
+            box.Load(keyArray, index);
+        }
+
+        /// <summary>
+        /// Loads data into a ListBox
+        /// </summary>
+        internal static void Load<T>(this ListBox box, IEnumerable<T> source, int index)
+        {
+            box.ItemsSource = source.ToArray();
             box.SelectedIndex = index;
         }
 
@@ -83,21 +100,28 @@ namespace Hoscy.Ui
             list[index] = item;
             return true;
         }
+
+        /// <summary>
+        /// Sets window to dark mode and calls ShowDialog
+        /// </summary>
+        internal static void ShowDialogDark(this Window window)
+        {
+            window.SetDarkMode(true);
+            window.ShowDialog();
+        }
         #endregion
 
         #region Opening Modify Windows
         internal static void OpenListEditor(string title, string valueName, List<string> list, string defaultString = "New Value")
         {
             var window = new ModifyListWindow(title, valueName, list, defaultString);
-            window.SetDarkMode(true);
-            window.ShowDialog();
+            window.ShowDialogDark();
         }
 
         internal static void OpenDictionaryEditor(string title, string keyName, string valueName, Dictionary<string, string> dict)
         {
             var window = new ModifyDictionaryWindow(title, keyName, valueName, dict);
-            window.SetDarkMode(true);
-            window.ShowDialog();
+            window.ShowDialogDark();
         }
         #endregion
 
@@ -135,7 +159,6 @@ namespace Hoscy.Ui
             DWMWA_MICA_EFFECT = 1029,
         }
 
-
         internal static bool SetDarkMode(this Window window, bool darkMode)
         {
             try
@@ -148,27 +171,6 @@ namespace Hoscy.Ui
             catch (Exception)
             {
                 return false;
-            }
-        }
-        #endregion
-
-        #region Extra
-        /// <summary>
-        /// Starts a process
-        /// </summary>
-        internal static void StartProcess(string path)
-        {
-            try
-            {
-                Process.Start(new ProcessStartInfo()
-                {
-                    FileName = path,
-                    UseShellExecute = true
-                });
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "Failed to start process.");
             }
         }
         #endregion

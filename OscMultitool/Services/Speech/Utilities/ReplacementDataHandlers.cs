@@ -16,7 +16,7 @@ namespace Hoscy.Services.Speech.Utilities
             RegexOptions rexOpt = replacementData.IgnoreCase ? RegexOptions.IgnoreCase : RegexOptions.None | RegexOptions.CultureInvariant;
             _regex = replacementData.UseRegex
                 ? new(replacementData.Text, rexOpt)
-                : new($@"(?<= |\b){Regex.Escape(replacementData.Text)}(?=$| |\b)", rexOpt);
+                : new($@"(?<=^| |\b){Regex.Escape(replacementData.Text)}(?=$| |\b)", rexOpt);
         }
 
         internal string Replace(string text)

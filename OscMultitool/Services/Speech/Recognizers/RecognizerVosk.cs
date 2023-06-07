@@ -15,7 +15,7 @@ namespace Hoscy.Services.Speech.Recognizers
         {
             Description = "Local AI, quality / RAM usage varies, startup may take a while",
             UsesMicrophone = true,
-            UsesVoskModel = true
+            Type = RecognizerType.Vosk
         };
 
         internal override bool IsListening => _microphone.IsListening;
@@ -26,14 +26,15 @@ namespace Hoscy.Services.Speech.Recognizers
         //Used for stopping thread
         private Thread? _recThread;
         private bool _threadStop = false;
-
+            
         #region Start / Stop and Muting
         protected override bool StartInternal()
         {
             try
             {
-                Config.Speech.VoskModels.TryGetValue(Config.Speech.VoskModelCurrent, out var path);
-                if (!Directory.Exists(path ?? string.Empty))
+                Logger.Info("Attempting to load vosk model, this might take a while");
+                var valid = Config.Speech.VoskModels.TryGetValue(Config.Speech.VoskModelCurrent, out var path);
+                if (!valid || !Directory.Exists(path))
                 {
                     Logger.Error("A Vosk AI model has not been picked or it's path is invalid.\n\nTo use Vosk speech recognition please provide an AI model. Information can be found in the quickstart guide on GitHub\n\nIf you do not want to use Vosk, please change the recognizer type on the speech page");
                     return false;
@@ -64,6 +65,7 @@ namespace Hoscy.Services.Speech.Recognizers
             _microphone.Start();
             _recThread = new(new ThreadStart(HandleAvailableDataLoop))
             {
+                Name = "Vosk Data Handler",
                 Priority = ThreadPriority.AboveNormal
             };
             _recThread.Start();
@@ -72,7 +74,7 @@ namespace Hoscy.Services.Speech.Recognizers
 
         protected override void StopInternal()
         {
-            Textbox.EnableTyping(false);
+            HandleSpeechActivityUpdated(false);
             _microphone.Dispose();
 
             //Stopping thread
@@ -84,6 +86,7 @@ namespace Hoscy.Services.Speech.Recognizers
             _rec?.Dispose();
             _rec = null;
         }
+
         protected override bool SetListeningInternal(bool enabled)
             => _microphone.SetMuteStatus(enabled);
         #endregion
@@ -137,11 +140,10 @@ namespace Hoscy.Services.Speech.Recognizers
             }
 
             var result = CleanMessage(_rec.Result());
-
             if (!string.IsNullOrWhiteSpace(result))
             {
                 Logger.Log("Got Message: " + result);
-                ProcessMessage(result);
+                HandleSpeechRecognized(result);
             }
 
             ClearLastChanged();
@@ -159,7 +161,6 @@ namespace Hoscy.Services.Speech.Recognizers
             }
 
             var result = CleanMessage(_rec.PartialResult());
-
             if (string.IsNullOrWhiteSpace(result))
                 return;
 
@@ -167,15 +168,15 @@ namespace Hoscy.Services.Speech.Recognizers
             {
                 _lastChangedString = result;
                 _lastChangedAt = DateTime.Now;
-                Textbox.EnableTyping(true);
+                HandleSpeechActivityUpdated(true);
                 return;
             }
 
             if ((DateTime.Now - _lastChangedAt).TotalMilliseconds > Config.Speech.VoskTimeout)
             {
                 Logger.Log("Got Message (T): " + result);
-                ProcessMessage(result);
                 ClearLastChanged();
+                HandleSpeechRecognized(result);
             }
         }
 
@@ -184,7 +185,7 @@ namespace Hoscy.Services.Speech.Recognizers
         /// </summary>
         private void ClearLastChanged()
         {
-            Textbox.EnableTyping(false);
+            HandleSpeechActivityUpdated(false);
             _lastChangedString = string.Empty;
             _lastChangedAt = DateTime.MaxValue;
             _rec?.Reset();
@@ -195,10 +196,10 @@ namespace Hoscy.Services.Speech.Recognizers
         private static string? CleanMessage(string res)
         {
             var extracted = Utils.ExtractFromJson(string.Empty, res);
-            if (extracted == null)
+            if (extracted == null || Config.Speech.NoiseFilter.Contains(extracted))
                 return null;
 
-            return Denoise(extracted);
+            return extracted;
         }
         #endregion
     }

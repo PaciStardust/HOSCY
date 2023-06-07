@@ -8,7 +8,7 @@ namespace Hoscy.Services.Speech.Recognizers
         new internal static RecognizerPerms Perms => new()
         {
             Description = "Recognizer using Windows Recognition, low quality, please avoid",
-            UsesWinRecognizer = true
+            Type = RecognizerType.Windows
         };
 
         internal override bool IsListening => _isListening;
@@ -58,15 +58,10 @@ namespace Hoscy.Services.Speech.Recognizers
             _rec = null;
         }
 
-        private static void Recognizer_SpeechRecognized(object? sender, SpeechRecognizedEventArgs e)
+        private void Recognizer_SpeechRecognized(object? sender, SpeechRecognizedEventArgs e)
         {
             Logger.Log("Got Message: " + e.Result.Text);
-
-            var message = Denoise(e.Result.Text);
-            if (string.IsNullOrWhiteSpace(message))
-                return;
-
-            ProcessMessage(message);
+            HandleSpeechRecognized(e.Result.Text);
         }
     }
 }
