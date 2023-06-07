@@ -38,7 +38,7 @@ namespace Hoscy.Ui.Pages
                 "Windows Recognizer V2" => new RecognizerWindowsV2(),
                 "Windows Recognizer" => new RecognizerWindows(),
                 "Any-API Recognizer" => new RecognizerApi(),
-                _ => new RecognizerWhisper()
+                _ => new RecognizerWindowsV2()
             };
 
         public PageSpeech()
