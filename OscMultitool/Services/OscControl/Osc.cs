@@ -59,7 +59,6 @@ namespace Hoscy.Services.OscControl
         /// </summary>
         internal static void RecreateListener()
         {
-            _listener = null;
             try
             {
                 Logger.PInfo("Recreating listener");
@@ -69,6 +68,7 @@ namespace Hoscy.Services.OscControl
             }
             catch (Exception e)
             {
+                _listener = null;
                 Logger.Error(e, "Failed to create OSC listener");
             }
         }
