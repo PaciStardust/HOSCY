@@ -15,7 +15,7 @@ namespace Hoscy.Ui.Pages
     /// <summary>
     /// Interaction logic for TestPage.xaml
     /// </summary>
-    internal partial class PageSpeech : Page //todo: [BUG] Change indicator reset issues
+    internal partial class PageSpeech : Page
     {
         private static bool _changedValues = false;
 

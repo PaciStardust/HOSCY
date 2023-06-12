@@ -117,9 +117,10 @@ namespace Hoscy.Services.OscControl
         /// <param name="arguments">Arguments of packet</param>
         private void HandleData(string address, object[] arguments)
         {
-            OscDataHandler.Handle(address, arguments);
+            if (OscDataHandler.Handle(address, arguments))
+                return;
 
-            foreach (var filter in _filters)
+            foreach (var filter in _filters) //todo: [TEST] New routing filters
                 if (filter.Matches(address))
                     filter.Send(address, arguments);
         }

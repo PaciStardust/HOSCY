@@ -8,13 +8,15 @@ namespace Hoscy.Services.OscControl
         internal readonly int Port { get; init; } = -1;
         internal readonly string Ip { get; init; } = string.Empty;
         internal readonly IReadOnlyList<string> Filters { get; init; } = new List<string>();
+        internal readonly bool BlacklistMode { get; init; } = false;
 
-        internal OscRoutingFilter(string name, string ip, int port, List<string> filters)
+        internal OscRoutingFilter(string name, string ip, int port, List<string> filters, bool blacklist)
         {
             Name = name;
             Port = port;
             Ip = ip;
             Filters = filters.AsReadOnly();
+            BlacklistMode = blacklist;
         }
 
         #region Validation
@@ -30,9 +32,9 @@ namespace Hoscy.Services.OscControl
 
             foreach (var filter in Filters)
                 if (input.StartsWith(filter))
-                    return true;
+                    return !BlacklistMode;
 
-            return false;
+            return BlacklistMode;
         }
 
         /// <summary>

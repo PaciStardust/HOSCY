@@ -69,6 +69,7 @@ namespace Hoscy.Ui.Windows
             textName.Text = _list[listBox.SelectedIndex].Name;
             textPort.Text = _list[listBox.SelectedIndex].Port.ToString();
             textIp.Text = _list[listBox.SelectedIndex].Ip;
+            blacklistCheckBox.IsChecked = _list[listBox.SelectedIndex].BlacklistMode;
         }
 
         private OscRoutingFilterModel GetNewModel()
@@ -86,6 +87,8 @@ namespace Hoscy.Ui.Windows
 
             if (listBox.SelectedIndex != -1)
                 model.Filters = _list[listBox.SelectedIndex].Filters.ToList();
+
+            model.BlacklistMode = blacklistCheckBox.IsChecked ?? false;
 
             return model;
         }

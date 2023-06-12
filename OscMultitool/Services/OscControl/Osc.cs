@@ -91,7 +91,7 @@ namespace Hoscy.Services.OscControl
 
             foreach (var filter in Config.Osc.RoutingFilters)
             {
-                var newFilter = new OscRoutingFilter(filter.Name, filter.Ip, filter.Port, filter.Filters);
+                var newFilter = new OscRoutingFilter(filter.Name, filter.Ip, filter.Port, filter.Filters, filter.BlacklistMode);
 
                 if (!newFilter.TestValidity())
                 {

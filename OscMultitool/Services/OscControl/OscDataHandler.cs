@@ -15,17 +15,20 @@ namespace Hoscy.Services.OscControl
         /// </summary>
         /// <param name="address">Target address of packet</param>
         /// <param name="arguments">Arguments of packet</param>
-        internal static void Handle(string address, object[] arguments)
+        /// <returns>Fully handled?</returns>
+        internal static bool Handle(string address, object[] arguments)
         {
             if (arguments.Length == 0 || arguments[0] == null)
-                return;
+                return false;
 
             Type type = arguments[0].GetType();
 
             if (type == typeof(bool))
                 HandleToolDataBool(address, (bool)arguments[0]);
             else if (type == typeof(string))
-                HandleToolDataString(address, (string)arguments[0]);
+                return HandleToolDataString(address, (string)arguments[0]);
+
+            return false;
         }
 
         /// <summary>
@@ -93,10 +96,11 @@ namespace Hoscy.Services.OscControl
         /// </summary>
         /// <param name="address">Target address of packet</param>
         /// <param name="value">String value</param>
-        private static void HandleToolDataString(string address, string value)
+        /// <returns>Fully handled?</returns>
+        private static bool HandleToolDataString(string address, string value)
         {
             if (string.IsNullOrWhiteSpace(value))
-                return;
+                return false;
 
             var useTextbox = address == Config.Osc.AddressAddTextbox || address == Config.Osc.AddressGameTextbox;
             if (useTextbox || address == Config.Osc.AddressAddTts)
@@ -114,6 +118,8 @@ namespace Hoscy.Services.OscControl
 
             if (address == Config.Osc.AddressAddNotification)
                 Textbox.Notify(value, NotificationType.External);
+
+            return true;
         }
         #endregion
 

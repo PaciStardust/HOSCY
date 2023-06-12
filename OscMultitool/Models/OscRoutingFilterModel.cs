@@ -21,6 +21,7 @@ namespace Hoscy.Models
         private int _port = -1;
         public string Ip { get; set; } = "127.0.0.1";
         public List<string> Filters { get; set; } = new();
+        public bool BlacklistMode { get; set; } = false;
 
         private bool _isValid = true;
         public override string ToString()
