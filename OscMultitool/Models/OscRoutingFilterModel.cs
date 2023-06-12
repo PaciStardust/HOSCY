@@ -25,7 +25,7 @@ namespace Hoscy.Models
 
         private bool _isValid = true;
         public override string ToString()
-            => $"{(_isValid ? "" : "[x]")}{Name} => {Ip}:{Port}";
+            => $"{(_isValid ? "" : "[x]")}{Name} ={(BlacklistMode ? "B" : string.Empty)}> {Ip}:{Port}";
 
         /// <summary>
         /// Sets validity to be displayed in filter window

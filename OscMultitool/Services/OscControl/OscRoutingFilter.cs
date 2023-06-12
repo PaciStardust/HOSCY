@@ -73,6 +73,6 @@ namespace Hoscy.Services.OscControl
         }
 
         public override string ToString()
-            => $"{Name} => {Ip}:{Port}";
+            => $"{Name} ={(BlacklistMode ? "B" : string.Empty)}> {Ip}:{Port}";
     }
 }
