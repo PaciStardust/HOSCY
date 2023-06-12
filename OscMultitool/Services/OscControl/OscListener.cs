@@ -120,7 +120,7 @@ namespace Hoscy.Services.OscControl
             if (OscDataHandler.Handle(address, arguments))
                 return;
 
-            foreach (var filter in _filters) //todo: [TEST] New routing filters
+            foreach (var filter in _filters)
                 if (filter.Matches(address))
                     filter.Send(address, arguments);
         }
