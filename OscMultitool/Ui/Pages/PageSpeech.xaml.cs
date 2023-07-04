@@ -239,7 +239,7 @@ namespace Hoscy.Ui.Pages
 
         private void Button_EditWhisperModels(object sender, RoutedEventArgs e)
         {
-            UiHelper.OpenDictionaryEditor("Edit Whisper AI Models", "Model name", "Model folder", Config.Speech.WhisperModels);
+            UiHelper.OpenDictionaryEditor("Edit Whisper AI Models", "Model name", "Model file", Config.Speech.WhisperModels);
             UpdateWhisperRecognizerBox();
         }
 
