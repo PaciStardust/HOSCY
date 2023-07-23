@@ -114,12 +114,16 @@ namespace Hoscy.Services.OscControl
                     AllowTranslate = Config.Api.TranslationAllowExternal
                 };
                 tProcessor.Process(value);
+                return true;
             }
 
             if (address == Config.Osc.AddressAddNotification)
+            {
                 Textbox.Notify(value, NotificationType.External);
+                return true;
+            }  
 
-            return true;
+            return false;
         }
         #endregion
 
