@@ -181,8 +181,12 @@ namespace Hoscy.Services.OscControl
                 return;
             }
 
-            _serviceProfiles[connectionInfo.name.ToLower()] = connectionInfo;
-            Logger.Info($"Adding service profile \"{profile.name}\"");
+            var lowerName = connectionInfo.name.ToLower();
+            if (!_serviceProfiles.ContainsKey(lowerName))
+            {
+                _serviceProfiles[connectionInfo.name.ToLower()] = connectionInfo;
+                Logger.Info($"Adding service profile \"{profile.name}\"");
+            }
         }
         #endregion
     }
