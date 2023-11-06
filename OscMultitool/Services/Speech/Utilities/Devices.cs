@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Speech.Recognition;
 using System.Speech.Synthesis;
+using Whisper;
 
 namespace Hoscy.Services.Speech.Utilities
 {
@@ -153,6 +154,35 @@ namespace Hoscy.Services.Speech.Utilities
             }
 
             Logger.Warning("No matching windows voice found, defaulting to first in list...");
+            return 0;
+        }
+        #endregion
+
+        #region GPUs
+        internal static IReadOnlyList<string> GraphicsAdapters { get; private set; } = GetGraphicsAdapters();
+        private static IReadOnlyList<string> GetGraphicsAdapters()
+            => new List<string>(Library.listGraphicAdapters());
+
+        /// <summary>
+        /// Returns the adapter list index for a given ID
+        /// </summary>
+        /// <param name="id">ID of adapter</param>
+        /// <returns>On match => Index, No match => 0, Empty list => -1</returns>
+        internal static int GetGraphicsAdapterIndex(string id)
+        {
+            if (GraphicsAdapters.Count == 0)
+            {
+                Logger.Error("No graphics adapters available in list, this might cause some issues", false);
+                return -1;
+            }
+
+            for(int i = 0; i < GraphicsAdapters.Count; i++)
+            {
+                if (GraphicsAdapters[i] == id)
+                    return i;
+            }
+
+            Logger.Warning("No matching graphics adapter found, defaulting to first in list...");
             return 0;
         }
         #endregion

@@ -1,4 +1,5 @@
-﻿using Hoscy.Services.Speech.Utilities.Whisper;
+﻿using Hoscy.Services.Speech.Utilities;
+using Hoscy.Services.Speech.Utilities.Whisper;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -41,7 +42,9 @@ namespace Hoscy.Services.Speech.Recognizers
                 }
 
                 //var model = Library.loadModel(path, impl: Config.Speech.WhisperCpuOnly ? eModelImplementation.Reference : eModelImplementation.GPU); Disabled due to library issues
-                var model = Library.loadModel(path);
+                var adapter = GetGraphicsAdapter();
+                Logger.Debug($"Using Graphics Adapter {adapter ?? "NULL"} for Whisper recognition");
+                var model = Library.loadModel(path, adapter: adapter);
 
                 var captureDevice = GetCaptureDevice();
                 if (captureDevice == null)
@@ -289,6 +292,17 @@ namespace Hoscy.Services.Speech.Recognizers
             p.offset_ms = 0;
             p.setFlag(eFullParamsFlags.PrintRealtime, false);
             p.setFlag(eFullParamsFlags.PrintTimestamps, false);
+        }
+
+        private static string? GetGraphicsAdapter()
+        {
+            if (!string.IsNullOrWhiteSpace(Config.Speech.WhisperGraphicsAdapter))
+                return Config.Speech.WhisperGraphicsAdapter;
+
+            if (Devices.GraphicsAdapters.Any())
+                return Devices.GraphicsAdapters[0];
+
+            return null;
         }
         #endregion
     }

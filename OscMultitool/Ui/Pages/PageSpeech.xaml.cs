@@ -86,6 +86,8 @@ namespace Hoscy.Ui.Pages
             windowsRecognizerBox.Load(Devices.WindowsRecognizers.Select(x => x.Description), Devices.GetWindowsListenerIndex(Config.Speech.WinModelId));
             //AnyAPI presrt
             anyApiBox.Load(Config.Api.Presets.Select(x => x.Name), Config.Api.GetIndex(Config.Api.RecognitionPreset));
+            //Whsiper Adapters
+            whisperAdapterBox.Load(Devices.GraphicsAdapters, Devices.GetGraphicsAdapterIndex(Config.Speech.WhisperGraphicsAdapter));
 
             UpdateVoskRecognizerBox();
             UpdateWhisperRecognizerBox();
@@ -311,6 +313,18 @@ namespace Hoscy.Ui.Pages
                 Config.Speech.WhisperModelCurrent = Config.Speech.WhisperModels.Keys.ToArray()[index];
 
             if (oldModelName != Config.Speech.WhisperModelCurrent)
+                TryEnableChangeIndicator();
+        }
+
+        private void WhisperAdapterBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string oldAdapterName = Config.Speech.WhisperGraphicsAdapter;
+
+            var index = whisperAdapterBox.SelectedIndex;
+            if (index != -1 && index < Devices.GraphicsAdapters.Count)
+                Config.Speech.WhisperGraphicsAdapter = Devices.GraphicsAdapters[index];
+
+            if (oldAdapterName != Config.Speech.WhisperModelCurrent)
                 TryEnableChangeIndicator();
         }
 

@@ -277,6 +277,7 @@ namespace Hoscy.Models
             set => _whisperRecPauseDuration = Utils.MinMax(value, 0.05f, short.MaxValue);
         }
         private float _whisperRecPauseDuration = 0.5f;
+        public string WhisperGraphicsAdapter { get; set; } = string.Empty;
 
         //Windows
         public string WinModelId { get; set; } = string.Empty; //Identifier for Microsoft Recognizer

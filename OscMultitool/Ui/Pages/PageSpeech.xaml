@@ -116,6 +116,9 @@
                                 <Button Style="{StaticResource HButtonSmall}" Content="Edit noise whitelist" Margin="8,0,0,0" VerticalAlignment="Center" Click="Button_EditWhisperNoiseWhitelist"/>
                             </WrapPanel>
 
+                            <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Graphics Adapter" Margin="0,4,0,0"/>
+                            <ComboBox x:Name="whisperAdapterBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="WhisperAdapterBox_SelectionChanged"/>
+
                             <Label Content="Additional Options" Margin="0,4,0,0"/>
                             <StackPanel Style="{StaticResource HStackIndent}">
                                 <CheckBox Content="Single segment (More accurate, less detail)" IsChecked="{Binding Speech.WhisperSingleSegment, Source={x:Static local:Config.Data}}" Checked="CheckBox_Checked"/>
