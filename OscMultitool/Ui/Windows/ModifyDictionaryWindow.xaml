@@ -27,13 +27,13 @@
                 <Button Content="Add New / Modify" HorizontalAlignment="Center" Click="Button_AddOrModifyEntry"/>
                 <Button Content="Remove" HorizontalAlignment="Center" Margin="0,8,0,0" VerticalAlignment="Top" Click="Button_RemoveEntry"/>
 
-                <TextBlock x:Name="labelKey" Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Text="Key" Margin="0,16,0,0"/>
+                <TextBlock x:Name="labelKey" Style="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Key" Margin="0,16,0,0"/>
                 <TextBox x:Name="textKey" KeyUp="TextBox_KeyPressed" Tag="Key..."/>
             </StackPanel>
 
             <DockPanel Grid.Row="1" Margin="0,16,0,0">
-                <TextBlock x:Name="labelValue" Style="{DynamicResource HTextBlock}" DockPanel.Dock="Top" HorizontalAlignment="Center" Text="Value"/>
-                <TextBox x:Name="textValue" Style="{DynamicResource HTextBoxLarge}" KeyUp="TextBox_KeyPressed" Tag="Value..."/>
+                <TextBlock x:Name="labelValue" Style="{StaticResource HTextBlock}" DockPanel.Dock="Top" HorizontalAlignment="Center" Text="Value"/>
+                <TextBox x:Name="textValue" Style="{StaticResource HTextBoxLarge}" KeyUp="TextBox_KeyPressed" Tag="Value..."/>
             </DockPanel>
         </Grid>
     </Grid>

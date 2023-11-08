@@ -37,16 +37,16 @@
             </StackPanel>
 
             <StackPanel Grid.Row="1" VerticalAlignment="Bottom">
-                <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Text="Name"/>
+                <TextBlock Style="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Name"/>
                 <TextBox x:Name="textName" KeyUp="TextBox_KeyPressed" Tag="Name..."/>
 
-                <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="Parameter"/>
+                <TextBlock Style="{StaticResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="Parameter"/>
                 <TextBox x:Name="textParameter" KeyUp="TextBox_KeyPressed" Tag="Parameter..."/>
 
-                <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="Count"/>
+                <TextBlock Style="{StaticResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="Count"/>
                 <TextBox x:Name="textCount" KeyUp="TextBox_KeyPressed" Tag="Count..."/>
 
-                <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="Cooldown (s)"/>
+                <TextBlock Style="{StaticResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="Cooldown (s)"/>
                 <TextBox x:Name="textCooldown" KeyUp="TextBox_KeyPressed" Tag="Cooldown..."/>
             </StackPanel>
         </Grid>

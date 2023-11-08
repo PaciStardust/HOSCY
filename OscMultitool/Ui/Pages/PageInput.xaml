@@ -20,7 +20,7 @@
             <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
 
-        <TextBox x:Name="textBox" Style="{DynamicResource HTextBoxLarge}" Grid.Row="0" Grid.Column="0" Margin="0,0,16,8" KeyUp="TextBox_KeyPressed" AcceptsReturn="True" Tag="Enter a message here..."/>
+        <TextBox x:Name="textBox" Style="{StaticResource HTextBoxLarge}" Grid.Row="0" Grid.Column="0" Margin="0,0,16,8" KeyUp="TextBox_KeyPressed" AcceptsReturn="True" Tag="Enter a message here..."/>
 
         <WrapPanel  Grid.Row="1" Grid.Column="0" Margin="0,8,16,0" HorizontalAlignment="Center" VerticalAlignment="Bottom">
             <CheckBox Content="TTS" VerticalAlignment="Center" HorizontalAlignment="Left" IsChecked="{Binding Input.UseTts, Source={x:Static local:Config.Data}}"/>

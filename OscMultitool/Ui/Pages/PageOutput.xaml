@@ -93,7 +93,7 @@
                             <Label Content="Max. text length" VerticalAlignment="Center"/>
                         </WrapPanel>
 
-                        <TextBlock Style="{DynamicResource HTextBlock}" Text="Notification Text" Margin="0,4,0,0"/>
+                        <TextBlock Style="{StaticResource HTextBlock}" Text="Notification Text" Margin="0,4,0,0"/>
                         <WrapPanel>
                             <TextBox Tag="Left..." Style="{StaticResource HTextBoxTiny}">
                                 <TextBox.Text>
@@ -187,13 +187,13 @@
                     <CheckBox x:Name="SynthUseAzure" Content="Use Azure TTS" IsChecked="{Binding Api.UseAzureTts, Source={x:Static local:Config.Data}}" Checked="SynthUseAzure_Checked"/>
 
                     <StackPanel Margin="0,4,0,0" IsEnabled="{Binding Api.UseAzureTts, Source={x:Static local:Config.Data}}">
-                        <TextBlock Style="{DynamicResource HTextBlock}" Text="Output Speech Voice"/>
+                        <TextBlock Style="{StaticResource HTextBlock}" Text="Output Speech Voice"/>
                         <WrapPanel>
                             <ComboBox x:Name="azureVoiceBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="AzureVoiceBox_SelectionChanged"/>
                             <Button Style="{StaticResource HButtonSmall}" Content="Edit list" Margin="8,0,0,0" VerticalAlignment="Center" Click="Button_EditAzureVoices"/>
                         </WrapPanel>
 
-                        <TextBlock Style="{DynamicResource HTextBlock}" Text="Custom endpoint" Margin="0,4,0,0"/>
+                        <TextBlock Style="{StaticResource HTextBlock}" Text="Custom endpoint" Margin="0,4,0,0"/>
                         <TextBox Text="{Binding Api.AzureCustomEndpointSpeech, Source={x:Static local:Config.Data}}" Tag="Custom endpoint..." Style="{StaticResource HTextBoxLong}" PreviewKeyDown="SynthTextBox_PreviewKeyDown"/>
 
                         <WrapPanel Margin="0,4,0,0">
