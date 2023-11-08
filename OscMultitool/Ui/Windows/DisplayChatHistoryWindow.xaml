@@ -11,6 +11,12 @@
         Title="Chat History" Height="400" Width="500" Background="{Binding Source={x:Static ui:UiHelper.ColorBack}}" ResizeMode="CanResize">
 
     <Grid Margin="16">
-        <ListBox x:Name="listBox" Grid.Column="0" Margin="0,0,8,0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
+        <ListBox x:Name="listBox" Grid.Column="0" Margin="0,0,8,0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" TextWrapping="Wrap"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
     </Grid>
 </Window>

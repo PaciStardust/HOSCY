@@ -20,7 +20,12 @@ namespace Hoscy.Ui.Windows
         }
 
         private void Refresh()
-        => listBox.Load(_list, _list.Count -1);
+        {
+            var index = _list.Count - 1;
+            listBox.Load(_list, index);
+            if (index > -1)
+                listBox.ScrollIntoView(listBox.Items[index]);
+        }
 
         internal static void AddMessage(string message)
         {
