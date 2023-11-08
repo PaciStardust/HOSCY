@@ -67,8 +67,7 @@ namespace Hoscy.Ui.Pages
 
         private void Button_History(object sender, RoutedEventArgs e)
         {
-            var window = DisplayChatHistoryWindow.Instance;
-            window ??= new DisplayChatHistoryWindow();
+            var window = new DisplayChatHistoryWindow();
             window.Show();
         }
         #endregion

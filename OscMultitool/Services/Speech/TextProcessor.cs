@@ -127,7 +127,7 @@ namespace Hoscy.Services.Speech
                 message = message[..512];
 
             PageInfo.SetMessage(message, UseTextbox, UseTts);
-            DisplayChatHistoryWindow.Instance?.AddMessage(message);
+            DisplayChatHistoryWindow.AddMessage(message);
         }
 
         /// <summary>
