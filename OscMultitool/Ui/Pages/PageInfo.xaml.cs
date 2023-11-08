@@ -1,5 +1,6 @@
 ﻿using Hoscy.Services.OscControl;
 using Hoscy.Services.Speech;
+using Hoscy.Ui.Windows;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -62,6 +63,13 @@ namespace Hoscy.Ui.Pages
                 else
                     SetRecStatus("Recognizer failed to start" + _perfTip);
             }
+        }
+
+        private void Button_History(object sender, RoutedEventArgs e)
+        {
+            var window = DisplayChatHistoryWindow.Instance;
+            window ??= new DisplayChatHistoryWindow();
+            window.Show();
         }
         #endregion
 

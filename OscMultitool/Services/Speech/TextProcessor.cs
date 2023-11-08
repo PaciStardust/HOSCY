@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using Hoscy.Services.Speech.Utilities;
 using System.Text;
 using System.Linq;
+using Hoscy.Ui.Windows;
 
 namespace Hoscy.Services.Speech
 {
@@ -126,6 +127,7 @@ namespace Hoscy.Services.Speech
                 message = message[..512];
 
             PageInfo.SetMessage(message, UseTextbox, UseTts);
+            DisplayChatHistoryWindow.Instance?.AddMessage(message);
         }
 
         /// <summary>
