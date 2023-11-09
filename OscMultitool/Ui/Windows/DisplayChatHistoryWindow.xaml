@@ -11,12 +11,19 @@
         Title="Chat History" Height="400" Width="500" Background="{Binding Source={x:Static ui:UiHelper.ColorBack}}" ResizeMode="CanResize">
 
     <Grid Margin="16">
-        <ListBox x:Name="listBox" Grid.Column="0" Margin="0,0,8,0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <ListBox x:Name="listBox" Grid.Row="0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding}" TextWrapping="Wrap"/>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
+
+        <TextBox Grid.Row="1" x:Name="textMessage" KeyUp="TextBox_KeyPressed" Tag="Send Message..." Margin="0,8,0,0"/>
     </Grid>
 </Window>
