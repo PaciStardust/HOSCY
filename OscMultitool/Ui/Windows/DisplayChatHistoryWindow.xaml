@@ -24,6 +24,15 @@
             </ListBox.ItemTemplate>
         </ListBox>
 
-        <TextBox Grid.Row="1" x:Name="textMessage" KeyUp="TextBox_KeyPressed" Tag="Send Message..." Margin="0,8,0,0"/>
+        <Grid Grid.Row="1" Margin="0,8,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <TextBox Grid.Column="0" x:Name="textMessage" KeyUp="TextBox_KeyPressed" Tag="Enter a message here..."/>
+
+            <Button Grid.Column="1" Content="(Re)Send" Margin="8,0,0,0" Click="Button_Send"/>
+        </Grid>
     </Grid>
 </Window>
