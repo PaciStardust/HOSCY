@@ -30,7 +30,7 @@
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
             
-            <TextBox Grid.Column="0" x:Name="textMessage" KeyUp="TextBox_KeyPressed" Tag="Enter a message here..."/>
+            <TextBox Grid.Column="0" x:Name="textBox" KeyUp="TextBox_KeyPressed" Tag="Enter a message here..."/>
 
             <Button Grid.Column="1" Content="(Re)Send" Margin="8,0,0,0" Click="Button_Send"/>
         </Grid>

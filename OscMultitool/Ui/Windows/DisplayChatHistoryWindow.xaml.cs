@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Input;
 
 namespace Hoscy.Ui.Windows
 {
@@ -36,11 +37,12 @@ namespace Hoscy.Ui.Windows
         }
 
         private void UpdateList()
-        {
-            Dispatcher.Invoke(() =>
-            {
-                Refresh();
-            });
-        }
+            => Dispatcher.Invoke(Refresh);
+
+        private void TextBox_KeyPressed(object sender, KeyEventArgs e)
+            => ManualInputHelper.KeyPress(textBox, e);
+
+        private void Button_Send(object sender, RoutedEventArgs e)
+            => ManualInputHelper.SendMessage(textBox);
     }
 }
