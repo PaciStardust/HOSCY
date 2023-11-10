@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Hoscy.Ui.Windows
@@ -12,20 +13,24 @@ namespace Hoscy.Ui.Windows
     {
         private static readonly List<string> _list = new();
         private static event Action ListAdded = delegate { };
+        private bool _selectionInputsToBox = false;
 
         public DisplayChatHistoryWindow()
         {
             InitializeComponent();
             Refresh();
             ListAdded += UpdateList;
+            _selectionInputsToBox = true;
         }
 
         private void Refresh()
         {
+            _selectionInputsToBox = false;
             var index = _list.Count - 1;
             listBox.Load(_list, index);
             if (index > -1)
                 listBox.ScrollIntoView(listBox.Items[index]);
+            _selectionInputsToBox = true;
         }
 
         internal static void AddMessage(string message)
@@ -44,5 +49,13 @@ namespace Hoscy.Ui.Windows
 
         private void Button_Send(object sender, RoutedEventArgs e)
             => ManualInputHelper.SendMessage(textBox);
+
+        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var index = listBox.SelectedIndex;
+            if (!_selectionInputsToBox || index < 0 || index >= _list.Count)
+                return;
+            textBox.Text = _list[index];
+        }
     }
 }
