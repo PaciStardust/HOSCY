@@ -64,12 +64,6 @@ namespace Hoscy.Ui.Pages
                     SetRecStatus("Recognizer failed to start" + _perfTip);
             }
         }
-
-        private void Button_History(object sender, RoutedEventArgs e)
-        {
-            var window = new DisplayChatHistoryWindow();
-            window.Show();
-        }
         #endregion
 
         #region Text Setters

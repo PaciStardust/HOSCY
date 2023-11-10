@@ -39,7 +39,6 @@
             <Button x:Name="muteButton" Content="Listening" Click="Button_Mute" Height="76"/>
             <Button Content="Clear" Margin="0,16,0,0" Click="Button_Clear" Height="76"/>
             <Button x:Name="startButton" Margin="0,16,0,0" Content="Stopped" Click="Button_Start" Height="76"/>
-            <Button x:Name="historyButton" Margin="0,16,0,0" Content="History" Click="Button_History" Height="76"/>
         </StackPanel>
     </Grid>
 </Page>

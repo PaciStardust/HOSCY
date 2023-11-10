@@ -1,4 +1,5 @@
 ﻿using Hoscy.Services.Speech;
+using Hoscy.Ui.Windows;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,6 +26,12 @@ namespace Hoscy.Ui.Pages
         {
             UiHelper.OpenDictionaryEditor("Edit Input Presets", "Name", "Text", Config.Input.Presets);
             RefreshPresets();
+        }
+
+        private void Button_History(object sender, RoutedEventArgs e)
+        {
+            var window = new DisplayChatHistoryWindow();
+            window.Show();
         }
         #endregion
 

@@ -16,8 +16,8 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="5*"/>
-            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
 
         <TextBox x:Name="textBox" Style="{StaticResource HTextBoxLarge}" Grid.Row="0" Grid.Column="0" Margin="0,0,16,8" KeyUp="TextBox_KeyPressed" AcceptsReturn="True" Tag="Enter a message here..."/>
@@ -30,6 +30,9 @@
 
         <ListBox x:Name="presetBox" Grid.Column="1" Grid.Row="0" Margin="16,0,0,8" SelectionChanged="PresetBox_SelectionChanged"/>
 
-        <Button Grid.Row="1" Grid.Column="1" Content="Change Presets" Margin="16,8,0,0" Click="Button_ChangePresets" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+        <WrapPanel Grid.Row="1" Grid.Column="1" Margin="16,8,0,0" HorizontalAlignment="Center">
+            <Button Content="Presets" Click="Button_ChangePresets"/>
+            <Button Content="History" Click="Button_History" Margin="8,0,0,0"/>
+        </WrapPanel>
     </Grid>
 </Page>
