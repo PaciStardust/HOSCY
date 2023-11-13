@@ -29,7 +29,7 @@ namespace Hoscy.Ui
                 UseTts = Config.Input.UseTts,
                 AllowTranslate = Config.Input.AllowTranslation
             };
-            tProcessor.Process(input);
+            tProcessor.Process(input, InputSource.Manual);
 
             _lastMessage = input;
             textBox.Text = string.Empty;

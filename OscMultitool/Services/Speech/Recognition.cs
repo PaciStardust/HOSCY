@@ -104,7 +104,7 @@ namespace Hoscy.Services.Speech
                 AllowTranslate = true
             };
 
-            processor.Process(cleanedMessage);
+            processor.Process(cleanedMessage, InputSource.Voice);
         }
 
         private static Regex _denoiseFilter = new(" *");
@@ -145,7 +145,7 @@ namespace Hoscy.Services.Speech
         internal static event EventHandler<RecognitionChangedEventArgs> RecognitionChanged = delegate { };
 
         private static void HandleRecognitionChanged(object? sender, RecognitionChangedEventArgs e)
-            => RecognitionChanged.Invoke(sender, e);
+            => RecognitionChanged.Invoke(null, e);
 
         private static void TriggerRecognitionChanged()
             => HandleRecognitionChanged(null, new(IsRunning, IsListening));

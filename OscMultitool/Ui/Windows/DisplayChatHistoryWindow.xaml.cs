@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Hoscy.Services.Speech;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -11,7 +13,7 @@ namespace Hoscy.Ui.Windows
     /// </summary>
     internal partial class DisplayChatHistoryWindow : Window
     {
-        private static readonly List<string> _list = new();
+        private static readonly List<TextProcessorResult> _list = new();
         private static event Action ListAdded = delegate { };
         private bool _selectionInputsToBox = false;
 
@@ -27,15 +29,15 @@ namespace Hoscy.Ui.Windows
         {
             _selectionInputsToBox = false;
             var index = _list.Count - 1;
-            listBox.Load(_list, index);
+            listBox.Load(_list.Select(x => $"[{x.InputSource.ToString()[0]}] {x.Message}"), index);
             if (index > -1)
                 listBox.ScrollIntoView(listBox.Items[index]);
             _selectionInputsToBox = true;
         }
 
-        internal static void AddMessage(string message)
+        internal static void AddMessage(TextProcessorResult result)
         {
-            _list.Add(message);
+            _list.Add(result);
             if (_list.Count > 50)
                 _list.RemoveAt(0);
             ListAdded.Invoke();
@@ -55,7 +57,7 @@ namespace Hoscy.Ui.Windows
             var index = listBox.SelectedIndex;
             if (!_selectionInputsToBox || index < 0 || index >= _list.Count)
                 return;
-            textBox.Text = _list[index];
+            textBox.Text = _list[index].Message;
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Hoscy.Services.OscControl;
 using Hoscy.Services.Speech;
-using Hoscy.Ui.Windows;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -104,18 +103,18 @@ namespace Hoscy.Ui.Pages
         /// <param name="message">Message to display</param>
         /// <param name="textbox">Did it send via Textbox</param>
         /// <param name="tts">Did it send via TTS</param>
-        internal static void SetMessage(string message, bool textbox, bool tts) 
+        internal static void SetMessage(TextProcessorResult result) 
         {
             var add = "Nothing";
-            if (textbox && tts)
+            if (result.UseTextbox && result.UseTts)
                 add = "Textbox and TTS";
-            else if (textbox)
+            else if (result.UseTextbox)
                 add = "Textbox";
-            else if (tts)
+            else if (result.UseTts)
                 add = "TTS";
 
-            _sendStatus = "Sent via " + add;
-            _message = message;
+            _sendStatus = $"{result.InputSource} input sent via {add}";
+            _message = result.Message;
 
             Instance?.Dispatcher.Invoke(() =>
             {

@@ -7,7 +7,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Hoscy.Services.Speech.Utilities;
-using System.Text;
 using System.Linq;
 using Hoscy.Ui.Windows;
 
@@ -78,14 +77,15 @@ namespace Hoscy.Services.Speech
         /// Processes and sends strings with given options
         /// </summary>
         /// <param name="message">The message to process</param>
-        internal void Process(string message)
-            => ProcessInternal(message).RunWithoutAwait();
+        /// <param name="source">Source of the message</param>
+        internal void Process(string message, InputSource source)
+            => ProcessInternal(message, source).RunWithoutAwait();
 
         /// <summary>
         /// Processes and sends strings with given options
         /// </summary>
         /// <param name="message">The message to process</param>
-        private async Task ProcessInternal(string message)
+        private async Task ProcessInternal(string message, InputSource source)
         {
             Logger.Debug("Processing message: " + message);
 
@@ -126,8 +126,9 @@ namespace Hoscy.Services.Speech
             if (message.Length > 512)
                 message = message[..512];
 
-            PageInfo.SetMessage(message, UseTextbox, UseTts);
-            DisplayChatHistoryWindow.AddMessage(message);
+            var processorResult = new TextProcessorResult(message, UseTextbox, UseTts, source);
+            PageInfo.SetMessage(processorResult);
+            DisplayChatHistoryWindow.AddMessage(processorResult);
         }
 
         /// <summary>
@@ -209,5 +210,28 @@ namespace Hoscy.Services.Speech
             return null;
         }
         #endregion
+    }
+
+    internal class TextProcessorResult
+    {
+        public TextProcessorResult(string message, bool useTextbox, bool useTts, InputSource source)
+        {
+            Message = message;
+            UseTextbox = useTextbox;
+            UseTts = useTts;
+            InputSource = source;
+        }
+
+        internal string Message { get; }
+        internal bool UseTextbox { get; }
+        internal bool UseTts { get; }
+        internal InputSource InputSource { get; }
+    } 
+
+    internal enum InputSource
+    {
+        Voice,
+        Manual,
+        Osc
     }
 }
