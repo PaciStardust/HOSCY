@@ -29,7 +29,7 @@
                     <CheckBox Content="Swap artist and song name" Margin="0,4,0,0" IsChecked="{Binding Textbox.MediaSwapArtistAndSong, Source={x:Static local:Config.Data}}" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}"/>
                     <CheckBox Content="Also display album name" Margin="0,4,0,0" IsChecked="{Binding Textbox.MediaAddAlbum, Source={x:Static local:Config.Data}}" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}"/>
 
-                    <TextBlock Style="{DynamicResource HTextBlock}" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}" Text="Text Configuration" Margin="0,8,0,0"/>
+                    <TextBlock Style="{StaticResource HTextBlock}" IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}" Text="Text Configuration" Margin="0,8,0,0"/>
                     <WrapPanel IsEnabled="{Binding Textbox.MediaShowStatus, Source={x:Static local:Config.Data}}">
                         <TextBox Tag="Playing..." Style="{StaticResource HTextBoxShort}">
                             <TextBox.Text>
@@ -111,10 +111,10 @@
                 <Label Style="{StaticResource HLabelM}" Content="Azure Cognitive Services" Margin="0,16,0,0"/>
 
                 <StackPanel Style="{StaticResource HStackIndent}">
-                    <TextBlock Style="{DynamicResource HTextBlock}" Text="API Key"/>
+                    <TextBlock Style="{StaticResource HTextBlock}" Text="API Key"/>
                     <TextBox Text="{Binding Api.AzureKey, Source={x:Static local:Config.Data}}" Tag="API key..." Style="{StaticResource HTextBoxLong}"/>
 
-                    <TextBlock Style="{DynamicResource HTextBlock}" Text="API Region" Margin="0,4,0,0"/>
+                    <TextBlock Style="{StaticResource HTextBlock}" Text="API Region" Margin="0,4,0,0"/>
                     <TextBox Text="{Binding Api.AzureRegion, Source={x:Static local:Config.Data}}" Tag="API Region..." Style="{StaticResource HTextBoxLong}"/>
                 </StackPanel>
             </StackPanel>

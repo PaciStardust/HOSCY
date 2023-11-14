@@ -104,6 +104,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Update="Ui\Windows\DisplayChatHistoryWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
     <Page Update="Ui\Windows\ModifyApiPresetsWindow.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>

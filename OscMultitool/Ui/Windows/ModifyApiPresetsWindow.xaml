@@ -38,10 +38,10 @@
 
             <ScrollViewer Grid.Row="1" Margin="0,32,0,0">
                 <StackPanel Margin="0,0,16,0">
-                    <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Text="Name"/>
+                    <TextBlock Style="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Name"/>
                     <TextBox x:Name="textName" TextWrapping="Wrap" KeyUp="TextBox_KeyPressed" Tag="Name..."/>
 
-                    <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="URL"/>
+                    <TextBlock Style="{StaticResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="URL"/>
                     <TextBox x:Name="textUrl" TextWrapping="Wrap" KeyUp="TextBox_KeyPressed" Tag="URL..."/>
 
                     <Grid Margin="0,8,0,0">
@@ -51,24 +51,24 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Margin="0,0,8,0">
-                            <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Text="Result Name"/>
+                            <TextBlock Style="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Result Name"/>
                             <TextBox x:Name="textResult" KeyUp="TextBox_KeyPressed" Tag="Result..."/>
                         </StackPanel>
 
                         <StackPanel Margin="8,0,0,0" Grid.Column="1">
-                            <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Text="Timeout (ms)"/>
+                            <TextBlock Style="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Timeout (ms)"/>
                             <TextBox x:Name="textTimeout" KeyUp="TextBox_KeyPressed" Tag="Timeout..."/>
                         </StackPanel>
                     </Grid>
 
-                    <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="Content Type"/>
-                    <TextBox x:Name="textContentType" Style="{DynamicResource HTextBoxLarge}" KeyUp="TextBox_KeyPressed" Tag="Content Type..."/>
+                    <TextBlock Style="{StaticResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="Content Type"/>
+                    <TextBox x:Name="textContentType" Style="{StaticResource HTextBoxLarge}" KeyUp="TextBox_KeyPressed" Tag="Content Type..."/>
 
-                    <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="Content (Translation, [T] gets replaced)"/>
-                    <TextBox x:Name="textJson" Style="{DynamicResource HTextBoxLarge}" AcceptsReturn="True" Tag="JSON..."/>
+                    <TextBlock Style="{StaticResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="Content (Translation, [T] gets replaced)"/>
+                    <TextBox x:Name="textJson" Style="{StaticResource HTextBoxLarge}" AcceptsReturn="True" Tag="JSON..."/>
 
-                    <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="Authorization Header (Optional)"/>
-                    <TextBox x:Name="textAuthHeader" Style="{DynamicResource HTextBoxLarge}" KeyUp="TextBox_KeyPressed" Tag="Authorization Header..."/>
+                    <TextBlock Style="{StaticResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="Authorization Header (Optional)"/>
+                    <TextBox x:Name="textAuthHeader" Style="{StaticResource HTextBoxLarge}" KeyUp="TextBox_KeyPressed" Tag="Authorization Header..."/>
                 </StackPanel>
             </ScrollViewer>
         </Grid>

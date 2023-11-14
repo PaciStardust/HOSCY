@@ -19,7 +19,7 @@
 
             <StackPanel Style="{StaticResource HStackIndent}">
 
-                <TextBlock Style="{DynamicResource HTextBlock}" Text="Logging Level"/>
+                <TextBlock Style="{StaticResource HTextBlock}" Text="Logging Level"/>
                 <WrapPanel>
                     <ComboBox x:Name="loggingLevelBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="LoggingLevelBox_SelectionChanged"/>
                     <Button Style="{StaticResource HButtonSmall}" Content="Edit filters" Margin="8,0,0,0" VerticalAlignment="Center" Click="Button_OpenLogFilter"/>

@@ -37,16 +37,16 @@
             </StackPanel>
 
             <StackPanel Grid.Row="1" VerticalAlignment="Bottom">
-                <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Text="Name"/>
+                <TextBlock Style="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Name"/>
                 <TextBox x:Name="textName" KeyUp="TextBox_KeyPressed" Tag="Name..."/>
 
-                <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="IP"/>
+                <TextBlock Style="{StaticResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="IP"/>
                 <TextBox x:Name="textIp" KeyUp="TextBox_KeyPressed" Tag="IP..."/>
 
-                <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="Port"/>
+                <TextBlock Style="{StaticResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,0" Text="Port"/>
                 <TextBox x:Name="textPort" KeyUp="TextBox_KeyPressed" Tag="Port..."/>
 
-                <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,4" Text="Extra Options"/>
+                <TextBlock Style="{StaticResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,4" Text="Extra Options"/>
                 <WrapPanel HorizontalAlignment="Center">
                     <CheckBox VerticalAlignment="Center" Content="Blacklist Mode" x:Name="blacklistCheckBox"/>
                 </WrapPanel>

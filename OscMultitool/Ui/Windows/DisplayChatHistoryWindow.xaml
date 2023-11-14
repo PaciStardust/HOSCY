@@ -1,0 +1,38 @@
+﻿<Window x:Class="Hoscy.Ui.Windows.DisplayChatHistoryWindow"
+        x:ClassModifier="internal"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Hoscy"
+        xmlns:ui="clr-namespace:Hoscy.Ui"
+        mc:Ignorable="d"
+        MinHeight="400" MinWidth="500"
+        Title="Chat History" Height="400" Width="500" Background="{Binding Source={x:Static ui:UiHelper.ColorBack}}" ResizeMode="CanResize">
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <ListBox x:Name="listBox" Grid.Row="0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged ="ListBox_SelectionChanged">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" TextWrapping="Wrap"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <Grid Grid.Row="1" Margin="0,8,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <TextBox Grid.Column="0" x:Name="textBox" KeyUp="TextBox_KeyPressed" Tag="Enter a message here..."/>
+
+            <Button Grid.Column="1" Content="(Re)Send" Margin="8,0,0,0" Click="Button_Send"/>
+        </Grid>
+    </Grid>
+</Window>

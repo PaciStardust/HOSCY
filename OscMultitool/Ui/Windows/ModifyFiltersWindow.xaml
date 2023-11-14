@@ -36,17 +36,17 @@
                     <CheckBox VerticalAlignment="Center" Content="Enabled" x:Name="enabledCheckBox" Margin="8,0,0,0" IsChecked="True"/>
                 </WrapPanel>
 
-                <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Text="Name" Margin="0,8,0,0"/>
+                <TextBlock Style="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Name" Margin="0,8,0,0"/>
                 <TextBox x:Name="textName" KeyUp="TextBox_KeyPressed" Tag="Name..."/>
             </StackPanel>
 
             <DockPanel Grid.Row="1" Margin="0,8,0,0">
-                <TextBlock Style="{DynamicResource HTextBlock}" DockPanel.Dock="Top" HorizontalAlignment="Center" Text="Filter Text"/>
-                <TextBox x:Name="textFilterText" Style="{DynamicResource HTextBoxLarge}" KeyUp="TextBox_KeyPressed" Tag="Filter text..."/>
+                <TextBlock Style="{StaticResource HTextBlock}" DockPanel.Dock="Top" HorizontalAlignment="Center" Text="Filter Text"/>
+                <TextBox x:Name="textFilterText" Style="{StaticResource HTextBoxLarge}" KeyUp="TextBox_KeyPressed" Tag="Filter text..."/>
             </DockPanel>
 
             <StackPanel Grid.Row="2" VerticalAlignment="Bottom">
-                <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,4" Text="Comparison Options"/>
+                <TextBlock Style="{StaticResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,4" Text="Comparison Options"/>
                 <WrapPanel HorizontalAlignment="Center">
                     <CheckBox VerticalAlignment="Center" Content="Ignore Case" x:Name="ignoreCaseCheckBox"/>
                     <CheckBox VerticalAlignment="Center" Content="Regex" x:Name="regexCheckBox" Margin="8,0,0,0"/>

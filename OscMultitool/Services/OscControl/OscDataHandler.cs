@@ -113,7 +113,7 @@ namespace Hoscy.Services.OscControl
                     UseTts = address == Config.Osc.AddressAddTts,
                     AllowTranslate = Config.Api.TranslationAllowExternal
                 };
-                tProcessor.Process(value);
+                tProcessor.Process(value, InputSource.Osc);
                 return true;
             }
 

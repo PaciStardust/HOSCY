@@ -1,4 +1,6 @@
-﻿using Hoscy.Services.Speech;
+﻿using Hoscy.Services.Api;
+using Hoscy.Services.OscControl;
+using Hoscy.Services.Speech;
 using Hoscy.Ui;
 using Hoscy.Ui.Windows;
 using System;
@@ -15,6 +17,29 @@ namespace Hoscy
     public partial class App : Application
     {
         public static string Version { get; private set; } = GetVersion();
+
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            ShutdownMode = ShutdownMode.OnMainWindowClose;
+
+            Logger.PInfo("HOSCY VERSION " + Version);
+            Config.BackupFile(Utils.PathConfigFile);
+            Osc.RecreateListener(); //This also loads the config
+            Media.StartMediaDetection();
+
+            if (Config.Debug.CheckUpdates)
+                Updater.CheckForUpdates();
+
+            Recognition.RecognitionChanged += PlayMuteSound;
+        }
+
+        private bool _currentListenStatus = false;
+        private void PlayMuteSound(object? sender, RecognitionChangedEventArgs e)
+        {
+            if (_currentListenStatus != e.Listening && Config.Speech.PlayMuteSound && Running)
+                SoundPlayer.Play(e.Listening ? SoundPlayer.Sound.Unmute : SoundPlayer.Sound.Mute);
+            _currentListenStatus = e.Listening;
+        }
 
         //Indicator for threads to stop
         public static bool Running { get; private set; } = true;

@@ -27,11 +27,11 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Style="{DynamicResource HTextBlock}" x:Name="sendStatus" Grid.Row="0" TextAlignment="Center" Text="No message sent since opening" Opacity="0.65"/>
+                <TextBlock Style="{StaticResource HTextBlock}" x:Name="sendStatus" Grid.Row="0" TextAlignment="Center" Text="No message sent since opening" Opacity="0.65"/>
                 <Rectangle Grid.Row="1" Height="4" Fill="{DynamicResource AccentColor}" RadiusY="2" RadiusX="4" Margin="4" Opacity="0.65"/>
-                <TextBlock Grid.Row="2" Style="{DynamicResource HTextBlock}" x:Name="message" TextAlignment="Center" Text="No message sent since opening" VerticalAlignment="Center" FontSize="24"/>
+                <TextBlock Grid.Row="2" Style="{StaticResource HTextBlock}" x:Name="message" TextAlignment="Center" Text="No message sent since opening" VerticalAlignment="Center" FontSize="24"/>
                 <Rectangle Grid.Row="3" Height="4" Fill="{DynamicResource AccentColor}" RadiusY="2" RadiusX="4" Margin="4" Opacity="0.65"/>
-                <TextBlock Style="{DynamicResource HTextBlock}" x:Name="notification" Grid.Row="4" TextAlignment="Center" Text="No notification sent since opening" Opacity="0.65"/>
+                <TextBlock Style="{StaticResource HTextBlock}" x:Name="notification" Grid.Row="4" TextAlignment="Center" Text="No notification sent since opening" Opacity="0.65"/>
             </Grid>
         </Border>
 

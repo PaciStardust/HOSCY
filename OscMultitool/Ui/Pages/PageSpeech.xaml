@@ -77,7 +77,7 @@
                         <Label Content="Vosk Options"/>
 
                         <StackPanel Style="{StaticResource HStackIndent}">
-                            <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="AI model"/>
+                            <TextBlock Style="{StaticResource HTextBlock}" VerticalAlignment="Center" Text="AI model"/>
 
                             <WrapPanel>
                                 <ComboBox x:Name="voskModelBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="VoskModelBox_SelectionChanged"/>
@@ -104,19 +104,19 @@
                         <Label Content="Whisper Options"/>
 
                         <StackPanel Style="{StaticResource HStackIndent}">
-                            <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="AI model"/>
+                            <TextBlock Style="{StaticResource HTextBlock}" VerticalAlignment="Center" Text="AI model"/>
                             <WrapPanel>
                                 <ComboBox x:Name="whisperModelBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="WhisperModelBox_SelectionChanged"/>
                                 <Button Style="{StaticResource HButtonSmall}" Content="Edit list" Margin="8,0,0,0" VerticalAlignment="Center" Click="Button_EditWhisperModels"/>
                             </WrapPanel>
 
-                            <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Input language" Margin="0,4,0,0"/>
+                            <TextBlock Style="{StaticResource HTextBlock}" VerticalAlignment="Center" Text="Input language" Margin="0,4,0,0"/>
                             <WrapPanel>
                                 <ComboBox x:Name="whisperLanguageBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="WhisperLanguageBox_SelectionChanged"/>
                                 <Button Style="{StaticResource HButtonSmall}" Content="Edit noise whitelist" Margin="8,0,0,0" VerticalAlignment="Center" Click="Button_EditWhisperNoiseWhitelist"/>
                             </WrapPanel>
 
-                            <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="Graphics Adapter" Margin="0,4,0,0"/>
+                            <TextBlock Style="{StaticResource HTextBlock}" VerticalAlignment="Center" Text="Graphics Adapter" Margin="0,4,0,0"/>
                             <ComboBox x:Name="whisperAdapterBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="WhisperAdapterBox_SelectionChanged"/>
 
                             <Label Content="Additional Options" Margin="0,4,0,0"/>
@@ -212,7 +212,7 @@
                         <Label Content="Any-API Options"/>
 
                         <StackPanel Style="{StaticResource HStackIndent}">
-                            <TextBlock Style="{DynamicResource HTextBlock}" VerticalAlignment="Center" Text="API Preset"/>
+                            <TextBlock Style="{StaticResource HTextBlock}" VerticalAlignment="Center" Text="API Preset"/>
                             <ComboBox x:Name="anyApiBox" Style="{StaticResource HSettingsComboBox}" SelectionChanged="AnyApiBox_SelectionChanged"/>
 
                             <WrapPanel Margin="0,4,0,0">
@@ -235,7 +235,7 @@
                         <Label Content="Azure Options"/>
 
                         <StackPanel Style="{StaticResource HStackIndent}">
-                            <TextBlock Style="{DynamicResource HTextBlock}" Text="Custom endpoint"/>
+                            <TextBlock Style="{StaticResource HTextBlock}" Text="Custom endpoint"/>
                             <TextBox Text="{Binding Api.AzureCustomEndpointRecognition, Source={x:Static local:Config.Data}}" Tag="Custom endpoint..." Style="{StaticResource HTextBoxLong}" PreviewKeyDown="TextBox_PreviewKeyDown"/>
 
                             <WrapPanel Margin="0,4,0,0">

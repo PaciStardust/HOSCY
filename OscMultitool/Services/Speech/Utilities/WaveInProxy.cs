@@ -72,13 +72,13 @@ namespace Hoscy.Services.Speech.Utilities
                 return;
 
             if (IsListening)
-                DataAvailable.Invoke(this, e);
+                DataAvailable.Invoke(null, e);
             else
-                DataAvailable.Invoke(this, _emptyWaveInData);
+                DataAvailable.Invoke(null, _emptyWaveInData);
         }
 
         private void HandleRecordingStopped(object? sender, StoppedEventArgs e)
-            => RecordingStopped.Invoke(this, e);
+            => RecordingStopped.Invoke(null, e);
 
         #endregion
 

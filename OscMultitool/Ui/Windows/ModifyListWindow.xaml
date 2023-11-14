@@ -33,8 +33,8 @@
             </StackPanel>
 
             <DockPanel Margin="0,16,0,0" Grid.Row="1">
-                <TextBlock x:Name="labelValue" Style="{DynamicResource HTextBlock}" Grid.Column="1" DockPanel.Dock="Top" HorizontalAlignment="Center" Text="Value"/>
-                <TextBox x:Name="textValue" Style="{DynamicResource HTextBoxLarge}" KeyUp="TextBox_KeyPressed" Tag="Value..."/>
+                <TextBlock x:Name="labelValue" Style="{StaticResource HTextBlock}" Grid.Column="1" DockPanel.Dock="Top" HorizontalAlignment="Center" Text="Value"/>
+                <TextBox x:Name="textValue" Style="{StaticResource HTextBoxLarge}" KeyUp="TextBox_KeyPressed" Tag="Value..."/>
             </DockPanel>
         </Grid>
     </Grid>

@@ -39,17 +39,17 @@
             </StackPanel>
 
             <DockPanel Grid.Row="1" Margin="0,8,0,0">
-                <TextBlock Style="{DynamicResource HTextBlock}" DockPanel.Dock="Top" HorizontalAlignment="Center" Text="Text"/>
-                <TextBox x:Name="textValue" Style="{DynamicResource HTextBoxLarge}" KeyUp="TextBox_KeyPressed" Tag="Text..."/>
+                <TextBlock Style="{StaticResource HTextBlock}" DockPanel.Dock="Top" HorizontalAlignment="Center" Text="Text"/>
+                <TextBox x:Name="textValue" Style="{StaticResource HTextBoxLarge}" KeyUp="TextBox_KeyPressed" Tag="Text..."/>
             </DockPanel>
             
             <DockPanel Grid.Row="2" Margin="0,8,0,0">
-                <TextBlock Style="{DynamicResource HTextBlock}" DockPanel.Dock="Top" HorizontalAlignment="Center" Text="Replacement"/>
-                <TextBox x:Name="replacementValue" Style="{DynamicResource HTextBoxLarge}" KeyUp="TextBox_KeyPressed" Tag="Replacement..."/>
+                <TextBlock Style="{StaticResource HTextBlock}" DockPanel.Dock="Top" HorizontalAlignment="Center" Text="Replacement"/>
+                <TextBox x:Name="replacementValue" Style="{StaticResource HTextBoxLarge}" KeyUp="TextBox_KeyPressed" Tag="Replacement..."/>
             </DockPanel>
 
             <StackPanel  Grid.Row="3">
-                <TextBlock Style="{DynamicResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,4" Text="Comparison Options"/>
+                <TextBlock Style="{StaticResource HTextBlock}" HorizontalAlignment="Center" Margin="0,8,0,4" Text="Comparison Options"/>
                 <WrapPanel HorizontalAlignment="Center">
                     <CheckBox VerticalAlignment="Center" Content="Ignore Case" x:Name="ignoreCaseCheckBox" IsChecked="True"/>
                     <CheckBox VerticalAlignment="Center" Content="Regex" x:Name="regexCheckBox" Margin="8,0,0,0"/>
