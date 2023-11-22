@@ -45,7 +45,8 @@ namespace Hoscy.Services.Speech.Recognizers
                     ErrorDialog = false,
                     CreateNoWindow = true,
                     Arguments = GenerateArguments()
-                }
+                },
+                EnableRaisingEvents = true
             };
 
             try
@@ -114,7 +115,8 @@ namespace Hoscy.Services.Speech.Recognizers
                 { "WhisperLanguage", Config.Speech.WhisperLanguage },
                 { "WhisperRecMaxDuration", Config.Speech.WhisperRecMaxDuration },
                 { "WhisperRecPauseDuration", Config.Speech.WhisperRecPauseDuration },
-                { "WhisperHighPerformance", Config.Speech.WhisperHighPerformance }
+                { "WhisperHighPerformance", Config.Speech.WhisperHighPerformance },
+                { "ParentPid", Environment.ProcessId }
             };
 
             return JsonConvert.SerializeObject(dict, Formatting.None).Replace("\"", "'");

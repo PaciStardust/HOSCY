@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Diagnostics;
 using Whisper;
 
 namespace HoscyWhisperServer
@@ -27,6 +28,10 @@ namespace HoscyWhisperServer
                 SendMessage(MessageType.Error, ex.Message);
                 return;
             }
+
+            var process = Process.GetProcessById(Convert.ToInt32(_config["ParentPid"]));
+            process.EnableRaisingEvents = true;
+            process.Exited += HoscyExited;
 
             try
             {
@@ -67,7 +72,12 @@ namespace HoscyWhisperServer
             }
 
             SendMessage(MessageType.Loaded, _cptThread.StartTime.ToString());
-            Console.ReadKey();
+        }
+
+        private static void HoscyExited(object? sender, EventArgs e)
+        {
+            _cptThread?.Stop();
+            Process.GetCurrentProcess().Kill();
         }
 
         private static void ApplyParameters(ref Parameters p)
