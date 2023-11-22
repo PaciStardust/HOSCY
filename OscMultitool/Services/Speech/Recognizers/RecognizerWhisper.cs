@@ -6,13 +6,12 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Text;
 using System.Threading;
-using Whisper;
 using Newtonsoft.Json;
 using Hoscy.Services.Speech.Utilities;
 
 namespace Hoscy.Services.Speech.Recognizers
 {
-    internal class RecognizerWhisper : RecognizerBase
+    internal class RecognizerWhisper : RecognizerBase //todo: use anon pipe
     {
         new internal static RecognizerPerms Perms => new()
         {
@@ -63,13 +62,13 @@ namespace Hoscy.Services.Speech.Recognizers
                 return false;
             }
 
-            while(!_hasLoaded)
+            while(!_hasLoaded) 
             {
                 if (process.HasExited)
                     return false;
                 Thread.Sleep(10);
             }
-            if (_timeStarted is null)
+            if (_timeStarted is null) //todo: redo all logic associated with "Loaded"
                 return false;
 
             process.Exited += ProcessExited;
