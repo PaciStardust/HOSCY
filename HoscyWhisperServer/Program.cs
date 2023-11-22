@@ -74,7 +74,7 @@ namespace HoscyWhisperServer
         {
             //Threads
             var maxThreads = Environment.ProcessorCount;
-            var cfgThreads = (int)_config["WhisperThreads"];
+            var cfgThreads = Convert.ToInt32(_config["WhisperThreads"]);
 
             if (cfgThreads < 0)
                 p.cpuThreads = Math.Max(1, maxThreads - cfgThreads);
@@ -87,12 +87,12 @@ namespace HoscyWhisperServer
             //p.setFlag(eFullParamsFlags.SpeedupAudio, Config.Speech.WhisperSpeedup); Disabled due to library issues
 
             //Number Flags
-            if ((int)_config["WhisperMaxContext"] >= 0)
-                p.n_max_text_ctx = (int)_config["WhisperMaxContext"];
-            p.setFlag(eFullParamsFlags.TokenTimestamps, (int)_config["WhisperMaxSegLen"] > 0);
-            p.max_len = (int)_config["WhisperMaxSegLen"];
+            if (Convert.ToInt32(_config["WhisperMaxContext"]) >= 0)
+                p.n_max_text_ctx = Convert.ToInt32(_config["WhisperMaxContext"]);
+            p.setFlag(eFullParamsFlags.TokenTimestamps, Convert.ToInt32(_config["WhisperMaxSegLen"]) > 0);
+            p.max_len = Convert.ToInt32(_config["WhisperMaxSegLen"]);
 
-            p.language = (eLanguage)_config["WhisperLanguage"];
+            p.language = (eLanguage)Convert.ToUInt32(_config["WhisperLanguage"]);
 
             //Hardcoded
             p.thold_pt = 0.01f;
@@ -136,8 +136,8 @@ namespace HoscyWhisperServer
             {
                 dropStartSilence = 0.25f,
                 minDuration = 1,
-                maxDuration = (float)_config["WhisperRecMaxDuration"],
-                pauseDuration = (float)_config["WhisperRecPauseDuration"]
+                maxDuration = Convert.ToSingle(_config["WhisperRecMaxDuration"]),
+                pauseDuration = Convert.ToSingle(_config["WhisperRecPauseDuration"])
             };
 
             return medf.openCaptureDevice(deviceId.Value, cp);
@@ -150,7 +150,8 @@ namespace HoscyWhisperServer
             //Ensure segments are ordered correctly
             var sortedSegments = segments.OrderBy(x => x.time.begin);
 
-            SendMessage(MessageType.Segments, JsonConvert.SerializeObject(sortedSegments));
+            var res = JsonConvert.SerializeObject(sortedSegments.Select(x => (x.text, x.time.begin, x.time.end)));
+            SendMessage(MessageType.Segments, res);
         }
 
         private static void SendMessage(MessageType type, string message)

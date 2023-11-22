@@ -107,6 +107,7 @@ namespace Hoscy.Services.Speech.Recognizers
                 { "GraphicsAdapter", GetGraphicsAdapter() ?? string.Empty },
                 { "WhisperThreads", Config.Speech.WhisperThreads },
                 { "WhisperSingleSegment", Config.Speech.WhisperSingleSegment },
+                { "MicId", Config.Speech.MicId },
                 { "WhisperToEnglish", Config.Speech.WhisperToEnglish },
                 { "WhisperMaxContext", Config.Speech.WhisperMaxContext },
                 { "WhisperMaxSegLen", Config.Speech.WhisperMaxSegLen },
@@ -159,7 +160,7 @@ namespace Hoscy.Services.Speech.Recognizers
 
                 if (SpanCompare(flag, "Segments"))
                 {
-                    var segments = JsonConvert.DeserializeObject<sSegment[]>(text.ToString());
+                    var segments = JsonConvert.DeserializeObject<(string, TimeSpan, TimeSpan)[]>(text.ToString());
                     HandleSegments(segments);
                     return;
                 }
@@ -196,20 +197,20 @@ namespace Hoscy.Services.Speech.Recognizers
             Logger.Debug("Unknown data: " + e.Data);
         }
 
-        private void HandleSegments(sSegment[]? segments)
+        private void HandleSegments((string, TimeSpan, TimeSpan)[]? segments)
         {
             if (segments == null || segments.Length == 0) return;
 
             //Ensure segments are ordered correctly
-            var sortedSegments = segments.OrderBy(x => x.time.begin);
+            var sortedSegments = segments.OrderBy(x => x.Item2);
             var strings = new List<string>();
 
             foreach (var segment in sortedSegments)
             {
-                if (string.IsNullOrWhiteSpace(segment.text) || IsSpokenWhileMuted(_timeStarted!.Value, segment))
+                if (string.IsNullOrWhiteSpace(segment.Item1) || IsSpokenWhileMuted(_timeStarted!.Value, segment))
                     continue;
 
-                var fixedActionText = ReplaceActions(segment.text);
+                var fixedActionText = ReplaceActions(segment.Item1);
                 fixedActionText = CleanText(fixedActionText);
                 strings.Add(fixedActionText);
             }
@@ -225,10 +226,10 @@ namespace Hoscy.Services.Speech.Recognizers
         /// <param name="startTime">CaptureThread start time</param>
         /// <param name="segment">Segment to check</param>
         /// <returns>Was spoken while muted?</returns>
-        private bool IsSpokenWhileMuted(DateTime startTime, sSegment segment)
+        private bool IsSpokenWhileMuted(DateTime startTime, (string, TimeSpan, TimeSpan) segment)
         {
-            var start = startTime + segment.time.begin;
-            var end = startTime + segment.time.end;
+            var start = startTime + segment.Item2;
+            var end = startTime + segment.Item3;
 
             //Remove all unneeded values
             _muteTimes.RemoveAll(x => x.End <= start);
