@@ -147,7 +147,8 @@ namespace Hoscy.Services.Speech.Recognizers
         {
             { "Info", LogSeverity.Info },
             { "Error", LogSeverity.Error },
-            { "Warning", LogSeverity.Info }
+            { "Warning", LogSeverity.Info },
+            { "Debug", LogSeverity.Debug }
         };
 
         private void ProcessOutputRecieved(object sender, DataReceivedEventArgs e)

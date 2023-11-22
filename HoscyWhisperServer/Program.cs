@@ -45,7 +45,7 @@ namespace HoscyWhisperServer
                 //var model = Library.loadModel(path, impl: Config.Speech.WhisperCpuOnly ? eModelImplementation.Reference : eModelImplementation.GPU); Disabled due to library issues
                 var adapterString = (string)_config["GraphicsAdapter"];
                 var adapter = string.IsNullOrWhiteSpace(adapterString) ? null : adapterString;
-                SendMessage(MessageType.Info, $"Using Graphics Adapter {adapter ?? "NULL"} for Whisper recognition");
+                SendMessage(MessageType.Debug, $"Using Graphics Adapter {adapter ?? "NULL"} for Whisper recognition");
                 var model = Library.loadModel(path, adapter: adapter);
 
                 var captureDevice = GetCaptureDevice();
@@ -174,7 +174,8 @@ namespace HoscyWhisperServer
             Warning,
             Error,
             Info,
-            Loaded
+            Loaded,
+            Debug
         }
     }
 }
