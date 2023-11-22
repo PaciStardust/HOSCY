@@ -16,7 +16,7 @@ namespace HoscyWhisperServer
         internal DateTime StartTime { get; private init; }
 
         #region Startup
-        internal CaptureThread(Context ctx, iAudioCapture capture)
+        internal CaptureThread(Context ctx, iAudioCapture capture, bool highPerf)
         {
             _callbacks = new();
             _context = ctx;
@@ -25,7 +25,7 @@ namespace HoscyWhisperServer
             _thread = new(ThreadRunCapture)
             {
                 Name = "Whisper Capture Thread",
-                Priority = Config.Speech.WhisperHighPerformance
+                Priority = highPerf
                     ? ThreadPriority.AboveNormal
                     : ThreadPriority.Normal
             };

@@ -165,7 +165,8 @@ namespace Hoscy.Services.Speech.Recognizers
                 { "WhisperMaxSegLen", Config.Speech.WhisperMaxSegLen },
                 { "WhisperLanguage", Config.Speech.WhisperLanguage },
                 { "WhisperRecMaxDuration", Config.Speech.WhisperRecMaxDuration },
-                { "WhisperRecPauseDuration", Config.Speech.WhisperRecPauseDuration }
+                { "WhisperRecPauseDuration", Config.Speech.WhisperRecPauseDuration },
+                { "WhisperHighPerformance", Config.Speech.WhisperHighPerformance }
             };
 
             return JsonConvert.SerializeObject(dict, Formatting.None);
