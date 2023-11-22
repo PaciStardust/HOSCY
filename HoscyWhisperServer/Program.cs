@@ -10,20 +10,30 @@ namespace HoscyWhisperServer
 
         static void Main(string[] args)
         {
-            var loadedConfig = JsonConvert.DeserializeObject<Dictionary<string, object>>(string.Join(' ', args));
-            if (loadedConfig is null)
+            SendMessage(MessageType.Info, "Attempting to load whisper model");
+            var cfg = string.Join(' ', args).Replace("'", "\"");
+            try
             {
-                SendMessage(MessageType.Error, "Could not load config parameters into process");
+                var loadedConfig = JsonConvert.DeserializeObject<Dictionary<string, object>>(cfg);
+                if (loadedConfig is null)
+                {
+                    SendMessage(MessageType.Error, "Could not load config parameters into process");
+                    return;
+                }
+                _config = loadedConfig;
+            }
+            catch (Exception ex)
+            {
+                SendMessage(MessageType.Error, ex.Message);
                 return;
             }
-            _config = loadedConfig;
 
             try
             {
                 var path = (string)_config["ModelPath"];
                 if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
                 {
-                    SendMessage(MessageType.Error, "A Whisper AI model has not been picked or it's path is invalid.\n\nTo use Whisper speech recognition please provide an AI model. Information can be found in the quickstart guide on GitHub\n\nIf you do not want to use Whisper, please change the recognizer type on the speech page");
+                    SendMessage(MessageType.Error, "A Whisper AI model has not been picked or it's path is invalid, please provide one for speech recognition to function.\n\nInformation about AI models can be found in the quickstart guide on GitHub.\n\nIf you do not want to use Whisper, please change the recognizer type on the speech page");
                     return;
                 }
 
@@ -144,7 +154,7 @@ namespace HoscyWhisperServer
         }
 
         private static void SendMessage(MessageType type, string message)
-            => Console.WriteLine($"{type}|||{message}");
+            => Console.WriteLine($"{type}|||{message}".Replace("\n", "[NL]"));
 
         private enum MessageType
         {

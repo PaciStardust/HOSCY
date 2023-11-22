@@ -34,27 +34,10 @@ namespace Hoscy.Services.Speech.Recognizers
         private bool _hasLoaded = false;
         private DateTime? _timeStarted;
 
-        protected override bool SetListeningInternal(bool enabled)
-        {
-            if (IsListening == enabled)
-                return false;
-
-            if (enabled)
-            {
-                //Set mute records last time to not be indefinite
-                if (_muteTimes.Count > 0)
-                    _muteTimes[^1] = new(_muteTimes[^1].Start, DateTime.Now);
-            }
-            else
-                //Add new indefinite mute record
-                _muteTimes.Add(new(DateTime.Now, DateTime.MaxValue));
-
-            return true;
-        }
-
+        #region Start / Stop
         protected override bool StartInternal()
         {
-            Logger.Info("Attempting to load whisper model");
+            Logger.Info("Starting Whisper Process");
             var process = new Process()
             {
                 StartInfo = new ProcessStartInfo(Path.Combine(Utils.PathExecutableFolder, "HoscyWhisperServer.exe"))
@@ -100,41 +83,6 @@ namespace Hoscy.Services.Speech.Recognizers
             StopInternal();
         }
 
-        private static readonly string _separator = "|||";
-        private void ProcessOutputRecieved(object sender, DataReceivedEventArgs e)
-        {
-            if (e.Data is null) return;
-
-            var indexOfSeparator = e.Data.IndexOf(_separator);
-
-            var flag = e.Data.AsSpan()[..indexOfSeparator];
-            var text = e.Data.AsSpan()[(indexOfSeparator + _separator.Length)..];
-
-            if (flag == "Segments")
-            {
-                var segments = JsonConvert.DeserializeObject<sSegment[]>(text.ToString());
-                HandleSegments(segments);
-            }
-            else if (flag == "Speech")
-                HandleSpeechActivityUpdated(text == "T");
-            else if (flag == "Info")
-                Logger.Info(text.ToString());
-            else if (flag == "Warning")
-                Logger.Warning(text.ToString());
-            else if (flag == "Error")
-                Logger.Error(text.ToString());
-            else if (flag == "Loaded")
-            {
-                _hasLoaded = true;
-                var success = DateTime.TryParse(text.ToString(), out var started);
-                if (success)
-                    _timeStarted = started;
-            }
-
-            Logger.Debug(e.Data ?? "NONE");
-        }
-        
-
         protected override void StopInternal()
         {
             HandleSpeechActivityUpdated(false);
@@ -169,18 +117,84 @@ namespace Hoscy.Services.Speech.Recognizers
                 { "WhisperHighPerformance", Config.Speech.WhisperHighPerformance }
             };
 
-            return JsonConvert.SerializeObject(dict, Formatting.None);
+            return JsonConvert.SerializeObject(dict, Formatting.None).Replace("\"", "'");
         }
 
-        /// <summary>
-        /// Logs all filtered actions
-        /// </summary>
-        private void LogFilteredActions()
+        protected override bool SetListeningInternal(bool enabled)
         {
-            var sortedActions = _filteredActions.Select(x => (x.Key, x.Value))
-                                                .OrderByDescending(x => x.Value)
-                                                .Select(x => $"\"{x.Key}\" ({x.Value}x)");
-            Logger.PInfo("Filtered actions by Whisper: " + string.Join(", ", sortedActions));
+            if (IsListening == enabled)
+                return false;
+
+            if (enabled)
+            {
+                //Set mute records last time to not be indefinite
+                if (_muteTimes.Count > 0)
+                    _muteTimes[^1] = new(_muteTimes[^1].Start, DateTime.Now);
+            }
+            else
+                //Add new indefinite mute record
+                _muteTimes.Add(new(DateTime.Now, DateTime.MaxValue));
+
+            return true;
+        }
+        #endregion
+
+        #region Input Processing
+        private static readonly string _separator = "|||";
+        private static readonly IReadOnlyDictionary<string, LogSeverity> _toServerity = new Dictionary<string, LogSeverity>()
+        {
+            { "Info", LogSeverity.Info },
+            { "Error", LogSeverity.Error },
+            { "Warning", LogSeverity.Info }
+        };
+
+        private void ProcessOutputRecieved(object sender, DataReceivedEventArgs e)
+        {
+            if (e.Data is null) return;
+
+            var indexOfSeparator = e.Data.IndexOf(_separator);
+            if (indexOfSeparator != -1)
+            {
+                var flag = e.Data.AsSpan()[..indexOfSeparator];
+                var text = e.Data.AsSpan()[(indexOfSeparator + _separator.Length)..];
+
+                if (SpanCompare(flag, "Segments"))
+                {
+                    var segments = JsonConvert.DeserializeObject<sSegment[]>(text.ToString());
+                    HandleSegments(segments);
+                    return;
+                }
+                if (SpanCompare(flag, "Speech"))
+                {
+                    HandleSpeechActivityUpdated(SpanCompare(text, "T"));
+                    return;
+                }
+                if (SpanCompare(flag, "Loaded"))
+                {
+                    _hasLoaded = true;
+                    var success = DateTime.TryParse(text.ToString(), out var started);
+                    if (success)
+                        _timeStarted = started;
+                    return;
+                }
+
+                LogSeverity? severity = null;
+                foreach (var kvp in _toServerity)
+                {
+                    if (SpanCompare(flag, kvp.Key))
+                    {
+                        severity = kvp.Value;
+                        break;
+                    }
+                }
+                if (severity is not null)
+                {
+                    Logger.Log(text.ToString().Replace("[NL]", "\n"), severity.Value);
+                    return;
+                }
+            }
+
+            Logger.Debug("Unknown data: " + e.Data);
         }
 
         private void HandleSegments(sSegment[]? segments)
@@ -228,7 +242,9 @@ namespace Hoscy.Services.Speech.Recognizers
             }
             return false;
         }
+        #endregion
 
+        #region Text Processing
         private static readonly Regex _actionDetector = new(@"( *)[\[\(\*] *([^\]\*\)]+) *[\*\)\]]");
         /// <summary>
         /// Replaces all actions if valid
@@ -292,6 +308,19 @@ namespace Hoscy.Services.Speech.Recognizers
             return text.Replace('|', '*');
         }
 
+        /// <summary>
+        /// Logs all filtered actions
+        /// </summary>
+        private void LogFilteredActions()
+        {
+            var sortedActions = _filteredActions.Select(x => (x.Key, x.Value))
+                                                .OrderByDescending(x => x.Value)
+                                                .Select(x => $"\"{x.Key}\" ({x.Value}x)");
+            Logger.PInfo("Filtered actions by Whisper: " + string.Join(", ", sortedActions));
+        }
+        #endregion
+
+        #region Utils
         private static string? GetGraphicsAdapter()
         {
             if (!string.IsNullOrWhiteSpace(Config.Speech.WhisperGraphicsAdapter))
@@ -302,5 +331,17 @@ namespace Hoscy.Services.Speech.Recognizers
 
             return null;
         }
+
+        private static bool SpanCompare(ReadOnlySpan<char> span, string text)
+        {
+            if (span.Length != text.Length)
+                return false;
+
+            for (int i = 0; i < span.Length; i++) 
+                if (span[i] != text[i]) return false;
+
+            return true;
+        }
+        #endregion
     }
 }
