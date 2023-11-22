@@ -22,6 +22,7 @@ namespace Hoscy.Ui.Pages
         private static readonly IReadOnlyDictionary<string, RecognizerPerms> _permDict = new Dictionary<string, RecognizerPerms>()
         {
             { "Whisper AI Recognizer", RecognizerWhisper.Perms },
+            { "Whisper TEST", RecognizerWhisperTest.Perms },
             { "Vosk AI Recognizer", RecognizerVosk.Perms },
             { "Azure API Recognizer", RecognizerAzure.Perms },
             { "Windows Recognizer V2", RecognizerWindowsV2.Perms },
@@ -33,6 +34,7 @@ namespace Hoscy.Ui.Pages
             => Config.Speech.ModelName switch
             {
                 "Whisper AI Recognizer" => new RecognizerWhisper(),
+                "Whisper TEST" => new RecognizerWhisperTest(),
                 "Vosk AI Recognizer" => new RecognizerVosk(),
                 "Azure API Recognizer" => new RecognizerAzure(),
                 "Windows Recognizer V2" => new RecognizerWindowsV2(),

@@ -70,6 +70,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HoscyWhisperServer\HoscyWhisperServer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Ui\Windows\ModifyApiPresetsWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
