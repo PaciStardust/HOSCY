@@ -29,7 +29,6 @@ namespace Hoscy.Services.Speech.Recognizers
         private readonly Dictionary<string, int> _filteredActions = new();
 
         private Process? _whisperProcess;
-        private bool _hasLoaded = false;
         private DateTime? _timeStarted;
 
         #region Start / Stop
@@ -57,23 +56,38 @@ namespace Hoscy.Services.Speech.Recognizers
             catch (Exception ex)
             {
                 Logger.Error(ex);
-                process.Kill();
-                process.Dispose();
+                CleanupProcess(process);
                 return false;
             }
 
-            while(!_hasLoaded) 
+            while(_timeStarted is null) 
             {
                 if (process.HasExited)
+                {
+                    process.Dispose();
+                    Logger.Debug("Whisper process has exited before startup");
                     return false;
+                }
                 Thread.Sleep(10);
             }
-            if (_timeStarted is null) //todo: redo all logic associated with "Loaded"
+            if (_timeStarted == DateTime.MinValue)
+            {
+                Logger.Error("Process has finished starting, but failed to parse start time");
+                CleanupProcess(process);
                 return false;
+            }
 
             process.Exited += ProcessExited;
             _whisperProcess = process;
             return true;
+        }
+
+        private static void CleanupProcess(Process? process)
+        {
+            if (process is null) return;
+            if (!process.HasExited)
+                process.Kill();
+            process.Dispose();
         }
 
         private void ProcessExited(object? sender, EventArgs e)
@@ -91,8 +105,7 @@ namespace Hoscy.Services.Speech.Recognizers
             if (_whisperProcess != null)
             {
                 _whisperProcess.Exited -= ProcessExited;
-                _whisperProcess.Kill();
-                _whisperProcess.Dispose();
+                CleanupProcess(_whisperProcess);
                 _whisperProcess = null;
             }
         }
@@ -171,15 +184,6 @@ namespace Hoscy.Services.Speech.Recognizers
                     HandleSpeechActivityUpdated(SpanCompare(text, "T"));
                     return;
                 }
-                if (SpanCompare(flag, "Loaded"))
-                {
-                    var success = DateTime.TryParse(text.ToString(), out var started);
-                    if (success)
-                        _timeStarted = started;
-                    Logger.Debug("")
-                    _hasLoaded = true;
-                    return;
-                }
 
                 LogSeverity? severity = null;
                 foreach (var kvp in _toServerity)
@@ -193,6 +197,15 @@ namespace Hoscy.Services.Speech.Recognizers
                 if (severity is not null)
                 {
                     Logger.Log(text.ToString().Replace("[NL]", "\n"), severity.Value);
+                    return;
+                }
+
+                if (SpanCompare(flag, "Loaded"))
+                {
+                    if(DateTime.TryParse(text.ToString(), out var started))
+                        _timeStarted = started;
+                    else
+                        _timeStarted = DateTime.MinValue;
                     return;
                 }
             }
