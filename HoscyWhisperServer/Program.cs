@@ -60,6 +60,8 @@ namespace HoscyWhisperServer
 
                 SendMessage(MessageType.Info, "Starting whisper thread, this might take a while");
                 CaptureThread thread = new(ctx, captureDevice, (bool)_config["WhisperHighPerformance"]);
+                if ((bool)_config["WhisperHighPerformance"])
+                    SendMessage(MessageType.Debug, "Using high perfomance mode");
                 thread.StartException?.Throw();
                 thread.SpeechRecognized += OnSpeechRecognized;
                 thread.SpeechActivityUpdated += (s, o) => SendMessage(MessageType.Speech,o ? "T" : "F");

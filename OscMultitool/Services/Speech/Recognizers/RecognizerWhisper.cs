@@ -11,7 +11,7 @@ using Hoscy.Services.Speech.Utilities;
 
 namespace Hoscy.Services.Speech.Recognizers
 {
-    internal class RecognizerWhisper : RecognizerBase //todo: use anon pipe
+    internal class RecognizerWhisper : RecognizerBase
     {
         new internal static RecognizerPerms Perms => new()
         {
@@ -173,10 +173,11 @@ namespace Hoscy.Services.Speech.Recognizers
                 }
                 if (SpanCompare(flag, "Loaded"))
                 {
-                    _hasLoaded = true;
                     var success = DateTime.TryParse(text.ToString(), out var started);
                     if (success)
                         _timeStarted = started;
+                    Logger.Debug("")
+                    _hasLoaded = true;
                     return;
                 }
 

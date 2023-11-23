@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace HoscyWhisperServer
+﻿namespace HoscyWhisperServer
 {
     internal readonly struct TimeInterval
     {

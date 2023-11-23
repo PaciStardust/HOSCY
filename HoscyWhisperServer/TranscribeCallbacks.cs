@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Whisper;
+﻿using Whisper;
 
 namespace HoscyWhisperServer
 {
