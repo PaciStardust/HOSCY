@@ -195,11 +195,6 @@
 
                         <TextBlock Style="{StaticResource HTextBlock}" Text="Custom endpoint" Margin="0,4,0,0"/>
                         <TextBox Text="{Binding Api.AzureCustomEndpointSpeech, Source={x:Static local:Config.Data}}" Tag="Custom endpoint..." Style="{StaticResource HTextBoxLong}" PreviewKeyDown="SynthTextBox_PreviewKeyDown"/>
-
-                        <WrapPanel Margin="0,4,0,0">
-                            <TextBox HorizontalAlignment="Left" Text="{Binding Api.AzureSpeechLanguage, Source={x:Static local:Config.Data}}" Tag="Language..." Style="{StaticResource HTextBoxShort}" PreviewKeyDown="SynthTextBox_PreviewKeyDown"/>
-                            <Label Content="Used Language" VerticalAlignment="Center"/>
-                        </WrapPanel>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
