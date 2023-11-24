@@ -14,14 +14,13 @@ namespace Hoscy.Ui.Windows
     {
         private readonly List<ApiPresetModel> _list;
 
-        public ModifyApiPresetsWindow(string title, List<ApiPresetModel> list)
+        public ModifyApiPresetsWindow(List<ApiPresetModel> list)
         {
             InitializeComponent();
 
             Closed += (s, a) => Config.SaveConfig();
 
             _list = list;
-            Title = title;
             Refresh(-1);
         }
 
@@ -113,7 +112,7 @@ namespace Hoscy.Ui.Windows
 
             var index = listBox.SelectedIndex;
             var selected = _list[index];
-            UiHelper.OpenDictionaryEditor($"Edit Headers: {selected.Name}", "Name", "Value", selected.HeaderValues);
+            UiHelper.OpenDictionaryEditor($"Modify Headers: {selected.Name}", "Name", "Value", selected.HeaderValues);
             Refresh(index);
         }
         #endregion

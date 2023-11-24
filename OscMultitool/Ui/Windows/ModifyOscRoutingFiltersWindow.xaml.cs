@@ -14,14 +14,13 @@ namespace Hoscy.Ui.Windows
     {
         private readonly List<OscRoutingFilterModel> _list;
 
-        public ModifyOscRoutingFiltersWindow(string title, List<OscRoutingFilterModel> list)
+        public ModifyOscRoutingFiltersWindow(List<OscRoutingFilterModel> list)
         {
             InitializeComponent();
 
             Closed += (s, a) => Config.SaveConfig();
 
             _list = list;
-            Title = title;
             Refresh(-1);
         }
 
@@ -100,7 +99,7 @@ namespace Hoscy.Ui.Windows
 
             var index = listBox.SelectedIndex;
             var selected = _list[index];
-            UiHelper.OpenListEditor($"Edit Filter: {selected}", "OSC Filter", selected.Filters, "/");
+            UiHelper.OpenListEditor($"Modify Filter: {selected}", "OSC Filter", selected.Filters, "/");
             Refresh(index);
         }
         #endregion

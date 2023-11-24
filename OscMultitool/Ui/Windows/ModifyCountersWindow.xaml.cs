@@ -16,14 +16,13 @@ namespace Hoscy.Ui.Windows
     {
         private readonly List<CounterModel> _list;
 
-        public ModifyCountersWindow(string title, List<CounterModel> list)
+        public ModifyCountersWindow(List<CounterModel> list)
         {
             InitializeComponent();
 
             Closed += (s, a) => Config.SaveConfig();
 
             _list = list;
-            Title = title;
             Refresh(-1);
         }
 
