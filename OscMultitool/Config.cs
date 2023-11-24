@@ -21,18 +21,26 @@ namespace Hoscy
         #region Loading
         static Config()
         {
+            Data = new();
+        }
+
+        internal static void Load()
+        {
             try
             {
                 if (!Directory.Exists(Utils.PathConfigFolder))
                     Directory.CreateDirectory(Utils.PathConfigFolder);
 
                 string configData = File.ReadAllText(Utils.PathConfigFile, Encoding.UTF8);
-                Data = JsonConvert.DeserializeObject<ConfigModel>(configData) ?? new();
+                var newData = JsonConvert.DeserializeObject<ConfigModel>(configData);
+                if (newData is not null)
+                    Data = newData;
             }
-            catch
+            catch (JsonReaderException ex)
             {
-                Data = new();
+                MessageBox.Show("Unable to read JSON file correctly:\n\n" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            catch { }
 
             UpdateConfig(Data);
 
@@ -203,5 +211,12 @@ namespace Hoscy
             config.ConfigVersion = 5;
         }
         #endregion
+    }
+
+    internal enum ConfigLoadResult
+    {
+        Success,
+        CantCreateDirectory,
+        ConfigCorrupted
     }
 }
