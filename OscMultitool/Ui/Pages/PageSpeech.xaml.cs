@@ -85,7 +85,7 @@ namespace Hoscy.Ui.Pages
             //Windows Listeners
             windowsRecognizerBox.Load(Devices.WindowsRecognizers.Select(x => x.Description), Devices.GetWindowsListenerIndex(Config.Speech.WinModelId));
             //AnyAPI presrt
-            anyApiBox.Load(Config.Api.Presets.Select(x => x.Name), Config.Api.GetIndex(Config.Api.RecognitionPreset));
+            anyApiBox.Load(Config.Api.Presets.Select(x => x.Name), Config.Api.GetPresetIndex(Config.Api.RecognitionPreset));
             //Whsiper Adapters
             whisperAdapterBox.Load(Devices.GraphicsAdapters, Devices.GetGraphicsAdapterIndex(Config.Speech.WhisperGraphicsAdapter));
 

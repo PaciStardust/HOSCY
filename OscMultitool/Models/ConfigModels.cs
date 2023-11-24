@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Whisper;
 
 namespace Hoscy.Models
@@ -55,6 +56,7 @@ namespace Hoscy.Models
         public List<string> AzurePhrases { get; set; } = new(); //Phrases to set for improved recognition
         public List<string> AzureRecognitionLanguages { get; set; } = new(); //All voices for speech recognition
         public Dictionary<string, string> AzureVoices { get; set; } = new(); //All voices for TTS
+        public List<AzureTtsVoiceModel> AzureTtsVoices { get; set; } = new();
 
         //Usage
         public bool TranslateTts { get; set; } = false; //Automatically translate TTS
@@ -63,25 +65,21 @@ namespace Hoscy.Models
         public bool AddOriginalAfterTranslate { get; set; } = false; //Add original version after translation
         public bool UseAzureTts { get; set; } = false; //Use azure TTS instead of Microsoft
 
-        internal int GetIndex(string name)
+        private static int GetListIndex<T>(List<T> list, Predicate<T> predicate)
         {
-            for (int i = 0; i < Presets.Count; i++)
+            for (int i = 0; i < list.Count; i++)
             {
-                if (Presets[i].Name == name)
+                if (predicate(list[i]))
                     return i;
             }
             return -1;
         }
 
-        internal ApiPresetModel? GetPreset(string name)
-        {
-            var presetIndex = GetIndex(name);
+        internal int GetPresetIndex(string name)
+            => GetListIndex(Presets, x => x.Name == name);
 
-            if (presetIndex == -1 || presetIndex >= Presets.Count)
-                return null;
-
-            return Presets[presetIndex];
-        }
+        internal int GetTtsVoiceIndex(string name)
+            => GetListIndex(AzureTtsVoices, x => x.Name == name);
     }
 
     /// <summary>

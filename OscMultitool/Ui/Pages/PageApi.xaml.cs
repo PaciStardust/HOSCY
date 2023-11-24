@@ -22,7 +22,7 @@ namespace Hoscy.Ui.Pages
         #region Loading
         private void LoadBoxes()
         {
-            translatorApiBox.Load(Config.Api.Presets.Select(x => x.Name), Config.Api.GetIndex(Config.Api.TranslationPreset));
+            translatorApiBox.Load(Config.Api.Presets.Select(x => x.Name), Config.Api.GetPresetIndex(Config.Api.TranslationPreset));
         }
         #endregion
 

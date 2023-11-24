@@ -29,14 +29,14 @@ namespace Hoscy.Services.Speech.Recognizers
         #region Starting / Stopping
         protected override bool StartInternal()
         {
-            var preset = Config.Api.GetPreset(Config.Api.RecognitionPreset);
-            if (preset == null)
+            var index = Config.Api.GetPresetIndex(Config.Api.RecognitionPreset);
+            if (index == -1)
             {
                 Logger.Warning("Attempted to use a non existant preset");
                 return false;
             }
 
-            if (!_client.LoadPreset(preset))
+            if (!_client.LoadPreset(Config.Api.Presets[index]))
                 return false;
 
             _microphone.DataAvailable += OnDataAvailable;
