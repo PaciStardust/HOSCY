@@ -24,11 +24,15 @@ namespace Hoscy.Services.Speech.Synthesizers
                 if (!string.IsNullOrWhiteSpace(Config.Api.AzureCustomEndpointSpeech))
                     speechCfg.EndpointId = Config.Api.AzureCustomEndpointSpeech;
 
-                if (!string.IsNullOrWhiteSpace(Config.Api.AzureVoiceCurrent) && Config.Api.AzureVoices.ContainsKey(Config.Api.AzureVoiceCurrent))
-                    speechCfg.SpeechSynthesisVoiceName = Config.Api.AzureVoices[Config.Api.AzureVoiceCurrent];
-
-                if (!string.IsNullOrWhiteSpace(Config.Api.AzureSpeechLanguage))
-                    speechCfg.SpeechSynthesisLanguage = Config.Api.AzureSpeechLanguage;
+                var currentVoiceIndex = Config.Api.GetTtsVoiceIndex(Config.Api.AzureTtsVoiceCurrent);
+                if (currentVoiceIndex != -1)
+                {
+                    var voice = Config.Api.AzureTtsVoices[currentVoiceIndex];
+                    if (!string.IsNullOrWhiteSpace(voice.Voice))
+                        speechCfg.SpeechSynthesisVoiceName = voice.Voice;
+                    if (!string.IsNullOrWhiteSpace(voice.Language))
+                        speechCfg.SpeechSynthesisLanguage = voice.Language;
+                }
 
                 speechCfg.SetSpeechSynthesisOutputFormat(SpeechSynthesisOutputFormat.Raw16Khz16BitMonoPcm);
 

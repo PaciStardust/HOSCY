@@ -49,14 +49,12 @@ namespace Hoscy.Models
         //Azure
         public string AzureRegion { get; set; } = string.Empty; //Region for azure
         public string AzureKey { get; set; } = string.Empty; //Cognitive services key
-        public string AzureSpeechLanguage { get; set; } = string.Empty; //Language of TTS
         public string AzureCustomEndpointSpeech { get; set; } = string.Empty; //Custom speech endpoint
         public string AzureCustomEndpointRecognition { get; set; } = string.Empty; //Custom recognition endpoint
-        public string AzureVoiceCurrent { get; set; } = string.Empty; //Current azure voice
+        public string AzureTtsVoiceCurrent { get; set; } = string.Empty; //Current azure voice
         public List<string> AzurePhrases { get; set; } = new(); //Phrases to set for improved recognition
         public List<string> AzureRecognitionLanguages { get; set; } = new(); //All voices for speech recognition
-        public Dictionary<string, string> AzureVoices { get; set; } = new(); //All voices for TTS
-        public List<AzureTtsVoiceModel> AzureTtsVoices { get; set; } = new();
+        public List<AzureTtsVoiceModel> AzureTtsVoices { get; set; } = new(); //All voices for TTS
 
         //Usage
         public bool TranslateTts { get; set; } = false; //Automatically translate TTS
