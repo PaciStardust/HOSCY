@@ -212,11 +212,4 @@ namespace Hoscy
         }
         #endregion
     }
-
-    internal enum ConfigLoadResult
-    {
-        Success,
-        CantCreateDirectory,
-        ConfigCorrupted
-    }
 }
