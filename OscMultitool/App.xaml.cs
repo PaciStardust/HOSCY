@@ -22,6 +22,7 @@ namespace Hoscy
         {
             ShutdownMode = ShutdownMode.OnMainWindowClose;
 
+            Config.Load();
             Logger.PInfo("HOSCY VERSION " + Version);
             Config.BackupFile(Utils.PathConfigFile);
             Osc.RecreateListener(); //This also loads the config

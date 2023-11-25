@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PlatformTarget>x64</PlatformTarget>
+    <BaseOutputPath>.\OscMultitool\bin</BaseOutputPath>
+    <Title>HOSCYWhisperServer</Title>
+    <Authors>Paci Stardust</Authors>
+    <PackageProjectUrl>https://github.com/PaciStardust/HOSCY</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/PaciStardust/HOSCY</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	<PackageReference Include="WhisperNet" Version="1.12.0" />
+  </ItemGroup>
+
+    <ItemGroup>
+	    <None Include="..\LICENSE">
+		    <Pack>True</Pack>
+		    <PackagePath>\</PackagePath>
+	    </None>
+	    <None Include="..\README.md">
+		    <Pack>True</Pack>
+		    <PackagePath>\</PackagePath>
+	    </None>
+    </ItemGroup>
+
+</Project>

@@ -28,7 +28,7 @@ namespace Hoscy.Ui.Pages
 
         private void Button_ModifyRouting(object sender, RoutedEventArgs e)
         {
-            var window = new ModifyOscRoutingFiltersWindow("Edit Routing Filters", Config.Osc.RoutingFilters);
+            var window = new ModifyOscRoutingFiltersWindow(Config.Osc.RoutingFilters);
             window.ShowDialogDark();
             Osc.RecreateListener();
             CheckIndicators();
@@ -36,7 +36,7 @@ namespace Hoscy.Ui.Pages
 
         private void Button_ModifyCounters(object sender, RoutedEventArgs e)
         {
-            var window = new ModifyCountersWindow("Edit Counters", Config.Osc.Counters);
+            var window = new ModifyCountersWindow(Config.Osc.Counters);
             window.ShowDialogDark();
         }
 

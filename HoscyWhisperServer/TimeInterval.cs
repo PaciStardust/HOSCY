@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Hoscy.Services.Speech.Utilities.Whisper
+﻿namespace HoscyWhisperServer
 {
     internal readonly struct TimeInterval
     {

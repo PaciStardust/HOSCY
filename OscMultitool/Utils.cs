@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -17,13 +15,14 @@ namespace Hoscy
         internal static string PathExecutable { get; private set; }
         internal static string PathConfigFolder { get; private set; }
         internal static string PathConfigFile { get; private set; }
+        internal static string PathExecutableFolder { get; private set; }
         internal static string PathLog { get; private set; }
 
         static Utils()
         {
             PathExecutable = Process.GetCurrentProcess().MainModule?.FileName ?? Assembly.GetExecutingAssembly().Location;
-            var exeFolder = Path.GetDirectoryName(PathExecutable) ?? Directory.GetCurrentDirectory();
-            PathConfigFolder = Path.GetFullPath(Path.Combine(exeFolder, "config"));
+            PathExecutableFolder = Path.GetDirectoryName(PathExecutable) ?? Directory.GetCurrentDirectory();
+            PathConfigFolder = Path.GetFullPath(Path.Combine(PathExecutableFolder, "config"));
             PathConfigFile = Path.GetFullPath(Path.Combine(PathConfigFolder, "config.json"));
             PathLog = Path.GetFullPath(Path.Combine(PathConfigFolder, $"log-{DateTime.Now:MM-dd-yyyy-HH-mm-ss}.txt"));
         }

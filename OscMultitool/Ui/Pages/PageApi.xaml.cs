@@ -22,7 +22,7 @@ namespace Hoscy.Ui.Pages
         #region Loading
         private void LoadBoxes()
         {
-            translatorApiBox.Load(Config.Api.Presets.Select(x => x.Name), Config.Api.GetIndex(Config.Api.TranslationPreset));
+            translatorApiBox.Load(Config.Api.Presets.Select(x => x.Name), Config.Api.GetPresetIndex(Config.Api.TranslationPreset));
         }
         #endregion
 
@@ -42,7 +42,7 @@ namespace Hoscy.Ui.Pages
         #region Buttons
         private void Button_ModifyPresets(object sender, RoutedEventArgs e)
         {
-            var window = new ModifyApiPresetsWindow("Edit API Presets", Config.Api.Presets);
+            var window = new ModifyApiPresetsWindow(Config.Api.Presets);
             window.ShowDialogDark();
             LoadBoxes();
             SetChangedValueTranslation(true);

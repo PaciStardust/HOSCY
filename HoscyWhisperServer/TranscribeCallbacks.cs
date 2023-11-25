@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using Whisper;
+﻿using Whisper;
 
-namespace Hoscy.Services.Speech.Utilities.Whisper
+namespace HoscyWhisperServer
 {
     internal class TranscribeCallbacks : Callbacks
     {

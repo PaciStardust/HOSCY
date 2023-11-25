@@ -38,13 +38,13 @@ namespace Hoscy.Services.Api
         {
             Logger.PInfo("Performing reload of Translation");
 
-            var preset = Config.Api.GetPreset(Config.Api.TranslationPreset);
-            if (preset == null)
+            var index = Config.Api.GetPresetIndex(Config.Api.TranslationPreset);
+            if (index == -1)
             {
                 Logger.Warning("Attempted to use a non existant preset");
                 return;
             }
-            _client.LoadPreset(preset);
+            _client.LoadPreset(Config.Api.Presets[index]);
         }
     }
 }

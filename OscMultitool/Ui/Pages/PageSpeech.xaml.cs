@@ -85,7 +85,7 @@ namespace Hoscy.Ui.Pages
             //Windows Listeners
             windowsRecognizerBox.Load(Devices.WindowsRecognizers.Select(x => x.Description), Devices.GetWindowsListenerIndex(Config.Speech.WinModelId));
             //AnyAPI presrt
-            anyApiBox.Load(Config.Api.Presets.Select(x => x.Name), Config.Api.GetIndex(Config.Api.RecognitionPreset));
+            anyApiBox.Load(Config.Api.Presets.Select(x => x.Name), Config.Api.GetPresetIndex(Config.Api.RecognitionPreset));
             //Whsiper Adapters
             whisperAdapterBox.Load(Devices.GraphicsAdapters, Devices.GetGraphicsAdapterIndex(Config.Speech.WhisperGraphicsAdapter));
 
@@ -217,49 +217,49 @@ namespace Hoscy.Ui.Pages
 
         private void Button_OpenNoiseFilter(object sender, RoutedEventArgs e)
         {
-            UiHelper.OpenListEditor("Edit Noise Filter", "Noise Text", Config.Speech.NoiseFilter);
+            UiHelper.OpenListEditor("Modify Noise Filter", "Noise Text", Config.Speech.NoiseFilter);
             Recognition.UpdateDenoiseRegex();
         }
         private void Button_OpenReplacements(object sender, RoutedEventArgs e)
         {
-            var window = new ModifyReplacementDataWindow("Edit Replacements", Config.Speech.Replacements);
+            var window = new ModifyReplacementDataWindow("Modify Replacements", Config.Speech.Replacements);
             window.ShowDialogDark();
             TextProcessor.UpdateReplacementDataHandlers();
         }
         private void Button_OpenShortcuts(object sender, RoutedEventArgs e)
         {
-            var window = new ModifyReplacementDataWindow("Edit Shortcuts", Config.Speech.Shortcuts);
+            var window = new ModifyReplacementDataWindow("Modify Shortcuts", Config.Speech.Shortcuts);
             window.ShowDialogDark();
             TextProcessor.UpdateReplacementDataHandlers();
         }
 
         private void Button_EditVoskModels(object sender, RoutedEventArgs e)
         {
-            UiHelper.OpenDictionaryEditor("Edit Vosk AI Models", "Model name", "Model folder", Config.Speech.VoskModels);
+            UiHelper.OpenDictionaryEditor("Modify Vosk AI Models", "Model name", "Model folder", Config.Speech.VoskModels);
             UpdateVoskRecognizerBox();
         }
 
         private void Button_EditWhisperModels(object sender, RoutedEventArgs e)
         {
-            UiHelper.OpenDictionaryEditor("Edit Whisper AI Models", "Model name", "Model file", Config.Speech.WhisperModels);
+            UiHelper.OpenDictionaryEditor("Modify Whisper AI Models", "Model name", "Model file", Config.Speech.WhisperModels);
             UpdateWhisperRecognizerBox();
         }
 
         private void Button_EditAzurePhrases(object sender, RoutedEventArgs e)
         {
-            UiHelper.OpenListEditor("Edit Phrases", "Phrase", Config.Api.AzurePhrases, "New Phrase");
+            UiHelper.OpenListEditor("Modify Phrases", "Phrase", Config.Api.AzurePhrases, "New Phrase");
             TryEnableChangeIndicator();
         }
 
         private void Button_EditAzureLanguages(object sender, RoutedEventArgs e)
         {
-            UiHelper.OpenListEditor("Edit Languages", "Language", Config.Api.AzureRecognitionLanguages, "New Language");
+            UiHelper.OpenListEditor("Modify Languages", "Language", Config.Api.AzureRecognitionLanguages, "New Language");
             TryEnableChangeIndicator();
         }
 
         private void Button_EditWhisperNoiseWhitelist(object sender, RoutedEventArgs e)
         {
-            var window = new ModifyDictionaryWindow("Edit Noise Whitelist", "Identifier", "Noise start", Config.Speech.WhisperNoiseFilter);
+            var window = new ModifyDictionaryWindow("Modify Noise Whitelist", "Identifier", "Noise start", Config.Speech.WhisperNoiseFilter);
             window.ShowDialogDark();
         }
         #endregion

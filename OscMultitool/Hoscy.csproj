@@ -46,13 +46,13 @@
 
   <ItemGroup>
     <PackageReference Include="MeaMod.DNS" Version="1.0.70" />
-    <PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.29.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
-    <PackageReference Include="NAudio" Version="2.1.0" />
+    <PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.33.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
+    <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="System.Speech" Version="7.0.0" />
+    <PackageReference Include="System.Speech" Version="8.0.0" />
     <PackageReference Include="Vosk" Version="0.3.38" />
-    <PackageReference Include="WhisperNet" Version="1.11.0" />
+    <PackageReference Include="WhisperNet" Version="1.12.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -70,7 +70,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HoscyWhisperServer\HoscyWhisperServer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Ui\Windows\ModifyApiPresetsWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Ui\Windows\ModifyAzureTtsVoicesWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Ui\Windows\ModifyFiltersWindow.xaml.cs">
@@ -112,6 +119,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Ui\Windows\DisplayListWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Ui\Windows\ModifyAzureTtsVoicesWindow.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Ui\Windows\ModifyFiltersWindow.xaml">

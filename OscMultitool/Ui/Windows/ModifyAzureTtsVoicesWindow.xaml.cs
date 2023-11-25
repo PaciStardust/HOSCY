@@ -1,7 +1,5 @@
 ﻿using Hoscy.Models;
-using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,11 +10,11 @@ namespace Hoscy.Ui.Windows
     /// <summary>
     /// Interaction logic for ModifyListWindow.xaml
     /// </summary>
-    internal partial class ModifyCountersWindow : Window
+    internal partial class ModifyAzureTtsVoicesWindow : Window
     {
-        private readonly List<CounterModel> _list;
+        private readonly List<AzureTtsVoiceModel> _list;
 
-        public ModifyCountersWindow(List<CounterModel> list)
+        public ModifyAzureTtsVoicesWindow(List<AzureTtsVoiceModel> list)
         {
             InitializeComponent();
 
@@ -68,31 +66,22 @@ namespace Hoscy.Ui.Windows
                 return;
 
             textName.Text = _list[listBox.SelectedIndex].Name;
-            textParameter.Text = _list[listBox.SelectedIndex].Parameter;
-            textCount.Text = _list[listBox.SelectedIndex].Count.ToString();
-            enabledCheckBox.IsChecked = _list[listBox.SelectedIndex].Enabled;
-            textCooldown.Text = _list[listBox.SelectedIndex].Cooldown.ToString();
+            textVoice.Text = _list[listBox.SelectedIndex].Voice;
+            textLanguage.Text = _list[listBox.SelectedIndex].Language;
         }
 
-        private CounterModel GetNewModel()
+        private AzureTtsVoiceModel GetNewModel()
         {
-            var model = new CounterModel()
-            {
-                Enabled = enabledCheckBox.IsChecked ?? false
-            };
+            var model = new AzureTtsVoiceModel();
 
             if (!string.IsNullOrWhiteSpace(textName.Text))
                 model.Name = textName.Text;
 
-            if (!string.IsNullOrWhiteSpace(textParameter.Text))
-                model.Parameter = textParameter.Text;
+            if (!string.IsNullOrWhiteSpace(textVoice.Text))
+                model.Voice = textVoice.Text;
 
-            try
-            {
-                model.Count = Convert.ToUInt32(textCount.Text);
-                model.Cooldown = float.Parse(textCooldown.Text, CultureInfo.InvariantCulture.NumberFormat);
-            }
-            catch { }
+            if (!string.IsNullOrWhiteSpace(textLanguage.Text))
+                model.Language = textLanguage.Text;
 
             return model;
         }

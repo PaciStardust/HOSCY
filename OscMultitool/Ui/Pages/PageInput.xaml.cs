@@ -23,7 +23,7 @@ namespace Hoscy.Ui.Pages
 
         private void Button_ChangePresets(object sender, RoutedEventArgs e)
         {
-            UiHelper.OpenDictionaryEditor("Edit Input Presets", "Name", "Text", Config.Input.Presets);
+            UiHelper.OpenDictionaryEditor("Modify Input Presets", "Name", "Text", Config.Input.Presets);
             RefreshPresets();
         }
 

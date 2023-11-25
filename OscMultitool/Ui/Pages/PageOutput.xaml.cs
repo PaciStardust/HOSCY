@@ -1,5 +1,6 @@
 ﻿using Hoscy.Services.Speech;
 using Hoscy.Services.Speech.Utilities;
+using Hoscy.Ui.Windows;
 using System;
 using System.Linq;
 using System.Windows;
@@ -50,7 +51,7 @@ namespace Hoscy.Ui.Pages
         /// Reloads the azure voice dropdown UI
         /// </summary>
         private void UpdateAzureVoiceBox()
-            => azureVoiceBox.LoadDictionary(Config.Api.AzureVoices, Config.Api.AzureVoiceCurrent);
+            => azureVoiceBox.Load(Config.Api.AzureTtsVoices.Select(x => x.Name), Config.Api.GetTtsVoiceIndex(Config.Api.AzureTtsVoiceCurrent));
 
         /// <summary>
         /// Updates the UI text for the volume slider
@@ -102,7 +103,8 @@ namespace Hoscy.Ui.Pages
 
         private void Button_EditAzureVoices(object sender, RoutedEventArgs e)
         {
-            UiHelper.OpenDictionaryEditor("Edit Azure Voices", "Voice Identifier", "Voice Name", Config.Api.AzureVoices);
+            var window = new ModifyAzureTtsVoicesWindow(Config.Api.AzureTtsVoices);
+            window.ShowDialogDark();
             UpdateAzureVoiceBox();
         }
         #endregion
@@ -125,13 +127,13 @@ namespace Hoscy.Ui.Pages
 
         private void AzureVoiceBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string oldVoiceName = Config.Api.AzureVoiceCurrent;
+            string oldVoiceName = Config.Api.AzureTtsVoiceCurrent;
 
             var index = azureVoiceBox.SelectedIndex;
-            if (index != -1 && index < Config.Api.AzureVoices.Count)
-                Config.Api.AzureVoiceCurrent = Config.Api.AzureVoices.Keys.ToArray()[index];
+            if (index != -1 && index < Config.Api.AzureTtsVoices.Count)
+                Config.Api.AzureTtsVoiceCurrent = Config.Api.AzureTtsVoices[index].Name;
 
-            if (oldVoiceName != Config.Api.AzureVoiceCurrent)
+            if (oldVoiceName != Config.Api.AzureTtsVoiceCurrent)
                 TryEnableChangeIndicatorSynth();
         }
         #endregion

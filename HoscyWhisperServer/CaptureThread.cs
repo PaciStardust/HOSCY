@@ -1,9 +1,7 @@
-﻿using System;
-using System.Runtime.ExceptionServices;
-using System.Threading;
+﻿using System.Runtime.ExceptionServices;
 using Whisper;
 
-namespace Hoscy.Services.Speech.Utilities.Whisper
+namespace HoscyWhisperServer
 {
     internal class CaptureThread : CaptureCallbacks
     {
@@ -16,7 +14,7 @@ namespace Hoscy.Services.Speech.Utilities.Whisper
         internal DateTime StartTime { get; private init; }
 
         #region Startup
-        internal CaptureThread(Context ctx, iAudioCapture capture)
+        internal CaptureThread(Context ctx, iAudioCapture capture, bool highPerf)
         {
             _callbacks = new();
             _context = ctx;
@@ -25,7 +23,7 @@ namespace Hoscy.Services.Speech.Utilities.Whisper
             _thread = new(ThreadRunCapture)
             {
                 Name = "Whisper Capture Thread",
-                Priority = Config.Speech.WhisperHighPerformance
+                Priority = highPerf
                     ? ThreadPriority.AboveNormal
                     : ThreadPriority.Normal
             };
