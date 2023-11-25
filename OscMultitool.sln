@@ -5,7 +5,7 @@ VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hoscy", "OscMultitool\Hoscy.csproj", "{6006008D-0DFD-4BD7-9078-014C176D6839}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HoscyWhisperServer", "HoscyWhisperServer\HoscyWhisperServer.csproj", "{522DDDF2-702E-464D-8ACE-8869FA4B85FD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HoscyWhisperServer", "HoscyWhisperServer\HoscyWhisperServer.csproj", "{522DDDF2-702E-464D-8ACE-8869FA4B85FD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,8 +29,8 @@ Global
 		{522DDDF2-702E-464D-8ACE-8869FA4B85FD}.Debug|x64.Build.0 = Debug|Any CPU
 		{522DDDF2-702E-464D-8ACE-8869FA4B85FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{522DDDF2-702E-464D-8ACE-8869FA4B85FD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{522DDDF2-702E-464D-8ACE-8869FA4B85FD}.Release|x64.ActiveCfg = Release|Any CPU
-		{522DDDF2-702E-464D-8ACE-8869FA4B85FD}.Release|x64.Build.0 = Release|Any CPU
+		{522DDDF2-702E-464D-8ACE-8869FA4B85FD}.Release|x64.ActiveCfg = Release|x64
+		{522DDDF2-702E-464D-8ACE-8869FA4B85FD}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
