@@ -113,7 +113,7 @@ namespace Hoscy.Services.Speech
             if (UseTextbox)
             {
                 if (Config.Api.TranslateTextbox)
-                    Textbox.Say(translation + (Config.Api.AddOriginalAfterTranslate ? $" <> {message}" : string.Empty));
+                    Textbox.Say(translation + (Config.Api.AddOriginalAfterTranslate ? $" ({message})" : string.Empty));
                 else
                     Textbox.Say(message);
             }
