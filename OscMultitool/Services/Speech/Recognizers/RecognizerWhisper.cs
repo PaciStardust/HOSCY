@@ -171,17 +171,26 @@ namespace Hoscy.Services.Speech.Recognizers
             if (indexOfSeparator != -1)
             {
                 var flag = e.Data.AsSpan()[..indexOfSeparator];
-                var text = e.Data.AsSpan()[(indexOfSeparator + _separator.Length)..];
+                var text = e.Data[(indexOfSeparator + _separator.Length)..];
 
                 if (SpanCompare(flag, "Segments"))
                 {
-                    var segments = JsonConvert.DeserializeObject<(string, TimeSpan, TimeSpan)[]>(text.ToString());
-                    HandleSegments(segments);
+                    try
+                    {
+                        var bytes = Convert.FromBase64String(text);
+                        var decoded = Encoding.UTF8.GetString(bytes);
+                        var segments = JsonConvert.DeserializeObject<(string, TimeSpan, TimeSpan)[]>(decoded);
+                        HandleSegments(segments);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex, "Failed to decode base64 " + text);
+                    }
                     return;
                 }
                 if (SpanCompare(flag, "Speech"))
                 {
-                    HandleSpeechActivityUpdated(SpanCompare(text, "T"));
+                    HandleSpeechActivityUpdated(text == "T");
                     return;
                 }
 
@@ -196,13 +205,13 @@ namespace Hoscy.Services.Speech.Recognizers
                 }
                 if (severity is not null)
                 {
-                    Logger.Log(text.ToString().Replace("[NL]", "\n"), severity.Value);
+                    Logger.Log(text.Replace("[NL]", "\n"), severity.Value);
                     return;
                 }
 
                 if (SpanCompare(flag, "Loaded"))
                 {
-                    if(DateTime.TryParse(text.ToString(), out var started))
+                    if(DateTime.TryParse(text, out var started))
                         _timeStarted = started;
                     else
                         _timeStarted = DateTime.MinValue;

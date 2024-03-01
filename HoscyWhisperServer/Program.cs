@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.Diagnostics;
+using System.Text;
 using Whisper;
 
 namespace HoscyWhisperServer
@@ -167,7 +168,27 @@ namespace HoscyWhisperServer
         }
 
         private static void SendMessage(MessageType type, string message)
-            => Console.WriteLine($"{type}|||{message}".Replace("\n", "[NL]"));
+        {
+            if (type == MessageType.Segments)
+            {
+                try
+                {
+                    var bytes = Encoding.UTF8.GetBytes(message);
+                    message = Convert.ToBase64String(bytes);
+                }
+                catch (Exception ex)
+                {
+                    type = MessageType.Error;
+                    message = ex.Message;
+                }
+            }
+            else
+            {
+                message = message.Replace("\n", "[NL]");
+            }
+
+            Console.WriteLine($"{type}|||{message}");
+        }
 
         private enum MessageType
         {
