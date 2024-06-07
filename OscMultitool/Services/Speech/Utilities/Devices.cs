@@ -1,4 +1,5 @@
 ﻿using NAudio.Wave;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Speech.Recognition;
@@ -34,13 +35,16 @@ namespace Hoscy.Services.Speech.Utilities
         /// Returns the microphone list index for a given GUID
         /// </summary>
         /// <param name="guid">GUID of microphone</param>
-        /// <returns>On match => Index, No match => 0, Empty list => -1</returns>
+        /// <returns>On match => Index, No match / none found => -1</returns>
         internal static int GetMicrophoneIndex(string guid)
         {
             for (int i = 0; i < Microphones.Count; i++)
             {
                 if (Microphones[i].ProductName == guid)
+                {
+                    Logger.Debug($"Returning microphone index {i} for device {Microphones[i].NameGuid} {Microphones[i].ProductName}");
                     return i;
+                }
             }
 
             if (Microphones.Count == 0)
@@ -49,8 +53,8 @@ namespace Hoscy.Services.Speech.Utilities
                 return -1;
             }
 
-            Logger.Warning("No matching microphone found, defaulting to first in list...");
-            return 0;
+            Logger.Warning("No matching microphone found, defaulting...");
+            return -1;
         }
         #endregion
 
@@ -70,13 +74,16 @@ namespace Hoscy.Services.Speech.Utilities
         /// Returns the speaker list index for a given GUID
         /// </summary>
         /// <param name="guid">GUID of speaker</param>
-        /// <returns>On match => Index, No match => 0, Empty list => -1</returns>
+        /// <returns>On match => Index, No match / Empty list => -1</returns>
         internal static int GetSpeakerIndex(string guid)
         {
             for (int i = 0; i < Speakers.Count; i++)
             {
                 if (Speakers[i].ProductName == guid)
+                {
+                    Logger.Debug($"Returning speaker index {i} for device {Speakers[i].NameGuid} {Speakers[i].ProductName}");
                     return i;
+                }
             }
 
             if (Speakers.Count == 0)
@@ -85,8 +92,8 @@ namespace Hoscy.Services.Speech.Utilities
                 return -1;
             }
 
-            Logger.Warning("No matching speaker found, defaulting to first in list...");
-            return 0;
+            Logger.Warning("No matching speaker found, defaulting...");
+            return -1;
         }
         #endregion
 
@@ -108,7 +115,10 @@ namespace Hoscy.Services.Speech.Utilities
             for (int i = 0; i < WindowsRecognizers.Count; i++)
             {
                 if (WindowsRecognizers[i].Id == id)
+                {
+                    Logger.Debug($"Returning windows recognizer index {i} for device {WindowsRecognizers[i].Name}");
                     return i;
+                }
             }
 
             if (WindowsRecognizers.Count == 0)
@@ -118,7 +128,7 @@ namespace Hoscy.Services.Speech.Utilities
             }
 
             Logger.Warning("No matching windows recognizer found, defaulting to first in list...");
-            return 0;
+            return -1;
         }
         #endregion
 
@@ -144,7 +154,10 @@ namespace Hoscy.Services.Speech.Utilities
             for (int i = 0; i < WindowsVoices.Count; i++)
             {
                 if (WindowsVoices[i].Id == id)
+                {
+                    Logger.Debug($"Returning windows voice index {i} for device {WindowsVoices[i].Name}");
                     return i;
+                }
             }
 
             if (WindowsVoices.Count == 0)
@@ -154,7 +167,7 @@ namespace Hoscy.Services.Speech.Utilities
             }
 
             Logger.Warning("No matching windows voice found, defaulting to first in list...");
-            return 0;
+            return -1;
         }
         #endregion
 
@@ -179,11 +192,14 @@ namespace Hoscy.Services.Speech.Utilities
             for(int i = 0; i < GraphicsAdapters.Count; i++)
             {
                 if (GraphicsAdapters[i] == id)
+                {
+                    Logger.Debug($"Returning gpu index {i} for device {GraphicsAdapters[i]}");
                     return i;
+                }
             }
 
             Logger.Warning("No matching graphics adapter found, defaulting to first in list...");
-            return 0;
+            return -1;
         }
         #endregion
     }

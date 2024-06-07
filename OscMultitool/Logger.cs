@@ -125,7 +125,7 @@ namespace Hoscy
             var errorType = error.GetType().Name;
             sb.AppendLine($"{errorType} at {error.Source}: {error.Message}");
             if (error.StackTrace is not null)
-                sb.AppendLine("\n--------------------------\nStack trace of {errorType}:\n\n" + error.StackTrace);
+                sb.AppendLine($"\n--------------------------\nStack trace of {errorType}:\n\n" + error.StackTrace);
             if (error.InnerException is not null)
             {
                 sb.AppendLine($"\n--------------------------\nInner exception of {errorType}:\n\n");
