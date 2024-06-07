@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Hoscy
 {
@@ -114,15 +115,22 @@ namespace Hoscy
             if (!string.IsNullOrWhiteSpace(descriptiveError))
                 sb.AppendLine(descriptiveError + "\n\n--------------------------\nError details:\n");
 
-            sb.AppendLine($"{error.GetType().Name} at {error.Source}: {error.Message}");
-
-            if (error.InnerException != null)
-                sb.AppendLine($"\n(Inner {error.InnerException.GetType()}: {error.InnerException.Message}{(error.InnerException.Source == null ? "" : $" at {error.InnerException.Source}")})");
-
-            if (error.StackTrace != null)
-                sb.AppendLine("\n--------------------------\nStack trace:\n\n" + error.StackTrace);
+            AppendExceptionToStringBuilder(error, sb);
 
             Error(sb.ToString(), notify, file, member, line);
+        }
+
+        private static void AppendExceptionToStringBuilder(Exception error, StringBuilder sb)
+        {
+            var errorType = error.GetType().Name;
+            sb.AppendLine($"{errorType} at {error.Source}: {error.Message}");
+            if (error.StackTrace is not null)
+                sb.AppendLine("\n--------------------------\nStack trace of {errorType}:\n\n" + error.StackTrace);
+            if (error.InnerException is not null)
+            {
+                sb.AppendLine($"\n--------------------------\nInner exception of {errorType}:\n\n");
+                AppendExceptionToStringBuilder(error.InnerException, sb);
+            }
         }
         #endregion
 
