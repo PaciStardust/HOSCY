@@ -158,8 +158,16 @@
                     </WrapPanel>
 
                     <WrapPanel Margin="0,4,0,0">
-                        <Slider Width="320" x:Name="volumeSlider" VerticalAlignment="Center" Minimum="0" Maximum="1" Value="{Binding Speech.SpeakerVolume, Source={x:Static local:Config.Data}}" ValueChanged="Slider_Volume" LargeChange="0.25" SmallChange="0.05" TickFrequency="0.05" IsSnapToTickEnabled="True" Height="17" FontSize="18" FontFamily="Microsoft YaHei UI"/>
-                        <Label x:Name="volumeLabel" Content="Speech volume"/>
+                        <TextBox Tag="Volume..." Style="{StaticResource HTextBoxShort}">
+                            <TextBox.Text>
+                                <Binding Source="{x:Static local:Config.Data}" Path="Speech.SpeakerVolumeInt" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <ui:IntegerValidationRule Min="0" Max="100"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                        <Label Content="Speech Volume" VerticalAlignment="Center"/>
                     </WrapPanel>
                 </StackPanel>
 

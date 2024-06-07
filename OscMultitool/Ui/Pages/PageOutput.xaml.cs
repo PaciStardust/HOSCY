@@ -1,7 +1,6 @@
 ﻿using Hoscy.Services.Speech;
 using Hoscy.Services.Speech.Utilities;
 using Hoscy.Ui.Windows;
-using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,7 +19,6 @@ namespace Hoscy.Ui.Pages
             InitializeComponent();
             UpdateTimeoutBoxes();
             LoadBoxes();
-            UpdateVolumeText();
             UpdateChangeIndicatorSynth();
         }
 
@@ -52,15 +50,6 @@ namespace Hoscy.Ui.Pages
         /// </summary>
         private void UpdateAzureVoiceBox()
             => azureVoiceBox.Load(Config.Api.AzureTtsVoices.Select(x => x.Name), Config.Api.GetTtsVoiceIndex(Config.Api.AzureTtsVoiceCurrent));
-
-        /// <summary>
-        /// Updates the UI text for the volume slider
-        /// </summary>
-        private void UpdateVolumeText()
-        {
-            if (volumeLabel != null)
-                volumeLabel.Content = $"Speech volume ({(int)Math.Round(volumeSlider.Value * 100)}%)";
-        }
 
         /// <summary>
         /// Changes visibility of the UI change indicator for the synth
@@ -139,15 +128,6 @@ namespace Hoscy.Ui.Pages
         #endregion
 
         #region Other
-        private void Slider_Volume(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (volumeSlider != null)
-            {
-                UpdateVolumeText();
-                Synthesizing.ChangeVolume();
-            }
-        }
-
         private void TextboxDynamicTimeout_Checked(object sender, RoutedEventArgs e)
             => UpdateTimeoutBoxes();
 

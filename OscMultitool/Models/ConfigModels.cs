@@ -199,12 +199,12 @@ namespace Hoscy.Models
         //TTS
         public string TtsId { get; set; } = string.Empty; //Identifier for Microsoft TTS
         public string SpeakerId { get; set; } = string.Empty; //Speaker for TTS out
-        public float SpeakerVolume //TTS volume
+        public int SpeakerVolumeInt //TTS volume
         {
-            get => _speakerVolume;
-            set => _speakerVolume = Utils.MinMax(value, 0, 1);
+            get => _speakerVolumeInt;
+            set => _speakerVolumeInt = Utils.MinMax(value, 0, 100);
         }
-        private float _speakerVolume = 0.5f;
+        private int _speakerVolumeInt = 50;
         public int MaxLenTtsString //Max length of strings that get TTS
         {
             get => _maxLenTtsString;

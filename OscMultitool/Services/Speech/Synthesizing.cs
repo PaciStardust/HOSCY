@@ -102,15 +102,15 @@ namespace Hoscy.Services.Speech
             //This is an attempt at trying to make the speech page not crash randomly
             try
             {
-                var configVolume = Config.Speech.SpeakerVolume;
+                var configVolume = Config.Speech.SpeakerVolumeInt / 100f;
                 var roundedWaveOutVolume = Math.Ceiling(_waveOut.Volume * 20) / 20f;
 
                 //Floating points messed with this so its strings now
                 if (configVolume + string.Empty == roundedWaveOutVolume + string.Empty)
                     return;
 
-                _waveOut.Volume = Config.Speech.SpeakerVolume;
-                Logger.PInfo("Changed synthesizer volume: " + Config.Speech.SpeakerVolume);
+                _waveOut.Volume = Config.Speech.SpeakerVolumeInt;
+                Logger.PInfo("Changed synthesizer volume: " + Config.Speech.SpeakerVolumeInt);
             }
             catch (Exception ex)
             {
