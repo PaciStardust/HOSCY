@@ -136,6 +136,9 @@ namespace Hoscy.Ui.Pages
 
         private void SynthTextBox_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
             => TryEnableChangeIndicatorSynth();
+
+        private void VolumeBox_TextChanged(object sender, TextChangedEventArgs e)
+            => Synthesizing.ChangeVolume();
         #endregion
     }
 }

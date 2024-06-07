@@ -103,13 +103,13 @@ namespace Hoscy.Services.Speech
             try
             {
                 var configVolume = Config.Speech.SpeakerVolumeInt / 100f;
-                var roundedWaveOutVolume = Math.Ceiling(_waveOut.Volume * 20) / 20f;
+                var roundedWaveOut = Math.Round(_waveOut.Volume*100, 2) / 100;
 
                 //Floating points messed with this so its strings now
-                if (configVolume + string.Empty == roundedWaveOutVolume + string.Empty)
+                if (configVolume + string.Empty == roundedWaveOut + string.Empty)
                     return;
 
-                _waveOut.Volume = Config.Speech.SpeakerVolumeInt;
+                _waveOut.Volume = configVolume;
                 Logger.PInfo("Changed synthesizer volume: " + Config.Speech.SpeakerVolumeInt);
             }
             catch (Exception ex)

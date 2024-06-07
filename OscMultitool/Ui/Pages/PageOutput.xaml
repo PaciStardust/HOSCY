@@ -158,7 +158,7 @@
                     </WrapPanel>
 
                     <WrapPanel Margin="0,4,0,0">
-                        <TextBox Tag="Volume..." Style="{StaticResource HTextBoxShort}">
+                        <TextBox Tag="Volume..." Style="{StaticResource HTextBoxShort}" TextChanged="VolumeBox_TextChanged">
                             <TextBox.Text>
                                 <Binding Source="{x:Static local:Config.Data}" Path="Speech.SpeakerVolumeInt" UpdateSourceTrigger="PropertyChanged">
                                     <Binding.ValidationRules>
