@@ -19,6 +19,7 @@
     <Description>Companion for OSC and Communication</Description>
     <NoWin32Manifest>true</NoWin32Manifest>
     <SignAssembly>False</SignAssembly>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
