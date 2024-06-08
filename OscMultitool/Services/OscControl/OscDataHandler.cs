@@ -192,7 +192,7 @@ namespace Hoscy.Services.OscControl
         {
             if (Config.Osc.ShowAfkDuration && mode && _afkTimer == null)
             {
-                Textbox.Notify("Now AFK", NotificationType.Afk);
+                Textbox.Notify(Config.Osc.AfkStartText, NotificationType.Afk);
                 _afkStarted = DateTime.Now;
                 _afkTimesChecked = 0;
 
@@ -205,7 +205,7 @@ namespace Hoscy.Services.OscControl
             }
             else if (!mode && _afkTimer != null)
             {
-                Textbox.Notify("No longer AFK", NotificationType.Afk);
+                Textbox.Notify(Config.Osc.AfkEndText, NotificationType.Afk);
                 _afkTimer.Stop();
                 _afkTimer.Dispose();
                 _afkTimer = null;
@@ -230,8 +230,8 @@ namespace Hoscy.Services.OscControl
                 if (_afkTimesChecked % modulo != 0)
                     return;
             }
-            
-            Textbox.Notify("AFK since " + (e.SignalTime.AddMilliseconds(500) - _afkStarted).ToString(@"hh\:mm\:ss"), NotificationType.Afk);
+
+            Textbox.Notify($"{Config.Osc.AfkStatusText} {(e.SignalTime.AddMilliseconds(500) - _afkStarted).ToString(@"hh\:mm\:ss")}", NotificationType.Afk);
         }
         #endregion
     }

@@ -95,6 +95,15 @@
                             </TextBox>
                             <Label Content="Double after displaying ... times" VerticalAlignment="Center"/>
                         </WrapPanel>
+
+                        <TextBlock Style="{StaticResource HTextBlock}" Text="AFK Start Text" Margin="0,4,0,0"/>
+                        <TextBox Text="{Binding Osc.AfkStartText, Source={x:Static local:Config.Data}}" Tag="AFK Start Text..." Style="{StaticResource HTextBoxLong}"/>
+
+                        <TextBlock Style="{StaticResource HTextBlock}" Text="AFK Status Text" Margin="0,4,0,0"/>
+                        <TextBox Text="{Binding Osc.AfkStatusText, Source={x:Static local:Config.Data}}" Tag="AFK Status Text..." Style="{StaticResource HTextBoxLong}"/>
+
+                        <TextBlock Style="{StaticResource HTextBlock}" Text="AFK End Text" Margin="0,4,0,0"/>
+                        <TextBox Text="{Binding Osc.AfkEndText, Source={x:Static local:Config.Data}}" Tag="AFK End Text..." Style="{StaticResource HTextBoxLong}"/>
                     </StackPanel>
 
                     <WrapPanel Margin="0,8,0,0">

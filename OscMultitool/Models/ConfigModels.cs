@@ -180,6 +180,27 @@ namespace Hoscy.Models
             set => _afkDoubleDuration = Utils.MinMax(value, 0, 60);
         }
         private float _afkDoubleDuration = 12;
+
+        public string AfkStartText
+        {
+            get => _afkStartText;
+            set => _afkStartText = value.Length > 0 ? value : "Now AFK";
+        }
+        private string _afkStartText = "Now AFK";
+
+        public string AfkEndText
+        {
+            get => _afkEndText;
+            set => _afkEndText = value.Length > 0 ? value : "No longer AFK";
+        }
+        private string _afkEndText = "No longer AFK";
+
+        public string AfkStatusText
+        {
+            get => _afkStatusText;
+            set => _afkStatusText = value.Length > 0 ? value : "AFK since";
+        }
+        private string _afkStatusText = "AFK since";
     }
 
     /// <summary>
