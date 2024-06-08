@@ -15,6 +15,7 @@ namespace Hoscy.Services.Speech
         private static RawSourceWaveStream? _provider;
         private static string _currentString = string.Empty;
         private static bool _hasInitialized = false;
+        private static readonly bool _speakerInitialized = false;
 
         internal static bool IsRunning => _synth != null;
 
@@ -22,9 +23,9 @@ namespace Hoscy.Services.Speech
         {
             //Mic Setup
             _provider = GenerateProvider();
-            _waveOut.Init(_provider);
 
             ChangeSpeakers();
+            _speakerInitialized = true;
             ChangeVolume(); //Turns out the default for this somehow gets saved
 
             Logger.PInfo("Successfully prepared synth essentials");
@@ -78,7 +79,7 @@ namespace Hoscy.Services.Speech
         {
             var newDeviceNumber = Devices.GetSpeakerIndex(Config.Speech.SpeakerId);
 
-            if (newDeviceNumber == _waveOut.DeviceNumber)
+            if (_speakerInitialized && newDeviceNumber == _waveOut.DeviceNumber)
                 return;
             
             try

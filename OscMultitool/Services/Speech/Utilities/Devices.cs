@@ -54,7 +54,7 @@ namespace Hoscy.Services.Speech.Utilities
             }
 
             Logger.Warning("No matching microphone found, defaulting...");
-            return -1;
+            return 0;
         }
         #endregion
 
@@ -93,7 +93,7 @@ namespace Hoscy.Services.Speech.Utilities
             }
 
             Logger.Warning("No matching speaker found, defaulting...");
-            return -1;
+            return 0;
         }
         #endregion
 
@@ -128,7 +128,7 @@ namespace Hoscy.Services.Speech.Utilities
             }
 
             Logger.Warning("No matching windows recognizer found, defaulting to first in list...");
-            return -1;
+            return 0;
         }
         #endregion
 
@@ -167,7 +167,7 @@ namespace Hoscy.Services.Speech.Utilities
             }
 
             Logger.Warning("No matching windows voice found, defaulting to first in list...");
-            return -1;
+            return 0;
         }
         #endregion
 
@@ -199,7 +199,7 @@ namespace Hoscy.Services.Speech.Utilities
             }
 
             Logger.Warning("No matching graphics adapter found, defaulting to first in list...");
-            return -1;
+            return 0;
         }
         #endregion
     }
