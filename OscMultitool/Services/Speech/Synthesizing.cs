@@ -187,13 +187,13 @@ namespace Hoscy.Services.Speech
                     ? await _synth.SpeakAsync(_currentString)
                     : _synth.Speak(_currentString);
 
-                if (!speakSuccess)
-                    continue;
-
-                Logger.Info("Playing synth audio: " + _currentString);
+                if (speakSuccess)
+                {
+                    Logger.Info("Playing synth audio: " + _currentString);
+                    _stream.Position = 0;
+                    _waveOut.Play();
+                }
                 _currentString = string.Empty;
-                _stream.Position = 0;
-                _waveOut.Play();
             }
         }
 
