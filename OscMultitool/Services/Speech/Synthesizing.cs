@@ -84,9 +84,10 @@ namespace Hoscy.Services.Speech
             
             try
             {
-                _waveOut.Stop(); //Only triggers if its not alrady playing
+                if (_speakerInitialized)
+                    _waveOut.Stop(); //Only triggers if its not alrady playing
                 _waveOut.DeviceNumber = newDeviceNumber;
-                _waveOut.Init(_provider); //Redo init
+                _waveOut.Init(_provider);
                 Logger.PInfo("Changed synthesizer microphone: " + Devices.Speakers[newDeviceNumber].ProductName);
             }
             catch (Exception ex)
