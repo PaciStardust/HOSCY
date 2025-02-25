@@ -40,6 +40,7 @@ namespace Hoscy.Services.Speech.Recognizers
                 StartInfo = new ProcessStartInfo(Path.Combine(Utils.PathExecutableFolder, "HoscyWhisperServer.exe"))
                 {
                     RedirectStandardOutput = true,
+                    RedirectStandardError = true,
                     ErrorDialog = false,
                     CreateNoWindow = true,
                     Arguments = GenerateArguments()
@@ -92,8 +93,23 @@ namespace Hoscy.Services.Speech.Recognizers
 
         private void ProcessExited(object? sender, EventArgs e)
         {
-            Logger.Debug("Whisper process has exited, stopping recognizer");
-            StopInternal();
+            if (_whisperProcess is null)
+            {
+                Logger.Debug("Whisper process has exited for unknown reasons, stopping recognizer");
+            }
+            else
+            {
+                var errorText = _whisperProcess.StandardError.ReadToEnd();
+                if (string.IsNullOrWhiteSpace(errorText))
+                {
+                    Logger.Debug($"Whisper process has exited with code {_whisperProcess.ExitCode}, stopping recognizer");
+                }
+                else
+                {
+                    Logger.Error($"Recognizer stopped due to whisper process exiting with code {_whisperProcess.ExitCode}:\n\n{errorText}");
+                }
+            }
+            Stop();
         }
 
         protected override void StopInternal()
