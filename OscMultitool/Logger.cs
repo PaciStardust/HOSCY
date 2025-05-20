@@ -15,6 +15,7 @@ namespace Hoscy
     internal static class Logger
     {
         private static readonly StreamWriter? _logWriter;
+        private static readonly StreamWriter? _consoleWriter;
 
         //We use this to open a console window
         [DllImport("Kernel32")]
@@ -26,26 +27,32 @@ namespace Hoscy
             if (Config.Debug.OpenLogWindow)
                 AllocConsole();
 
-            _logWriter = StartLogger();
+            (_consoleWriter, _logWriter) = StartLogger();
         }
 
         /// <summary>
         /// Starts the logging service
         /// </summary>
         /// <returns>Streamwriter for logging</returns>
-        private static StreamWriter? StartLogger()
+        private static (StreamWriter?, StreamWriter?) StartLogger()
         {
             try
             {
                 DeleteOldLogs();
-                var writer = File.CreateText(Utils.PathLog);
-                writer.AutoFlush = true;
+                var logWriter = File.CreateText(Utils.PathLog);
+                logWriter.AutoFlush = true;
                 PInfo("Created logging file at " + Utils.PathLog);
-                return writer;
+
+                var consoleWriter = new StreamWriter(Console.OpenStandardOutput(), bufferSize: 16384)
+                {
+                    AutoFlush = true
+                };
+
+                return (consoleWriter, logWriter);
             }
             catch
             {
-                return null;
+                return (null, null);
             }
         }
 
@@ -83,9 +90,9 @@ namespace Hoscy
                     if (filter.Enabled && filter.Matches(message.Message))
                         return;
 
-                var messageString = message.ToString().Replace("\n", " ").Replace("\r", "");
                 Console.ForegroundColor = GetLogColor(message.Severity);
-                Console.WriteLine(messageString);
+                var messageString = message.ToString().Replace("\n", " ").Replace("\r", "");
+                _consoleWriter?.WriteLine(messageString);
                 _logWriter?.WriteLine(messageString);
             }
         }

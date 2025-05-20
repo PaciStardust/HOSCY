@@ -15,6 +15,8 @@ namespace Hoscy.Services.OscControl
     internal static class Osc
     {
         private static OscListener? _listener;
+        private static Dictionary<string, UDPSender> _senders = [];
+
         internal static int? ListenerPort => _listener?.Port;
         internal static bool HasInvalidFilters { get; private set; } = false;
 
@@ -26,16 +28,21 @@ namespace Hoscy.Services.OscControl
         /// <returns>Success?</returns>
         internal static bool Send(OscPacket p)
         {
+            var addrKey = $"{p.Ip}:{p.Port}";
             if(!p.IsValid)
             {
-                Logger.Warning($"Attempted to send a package to {p.Ip}:{p.Port} ({p.Address}), but the contents were empty or port was invalid");
+                Logger.Warning($"Attempted to send a package to {addrKey} ({p.Address}), but the contents were empty or port was invalid");
                 return false;
             }
 
             try
             {
                 var message = new OscMessage(p.Address, p.Variables);
-                var sender = new UDPSender(p.Ip, p.Port);
+                if (!_senders.TryGetValue(addrKey, out var sender))
+                {
+                    sender = new UDPSender(p.Ip, p.Port);
+                    _senders.Add(addrKey, sender);
+                }
 
                 sender.Send(message);
                 Logger.Debug($"Successfully sent data to {p}");
