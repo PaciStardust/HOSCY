@@ -191,10 +191,10 @@ internal class LegacyCounterModel
     public string Parameter { get; set; } = "Parameter";
 }
 
-internal class LegacyFilterModel
+internal class LegacyFilterModel(string name, string filterString)
 {
-    public string Name { get; set; } = "Unnamed Filter";
-    public string FilterString { get; set; } = "Filter Text";
+    public string Name { get; set; } = name;
+    public string FilterString { get; set; } = filterString;
     public bool Enabled { get; set; } = true;
     public bool IgnoreCase { get; set; } = true;
     public bool UseRegex { get; set; } = false;
@@ -209,11 +209,11 @@ internal class LegacyOscRoutingFilterModel
     public bool BlacklistMode { get; set; } = false;
 }
 
-internal class LegacyReplacementDataModel
+internal class LegacyReplacementDataModel(string text, string replacement, bool ignoreCase = true)
 {
-    public string Text { get; set; } = "New Text";
-    public string Replacement { get; set; } = "Example";
+    public string Text { get; set; } = text;
+    public string Replacement { get; set; } = replacement;
     public bool Enabled { get; set; } = true;
     public bool UseRegex { get; set; } = false;
-    public bool IgnoreCase { get; set; } = true;
+    public bool IgnoreCase { get; set; } = ignoreCase;
 }
