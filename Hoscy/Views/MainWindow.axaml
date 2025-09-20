@@ -1,0 +1,34 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Hoscy.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Hoscy.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/hoscy_circle.ico"
+        Title="HOSCY - OSC and Communication Companion"
+        WindowStartupLocation="CenterScreen"
+        MinHeight="450" Height="450" MinWidth="450" Width="800" 
+        CanResize="True" SystemDecorations="Full" WindowState="Normal"
+        Background="{StaticResource BackgroundDarkBrush}">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <Grid x:Name="MainGrid" Margin="4,6,6,6" ColumnDefinitions="auto,*">
+
+        <ListBox x:Name="listBox" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,4,0" BorderThickness="0">
+            <Border Width="200" Background="{StaticResource ValidBrush}">
+                <TextBlock FontSize="60" TextWrapping="Wrap">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</TextBlock>
+            </Border> <!-- Placeholder -->
+        </ListBox>
+
+        <Border x:Name="navBorder" Grid.Column="1" CornerRadius="8,4,4,8" Background="{StaticResource BackgroundBrush}">
+            <ContentControl x:Name="navFrame" /> 
+        </Border>
+    </Grid>
+</Window>
