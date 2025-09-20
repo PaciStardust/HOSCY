@@ -2,6 +2,7 @@ using Hoscy.Models.Config;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Hoscy.Models.Config.Migration;
 
@@ -131,7 +132,7 @@ internal static class OldConfigMigrator
 
     internal static ConfigModel Migrate(this LegacyConfigModel oldConfig)
     {
-        var newConfig = new ConfigModel
+        return new ConfigModel()
         {
             ConfigVersion = oldConfig.ConfigVersion,
 
@@ -284,44 +285,86 @@ internal static class OldConfigMigrator
             Textbox_Media_ExtraText = oldConfig.Textbox.MediaExtra,
             Textbox_Media_Filters = ConvertFilterModel(oldConfig.Textbox.MediaFilters)
         };
-
-        return newConfig;
     }
 
     #region Conversion Helpers
     private static ObservableCollection<ReplacementDataModel> ConvertReplacementDataModel(List<LegacyReplacementDataModel> replacements)
     {
-        throw new NotImplementedException();
+        return new(replacements.Select(old => new ReplacementDataModel()
+        {
+            Text = old.Text,
+            Replacement = old.Replacement,
+            Enabled = old.Enabled,
+            UseRegex = old.UseRegex,
+            IgnoreCase = old.IgnoreCase,
+        }));
     }
 
     private static ObservableCollection<CounterModel> ConvertCounterModel(List<LegacyCounterModel> counters)
     {
-        throw new NotImplementedException();
+        return new(counters.Select(old => new CounterModel()
+        {
+            Name = old.Name,
+            Count = old.Count,
+            LastUsed = old.LastUsed,
+            Enabled = old.Enabled,
+            Cooldown = old.Cooldown,
+            Parameter = old.Parameter
+        }));
     }
 
     private static ObservableCollection<OscRoutingFilterModel> ConvertOscRoutingFilterModel(List<LegacyOscRoutingFilterModel> routingFilters)
     {
-        throw new NotImplementedException();
+        return new(routingFilters.Select(old => new OscRoutingFilterModel()
+        {
+            Name = old.Name,
+            Port = old.Port,
+            Ip = old.Ip,
+            Filters = new(old.Filters),
+            BlacklistMode = old.BlacklistMode
+        }));
     }
 
-    private static ObservableCollection<FilterModel> ConvertFilterModel(List<LegacyFilterModel> logFilters)
+    private static ObservableCollection<FilterModel> ConvertFilterModel(List<LegacyFilterModel> filters)
     {
-        throw new NotImplementedException();
+        return new(filters.Select(old => new FilterModel()
+        {
+            Name = old.Name,
+            FilterString = old.FilterString,
+            Enabled = old.Enabled,
+            IgnoreCase = old.IgnoreCase,
+            UseRegex = old.UseRegex
+        }));
     }
 
     private static ObservableCollection<KeyValuePair<Tkey, Tvalue>> ConvertDictionary<Tkey, Tvalue>(Dictionary<Tkey, Tvalue> dict) where Tkey : notnull
     {
-        throw new NotImplementedException();
+        return new(dict.Select(old => new KeyValuePair<Tkey, Tvalue>(old.Key, old.Value)));
     }
 
     private static ObservableCollection<AzureTtsVoiceModel> ConvertAzureTtsVoiceModel(List<LegacyAzureTtsVoiceModel> azureTtsVoices)
     {
-        throw new NotImplementedException();
+        return new(azureTtsVoices.Select(old => new AzureTtsVoiceModel()
+        {
+            Name = old.Name,
+            Voice = old.Voice,
+            Language = old.Language
+        }));
     }
 
     private static ObservableCollection<ApiPresetModel> ConvertApiPresetModel(List<LegacyApiPresetModel> presets)
     {
-        throw new NotImplementedException();
+        return new(presets.Select(old => new ApiPresetModel()
+        {
+            Name = old.Name,
+            SentData = old.SentData,
+            HeaderValues = ConvertDictionary(old.HeaderValues),
+            ContentType = old.ContentType,
+            ResultField = old.ResultField,
+            TargetUrl = old.TargetUrl,
+            Authorization = old.Authorization,
+            ConnectionTimeout = old.ConnectionTimeout
+        }));
     }
     #endregion
 }
