@@ -5,7 +5,7 @@ using Whisper;
 
 namespace Hoscy.Models.Config;
 
-public class Configuration : ObservableObject
+public class ConfigModel : ObservableObject
 {
     public int ConfigVersion { get; set; } = 0;
 
@@ -55,6 +55,34 @@ public class Configuration : ObservableObject
     {
         get => _apiCommunication_Translation_MaxTextLength;
         set => SetProperty(ref _apiCommunication_Translation_MaxTextLength, Utils.MinMax(value, 1, short.MaxValue));
+    }
+
+    private bool _apiCommunication_Translation_OfTts;
+    public bool ApiCommunication_Translation_OfTts
+    {
+        get => _apiCommunication_Translation_OfTts;
+        set => SetProperty(ref _apiCommunication_Translation_OfTts, value);
+    }
+
+    private bool _apiCommunication_Translation_OfTextbox;
+    public bool ApiCommunication_Translation_OfTextbox
+    {
+        get => _apiCommunication_Translation_OfTextbox;
+        set => SetProperty(ref _apiCommunication_Translation_OfTextbox, value);
+    }
+
+    private bool _apiCommunication_Translation_OfExternalSources;
+    public bool ApiCommunication_Translation_OfExternalSources
+    {
+        get => _apiCommunication_Translation_OfExternalSources;
+        set => SetProperty(ref _apiCommunication_Translation_OfExternalSources, value);
+    }
+
+    private bool _apiCommunication_Translation_AppendOriginal;
+    public bool ApiCommunication_Translation_AppendOriginal
+    {
+        get => _apiCommunication_Translation_AppendOriginal;
+        set => SetProperty(ref _apiCommunication_Translation_AppendOriginal, value);
     }
 
     //AZURE
@@ -121,35 +149,6 @@ public class Configuration : ObservableObject
     {
         get => _apiCommunication_Azure_OverrideNormalTts;
         set => SetProperty(ref _apiCommunication_Azure_OverrideNormalTts, value);
-    }
-
-    //Translation
-    private bool _apiCommunication_Translation_OfTts;
-    public bool ApiCommunication_Translation_OfTts
-    {
-        get => _apiCommunication_Translation_OfTts;
-        set => SetProperty(ref _apiCommunication_Translation_OfTts, value);
-    }
-
-    private bool _apiCommunication_Translation_OfTextbox;
-    public bool ApiCommunication_Translation_OfTextbox
-    {
-        get => _apiCommunication_Translation_OfTextbox;
-        set => SetProperty(ref _apiCommunication_Translation_OfTextbox, value);
-    }
-
-    private bool _apiCommunication_Translation_OfExternalSources;
-    public bool ApiCommunication_Translation_OfExternalSources
-    {
-        get => _apiCommunication_Translation_OfExternalSources;
-        set => SetProperty(ref _apiCommunication_Translation_OfExternalSources, value);
-    }
-
-    private bool _apiCommunication_Translation_AppendOriginal;
-    public bool ApiCommunication_Translation_AppendOriginal
-    {
-        get => _apiCommunication_Translation_AppendOriginal;
-        set => SetProperty(ref _apiCommunication_Translation_AppendOriginal, value);
     }
 
     #endregion
@@ -237,14 +236,14 @@ public class Configuration : ObservableObject
 
     //ROUTING
     private string _osc_Routing_TargetIp = "127.0.0.1";
-    public string OSC_Routing_TargetIp
+    public string Osc_Routing_TargetIp
     {
         get => _osc_Routing_TargetIp;
         set => SetProperty(ref _osc_Routing_TargetIp, value);
     }
 
     private int _osc_Routing_TargetPort = 9000;
-    public int OSC_Routing_TargetPort
+    public int Osc_Routing_TargetPort
     {
         get => _osc_Routing_TargetPort;
         set => SetProperty(ref _osc_Routing_TargetPort, Utils.MinMax(value, -1, 65535));
@@ -461,7 +460,7 @@ public class Configuration : ObservableObject
 
     private const string OSC_AFK_NO_STARTTEXT = "Now AFK";
     private string _osc_Afk_StartText = OSC_AFK_NO_STARTTEXT;
-    public string OSC_AFK_StartText
+    public string OSC_Afk_StartText
     {
         get => _osc_Afk_StartText;
         set => SetProperty(ref _osc_Afk_StartText, value.Length > 0 ? value : OSC_AFK_NO_STARTTEXT);
@@ -469,7 +468,7 @@ public class Configuration : ObservableObject
 
     private const string OSC_AFK_NO_ENDTEXT = "No longer AFK";
     private string _osc_Afk_EndText = OSC_AFK_NO_ENDTEXT;
-    public string OSC_AFK_EndText
+    public string Osc_Afk_EndText
     {
         get => _osc_Afk_EndText;
         set => SetProperty(ref _osc_Afk_EndText, value.Length > 0 ? value : OSC_AFK_NO_ENDTEXT);
@@ -477,7 +476,7 @@ public class Configuration : ObservableObject
 
     private const string OSC_AFK_NO_STATUSTEXT = "AFK since";
     private string _osc_Afk_StatusText = OSC_AFK_NO_STATUSTEXT;
-    public string OSC_AFK_StatusText
+    public string Osc_Afk_StatusText
     {
         get => _osc_Afk_StatusText;
         set => SetProperty(ref _osc_Afk_StatusText, value.Length > 0 ? value : OSC_AFK_NO_STATUSTEXT);
@@ -492,11 +491,11 @@ public class Configuration : ObservableObject
     public bool Speech_Send_OverTextbox
     {
         get => _speech_Send_OverTextbox;
-        set => SetProperty(ref _input_UseTextbox, value);
+        set => SetProperty(ref _speech_Send_OverTextbox, value);
     }
 
     private bool _speech_Send_OverTts = false;
-    public bool Speech_SendOverTts
+    public bool Speech_Send_OverTts
     {
         get => _speech_Send_OverTts;
         set => SetProperty(ref _speech_Send_OverTts, value);
@@ -555,11 +554,11 @@ public class Configuration : ObservableObject
         set => SetProperty(ref _speech_Tts_MicrosoftTtsId, value);
     }
 
-    private int _speech_Tts_AudioVolume = 50;
-    public int Speech_Tts_AudioVolume
+    private int _speech_Tts_AudioVolumePercent = 50;
+    public int Speech_Tts_AudioVolumePercent
     {
-        get => _speech_Tts_AudioVolume;
-        set => SetProperty(ref _speech_Tts_AudioVolume, value);
+        get => _speech_Tts_AudioVolumePercent;
+        set => SetProperty(ref _speech_Tts_AudioVolumePercent, value);
     }
 
     private int _speech_Tts_MaximumLength = 500;
@@ -603,7 +602,7 @@ public class Configuration : ObservableObject
     public ObservableCollection<KeyValuePair<string, string>> Speech_Whisper_Models
     {
         get => _speech_Whisper_Models;
-        private set => SetProperty(ref _speech_Whisper_Models, value);
+        set => SetProperty(ref _speech_Whisper_Models, value);
     }
 
     private string _speech_Whisper_CurrentModel = string.Empty;
