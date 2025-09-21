@@ -1,12 +1,46 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
+using Newtonsoft.Json;
 using Serilog;
 
 namespace Hoscy.Models.Config;
 
 public static class ConfigModelLoader
 {
+    /// <summary>
+    /// Loads a ConfigModel from a file
+    /// </summary>
+    /// <returns>Null when no config could be loaded</returns>
+    public static ConfigModel? Load(string cfgFolder, string cfgFilename, ILogger logger)
+    {
+        var path = Path.Combine(cfgFolder, cfgFilename);
+        logger.Information("Attempting to load Config at path {configPath}", path);
+        try
+        {
+            if (!Directory.Exists(cfgFolder)) return null;
+            if (!File.Exists(path)) return null;
+            string configData = File.ReadAllText(Utils.PathConfigFile, Encoding.UTF8);
+            var newData = JsonConvert.DeserializeObject<ConfigModel>(configData);
+            if (newData is not null)
+                return newData;
+        }
+        catch (JsonReaderException ex)
+        {
+            logger.Error(ex, "Unable to read JSON file at {configPath} correctly", path);
+            throw;
+        }
+        catch (Exception ex)
+        {
+            logger.Error(ex, "Unexpected error while reading JSON file at {configPath}", path);
+            throw;
+        }
+
+        return null;
+    }
+
     /// <summary>
     /// Upgrades a ConfigModel to the newest version
     /// </summary>
