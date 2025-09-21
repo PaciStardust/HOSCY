@@ -1,13 +1,39 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Text;
+using Newtonsoft.Json;
 using Serilog;
 
 namespace Hoscy.Models.Config.Migration;
 
 internal static class LegacyConfigModelLoader
 {
+    internal static LegacyConfigModel? Load(string path, ILogger logger)
+    {
+        logger.Information("Attempting to load LegacyConfig at path {legacyConfigPath}", path);
+        try
+        {
+            if (!File.Exists(path)) return null;
+            string configData = File.ReadAllText(Utils.PathConfigFile, Encoding.UTF8);
+            var newData = JsonConvert.DeserializeObject<LegacyConfigModel>(configData);
+            if (newData is not null)
+                return newData;
+        }
+        catch (JsonReaderException ex)
+        {
+            logger.Error(ex, "Unable to read legacy JSON file at {legacyConfigPath} correctly", path);
+        }
+        catch (Exception ex)
+        {
+            logger.Error(ex, "Unexpected error while reading legacy JSON file at {legacyConfigPath}", path);
+        }
+
+        return null;
+    }
+
     internal static LegacyConfigModel? Upgrade(this LegacyConfigModel config, ILogger logger)
     {
         Dictionary<int, Action> steps = new()
@@ -114,7 +140,8 @@ internal static class LegacyConfigModelLoader
         };
 
         var newestVersion = steps.Keys.Max();
-        if (config.ConfigVersion == newestVersion) {
+        if (config.ConfigVersion == newestVersion)
+        {
             logger.Information("Legacy config is already at version {newestVersion}, skipping upgrade", newestVersion);
         }
         logger.Information("Legacy config is at version {currentVersion}, newst is {newestVersion}, starting upgrade", config.ConfigVersion, newestVersion);
