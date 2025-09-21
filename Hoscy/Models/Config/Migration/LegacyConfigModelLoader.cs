@@ -6,7 +6,7 @@ using Serilog;
 
 namespace Hoscy.Models.Config.Migration;
 
-internal static class OldConfigMigrator
+internal static class LegacyConfigModelLoader
 {
     internal static LegacyConfigModel? Upgrade(this LegacyConfigModel config, ILogger logger)
     {
