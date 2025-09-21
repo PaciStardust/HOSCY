@@ -7,7 +7,10 @@ namespace Hoscy.Models.Config;
 
 public static class ConfigModelLoader
 {
-    public static ConfigModel? Migrate(this ConfigModel config, ILogger logger)
+    /// <summary>
+    /// Upgrades a ConfigModel to the newest version
+    /// </summary>
+    public static ConfigModel Upgrade(this ConfigModel config, ILogger logger)
     {
         Dictionary<int, Action> steps = new()
         {
@@ -109,7 +112,8 @@ public static class ConfigModelLoader
         };
 
         var newestVersion = steps.Keys.Max();
-        if (config.ConfigVersion == newestVersion) {
+        if (config.ConfigVersion == newestVersion)
+        {
             logger.Information("Config is already at version {newestVersion}, skipping upgrade", newestVersion);
         }
         logger.Information("Config is at version {currentVersion}, newst is {newestVersion}, starting upgrade", config.ConfigVersion, newestVersion);
@@ -125,7 +129,7 @@ public static class ConfigModelLoader
             catch (Exception ex)
             {
                 logger.Error(ex, "Failed to upgrade config from version {oldVersion} to version {newVersion}, newest is {newestVersion}", config.ConfigVersion, version, newestVersion);
-                return null;
+                throw;
             }
             logger.Information("Upgraded config from version {oldVersion} to version {newVersion}, newest is {newestVersion}", config.ConfigVersion, version, newestVersion);
         }
