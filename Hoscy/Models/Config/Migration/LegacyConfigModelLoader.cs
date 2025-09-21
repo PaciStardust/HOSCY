@@ -11,6 +11,10 @@ namespace Hoscy.Models.Config.Migration;
 
 internal static class LegacyConfigModelLoader
 {
+    /// <summary>
+    /// Tries loading a legacy config file
+    /// </summary>
+    /// <returns>Null when no config could be loaded</returns>
     internal static LegacyConfigModel? Load(string configFolder, string configFilename, ILogger logger)
     {
         var path = Path.Combine(configFolder, configFilename);
@@ -27,16 +31,21 @@ internal static class LegacyConfigModelLoader
         catch (JsonReaderException ex)
         {
             logger.Error(ex, "Unable to read legacy JSON file at {legacyConfigPath} correctly", path);
+            throw;
         }
         catch (Exception ex)
         {
             logger.Error(ex, "Unexpected error while reading legacy JSON file at {legacyConfigPath}", path);
+            throw;
         }
 
         return null;
     }
 
-    internal static LegacyConfigModel? Upgrade(this LegacyConfigModel config, ILogger logger)
+    /// <summary>
+    /// Upgrades a LegacyConfigModel
+    /// </summary>
+    internal static LegacyConfigModel Upgrade(this LegacyConfigModel config, ILogger logger)
     {
         Dictionary<int, Action> steps = new()
         {
@@ -159,7 +168,7 @@ internal static class LegacyConfigModelLoader
             catch (Exception ex)
             {
                 logger.Error(ex, "Failed to upgrade legacy config from version {oldVersion} to version {newVersion}, newest is {newestVersion}", config.ConfigVersion, version, newestVersion);
-                return null;
+                throw;
             }
             logger.Information("Upgraded legacy config from version {oldVersion} to version {newVersion}, newest is {newestVersion}", config.ConfigVersion, version, newestVersion);
         }
@@ -167,6 +176,9 @@ internal static class LegacyConfigModelLoader
         return config;
     }
 
+    /// <summary>
+    /// Migrates a LegacyConfigModel to a new ConfigModel
+    /// </summary>
     internal static ConfigModel Migrate(this LegacyConfigModel oldConfig, ILogger logger)
     {
         logger.Information("Migrating legacy config to new format");
