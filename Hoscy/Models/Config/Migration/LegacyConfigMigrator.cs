@@ -1,101 +1,92 @@
-using Hoscy.Models.Config;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Serilog;
 
 namespace Hoscy.Models.Config.Migration;
 
 internal static class OldConfigMigrator
 {
-    internal static LegacyConfigModel Upgrade(this LegacyConfigModel config)
+    internal static LegacyConfigModel? Upgrade(this LegacyConfigModel config, ILogger logger)
     {
-        if (config.ConfigVersion < 1) //contains ifs to ensure old configs dont get these again
+        Dictionary<int, Action> steps = new()
         {
-            if (config.Speech.NoiseFilter.Count == 0)
-            {
-                config.Speech.NoiseFilter.AddRange(
-                [
-                    "the",
-                    "and",
-                    "einen"
-                ]);
-            }
-
-            if (config.Speech.Replacements.Count == 0)
-            {
-                config.Speech.Replacements.AddRange(
-                [
-                    new("exclamation mark", "!", false),
-                    new("question mark", "?", false),
-                    new("colon", ":", false),
-                    new("semicolon", ";", false),
-                    new("open parenthesis", "(", false),
-                    new("closed parenthesis", ")", false),
-                    new("open bracket", "(", false),
-                    new("closed bracket", ")", false),
-                    new("minus", "-", false),
-                    new("plus", "+", false),
-                    new("slash", "/", false),
-                    new("backslash", "\\", false),
-                    new("hashtag", "#", false),
-                    new("asterisk", "*", false)
-                ]);
-            }
-        }
-
-        if (config.ConfigVersion < 2)
-        {
-            config.Speech.Shortcuts.Add(new("box toggle", "[osc] [/avatar/parameters/ToolEnableBox [b]true \"self\"]"));
-
-            config.Api.Presets.AddRange(new List<LegacyApiPresetModel>()
-            {
-                new()
+            { 1, () => {
+                if (config.Speech.NoiseFilter.Count == 0)
                 {
-                    Name = "Example - Azure to DE",
-                    TargetUrl = "https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&to=de",
-                    ResultField = "text",
-                    SentData = @"[{""Text"" : ""[T]""}]",
-                    ContentType = "application/json",
-                    HeaderValues = new()
-                    {
-                        { "Ocp-Apim-Subscription-Key", "[YOUR KEY]" },
-                        { "Ocp-Apim-Subscription-Region", "[YOUR REGION]" }
-                    }
-                },
-
-                new()
-                {
-                    Name = "Example - Azure Recognition",
-                    TargetUrl = "https://northeurope.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1?language=en-US",
-                    ResultField = "Display Text",
-                    SentData = string.Empty,
-                    ContentType = "audio/wav; codecs=audio/pcm; samplerate=16000",
-                    HeaderValues =
-                    {
-                        { "Ocp-Apim-Subscription-Key", "[YOUR KEY]" },
-                        { "Accept", "true" }
-                    }
-                },
-
-                new()
-                {
-                    Name = "Example - DeepL to DE",
-                    TargetUrl = "https://api-free.deepl.com/v2/translate",
-                    ResultField = "text",
-                    SentData = "text=[T]&target_lang=DE",
-                    ContentType = "application/x-www-form-urlencoded",
-                    Authorization = "DeepL-Auth-Key [YOUR KEY]"
+                    config.Speech.NoiseFilter =
+                    [
+                        "the",
+                        "and",
+                        "einen"
+                    ];
                 }
-            });
-        }
-
-        if (config.ConfigVersion < 4)
-        {
-            if (config.Debug.LogFilters.Count == 0)
-            {
-                config.Debug.LogFilters.AddRange(
+                if (config.Speech.Replacements.Count == 0) {
+                    config.Speech.Replacements =
+                    [
+                        new("exclamation mark", "!", false),
+                        new("question mark", "?", false),
+                        new("colon", ":", false),
+                        new("semicolon", ";", false),
+                        new("open parenthesis", "(", false),
+                        new("closed parenthesis", ")", false),
+                        new("open bracket", "(", false),
+                        new("closed bracket", ")", false),
+                        new("minus", "-", false),
+                        new("plus", "+", false),
+                        new("slash", "/", false),
+                        new("backslash", "\\", false),
+                        new("hashtag", "#", false),
+                        new("asterisk", "*", false)
+                    ];
+                }
+            }},
+            {2, () => {
+                config.Speech.Shortcuts.Add(new("box toggle", "[osc] [/avatar/parameters/ToolEnableBox [b]true \"self\"]"));
+                if (config.Api.Presets.Count != 0) return;
+                config.Api.Presets =
                 [
+                    new()
+                    {
+                        Name = "Example - Azure to DE",
+                        TargetUrl = "https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&to=de",
+                        ResultField = "text",
+                        SentData = @"[{""Text"" : ""[T]""}]",
+                        ContentType = "application/json",
+                        HeaderValues = new()
+                        {
+                            { "Ocp-Apim-Subscription-Key", "[YOUR KEY]" },
+                            { "Ocp-Apim-Subscription-Region", "[YOUR REGION]" }
+                        }
+                    },
+                    new()
+                    {
+                        Name = "Example - Azure Recognition",
+                        TargetUrl = "https://northeurope.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1?language=en-US",
+                        ResultField = "Display Text",
+                        SentData = string.Empty,
+                        ContentType = "audio/wav; codecs=audio/pcm; samplerate=16000",
+                        HeaderValues =
+                        {
+                            { "Ocp-Apim-Subscription-Key", "[YOUR KEY]" },
+                            { "Accept", "true" }
+                        }
+                    },
+                    new()
+                    {
+                        Name = "Example - DeepL to DE",
+                        TargetUrl = "https://api-free.deepl.com/v2/translate",
+                        ResultField = "text",
+                        SentData = "text=[T]&target_lang=DE",
+                        ContentType = "application/x-www-form-urlencoded",
+                        Authorization = "DeepL-Auth-Key [YOUR KEY]"
+                    }
+                ];
+            }},
+            {4, () => {
+                if (config.Debug.LogFilters.Count != 0) return;
+                config.Debug.LogFilters = [
                     new("VRC Angular", "/Angular"),
                     new("VRC Grounded", "/Grounded"),
                     new("VRC Velocity", "/Velocity"),
@@ -107,14 +98,10 @@ internal static class OldConfigMigrator
                     new("VRC Stretch", "_Stretch"),
                     new("Notification Timeout", "Notification timeout was"),
                     new("Notification Override", "Did not override")
-                ]);
-            }
-        }
-
-        if (config.ConfigVersion < 5)
-        {
-            if (config.Speech.WhisperNoiseFilter.Count == 0)
-            {
+                ];
+            }},
+            {5, () => {
+                if (config.Speech.WhisperNoiseFilter.Count != 0) return;
                 config.Speech.WhisperNoiseFilter = new()
                 {
                     { "Laughing", "laugh" },
@@ -123,10 +110,31 @@ internal static class OldConfigMigrator
                     { "Sighing", "sigh" },
                     { "Humming", "hum" }
                 };
-            }
-        }
+            }}
+        };
 
-        config.ConfigVersion = 5;
+        var newestVersion = steps.Keys.Max();
+        if (config.ConfigVersion == newestVersion) {
+            logger.Information("Legacy config is already at version {newestVersion}, skipping upgrade", newestVersion);
+        }
+        logger.Information("Legacy config is at version {currentVersion}, newst is {newestVersion}, starting upgrade", config.ConfigVersion, newestVersion);
+
+        foreach (var (version, action) in steps.OrderBy(x => x.Key))
+        {
+            logger.Information("Migrating legacy config from version {oldVersion} to version {newVersion}, newest is {newestVersion}", config.ConfigVersion, version, newestVersion);
+            try
+            {
+                action();
+                config.ConfigVersion = version;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Failed to migrate legacy config from version {oldVersion} to version {newVersion}, newest is {newestVersion}", config.ConfigVersion, version, newestVersion);
+                return null;
+            }
+            logger.Information("Migrated legacy config from version {oldVersion} to version {newVersion}, newest is {newestVersion}", config.ConfigVersion, version, newestVersion);
+        }
+        logger.Information("Finished upgrading legacy config to version {newestVersion}", newestVersion);
         return config;
     }
 
