@@ -11,6 +11,8 @@ namespace Hoscy.Models.Config.Migration;
 
 internal static class LegacyConfigModelLoader
 {
+    public const string DEFAULT_FILE_NAME = "config.json";
+
     /// <summary>
     /// Loads a legacy config file
     /// </summary>

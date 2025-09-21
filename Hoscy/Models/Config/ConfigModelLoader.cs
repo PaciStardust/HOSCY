@@ -10,6 +10,8 @@ namespace Hoscy.Models.Config;
 
 public static class ConfigModelLoader
 {
+    public const string DEFAULT_FILE_NAME = "hoscy-config.json";
+
     /// <summary>
     /// Loads a ConfigModel from a file
     /// </summary>
