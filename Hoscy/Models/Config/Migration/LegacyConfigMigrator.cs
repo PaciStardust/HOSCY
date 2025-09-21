@@ -121,7 +121,7 @@ internal static class OldConfigMigrator
 
         foreach (var (version, action) in steps.OrderBy(x => x.Key))
         {
-            logger.Information("Migrating legacy config from version {oldVersion} to version {newVersion}, newest is {newestVersion}", config.ConfigVersion, version, newestVersion);
+            logger.Information("Upgrading legacy config from version {oldVersion} to version {newVersion}, newest is {newestVersion}", config.ConfigVersion, version, newestVersion);
             try
             {
                 action();
@@ -129,10 +129,10 @@ internal static class OldConfigMigrator
             }
             catch (Exception ex)
             {
-                logger.Error(ex, "Failed to migrate legacy config from version {oldVersion} to version {newVersion}, newest is {newestVersion}", config.ConfigVersion, version, newestVersion);
+                logger.Error(ex, "Failed to upgrade legacy config from version {oldVersion} to version {newVersion}, newest is {newestVersion}", config.ConfigVersion, version, newestVersion);
                 return null;
             }
-            logger.Information("Migrated legacy config from version {oldVersion} to version {newVersion}, newest is {newestVersion}", config.ConfigVersion, version, newestVersion);
+            logger.Information("Upgraded legacy config from version {oldVersion} to version {newVersion}, newest is {newestVersion}", config.ConfigVersion, version, newestVersion);
         }
         logger.Information("Finished upgrading legacy config to version {newestVersion}", newestVersion);
         return config;
