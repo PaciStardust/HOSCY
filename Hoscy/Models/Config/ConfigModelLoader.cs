@@ -181,7 +181,7 @@ public static class ConfigModelLoader
         {
             logger.Information("Config is already at version {newestVersion}, skipping upgrade", newestVersion);
         }
-        logger.Information("Config is at version {currentVersion}, newst is {newestVersion}, starting upgrade", config.ConfigVersion, newestVersion);
+        logger.Information("Config is at version {currentVersion}, newest is {newestVersion}, starting upgrade", config.ConfigVersion, newestVersion);
 
         foreach (var (version, action) in steps.OrderBy(x => x.Key))
         {
