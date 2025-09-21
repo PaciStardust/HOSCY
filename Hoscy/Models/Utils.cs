@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Serilog;
@@ -126,6 +127,25 @@ public static class Utils
         if (value.CompareTo(max) > 0)
             return max;
         return value;
+    }
+    #endregion
+
+    #region API
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    private static extern int MessageBoxW(IntPtr hWnd, string text, string caption, uint type);
+
+    /// <summary>
+    /// Launches an error box on windows, any other platform is hacky
+    /// (feel free to prove me otherwise)
+    /// If you use this software on anything but windows I expect you also could figure this out without a message box :3 
+    /// </summary>
+    public static void ShowErrorBoxOnWindows(string message, string title = "HOSCY - Error")
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            _ = MessageBoxW(IntPtr.Zero, message, title, 0x10);
+        }
+        return;
     }
     #endregion
 }

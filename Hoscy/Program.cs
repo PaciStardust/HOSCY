@@ -13,7 +13,7 @@ sealed class Program
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
     // yet and stuff might break.
     [STAThread]
-    public static void Main(string[] args)
+    public static int Main(string[] args)
     {
         var tempLogger = new LoggerConfiguration()
             .MinimumLevel.Verbose()
@@ -45,12 +45,14 @@ sealed class Program
         }
         catch (Exception ex)
         {
-            tempLogger.Error(ex, "Failed loading config file");
-            return; //todo: error window?
+            tempLogger.Fatal(ex, "Program wil shut down - Failed loading config file");
+            Utils.ShowErrorBoxOnWindows($"HOSCY encountered a {ex.GetType().Name} while loading the configuration file, check the most recent log file for more information");
+            return 1;
         }
 
         BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(args);
+        return 0;
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.
