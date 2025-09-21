@@ -11,11 +11,13 @@ namespace Hoscy.Models.Config.Migration;
 
 internal static class LegacyConfigModelLoader
 {
-    internal static LegacyConfigModel? Load(string path, ILogger logger)
+    internal static LegacyConfigModel? Load(string configFolder, string configFilename, ILogger logger)
     {
+        var path = Path.Combine(configFolder, configFilename);
         logger.Information("Attempting to load LegacyConfig at path {legacyConfigPath}", path);
         try
         {
+            if (!Directory.Exists(configFolder)) return null;
             if (!File.Exists(path)) return null;
             string configData = File.ReadAllText(Utils.PathConfigFile, Encoding.UTF8);
             var newData = JsonConvert.DeserializeObject<LegacyConfigModel>(configData);
