@@ -138,8 +138,9 @@ internal static class OldConfigMigrator
         return config;
     }
 
-    internal static ConfigModel Migrate(this LegacyConfigModel oldConfig)
+    internal static ConfigModel Migrate(this LegacyConfigModel oldConfig, ILogger logger)
     {
+        logger.Information("Migrating legacy config to new format");
         return new ConfigModel()
         {
             ConfigVersion = oldConfig.ConfigVersion,
