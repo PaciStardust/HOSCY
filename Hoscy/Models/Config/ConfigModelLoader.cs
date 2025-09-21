@@ -42,6 +42,35 @@ public static class ConfigModelLoader
     }
 
     /// <summary>
+    /// Attempt to save the config file
+    /// </summary>
+    /// <returns>Success</returns>
+    public static bool TrySave(this ConfigModel model, string cfgFolder, string cfgFilename, ILogger logger)
+    {
+        var path = Path.Combine(cfgFolder, cfgFilename);
+        logger.Information("Attempting to save Config at path {configPath}", path);
+        try
+        {
+            if (!Directory.Exists(path))
+            {
+                logger.Information("Config directory {directoryPath} not found, attempting creation", cfgFolder);
+                Directory.CreateDirectory(path);
+                logger.Information("Created config directory {directoryPath}", cfgFolder);
+            }
+
+            var jsonText = JsonConvert.SerializeObject(model, Formatting.Indented);
+            File.WriteAllText(path, jsonText, Encoding.UTF8);
+            logger.Information("Saved Config at path {configPath}", path);
+        }
+        catch (Exception ex)
+        {
+            logger.Error(ex, "The config file was unable to be saved.");
+            return false;
+        }
+        return true;
+    }
+
+    /// <summary>
     /// Upgrades a ConfigModel to the newest version
     /// </summary>
     public static ConfigModel Upgrade(this ConfigModel config, ILogger logger)
