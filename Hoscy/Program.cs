@@ -30,6 +30,36 @@ sealed class Program
         var newLogger = LogUtils.CreateLoggerFromConfiguration(config);
         newLogger.ForContext<Program>().Information("Logger now using config");
 
+        //Config.BackupFile(Utils.PathConfigFile);
+        //ShutdownMode = ShutdownMode.OnMainWindowClose;
+
+        //Osc.RecreateListener(); //This also loads the config
+        //Media.StartMediaDetection();
+        //Updater.CheckForUpdates();
+
+        /*
+        protected override void OnExit(ExitEventArgs e)
+        {
+            Running = false;
+            if (Recognition.IsRunning)
+                Recognition.StopRecognizer();
+            Config.SaveConfig();
+        }
+
+        //Error handling for unhandled errors
+        private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            try
+            {
+                Config.SaveConfig();
+                Logger.Error(e.Exception, "A fatal error has occured, Hoscy will now shut down.");
+            }
+            catch { }
+            Current.Shutdown(-1);
+            Environment.Exit(-1);
+        }
+        */
+
         return BuildAvaloniaApp(newLogger)
             .StartWithClassicDesktopLifetime(args);
     }
