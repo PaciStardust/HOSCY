@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Serilog.Core;
+using Serilog.Events;
 using Whisper;
 
 namespace Hoscy.Models.Config;
@@ -223,12 +225,19 @@ public class ConfigModel : ObservableObject
         set => SetProperty(ref _logger_CheckForUpdatesOnStartup, value);
     }
 
-    private string _logger_MinimumSeverity = "Log";
-    public string Logger_MinimumSeverity
+    private LogEventLevel _logger_MinimumSeverity = LogEventLevel.Debug;
+    private LoggingLevelSwitch _logger_MinimumSeveritySwitch = new();
+    public LogEventLevel Logger_MinimumSeverity
     {
         get => _logger_MinimumSeverity;
-        set => SetProperty(ref _logger_MinimumSeverity, value);
+        set
+        {
+            SetProperty(ref _logger_MinimumSeverity, value);
+            _logger_MinimumSeveritySwitch.MinimumLevel = value;
+        }
     }
+    public LoggingLevelSwitch Logger_MinimumSeverityGetSwitch()
+        => _logger_MinimumSeveritySwitch;
 
     private ObservableCollection<FilterModel> _logger_Filters = [];
     public ObservableCollection<FilterModel> Logger_Filters

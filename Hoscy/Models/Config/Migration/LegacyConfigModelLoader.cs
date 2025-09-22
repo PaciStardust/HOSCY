@@ -220,7 +220,7 @@ internal static class LegacyConfigModelLoader
 
             Logger_OpenWindowOnStartupWindowsOnly = oldConfig.Debug.OpenLogWindow,
             Logger_CheckForUpdatesOnStartup = oldConfig.Debug.CheckUpdates,
-            Logger_MinimumSeverity = "Log", //we omit this for now
+            Logger_MinimumSeverity = Serilog.Events.LogEventLevel.Debug, //we omit this for now
             Logger_Filters = ConvertFilterModel(oldConfig.Debug.LogFilters),
 
             Osc_Routing_TargetIp = oldConfig.Osc.Ip,
