@@ -27,7 +27,7 @@ internal static class LegacyConfigModelLoader
         {
             if (!Directory.Exists(configFolder)) return null;
             if (!File.Exists(path)) return null;
-            string configData = File.ReadAllText(Utils.PathConfigFile, Encoding.UTF8);
+            string configData = File.ReadAllText(path, Encoding.UTF8);
             var newData = JsonConvert.DeserializeObject<LegacyConfigModel>(configData);
             if (newData is not null)
                 return newData;

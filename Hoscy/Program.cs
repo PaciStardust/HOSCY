@@ -23,11 +23,11 @@ sealed class Program
         try
         {
             tempLogger.Information("Attempting to load config file...");
-            config = ConfigModelLoader.Load(Utils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, tempLogger);
+            config = ConfigModelLoader.Load(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, tempLogger);
             if (config is null)
             {
                 tempLogger.Information("Could not find config file, attempting to load legacy config file instead...");
-                config = LegacyConfigModelLoader.Load(Utils.PathConfigFolder, LegacyConfigModelLoader.DEFAULT_FILE_NAME, tempLogger)?
+                config = LegacyConfigModelLoader.Load(PathUtils.PathConfigFolder, LegacyConfigModelLoader.DEFAULT_FILE_NAME, tempLogger)?
                 .Upgrade(tempLogger)
                 .Migrate(tempLogger);
             }
