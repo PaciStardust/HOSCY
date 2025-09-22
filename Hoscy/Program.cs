@@ -1,5 +1,4 @@
 ﻿using Avalonia;
-using Hoscy.Configuration.Legacy;
 using Hoscy.Configuration.Modern;
 using Hoscy.Utility;
 using Serilog.Core;
@@ -16,32 +15,10 @@ sealed class Program
     public static int Main(string[] args)
     {
         var tempLogger = LogUtils.CreateTemporaryLogger();
-
-        ConfigModel? config;
-        try
+        ConfigModel? config = LaunchUtils.LoadConfigModel(tempLogger);
+        if (config is null)
         {
-            tempLogger.Information("Attempting to load config file...");
-            config = ConfigModelLoader.Load(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, tempLogger);
-            if (config is null)
-            {
-                tempLogger.Information("Could not find config file, attempting to load legacy config file instead...");
-                config = LegacyConfigModelLoader.Load(PathUtils.PathConfigFolder, LegacyConfigModelLoader.DEFAULT_FILE_NAME, tempLogger)?
-                .Upgrade(tempLogger)
-                .Migrate(tempLogger);
-            }
-            if (config is null)
-            {
-                tempLogger.Information("Could not find legacy config file, creating new file insted...");
-                config = new();
-            }
-            config.Upgrade(tempLogger);
-            tempLogger.Information("Successfully created and upgraded the provided configuration");
-            //todo: backup old?
-        }
-        catch (Exception ex)
-        {
-            tempLogger.Fatal(ex, "Program wil shut down - Failed loading config file");
-            Utils.ShowErrorBoxOnWindows($"HOSCY encountered a {ex.GetType().Name} while loading the configuration file, check the most recent log file for more information");
+            Utils.ShowErrorBoxOnWindows($"HOSCY encountered an error while loading the configuration file, check the most recent log file for more information");
             return 1;
         }
 
@@ -49,12 +26,12 @@ sealed class Program
         {
             Utils.OpenConsoleOnWindows();
         }
+
         var newLogger = LogUtils.CreateLoggerFromConfiguration(config);
         newLogger.ForContext<Program>().Information("Logger now using config");
 
-        BuildAvaloniaApp(newLogger)
+        return BuildAvaloniaApp(newLogger)
             .StartWithClassicDesktopLifetime(args);
-        return 0;
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.
