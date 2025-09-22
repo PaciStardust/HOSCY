@@ -145,7 +145,20 @@ public static class Utils
         {
             _ = MessageBoxW(IntPtr.Zero, message, title, 0x10);
         }
-        return;
+    }
+
+    [DllImport("Kernel32")]
+    private static extern void AllocConsole();
+
+    /// <summary>
+    ///  Opens a console in Windows, other OS should just launch over command line to have logging
+    /// </summary>
+    public static void OpenConsoleOnWindows()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            AllocConsole();
+        }
     }
     #endregion
 }

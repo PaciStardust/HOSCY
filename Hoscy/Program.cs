@@ -47,6 +47,10 @@ sealed class Program
             return 1;
         }
 
+        if (config.Logger_OpenWindowOnStartupWindowsOnly)
+        {
+            Utils.OpenConsoleOnWindows();
+        }
         var newLogger = CreateLoggerFromConfiguration(config);
         newLogger.ForContext<Program>().Information("Logger now using config");
 
