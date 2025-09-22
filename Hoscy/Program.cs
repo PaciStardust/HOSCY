@@ -87,7 +87,7 @@ sealed class Program
 
         if (config.Logger_LogToCommandLine)
         {
-            logConfig.WriteTo.Console();
+            logConfig.WriteTo.Console(outputTemplate: LOGGING_TEMPLATE);
         }
 
         return logConfig.CreateLogger();
