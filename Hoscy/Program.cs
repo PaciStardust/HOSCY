@@ -2,10 +2,7 @@
 using Hoscy.Configuration.Legacy;
 using Hoscy.Configuration.Modern;
 using Hoscy.Utility;
-using Serilog;
-using Serilog.Core;
 using System;
-using System.Linq;
 
 namespace Hoscy;
 
@@ -17,7 +14,7 @@ sealed class Program
     [STAThread]
     public static int Main(string[] args)
     {
-        var tempLogger = CreateTemporaryLogger();
+        var tempLogger = LogUtils.CreateTemporaryLogger();
 
         ConfigModel? config;
         try
@@ -51,7 +48,7 @@ sealed class Program
         {
             Utils.OpenConsoleOnWindows();
         }
-        var newLogger = CreateLoggerFromConfiguration(config);
+        var newLogger = LogUtils.CreateLoggerFromConfiguration(config);
         newLogger.ForContext<Program>().Information("Logger now using config");
 
         BuildAvaloniaApp()
@@ -65,35 +62,4 @@ sealed class Program
             .UsePlatformDetect()
             .WithInterFont()
             .LogToTrace();
-
-    private const string LOGGING_TEMPLATE = "[{Timestamp:HH:mm:ss.fff}] [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}";
-    private const string LOGGING_FILE = "log.txt";
-    private static ILogger CreateTemporaryLogger()
-    {
-        return new LoggerConfiguration()
-            .MinimumLevel.Verbose()
-            .Enrich.FromLogContext()
-            .WriteTo.File(LOGGING_FILE, outputTemplate: LOGGING_TEMPLATE)
-            .WriteTo.Console(outputTemplate: LOGGING_TEMPLATE)
-            .CreateLogger().ForContext<Program>();
-    }
-    private static Logger CreateLoggerFromConfiguration(ConfigModel config)
-    {
-        var logConfig = new LoggerConfiguration()
-            .Enrich.FromLogContext()
-            .WriteTo.File(LOGGING_FILE, outputTemplate: LOGGING_TEMPLATE)
-            .MinimumLevel.ControlledBy(config.Logger_MinimumSeverityGetSwitch())
-            .Filter.ByExcluding(x =>
-            {
-                var message = x.RenderMessage();
-                return config.Logger_Filters.Any(f => f.Matches(message));
-            });
-
-        if (config.Logger_LogToCommandLine)
-        {
-            logConfig.WriteTo.Console(outputTemplate: LOGGING_TEMPLATE);
-        }
-
-        return logConfig.CreateLogger();
-    } 
 }

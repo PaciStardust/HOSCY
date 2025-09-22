@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -12,21 +11,6 @@ namespace Hoscy.Utility;
 
 public static class Utils
 {
-    public static string PathExecutable { get; private set; }
-    public static string PathConfigFolder { get; private set; }
-    public static string PathConfigFile { get; private set; }
-    public static string PathExecutableFolder { get; private set; }
-    public static string PathLog { get; private set; }
-
-    static Utils()
-    {
-        PathExecutable = Process.GetCurrentProcess().MainModule?.FileName ?? Assembly.GetExecutingAssembly().Location;
-        PathExecutableFolder = Path.GetDirectoryName(PathExecutable) ?? Directory.GetCurrentDirectory();
-        PathConfigFolder = Path.GetFullPath(Path.Combine(PathExecutableFolder, "config"));
-        PathConfigFile = Path.GetFullPath(Path.Combine(PathConfigFolder, "config.json"));
-        PathLog = Path.GetFullPath(Path.Combine(PathConfigFolder, $"log-{DateTime.Now:MM-dd-yyyy-HH-mm-ss}.txt"));
-    }
-
     #region Extention Methods
     /// <summary>
     /// Runs an async Task without awaiting
