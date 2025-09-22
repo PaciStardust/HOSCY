@@ -2,6 +2,7 @@
 using Hoscy.Configuration.Legacy;
 using Hoscy.Configuration.Modern;
 using Hoscy.Utility;
+using Serilog.Core;
 using System;
 
 namespace Hoscy;
@@ -51,15 +52,15 @@ sealed class Program
         var newLogger = LogUtils.CreateLoggerFromConfiguration(config);
         newLogger.ForContext<Program>().Information("Logger now using config");
 
-        BuildAvaloniaApp()
+        BuildAvaloniaApp(newLogger)
             .StartWithClassicDesktopLifetime(args);
         return 0;
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.
-    public static AppBuilder BuildAvaloniaApp()
+    public static AppBuilder BuildAvaloniaApp(Logger logger)
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()
-            .LogToTrace();
+            .LogToSerilog(logger);
 }

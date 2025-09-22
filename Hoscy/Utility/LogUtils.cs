@@ -1,8 +1,9 @@
 using System;
 using System.Linq;
+using Avalonia;
+using Avalonia.Logging;
 using Hoscy.Configuration.Modern;
 using Serilog;
-using Serilog.Core;
 
 namespace Hoscy.Utility;
 
@@ -22,7 +23,7 @@ public static class LogUtils
             .WriteTo.Console(outputTemplate: LOGGING_TEMPLATE)
             .CreateLogger().ForContext<Program>();
     }
-    public static Logger CreateLoggerFromConfiguration(ConfigModel config)
+    public static Serilog.Core.Logger CreateLoggerFromConfiguration(ConfigModel config)
     {
         var logConfig = new LoggerConfiguration()
             .Enrich.FromLogContext()
@@ -40,5 +41,46 @@ public static class LogUtils
         }
 
         return logConfig.CreateLogger();
-    } 
+    }
+
+    public static AppBuilder LogToSerilog(this AppBuilder builder, Serilog.Core.Logger logger)
+    {
+        Logger.Sink = new SerilogAvaloniaSink(logger);
+        return builder;
+    }
+
+    private class SerilogAvaloniaSink(Serilog.Core.Logger logger) : ILogSink
+    {
+        private readonly ILogger _logger = logger.ForContext<SerilogAvaloniaSink>();
+
+        public bool IsEnabled(LogEventLevel level, string area)
+        {
+            return true;
+        }
+
+        public void Log(LogEventLevel level, string area, object? source, string messageTemplate)
+        {
+            var logText = $"{area} {(source is null ? string.Empty : $"({source.GetType()})")} > {messageTemplate}";
+            _logger.Write(ConvertLogLevel(level), logText);
+        }
+
+        public void Log(LogEventLevel level, string area, object? source, string messageTemplate, params object?[] propertyValues)
+        {
+            var logText = $"{area} {(source is null ? string.Empty : $"({source.GetType()})")} > {messageTemplate}";
+            _logger.Write(ConvertLogLevel(level), logText, propertyValues);
+        }
+
+        private static Serilog.Events.LogEventLevel ConvertLogLevel(LogEventLevel level) {
+            return level switch
+            {
+                LogEventLevel.Verbose => Serilog.Events.LogEventLevel.Verbose,
+                LogEventLevel.Debug => Serilog.Events.LogEventLevel.Debug,
+                LogEventLevel.Information => Serilog.Events.LogEventLevel.Information,
+                LogEventLevel.Warning => Serilog.Events.LogEventLevel.Warning,
+                LogEventLevel.Error => Serilog.Events.LogEventLevel.Error,
+                LogEventLevel.Fatal => Serilog.Events.LogEventLevel.Fatal,
+                _ => Serilog.Events.LogEventLevel.Warning
+            };
+        }
+    }
 }
