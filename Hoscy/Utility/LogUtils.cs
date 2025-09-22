@@ -48,39 +48,39 @@ public static class LogUtils
         Logger.Sink = new SerilogAvaloniaSink(logger);
         return builder;
     }
+}
 
-    private class SerilogAvaloniaSink(Serilog.Core.Logger logger) : ILogSink
+public class SerilogAvaloniaSink(Serilog.Core.Logger logger) : ILogSink
+{
+    private readonly ILogger _logger = logger.ForContext<SerilogAvaloniaSink>();
+
+    public bool IsEnabled(LogEventLevel level, string area)
     {
-        private readonly ILogger _logger = logger.ForContext<SerilogAvaloniaSink>();
+        return true;
+    }
 
-        public bool IsEnabled(LogEventLevel level, string area)
+    public void Log(LogEventLevel level, string area, object? source, string messageTemplate)
+    {
+        var logText = $"{area} {(source is null ? string.Empty : $"({source.GetType()})")} > {messageTemplate}";
+        _logger.Write(ConvertLogLevel(level), logText);
+    }
+
+    public void Log(LogEventLevel level, string area, object? source, string messageTemplate, params object?[] propertyValues)
+    {
+        var logText = $"{area} {(source is null ? string.Empty : $"({source.GetType()})")} > {messageTemplate}";
+        _logger.Write(ConvertLogLevel(level), logText, propertyValues);
+    }
+
+    private static Serilog.Events.LogEventLevel ConvertLogLevel(LogEventLevel level) {
+        return level switch
         {
-            return true;
-        }
-
-        public void Log(LogEventLevel level, string area, object? source, string messageTemplate)
-        {
-            var logText = $"{area} {(source is null ? string.Empty : $"({source.GetType()})")} > {messageTemplate}";
-            _logger.Write(ConvertLogLevel(level), logText);
-        }
-
-        public void Log(LogEventLevel level, string area, object? source, string messageTemplate, params object?[] propertyValues)
-        {
-            var logText = $"{area} {(source is null ? string.Empty : $"({source.GetType()})")} > {messageTemplate}";
-            _logger.Write(ConvertLogLevel(level), logText, propertyValues);
-        }
-
-        private static Serilog.Events.LogEventLevel ConvertLogLevel(LogEventLevel level) {
-            return level switch
-            {
-                LogEventLevel.Verbose => Serilog.Events.LogEventLevel.Verbose,
-                LogEventLevel.Debug => Serilog.Events.LogEventLevel.Debug,
-                LogEventLevel.Information => Serilog.Events.LogEventLevel.Information,
-                LogEventLevel.Warning => Serilog.Events.LogEventLevel.Warning,
-                LogEventLevel.Error => Serilog.Events.LogEventLevel.Error,
-                LogEventLevel.Fatal => Serilog.Events.LogEventLevel.Fatal,
-                _ => Serilog.Events.LogEventLevel.Warning
-            };
-        }
+            LogEventLevel.Verbose => Serilog.Events.LogEventLevel.Verbose,
+            LogEventLevel.Debug => Serilog.Events.LogEventLevel.Debug,
+            LogEventLevel.Information => Serilog.Events.LogEventLevel.Information,
+            LogEventLevel.Warning => Serilog.Events.LogEventLevel.Warning,
+            LogEventLevel.Error => Serilog.Events.LogEventLevel.Error,
+            LogEventLevel.Fatal => Serilog.Events.LogEventLevel.Fatal,
+            _ => Serilog.Events.LogEventLevel.Warning
+        };
     }
 }
