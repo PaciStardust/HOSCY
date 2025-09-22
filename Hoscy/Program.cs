@@ -1,7 +1,7 @@
 ﻿using Avalonia;
-using Hoscy.Models;
-using Hoscy.Models.Config;
-using Hoscy.Models.Config.Migration;
+using Hoscy.Configuration.Legacy;
+using Hoscy.Configuration.Modern;
+using Hoscy.Utility;
 using Serilog;
 using Serilog.Core;
 using System;

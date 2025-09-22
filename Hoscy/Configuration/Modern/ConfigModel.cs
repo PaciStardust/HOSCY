@@ -5,7 +5,7 @@ using Serilog.Core;
 using Serilog.Events;
 using Whisper;
 
-namespace Hoscy.Models.Config;
+namespace Hoscy.Configuration.Modern;
 
 public class ConfigModel : ObservableObject
 {

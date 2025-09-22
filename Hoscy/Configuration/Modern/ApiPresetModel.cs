@@ -1,9 +1,10 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using Hoscy.Utility;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net.Http.Headers;
 
-namespace Hoscy.Models.Config;
+namespace Hoscy.Configuration.Modern;
 
 public class ApiPresetModel : ObservableObject
 {

@@ -1,7 +1,7 @@
 using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace Hoscy.Models.Config;
+namespace Hoscy.Configuration.Modern;
 
 public class CounterModel : ObservableObject
 {

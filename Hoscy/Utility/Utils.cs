@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Serilog;
 
-namespace Hoscy.Models;
+namespace Hoscy.Utility;
 
 public static class Utils
 {

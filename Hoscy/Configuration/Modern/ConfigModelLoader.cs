@@ -6,7 +6,7 @@ using System.Text;
 using Newtonsoft.Json;
 using Serilog;
 
-namespace Hoscy.Models.Config;
+namespace Hoscy.Configuration.Modern;
 
 public static class ConfigModelLoader
 {

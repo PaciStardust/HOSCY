@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Whisper;
 
-namespace Hoscy.Models.Config.Migration;
+namespace Hoscy.Configuration.Legacy;
 
 internal class LegacyConfigModel
 {

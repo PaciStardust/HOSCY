@@ -4,10 +4,12 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Hoscy.Configuration.Modern;
+using Hoscy.Utility;
 using Newtonsoft.Json;
 using Serilog;
 
-namespace Hoscy.Models.Config.Migration;
+namespace Hoscy.Configuration.Legacy;
 
 internal static class LegacyConfigModelLoader
 {

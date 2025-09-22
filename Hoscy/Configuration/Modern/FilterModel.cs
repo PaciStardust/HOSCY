@@ -2,7 +2,7 @@ using System;
 using System.Text.RegularExpressions;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace Hoscy.Models.Config;
+namespace Hoscy.Configuration.Modern;
 
 public class FilterModel : ObservableObject
 {
