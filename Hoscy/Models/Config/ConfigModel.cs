@@ -202,11 +202,18 @@ public class ConfigModel : ObservableObject
     //todo: See if needed!
     #region Logger 
 
-    private bool _logger_OpenWindowOnStartup;
-    public bool Logger_OpenWindowOnStartup
+    private bool _logger_OpenWindowOnStartupWindowsOnly;
+    public bool Logger_OpenWindowOnStartupWindowsOnly
     {
-        get => _logger_OpenWindowOnStartup;
-        set => SetProperty(ref _logger_OpenWindowOnStartup, value);
+        get => _logger_OpenWindowOnStartupWindowsOnly;
+        set => SetProperty(ref _logger_OpenWindowOnStartupWindowsOnly, value);
+    }
+
+    private bool _logger_LogToCommandline = true;
+    public bool Logger_LogToCommandLine
+    {
+        get => _logger_LogToCommandline;
+        set => SetProperty(ref _logger_LogToCommandline, value);
     }
 
     private bool _logger_CheckForUpdatesOnStartup = true;

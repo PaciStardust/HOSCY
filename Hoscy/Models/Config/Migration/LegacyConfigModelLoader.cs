@@ -218,7 +218,7 @@ internal static class LegacyConfigModelLoader
             Input_CanBeTranslated = oldConfig.Input.AllowTranslation,
             Input_Presets = ConvertDictionary(oldConfig.Input.Presets),
 
-            Logger_OpenWindowOnStartup = oldConfig.Debug.OpenLogWindow,
+            Logger_OpenWindowOnStartupWindowsOnly = oldConfig.Debug.OpenLogWindow,
             Logger_CheckForUpdatesOnStartup = oldConfig.Debug.CheckUpdates,
             Logger_MinimumSeverity = "Log", //we omit this for now
             Logger_Filters = ConvertFilterModel(oldConfig.Debug.LogFilters),
