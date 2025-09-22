@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Hoscy.Utility;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -24,7 +25,7 @@ public static class ConfigModelLoader
         {
             if (!Directory.Exists(cfgFolder)) return null;
             if (!File.Exists(path)) return null;
-            string configData = File.ReadAllText(Utils.PathConfigFile, Encoding.UTF8);
+            string configData = File.ReadAllText(LogUtils.LogFileName, Encoding.UTF8);
             var newData = JsonConvert.DeserializeObject<ConfigModel>(configData);
             if (newData is not null)
                 return newData;

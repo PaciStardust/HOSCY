@@ -1,5 +1,6 @@
 using System;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Hoscy.Utility;
 
 namespace Hoscy.Configuration.Modern;
 
