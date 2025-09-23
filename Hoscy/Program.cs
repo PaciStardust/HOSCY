@@ -30,9 +30,6 @@ sealed class Program
         var newLogger = LogUtils.CreateLoggerFromConfiguration(config);
         newLogger.ForContext<Program>().Information("Logger now using config");
 
-        //Config.BackupFile(Utils.PathConfigFile);
-        //ShutdownMode = ShutdownMode.OnMainWindowClose;
-
         //Osc.RecreateListener(); //This also loads the config
         //Media.StartMediaDetection();
         //Updater.CheckForUpdates();
