@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+using System.Reflection;
 using Hoscy.Configuration.Legacy;
 using Hoscy.Configuration.Modern;
 using Serilog;
@@ -7,6 +9,28 @@ namespace Hoscy.Utility;
 
 public static class LaunchUtils
 {
+    private const string UNKNOWN_VERSION = "???";
+    private static string? _appVersion;
+    /// <summary>
+    /// Retrieves the current verion of the App from the assembly
+    /// </summary>
+    public static string GetVersion()
+    {
+        if (_appVersion is null)
+        {
+            try
+            {
+                var assembly = Assembly.GetEntryAssembly();
+                _appVersion = "v." + (assembly != null ? FileVersionInfo.GetVersionInfo(assembly.Location).FileVersion : UNKNOWN_VERSION);
+            }
+            catch
+            {
+                _appVersion = "v." + UNKNOWN_VERSION;
+            }
+        }
+        return _appVersion;
+    }
+
     /// <summary>
     /// Loads in the config model or generates a new one
     /// </summary>

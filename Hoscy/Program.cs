@@ -15,6 +15,8 @@ sealed class Program
     public static int Main(string[] args)
     {
         var tempLogger = LogUtils.CreateTemporaryLogger();
+        tempLogger.Warning("Starting HOSCY Version {hoscyVersion}", LaunchUtils.GetVersion());
+
         ConfigModel? config = LaunchUtils.LoadConfigModel(tempLogger); //todo: maybe move saving?
         if (config is null)
         {
@@ -29,10 +31,6 @@ sealed class Program
 
         var newLogger = LogUtils.CreateLoggerFromConfiguration(config);
         newLogger.ForContext<Program>().Information("Logger now using config");
-
-        //Osc.RecreateListener(); //This also loads the config
-        //Media.StartMediaDetection();
-        //Updater.CheckForUpdates();
 
         try
         {
