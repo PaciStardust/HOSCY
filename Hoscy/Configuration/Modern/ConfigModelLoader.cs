@@ -74,7 +74,12 @@ public static class ConfigModelLoader
         return true;
     }
 
-    private static bool TryCreateRawBackup(string contents, string path, ILogger logger) {
+    /// <summary>
+    /// Writes the raw text of a loaded config into a file
+    /// </summary>
+    /// <returns>Success</returns>
+    private static bool TryCreateRawBackup(string contents, string path, ILogger logger)
+    {
         try
         {
             logger.Information("Attempting creation of backup of config file at {backupPath}", path);
