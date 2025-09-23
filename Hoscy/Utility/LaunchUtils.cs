@@ -33,7 +33,7 @@ public static class LaunchUtils
             }
             config.Upgrade(logger);
             logger.Information("Successfully created and upgraded the provided configuration");
-            //todo: backup old?
+            config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, logger);
             return config;
         }
         catch (Exception ex)
