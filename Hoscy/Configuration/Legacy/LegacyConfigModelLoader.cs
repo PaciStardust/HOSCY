@@ -19,7 +19,7 @@ internal static class LegacyConfigModelLoader
     /// Loads a legacy config file
     /// </summary>
     /// <returns>Null when no config could be loaded</returns>
-    internal static LegacyConfigModel? Load(string configFolder, string configFilename, ILogger logger) //Yes I am aware this code is duplicated and should be fixed
+    internal static LegacyConfigModel? TryLoad(string configFolder, string configFilename, ILogger logger) //Yes I am aware this code is duplicated and should be fixed
     {
         var path = Path.Combine(configFolder, configFilename);
         logger.Information("Attempting to load LegacyConfig at path {legacyConfigPath}", path);

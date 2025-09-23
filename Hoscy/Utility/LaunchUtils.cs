@@ -18,11 +18,11 @@ public static class LaunchUtils
         try
         {
             logger.Information("Attempting to load config file...");
-            config = ConfigModelLoader.Load(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, logger);
+            config = ConfigModelLoader.TryLoad(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, logger);
             if (config is null)
             {
                 logger.Information("Could not find config file, attempting to load legacy config file instead...");
-                config = LegacyConfigModelLoader.Load(PathUtils.PathConfigFolder, LegacyConfigModelLoader.DEFAULT_FILE_NAME, logger)?
+                config = LegacyConfigModelLoader.TryLoad(PathUtils.PathConfigFolder, LegacyConfigModelLoader.DEFAULT_FILE_NAME, logger)?
                 .Upgrade(logger)
                 .Migrate(logger);
             }

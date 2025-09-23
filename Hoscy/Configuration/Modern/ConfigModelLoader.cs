@@ -17,7 +17,7 @@ public static class ConfigModelLoader
     /// Loads a ConfigModel from a file
     /// </summary>
     /// <returns>Null when no config could be loaded</returns>
-    public static ConfigModel? Load(string cfgFolder, string cfgFilename, ILogger logger)
+    public static ConfigModel? TryLoad(string cfgFolder, string cfgFilename, ILogger logger)
     {
         var path = Path.Combine(cfgFolder, cfgFilename);
         logger.Information("Attempting to load Config at path {configPath}", path);
