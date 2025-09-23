@@ -1,27 +1,27 @@
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
-using System.Linq;
 using Avalonia.Markup.Xaml;
+using Hoscy.Configuration.Modern;
+using Hoscy.Utility;
 using Hoscy.ViewModels;
 using Hoscy.Views;
-using System;
 using Serilog;
-using Hoscy.Configuration.Modern;
 
 namespace Hoscy;
 
 public partial class App(ILogger logger, ConfigModel config) : Application
 {
-    private readonly ILogger _logger = logger;
+    private readonly ILogger _loggerNoContext = logger;
+    private readonly ILogger _logger = logger.ForContext<App>();
     private readonly ConfigModel _config = config;
 
     public override void Initialize()
     {
-        var appLogger = _logger.ForContext<App>();
-        appLogger.Information("Initializing Avalonia...");
+        _logger.Information("Initializing Avalonia...");
         AvaloniaXamlLoader.Load(this);
-        appLogger.Information("Initializing Avalonia complete");
+        _logger.Information("Initializing Avalonia complete");
     }
 
     public override void OnFrameworkInitializationCompleted()
@@ -31,10 +31,12 @@ public partial class App(ILogger logger, ConfigModel config) : Application
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
+            //todo: initialize services here?
             desktop.MainWindow = new MainWindow
             {
                 DataContext = new MainWindowViewModel(),
             };
+            desktop.ShutdownRequested += OnShutdownRequested;
         }
 
         base.OnFrameworkInitializationCompleted();
@@ -51,5 +53,12 @@ public partial class App(ILogger logger, ConfigModel config) : Application
         {
             BindingPlugins.DataValidators.Remove(plugin);
         }
+    }
+
+    private void OnShutdownRequested(object? sender, ShutdownRequestedEventArgs e)
+    {
+        _logger.Information("Shutting down Hoscy...");
+        _config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
+        //todo: gracefully shut down services here
     }
 }

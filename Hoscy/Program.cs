@@ -34,16 +34,6 @@ sealed class Program
         //Media.StartMediaDetection();
         //Updater.CheckForUpdates();
 
-        /*
-        protected override void OnExit(ExitEventArgs e)
-        {
-            Running = false;
-            if (Recognition.IsRunning)
-                Recognition.StopRecognizer();
-            Config.SaveConfig();
-        }
-        */
-
         try
         {
             return BuildAvaloniaApp(newLogger, config)
