@@ -1,19 +1,27 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using System.Linq;
 using Avalonia.Markup.Xaml;
 using Hoscy.ViewModels;
 using Hoscy.Views;
+using System;
+using Serilog;
+using Hoscy.Configuration.Modern;
 
 namespace Hoscy;
 
-public partial class App : Application
+public partial class App(ILogger logger, ConfigModel config) : Application
 {
+    private readonly ILogger _logger = logger;
+    private readonly ConfigModel _config = config;
+
     public override void Initialize()
     {
+        var appLogger = _logger.ForContext<App>();
+        appLogger.Information("Initializing Avalonia...");
         AvaloniaXamlLoader.Load(this);
+        appLogger.Information("Initializing Avalonia complete");
     }
 
     public override void OnFrameworkInitializationCompleted()

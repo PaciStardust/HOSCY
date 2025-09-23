@@ -15,7 +15,7 @@ sealed class Program
     public static int Main(string[] args)
     {
         var tempLogger = LogUtils.CreateTemporaryLogger();
-        ConfigModel? config = LaunchUtils.LoadConfigModel(tempLogger);
+        ConfigModel? config = LaunchUtils.LoadConfigModel(tempLogger); //todo: maybe move saving?
         if (config is null)
         {
             Utils.ShowErrorBoxOnWindows($"HOSCY encountered an error while loading the configuration file, check the most recent log file for more information");
@@ -42,28 +42,29 @@ sealed class Program
                 Recognition.StopRecognizer();
             Config.SaveConfig();
         }
+        */
 
-        //Error handling for unhandled errors
-        private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        try
+        {
+            return BuildAvaloniaApp(newLogger, config)
+                .StartWithClassicDesktopLifetime(args);
+        }
+        catch (Exception ex)
         {
             try
             {
-                Config.SaveConfig();
-                Logger.Error(e.Exception, "A fatal error has occured, Hoscy will now shut down.");
+                newLogger.Fatal(ex, "An unexpected and uncaught error has occured, Hoscy will now shut down.");
+                config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, newLogger);
+                //todo: Gracefully stop services if possible?
             }
             catch { }
-            Current.Shutdown(-1);
-            Environment.Exit(-1);
+            return -1;
         }
-        */
-
-        return BuildAvaloniaApp(newLogger)
-            .StartWithClassicDesktopLifetime(args);
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.
-    public static AppBuilder BuildAvaloniaApp(Logger logger)
-        => AppBuilder.Configure<App>()
+    public static AppBuilder BuildAvaloniaApp(Logger logger, ConfigModel config)
+        => AppBuilder.Configure(() => new App(logger, config))
             .UsePlatformDetect()
             .WithInterFont()
             .LogToSerilog(logger);
