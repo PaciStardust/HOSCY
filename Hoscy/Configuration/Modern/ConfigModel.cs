@@ -227,7 +227,7 @@ public class ConfigModel : ObservableObject
     }
 
     private LogEventLevel _logger_MinimumSeverity = LogEventLevel.Debug;
-    private LoggingLevelSwitch _logger_MinimumSeveritySwitch = new();
+    private readonly LoggingLevelSwitch _logger_MinimumSeveritySwitch = new(LogEventLevel.Debug);
     public LogEventLevel Logger_MinimumSeverity
     {
         get => _logger_MinimumSeverity;
