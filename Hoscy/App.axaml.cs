@@ -13,11 +13,25 @@ using Serilog;
 
 namespace Hoscy;
 
-public partial class App(DiContainer container) : Application
+public partial class App : Application
 {
-    private readonly DiContainer _container = container;
-    private readonly ILogger _logger = container.GetRequiredService<ILogger>().ForContext<App>();
-    private readonly ConfigModel _config = container.GetRequiredService<ConfigModel>();
+    private readonly DiContainer _container;
+    private readonly ILogger _logger;
+    private readonly ConfigModel _config;
+
+    public App()
+    {
+        _logger = new LoggerConfiguration().CreateLogger();
+        _config = new();
+        _container = DiContainer.Empty();
+    }
+
+    public App(DiContainer container)
+    {
+        _container = container;
+        _logger = container.GetRequiredService<ILogger>().ForContext<App>();
+        _config = container.GetRequiredService<ConfigModel>();
+    }
 
     public override void Initialize()
     {

@@ -63,4 +63,9 @@ sealed class Program
             .UsePlatformDetect()
             .WithInterFont()
             .LogToSerilog(logger);
+
+    public static AppBuilder BuildAvaloniaApp()
+        => AppBuilder.Configure<App>()
+            .UsePlatformDetect()
+            .WithInterFont();
 }

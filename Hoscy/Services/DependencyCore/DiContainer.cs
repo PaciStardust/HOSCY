@@ -44,6 +44,15 @@ public class DiContainer
         return new DiContainer(collection.BuildServiceProvider(), internalLogger);
     }
 
+    public static DiContainer Empty()
+    {
+        return new DiContainer
+        (
+            new ServiceCollection().BuildServiceProvider(),
+            new LoggerConfiguration().CreateLogger()
+        );
+    }
+
     private static void AddFromAssembly(IServiceCollection collection, ILogger logger)
     {
         var sw = Stopwatch.StartNew();
