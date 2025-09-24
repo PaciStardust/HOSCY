@@ -8,7 +8,6 @@ using Hoscy.Services.DependencyCore;
 using Hoscy.Utility;
 using Hoscy.ViewModels;
 using Hoscy.Views;
-using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
 namespace Hoscy;
@@ -16,8 +15,8 @@ namespace Hoscy;
 public partial class App(DiContainer container) : Application
 {
     private readonly DiContainer _container = container;
-    private readonly ILogger _logger = container.Services.GetRequiredService<ILogger>().ForContext<App>();
-    private readonly ConfigModel _config = container.Services.GetRequiredService<ConfigModel>(); //todo: this is ugly
+    private readonly ILogger _logger = container.GetRequiredService<ILogger>().ForContext<App>();
+    private readonly ConfigModel _config = container.GetRequiredService<ConfigModel>();
 
     public override void Initialize()
     {

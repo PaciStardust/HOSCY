@@ -202,7 +202,6 @@ public class ConfigModel : ObservableObject
 
     #endregion
 
-    //todo: See if needed!
     #region Logger 
 
     private bool _logger_OpenWindowOnStartupWindowsOnly;

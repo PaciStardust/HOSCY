@@ -6,7 +6,6 @@ using System.Reflection;
 using Hoscy.Configuration.Modern;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using Serilog.Core;
 
 namespace Hoscy.Services.DependencyCore;
 
@@ -21,6 +20,14 @@ public class DiContainer
         _internalLogger = internalLogger;
     }
 
+    public T? GetService<T>() {
+        return Services.GetService<T>();
+    }
+    public T GetRequiredService<T>() where T : notnull
+    {
+        return Services.GetRequiredService<T>();
+    }
+
     public static DiContainer LoadFromAssembly(ILogger logger, ConfigModel config, Action<ServiceCollection>? additionalInserts = null)
     {
         var internalLogger = logger.ForContext<DiContainer>();
@@ -33,8 +40,6 @@ public class DiContainer
 
         AddFromAssembly(collection, internalLogger);
         additionalInserts?.Invoke(collection);
-
-        //todo: actual loading, proper logging
 
         return new DiContainer(collection.BuildServiceProvider(), internalLogger);
     }
@@ -95,6 +100,9 @@ public class DiContainer
         _internalLogger.Information("Successfully started {toStart} StartStopServices in {diDuration}ms", servicesInOrder.Count, sw.ElapsedMilliseconds);
     }
 
+    /// <summary>
+    /// Grabs all Services from the container and stops them in an order established using their dependencies
+    /// </summary>
     public void StopServices()
     {
         var sw = Stopwatch.StartNew();
@@ -103,7 +111,7 @@ public class DiContainer
 
         _internalLogger.Information("Establishing reversed startup order of {serviceCount} StartStopServices by resolving dependencies... (DI taken {diDuration}ms so far)",
             servicesToStop.Count, sw.ElapsedMilliseconds);
-        var  (servicesResolvedInOrder, servicesInOrder) = EstablishStartOrder(servicesToStop, true);
+        var (servicesResolvedInOrder, servicesInOrder) = EstablishStartOrder(servicesToStop, true);
 
         _internalLogger.Information("Order of {toStop} StartStopServices established, proceeding with stopping... (DI taken {diDuration}ms so far)",
             servicesInOrder.Count, sw.ElapsedMilliseconds);
