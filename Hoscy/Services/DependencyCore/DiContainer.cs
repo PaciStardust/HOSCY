@@ -69,18 +69,9 @@ public class DiContainer
     /// </summary>
     public void StartServices()
     {
-        _internalLogger.Information("Locating all StartStopServices for startup...");
         var sw = Stopwatch.StartNew();
-
-        List<(Type, IStartStopService, List<Type>)> servicesToStart = [];
-        foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
-        {
-            if (!RetrieveStartStopServiceInfosForType(type, out var instance, out var requiredServiceTypes)) continue;
-
-            _internalLogger.Debug("Assessed {requiredServiceCount} other required StartStopServices for StartStopService {serviceType}",
-            requiredServiceTypes!.Count, type.FullName);
-            servicesToStart.Add((type, instance!, requiredServiceTypes));
-        }
+        _internalLogger.Information("Locating all StartStopServices for startup...");
+        var servicesToStart = RetrieveStartStopServiceInfos();
 
         _internalLogger.Information("Establishing startup order of {serviceCount} StartStopServices by resolving dependencies... (DI taken {diDuration}ms so far)",
             servicesToStart.Count, sw.ElapsedMilliseconds);
@@ -114,40 +105,48 @@ public class DiContainer
     /// Retrieves instance and list of other StartStopServices in constructor if applicable to Type
     /// </summary>
     /// <returns>Null if Type is not StartStopService or no Instance is available</returns>
-    private bool RetrieveStartStopServiceInfosForType(Type type, out IStartStopService? serviceInstance, out List<Type>? ctorTypes)
+    private List<(Type, IStartStopService, List<Type>)> RetrieveStartStopServiceInfos()
     {
         var startstopServiceInterface = typeof(IStartStopService);
-        serviceInstance = null;
-        ctorTypes = null;
-
-        if (type.IsInterface || !type.IsAssignableTo(startstopServiceInterface)) return false;
-
-        if (Services.GetService(type) is not IStartStopService instance)
+        List<(Type, IStartStopService, List<Type>)> servicesToStart = [];
+        foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
         {
-            _internalLogger.Debug("Could not locate instance of StartStopService {serviceType}", type.FullName);
-            return false;
-        }
-        _internalLogger.Debug("Located instance of StartStopService {serviceType}", type.FullName);
+            if (type.IsInterface || !type.IsAssignableTo(startstopServiceInterface)) continue;
 
-        var ctors = type.GetConstructors();
-        if (ctors.Length == 0)
-        {
-            _internalLogger.Warning("Failed to locate constructor for StartStopService {serviceType}", type.FullName);
-            return false;
-        }
-        else if (ctors.Length > 0)
-        {
-            _internalLogger.Debug("Located multiple constructors for StartStopService {serviceType}, picking first", type.FullName);
-        }
+            if (Services.GetService(type) is not IStartStopService instance)
+            {
+                _internalLogger.Debug("Could not locate instance of StartStopService {serviceType}", type.FullName);
+                continue;
+            }
+            _internalLogger.Debug("Located instance of StartStopService {serviceType}", type.FullName);
 
-        ctorTypes = ctors[0].GetParameters()
-            .Select(x => x.ParameterType)
-            .Where(x => !x.IsInterface && x.IsAssignableTo(startstopServiceInterface))
-            .ToList();
-        serviceInstance = instance;
-        return true;
+            var ctors = type.GetConstructors();
+            if (ctors.Length == 0)
+            {
+                _internalLogger.Warning("Failed to locate constructor for StartStopService {serviceType}", type.FullName);
+                continue;
+            }
+            else if (ctors.Length > 0)
+            {
+                _internalLogger.Debug("Located multiple constructors for StartStopService {serviceType}, picking first", type.FullName);
+            }
+
+            var requiredServiceTypes = ctors[0].GetParameters()
+                .Select(x => x.ParameterType)
+                .Where(x => !x.IsInterface && x.IsAssignableTo(startstopServiceInterface))
+                .ToList();
+            _internalLogger.Debug("Assessed {requiredServiceCount} other required StartStopServices for StartStopService {serviceType}",
+                requiredServiceTypes.Count, type.FullName);
+
+            servicesToStart.Add((type, instance!, requiredServiceTypes));
+        }
+        return servicesToStart;
     }
 
+    /// <summary>
+    /// Establishing startup order of StartStopServices by resolving dependencies
+    /// </summary>
+    /// <returns>A list of types and instances in correct order</returns>
     public (List<Type>, List<IStartStopService>) EstablishStartOrder(List<(Type, IStartStopService, List<Type>)> servicesToStart)
     {
         List<Type> servicesResolvedInOrder = [];
