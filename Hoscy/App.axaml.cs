@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -60,7 +61,13 @@ public partial class App(DiContainer container) : Application
     {
         _logger.Information("Shutting down Hoscy...");
         _config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
-        _container.StopServices();
-        //todo: trycatch
+        try
+        {
+            _container.StopServices();
+        }
+        catch (Exception ex)
+        {
+            _logger.Fatal(ex, "Unable to stop Services correctly");
+        }
     }
 }
