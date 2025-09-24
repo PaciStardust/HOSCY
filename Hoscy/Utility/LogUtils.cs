@@ -43,14 +43,14 @@ public static class LogUtils
         return logConfig.CreateLogger();
     }
 
-    public static AppBuilder LogToSerilog(this AppBuilder builder, Serilog.Core.Logger logger)
+    public static AppBuilder LogToSerilog(this AppBuilder builder, ILogger logger)
     {
         Logger.Sink = new SerilogAvaloniaSink(logger);
         return builder;
     }
 }
 
-public class SerilogAvaloniaSink(Serilog.Core.Logger logger) : ILogSink
+public class SerilogAvaloniaSink(ILogger logger) : ILogSink
 {
     private readonly ILogger _logger = logger.ForContext<SerilogAvaloniaSink>();
 

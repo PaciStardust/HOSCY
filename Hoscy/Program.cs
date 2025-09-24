@@ -1,6 +1,8 @@
 ﻿using Avalonia;
 using Hoscy.Configuration.Modern;
+using Hoscy.Services.DependencyCore;
 using Hoscy.Utility;
+using Serilog;
 using Serilog.Core;
 using System;
 
@@ -14,36 +16,37 @@ sealed class Program
     [STAThread]
     public static int Main(string[] args)
     {
-        var tempLogger = LogUtils.CreateTemporaryLogger();
-        tempLogger.Warning("Starting HOSCY Version {hoscyVersion}", LaunchUtils.GetVersion());
-
-        ConfigModel? config = LaunchUtils.LoadConfigModel(tempLogger); //todo: maybe move saving?
-        if (config is null)
-        {
-            Utils.ShowErrorBoxOnWindows($"HOSCY encountered an error while loading the configuration file, check the most recent log file for more information");
-            return 1;
-        }
-
-        if (config.Logger_OpenWindowOnStartupWindowsOnly)
-        {
-            Utils.OpenConsoleOnWindows();
-        }
-
-        var newLogger = LogUtils.CreateLoggerFromConfiguration(config);
-        newLogger.ForContext<Program>().Information("Logger now using config");
+        ILogger currentLogger = LogUtils.CreateTemporaryLogger();
+        ConfigModel? config = null;
 
         try
         {
-            return BuildAvaloniaApp(newLogger, config)
+            currentLogger.Warning("Starting HOSCY Version {hoscyVersion}", LaunchUtils.GetVersion());
+
+            config = LaunchUtils.LoadConfigModel(currentLogger);
+            if (config is null)
+            {
+                Utils.ShowErrorBoxOnWindows($"HOSCY encountered an error while loading the configuration file, check the most recent log file for more information");
+                return 1;
+            }
+
+            if (config.Logger_OpenWindowOnStartupWindowsOnly)
+            {
+                Utils.OpenConsoleOnWindows();
+            }
+
+            currentLogger = LogUtils.CreateLoggerFromConfiguration(config);
+            currentLogger.ForContext<Program>().Information("Logger now using config");
+
+            return BuildAvaloniaApp(currentLogger, config)
                 .StartWithClassicDesktopLifetime(args);
         }
         catch (Exception ex)
         {
             try
             {
-                newLogger.Fatal(ex, "An unexpected and uncaught error has occured, Hoscy will now shut down.");
-                config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, newLogger);
-                //todo: Gracefully stop services if possible?
+                currentLogger.Fatal(ex, "An unexpected and uncaught error has occured, Hoscy will now shut down.");
+                config?.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, currentLogger);
             }
             catch { }
             return -1;
@@ -51,7 +54,7 @@ sealed class Program
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.
-    public static AppBuilder BuildAvaloniaApp(Logger logger, ConfigModel config)
+    public static AppBuilder BuildAvaloniaApp(ILogger logger, ConfigModel config)
         => AppBuilder.Configure(() => new App(logger, config))
             .UsePlatformDetect()
             .WithInterFont()
