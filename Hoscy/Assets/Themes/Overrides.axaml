@@ -1,0 +1,19 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20" Background="{DynamicResource BackgroundDarkBrush}">
+            <TextBlock Classes="h-textblock" Text="Waaaa" />
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector="TextBlock.h-textblock">
+        <Setter Property="Foreground" Value="{DynamicResource AccentColor}"/>
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.65"/>
+        </Style>
+    </Style>
+</Styles>
