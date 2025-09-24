@@ -1,6 +1,7 @@
 namespace Hoscy.Services.DependencyCore;
 
-public interface IStartupService
+public interface IStartStopService
 {
     void Start();
+    void Stop();
 }
