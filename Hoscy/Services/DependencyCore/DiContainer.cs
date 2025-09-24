@@ -97,8 +97,30 @@ public class DiContainer
 
     public void StopServices()
     {
-        //todo: this
-        throw new NotImplementedException();
+        var sw = Stopwatch.StartNew();
+        _internalLogger.Information("Locating all StartStopServices for stopping...");
+        var servicesToStop = RetrieveStartStopServiceInfos();
+
+        _internalLogger.Information("Establishing reversed startup order of {serviceCount} StartStopServices by resolving dependencies... (DI taken {diDuration}ms so far)",
+            servicesToStop.Count, sw.ElapsedMilliseconds);
+        var  (servicesResolvedInOrder, servicesInOrder) = EstablishStartOrder(servicesToStop, true);
+
+        _internalLogger.Information("Order of {toStop} StartStopServices established, proceeding with stopping... (DI taken {diDuration}ms so far)",
+            servicesInOrder.Count, sw.ElapsedMilliseconds);
+        for (var i = 0; i < servicesInOrder.Count; i++)
+        {
+            var subSw = Stopwatch.StartNew();
+            var currentService = servicesInOrder[i];
+            _internalLogger.Debug("Stopping StartStopServices {currenStart}/{toStop}: {currentService}",
+            i + 1, servicesInOrder.Count, servicesResolvedInOrder[i].FullName);
+            currentService.Stop();
+            subSw.Stop();
+            _internalLogger.Debug("Stopped StartStopServices {currenStart}/{toStop}: {currentService} (Took {startDuration}ms, DI taken {diDuration}ms so far)",
+            i + 1, servicesInOrder.Count, servicesResolvedInOrder[i].FullName, subSw.ElapsedMilliseconds, sw.ElapsedMilliseconds);
+        }
+
+        sw.Stop();
+        _internalLogger.Information("Successfully stopped {toStart} StartStopServices in {diDuration}ms", servicesInOrder.Count, sw.ElapsedMilliseconds);
     }
 
     /// <summary>
@@ -147,7 +169,7 @@ public class DiContainer
     /// Establishing startup order of StartStopServices by resolving dependencies
     /// </summary>
     /// <returns>A list of types and instances in correct order</returns>
-    public (List<Type>, List<IStartStopService>) EstablishStartOrder(List<(Type, IStartStopService, List<Type>)> servicesToStart)
+    public (List<Type>, List<IStartStopService>) EstablishStartOrder(List<(Type, IStartStopService, List<Type>)> servicesToStart, bool reversed = false)
     {
         List<Type> servicesResolvedInOrder = [];
         List<IStartStopService> servicesInOrder = [];
@@ -179,6 +201,12 @@ public class DiContainer
                 _internalLogger.Fatal(ex, "Unable to resolve dependency chain for the following StartStopServices: {brokenServices}", brokenServices);
                 throw ex;
             }
+        }
+
+        if (reversed)
+        {
+            servicesResolvedInOrder.Reverse();
+            servicesInOrder.Reverse();   
         }
         return (servicesResolvedInOrder, servicesInOrder);
     }
