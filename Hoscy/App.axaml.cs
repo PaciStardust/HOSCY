@@ -4,18 +4,20 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using Hoscy.Configuration.Modern;
+using Hoscy.Services.DependencyCore;
 using Hoscy.Utility;
 using Hoscy.ViewModels;
 using Hoscy.Views;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
 namespace Hoscy;
 
-public partial class App(ILogger logger, ConfigModel config) : Application
+public partial class App(DiContainer container) : Application
 {
-    private readonly ILogger _loggerNoContext = logger;
-    private readonly ILogger _logger = logger.ForContext<App>();
-    private readonly ConfigModel _config = config;
+    private readonly DiContainer _container = container;
+    private readonly ILogger _logger = container.Services.GetRequiredService<ILogger>().ForContext<App>();
+    private readonly ConfigModel _config = container.Services.GetRequiredService<ConfigModel>(); //todo: this is ugly
 
     public override void Initialize()
     {
@@ -59,6 +61,7 @@ public partial class App(ILogger logger, ConfigModel config) : Application
     {
         _logger.Information("Shutting down Hoscy...");
         _config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
-        //todo: gracefully shut down services here
+        _container.StopServices();
+        //todo: trycatch
     }
 }

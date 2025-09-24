@@ -21,7 +21,7 @@ public class DiContainer
         _internalLogger = internalLogger;
     }
 
-    public static DiContainer LoadFromAssembly(Logger logger, ConfigModel config, Action<ServiceCollection>? additionalInserts = null)
+    public static DiContainer LoadFromAssembly(ILogger logger, ConfigModel config, Action<ServiceCollection>? additionalInserts = null)
     {
         var internalLogger = logger.ForContext<DiContainer>();
         var sw = Stopwatch.StartNew();

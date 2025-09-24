@@ -18,6 +18,7 @@ sealed class Program
     {
         ILogger currentLogger = LogUtils.CreateTemporaryLogger();
         ConfigModel? config = null;
+        DiContainer? container = null;
 
         try
         {
@@ -38,15 +39,18 @@ sealed class Program
             currentLogger = LogUtils.CreateLoggerFromConfiguration(config);
             currentLogger.ForContext<Program>().Information("Logger now using config");
 
-            return BuildAvaloniaApp(currentLogger, config)
+            container = DiContainer.LoadFromAssembly(currentLogger, config);
+
+            return BuildAvaloniaApp(container, currentLogger)
                 .StartWithClassicDesktopLifetime(args);
         }
         catch (Exception ex)
         {
             try
             {
-                currentLogger.Fatal(ex, "An unexpected and uncaught error has occured, Hoscy will now shut down.");
+                currentLogger.ForContext<Program>().Fatal(ex, "An unexpected and uncaught error has occured, Hoscy will now shut down.");
                 config?.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, currentLogger);
+                container?.StopServices();
             }
             catch { }
             return -1;
@@ -54,8 +58,8 @@ sealed class Program
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.
-    public static AppBuilder BuildAvaloniaApp(ILogger logger, ConfigModel config)
-        => AppBuilder.Configure(() => new App(logger, config))
+    public static AppBuilder BuildAvaloniaApp(DiContainer container, ILogger logger)
+        => AppBuilder.Configure(() => new App(container))
             .UsePlatformDetect()
             .WithInterFont()
             .LogToSerilog(logger);
