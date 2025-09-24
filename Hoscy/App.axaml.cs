@@ -28,18 +28,24 @@ public partial class App(DiContainer container) : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
         {
-            // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
-            // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
-            DisableAvaloniaDataAnnotationValidation();
-            //todo: initialize services here?
-            desktop.MainWindow = new MainWindow
-            {
-                DataContext = new MainWindowViewModel(),
-            };
-            desktop.ShutdownRequested += OnShutdownRequested;
+            base.OnFrameworkInitializationCompleted();
+            return;
         }
+        // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
+        // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
+        DisableAvaloniaDataAnnotationValidation();
+
+
+        desktop.ShutdownRequested += OnShutdownRequested;
+        //todo: intermediary loading window
+        _container.StartServices();
+
+        desktop.MainWindow = new MainWindow
+        {
+            DataContext = new MainWindowViewModel(),
+        };
 
         base.OnFrameworkInitializationCompleted();
     }
@@ -69,5 +75,6 @@ public partial class App(DiContainer container) : Application
         {
             _logger.Fatal(ex, "Unable to stop Services correctly");
         }
+        _logger.Information("Hoscy has shut down, goodnight!");
     }
 }
