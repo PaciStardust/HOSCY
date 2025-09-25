@@ -2,7 +2,7 @@
 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
     <Design.PreviewWith>
-        <Border Padding="20" Background="{StaticResource BackgroundDarkBrush}">
+        <Border Padding="20" Background="{StaticResource BackgroundBaseBrush}">
             <StackPanel Theme="{StaticResource HStackLarge}">
                 <TextBlock Theme="{StaticResource HTextBlock}" Text="Waaaa" />
                 <Border Padding="4"/>
@@ -15,6 +15,10 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
                 <TextBox Theme="{StaticResource HTextBoxTiny}" Watermark="Wtrmrkkkkkkk" Text="Waaaa22222222222222222222222222222222222222222" />
                 <Border Padding="4"/>
                 <TextBox Theme="{StaticResource HTextBoxLong}" Watermark="Wtrmrkkkkkkk" Text="Waaaa22222222222222222222222222222222222222222" />
+                <Border Padding="4"/>
+                <Button Theme="{StaticResource HButton}" Content="Mwow" />
+                <Border Padding="4"/>
+                <Button Theme="{StaticResource HButtonSmall}" Content="Mwow2" />
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -132,43 +136,53 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
         <Setter Property="Margin" Value="0,0,32,0"/>
     </ControlTheme>
 
-    <!-- TODO
-    <Style x:Key="HButton" TargetType="{x:Type Button}">
-        <Setter Property="Foreground" Value="{x:Static ui:UiHelper.ColorFront}"/>
-        <Setter Property="Background" Value="{x:Static ui:UiHelper.ColorBackDark}"/>
-        <Setter Property="BorderBrush" Value="{x:Static ui:UiHelper.ColorBackDark}"/>
+    <!-- Button -->
+
+    <ControlTheme x:Key="HButton" TargetType="Button">
+        <Setter Property="Foreground" Value="{StaticResource FrontBrush}"/>
+        <Setter Property="Background" Value="{StaticResource BackgroundDarkBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BackgroundDarkBrush}"/>
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="FontSize" Value="18"/>
         <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
-        <Setter Property="SnapsToDevicePixels" Value="True"/>
 
         <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Button}">
-                    <Border x:Name="border" CornerRadius="4" Background="{TemplateBinding Background}" Padding="4" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
-                        <ContentPresenter x:Name="ButtonContentPresenter" Content="{TemplateBinding Content}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    </Border>
-
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="{x:Static ui:UiHelper.ColorBack}"/>
-                            <Setter Property="BorderBrush" Value="{x:Static ui:UiHelper.ColorBackLight}"/>
-                        </Trigger>
-                        
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Opacity" Value="0.65"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
+            <ControlTemplate>
+                <Border x:Name="border"
+                CornerRadius="4"
+                Background="{TemplateBinding Background}"
+                Padding="4"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}">
+                    <ContentPresenter x:Name="PART_ContentPresenter"
+                    Content="{TemplateBinding Content}"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"/>
+                </Border>
+            </ControlTemplate>
         </Setter>
-    </Style>
+
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.65"/>
+        </Style>  
+
+        <Style Selector="^:pointerover">
+            <Setter Property="Background" Value="{StaticResource BackgroundBaseBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BackgroundLightBrush}"/>
+        </Style>
+    </ControlTheme>
+
+    <ControlTheme x:Key="HButtonSmall" TargetType="Button" BasedOn="{StaticResource HButton}">
+        <Setter Property="FontSize" Value="14"/>
+    </ControlTheme>
+
+    <!-- TODO
+
     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource HButton}"/>
     <Style x:Key="HButtonSmall" TargetType="{x:Type Button}" BasedOn="{StaticResource HButton}">
         <Setter Property="FontSize" Value="14"/>
     </Style>
 
-    <!-- HBorder -->
     <Style x:Key="HBorder" TargetType="{x:Type Border}">
         <Setter Property="CornerRadius" Value="4"/>
         <Setter Property="BorderThickness" Value="0"/>
@@ -181,7 +195,6 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
         </Style.Triggers>
     </Style>
 
-    <!-- HListBox -->
     <Style x:Key="HListBox" TargetType="{x:Type ListBox}">
         <Setter Property="Foreground" Value="{Binding Source={x:Static ui:UiHelper.ColorFront}}"/>
         <Setter Property="FontSize" Value="18"/>
@@ -214,7 +227,6 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
     </Style>
     <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource HListBox}"/>
 
-    <!-- HListBoxItem -->
     <Style x:Key="HListBoxItem" TargetType="{x:Type ListBoxItem}">
         <Setter Property="SnapsToDevicePixels" Value="true"/>
         <Setter Property="BorderBrush" Value="{x:Null}"/>
@@ -245,7 +257,6 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
     </Style>
     <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource HListBoxItem}"/>
 
-    <!-- HLabel -->
     <Style x:Key="HLabel" TargetType="{x:Type Label}">
         <Setter Property="Foreground" Value="{Binding Source={x:Static ui:UiHelper.ColorFront}}"/>
         <Setter Property="FontSize" Value="18"/>
@@ -268,7 +279,6 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
         <Setter Property="Margin" Value="0,0,8,0"/>
     </Style>
 
-    <!-- HCheckBox -->
     <Style x:Key="HCheckBox" TargetType="{x:Type CheckBox}">
         <Setter Property="Foreground" Value="{Binding Source={x:Static ui:UiHelper.ColorFront}}"/>
         <Setter Property="FontSize" Value="18"/>
@@ -327,7 +337,6 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
     </Style>
     <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource HCheckBox}"/>
 
-    <!--#region Slider Override -->
     <Style x:Key="SliderButtonStyle"
        TargetType="{x:Type RepeatButton}">
         <Setter Property="SnapsToDevicePixels" Value="true"/>
@@ -372,7 +381,6 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
         </Setter>
     </Style>
 
-    <!--Template when the orientation of the Slider is Horizontal.-->
     <ControlTemplate x:Key="HorizontalSlider" TargetType="{x:Type Slider}">
         <Grid>
             <Grid.RowDefinitions>
@@ -418,7 +426,6 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
         </ControlTemplate.Triggers>
     </ControlTemplate>
 
-    <!--Template when the orientation of the Slider is Vertical.-->
     <ControlTemplate x:Key="VerticalSlider" TargetType="{x:Type Slider}">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -486,10 +493,7 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
             </Trigger>
         </Style.Triggers>
     </Style>
-    <!--#endregion-->
     
-    <!--#region Scrollbar Override, adapted from docs-->
-    <!-- LineButton -->
     <Style x:Key="ScrollBarLineButton" TargetType="{x:Type RepeatButton}">
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="Focusable" Value="false"/>
@@ -516,7 +520,6 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
         </Setter>
     </Style>
 
-    <!-- PageButton -->
     <Style x:Key="ScrollBarPageButton"
        TargetType="{x:Type RepeatButton}">
         <Setter Property="SnapsToDevicePixels" Value="True"/>
@@ -532,7 +535,6 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
         </Setter>
     </Style>
 
-    <!-- Thumb -->
     <Style x:Key="ScrollBarThumb"
        TargetType="{x:Type Thumb}">
         <Setter Property="SnapsToDevicePixels" Value="True"/>
@@ -557,7 +559,6 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
         </Setter>
     </Style>
 
-    <!-- Vertical -->
     <ControlTemplate x:Key="VerticalScrollBar" TargetType="{x:Type ScrollBar}">
         <Grid>
             <Grid.RowDefinitions>
@@ -587,7 +588,6 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
         </Grid>
     </ControlTemplate>
 
-    <!-- Horizontal -->
     <ControlTemplate x:Key="HorizontalScrollBar" TargetType="{x:Type ScrollBar}">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -618,7 +618,6 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
         </Grid>
     </ControlTemplate>
 
-    <!-- Main -->
     <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
         <Setter Property="SnapsToDevicePixels" Value="True"/>
 
@@ -641,7 +640,6 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
         </Style.Triggers>
     </Style>
     
-    <!-- ScrollViewer -->
     <Style TargetType="{x:Type ScrollViewer}">
         <Setter Property="Template">
             <Setter.Value>
@@ -670,10 +668,7 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
             </Setter.Value>
         </Setter>
     </Style>
-    <!--#endregion-->
 
-    <!--#region ComboBox Override -->
-    <!-- ToggleButton -->
     <ControlTemplate x:Key="ComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
         <Border x:Name="Border" CornerRadius="2" BorderThickness="2" BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}">
             <Grid>
@@ -693,12 +688,10 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
         </Border>
     </ControlTemplate>
 
-    <!-- Text Box -->
     <ControlTemplate x:Key="ComboBoxTextBox" TargetType="{x:Type TextBox}">
         <Border x:Name="PART_ContentHost" Focusable="False" Background="{TemplateBinding Background}"/>
     </ControlTemplate>
 
-    <!-- Combo Box -->
     <Style x:Key="HComboBox" TargetType="{x:Type ComboBox}">
         <Setter Property="SnapsToDevicePixels" Value="true"/>
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
@@ -769,7 +762,6 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
         <Setter Property="Width" Value="320"/>
     </Style>
 
-    <!-- ComboBoxItem -->
     <Style x:Key="{x:Type ComboBoxItem}"
        TargetType="{x:Type ComboBoxItem}">
         <Setter Property="SnapsToDevicePixels" Value="true"/>
