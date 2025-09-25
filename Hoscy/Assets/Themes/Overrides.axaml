@@ -2,7 +2,7 @@
 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
     <Design.PreviewWith>
-        <Border Padding="20" Background="{StaticResource BackgroundBaseBrush}">
+        <Border Padding="20" Background="{StaticResource BackgroundBaseBrush}" Width="600">
             <StackPanel Theme="{StaticResource HStackLarge}">
                 <TextBlock Theme="{StaticResource HTextBlock}" Text="Waaaa" />
                 <Border Padding="4"/>
@@ -22,6 +22,18 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
                 <Border Padding="4"/>
                 <Border Theme="{StaticResource HBorder}"> 
                     <TextBlock Theme="{StaticResource HTextBlock}" Text="Waaaa" />
+                </Border>
+                <Border Padding="4"/>
+                <Border Theme="{StaticResource HBorder}"> 
+                    <ListBox Theme="{StaticResource HListBox}" Height="100">
+                        <ListBoxItem Theme="{StaticResource HListBoxItem}" Content="11"/>
+                        <ListBoxItem Theme="{StaticResource HListBoxItem}" Content="22"/>
+                        <ListBoxItem Theme="{StaticResource HListBoxItem}" Content="3 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"/>
+                        <ListBoxItem Theme="{StaticResource HListBoxItem}" Content="44"/>
+                        <ListBoxItem Theme="{StaticResource HListBoxItem}" Content="55"/>
+                        <ListBoxItem Theme="{StaticResource HListBoxItem}" Content="55"/>
+                        <ListBoxItem Theme="{StaticResource HListBoxItem}" Content="55"/>
+                    </ListBox>
                 </Border>
             </StackPanel>
         </Border>
@@ -192,69 +204,76 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
         </Style> 
     </ControlTheme>
 
-    <!-- TODO
+    <!-- ListBox -->
 
-    <Style x:Key="HListBox" TargetType="{x:Type ListBox}">
-        <Setter Property="Foreground" Value="{Binding Source={x:Static ui:UiHelper.ColorFront}}"/>
+    <ControlTheme x:Key="HListBox" TargetType="ListBox">
+        <Setter Property="Foreground" Value="{StaticResource FrontBrush}"/>
         <Setter Property="FontSize" Value="18"/>
         <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
-        <Setter Property="BorderBrush" Value="{x:Static ui:UiHelper.ColorBackLight}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BackgroundLightBrush}"/>
         <Setter Property="BorderThickness" Value="2"/>
-        <Setter Property="Background" Value="{x:Static ui:UiHelper.ColorBackDark}"/>
-        <Setter Property="SnapsToDevicePixels" Value="True"/>
-
-        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
-        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="Background" Value="{StaticResource BackgroundDarkBrush}"/>
 
         <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate>
-                    <Border x:Name="border" CornerRadius="4" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
-                        <ScrollViewer Margin="0" Focusable="false">
-                            <ItemsPresenter Margin="2"/>
-                        </ScrollViewer>
-                    </Border>
-
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Opacity" TargetName="border" Value="0.65"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
+            <ControlTemplate>
+                <Border x:Name="border" 
+                CornerRadius="4"
+                Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}">
+                    <ScrollViewer x:Name="PART_ScrollViewer" 
+                    HorizontalScrollBarVisibility="Auto" 
+                    VerticalScrollBarVisibility="Auto"
+                    Margin="0" Focusable="false"
+                    VerticalSnapPointsType="MandatorySingle"
+                    HorizontalSnapPointsType="MandatorySingle"
+                    BringIntoViewOnFocusChange="True">
+                        <ItemsPresenter x:Name="PART_ItemsPresenter"
+                        Margin="2" 
+                        ItemsPanel="{TemplateBinding ItemsPanel}"/>
+                    </ScrollViewer>
+                </Border>
+            </ControlTemplate>
         </Setter>
-    </Style>
-    <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource HListBox}"/>
 
-    <Style x:Key="HListBoxItem" TargetType="{x:Type ListBoxItem}">
-        <Setter Property="SnapsToDevicePixels" Value="true"/>
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.65"/>
+        </Style> 
+    </ControlTheme>
+
+    <!-- ListBoxItem -->
+
+    <ControlTheme x:Key="HListBoxItem" TargetType="ListBoxItem">
         <Setter Property="BorderBrush" Value="{x:Null}"/>
 
         <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="ListBoxItem">
-                    <Border x:Name="border" CornerRadius="2" BorderThickness="1" Padding="4,2,4,2" BorderBrush="{TemplateBinding BorderBrush}">
-                        <ContentPresenter/>
-                    </Border>
-
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="BorderBrush" Value="{x:Static ui:UiHelper.ColorBackLight}"/>
-                        </Trigger>
-
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="BorderBrush" Value="{DynamicResource AccentColor}"/>
-                        </Trigger>
-
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Opacity" TargetName="border" Value="0.65"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
+            <ControlTemplate>
+                <Border x:Name="border" 
+                CornerRadius="2" 
+                BorderThickness="1" 
+                Padding="4,2,4,2"
+                BorderBrush="{TemplateBinding BorderBrush}">
+                    <ContentPresenter
+                    x:Name="PART_ContentPresenter"
+                    Content="{TemplateBinding Content}"/>
+                </Border>
+            </ControlTemplate>
         </Setter>
-    </Style>
-    <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource HListBoxItem}"/>
+
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.65"/>
+        </Style> 
+
+        <Style Selector="^:pointerover">
+            <Setter Property="BorderBrush" Value="{StaticResource BackgroundLightBrush}"/>
+        </Style>
+
+        <Style Selector="^:selected">
+            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+        </Style>
+    </ControlTheme>
+
+    <!-- TODO
 
     <Style x:Key="HLabel" TargetType="{x:Type Label}">
         <Setter Property="Foreground" Value="{Binding Source={x:Static ui:UiHelper.ColorFront}}"/>
