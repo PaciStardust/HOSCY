@@ -5,13 +5,15 @@ using Avalonia.Data.Converters;
 namespace Hoscy.Converters;
 
 public class StringNullOrEmptyToBoolConverter : IValueConverter
-    {
-        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
-        {
-            var s = value as string;
-            return string.IsNullOrEmpty(s);
-        }
+{
+    public static readonly StringNullOrEmptyToBoolConverter Instance = new();
 
-        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
-            => throw new NotImplementedException();
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        var s = value as string;
+        return string.IsNullOrEmpty(s);
     }
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => throw new NotImplementedException();
+}

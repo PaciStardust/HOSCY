@@ -1,13 +1,19 @@
-<Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
     <Design.PreviewWith>
-        <Border Padding="20" Background="{DynamicResource BackgroundDarkBrush}">
-            <TextBlock Classes="h-textblock" Text="Waaaa" />
+        <Border Padding="20" Background="{StaticResource BackgroundDarkBrush}">
+            <StackPanel>
+                <TextBlock Theme="{StaticResource HTextBlock}" Text="Waaaa" />
+                <TextBox Theme="{StaticResource HTextBox}" Watermark="Wtrmrk" Text="Waaaa2" />
+            </StackPanel>
         </Border>
     </Design.PreviewWith>
 
-    <Style Selector="TextBlock.h-textblock">
-        <Setter Property="Foreground" Value="{DynamicResource AccentColor}"/>
+    <conv:StringNullOrEmptyToBoolConverter x:Key="StringNullOrEmptyToBool"/>
+
+    <ControlTheme x:Key="HTextBlock" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
         <Setter Property="FontSize" Value="18"/>
         <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
         <Setter Property="TextWrapping" Value="Wrap"/>
@@ -15,5 +21,73 @@
         <Style Selector="^:disabled">
             <Setter Property="Opacity" Value="0.65"/>
         </Style>
-    </Style>
-</Styles>
+    </ControlTheme>
+
+    <ControlTheme x:Key="HTextBox" TargetType="TextBox">
+        <Setter Property="Foreground" Value="{StaticResource FrontBrush}"/>
+        <Setter Property="Background" Value="{StaticResource BackgroundDarkBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BackgroundLightBrush}"/>
+        <Setter Property="BorderThickness" Value="0,0,0,2"/>
+        <Setter Property="TextWrapping" Value="NoWrap"/>
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+        <Setter Property="SelectionBrush" Value="{StaticResource AccentHalfOpaBrush}"/>
+        <Setter Property="CaretBrush" Value="{StaticResource AccentBrush}"/>
+
+        <Setter Property="Watermark" Value=""/>
+
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border x:Name="border"
+                CornerRadius="4" 
+                Background="{TemplateBinding Background}" 
+                BorderBrush="{TemplateBinding BorderBrush}" 
+                BorderThickness="{TemplateBinding BorderThickness}">
+                    <Grid x:Name="container" Margin="4,4,4,0">
+                        <ScrollViewer x:Name="PART_ScrollViewer" 
+                        Focusable="false" 
+                        HorizontalScrollBarVisibility="Hidden" 
+                        VerticalScrollBarVisibility="Hidden">
+                            <TextPresenter x:Name="PART_TextPresenter" 
+                            CaretBrush="{TemplateBinding CaretBrush}"
+                            SelectionBrush="{TemplateBinding SelectionBrush}"
+                            Text="{TemplateBinding Text}"/>
+                        </ScrollViewer>
+
+                        <TextBlock x:Name="PART_Watermark"
+                        Text="{TemplateBinding Watermark}"
+                        IsHitTestVisible="False"
+                        Margin="{TemplateBinding Padding}"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Left"
+                        TextWrapping="{TemplateBinding TextWrapping}" 
+                        FontSize="{TemplateBinding FontSize}"
+                        FontFamily="{TemplateBinding FontFamily}"
+                        Foreground="{StaticResource FrontDarkBrush}"
+                        IsVisible="{Binding Text,
+                               RelativeSource={RelativeSource TemplatedParent},
+                               Converter={StaticResource StringNullOrEmptyToBool}}"/>
+                    </Grid>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.65"/>
+        </Style>    
+
+        <Style Selector="^:focus">
+            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="Background" Value="{StaticResource BackgroundDarkBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource FrontBrush}"/>
+        </Style>
+
+        <Style Selector="^:pointerover:not(:focus)">
+            <Setter Property="Background" Value="{StaticResource BackgroundBaseBrush}"/>
+        </Style>
+
+        <Style Selector="^:invalid">
+            <Setter Property="BorderBrush" Value="{StaticResource InvalidBrush}"/>
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>
