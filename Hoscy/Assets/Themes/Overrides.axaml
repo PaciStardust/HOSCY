@@ -41,6 +41,8 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
                 <Label Theme="{StaticResource HLabelM}" Content="Mwow2" />
                 <Border Padding="4"/>
                 <Label Theme="{StaticResource HLabelL}" Content="Mwow2" />
+                <Border Padding="4"/>
+                <CheckBox Theme="{StaticResource HCheckBox}" Content="Mwow2" />
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -258,7 +260,8 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
                 CornerRadius="2" 
                 BorderThickness="1" 
                 Padding="4,2,4,2"
-                BorderBrush="{TemplateBinding BorderBrush}">
+                BorderBrush="{TemplateBinding BorderBrush}"
+                Background="Transparent">
                     <ContentPresenter
                     x:Name="PART_ContentPresenter"
                     Content="{TemplateBinding Content}"/>
@@ -301,65 +304,72 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
         <Setter Property="Margin" Value="0,0,8,0"/>
     </ControlTheme>
 
-    <!-- TODO
+    <!-- Checkbox -->
 
-    <Style x:Key="HCheckBox" TargetType="{x:Type CheckBox}">
-        <Setter Property="Foreground" Value="{Binding Source={x:Static ui:UiHelper.ColorFront}}"/>
+    <ControlTheme x:Key="HCheckBox" TargetType="CheckBox">
+        <Setter Property="Foreground" Value="{StaticResource FrontBrush}"/>
         <Setter Property="FontSize" Value="18"/>
         <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
-        <Setter Property="BorderBrush" Value="{Binding Source={x:Static ui:UiHelper.ColorBackDark}}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BackgroundDarkBrush}"/>
         <Setter Property="BorderThickness" Value="2"/>
-        <Setter Property="Background" Value="{Binding Source={x:Static ui:UiHelper.ColorBackDark}}"/>
-        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="Background" Value="{StaticResource BackgroundDarkBrush}"/>
 
         <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="CheckBox">
-                    <BulletDecorator Background="Transparent">
-                        <BulletDecorator.Bullet>
-                            <Border x:Name="Border" Width="24" Height="24" CornerRadius="4" Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}">
-                                <TextBlock Name="checkboxIcon" Visibility="Hidden" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Segoe MDL2 Assets" Foreground="{DynamicResource AccentColor}">&#xE73E;</TextBlock>
-                            </Border>
-                        </BulletDecorator.Bullet>
-                        <ContentPresenter Margin="6,1,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" RecognizesAccessKey="True"/>
-                    </BulletDecorator>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="checkboxIcon" Property="Visibility" Value="Visible"/>
-                            <Setter Property="BorderBrush" Value="{DynamicResource AccentColor}"/>
-                            <Setter Property="Background" Value="{x:Static ui:UiHelper.ColorBackDark}"/>
-                        </Trigger>
-
-                        <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Opacity" Value="0.65"/>
-                        </Trigger>
-
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsMouseOver" Value="true"/>
-                                <Condition Property="IsChecked" Value="false"/>
-                            </MultiTrigger.Conditions>
-                            <MultiTrigger.Setters>
-                                <Setter Property="Background" Value="{x:Static ui:UiHelper.ColorBack}"/>
-                                <Setter Property="BorderBrush" Value="{x:Static ui:UiHelper.ColorBackLight}"/>
-                            </MultiTrigger.Setters>
-                        </MultiTrigger>
-
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsMouseOver" Value="true"/>
-                                <Condition Property="IsChecked" Value="true"/>
-                            </MultiTrigger.Conditions>
-                            <MultiTrigger.Setters>
-                                <Setter Property="Background" Value="{x:Static ui:UiHelper.ColorBack}"/>
-                            </MultiTrigger.Setters>
-                        </MultiTrigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
+            <ControlTemplate>
+                <Grid ColumnDefinitions="Auto,*"
+                ColumnSpacing="2"
+                Background="Transparent">
+                    <Border x:Name="Border"
+                    Grid.Column="0"
+                    Width="24" Height="24"
+                    CornerRadius="4"
+                    Background="{TemplateBinding Background}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    BorderBrush="{TemplateBinding BorderBrush}">
+                        <TextBlock Name="checkboxIcon"
+                        IsVisible="{TemplateBinding IsChecked}"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        FontWeight="Bold"
+                        FontFamily="Segoe MDL2 Assets"
+                        Foreground="{StaticResource AccentBrush}"
+                        IsHitTestVisible="False">
+                            &#xE73E;
+                        </TextBlock>
+                    </Border>
+                    <ContentPresenter x:Name="PART_ContentPresenter"
+                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                          Content="{TemplateBinding Content}"
+                          TextWrapping="NoWrap"
+                          Grid.Column="1" 
+                          Margin="6,1,0,0"
+                          VerticalAlignment="Center"
+                          HorizontalAlignment="Left"
+                          RecognizesAccessKey="True"/>
+                </Grid>
+            </ControlTemplate>
         </Setter>
-    </Style>
-    <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource HCheckBox}"/>
+
+        <Style Selector="^:checked">
+            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="Background" Value="{StaticResource BackgroundDarkBrush}"/>
+        </Style> 
+
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.65"/>
+        </Style> 
+
+        <Style Selector="^:pointerover:not(:checked)">
+            <Setter Property="Background" Value="{StaticResource BackgroundBaseBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BackgroundLightBrush}"/>
+        </Style> 
+
+        <Style Selector="^:pointerover:checked">
+            <Setter Property="Background" Value="{StaticResource BackgroundBaseBrush}"/>
+        </Style> 
+    </ControlTheme>
+
+    <!-- TODO
 
     <Style x:Key="SliderButtonStyle"
        TargetType="{x:Type RepeatButton}">
