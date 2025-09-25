@@ -1,30 +1,33 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Color x:Key="BackgroundDark">#232323</Color>
-    <SolidColorBrush x:Key="BackgroundDarkBrush" Color="{DynamicResource BackgroundDark}" />
+    <Color x:Key="BackgroundDarkColor">#232323</Color>
+    <SolidColorBrush x:Key="BackgroundDarkBrush" Color="{DynamicResource BackgroundDarkColor}" />
 
-    <Color x:Key="BackgroundBase">#343434</Color>
-    <SolidColorBrush x:Key="BackgroundBaseBrush" Color="{DynamicResource BackgroundBase}" />
+    <Color x:Key="BackgroundBaseColor">#343434</Color>
+    <SolidColorBrush x:Key="BackgroundBaseBrush" Color="{DynamicResource BackgroundBaseColor}" />
 
-    <Color x:Key="BackgroundLight">#4d4d4d</Color>
-    <SolidColorBrush x:Key="BackgroundLightBrush" Color="{DynamicResource BackgroundLight}" />
-
-
-
-    <Color x:Key="Front">#ffffff</Color>
-    <SolidColorBrush x:Key="FrontBrush" Color="{DynamicResource Front}" />
-
-    <Color x:Key="FrontDark">#c8c8c8</Color>
-    <SolidColorBrush x:Key="FrontDarkBrush" Color="{DynamicResource FrontDark}" />
+    <Color x:Key="BackgroundLightColor">#4d4d4d</Color>
+    <SolidColorBrush x:Key="BackgroundLightBrush" Color="{DynamicResource BackgroundLightColor}" />
 
 
 
-    <Color x:Key="Valid">#caffbf</Color>
-    <SolidColorBrush x:Key="ValidBrush" Color="{DynamicResource Valid}" />
+    <Color x:Key="FrontColor">#ffffff</Color>
+    <SolidColorBrush x:Key="FrontBrush" Color="{DynamicResource FrontColor}" />
 
-    <Color x:Key="Invalid">#ffadad</Color>
-    <SolidColorBrush x:Key="InvalidBrush" Color="{DynamicResource Invalid}" />
+    <Color x:Key="FrontDarkColor">#c8c8c8</Color>
+    <SolidColorBrush x:Key="FrontDarkBrush" Color="{DynamicResource FrontDarkColor}" />
 
 
 
-    <SolidColorBrush x:Key="AccentColor" Color="Pink"/>
+    <Color x:Key="ValidColor">#caffbf</Color>
+    <SolidColorBrush x:Key="ValidBrush" Color="{DynamicResource ValidColor}" />
+
+    <Color x:Key="InvalidColor">#ffadad</Color>
+    <SolidColorBrush x:Key="InvalidBrush" Color="{DynamicResource InvalidColor}" />
+
+
+    <Color x:Key="AccentColor">#aaaaff</Color>
+    <SolidColorBrush x:Key="AccentBrush" Color="{DynamicResource AccentColor}" />
+
+    <Color x:Key="AccentHalfOpaColor">#80aaaaff</Color>
+    <SolidColorBrush x:Key="AccentHalfOpaBrush" Color="{DynamicResource AccentHalfOpaColor}" />
 </ResourceDictionary>
