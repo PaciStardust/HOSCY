@@ -35,6 +35,12 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
                         <ListBoxItem Theme="{StaticResource HListBoxItem}" Content="55"/>
                     </ListBox>
                 </Border>
+                <Border Padding="4"/>
+                <Label Theme="{StaticResource HLabel}" Content="Mwow2" />
+                <Border Padding="4"/>
+                <Label Theme="{StaticResource HLabelM}" Content="Mwow2" />
+                <Border Padding="4"/>
+                <Label Theme="{StaticResource HLabelL}" Content="Mwow2" />
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -273,29 +279,29 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
         </Style>
     </ControlTheme>
 
-    <!-- TODO
+    <!-- Label -->
 
-    <Style x:Key="HLabel" TargetType="{x:Type Label}">
-        <Setter Property="Foreground" Value="{Binding Source={x:Static ui:UiHelper.ColorFront}}"/>
+    <ControlTheme x:Key="HLabel" TargetType="Label">
+        <Setter Property="Foreground" Value="{StaticResource FrontBrush}"/>
         <Setter Property="FontSize" Value="18"/>
         <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
-        <Setter Property="SnapsToDevicePixels" Value="True"/>
 
-        <Style.Triggers>
-            <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Opacity" Value="0.65"/>
-            </Trigger>
-        </Style.Triggers>
-    </Style>
-    <Style TargetType="{x:Type Label}" BasedOn="{StaticResource HLabel}"/>
-    <Style x:Key="HLabelL" TargetType="{x:Type Label}" BasedOn="{StaticResource HLabel}">
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.65"/>
+        </Style> 
+    </ControlTheme>
+
+    <ControlTheme x:Key="HLabelL" TargetType="Label" BasedOn="{StaticResource HLabel}">
         <Setter Property="FontSize" Value="30"/>
         <Setter Property="Margin" Value="0,0,8,0"/>
-    </Style>
-    <Style x:Key="HLabelM" TargetType="{x:Type Label}" BasedOn="{StaticResource HLabel}">
+    </ControlTheme>
+
+    <ControlTheme x:Key="HLabelM" TargetType="Label" BasedOn="{StaticResource HLabel}">
         <Setter Property="FontSize" Value="24"/>
         <Setter Property="Margin" Value="0,0,8,0"/>
-    </Style>
+    </ControlTheme>
+
+    <!-- TODO
 
     <Style x:Key="HCheckBox" TargetType="{x:Type CheckBox}">
         <Setter Property="Foreground" Value="{Binding Source={x:Static ui:UiHelper.ColorFront}}"/>
