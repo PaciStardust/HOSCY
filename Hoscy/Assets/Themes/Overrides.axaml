@@ -43,6 +43,8 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
                 <Label Theme="{StaticResource HLabelL}" Content="Mwow2" />
                 <Border Padding="4"/>
                 <CheckBox Theme="{StaticResource HCheckBox}" Content="Mwow2" />
+                <Border Padding="4"/>
+                <Slider Minimum="0" Maximum="10" Theme="{StaticResource HSlider}"/>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -369,164 +371,200 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
         </Style> 
     </ControlTheme>
 
-    <!-- TODO
+    <!-- Slider -->
 
-    <Style x:Key="SliderButtonStyle"
-       TargetType="{x:Type RepeatButton}">
-        <Setter Property="SnapsToDevicePixels" Value="true"/>
+    <ControlTheme x:Key="HSliderButton" TargetType="RepeatButton">
         <Setter Property="IsTabStop" Value="false"/>
         <Setter Property="Focusable" Value="false"/>
-        
+
         <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type RepeatButton}">
-                    <Border Background="Transparent" />
-
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Opacity" Value="0.65"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
+            <ControlTemplate>
+                <Border Background="Transparent" />
+            </ControlTemplate>
         </Setter>
-    </Style>
 
-    <Style x:Key="SliderThumbStyle" TargetType="{x:Type Thumb}">
-        <Setter Property="SnapsToDevicePixels" Value="true"/>
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.65"/>
+        </Style>
+    </ControlTheme>
+
+    <ControlTheme x:Key="HSliderThumb" TargetType="Thumb">
         <Setter Property="Height" Value="20"/>
         <Setter Property="Width" Value="12"/>
-        
+        <Setter Property="Background" Value="{StaticResource BackgroundBaseBrush}"/>
+
         <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Thumb}">
-                    <Border x:Name="border" Background="{x:Static ui:UiHelper.ColorBack}" BorderThickness="2" CornerRadius="3" BorderBrush="{DynamicResource AccentColor}"/>
-
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Opacity" Value="0.65"/>
-                        </Trigger>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="{x:Static ui:UiHelper.ColorBackLight}"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
+            <ControlTemplate>
+                <Border x:Name="border"
+                Background="{TemplateBinding Background}"
+                BorderThickness="2"
+                CornerRadius="3" 
+                BorderBrush="{StaticResource AccentBrush}"/>
+            </ControlTemplate>
         </Setter>
-    </Style>
 
-    <ControlTemplate x:Key="HorizontalSlider" TargetType="{x:Type Slider}">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto" MinHeight="{TemplateBinding MinHeight}"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.65"/>
+        </Style>
 
-            <TickBar x:Name="TopTick" SnapsToDevicePixels="True" Placement="Top" Height="4" Visibility="Collapsed" Fill="{x:Static ui:UiHelper.ColorBackDark}"/>
+        <Style Selector="^:pointerover">
+            <Setter Property="Background" Value="{StaticResource BackgroundLightBrush}"/>
+        </Style>
+    </ControlTheme>
 
-            <Border x:Name="TrackBackground" Margin="0" CornerRadius="2" Height="4" Grid.Row="1" BorderThickness="2" BorderBrush="{x:Static ui:UiHelper.ColorBackDark}" Background="{x:Static ui:UiHelper.ColorBackDark}"/>
+    <ControlTheme x:Key="HSlider" TargetType="Slider">
+        <Setter Property="Foreground" Value="{StaticResource BackgroundDarkBrush}"/>
 
-            <Track Grid.Row="1" x:Name="PART_Track">
-                <Track.DecreaseRepeatButton>
-                    <RepeatButton Style="{StaticResource SliderButtonStyle}" Command="Slider.DecreaseLarge"/>
-                </Track.DecreaseRepeatButton>
-                <Track.Thumb>
-                    <Thumb Style="{StaticResource SliderThumbStyle}"/>
-                </Track.Thumb>
-                <Track.IncreaseRepeatButton>
-                    <RepeatButton Style="{StaticResource SliderButtonStyle}" Command="Slider.IncreaseLarge"/>
-                </Track.IncreaseRepeatButton>
-            </Track>
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.65"/>
+        </Style>
+
+        <Style Selector="^:horizontal">
+            <Setter Property="MinWidth" Value="104"/>
+            <Setter Property="MinHeight" Value="21"/>
             
-            <TickBar x:Name="BottomTick" SnapsToDevicePixels="True" Grid.Row="2" Fill="{TemplateBinding Foreground}" Placement="Bottom" Height="4" Visibility="Collapsed"/>
-        </Grid>
-        
-        <ControlTemplate.Triggers>
-            <Trigger Property="TickPlacement"
-             Value="TopLeft">
-                <Setter TargetName="TopTick" Property="Visibility" Value="Visible"/>
-            </Trigger>
-            <Trigger Property="TickPlacement" Value="BottomRight">
-                <Setter TargetName="BottomTick" Property="Visibility" Value="Visible"/>
-            </Trigger>
-            <Trigger Property="TickPlacement" Value="Both">
-                <Setter TargetName="TopTick" Property="Visibility" Value="Visible"/>
-                <Setter TargetName="BottomTick" Property="Visibility" Value="Visible"/>
-            </Trigger>
-            <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Opacity" Value="0.65"/>
-            </Trigger>
-        </ControlTemplate.Triggers>
-    </ControlTemplate>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Grid Background="Transparent">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto" MinHeight="{TemplateBinding MinHeight}"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
 
-    <ControlTemplate x:Key="VerticalSlider" TargetType="{x:Type Slider}">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto" MinWidth="{TemplateBinding MinWidth}"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
+                        <TickBar x:Name="TopTick" 
+                        Placement="Top"
+                        Height="4"
+                        IsVisible="True"
+                        Fill="{StaticResource BackgroundDarkBrush}"/>
 
-            <TickBar x:Name="TopTick" SnapsToDevicePixels="True" Placement="Left" Width="4" Visibility="Collapsed" Fill="{x:Static ui:UiHelper.ColorBackDark}"/>
+                        <Border x:Name="TrackBackground" 
+                        Margin="0"
+                        CornerRadius="2"
+                        Height="4"
+                        Grid.Row="1"
+                        BorderThickness="2"
+                        BorderBrush="{StaticResource BackgroundDarkBrush}"
+                        Background="{StaticResource BackgroundDarkBrush}"/>
 
-            <Border x:Name="TrackBackground" Margin="0" CornerRadius="2" Width="4" Grid.Column="1" BorderBrush="{x:Static ui:UiHelper.ColorBackDark}" Background="{x:Static ui:UiHelper.ColorBackDark}"/>
+                        <Track Grid.Row="1" x:Name="PART_Track"
+                        Minimum="{TemplateBinding Minimum}"
+                        Maximum="{TemplateBinding Maximum}"
+                        Value="{TemplateBinding Value, Mode=TwoWay}"
+                        IsDirectionReversed="{TemplateBinding IsDirectionReversed}"
+                        Orientation="Horizontal">
+                            <Track.DecreaseButton>
+                                <RepeatButton Theme="{StaticResource HSliderButton}"
+                                Name="PART_DecreaseButton"
+                                Focusable="False"/>
+                            </Track.DecreaseButton>
+                            <Track.Thumb>
+                                <Thumb Theme="{StaticResource HSliderThumb}"
+                                Name="SliderThumb"
+                                DataContext="{TemplateBinding Value}"/>
+                            </Track.Thumb>
+                            <Track.IncreaseButton>
+                                <RepeatButton Theme="{StaticResource HSliderButton}"
+                                Name="PART_IncreaseButton"
+                                Focusable="False"/>
+                            </Track.IncreaseButton>
+                        </Track>
 
-            <Track Grid.Column="1" x:Name="PART_Track">
-                <Track.DecreaseRepeatButton>
-                    <RepeatButton Style="{StaticResource SliderButtonStyle}" Command="Slider.DecreaseLarge"/>
-                </Track.DecreaseRepeatButton>
-                <Track.Thumb>
-                    <Thumb Style="{StaticResource SliderThumbStyle}"/>
-                </Track.Thumb>
-                <Track.IncreaseRepeatButton>
-                    <RepeatButton Style="{StaticResource SliderButtonStyle}" Command="Slider.IncreaseLarge"/>
-                </Track.IncreaseRepeatButton>
-            </Track>
+                        <TickBar x:Name="BottomTick"
+                        Grid.Row="2"
+                        Fill="{StaticResource BackgroundDarkBrush}"
+                        Placement="Bottom"
+                        Height="4"
+                        IsVisible="True"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="^:vertical">
+            <Setter Property="MinWidth" Value="21"/>
+            <Setter Property="MinHeight" Value="104"/>
             
-            <TickBar x:Name="BottomTick" SnapsToDevicePixels="True" Grid.Column="2" Fill="{TemplateBinding Foreground}" Placement="Right" Width="4" Visibility="Collapsed"/>
-        </Grid>
-        
-        <ControlTemplate.Triggers>
-            <Trigger Property="TickPlacement" Value="TopLeft">
-                <Setter TargetName="TopTick" Property="Visibility" Value="Visible"/>
-            </Trigger>
-            <Trigger Property="TickPlacement" Value="BottomRight">
-                <Setter TargetName="BottomTick" Property="Visibility" Value="Visible"/>
-            </Trigger>
-            <Trigger Property="TickPlacement" Value="Both">
-                <Setter TargetName="TopTick" Property="Visibility" Value="Visible"/>
-                <Setter TargetName="BottomTick" Property="Visibility" Value="Visible"/>
-            </Trigger>
-            <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Opacity" Value="0.65"/>
-            </Trigger>
-        </ControlTemplate.Triggers>
-    </ControlTemplate>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Grid Background="Transparent">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto" MinWidth="{TemplateBinding MinWidth}"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
 
-    <Style TargetType="{x:Type Slider}">
-        <Setter Property="Foreground" Value="{x:Static ui:UiHelper.ColorBackDark}"/>
+                        <TickBar x:Name="TopTick" 
+                        Placement="Left"
+                        Width="4"
+                        IsVisible="True"
+                        Fill="{StaticResource BackgroundDarkBrush}"/>
 
-        <Setter Property="SnapsToDevicePixels" Value="true"/>
-        <Setter Property="OverridesDefaultStyle" Value="true"/>
-        <Style.Triggers>
-            <Trigger Property="Orientation" Value="Horizontal">
-                <Setter Property="MinWidth" Value="104" />
-                <Setter Property="MinHeight" Value="21" />
-                <Setter Property="Template" Value="{StaticResource HorizontalSlider}"/>
-            </Trigger>
-            
-            <Trigger Property="Orientation" Value="Vertical">
-                <Setter Property="MinWidth" Value="21" />
-                <Setter Property="MinHeight" Value="104" />
-                <Setter Property="Template" Value="{StaticResource VerticalSlider}"/>
-            </Trigger>
+                        <Border x:Name="TrackBackground" 
+                        Margin="0"
+                        CornerRadius="2"
+                        Width="4"
+                        Grid.Row="1"
+                        BorderThickness="2"
+                        BorderBrush="{StaticResource BackgroundDarkBrush}"
+                        Background="{StaticResource BackgroundDarkBrush}"/>
 
-            <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Opacity" Value="0.65"/>
-            </Trigger>
-        </Style.Triggers>
-    </Style>
+                        <Track Grid.Row="1" x:Name="PART_Track"
+                        Minimum="{TemplateBinding Minimum}"
+                        Maximum="{TemplateBinding Maximum}"
+                        Value="{TemplateBinding Value, Mode=TwoWay}"
+                        IsDirectionReversed="{TemplateBinding IsDirectionReversed}"
+                        Orientation="Vertical">
+                            <Track.DecreaseButton>
+                                <RepeatButton Theme="{StaticResource HSliderButton}"
+                                Name="PART_DecreaseButton"
+                                Focusable="False"/>
+                            </Track.DecreaseButton>
+                            <Track.Thumb>
+                                <Thumb Theme="{StaticResource HSliderThumb}"
+                                Name="SliderThumb"
+                                DataContext="{TemplateBinding Value}"/>
+                            </Track.Thumb>
+                            <Track.IncreaseButton>
+                                <RepeatButton Theme="{StaticResource HSliderButton}"
+                                Name="PART_IncreaseButton"
+                                Focusable="False"/>
+                            </Track.IncreaseButton>
+                        </Track>
+
+                        <TickBar x:Name="BottomTick"
+                        Grid.Row="2"
+                        Fill="{StaticResource BackgroundDarkBrush}"
+                        Placement="Right"
+                        Height="4"
+                        IsVisible="True"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.65"/>
+        </Style>
+
+        <!--
+        <Style Selector="^[TickPlacement=BottomRight] /template/ TickBar#TopTick">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
+        <Style Selector="^[TickPlacement=TopLeft] /template/ TickBar#BottomTick">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
+        <Style Selector="^[TickPlacement=None] /template/ TickBar">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
+        -->
+
+        <Style Selector="^:pointerover /template/ Thumb, ^:focused /template/ Thumb">
+            <Setter Property="Background" Value="{StaticResource BackgroundLightBrush}"/>
+        </Style>
+    </ControlTheme>
+
+    <!-- TODO
     
     <Style x:Key="ScrollBarLineButton" TargetType="{x:Type RepeatButton}">
         <Setter Property="SnapsToDevicePixels" Value="True"/>
