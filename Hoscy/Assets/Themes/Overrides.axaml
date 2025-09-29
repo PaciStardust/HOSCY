@@ -237,7 +237,8 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
                     Margin="0" Focusable="false"
                     VerticalSnapPointsType="MandatorySingle"
                     HorizontalSnapPointsType="MandatorySingle"
-                    BringIntoViewOnFocusChange="True">
+                    BringIntoViewOnFocusChange="True"
+                    Theme="{StaticResource HScrollViewer}">
                         <ItemsPresenter x:Name="PART_ItemsPresenter"
                         Margin="2" 
                         ItemsPanel="{TemplateBinding ItemsPanel}"/>
@@ -564,6 +565,8 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
         </Style>
     </ControlTheme>
 
+    <!-- Scrollbar -->
+
     <ControlTheme x:Key="HScrollBarLineButton" TargetType="RepeatButton">
         <Setter Property="Focusable" Value="False"/>
         <Setter Property="Background" Value="{StaticResource BackgroundDarkBrush}"/>
@@ -756,6 +759,58 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
                 </ControlTemplate>
             </Setter>
         </Style>
+
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.65"/>
+        </Style>
+    </ControlTheme>
+
+    <!-- Scrollviewer -->
+
+    <ControlTheme x:Key="HScrollViewer" TargetType="ScrollViewer">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <ScrollContentPresenter x:Name="PART_ContentPresenter"
+                    Background="{TemplateBinding Background}"
+                    HorizontalSnapPointsType="{TemplateBinding HorizontalSnapPointsType}"
+                    VerticalSnapPointsType="{TemplateBinding VerticalSnapPointsType}"
+                    HorizontalSnapPointsAlignment="{TemplateBinding HorizontalSnapPointsAlignment}"
+                    VerticalSnapPointsAlignment="{TemplateBinding VerticalSnapPointsAlignment}"
+                    ScrollViewer.IsScrollInertiaEnabled="{TemplateBinding IsScrollInertiaEnabled}"
+                    Grid.Column="0"/>
+
+                    <ScrollBar x:Name="PART_VerticalScrollBar"
+                    Orientation="Vertical"
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Theme="{StaticResource HScrollBar}"/>
+
+                    <ScrollBar x:Name="PART_HorizontalScrollBar"
+                    Orientation="Horizontal" 
+                    Grid.Row="1" 
+                    Grid.Column="0"
+                    Theme="{StaticResource HScrollBar}"/>
+                    <!-- Ported correctly? -->
+                    <Rectangle x:Name="PART_ScrollBarsSeparator" 
+                    Grid.Row="1" 
+                    Grid.Column="1" 
+                    RadiusX="2" 
+                    RadiusY="2" 
+                    Fill="{StaticResource AccentBrush}"
+                    Margin="2"/>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
 
         <Style Selector="^:disabled">
             <Setter Property="Opacity" Value="0.65"/>
