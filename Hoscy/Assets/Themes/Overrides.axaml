@@ -45,6 +45,15 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
                 <CheckBox Theme="{StaticResource HCheckBox}" Content="Mwow2" />
                 <Border Padding="4"/>
                 <Slider Minimum="0" Maximum="10" Theme="{StaticResource HSlider}"/>
+                <Border Padding="4"/>
+                <ScrollBar
+                Orientation="Horizontal"
+                Minimum="0"
+                Maximum="100"
+                Value="50"
+                ViewportSize="10"
+                Width="200"
+                Theme="{StaticResource HScrollBar}"/>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -638,11 +647,11 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
 
             <Setter Property="Template">
                 <ControlTemplate>
-                    <Grid>
+                    <Grid Background="Transparent">
                         <Grid.RowDefinitions>
-                            <RowDefinition MaxHeight="18"/>
-                            <RowDefinition Height="0.00001*"/>
-                            <RowDefinition MaxHeight="18"/>
+                            <RowDefinition Height="18"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="18"/>
                         </Grid.RowDefinitions>
 
                         <Border Grid.RowSpan="3" 
@@ -652,7 +661,6 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
                         <RepeatButton x:Name="PART_LineUpButton"
                         Grid.Row="0"
                         Focusable="False"
-                        HorizontalAlignment="Center"
                         Theme="{StaticResource HScrollBarLineButton}"
                         Height="18"
                         Content="M 0 4 L 8 4 L 4 0 Z"/>
@@ -676,6 +684,8 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
                                 <Thumb Theme="{StaticResource HScrollBarThumb}"
                                 Margin="3"
                                 BorderThickness="0"
+                                MinHeight="10"
+                                MinWidth="10"
                                 Background="{StaticResource BackgroundBaseBrush}"/>
                             </Track.Thumb>
                             
@@ -702,11 +712,11 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
 
             <Setter Property="Template">
                 <ControlTemplate>
-                    <Grid>
+                    <Grid Background="Transparent">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition MaxWidth="18"/>
-                            <ColumnDefinition Width="0.00001*"/>
-                            <ColumnDefinition MaxWidth="18"/>
+                            <ColumnDefinition Width="18"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="18"/>
                         </Grid.ColumnDefinitions>
 
                         <Border Grid.ColumnSpan="3"
@@ -716,7 +726,6 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
                         <RepeatButton x:Name="PART_LineUpButton"
                         Grid.Column="0" 
                         Focusable="False"
-                        VerticalAlignment="Center"
                         Theme="{StaticResource HScrollBarLineButton}" 
                         Width="18"
                         Content="M 4 0 L 4 8 L 0 4 Z"/>
@@ -738,7 +747,9 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
                             <Track.Thumb>
                                 <Thumb Theme="{StaticResource HScrollBarThumb}"
                                 Margin="3" 
-                                BorderThickness="0" 
+                                BorderThickness="0"
+                                MinHeight="10"
+                                MinWidth="10"
                                 Background="{StaticResource BackgroundBaseBrush}"/>
                             </Track.Thumb>
                             
