@@ -1,5 +1,50 @@
-﻿# HOSCY 
+﻿# THIS IS AN UNFINISHED DEVELOPMENT BRANCH
+Hoscy-Avalonia is an attempt of mine to completely rewrite HOSCY from the ground up for the following reasons:
+- The original is WPF so unfortunatly can not run on Linux (Which I want to make possible)
+- As I started the project with 1 year of experience it is genuinely a mess so impossible to really update comfortably
+- As a personal challenge to try out things
 
+**Disclaimer: I can not promise that I will finish this as I have other things going on in life and am unsure if this even feasible or worth it**
+## Current Progress
+### Initial Release V1
+- ❌ **Initial Startup**
+  - ✅ Dependency injection
+  - ✅ Logging
+  - ✅ Config Loading
+  - ❌ Displaying startup errors (Currently windows only)
+  - ❌ Loading splash screen
+  - ❌ Version checking & updating
+- ❌ **User Interface**
+  - ❌ Recreation of original Hoscy components
+  - ❌ Recreation of UI
+- ❌ **Features**
+  - ❌ OSC
+    - ❌ Sending
+    - ❌ Receiving
+    - ❌ Routing
+    - ❌ OscQuery
+  - ❌ Hotkeys
+  - ❌ Media
+    - ❌ Control
+    - ❌ Display
+  - ❌ Translation
+  - ❌ Textbox Control
+  - ❌ STT
+    - ❌ Voice Commands
+    - ❌ API Recognition
+    - ❌ Azure Recognition
+    - ❌ Vosk Recognition
+    - ❌ Whisper Recognition
+    - ❌ Windows Recognition (V1 & V2)
+  - ❌ TTS
+    - ❌ Azure TTS
+    - ❌ Windows TTS
+### Future Updates
+- ❌ UI Themes
+- ❌ Updating Whisper
+- ❌ Improved TTS with Piper
+
+# HOSCY 
 HOSCY is a free and Open-Source tool with many utilities for communication and OSC aimed at making communication and use of OSC easier
 
 Need help setting this up? Check the **[Quickstart Guide](https://github.com/PaciStardust/HOSCY/wiki/Quickstart-Guide)**
