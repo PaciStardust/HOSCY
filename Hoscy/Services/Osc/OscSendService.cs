@@ -16,6 +16,7 @@ public class OscSendService(ILogger logger, ConfigModel config) : IOscSendServic
     private readonly ILogger _logger = logger.ForContext<OscSendService>();
     private readonly ConfigModel _config = config;
 
+    #region Sending Public
     public void Send(string address, params object?[] args)
     {
         Send(_config.Osc_Routing_TargetIp, _config.Osc_Routing_TargetPort, address, args);
@@ -28,6 +29,45 @@ public class OscSendService(ILogger logger, ConfigModel config) : IOscSendServic
         SendSync(sender, ip, port, address, args);
     }
 
+    public async Task SendAsync(string address, params object?[] args)
+    {
+        await SendAsync(_config.Osc_Routing_TargetIp, _config.Osc_Routing_TargetPort, address, args);
+    }
+
+    public async Task SendAsync(string ip, ushort port, string address, params object?[] args)
+    {
+        var sender = GetOrCreateSender(ip, port);
+        if (sender is null) return;
+        await SendAsync(sender, ip, port, address, args);
+    }
+    #endregion
+
+    #region Sending Internals
+    private void SendSync(OscSender sender, string ipForLog, ushort portForLog, string address, params object?[] args)
+    {
+        Task.Run(() => SendAsync(sender, ipForLog, portForLog, address, args)).ConfigureAwait(false);
+    }
+
+    private async Task SendAsync(OscSender sender, string ipForLog, ushort portForLog, string address, params object?[] args)
+    {
+        var packet = new OscMessage(address, args);
+        try
+        {
+            _logger.Verbose("Sending packet to {targetIp}->{targetPort}->{address} with parameters {params}",
+            ipForLog, portForLog, address, args);
+            await sender.SendAsync(packet);
+            _logger.Verbose("Sent packet to {targetIp}->{targetPort}->{address} with parameters {params}",
+            ipForLog, portForLog, address, args);
+        }
+        catch (Exception ex)
+        {
+            _logger.Warning(ex, "Failed to send packet to {targetIp}->{targetPort}->{address} with parameters {params}",
+            ipForLog, portForLog, address, args);
+        }
+    }
+    #endregion
+
+    #region Utils
     private OscSender? GetOrCreateSender(string ip, ushort port)
     {
         var idString = GetIdString(ip, port);
@@ -56,27 +96,5 @@ public class OscSendService(ILogger logger, ConfigModel config) : IOscSendServic
         }
         return new(ipAddress, port);
     }
-
-    private void SendSync(OscSender sender, string ipForLog, ushort portForLog, string address, params object?[] args)
-    {
-        Task.Run(() => SendAsync(sender, ipForLog, portForLog, address,args)).ConfigureAwait(false);
-    }
-
-    private async Task SendAsync(OscSender sender, string ipForLog, ushort portForLog, string address, params object?[] args)
-    {
-        var packet = new OscMessage(address, args);
-        try
-        {
-            _logger.Verbose("Sending packet to {targetIp}->{targetPort}->{address} with parameters {params}",
-            ipForLog, portForLog, address, args);
-            await sender.SendAsync(packet);
-            _logger.Verbose("Sent packet to {targetIp}->{targetPort}->{address} with parameters {params}",
-            ipForLog, portForLog, address, args);
-        }
-        catch (Exception ex)
-        {
-            _logger.Warning(ex,"Failed to send packet to {targetIp}->{targetPort}->{address} with parameters {params}",
-            ipForLog, portForLog, address, args);
-        }
-    }
+    #endregion
 }
