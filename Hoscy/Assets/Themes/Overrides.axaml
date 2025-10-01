@@ -20,9 +20,11 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
                 <Border Padding="4"/>
                 <Button Theme="{StaticResource HButtonSmall}" Content="Mwow2" />
                 <Border Padding="4"/>
-                <Border Theme="{StaticResource HBorder}"> 
-                    <TextBlock Theme="{StaticResource HTextBlock}" Text="Waaaa" />
-                </Border>
+                <ComboBox Theme="{StaticResource HComboBox}">
+                    <ComboBoxItem Theme="{StaticResource HComboBoxItem}" Content="123"/>
+                    <ComboBoxItem Theme="{StaticResource HComboBoxItem}" Content="456"/>
+                    <ComboBoxItem Theme="{StaticResource HComboBoxItem}" Content="789"/>
+                </ComboBox>
                 <Border Padding="4"/>
                 <Border Theme="{StaticResource HBorder}"> 
                     <ListBox Theme="{StaticResource HListBox}" Height="100">
@@ -55,11 +57,9 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
                 Width="200"
                 Theme="{StaticResource HScrollBar}"/>
                 <Border Padding="4"/>
-                <ComboBox Theme="{StaticResource HComboBox}">
-                    <ComboBoxItem Theme="{StaticResource HComboBoxItem}" Content="123"/>
-                    <ComboBoxItem Theme="{StaticResource HComboBoxItem}" Content="456"/>
-                    <ComboBoxItem Theme="{StaticResource HComboBoxItem}" Content="789"/>
-                </ComboBox>
+                <Border Theme="{StaticResource HBorder}"> 
+                    <TextBlock Theme="{StaticResource HTextBlock}" Text="Waaaa" />
+                </Border>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -986,10 +986,8 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
                     <Popup x:Name="PART_Popup"
                     WindowManagerAddShadowHint="False"
                     IsOpen="{TemplateBinding IsDropDownOpen, Mode=TwoWay}"
-                    MinWidth="{TemplateBinding Width}" 
                     MaxHeight="{TemplateBinding MaxDropDownHeight}"
                     Focusable="False"
-                    PlacementTarget="{Binding ElementName=PART_Button}"
                     Placement="Bottom"
                     IsLightDismissEnabled="True"
                     InheritsTransform="True">
@@ -1007,8 +1005,7 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
                             VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
                             IsDeferredScrollingEnabled="{TemplateBinding (ScrollViewer.IsDeferredScrollingEnabled)}">
                                 <ItemsPresenter x:Name="PART_ItemsPresenter"
-                                Margin="0"
-                                ItemsPanel="{TemplateBinding ItemsPanel}"/>
+                                Margin="0"/>
                             </ScrollViewer>
                         </Border>
                     </Popup>
@@ -1036,6 +1033,14 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
         <Style Selector="^:dropdownopen /template/ ToggleButton#PART_Button">
             <Setter Property="Background" Value="{StaticResource BackgroundDarkBrush}"/>
             <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+        </Style>
+
+        <Style Selector="^:editable /template/ TextBox#PART_EditableTextBox">
+            <Setter Property="IsVisible" Value="True"/>
+        </Style>
+
+        <Style Selector="^:editable /template/ ContentControl#ContentSite">
+            <Setter Property="IsVisible" Value="False"/>
         </Style>
     </ControlTheme>
 </ResourceDictionary>
