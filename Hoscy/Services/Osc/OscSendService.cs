@@ -4,17 +4,19 @@ using System.Net;
 using System.Threading.Tasks;
 using Hoscy.Configuration.Modern;
 using Hoscy.Services.DependencyCore;
+using Hoscy.Services.Interfacing;
 using LucHeart.CoreOSC;
 using Serilog;
 
 namespace Hoscy.Services.Osc;
 
 [LoadIntoDiContainer(Lifetime.Singleton)]
-public class OscSendService(ILogger logger, ConfigModel config) : IOscSendService
+public class OscSendService(ILogger logger, ConfigModel config, IBackToFrontNotifyService notify) : IOscSendService
 {
     private readonly Dictionary<string, OscSender> _senders = [];
     private readonly ILogger _logger = logger.ForContext<OscSendService>();
     private readonly ConfigModel _config = config;
+    private readonly IBackToFrontNotifyService _notify = notify;
 
     #region Sending Public
     public void Send(string address, params object?[] args)
@@ -90,7 +92,7 @@ public class OscSendService(ILogger logger, ConfigModel config) : IOscSendServic
     {
         if (!IPAddress.TryParse(ipString, out var ipAddress))
         {
-            //todo: some kind of UI notify service here?
+            _notify.SendWarning("OSC Send Error", $"Failed to convert IP string \"{ipString}\" to an IP address and is unable to send");
             _logger.Error("Failed to parse IP {ipString} for OSC sending", ipString);
             return null;
         }
