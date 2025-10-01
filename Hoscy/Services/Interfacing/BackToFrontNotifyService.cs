@@ -7,7 +7,7 @@ namespace Hoscy.Services.Interfacing;
 [LoadIntoDiContainer]
 public class BackToFrontNotifyService(ILogger logger) : IBackToFrontNotifyService
 {
-    //todo: logging, making use of this
+    //todo: making use of this
     private readonly ILogger _logger = logger.ForContext<BackToFrontNotifyService>();
 
     #region Events
@@ -20,21 +20,25 @@ public class BackToFrontNotifyService(ILogger logger) : IBackToFrontNotifyServic
     #region Invocation
     public void SendInfo(string title, string content, Exception? exception = null)
     {
+        _logger.Debug(exception, "Calling SendInfo with title {title} and content {content}");
         OnInfo.Invoke(this, CreateArgs(title, content, exception));
     }
 
     public void SendWarning(string title, string content, Exception? exception = null)
     {
+        _logger.Debug(exception, "Calling SendWarning with title {title} and content {content}");
         OnWarning.Invoke(this, CreateArgs(title, content, exception));
     }
 
     public void SendError(string title, string content, Exception? exception = null)
     {
+        _logger.Debug(exception, "Calling SendError with title {title} and content {content}");
         OnError.Invoke(this, CreateArgs(title, content, exception));
     }
 
     public void SendFatal(string title, string content, Exception? exception = null)
     {
+        _logger.Debug(exception, "Calling SendFatal with title {title} and content {content}");
         OnFatal.Invoke(this, CreateArgs(title, content, exception));
     }
     #endregion
