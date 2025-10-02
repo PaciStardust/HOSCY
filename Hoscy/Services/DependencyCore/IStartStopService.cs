@@ -4,4 +4,5 @@ public interface IStartStopService
 {
     void Start();
     void Stop();
+    bool IsFaulted();
 }
