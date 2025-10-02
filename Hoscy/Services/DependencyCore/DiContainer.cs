@@ -60,6 +60,8 @@ public class DiContainer
         var addedCount = 0;
         foreach (var service in Assembly.GetExecutingAssembly().GetTypes())
         {
+            if (service.IsAbstract || service.IsInterface) continue;
+
             var containerAttribute = service.GetCustomAttribute<LoadIntoDiContainerAttribute>();
             if (containerAttribute is null)
                 continue;
@@ -150,7 +152,7 @@ public class DiContainer
         List<(Type, IStartStopService, List<Type>)> servicesToStart = [];
         foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
         {
-            if (type.IsInterface || !type.IsAssignableTo(startstopServiceInterface)) continue;
+            if (type.IsInterface || type.IsAbstract || !type.IsAssignableTo(startstopServiceInterface)) continue;
 
             if (Services.GetService(type) is not IStartStopService instance)
             {
