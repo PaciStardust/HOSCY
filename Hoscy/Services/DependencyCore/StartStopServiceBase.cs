@@ -14,6 +14,7 @@ public abstract class StartStopServiceBase : IStartStopService
     protected abstract void StartInternal();
 
     public abstract void Stop();
+    public abstract bool TryRestart();
     public abstract bool IsRunning();
 
     public Exception? GetFaultIfExists()

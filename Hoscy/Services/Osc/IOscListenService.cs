@@ -4,5 +4,5 @@ namespace Hoscy.Services.Osc;
 
 public interface IOscListenService : IStartStopService
 {
-    public bool TryRestart();
+    
 }

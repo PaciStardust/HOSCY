@@ -6,6 +6,7 @@ public interface IStartStopService
 {
     public void Start();
     public void Stop();
+    public bool TryRestart();
     public bool IsRunning();
     public StatStopServiceStatus GetStatus();
     public Exception? GetFaultIfExists();
