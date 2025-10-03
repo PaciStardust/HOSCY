@@ -27,7 +27,7 @@ public class OscListenService(ConfigModel config, IOscSendService sender, ILogge
     {
         return _workerTask is not null || _cts is not null || _listener is not null;
     }
-    
+
     protected override void StartInternal()
     {
         _logger.Information("Starting up Service on localhost:{port}", _config.Osc_Routing_ListenPort);
@@ -89,9 +89,38 @@ public class OscListenService(ConfigModel config, IOscSendService sender, ILogge
     }
     #endregion
 
+    #region Listening
     public async Task ListenLoop()
     {
-        //todo: implement
-        while (!_cts?.IsCancellationRequested ?? false) await Task.Delay(1000);
+        _logger.Debug("Started Listen Loop");
+        try
+        {
+            while (_cts is not null && !_cts.IsCancellationRequested && _listener is not null)
+            {
+                await DoListen();
+            }
+        }
+        catch (OperationCanceledException ex) when (_cts?.IsCancellationRequested ?? false)
+        {
+            _logger.Debug(ex, "Listen loop stopped via CancelException");
+        }
+        catch (Exception ex)
+        {
+            SetFault(ex);
+            _logger.Error(ex, "Listen Loop encountered an unexpected error");
+            _notify.SendError("Listen Loop encountered an exception", exception: ex);
+            while (_cts is not null && !_cts.IsCancellationRequested)
+            {
+                await Task.Delay(100);
+            }
+        }
+        _logger.Debug("Stopped Listen Loop");
     }
+
+    private async Task DoListen()
+    {
+        var res = await _listener!.ReceiveMessageAsync(_cts!.Token);
+        //todo: routing and handling
+    }
+    #endregion
 }
