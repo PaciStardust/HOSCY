@@ -70,9 +70,19 @@ public class DiContainer
 
             switch (containerAttribute.Lifetime)
             {
-                case Lifetime.Transient: collection.AddTransient(service); break;
-                case Lifetime.Scoped: collection.AddScoped(service); break;
-                default: collection.AddSingleton(service); break;
+                //todo: this is only added as its own type for startstopservice, fix via attribute?
+                case Lifetime.Transient:
+                    collection.AddTransient(service);
+                    collection.AddTransient(containerAttribute.AsType, service);
+                    break;
+                case Lifetime.Scoped:
+                    collection.AddScoped(service);
+                    collection.AddScoped(containerAttribute.AsType, service);
+                    break;
+                default:
+                    collection.AddSingleton(service);
+                    collection.AddSingleton(containerAttribute.AsType, service);
+                    break;
             }
             addedCount++;
         }

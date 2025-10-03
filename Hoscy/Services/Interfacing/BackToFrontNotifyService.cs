@@ -4,7 +4,7 @@ using Serilog;
 
 namespace Hoscy.Services.Interfacing;
 
-[LoadIntoDiContainer]
+[LoadIntoDiContainer(typeof(IBackToFrontNotifyService), Lifetime.Singleton)]
 public class BackToFrontNotifyService(ILogger logger) : IBackToFrontNotifyService
 {
     //todo: making use of this

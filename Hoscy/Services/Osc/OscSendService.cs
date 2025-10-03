@@ -10,7 +10,7 @@ using Serilog;
 
 namespace Hoscy.Services.Osc;
 
-[LoadIntoDiContainer(Lifetime.Singleton)]
+[LoadIntoDiContainer(typeof(IOscSendService), Lifetime.Singleton)]
 public class OscSendService(ILogger logger, ConfigModel config, IBackToFrontNotifyService notify) : IOscSendService
 {
     private readonly Dictionary<string, OscSender> _senders = [];

@@ -6,9 +6,10 @@ namespace Hoscy.Services.DependencyCore;
 /// Flag for enabling automatic loading of services, lifetime attributes do not affect hosted services
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-public class LoadIntoDiContainerAttribute(Lifetime lifetime = Lifetime.Singleton) : Attribute
+public class LoadIntoDiContainerAttribute(Type asType, Lifetime lifetime = Lifetime.Singleton) : Attribute
 {
     public Lifetime Lifetime { get; } = lifetime;
+    public Type AsType { get; } = asType;
 }
 
 public enum Lifetime
