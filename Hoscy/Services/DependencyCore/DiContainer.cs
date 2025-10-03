@@ -70,17 +70,13 @@ public class DiContainer
 
             switch (containerAttribute.Lifetime)
             {
-                //todo: this is only added as its own type for startstopservice, fix via attribute?
                 case Lifetime.Transient:
-                    collection.AddTransient(service);
                     collection.AddTransient(containerAttribute.AsType, service);
                     break;
                 case Lifetime.Scoped:
-                    collection.AddScoped(service);
                     collection.AddScoped(containerAttribute.AsType, service);
                     break;
                 default:
-                    collection.AddSingleton(service);
                     collection.AddSingleton(containerAttribute.AsType, service);
                     break;
             }
@@ -164,7 +160,9 @@ public class DiContainer
         {
             if (type.IsInterface || type.IsAbstract || !type.IsAssignableTo(startstopServiceInterface)) continue;
 
-            if (Services.GetService(type) is not IStartStopService instance)
+            var diType = type.GetCustomAttribute<LoadIntoDiContainerAttribute>()?.AsType ?? type;
+
+            if (Services.GetService(diType) is not IStartStopService instance)
             {
                 _internalLogger.Debug("Could not locate instance of StartStopService {serviceType}", type.FullName);
                 continue;
