@@ -4,6 +4,10 @@ using Serilog;
 
 namespace Hoscy.Services.Interfacing;
 
+/// <summary>
+/// Implementation for IBackToFrontNotifyService
+/// </summary>
+/// <param name="logger"></param>
 [LoadIntoDiContainer(typeof(IBackToFrontNotifyService), Lifetime.Singleton)]
 public class BackToFrontNotifyService(ILogger logger) : IBackToFrontNotifyService
 {
