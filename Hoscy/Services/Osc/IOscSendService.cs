@@ -2,6 +2,9 @@ using System.Threading.Tasks;
 
 namespace Hoscy.Services.Osc;
 
+/// <summary>
+/// Interface for an OSC Sender
+/// </summary>
 public interface IOscSendService
 {
     public void Send(string address, params object?[] args);

@@ -10,6 +10,9 @@ using Serilog;
 
 namespace Hoscy.Services.Osc;
 
+/// <summary>
+/// Default Listener for OSC
+/// </summary>
 [LoadIntoDiContainer(typeof(IOscListenService), Lifetime.Singleton)]
 public class OscListenService(ConfigModel config, IOscSendService sender, ILogger logger, IBackToFrontNotifyService notify) : StartStopServiceBase, IOscListenService
 {

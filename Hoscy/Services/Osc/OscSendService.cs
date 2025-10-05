@@ -10,6 +10,9 @@ using Serilog;
 
 namespace Hoscy.Services.Osc;
 
+/// <summary>
+/// Default Sender for OSC
+/// </summary>
 [LoadIntoDiContainer(typeof(IOscSendService), Lifetime.Singleton)]
 public class OscSendService(ILogger logger, ConfigModel config, IBackToFrontNotifyService notify) : IOscSendService
 {
