@@ -4,6 +4,9 @@ using Avalonia.Data.Converters;
 
 namespace Hoscy.Converters;
 
+/// <summary>
+/// Converts a string to bool if null or empty
+/// </summary>
 public class StringNullOrEmptyToBoolConverter : IValueConverter
 {
     public static readonly StringNullOrEmptyToBoolConverter Instance = new();

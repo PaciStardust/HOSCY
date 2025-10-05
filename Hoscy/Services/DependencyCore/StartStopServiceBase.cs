@@ -2,6 +2,9 @@ using System;
 
 namespace Hoscy.Services.DependencyCore;
 
+/// <summary>
+/// Helper class for ease of use for the )StartStopServices
+/// </summary>
 public abstract class StartStopServiceBase : IStartStopService
 {
     private Exception? _internalException = null;
