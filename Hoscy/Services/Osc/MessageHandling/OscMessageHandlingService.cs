@@ -6,7 +6,7 @@ using Hoscy.Services.Interfacing;
 using LucHeart.CoreOSC;
 using Serilog;
 
-namespace Hoscy.Services.Osc;
+namespace Hoscy.Services.Osc.MessageHandling;
 
 /// <summary>
 /// Service to handle osc messages
