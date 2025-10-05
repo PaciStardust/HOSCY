@@ -7,5 +7,9 @@ namespace Hoscy.Services.Osc;
 /// </summary>
 public interface IOscMessageHandler
 {
+    /// <summary>
+    /// Handles an OscMessage
+    /// </summary>
+    /// <returns>True if handled</returns>
     public bool HandleMessage(OscMessage message);
 }
