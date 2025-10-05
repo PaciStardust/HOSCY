@@ -1,0 +1,16 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Hoscy.Views.SplashScreen"
+        Title="SplashScreen"
+        Background="{StaticResource BackgroundDarkBrush}">
+
+  <Grid ColumnDefinitions="*,*" RowDefinitions="*,2*,*">
+    <Image Margin="0,0,8,0" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" Source="avares://Hoscy/Assets/hoscy_circle.ico" />
+    <Border Margin="8,0,0,0" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center">
+      <TextBlock FontWeight="Bold" Foreground="White" FontSize="32">HOSCY</TextBlock>
+    </Border>
+  </Grid>
+</Window>
