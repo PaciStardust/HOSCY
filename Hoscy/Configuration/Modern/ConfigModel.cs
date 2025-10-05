@@ -789,6 +789,13 @@ public class ConfigModel : ObservableObject
         set => SetProperty(ref _textbox_Text_MaxDisplayedCharacters, Utils.MinMax(value, 10, 130));
     }
 
+    private bool _textbox_Text_TypingIndicatorWhenSpeaking;
+    public bool Textbox_Text_TypingIndicatorWhenSpeaking
+    {
+        get => _textbox_Text_TypingIndicatorWhenSpeaking;
+        set => SetProperty(ref _textbox_Text_TypingIndicatorWhenSpeaking, value);
+    }
+
     private bool _textbox_Text_TypingIndicatorWhenDisabled;
     public bool Textbox_Text_TypingIndicatorWhenDisabled
     {

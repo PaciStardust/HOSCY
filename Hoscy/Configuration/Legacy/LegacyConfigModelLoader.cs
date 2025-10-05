@@ -313,6 +313,7 @@ internal static class LegacyConfigModelLoader
             Speech_Replacement_IgnoredCharactersForShortcuts = oldConfig.Speech.ShortcutIgnoredCharacters,
 
             Textbox_Text_MaxDisplayedCharacters = oldConfig.Textbox.MaxLength,
+            Textbox_Text_TypingIndicatorWhenSpeaking = oldConfig.Textbox.UseIndicatorWhenSpeaking,
             Textbox_Text_TypingIndicatorWhenDisabled = oldConfig.Textbox.UseIndicatorWithoutBox,
 
             Textbox_Timeout_DynamicPer20CharactersDisplayedMs = oldConfig.Textbox.TimeoutMultiplier,

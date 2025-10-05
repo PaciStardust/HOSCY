@@ -145,6 +145,7 @@ internal class LegacyConfigTextboxModel
     public bool DynamicTimeout { get; set; } = true;
     public bool AutomaticClearNotification { get; set; } = true;
     public bool AutomaticClearMessage { get; set; }
+    public bool UseIndicatorWhenSpeaking { get; set; }
     public bool UseIndicatorWithoutBox { get; set; }
     public string NotificationIndicatorLeft { get; set; } = "〈";
     public string NotificationIndicatorRight { get; set; } = "〉";
