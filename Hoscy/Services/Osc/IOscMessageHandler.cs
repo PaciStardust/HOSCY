@@ -3,9 +3,9 @@ using LucHeart.CoreOSC;
 namespace Hoscy.Services.Osc;
 
 /// <summary>
-/// Represents a Control Module for OscControl
+/// Represents a Message Handler for OSC Messages
 /// </summary>
-public interface IOscInternalControlModule
+public interface IOscMessageHandler
 {
     public bool HandleMessage(OscMessage message);
 }
