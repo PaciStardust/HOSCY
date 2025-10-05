@@ -4,6 +4,9 @@ using System.Reflection;
 
 namespace Hoscy.Utility;
 
+/// <summary>
+/// Utilities for Important paths
+/// </summary>
 public static class PathUtils
 {
     public static string PathExecutable { get; private set; }

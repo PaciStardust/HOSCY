@@ -9,7 +9,10 @@ using Serilog;
 
 namespace Hoscy.Utility;
 
-public static class Utils
+/// <summary>
+/// Misc Utility
+/// </summary>
+public static class Utils //todo: clean this
 {
     #region Extention Methods
     /// <summary>

@@ -7,6 +7,9 @@ using Serilog;
 
 namespace Hoscy.Utility;
 
+/// <summary>
+/// Utilities for Launching the Application
+/// </summary>
 public static class LaunchUtils
 {
     private const string UNKNOWN_VERSION = "???";

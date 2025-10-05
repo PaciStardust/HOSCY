@@ -7,6 +7,9 @@ using Serilog;
 
 namespace Hoscy.Utility;
 
+/// <summary>
+/// Utilities for creating a logger and routing logging
+/// </summary>
 public static class LogUtils
 {
     private const string LOGGING_TEMPLATE = "[{Timestamp:HH:mm:ss.fff}] [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}";
@@ -43,6 +46,9 @@ public static class LogUtils
         return logConfig.CreateLogger();
     }
 
+    /// <summary>
+    /// Route Avalonia Logging to Serilog
+    /// </summary>
     public static AppBuilder LogToSerilog(this AppBuilder builder, ILogger logger)
     {
         Logger.Sink = new SerilogAvaloniaSink(logger);
@@ -50,6 +56,9 @@ public static class LogUtils
     }
 }
 
+/// <summary>
+/// Sink to permit Avalonia to log to Serilog
+/// </summary>
 public class SerilogAvaloniaSink(ILogger logger) : ILogSink
 {
     private readonly ILogger _logger = logger.ForContext<SerilogAvaloniaSink>();
@@ -71,7 +80,8 @@ public class SerilogAvaloniaSink(ILogger logger) : ILogSink
         _logger.Write(ConvertLogLevel(level), logText, propertyValues);
     }
 
-    private static Serilog.Events.LogEventLevel ConvertLogLevel(LogEventLevel level) {
+    private static Serilog.Events.LogEventLevel ConvertLogLevel(LogEventLevel level)
+    {
         return level switch
         {
             LogEventLevel.Verbose => Serilog.Events.LogEventLevel.Verbose,
