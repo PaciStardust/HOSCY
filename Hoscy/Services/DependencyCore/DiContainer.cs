@@ -9,6 +9,9 @@ using Serilog;
 
 namespace Hoscy.Services.DependencyCore;
 
+/// <summary>
+/// Container for resolving dependencies
+/// </summary>
 public class DiContainer
 {
     public ServiceProvider Services { get; init; }
@@ -117,7 +120,7 @@ public class DiContainer
 
         _internalLogger.Information("Establishing startup order of {serviceCount} StartStopServices by resolving dependencies... (DI taken {diDuration}ms so far)",
             servicesToStart.Count, sw.ElapsedMilliseconds);
-        var  (servicesResolvedInOrder, servicesInOrder) = EstablishStartOrder(servicesToStart);
+        var (servicesResolvedInOrder, servicesInOrder) = EstablishStartOrder(servicesToStart);
 
         _internalLogger.Information("Order of {toStart} StartStopServices established, proceeding with startup... (DI taken {diDuration}ms so far)",
             servicesInOrder.Count, sw.ElapsedMilliseconds);
@@ -253,7 +256,7 @@ public class DiContainer
         if (reversed)
         {
             servicesResolvedInOrder.Reverse();
-            servicesInOrder.Reverse();   
+            servicesInOrder.Reverse();
         }
         return (servicesResolvedInOrder, servicesInOrder);
     }
