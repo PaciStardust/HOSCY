@@ -74,22 +74,7 @@ public class OscListenService(ConfigModel config, IOscSendService sender, ILogge
     }
 
     public override bool TryRestart()
-    {
-        _logger.Information("Restarting Service");
-        try
-        {
-            Stop();
-            Start();
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, "Failed to restart service");
-            _notify.SendError("OscListenService start failed", exception: ex);
-            return false;
-        }
-        _logger.Information("Restarted Service");
-        return true;
-    }
+        => TryRestartSimple(GetType().Name, _logger, _notify);
     #endregion
 
     #region Listening
