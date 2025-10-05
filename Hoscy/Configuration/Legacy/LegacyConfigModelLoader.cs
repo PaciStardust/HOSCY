@@ -367,9 +367,9 @@ internal static class LegacyConfigModelLoader
         }));
     }
 
-    private static ObservableCollection<OscRoutingFilterModel> ConvertOscRoutingFilterModel(List<LegacyOscRoutingFilterModel> routingFilters)
+    private static ObservableCollection<OscRelayFilterModel> ConvertOscRoutingFilterModel(List<LegacyOscRoutingFilterModel> routingFilters)
     {
-        return new(routingFilters.Select(old => new OscRoutingFilterModel()
+        return new(routingFilters.Select(old => new OscRelayFilterModel()
         {
             Name = old.Name,
             Port = old.Port,

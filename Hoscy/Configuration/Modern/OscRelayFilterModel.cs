@@ -4,7 +4,7 @@ using Hoscy.Utility;
 
 namespace Hoscy.Configuration.Modern;
 
-public class OscRoutingFilterModel : ObservableObject
+public class OscRelayFilterModel : ObservableObject
 {
     private const string NO_FILTER_NAME = "Unnamed Filter";
     private string _name = NO_FILTER_NAME;
