@@ -1,4 +1,6 @@
 using System;
+using Hoscy.Services.Interfacing;
+using Serilog;
 
 namespace Hoscy.Services.DependencyCore;
 
@@ -33,5 +35,23 @@ public abstract class StartStopServiceBase : IStartStopService
         if (!IsRunning()) return StatStopServiceStatus.Stopped;
         if (GetFaultIfExists() is not null) return StatStopServiceStatus.Faulted;
         return StatStopServiceStatus.Running;
+    }
+
+    public bool TryRestartSimple(string serviceName, ILogger logger, IBackToFrontNotifyService? notify)
+    {
+        logger.Information("Restarting Service {serviceName}", serviceName);
+        try
+        {
+            Stop();
+            Start();
+        }
+        catch (Exception ex)
+        {
+            logger.Error(ex, "Failed to restart service {serviceName}", serviceName);
+            notify?.SendError($"{serviceName} restart failed", exception: ex);
+            return false;
+        }
+        logger.Information("Restarted Service {serviceName}", serviceName);
+        return true;
     }
 }
