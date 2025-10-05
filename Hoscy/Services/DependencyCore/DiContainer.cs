@@ -20,14 +20,28 @@ public class DiContainer
         _internalLogger = internalLogger;
     }
 
-    public T? GetService<T>() {
+    /// <summary>
+    /// Shortcut for Services.GetService
+    /// </summary>
+    public T? GetService<T>()
+    {
         return Services.GetService<T>();
     }
+    /// <summary>
+    /// Shortcut for Services.GetRequiredService
+    /// </summary>
     public T GetRequiredService<T>() where T : notnull
     {
         return Services.GetRequiredService<T>();
     }
 
+    /// <summary>
+    /// Creates a DiContainer using a Logger, ConfigModel, some manual extra additions and all classes with the loader attribute
+    /// </summary>
+    /// <param name="logger">Logger for container</param>
+    /// <param name="config">ConfigModel for container</param>
+    /// <param name="additionalInserts">An action to insert additional dependencies manually</param>
+    /// <returns>DiContainer with all dependencies loaded in</returns>
     public static DiContainer LoadFromAssembly(ILogger logger, ConfigModel config, Action<ServiceCollection>? additionalInserts = null)
     {
         var internalLogger = logger.ForContext<DiContainer>();
@@ -44,6 +58,9 @@ public class DiContainer
         return new DiContainer(collection.BuildServiceProvider(), internalLogger);
     }
 
+    /// <summary>
+    /// Creates an empty DiContainer for debugging
+    /// </summary>
     public static DiContainer Empty()
     {
         return new DiContainer
@@ -53,6 +70,9 @@ public class DiContainer
         );
     }
 
+    /// <summary>
+    /// Loads services with attribute into IServiceCollection
+    /// </summary>
     private static void AddFromAssembly(IServiceCollection collection, ILogger logger)
     {
         var sw = Stopwatch.StartNew();
