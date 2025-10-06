@@ -7,5 +7,5 @@ namespace Hoscy.Services.Osc;
 /// </summary>
 public interface IOscListenService : IStartStopService
 {
-
+    public int? GetPort();
 }

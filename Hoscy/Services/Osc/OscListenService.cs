@@ -31,6 +31,11 @@ public class OscListenService(ConfigModel config, IOscSendService sender, ILogge
         return _workerTask is not null || _cts is not null || _listener is not null;
     }
 
+    public int? GetPort()
+    {
+        return IsRunning() ? _config.Osc_Routing_ListenPort : null;
+    }
+
     protected override void StartInternal()
     {
         _logger.Information("Starting up Service on localhost:{port}", _config.Osc_Routing_ListenPort);
@@ -39,7 +44,7 @@ public class OscListenService(ConfigModel config, IOscSendService sender, ILogge
             _logger.Information("Skipped starting Service, still running");
             return;
         }
-        _listener = new(new(IPAddress.Parse("127.0.0.1"), _config.Osc_Routing_ListenPort))
+        _listener = new(new(IPAddress.Loopback, _config.Osc_Routing_ListenPort))
         {
             EnableTransparentBundleToMessageConversion = true
         };
