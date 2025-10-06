@@ -64,7 +64,7 @@ public class OscListenService(ConfigModel config, IOscSendService sender, ILogge
         }
         catch (OperationCanceledException ex)
         {
-            _logger.Debug(ex, "Caught expected exception during sutdown");
+            _logger.Debug(ex, "Caught expected exception during shutdown");
         }
         finally
         {
