@@ -5,7 +5,7 @@ namespace Hoscy.Services.DependencyCore;
 /// <summary>
 /// Represents a service that can be started and stopped
 /// </summary>
-public interface IStartStopService
+public interface IStartStopService : IDisposable
 {
     public void Start();
     public void Stop();
@@ -13,6 +13,12 @@ public interface IStartStopService
     public bool IsRunning();
     public StatStopServiceStatus GetStatus();
     public Exception? GetFaultIfExists();
+
+    void IDisposable.Dispose()
+    {
+        Stop();
+        GC.SuppressFinalize(this);
+    }
 }
 
 public enum StatStopServiceStatus {
