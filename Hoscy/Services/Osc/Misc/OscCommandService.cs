@@ -18,12 +18,17 @@ public partial class OscCommandService : IOscCommandService
     )]
     private static partial Regex OscParameterExtractorRegex();
 
-    public bool DetectAndHandleCommand(string commandString)
+    public string GetCommandIdentifier()
     {
         throw new System.NotImplementedException();
     }
 
     public bool DetectCommand(string commandString)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public bool DetectAndHandleCommand(string commandString)
     {
         throw new System.NotImplementedException();
     }

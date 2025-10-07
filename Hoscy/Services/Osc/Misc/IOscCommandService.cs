@@ -16,4 +16,9 @@ public interface IOscCommandService
     /// </summary>
     /// <returns>Success</returns>
     public bool DetectAndHandleCommand(string commandString);
+
+    /// <summary>
+    /// Gets the text needed to identify a command
+    /// </summary>
+    public string GetCommandIdentifier();
 }
