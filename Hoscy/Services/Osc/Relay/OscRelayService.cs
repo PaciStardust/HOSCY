@@ -72,20 +72,20 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
     {
         const string OSC_TEST_ADDRESS = "/osctest123";
 
-        logger.Information("Loading relay filters...");
+        _logger.Information("Loading relay filters...");
         HasInvalidFilters = false;
         _filters.Clear();
         List<OscReadonlyRelayFilter> filters = [];
         if (filterModels.Count == 0)
         {
-            logger.Information("No relay filters found");
+            _logger.Information("No relay filters found");
             return;
         }
 
         foreach (var filterModel in filterModels)
         {
             var readonlyFilter = new OscReadonlyRelayFilter(filterModel);
-            logger.Debug("Checking validity of Relay Filter {filterName}", readonlyFilter.Name);
+            _logger.Debug("Checking validity of Relay Filter {filterName}", readonlyFilter.Name);
 
             var result = !string.IsNullOrWhiteSpace(readonlyFilter.Ip)
                 && !string.IsNullOrWhiteSpace(readonlyFilter.Name)
@@ -101,11 +101,11 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
 
             filterModel.SetValidity(true);
             filters.Add(readonlyFilter);
-            logger.Debug("Relay Filter {filterName} is valid and has been added to list", readonlyFilter.Name);
+            _logger.Debug("Relay Filter {filterName} is valid and has been added to list", readonlyFilter.Name);
         }
 
         _filters = filters;
-        logger.Information("{currentFilterCount}/{allFiltersCount} filters have been loaded", filters.Count, filterModels.Count);
+        _logger.Information("{currentFilterCount}/{allFiltersCount} filters have been loaded", filters.Count, filterModels.Count);
     }
     #endregion
 }
