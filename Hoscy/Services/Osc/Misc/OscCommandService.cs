@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Hoscy.Services.DependencyCore;
 using Hoscy.Services.Osc.SendReceive;
@@ -10,12 +11,13 @@ using Serilog;
 namespace Hoscy.Services.Osc.Misc;
 
 [LoadIntoDiContainer(typeof(IOscCommandService), Lifetime.Singleton)]
-public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery, IOscSendService sender) : IOscCommandService
+public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery, IOscSendService sender) : StartStopServiceBase, IOscCommandService
 {
     private readonly ILogger _logger = logger.ForContext<OscCommandService>();
     private readonly IOscQueryService _oscQuery = oscQuery;
     private readonly IOscSendService _sender = sender;
-    private bool _isRunning = true; //todo: temp solution
+    private readonly List<Task> _runningTasks = []; //todo: use
+    private readonly CancellationTokenSource _cts = new();
 
     [GeneratedRegex(
         @"\[ *(?<address>(?:\/[^\ #\*,\/?\[\]\{\}]+)+)(?<values>(?: +\[(?:[fF]\]-?[0-9]+(?:\.[0-9]+)?|[iI]\]\-?[0-9]+|[sS]\]""[^""]*""|[bB]\](?:[tT]rue|[fF]alse)))+)(?: +(?:(?<ip>(?:(?:25[0-5]|(?:2[0-4]|1\d|[1-9]|)\d)\.?\b){4}):(?<port>[0-9]{1,5})|""(?<target>[^""]*)""))?(?: +[wW](?<wait>[0-9]+))? *\]",
@@ -29,6 +31,7 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
     )]
     private static partial Regex OscParameterExtractorRegex();
 
+    #region Funtionality
     private const string OSC_COMMAND_IDENTIFIER = "[OSC]";
     public string GetCommandIdentifier()
         => OSC_COMMAND_IDENTIFIER;
@@ -40,6 +43,8 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
 
     public OscCommandState DetectAndHandleCommand(string commandString)
     {
+        if (_cts.IsCancellationRequested) return OscCommandState.Shutdown;
+
         _logger.Verbose("Performing OSC command check on string \"{commandString}\"", commandString);
         if (!DetectCommand(commandString))
         {
@@ -90,7 +95,7 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
         string addressText = commandMatch.Groups["address"].Value;
         string valuesText = commandMatch.Groups["values"].Value;
         string? targetText = commandMatch.Groups["target"].Value.Length == 0 ? null : commandMatch.Groups["target"].Value;
-        string? ipText = commandMatch.Groups["ip"].Value.Length == 0 ? null: commandMatch.Groups["ip"].Value;
+        string? ipText = commandMatch.Groups["ip"].Value.Length == 0 ? null : commandMatch.Groups["ip"].Value;
         string? portText = commandMatch.Groups["port"].Value.Length == 0 ? null : commandMatch.Groups["port"].Value;
         string? waitText = commandMatch.Groups["wait"].Value.Length == 0 ? null : commandMatch.Groups["wait"].Value;
 
@@ -134,7 +139,9 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
                 return null;
             }
             parsedPort = parsedPortTmp;
-        } else {
+        }
+        else
+        {
             parsedPort = null;
         }
 
@@ -190,7 +197,7 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
                 case "i":
                     if (int.TryParse(value, out var parsedInt))
                         parsedVariables.Add(parsedInt);
-                    else 
+                    else
                         _logger.Warning("Failed Parsing OSC variable in \"{valuesText}\" => type \"{typeText}\" for value \"{valueText}\"", valuesText, type, value);
                     continue;
 
@@ -216,22 +223,22 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
 
         for (int i = 0; i < cmdCount; i++)
         {
-            if (!_isRunning)
+            if (_cts.IsCancellationRequested)
             {
-                _logger.Debug("{taskId}: Cancelled early during step {step}", taskId, i+1);
+                _logger.Debug("{taskId}: Cancelled early during step {step}", taskId, i + 1);
                 return Task.CompletedTask;
             }
 
             var cmdInfo = commandInfos[i];
-            _logger.Debug("{taskId}: Step {step}/{cmdCount} sending {cmdInfo}", taskId, i+1, cmdCount, cmdInfo.ToString());
+            _logger.Debug("{taskId}: Step {step}/{cmdCount} sending {cmdInfo}", taskId, i + 1, cmdCount, cmdInfo.ToString());
             if (!_sender.SendSync(cmdInfo.Ip ?? _sender.GetDefaultIp(), cmdInfo.Port ?? _sender.GetDefaultPort(), cmdInfo.Address, cmdInfo.Arguments))
             {
-                _logger.Warning("{taskId}: Step {step}/{cmdCount} with info {cmdInfo} failed to send", taskId, i+1, cmdCount, cmdInfo.ToString());
+                _logger.Warning("{taskId}: Step {step}/{cmdCount} with info {cmdInfo} failed to send", taskId, i + 1, cmdCount, cmdInfo.ToString());
                 return Task.CompletedTask;
             }
             if (i != cmdCount - 1 && cmdInfo.Wait.HasValue && cmdInfo.Wait.Value > 0)
             {
-                _logger.Debug("{taskId}: Step {step}/{cmdCount} waiting for {timeout}ms after execution", taskId, i+1, cmdCount, cmdInfo.Wait);
+                _logger.Debug("{taskId}: Step {step}/{cmdCount} waiting for {timeout}ms after execution", taskId, i + 1, cmdCount, cmdInfo.Wait);
                 Task.Delay(cmdInfo.Wait.Value).Wait();
             }
 
@@ -239,4 +246,5 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
         _logger.Debug("{taskId}: Finished processing {cmdCount} subcommands", taskId, cmdCount);
         return Task.CompletedTask;
     }
+    #endregion
 }
