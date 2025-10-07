@@ -16,7 +16,7 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
     private readonly ILogger _logger = logger.ForContext<OscCommandService>();
     private readonly IOscQueryService _oscQuery = oscQuery;
     private readonly IOscSendService _sender = sender;
-    private readonly List<Task> _runningTasks = []; //todo: use
+    private readonly List<Task> _runningTasks = [];
     private readonly CancellationTokenSource _cts = new();
 
     [GeneratedRegex(
@@ -31,8 +31,10 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
     )]
     private static partial Regex OscParameterExtractorRegex();
 
-    #region Funtionality
     private const string OSC_COMMAND_IDENTIFIER = "[OSC]";
+    private const int OSC_COMMAND_MAX_UNINTERRUPTED_WAIT = 50;
+
+    #region Funtionality
     public string GetCommandIdentifier()
         => OSC_COMMAND_IDENTIFIER;
 
@@ -80,8 +82,9 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
         var threadId = "ST-" + Guid.NewGuid().ToString().Split('-')[0];
         _logger.Debug("Parsed {commandMessageCount} OSC command infos from string \"{commandString}\", executing as id {threadId}",
             commandInfos.Count, commandString, threadId);
-        //todo: keep track of these and cancel them?
-        Task.Run(() => ExecuteOscCommands(threadId, commandInfos));
+        var task = Task.Run(() => ExecuteOscCommands(threadId, commandInfos));
+        PerformTaskCleanup();
+        _runningTasks.Add(task);
         return OscCommandState.Success;
     }
 
@@ -242,7 +245,7 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
                 var timeToWait = cmdInfo.Wait.Value;
                 while (timeToWait > 0) //this loop ensures that we can exit within 50ms of the token being cancelled
                 {
-                    var waitCycle = Math.Min(timeToWait, 50);
+                    var waitCycle = Math.Min(timeToWait, OSC_COMMAND_MAX_UNINTERRUPTED_WAIT);
                     Task.Delay(waitCycle).Wait();
                     if (_cts.IsCancellationRequested) return Task.CompletedTask;
                     timeToWait -= waitCycle;
@@ -256,7 +259,11 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
     #endregion
 
     #region Task Management
-    public void PerformTaskCleanup()
+    /// <summary>
+    /// Checks list of tasks for any that are completed and removes them
+    /// </summary>
+    /// <returns>Currently running task count</returns>
+    public int PerformTaskCleanup()
     {
         var currentCount = _runningTasks.Count;
         _logger.Debug("Performing Task Cleanup, currently {currentCount} in list", currentCount);
@@ -268,6 +275,7 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
             }
         }
         _logger.Debug("Performed Task Cleanup, currently {oldCount} => {currentCount} in list", currentCount, _runningTasks.Count);
+        return _runningTasks.Count;
     }
     #endregion
 
@@ -291,7 +299,24 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
 
     public override void Stop()
     {
-        throw new NotImplementedException();
+        _logger.Information("Service stopping, ensuring all tasks ended");
+        _cts.Cancel();
+
+        var remain = PerformTaskCleanup();
+        if (remain > 0)
+        {
+            _logger.Information("{remain} tasks are still running, waiting a timer period to allow them to safely stop", remain);
+            Thread.Sleep(OSC_COMMAND_MAX_UNINTERRUPTED_WAIT + 1); //This should ensure all tasks to have a chance of exiting unless stuck
+            remain = PerformTaskCleanup();
+            if (remain > 0)
+            {
+                _logger.Information("{remain} tasks refused to stop in expected duration, forcing shutdown", remain);
+                _runningTasks.Clear();
+            }
+        }
+
+        _cts.Dispose();
+        _logger.Information("Service is stopped");
     }
     #endregion
 }
