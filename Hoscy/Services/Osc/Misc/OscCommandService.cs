@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Hoscy.Services.DependencyCore;
@@ -138,12 +139,62 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
             Port = parsedPort,
             Wait = parsedWait
         };
+        _logger.Verbose("Parsed OSC subcommand \"{subcommandString}\"", commandMatch.Value);
         return info;
     }
 
+    /// <summary>
+    /// Parses osc variables from string
+    /// </summary>
     private List<object> ParseOscVariables(string valuesText)
     {
-        throw new NotImplementedException();
+        _logger.Verbose("Parsing OSC variables \"{valuesText}\"", valuesText);
+        var variableMatches = OscParameterExtractorRegex().Matches(valuesText);
+        var parsedVariables = new List<object>();
+
+        foreach (Match variableMatch in variableMatches)
+        {
+            var type = variableMatch.Groups["type"].Value;
+            var value = variableMatch.Groups["value"].Value;
+
+            if (string.IsNullOrWhiteSpace(type))
+            {
+                _logger.Warning("Failed Parsing OSC variable in \"{valuesText}\" => type missing for value \"{valueText}\"", valuesText, value);
+                continue;
+            }
+
+            switch (type.ToLower())
+            {
+                case "s":
+                    parsedVariables.Add(value);
+                    continue;
+
+                case "b":
+                    parsedVariables.Add(value.Equals("true", StringComparison.OrdinalIgnoreCase));
+                    continue;
+
+                case "f":
+                    if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out float parsedFloat))
+                        parsedVariables.Add(parsedFloat);
+                    else
+                        _logger.Warning("Failed Parsing OSC variable in \"{valuesText}\" => type \"{typeText}\" for value \"{valueText}\"", valuesText, type, value);
+                    continue;
+
+                case "i":
+                    if (int.TryParse(value, out var parsedInt))
+                        parsedVariables.Add(parsedInt);
+                    else 
+                        _logger.Warning("Failed Parsing OSC variable in \"{valuesText}\" => type \"{typeText}\" for value \"{valueText}\"", valuesText, type, value);
+                    continue;
+
+                default:
+                    _logger.Warning("Failed Parsing OSC variable in \"{valuesText}\" => type \"{typeText}\" for value \"{valueText}\"", valuesText, type, value);
+                    continue;
+            }
+        }
+
+        _logger.Verbose("Parsed {parsedCount}/{totalCount} OSC variables from \"{valuesText}\"", parsedVariables.Count, variableMatches.Count, valuesText);
+        return parsedVariables;
     }
 
     private void ExecuteOscCommands(string threadId, List<OscCommandInfo> commandInfos)
