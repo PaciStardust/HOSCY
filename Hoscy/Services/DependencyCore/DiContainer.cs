@@ -253,7 +253,7 @@ public class DiContainer
             }
         }
 
-        if (reversed)
+        if (!reversed)
         {
             servicesResolvedInOrder.Reverse();
             servicesInOrder.Reverse();
