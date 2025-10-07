@@ -1,7 +1,7 @@
 using Hoscy.Services.DependencyCore;
 using LucHeart.CoreOSC;
 
-namespace Hoscy.Services.Osc;
+namespace Hoscy.Services.Osc.Relay;
 
 /// <summary>
 /// Relays incoming messages to other locations
