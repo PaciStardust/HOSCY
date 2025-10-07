@@ -11,7 +11,7 @@ using Hoscy.Services.Osc.Relay;
 using LucHeart.CoreOSC;
 using Serilog;
 
-namespace Hoscy.Services.Osc;
+namespace Hoscy.Services.Osc.SendReceive;
 
 /// <summary>
 /// Default Listener for OSC

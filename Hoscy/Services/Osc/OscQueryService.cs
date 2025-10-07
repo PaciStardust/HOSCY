@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Timers;
 using Hoscy.Services.DependencyCore;
 using Hoscy.Services.Interfacing;
+using Hoscy.Services.Osc.SendReceive;
 using Microsoft.Extensions.Logging;
 using Serilog.Extensions.Logging;
 using Vrc = VRC.OSCQuery;

@@ -4,6 +4,7 @@ using System.Linq;
 using Hoscy.Configuration.Modern;
 using Hoscy.Services.DependencyCore;
 using Hoscy.Services.Interfacing;
+using Hoscy.Services.Osc.SendReceive;
 using LucHeart.CoreOSC;
 using Serilog;
 

@@ -1,6 +1,6 @@
 using Hoscy.Services.DependencyCore;
 
-namespace Hoscy.Services.Osc;
+namespace Hoscy.Services.Osc.SendReceive;
 
 /// <summary>
 /// Identifies an IOscListenService, a service used to receive OSC

@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Hoscy.Services.Osc;
+namespace Hoscy.Services.Osc.SendReceive;
 
 /// <summary>
 /// Interface for an OSC Sender

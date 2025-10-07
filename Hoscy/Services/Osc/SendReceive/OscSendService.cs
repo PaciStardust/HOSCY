@@ -8,7 +8,7 @@ using Hoscy.Services.Interfacing;
 using LucHeart.CoreOSC;
 using Serilog;
 
-namespace Hoscy.Services.Osc;
+namespace Hoscy.Services.Osc.SendReceive;
 
 /// <summary>
 /// Default Sender for OSC
