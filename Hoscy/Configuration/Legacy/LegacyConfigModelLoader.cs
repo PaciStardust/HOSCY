@@ -373,7 +373,7 @@ internal static class LegacyConfigModelLoader
         return new(routingFilters.Select(old => new OscRelayFilterModel()
         {
             Name = old.Name,
-            Port = old.Port,
+            Port = ushort.TryParse(old.Port.ToString(), out var parsedPort) ? parsedPort : ushort.MinValue,
             Ip = old.Ip,
             Filters = new(old.Filters),
             BlacklistMode = old.BlacklistMode
