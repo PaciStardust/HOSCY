@@ -228,7 +228,7 @@ internal static class LegacyConfigModelLoader
             Osc_Routing_TargetIp = oldConfig.Osc.Ip,
             Osc_Routing_TargetPort = oldConfig.Osc.Port,
             Osc_Routing_ListenPort = oldConfig.Osc.PortListen,
-            Osc_Routing_Filters = ConvertOscRoutingFilterModel(oldConfig.Osc.RoutingFilters),
+            Osc_Relay_Filters = ConvertOscRoutingFilterModel(oldConfig.Osc.RoutingFilters),
 
             Osc_Address_Tool_ManualMute = oldConfig.Osc.AddressManualMute,
             Osc_Address_Tool_SkipSpeech = oldConfig.Osc.AddressManualSkipSpeech,

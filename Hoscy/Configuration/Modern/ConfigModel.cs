@@ -272,11 +272,11 @@ public class ConfigModel : ObservableObject
         set => SetProperty(ref _osc_Routing_ListenPort, Utils.MinMax(value, -1, 65535));
     }
 
-    private ObservableCollection<OscRelayFilterModel> _osc_Routing_Filters = [];
-    public ObservableCollection<OscRelayFilterModel> Osc_Routing_Filters
+    private ObservableCollection<OscRelayFilterModel> _osc_Relay_Filters = [];
+    public ObservableCollection<OscRelayFilterModel> Osc_Relay_Filters
     {
-        get => _osc_Routing_Filters;
-        set => SetProperty(ref _osc_Routing_Filters, value);
+        get => _osc_Relay_Filters;
+        set => SetProperty(ref _osc_Relay_Filters, value);
     }
 
     //Address - Tool
