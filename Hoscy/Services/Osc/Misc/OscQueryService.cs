@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using Serilog.Extensions.Logging;
 using Vrc = VRC.OSCQuery;
 
-namespace Hoscy.Services.Osc;
+namespace Hoscy.Services.Osc.Misc;
 
 [LoadIntoDiContainer(typeof(IOscQueryService), Lifetime.Singleton)]
 public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService notify, IOscListenService listener) : StartStopServiceBase, IOscQueryService

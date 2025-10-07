@@ -1,6 +1,6 @@
 using Hoscy.Services.DependencyCore;
 
-namespace Hoscy.Services.Osc;
+namespace Hoscy.Services.Osc.Misc;
 
 public interface IOscQueryService : IStartStopService
 {

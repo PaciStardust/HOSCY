@@ -1,4 +1,4 @@
-namespace Hoscy.Services.Osc;
+namespace Hoscy.Services.Osc.Misc;
 
 /// <summary>
 /// Handling of OSC commands
