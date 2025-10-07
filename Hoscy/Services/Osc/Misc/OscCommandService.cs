@@ -248,6 +248,22 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
     }
     #endregion
 
+    #region Task Management
+    public void PerformTaskCleanup()
+    {
+        var currentCount = _runningTasks.Count;
+        _logger.Debug("Performing Task Cleanup, currently {currentCount} in list", currentCount);
+        for (var i = currentCount; i > -1; i--)
+        {
+            if (_runningTasks[i].IsCompleted)
+            {
+                _runningTasks.RemoveAt(i);
+            }
+        }
+        _logger.Debug("Performed Task Cleanup, currently {oldCount} => {currentCount} in list", currentCount, _runningTasks.Count);
+    }
+    #endregion
+
     #region Start / Stop
     protected override void StartInternal()
     {
