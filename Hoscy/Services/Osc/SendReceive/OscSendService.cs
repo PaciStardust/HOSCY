@@ -21,10 +21,17 @@ public class OscSendService(ILogger logger, ConfigModel config, IBackToFrontNoti
     private readonly ConfigModel _config = config;
     private readonly IBackToFrontNotifyService _notify = notify;
 
+    #region Defaults
+    public string GetDefaultIp()
+        => _config.Osc_Routing_TargetIp;
+    public ushort GetDefaultPort()
+        => _config.Osc_Routing_TargetPort;
+    #endregion
+
     #region Sending Public
     public void SendSyncFireAndForget(string address, params object?[] args)
     {
-        SendSyncFireAndForget(_config.Osc_Routing_TargetIp, _config.Osc_Routing_TargetPort, address, args);
+        SendSyncFireAndForget(GetDefaultIp(), GetDefaultPort(), address, args);
     }
 
     public void SendSyncFireAndForget(string ip, ushort port, string address, params object?[] args)
@@ -36,7 +43,7 @@ public class OscSendService(ILogger logger, ConfigModel config, IBackToFrontNoti
 
     public bool SendSync(string address, params object?[] args)
     {
-        return SendSync(_config.Osc_Routing_TargetIp, _config.Osc_Routing_TargetPort, address, args);
+        return SendSync(GetDefaultIp(), GetDefaultPort(), address, args);
     }
 
     public bool SendSync(string ip, ushort port, string address, params object?[] args)
@@ -48,7 +55,7 @@ public class OscSendService(ILogger logger, ConfigModel config, IBackToFrontNoti
 
     public async Task<bool> SendAsync(string address, params object?[] args)
     {
-        return await SendAsync(_config.Osc_Routing_TargetIp, _config.Osc_Routing_TargetPort, address, args);
+        return await SendAsync(GetDefaultIp(), GetDefaultPort(), address, args);
     }
 
     public async Task<bool> SendAsync(string ip, ushort port, string address, params object?[] args)

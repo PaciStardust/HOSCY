@@ -7,6 +7,9 @@ namespace Hoscy.Services.Osc.SendReceive;
 /// </summary>
 public interface IOscSendService
 {
+    public string GetDefaultIp();
+    public ushort GetDefaultPort();
+
     public void SendSyncFireAndForget(string address, params object?[] args);
     public void SendSyncFireAndForget(string ip, ushort port, string address, params object?[] args);
     public bool SendSync(string address, params object?[] args);
