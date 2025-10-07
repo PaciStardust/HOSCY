@@ -247,4 +247,28 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
         return Task.CompletedTask;
     }
     #endregion
+
+    #region Start / Stop
+    protected override void StartInternal()
+    {
+        _logger.Information("Service \"started\", StartStop is only implemented for a clean shutdown");
+        return;
+    }
+
+    public override bool IsRunning()
+    {
+        return !_cts.IsCancellationRequested;
+    }
+
+    public override bool TryRestart()
+    {
+        _logger.Information("Service \"restarted\", StartStop is only implemented for a clean shutdown");
+        return true;
+    }
+
+    public override void Stop()
+    {
+        throw new NotImplementedException();
+    }
+    #endregion
 }
