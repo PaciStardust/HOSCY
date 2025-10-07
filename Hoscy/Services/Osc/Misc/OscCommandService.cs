@@ -1,3 +1,4 @@
+using System;
 using System.Text.RegularExpressions;
 using Hoscy.Services.DependencyCore;
 
@@ -24,7 +25,7 @@ public partial class OscCommandService : IOscCommandService
 
     public bool DetectCommand(string commandString)
     {
-        throw new System.NotImplementedException();
+        return commandString.StartsWith(OSC_COMMAND_IDENTIFIER, StringComparison.OrdinalIgnoreCase);
     }
 
     public OscCommandState DetectAndHandleCommand(string commandString)
