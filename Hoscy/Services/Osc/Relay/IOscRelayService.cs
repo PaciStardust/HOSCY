@@ -6,7 +6,7 @@ namespace Hoscy.Services.Osc.Relay;
 /// <summary>
 /// Relays incoming messages to other locations
 /// </summary>
-public interface IOscRelayService : IStartStopService //todo: impl
+public interface IOscRelayService : IStartStopService
 {
     /// <summary>
     /// Relays message to other locations

@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Hoscy.Configuration.Modern;
 using Hoscy.Services.DependencyCore;
 using Hoscy.Services.Interfacing;
+using Hoscy.Services.Osc.MessageHandling;
+using Hoscy.Services.Osc.Relay;
 using LucHeart.CoreOSC;
 using Serilog;
 
@@ -14,12 +16,14 @@ namespace Hoscy.Services.Osc;
 /// Default Listener for OSC
 /// </summary>
 [LoadIntoDiContainer(typeof(IOscListenService), Lifetime.Singleton)]
-public class OscListenService(ConfigModel config, IOscSendService sender, ILogger logger, IBackToFrontNotifyService notify) : StartStopServiceBase, IOscListenService
+public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNotifyService notify, IOscMessageHandlingService messageHandler, IOscRelayService relay)
+    : StartStopServiceBase, IOscListenService
 {
     private readonly ConfigModel _config = config;
-    private readonly IOscSendService _sender = sender;
     private readonly ILogger _logger = logger.ForContext<OscListenService>();
     private readonly IBackToFrontNotifyService _notify = notify;
+    private readonly IOscMessageHandlingService _messageHandler = messageHandler;
+    private readonly IOscRelayService _relay = relay;
 
     private OscListener? _listener = null;
     private CancellationTokenSource? _cts = null;
@@ -110,10 +114,13 @@ public class OscListenService(ConfigModel config, IOscSendService sender, ILogge
         _logger.Debug("Stopped Listen Loop");
     }
 
-    private async Task DoListen()
+    private async Task DoListen() //todo: logging
     {
         var res = await _listener!.ReceiveMessageAsync(_cts!.Token);
-        //todo: routing and handling
+        if (res is null) return;
+        var handled = _messageHandler.HandleMessage(res);
+        if (handled && _config.Osc_Relay_IgnoreIfHandled) return;
+        _relay.HandleRelay(res);
     }
     #endregion
 }
