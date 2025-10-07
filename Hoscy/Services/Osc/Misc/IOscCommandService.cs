@@ -27,5 +27,6 @@ public enum OscCommandState
 {
     Success,
     NotCommand,
-    Malformed
+    Malformed,
+    Shutdown
 }
