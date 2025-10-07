@@ -22,38 +22,38 @@ public class OscSendService(ILogger logger, ConfigModel config, IBackToFrontNoti
     private readonly IBackToFrontNotifyService _notify = notify;
 
     #region Sending Public
-    public void Send(string address, params object?[] args)
+    public bool SendSync(string address, params object?[] args)
     {
-        Send(_config.Osc_Routing_TargetIp, _config.Osc_Routing_TargetPort, address, args);
+        return SendSync(_config.Osc_Routing_TargetIp, _config.Osc_Routing_TargetPort, address, args);
     }
 
-    public void Send(string ip, ushort port, string address, params object?[] args)
+    public bool SendSync(string ip, ushort port, string address, params object?[] args)
     {
         var sender = GetOrCreateSender(ip, port);
-        if (sender is null) return;
-        SendSync(sender, ip, port, address, args);
+        if (sender is null) return false;
+        return SendSync(sender, ip, port, address, args);
     }
 
-    public async Task SendAsync(string address, params object?[] args)
+    public async Task<bool> SendAsync(string address, params object?[] args)
     {
-        await SendAsync(_config.Osc_Routing_TargetIp, _config.Osc_Routing_TargetPort, address, args);
+        return await SendAsync(_config.Osc_Routing_TargetIp, _config.Osc_Routing_TargetPort, address, args);
     }
 
-    public async Task SendAsync(string ip, ushort port, string address, params object?[] args)
+    public async Task<bool> SendAsync(string ip, ushort port, string address, params object?[] args)
     {
         var sender = GetOrCreateSender(ip, port);
-        if (sender is null) return;
-        await SendAsync(sender, ip, port, address, args);
+        if (sender is null) return false;
+        return await SendAsync(sender, ip, port, address, args);
     }
     #endregion
 
     #region Sending Internals
-    private void SendSync(OscSender sender, string ipForLog, ushort portForLog, string address, params object?[] args)
+    private bool SendSync(OscSender sender, string ipForLog, ushort portForLog, string address, params object?[] args)
     {
-        Task.Run(() => SendAsync(sender, ipForLog, portForLog, address, args)).ConfigureAwait(false);
+        return SendAsync(sender, ipForLog, portForLog, address, args).GetAwaiter().GetResult();
     }
 
-    private async Task SendAsync(OscSender sender, string ipForLog, ushort portForLog, string address, params object?[] args)
+    private async Task<bool> SendAsync(OscSender sender, string ipForLog, ushort portForLog, string address, params object?[] args)
     {
         var packet = new OscMessage(address, args);
         try
@@ -63,11 +63,13 @@ public class OscSendService(ILogger logger, ConfigModel config, IBackToFrontNoti
             await sender.SendAsync(packet);
             _logger.Verbose("Sent packet to {targetIp}->{targetPort}->{address} with parameters {params}",
             ipForLog, portForLog, address, args);
+            return true;
         }
         catch (Exception ex)
         {
             _logger.Warning(ex, "Failed to send packet to {targetIp}->{targetPort}->{address} with parameters {params}",
             ipForLog, portForLog, address, args);
+            return false;
         }
     }
     #endregion

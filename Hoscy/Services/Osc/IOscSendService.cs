@@ -7,8 +7,8 @@ namespace Hoscy.Services.Osc;
 /// </summary>
 public interface IOscSendService
 {
-    public void Send(string address, params object?[] args);
-    public void Send(string ip, ushort port, string address, params object?[] args);
-    public Task SendAsync(string address, params object?[] args);
-    public Task SendAsync(string ip, ushort port, string address, params object?[] args);
+    public bool SendSync(string address, params object?[] args);
+    public bool SendSync(string ip, ushort port, string address, params object?[] args);
+    public Task<bool> SendAsync(string address, params object?[] args);
+    public Task<bool> SendAsync(string ip, ushort port, string address, params object?[] args);
 }
