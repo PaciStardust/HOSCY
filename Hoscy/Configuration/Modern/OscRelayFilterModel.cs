@@ -14,11 +14,11 @@ public class OscRelayFilterModel : ObservableObject
         set => SetProperty(ref _name, string.IsNullOrWhiteSpace(value) ? NO_FILTER_NAME : value);
     }
 
-    private int _port = -1;
-    public int Port
+    private ushort _port = ushort.MinValue;
+    public ushort Port
     {
         get => _port;
-        set => SetProperty(ref _port, Utils.MinMax(value, -1, 65535));
+        set => SetProperty(ref _port, Utils.MinMax(value, ushort.MinValue, ushort.MaxValue));
     }
 
     private string _ip = "127.0.0.1";

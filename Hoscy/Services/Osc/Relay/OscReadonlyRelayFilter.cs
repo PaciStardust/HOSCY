@@ -6,7 +6,7 @@ namespace Hoscy.Services.Osc.Relay;
 public readonly struct OscReadonlyRelayFilter(OscRelayFilterModel model)
 {
     public readonly string Name { get; } = model.Name;
-    public readonly int Port { get; } = model.Port;
+    public readonly ushort Port { get; } = model.Port;
     public readonly string Ip { get; } = model.Ip;
     public readonly IReadOnlyList<string> Filters { get; } = model.Filters;
     public readonly bool BlacklistMode { get; } = model.BlacklistMode;
