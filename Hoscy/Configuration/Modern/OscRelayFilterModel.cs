@@ -49,6 +49,6 @@ public class OscRelayFilterModel : ObservableObject
     /// <summary>
     /// Sets validity to be displayed in filter window
     /// </summary>
-    internal void SetValidity(bool state)
+    public void SetValidity(bool state)
         => _isValid = state;
 }
