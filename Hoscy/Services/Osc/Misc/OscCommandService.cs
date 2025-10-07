@@ -239,7 +239,14 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
             if (i != cmdCount - 1 && cmdInfo.Wait.HasValue && cmdInfo.Wait.Value > 0)
             {
                 _logger.Debug("{taskId}: Step {step}/{cmdCount} waiting for {timeout}ms after execution", taskId, i + 1, cmdCount, cmdInfo.Wait);
-                Task.Delay(cmdInfo.Wait.Value).Wait();
+                var timeToWait = cmdInfo.Wait.Value;
+                while (timeToWait > 0) //this loop ensures that we can exit within 50ms of the token being cancelled
+                {
+                    var waitCycle = Math.Min(timeToWait, 50);
+                    Task.Delay(waitCycle).Wait();
+                    if (_cts.IsCancellationRequested) return Task.CompletedTask;
+                    timeToWait -= waitCycle;
+                }
             }
 
         }
