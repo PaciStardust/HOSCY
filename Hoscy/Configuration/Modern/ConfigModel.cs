@@ -279,6 +279,13 @@ public class ConfigModel : ObservableObject
         set => SetProperty(ref _osc_Relay_Filters, value);
     }
 
+    private bool _osc_Relay_IgnoreIfHandled = true;
+    public bool Osc_Relay_IgnoreIfHandled
+    {
+        get => _osc_Relay_IgnoreIfHandled;
+        set => SetProperty(ref _osc_Relay_IgnoreIfHandled, value);
+    }
+
     //Address - Tool
     private string _osc_Address_Tool_ManualMute = "/avatar/parameters/ToolMute";
     public string Osc_Address_Tool_ManualMute
