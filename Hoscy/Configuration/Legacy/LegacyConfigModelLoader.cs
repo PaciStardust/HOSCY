@@ -226,7 +226,7 @@ internal static class LegacyConfigModelLoader
             Logger_Filters = ConvertFilterModel(oldConfig.Debug.LogFilters),
 
             Osc_Routing_TargetIp = oldConfig.Osc.Ip,
-            Osc_Routing_TargetPort = oldConfig.Osc.Port,
+            Osc_Routing_TargetPort = ushort.TryParse(oldConfig.Osc.Port.ToString(), out var parsedPort) ? parsedPort : ushort.MinValue,
             Osc_Routing_ListenPort = oldConfig.Osc.PortListen,
             Osc_Relay_Filters = ConvertOscRoutingFilterModel(oldConfig.Osc.RoutingFilters),
 

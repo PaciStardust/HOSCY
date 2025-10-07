@@ -258,11 +258,11 @@ public class ConfigModel : ObservableObject
         set => SetProperty(ref _osc_Routing_TargetIp, value);
     }
 
-    private int _osc_Routing_TargetPort = 9000;
-    public int Osc_Routing_TargetPort
+    private ushort _osc_Routing_TargetPort = 9000;
+    public ushort Osc_Routing_TargetPort
     {
         get => _osc_Routing_TargetPort;
-        set => SetProperty(ref _osc_Routing_TargetPort, Utils.MinMax(value, -1, 65535));
+        set => SetProperty(ref _osc_Routing_TargetPort, Utils.MinMax(value, ushort.MinValue, ushort.MaxValue));
     }
 
     private int _osc_Routing_ListenPort = 9001;
