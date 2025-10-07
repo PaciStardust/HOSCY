@@ -4,16 +4,18 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Hoscy.Services.DependencyCore;
-using LucHeart.CoreOSC;
+using Hoscy.Services.Osc.SendReceive;
 using Serilog;
 
 namespace Hoscy.Services.Osc.Misc;
 
 [LoadIntoDiContainer(typeof(IOscCommandService), Lifetime.Singleton)]
-public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery) : IOscCommandService
+public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery, IOscSendService sender) : IOscCommandService
 {
     private readonly ILogger _logger = logger.ForContext<OscCommandService>();
     private readonly IOscQueryService _oscQuery = oscQuery;
+    private readonly IOscSendService _sender = sender;
+    private bool _isRunning = true; //todo: temp solution
 
     [GeneratedRegex(
         @"\[ *(?<address>(?:\/[^\ #\*,\/?\[\]\{\}]+)+)(?<values>(?: +\[(?:[fF]\]-?[0-9]+(?:\.[0-9]+)?|[iI]\]\-?[0-9]+|[sS]\]""[^""]*""|[bB]\](?:[tT]rue|[fF]alse)))+)(?: +(?:(?<ip>(?:(?:25[0-5]|(?:2[0-4]|1\d|[1-9]|)\d)\.?\b){4}):(?<port>[0-9]{1,5})|""(?<target>[^""]*)""))?(?: +[wW](?<wait>[0-9]+))? *\]",
@@ -107,7 +109,7 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
             parsedWait = parsedWaitTmp;
         }
 
-        int? parsedPort;
+        ushort? parsedPort;
         if (targetText is not null)
         {
             var target = _oscQuery.GetServiceAddressByName(targetText);
@@ -116,12 +118,17 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
                 _logger.Warning("Failed parsing OSC subcommand \"{subcommandString}\", specified target \"{target}\" not found", commandMatch.Value, targetText);
                 return null;
             }
+            if (!ushort.TryParse(target.Value.Item2.ToString(), out var parsedPortTmp)) //todo: fix this conversion
+            {
+                _logger.Warning("Failed parsing OSC subcommand \"{subcommandString}\", unable to parse port {port}", commandMatch.Value, target.Value.Item2);
+                return null;
+            }
             ipText = target.Value.Item1;
-            parsedPort = target.Value.Item2;
+            parsedPort = parsedPortTmp;
         }
         else if (portText is not null)
         {
-            if (!int.TryParse(portText, out var parsedPortTmp))
+            if (!ushort.TryParse(portText, out var parsedPortTmp))
             {
                 _logger.Warning("Failed parsing OSC subcommand \"{subcommandString}\", unable to parse port {port}", commandMatch.Value, portText);
                 return null;
@@ -197,8 +204,39 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
         return parsedVariables;
     }
 
-    private void ExecuteOscCommands(string threadId, List<OscCommandInfo> commandInfos)
+    /// <summary>
+    /// Runs all osc commands asyncronously
+    /// </summary>
+    /// <param name="threadId">identifier for thread</param>
+    /// <param name="commandPackets">packets to execute with wait</param>
+    private Task ExecuteOscCommands(string taskId, List<OscCommandInfo> commandInfos)
     {
-        throw new NotImplementedException();
+        int cmdCount = commandInfos.Count;
+        _logger.Debug("{taskId}: Started OSC subcommand execution task of length {cmdCount}", taskId, cmdCount);
+
+        for (int i = 0; i < cmdCount; i++)
+        {
+            if (!_isRunning)
+            {
+                _logger.Debug("{taskId}: Cancelled early during step {step}", taskId, i+1);
+                return Task.CompletedTask;
+            }
+
+            var cmdInfo = commandInfos[i];
+            _logger.Debug("{taskId}: Step {step}/{cmdCount} sending {cmdInfo}", taskId, i+1, cmdCount, cmdInfo.ToString());
+            if (!_sender.SendSync(cmdInfo.Ip ?? _sender.GetDefaultIp(), cmdInfo.Port ?? _sender.GetDefaultPort(), cmdInfo.Address, cmdInfo.Arguments))
+            {
+                _logger.Warning("{taskId}: Step {step}/{cmdCount} with info {cmdInfo} failed to send", taskId, i+1, cmdCount, cmdInfo.ToString());
+                return Task.CompletedTask;
+            }
+            if (i != cmdCount - 1 && cmdInfo.Wait.HasValue && cmdInfo.Wait.Value > 0)
+            {
+                _logger.Debug("{taskId}: Step {step}/{cmdCount} waiting for {timeout}ms after execution", taskId, i+1, cmdCount, cmdInfo.Wait);
+                Task.Delay(cmdInfo.Wait.Value).Wait();
+            }
+
+        }
+        _logger.Debug("{taskId}: Finished processing {cmdCount} subcommands", taskId, cmdCount);
+        return Task.CompletedTask;
     }
 }
