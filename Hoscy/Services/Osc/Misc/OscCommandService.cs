@@ -27,7 +27,7 @@ public partial class OscCommandService : IOscCommandService
         throw new System.NotImplementedException();
     }
 
-    public bool DetectAndHandleCommand(string commandString)
+    public OscCommandState DetectAndHandleCommand(string commandString)
     {
         throw new System.NotImplementedException();
     }

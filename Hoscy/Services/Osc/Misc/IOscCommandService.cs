@@ -15,10 +15,17 @@ public interface IOscCommandService
     /// Checks if a string of text is an OSC command and executes it
     /// </summary>
     /// <returns>Success</returns>
-    public bool DetectAndHandleCommand(string commandString);
+    public OscCommandState DetectAndHandleCommand(string commandString);
 
     /// <summary>
     /// Gets the text needed to identify a command
     /// </summary>
     public string GetCommandIdentifier();
+}
+
+public enum OscCommandState
+{
+    Success,
+    NotCommand,
+    Malformed
 }
