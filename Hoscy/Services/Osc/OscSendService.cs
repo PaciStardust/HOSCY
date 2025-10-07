@@ -22,6 +22,18 @@ public class OscSendService(ILogger logger, ConfigModel config, IBackToFrontNoti
     private readonly IBackToFrontNotifyService _notify = notify;
 
     #region Sending Public
+    public void SendSyncFireAndForget(string address, params object?[] args)
+    {
+        SendSyncFireAndForget(_config.Osc_Routing_TargetIp, _config.Osc_Routing_TargetPort, address, args);
+    }
+
+    public void SendSyncFireAndForget(string ip, ushort port, string address, params object?[] args)
+    {
+        var sender = GetOrCreateSender(ip, port);
+        if (sender is null) return;
+        SendSyncFireAndForget(sender, ip, port, address, args);
+    }
+
     public bool SendSync(string address, params object?[] args)
     {
         return SendSync(_config.Osc_Routing_TargetIp, _config.Osc_Routing_TargetPort, address, args);
@@ -48,6 +60,11 @@ public class OscSendService(ILogger logger, ConfigModel config, IBackToFrontNoti
     #endregion
 
     #region Sending Internals
+    private void SendSyncFireAndForget(OscSender sender, string ipForLog, ushort portForLog, string address, params object?[] args)
+    {
+        Task.Run(() => SendAsync(sender, ipForLog, portForLog, address, args)).ConfigureAwait(false);    
+    }
+
     private bool SendSync(OscSender sender, string ipForLog, ushort portForLog, string address, params object?[] args)
     {
         return SendAsync(sender, ipForLog, portForLog, address, args).GetAwaiter().GetResult();
