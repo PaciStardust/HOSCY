@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace Hoscy.Services.Osc.Misc;
 
 public record OscCommandInfo()
@@ -7,4 +9,9 @@ public record OscCommandInfo()
     public string? Ip;
     public int? Port;
     public int? Wait;
+
+    override public string ToString()
+    {
+        return $"{Address} ({string.Join(",", Arguments.Select(x => x.ToString()))}) => {Ip ?? "NULL"}:{Port?.ToString() ?? "NULL"}";
+    }
 }
