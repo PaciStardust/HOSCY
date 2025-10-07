@@ -18,10 +18,9 @@ public partial class OscCommandService : IOscCommandService
     )]
     private static partial Regex OscParameterExtractorRegex();
 
+    private const string OSC_COMMAND_IDENTIFIER = "[OSC]";
     public string GetCommandIdentifier()
-    {
-        throw new System.NotImplementedException();
-    }
+        => OSC_COMMAND_IDENTIFIER;
 
     public bool DetectCommand(string commandString)
     {
