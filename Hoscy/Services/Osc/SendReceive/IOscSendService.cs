@@ -10,10 +10,10 @@ public interface IOscSendService
     public string GetDefaultIp();
     public ushort GetDefaultPort();
 
-    public void SendSyncFireAndForget(string address, params object?[] args);
+    public void SendToDefaultSyncFireAndForget(string address, params object?[] args);
     public void SendSyncFireAndForget(string ip, ushort port, string address, params object?[] args);
-    public bool SendSync(string address, params object?[] args);
+    public bool SendToDefaultSync(string address, params object?[] args);
     public bool SendSync(string ip, ushort port, string address, params object?[] args);
-    public Task<bool> SendAsync(string address, params object?[] args);
+    public Task<bool> SendToDefaultAsync(string address, params object?[] args);
     public Task<bool> SendAsync(string ip, ushort port, string address, params object?[] args);
 }

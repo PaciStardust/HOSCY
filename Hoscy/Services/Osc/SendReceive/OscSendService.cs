@@ -29,7 +29,7 @@ public class OscSendService(ILogger logger, ConfigModel config, IBackToFrontNoti
     #endregion
 
     #region Sending Public
-    public void SendSyncFireAndForget(string address, params object?[] args)
+    public void SendToDefaultSyncFireAndForget(string address, params object?[] args)
     {
         SendSyncFireAndForget(GetDefaultIp(), GetDefaultPort(), address, args);
     }
@@ -41,7 +41,7 @@ public class OscSendService(ILogger logger, ConfigModel config, IBackToFrontNoti
         SendSyncFireAndForget(sender, ip, port, address, args);
     }
 
-    public bool SendSync(string address, params object?[] args)
+    public bool SendToDefaultSync(string address, params object?[] args)
     {
         return SendSync(GetDefaultIp(), GetDefaultPort(), address, args);
     }
@@ -53,7 +53,7 @@ public class OscSendService(ILogger logger, ConfigModel config, IBackToFrontNoti
         return SendSync(sender, ip, port, address, args);
     }
 
-    public async Task<bool> SendAsync(string address, params object?[] args)
+    public async Task<bool> SendToDefaultAsync(string address, params object?[] args)
     {
         return await SendAsync(GetDefaultIp(), GetDefaultPort(), address, args);
     }
