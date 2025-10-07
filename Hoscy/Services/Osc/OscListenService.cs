@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -117,7 +118,22 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
     private async Task DoListen() //todo: logging
     {
         var res = await _listener!.ReceiveMessageAsync(_cts!.Token);
-        if (res is null) return;
+        if (res is null)
+        {
+            _logger.Debug("Received an empty packet, skipping");
+            return;
+        }
+
+        var argsInfo = new List<string>();
+        foreach (var arg in res.Arguments)
+        {
+            argsInfo.Add(arg is null
+                ? "[NULL]"
+                : $"{arg.GetType().Name}({arg})" ?? "???");
+        }
+        _logger.Debug("Packet has been received on port {thisPort} with address {messageAddress} => {argInfo}",
+            GetPort(), res.Address, argsInfo);
+
         var handled = _messageHandler.HandleMessage(res);
         if (handled && _config.Osc_Relay_IgnoreIfHandled) return;
         _relay.HandleRelay(res);
