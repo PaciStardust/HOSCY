@@ -153,11 +153,9 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         throw new NotImplementedException();
     }
 
-    private void HandleOnRuntimeError(object? sender, Exception e)
+    private void HandleOnRuntimeError(object? sender, Exception ex)
     {
-        SetFault(e);
-        _notify.SendError($"Encountered an error in Message Processor {sender?.GetType().FullName ?? "???"}", exception: e);
-        _logger.Error(e, "Encountered an error in Message Processor {senderType}", sender?.GetType().FullName ?? "???");
+        SetFaultLogAndNotify(ex, _logger, _notify, $"Encountered an error in Message Processor {sender?.GetType().FullName ?? "???"}");
     }
 
     private IOutputProcessor? RetrieveActiveProcessorWithInfo(OutputProcessorInfo info)

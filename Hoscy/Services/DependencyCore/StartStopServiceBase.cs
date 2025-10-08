@@ -47,12 +47,17 @@ public abstract class StartStopServiceBase : IStartStopService
         }
         catch (Exception ex)
         {
-            SetFault(ex);
-            logger.Error(ex, "Failed to restart service {serviceName}", serviceName);
-            notify?.SendError($"{serviceName} restart failed", exception: ex);
+            SetFaultLogAndNotify(ex, logger, notify, $"Failed to restart service {serviceName}");
             return false;
         }
         logger.Information("Restarted Service {serviceName}", serviceName);
         return true;
+    }
+
+    public void SetFaultLogAndNotify(Exception ex, ILogger? logger, IBackToFrontNotifyService? notify, string message)
+    {
+        SetFault(ex);
+        logger?.Error(ex, message);
+        notify?.SendError(message, exception: ex);
     }
 }
