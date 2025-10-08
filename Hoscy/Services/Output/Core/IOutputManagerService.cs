@@ -4,7 +4,7 @@ using Hoscy.Services.DependencyCore;
 
 namespace Hoscy.Services.Output.Core;
 
-public interface IOutputManager : IStartStopService
+public interface IOutputManagerService : IStartStopService
 {
     #region Info
     /// <summary>

@@ -5,11 +5,11 @@ using Serilog;
 
 namespace Hoscy.Services.Output.Core;
 
-[LoadIntoDiContainer(typeof(IOutputManager), Lifetime.Singleton)]
-public class OutputManager(ILogger logger) : StartStopServiceBase, IOutputManager
+[LoadIntoDiContainer(typeof(IOutputManagerService), Lifetime.Singleton)]
+public class OutputManagerService(ILogger logger) : StartStopServiceBase, IOutputManagerService
 {
     #region Injected
-    private readonly ILogger _logger = logger.ForContext<OutputManager>();
+    private readonly ILogger _logger = logger.ForContext<OutputManagerService>();
     #endregion
 
     #region Service Vars
