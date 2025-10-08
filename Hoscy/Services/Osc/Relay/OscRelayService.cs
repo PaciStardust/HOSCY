@@ -48,6 +48,7 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
         catch (Exception ex)
         {
             _logger.Error(ex, "Failed to restart Relay Filters");
+            SetFault(ex);
             _notify.SendError("Failed to restart Relay Filters", exception: ex);
             return false;
         }
