@@ -118,7 +118,17 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
 
     public StartStopStatus GetProcessorStatus(OutputProcessorInfo info)
     {
-        throw new NotImplementedException();
+        var activeProcessor = RetrieveActiveProcessorWithInfo(info);
+        if (activeProcessor is null)
+        {
+            return StartStopStatus.Stopped;
+        }
+        if (activeProcessor.GetStatus() == StartStopStatus.Stopped)
+        {
+            _logger.Warning("GetProcessorStatus: Retrieved stopped Processor with name {processorName} and type {processorType} from active list",
+                info.Name, info.ProcessorType.FullName);
+        }
+        return activeProcessor.GetStatus();
     }
 
     public void ShutdownProcessor(OutputProcessorInfo info)
