@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Hoscy.Services.DependencyCore;
 using Hoscy.Services.Interfacing;
 using Hoscy.Utility;
@@ -117,7 +116,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         _logger.Information("Activated Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
     }
 
-    public bool IsProcessorActive(OutputProcessorInfo info)
+    public StartStopStatus GetProcessorStatus(OutputProcessorInfo info)
     {
         throw new NotImplementedException();
     }

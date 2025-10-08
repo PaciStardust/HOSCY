@@ -17,7 +17,7 @@ public interface IOutputManagerService : IStartStopService
     public void ActivateProcessor(OutputProcessorInfo info);
     public void ShutdownProcessor(OutputProcessorInfo info);
     public void RestartProcessor(OutputProcessorInfo info);
-    public bool IsProcessorActive(OutputProcessorInfo info);
+    public StartStopStatus GetProcessorStatus(OutputProcessorInfo info);
     #endregion
 
     #region Processor Control
