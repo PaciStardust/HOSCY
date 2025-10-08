@@ -1,3 +1,5 @@
+using System;
+
 namespace Hoscy.Services.Output.Core;
 
 /// <summary>
@@ -8,4 +10,5 @@ public record OutputProcessorInfo
     public required string Name;
     public required string Description;
     public required OutputProcessorInfoFlags Flags;
+    public required Type ProcessorType;
 }
