@@ -9,5 +9,6 @@ namespace Hoscy.Services.Output.Core;
 public enum OutputProcessorInfoFlags
 {
     SupportsMessages = 1,
-    SupportsNotifications = 2
+    SupportsNotifications = 2,
+    SupportsProcessingIndicator = 4,
 }
