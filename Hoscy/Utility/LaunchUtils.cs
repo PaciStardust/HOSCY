@@ -75,7 +75,7 @@ public static class LaunchUtils
     /// <summary>
     /// Returns all implementations of a class that can be located in the procided container
     /// </summary>
-    public static T[] GetImplementationsInContainerForClass<T>(IServiceProvider container, ILogger? logger)
+    public static List<T> GetImplementationsInContainerForClass<T>(IServiceProvider container, ILogger? logger)
     {
         List<T> instances = [];
         var searchType = typeof(T);
@@ -93,6 +93,6 @@ public static class LaunchUtils
             instances.Add(instance);
         }
         logger?.Information("Located {moduleCount} instances of {baseType}", instances.Count, searchType.FullName);
-        return instances.ToArray();
+        return instances;
     }
 }
