@@ -20,10 +20,11 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
 
     #region Service Vars
     private readonly List<OutputProcessorInfo> _availableProcessors = [];
+    private readonly List<IOutputProcessor> _activeProcessors = [];
     #endregion
 
     #region Events
-    public event EventHandler<string> OnMessage = delegate {};
+    public event EventHandler<string> OnMessage = delegate { };
     public event EventHandler<OutputNotificationEventArgs> OnNotification = delegate {};
     public event EventHandler OnClear = delegate {};
     public event EventHandler<bool> OnProcessingIndicatorSet = delegate {};
@@ -57,7 +58,21 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
 
     public override void Stop()
     {
-        throw new NotImplementedException();
+        var activeProcessorCount = _activeProcessors.Count;
+        _logger.Information("Stopping service, shutting down {activeProcessors} Processors", activeProcessorCount);
+        foreach (var processor in _activeProcessors)
+        {
+            processor.Shutdown();
+        }
+
+        var stillActiveProcessors = _activeProcessors.Where(x => x.IsActive()).ToArray();
+        if (stillActiveProcessors.Length > 0)
+        {
+            var notStoppedProcessors = string.Join(", ", stillActiveProcessors.Select(x => x.GetType().FullName));
+            throw new StartStopServiceException($"Following MessageProcessors failed to comply with a shutdown call: {notStoppedProcessors}");
+        }
+        _activeProcessors.Clear();
+        _logger.Information("Stopped service, shut down {activeProcessors} Processors", activeProcessorCount);
     }
 
     public override bool TryRestart()
