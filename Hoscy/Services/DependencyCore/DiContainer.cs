@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Hoscy.Configuration.Modern;
+using Hoscy.Utility;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
@@ -177,21 +178,13 @@ public class DiContainer
     /// <returns>Null if Type is not StartStopService or no Instance is available</returns>
     private List<(Type, IStartStopService, List<Type>)> RetrieveStartStopServiceInfos()
     {
+        var startStopImplementations = LaunchUtils.GetImplementationsInContainerForClass<IStartStopService>(Services, _internalLogger);
         var startstopServiceInterface = typeof(IStartStopService);
         List<(Type, IStartStopService, List<Type>)> servicesToStart = [];
-        foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
+
+        foreach (var impl in startStopImplementations)
         {
-            if (type.IsInterface || type.IsAbstract || !type.IsAssignableTo(startstopServiceInterface)) continue;
-
-            var diType = type.GetCustomAttribute<LoadIntoDiContainerAttribute>()?.AsType ?? type;
-
-            if (Services.GetService(diType) is not IStartStopService instance)
-            {
-                _internalLogger.Debug("Could not locate instance of StartStopService {serviceType}", type.FullName);
-                continue;
-            }
-            _internalLogger.Debug("Located instance of StartStopService {serviceType}", type.FullName);
-
+            var type = impl.GetType();
             var ctors = type.GetConstructors();
             if (ctors.Length == 0)
             {
@@ -210,7 +203,7 @@ public class DiContainer
             _internalLogger.Debug("Assessed {requiredServiceCount} other required StartStopServices for StartStopService {serviceType}",
                 requiredServiceTypes.Count, type.FullName);
 
-            servicesToStart.Add((type, instance!, requiredServiceTypes));
+            servicesToStart.Add((type, impl, requiredServiceTypes));
         }
         return servicesToStart;
     }
