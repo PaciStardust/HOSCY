@@ -92,7 +92,7 @@ public static class LaunchUtils
             logger?.Debug("Located instance of {baseType} {serviceType}", searchType.FullName, type.FullName);
             instances.Add(instance);
         }
-        logger?.Information("Loaded {moduleCount} instances of {baseType}", instances.Count, searchType.FullName);
+        logger?.Information("Located {moduleCount} instances of {baseType}", instances.Count, searchType.FullName);
         return instances.ToArray();
     }
 }
