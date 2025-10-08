@@ -31,10 +31,18 @@ public interface IOutputManager : IStartStopService
     /// <summary>
     /// Event gets called whenever a message gets processed
     /// </summary>
-    public event EventHandler<OutputMessageEventArgs> OnMessage;
+    public event EventHandler<string> OnMessage;
     /// <summary>
     /// Event gets called whenever a notification gets processed
     /// </summary>
     public event EventHandler<OutputNotificationEventArgs> OnNotification;
+    /// <summary>
+    /// Event gets called whenever clear is called
+    /// </summary>
+    public event EventHandler OnClear;
+    /// <summary>
+    /// Event gets called whenever the processing indicator is set
+    /// </summary>
+    public event EventHandler<bool> OnProcessingIndicatorSet;
     #endregion
 }
