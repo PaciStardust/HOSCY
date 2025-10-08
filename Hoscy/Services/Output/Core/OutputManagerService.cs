@@ -91,11 +91,11 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     #region Processor => Start / Stop
     public void ActivateProcessor(OutputProcessorInfo info)
     {
-        _logger.Information("Attempting to activate Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
+        _logger.Information("Activating Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
         var activeMatch = RetrieveActiveProcessorWithInfo(info);
         if (activeMatch is not null)
         {
-            _logger.Information("Attempting to terminate old Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
+            _logger.Information("Terminating old Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
             ShutdownProcessor(info);
         }
         activeMatch = RetrieveActiveProcessorWithInfo(info);
@@ -133,7 +133,19 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
 
     public void ShutdownProcessor(OutputProcessorInfo info)
     {
-        throw new NotImplementedException();
+        _logger.Information("Shutting down Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
+        var activeProcessor = RetrieveActiveProcessorWithInfo(info);
+        if (activeProcessor is null)
+        {
+            _logger.Information("Processor with name {processorName} and type {processorType} is not active or does not exist", info.Name, info.GetType().FullName);
+            return;
+        }
+
+        activeProcessor.Clear();
+        activeProcessor.OnRuntimeError -= HandleOnRuntimeError;
+        activeProcessor.Shutdown();
+        _activeProcessors.Remove(activeProcessor); //todo: does that work?
+        _logger.Information("Shut down Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
     }
 
     public void RestartProcessor(OutputProcessorInfo info)
