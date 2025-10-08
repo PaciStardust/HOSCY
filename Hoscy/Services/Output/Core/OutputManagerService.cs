@@ -65,7 +65,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
             processor.Shutdown();
         }
 
-        var stillActiveProcessors = _activeProcessors.Where(x => x.IsActive()).ToArray();
+        var stillActiveProcessors = _activeProcessors.Where(x => x.GetStatus() != StartStopStatus.Stopped).ToArray();
         if (stillActiveProcessors.Length > 0)
         {
             var notStoppedProcessors = string.Join(", ", stillActiveProcessors.Select(x => x.GetType().FullName));
@@ -83,7 +83,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     public IReadOnlyList<OutputProcessorInfo> GetInfos(bool activeOnly)
     {
         return activeOnly
-            ? _activeProcessors.Where(x => x.IsActive()).Select(x => x.GetInfo()).ToList()
+            ? _activeProcessors.Where(x => x.GetStatus() != StartStopStatus.Stopped).Select(x => x.GetInfo()).ToList()
             : _availableProcessors;
     }
     #endregion

@@ -1,4 +1,5 @@
 using System;
+using Hoscy.Services.DependencyCore;
 
 namespace Hoscy.Services.Output.Core;
 
@@ -19,7 +20,7 @@ public interface IOutputProcessor
     public void Activate();
     public void Shutdown();
     public void Restart();
-    public bool IsActive();
+    public StartStopStatus GetStatus();
     #endregion
 
     #region Functionality
