@@ -19,7 +19,7 @@ public interface IOutputProcessor
     public void Activate();
     public void Shutdown();
     public void Restart();
-    public void IsActive();
+    public bool IsActive();
     #endregion
 
     #region Functionality
