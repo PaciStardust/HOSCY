@@ -1,0 +1,12 @@
+using System;
+
+namespace Hoscy.Services.Output.Core;
+
+/// <summary>
+/// Flags to determine settings to be displayed in UI
+/// </summary>
+[Flags]
+public enum OutputProcessorInfoFlags
+{
+    
+}
