@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Hoscy.Services.DependencyCore;
+using Hoscy.Services.Interfacing;
 using Hoscy.Utility;
 using Serilog;
 
 namespace Hoscy.Services.Output.Core;
 
 [LoadIntoDiContainer(typeof(IOutputManagerService), Lifetime.Singleton)]
-public class OutputManagerService(ILogger logger, IServiceProvider services) : StartStopServiceBase, IOutputManagerService
+public class OutputManagerService(ILogger logger, IServiceProvider services, IBackToFrontNotifyService notify) : StartStopServiceBase, IOutputManagerService
 {
     #region Injected
     private readonly ILogger _logger = logger.ForContext<OutputManagerService>();
     private readonly IServiceProvider _services = services;
+    private readonly IBackToFrontNotifyService _notify = notify;
     #endregion
 
     #region Service Vars
@@ -50,7 +52,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services) : S
 
     public override bool IsRunning()
     {
-        throw new NotImplementedException();
+        return _availableProcessors.Count > 0;
     }
 
     public override void Stop()
@@ -59,9 +61,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services) : S
     }
 
     public override bool TryRestart()
-    {
-        throw new NotImplementedException();
-    }
+        => TryRestartSimple(GetType().Name, _logger, _notify);
     #endregion
 
     #region Info
