@@ -5,6 +5,7 @@ using System.Reflection;
 using Hoscy.Services.DependencyCore;
 using Hoscy.Services.Interfacing;
 using Hoscy.Utility;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
 namespace Hoscy.Services.Output.Core;
@@ -62,7 +63,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         _logger.Information("Stopping service, shutting down {activeProcessors} Processors", activeProcessorCount);
         foreach (var processor in _activeProcessors)
         {
-            processor.Shutdown();
+            ShutdownProcessor(processor.GetInfo());
         }
 
         var stillActiveProcessors = _activeProcessors.Where(x => x.GetStatus() != StartStopStatus.Stopped).ToArray();
@@ -91,7 +92,29 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     #region Processor => Start / Stop
     public void ActivateProcessor(OutputProcessorInfo info)
     {
-        throw new NotImplementedException();
+        _logger.Information("Attempting to activate Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
+        var activeMatch = RetrieveActiveProcessorWithInfo(info);
+        if (activeMatch is not null)
+        {
+            _logger.Information("Attempting to terminate old Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
+            ShutdownProcessor(info);
+        }
+        activeMatch = RetrieveActiveProcessorWithInfo(info);
+        if (activeMatch is null)
+        {
+            _logger.Information("Terminated old Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
+        }
+        else
+        {
+            _logger.Error("Failed to terminate old Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
+            throw new StartStopServiceException($"Unable to shut down Processor {info.ProcessorType.FullName}");
+        }
+
+        var newProcessor = RetrieveProcessorInstanceWithInfo(info);
+        newProcessor.Activate();
+        newProcessor.OnRuntimeError += HandleOnRuntimeError;
+        _activeProcessors.Add(newProcessor);
+        _logger.Information("Activated Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
     }
 
     public bool IsProcessorActive(OutputProcessorInfo info)
@@ -107,6 +130,48 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     public void RestartProcessor(OutputProcessorInfo info)
     {
         throw new NotImplementedException();
+    }
+
+    private void HandleOnRuntimeError(object? sender, Exception e)
+    {
+        throw new NotImplementedException();
+    }
+
+    private IOutputProcessor? RetrieveActiveProcessorWithInfo(OutputProcessorInfo info)
+    {
+        var activeMatches = _activeProcessors.Where(x => x.GetInfo().ProcessorType == info.ProcessorType).ToArray();
+        switch (activeMatches.Length)
+        {
+            case 0:
+                return null;
+            case 1:
+                return activeMatches[0];
+            default:
+                _logger.Warning("Found multiple active {procCount} processors for InfoType {infoType}", activeMatches.Length, info.ProcessorType.FullName);
+                return activeMatches[0];
+        }
+    }
+
+    private IOutputProcessor RetrieveProcessorInstanceWithInfo(OutputProcessorInfo info)
+    {
+        var availableMatches = _availableProcessors.Where(x => x.ProcessorType == info.ProcessorType).ToArray();
+
+        switch (availableMatches.Length)
+        {
+            case 0:
+                _logger.Warning("Could not find any available processors for InfoType {infoType}", info.ProcessorType.FullName);
+                throw new ArgumentException($"Could not find any available processors for InfoType {info.ProcessorType.FullName}");
+            case 1:
+                break;
+            default:
+                _logger.Warning("Found multiple {procCount} processors for InfoType {infoType}", availableMatches.Length, info.ProcessorType.FullName);
+                break;
+        }
+
+        var searchMatch = _services.GetRequiredService(availableMatches[0].ProcessorType) as IOutputProcessor
+            ?? throw new DiResolveException($"Unable to retrieve Processor {info.ProcessorType.FullName}");
+
+        return searchMatch;
     }
     #endregion
 
