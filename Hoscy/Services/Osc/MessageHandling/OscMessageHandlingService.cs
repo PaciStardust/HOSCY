@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Hoscy.Services.DependencyCore;
 using Hoscy.Services.Interfacing;
+using Hoscy.Utility;
 using LucHeart.CoreOSC;
 using Serilog;
 
@@ -55,24 +56,7 @@ public class OscMessageHandlingService(ILogger logger, IBackToFrontNotifyService
     protected override void StartInternal()
     {
         _logger.Information("Loading Message Handlers");
-        var controlModuleInterface = typeof(IOscMessageHandler);
-        List<IOscMessageHandler> handlers = [];
-        foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
-        {
-            if (type.IsInterface || type.IsAbstract || !type.IsAssignableTo(controlModuleInterface)) continue;
-
-            var diType = type.GetCustomAttribute<LoadIntoDiContainerAttribute>()?.AsType ?? type;
-
-            if (_services.GetService(diType) is not IOscMessageHandler instance)
-            {
-                _logger.Debug("Could not locate instance of Message Handler {serviceType}", type.FullName);
-                continue;
-            }
-            _logger.Debug("Located instance of Message Handler {serviceType}", type.FullName);
-            handlers.Add(instance);
-        }
-        _logger.Information("Loaded {mmoduleCount} Message Handlers", handlers.Count);
-        _handlers = handlers;
+        _handlers = LaunchUtils.GetImplementationsInContainerForClass<IOscMessageHandler>(_services, _logger);
     }
     #endregion
 }
