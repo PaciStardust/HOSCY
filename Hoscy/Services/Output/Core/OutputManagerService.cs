@@ -82,7 +82,9 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     #region Info
     public IReadOnlyList<OutputProcessorInfo> GetInfos(bool activeOnly)
     {
-        throw new NotImplementedException();
+        return activeOnly
+            ? _activeProcessors.Where(x => x.IsActive()).Select(x => x.GetInfo()).ToList()
+            : _availableProcessors;
     }
     #endregion
 
