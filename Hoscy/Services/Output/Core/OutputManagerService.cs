@@ -1,15 +1,19 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using Hoscy.Services.DependencyCore;
+using Hoscy.Utility;
 using Serilog;
 
 namespace Hoscy.Services.Output.Core;
 
 [LoadIntoDiContainer(typeof(IOutputManagerService), Lifetime.Singleton)]
-public class OutputManagerService(ILogger logger) : StartStopServiceBase, IOutputManagerService
+public class OutputManagerService(ILogger logger, IServiceProvider services) : StartStopServiceBase, IOutputManagerService
 {
     #region Injected
     private readonly ILogger _logger = logger.ForContext<OutputManagerService>();
+    private readonly IServiceProvider _services = services;
     #endregion
 
     #region Service Vars
@@ -26,7 +30,22 @@ public class OutputManagerService(ILogger logger) : StartStopServiceBase, IOutpu
     #region Start / Stop
     protected override void StartInternal()
     {
-        throw new NotImplementedException();
+        _logger.Information("Starting up Service by loading available OutputProcessors");
+        if (IsRunning())
+        {
+            _logger.Information("Skipped starting Service, still running");
+            return;
+        }
+
+        _availableProcessors.Clear();
+        var processorsWithInstance = LaunchUtils.GetImplementationsInContainerForClass<IOutputProcessor>(_services, _logger);
+        _availableProcessors.AddRange(processorsWithInstance.Select(x => x.GetInfo()));
+        if (_availableProcessors.Count == 0)
+        {
+            _logger.Warning("No Output Processors could be located, Service will have no functionality and will be NOT be marked as running");
+            return;
+        }
+        _logger.Information("Started up Service with {processorCount} OutputProcessors", _availableProcessors.Count);
     }
 
     public override bool IsRunning()
