@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using Hoscy.Configuration.Legacy;
 using Hoscy.Configuration.Modern;
+using Hoscy.Services.DependencyCore;
 using Serilog;
 
 namespace Hoscy.Utility;
@@ -68,5 +70,29 @@ public static class LaunchUtils
             logger.Fatal(ex, "Program wil shut down - Failed loading config file");
         }
         return null;
+    }
+
+    /// <summary>
+    /// Returns all implementations of a class that can be located in the procided container
+    /// </summary>
+    public static T[] GetImplementationsInContainerForClass<T>(IServiceProvider container, ILogger? logger)
+    {
+        List<T> instances = [];
+        var searchType = typeof(T);
+        foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
+        {
+            if (type.IsInterface || type.IsAbstract || !type.IsAssignableTo(searchType)) continue;
+            var diType = type.GetCustomAttribute<LoadIntoDiContainerAttribute>()?.AsType ?? type;
+
+            if (container.GetService(diType) is not T instance)
+            {
+                logger?.Debug("Could not locate instance of {baseType} {serviceType}", searchType.FullName, type.FullName);
+                continue;
+            }
+            logger?.Debug("Located instance of {baseType} {serviceType}", searchType.FullName, type.FullName);
+            instances.Add(instance);
+        }
+        logger?.Information("Loaded {moduleCount} instances of {baseType}", instances.Count, searchType.FullName);
+        return instances.ToArray();
     }
 }
