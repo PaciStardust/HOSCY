@@ -30,11 +30,11 @@ public abstract class StartStopServiceBase : IStartStopService
         _internalException = ex;
     }
 
-    public StatStopServiceStatus GetStatus()
+    public StartStopStatus GetStatus()
     {
-        if (!IsRunning()) return StatStopServiceStatus.Stopped;
-        if (GetFaultIfExists() is not null) return StatStopServiceStatus.Faulted;
-        return StatStopServiceStatus.Running;
+        if (!IsRunning()) return StartStopStatus.Stopped;
+        if (GetFaultIfExists() is not null) return StartStopStatus.Faulted;
+        return StartStopStatus.Running;
     }
 
     public bool TryRestartSimple(string serviceName, ILogger logger, IBackToFrontNotifyService? notify)

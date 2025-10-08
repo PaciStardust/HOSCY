@@ -11,7 +11,7 @@ public interface IStartStopService : IDisposable
     public void Stop();
     public bool TryRestart();
     public bool IsRunning();
-    public StatStopServiceStatus GetStatus();
+    public StartStopStatus GetStatus();
     public Exception? GetFaultIfExists();
 
     void IDisposable.Dispose()
@@ -19,10 +19,4 @@ public interface IStartStopService : IDisposable
         Stop();
         GC.SuppressFinalize(this);
     }
-}
-
-public enum StatStopServiceStatus {
-    Running,
-    Stopped,
-    Faulted
 }
