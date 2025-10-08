@@ -8,10 +8,10 @@ namespace Hoscy.Services.Output.Core;
 public class OutputManager : StartStopServiceBase, IOutputManager
 {
     #region Events
-    public event EventHandler<string> OnMessage;
-    public event EventHandler<OutputNotificationEventArgs> OnNotification;
-    public event EventHandler OnClear;
-    public event EventHandler<bool> OnProcessingIndicatorSet;
+    public event EventHandler<string> OnMessage = delegate {};
+    public event EventHandler<OutputNotificationEventArgs> OnNotification = delegate {};
+    public event EventHandler OnClear = delegate {};
+    public event EventHandler<bool> OnProcessingIndicatorSet = delegate {};
     #endregion
 
     #region Start / Stop
