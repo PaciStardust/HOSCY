@@ -21,6 +21,7 @@ public interface IOutputProcessor
     public void Shutdown();
     public void Restart();
     public bool IsRunning();
+    public Exception? GetFaultIfExists();
     public StartStopStatus GetStatus();
     #endregion
 
