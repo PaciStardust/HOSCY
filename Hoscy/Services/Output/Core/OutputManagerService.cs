@@ -113,6 +113,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         var newProcessor = RetrieveProcessorInstanceWithInfo(info);
         newProcessor.Activate();
         newProcessor.OnRuntimeError += HandleOnRuntimeError;
+        newProcessor.OnShutdownCompleted += HandleOnShutdownCompleted;
         _activeProcessors.Add(newProcessor);
         _logger.Information("Activated Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
     }
@@ -143,11 +144,25 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         }
 
         activeProcessor.Clear();
-        activeProcessor.OnRuntimeError -= HandleOnRuntimeError;
-        activeProcessor.Shutdown();
-        _activeProcessors.Remove(activeProcessor); //todo: TEST => does that work?
-        SetFault(GetProcessorExceptions());
+        activeProcessor.OnShutdownCompleted -= HandleOnShutdownCompleted; //This is not needed when manually shutting down
+        CleanupAfterProcessorShutdown(activeProcessor);
         _logger.Information("Shut down Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
+    }
+
+    private void HandleOnShutdownCompleted(object? sender, EventArgs e)
+    {
+        if (sender is null) return;
+        _logger.Warning("HandleOnShutdownCompleted called for type {senderType}, this should only happen when a shutdown was called unexpectedly", sender.GetType().FullName);
+        if (sender is not IOutputProcessor processor) return;
+        CleanupAfterProcessorShutdown(processor);
+    }
+
+    private void CleanupAfterProcessorShutdown(IOutputProcessor processor)
+    {
+        processor.OnRuntimeError -= HandleOnRuntimeError;
+        processor.OnShutdownCompleted -= HandleOnShutdownCompleted;
+        _activeProcessors.Remove(processor); //todo: TEST => does that work?
+        SetFault(GetProcessorExceptions());
     }
 
     public void RestartProcessor(OutputProcessorInfo info)
