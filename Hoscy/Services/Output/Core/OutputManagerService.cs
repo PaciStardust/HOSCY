@@ -9,7 +9,7 @@ using Serilog;
 
 namespace Hoscy.Services.Output.Core;
 
-[LoadIntoDiContainer(typeof(IOutputManagerService), Lifetime.Singleton)] //todo: check for inactive actives better
+[LoadIntoDiContainer(typeof(IOutputManagerService), Lifetime.Singleton)]
 public class OutputManagerService(ILogger logger, IServiceProvider services, IBackToFrontNotifyService notify) : StartStopServiceBase, IOutputManagerService
 {
     #region Injected
@@ -65,7 +65,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
             ShutdownProcessor(processor.GetInfo());
         }
 
-        var stillActiveProcessors = _activeProcessors.Where(x => x.GetStatus() != StartStopStatus.Stopped).ToArray();
+        var stillActiveProcessors = _activeProcessors.Where(x => x.IsRunning()).ToArray();
         if (stillActiveProcessors.Length > 0)
         {
             var notStoppedProcessors = string.Join(", ", stillActiveProcessors.Select(x => x.GetType().FullName));
@@ -196,7 +196,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         return new OutputProcessorListException(processorExceptions);
     }
 
-    private IOutputProcessor? RetrieveActiveProcessorWithInfo(OutputProcessorInfo info) //todo: warning when inactive?
+    private IOutputProcessor? RetrieveActiveProcessorWithInfo(OutputProcessorInfo info)
     {
         var activeMatches = _activeProcessors.Where(x => x.GetInfo().ProcessorType == info.ProcessorType).ToArray();
         switch (activeMatches.Length)
@@ -204,8 +204,16 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
             case 0:
                 return null;
             case 1:
+                if (!activeMatches[0].IsRunning()) //todo: find a way to better handle this like an event?
+                {
+                    _logger.Warning("Processor with name {processorName} and type {processorType} was retrieved from active list despite being marked as stopped", info.Name, info.GetType().FullName);
+                }
                 return activeMatches[0];
             default:
+                if (activeMatches.Any(x => !x.IsRunning()))
+                {
+                    _logger.Warning("One or multiple processors retrieved from active list are marked as stopped");
+                }
                 _logger.Warning("Found multiple active {procCount} processors for InfoType {infoType}", activeMatches.Length, info.ProcessorType.FullName);
                 return activeMatches[0];
         }
