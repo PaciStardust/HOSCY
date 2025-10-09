@@ -115,6 +115,17 @@ public static class Utils //todo: clean this
             return max;
         return value;
     }
+
+    /// <summary>
+    /// Converts an int to a ushort
+    /// </summary>
+    /// <param name="value">int to convert</param>
+    /// <returns>ushort.MinValue when value is out of bounds, otherwise value as ushort</returns>
+    public static ushort ConvertToUshort(this int value)
+    {
+        if (value > ushort.MaxValue || value < ushort.MinValue) return ushort.MinValue;
+        return (ushort)(value & ushort.MaxValue); //Making sure we are truly within bit bounds
+    }
     #endregion
 
     #region API
