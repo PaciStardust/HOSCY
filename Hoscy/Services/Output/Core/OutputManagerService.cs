@@ -219,7 +219,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
             case 0:
                 return null;
             case 1:
-                if (!activeMatches[0].IsRunning()) //todo: find a way to better handle this like an event?
+                if (!activeMatches[0].IsRunning())
                 {
                     _logger.Warning("Processor with name {processorName} and type {processorType} was retrieved from active list despite being marked as stopped", info.Name, info.GetType().FullName);
                 }
