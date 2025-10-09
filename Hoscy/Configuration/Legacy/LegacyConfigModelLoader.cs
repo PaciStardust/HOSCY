@@ -226,7 +226,7 @@ internal static class LegacyConfigModelLoader
             Logger_Filters = ConvertFilterModel(oldConfig.Debug.LogFilters),
 
             Osc_Routing_TargetIp = oldConfig.Osc.Ip,
-            Osc_Routing_TargetPort = ushort.TryParse(oldConfig.Osc.Port.ToString(), out var parsedPort) ? parsedPort : ushort.MinValue,
+            Osc_Routing_TargetPort = oldConfig.Osc.Port.ConvertToUshort(),
             Osc_Routing_ListenPort = oldConfig.Osc.PortListen,
             Osc_Relay_Filters = ConvertOscRoutingFilterModel(oldConfig.Osc.RoutingFilters),
 
@@ -373,7 +373,7 @@ internal static class LegacyConfigModelLoader
         return new(routingFilters.Select(old => new OscRelayFilterModel()
         {
             Name = old.Name,
-            Port = ushort.TryParse(old.Port.ToString(), out var parsedPort) ? parsedPort : ushort.MinValue,
+            Port = old.Port.ConvertToUshort(),
             Ip = old.Ip,
             Filters = new(old.Filters),
             BlacklistMode = old.BlacklistMode

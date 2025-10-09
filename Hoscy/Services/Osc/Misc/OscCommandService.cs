@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Hoscy.Services.DependencyCore;
 using Hoscy.Services.Osc.SendReceive;
+using Hoscy.Utility;
 using Serilog;
 
 namespace Hoscy.Services.Osc.Misc;
@@ -126,13 +127,8 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
                 _logger.Warning("Failed parsing OSC subcommand \"{subcommandString}\", specified target \"{target}\" not found", commandMatch.Value, targetText);
                 return null;
             }
-            if (!ushort.TryParse(target.Value.Item2.ToString(), out var parsedPortTmp)) //todo: fix this conversion
-            {
-                _logger.Warning("Failed parsing OSC subcommand \"{subcommandString}\", unable to parse port {port}", commandMatch.Value, target.Value.Item2);
-                return null;
-            }
             ipText = target.Value.Item1;
-            parsedPort = parsedPortTmp;
+            parsedPort = target.Value.Item2.ConvertToUshort();
         }
         else if (portText is not null)
         {
