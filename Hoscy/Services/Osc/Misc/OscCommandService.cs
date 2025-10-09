@@ -287,10 +287,9 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
         return !_cts.IsCancellationRequested;
     }
 
-    public override bool TryRestart()
+    public override void Restart()
     {
         _logger.Information("Service \"restarted\", StartStop is only implemented for a clean shutdown");
-        return true;
     }
 
     public override void Stop()

@@ -19,7 +19,7 @@ public abstract class StartStopServiceBase : IStartStopService
     protected abstract void StartInternal();
 
     public abstract void Stop();
-    public abstract bool TryRestart();
+    public abstract void Restart();
     public abstract bool IsRunning();
 
     public Exception? GetFaultIfExists()
@@ -37,21 +37,12 @@ public abstract class StartStopServiceBase : IStartStopService
         return StartStopStatus.Running;
     }
 
-    public bool TryRestartSimple(string serviceName, ILogger logger, IBackToFrontNotifyService? notify)
+    public void RestartSimple(string serviceName, ILogger logger)
     {
         logger.Information("Restarting Service {serviceName}", serviceName);
-        try
-        {
-            Stop();
-            Start();
-        }
-        catch (Exception ex)
-        {
-            SetFaultLogAndNotify(ex, logger, notify, $"Failed to restart service {serviceName}");
-            return false;
-        }
+        Stop();
+        Start();
         logger.Information("Restarted Service {serviceName}", serviceName);
-        return true;
     }
 
     public void SetFaultLogAndNotify(Exception ex, ILogger? logger, IBackToFrontNotifyService? notify, string message)

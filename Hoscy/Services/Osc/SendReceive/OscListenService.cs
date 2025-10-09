@@ -83,8 +83,8 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
         _logger.Information("Service stopped");
     }
 
-    public override bool TryRestart()
-        => TryRestartSimple(GetType().Name, _logger, _notify);
+    public override void Restart()
+        => RestartSimple(GetType().Name, _logger);
     #endregion
 
     #region Listening

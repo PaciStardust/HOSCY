@@ -36,20 +36,11 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
         _logger.Information("Stopped Relay Service...");
     }
 
-    public override bool TryRestart()
+    public override void Restart()
     {
-        try
-        {
-            _logger.Information("Restarting Relay Service...");
-            ReloadValidRelayFilters(_config.Osc_Relay_Filters.ToList());
-            _logger.Information("Restarted Relay Service");
-            return true;
-        }
-        catch (Exception ex)
-        {
-            SetFaultLogAndNotify(ex, _logger, _notify, "Failed to restart Relay Filters");
-            return false;
-        }
+        _logger.Information("Restarting Relay Service...");
+        ReloadValidRelayFilters(_config.Osc_Relay_Filters.ToList());
+        _logger.Information("Restarted Relay Service");
     }
 
     public override bool IsRunning()

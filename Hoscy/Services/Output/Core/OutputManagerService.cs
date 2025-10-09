@@ -75,8 +75,8 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         _logger.Information("Stopped service, shut down {activeProcessors} Processors", activeProcessorCount);
     }
 
-    public override bool TryRestart()
-        => TryRestartSimple(GetType().Name, _logger, _notify);
+    public override void Restart()
+        => RestartSimple(GetType().Name, _logger);
     #endregion
 
     #region Info
@@ -89,7 +89,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     #endregion
 
     #region Processor => Start / Stop
-    public void ActivateProcessor(OutputProcessorInfo info) //todo: should all of these have trycatch
+    public void ActivateProcessor(OutputProcessorInfo info)
     {
         _logger.Information("Activating Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
         var activeMatch = RetrieveActiveProcessorWithInfo(info);

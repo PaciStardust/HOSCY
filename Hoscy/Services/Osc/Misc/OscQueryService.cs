@@ -85,8 +85,8 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
         return _oscQuery is not null || _serviceRefreshTimer is not null;
     }
 
-    public override bool TryRestart()
-        => TryRestartSimple(GetType().Name, _logger, _notify);
+    public override void Restart()
+        => RestartSimple(GetType().Name, _logger);
     #endregion
 
     #region Functionality

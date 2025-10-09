@@ -50,8 +50,8 @@ public class OscMessageHandlingService(ILogger logger, IBackToFrontNotifyService
         _logger.Information("Cleared module list");
     }
 
-    public override bool TryRestart()
-        => TryRestartSimple(GetType().Name, _logger, _notify);
+    public override void Restart()
+        => RestartSimple(GetType().Name, _logger);
 
     protected override void StartInternal()
     {

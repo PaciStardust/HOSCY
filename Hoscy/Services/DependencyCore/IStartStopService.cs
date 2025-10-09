@@ -9,8 +9,8 @@ public interface IStartStopService : IDisposable
 {
     public void Start();
     public void Stop();
-    public bool TryRestart();
-    public bool IsRunning();
+    public void Restart();
+    public bool IsRunning(); //todo: needed?
     public StartStopStatus GetStatus();
     public Exception? GetFaultIfExists();
 
