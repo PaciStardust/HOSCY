@@ -113,7 +113,7 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
         _logger.Debug("Stopped Listen Loop");
     }
 
-    private async Task DoListen() //todo: logging
+    private async Task DoListen()
     {
         var res = await _listener!.ReceiveMessageAsync(_cts!.Token);
         if (res is null)
