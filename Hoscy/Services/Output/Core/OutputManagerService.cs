@@ -9,7 +9,7 @@ using Serilog;
 
 namespace Hoscy.Services.Output.Core;
 
-[LoadIntoDiContainer(typeof(IOutputManagerService), Lifetime.Singleton)]
+[LoadIntoDiContainer(typeof(IOutputManagerService), Lifetime.Singleton)] //todo: check for inactive actives better
 public class OutputManagerService(ILogger logger, IServiceProvider services, IBackToFrontNotifyService notify) : StartStopServiceBase, IOutputManagerService
 {
     #region Injected
@@ -89,7 +89,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     #endregion
 
     #region Processor => Start / Stop
-    public void ActivateProcessor(OutputProcessorInfo info)
+    public void ActivateProcessor(OutputProcessorInfo info) //todo: should all of these have trycatch
     {
         _logger.Information("Activating Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
         var activeMatch = RetrieveActiveProcessorWithInfo(info);
@@ -150,15 +150,26 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
 
     public void RestartProcessor(OutputProcessorInfo info)
     {
-        throw new NotImplementedException();
+        _logger.Information("Restarting Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
+        var activeProcessor = RetrieveActiveProcessorWithInfo(info);
+        if (activeProcessor is null)
+        {
+            _logger.Information("Could not fine active Processor with name {processorName} and type {processorType}, starting instead", info.Name, info.GetType().FullName);
+            ActivateProcessor(info);
+        }
+        else
+        {
+            activeProcessor.Restart();
+        }
+        _logger.Information("Restarted Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
     }
 
-    private void HandleOnRuntimeError(object? sender, Exception ex)
+    private void HandleOnRuntimeError(object? sender, Exception ex) //todo: is this the best way to solve this?
     {
         SetFaultLogAndNotify(ex, _logger, _notify, $"Encountered an error in Message Processor {sender?.GetType().FullName ?? "???"}");
     }
 
-    private IOutputProcessor? RetrieveActiveProcessorWithInfo(OutputProcessorInfo info)
+    private IOutputProcessor? RetrieveActiveProcessorWithInfo(OutputProcessorInfo info) //todo: warning when inactive?
     {
         var activeMatches = _activeProcessors.Where(x => x.GetInfo().ProcessorType == info.ProcessorType).ToArray();
         switch (activeMatches.Length)
