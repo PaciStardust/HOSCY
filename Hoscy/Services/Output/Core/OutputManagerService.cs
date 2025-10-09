@@ -245,22 +245,42 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     #region Processor => Control
     public void SendMessage(string contents)
     {
-        throw new NotImplementedException();
+        _logger.Debug("Sending {processorCount} processors a message with contents {contentsMessage}", _activeProcessors.Count, contents);
+        foreach (var processor in _activeProcessors)
+        {
+            processor.SendMessage(contents);
+        }
+        _logger.Debug("Sent {processorCount} processors a message with contents {contentsMessage}", _activeProcessors.Count, contents);
     }
 
     public void SendNotification(string contents, OutputNotificationPriority priority)
     {
-        throw new NotImplementedException();
+        _logger.Debug("Sending {processorCount} processors a notification of priority {priority} with contents {contentsNotification}", _activeProcessors.Count, priority.ToString(), contents);
+        foreach (var processor in _activeProcessors)
+        {
+            processor.SendNotification(contents, priority);
+        }
+        _logger.Debug("Sent {processorCount} processors a notification of priority {priority} with contents {contentsNotification}", _activeProcessors.Count, priority.ToString(), contents);
     }
 
     public void Clear()
     {
-        throw new NotImplementedException();
+        _logger.Debug("Sending {processorCount} processors a clear command", _activeProcessors.Count);
+        foreach (var processor in _activeProcessors)
+        {
+            processor.Clear();
+        }
+        _logger.Debug("Sent {processorCount} processors a clear command", _activeProcessors.Count);
     }
 
     public void SetProcessingIndicator(bool isProcessing)
     {
-        throw new NotImplementedException();
+        _logger.Debug("Sending {processorCount} processors command to set processing indicator to {indicatorState}", _activeProcessors.Count, isProcessing);
+        foreach (var processor in _activeProcessors)
+        {
+            processor.Clear();
+        }
+        _logger.Debug("Sent {processorCount} processors command to set processing indicator to {indicatorState}", _activeProcessors.Count, isProcessing);
     }
     #endregion
 }
