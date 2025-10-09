@@ -21,10 +21,10 @@ public interface IOutputManagerService : IStartStopService
     #endregion
 
     #region Processor Control
-    public bool SendMessage(string contents);
-    public bool SendNotification(string contents, OutputNotificationPriority priority);
-    public bool Clear();
-    public bool SetProcessingIndicator(bool isProcessing);
+    public void SendMessage(string contents);
+    public void SendNotification(string contents, OutputNotificationPriority priority);
+    public void Clear();
+    public void SetProcessingIndicator(bool isProcessing);
     #endregion
 
     #region Events

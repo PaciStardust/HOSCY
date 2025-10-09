@@ -243,22 +243,22 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     #endregion
 
     #region Processor => Control
-    public bool SendMessage(string contents)
+    public void SendMessage(string contents)
     {
         throw new NotImplementedException();
     }
 
-    public bool SendNotification(string contents, OutputNotificationPriority priority)
+    public void SendNotification(string contents, OutputNotificationPriority priority)
     {
         throw new NotImplementedException();
     }
 
-    public bool Clear()
+    public void Clear()
     {
         throw new NotImplementedException();
     }
 
-    public bool SetProcessingIndicator(bool isProcessing)
+    public void SetProcessingIndicator(bool isProcessing)
     {
         throw new NotImplementedException();
     }
