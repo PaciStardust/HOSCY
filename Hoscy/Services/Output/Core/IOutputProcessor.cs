@@ -20,6 +20,7 @@ public interface IOutputProcessor
     public void Activate();
     public void Shutdown();
     public void Restart();
+    public bool IsRunning();
     public StartStopStatus GetStatus();
     #endregion
 
