@@ -109,6 +109,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
             throw new StartStopServiceException($"Unable to shut down Processor {info.ProcessorType.FullName}");
         }
 
+        SetFault(GetProcessorExceptions());
         var newProcessor = RetrieveProcessorInstanceWithInfo(info);
         newProcessor.Activate();
         newProcessor.OnRuntimeError += HandleOnRuntimeError;
@@ -144,7 +145,8 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         activeProcessor.Clear();
         activeProcessor.OnRuntimeError -= HandleOnRuntimeError;
         activeProcessor.Shutdown();
-        _activeProcessors.Remove(activeProcessor); //todo: does that work?
+        _activeProcessors.Remove(activeProcessor); //todo: TEST => does that work?
+        SetFault(GetProcessorExceptions());
         _logger.Information("Shut down Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
     }
 
@@ -164,9 +166,34 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         _logger.Information("Restarted Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
     }
 
-    private void HandleOnRuntimeError(object? sender, Exception ex) //todo: is this the best way to solve this?
+    private void HandleOnRuntimeError(object? sender, Exception ex)
     {
-        SetFaultLogAndNotify(ex, _logger, _notify, $"Encountered an error in Message Processor {sender?.GetType().FullName ?? "???"}");
+        _logger.Error(ex, "Encountered an error in Message Processor {senderType}", sender?.GetType().FullName);
+        _notify.SendError($"Encountered an error in Message Processor {sender?.GetType().FullName ?? "???"}",exception: ex);
+        var newCollectiveException = GetProcessorExceptions();
+        if (ex is null)
+        {
+            _logger.Information("Clear OutputProcessorListException for Service");
+        }
+        else
+        {
+            _logger.Information(ex, "Set new OutputProcessorListException for Service");
+        }
+        SetFault(ex);
+    }
+
+    private OutputProcessorListException? GetProcessorExceptions()
+    {
+        var processorExceptions = new List<Exception>();
+        foreach (var processor in _activeProcessors)
+        {
+            var processorException = processor.GetFaultIfExists();
+            if (processorException is not null)
+            {
+                processorExceptions.Add(processorException);
+            }
+        }
+        return new OutputProcessorListException(processorExceptions);
     }
 
     private IOutputProcessor? RetrieveActiveProcessorWithInfo(OutputProcessorInfo info) //todo: warning when inactive?
