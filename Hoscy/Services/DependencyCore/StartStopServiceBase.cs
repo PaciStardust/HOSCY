@@ -13,7 +13,7 @@ public abstract class StartStopServiceBase : IStartStopService
 
     public void Start()
     {
-        _internalException = null;
+        SetFault(null);
         StartInternal();
     }
     protected abstract void StartInternal();
@@ -25,7 +25,7 @@ public abstract class StartStopServiceBase : IStartStopService
     public Exception? GetFaultIfExists()
         => _internalException;
 
-    protected void SetFault(Exception ex)
+    protected void SetFault(Exception? ex)
     {
         _internalException = ex;
     }
