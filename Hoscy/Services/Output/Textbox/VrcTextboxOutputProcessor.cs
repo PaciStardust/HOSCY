@@ -23,6 +23,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     private const int TIMEOUT_MINIMUM_MS = 1250;
     private bool _isClearPending = false;
     private DateTime _intendedTimeoutUntil = DateTime.MinValue;
+    private bool _lastSetProcessingState = false;
     #endregion
 
     #region Events
@@ -57,8 +58,6 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     {
         throw new NotImplementedException();
     }
-
-
 
     public StartStopStatus GetStatus()
     {
