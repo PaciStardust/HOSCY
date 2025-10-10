@@ -24,6 +24,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     private bool _isClearPending = false;
     private DateTime _intendedTimeoutUntil = DateTime.MinValue;
     private bool _lastSetProcessingState = false;
+    private DateTime _lastSentTypingIndicator = DateTime.MinValue;
     #endregion
 
     #region Events
@@ -84,9 +85,26 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         throw new NotImplementedException();
     }
 
+    /// <summary>
+    /// Enables typing indicator for textbox
+    /// Note: This only stays on for 5 seconds ingame
+    /// </summary>
     public void SetProcessingIndicator(bool isProcessing)
     {
-        throw new NotImplementedException();
+        if (!isProcessing && !_lastSetProcessingState) return;
+        if (!CanSetProcessingIndicator()) return;
+
+        _lastSentTypingIndicator = isProcessing ? DateTime.Now : DateTime.MinValue;
+        _lastSetProcessingState = isProcessing;
+
+        _sender.SendToDefaultSyncFireAndForget("/chatbox/typing", isProcessing ? 1 : 0); //todo: should this be fire and forget?
+    }
+
+    private bool CanSetProcessingIndicator()
+    {
+        return _lastSentTypingIndicator.AddSeconds(4) > DateTime.Now
+            && _config.Textbox_Text_TypingIndicatorWhenSpeaking
+            && (_config.Input_UseTextbox || _config.Textbox_Text_TypingIndicatorWhenDisabled); //todo: UseTextbox check needs a redo
     }
 
     public void Shutdown()
