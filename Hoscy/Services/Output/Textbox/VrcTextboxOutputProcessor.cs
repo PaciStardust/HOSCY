@@ -75,12 +75,12 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         throw new NotImplementedException();
     }
 
-    public bool SendMessage(string contents)
+    public bool ProcessMessage(string contents)
     {
         throw new NotImplementedException();
     }
 
-    public bool SendNotification(string contents, OutputNotificationPriority priority)
+    public bool ProcessNotification(string contents, OutputNotificationPriority priority)
     {
         throw new NotImplementedException();
     }

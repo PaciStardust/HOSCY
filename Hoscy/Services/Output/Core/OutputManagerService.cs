@@ -263,7 +263,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         _logger.Debug("Sending {processorCount} processors a message with contents {contentsMessage}", _activeProcessors.Count, contents);
         foreach (var processor in _activeProcessors)
         {
-            processor.SendMessage(contents);
+            processor.ProcessMessage(contents);
         }
         _logger.Debug("Sent {processorCount} processors a message with contents {contentsMessage}", _activeProcessors.Count, contents);
     }
@@ -273,7 +273,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         _logger.Debug("Sending {processorCount} processors a notification of priority {priority} with contents {contentsNotification}", _activeProcessors.Count, priority.ToString(), contents);
         foreach (var processor in _activeProcessors)
         {
-            processor.SendNotification(contents, priority);
+            processor.ProcessNotification(contents, priority);
         }
         _logger.Debug("Sent {processorCount} processors a notification of priority {priority} with contents {contentsNotification}", _activeProcessors.Count, priority.ToString(), contents);
     }
