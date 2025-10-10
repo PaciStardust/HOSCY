@@ -10,6 +10,19 @@ public class VrcTextboxOutputProcessor : IOutputProcessor
     public event EventHandler<Exception> OnRuntimeError = delegate { };
     public event EventHandler OnShutdownCompleted = delegate { };
 
+    #region Information
+    public OutputProcessorInfo GetInfo()
+        => _info;
+
+    private readonly OutputProcessorInfo _info = new()
+    {
+        Name = "VRChat Textbox",
+        Description = "Sends Output to the VRChat Textbox via OSC",
+        Flags = OutputProcessorInfoFlags.SupportsMessages | OutputProcessorInfoFlags.SupportsNotifications | OutputProcessorInfoFlags.SupportsProcessingIndicator,
+        ProcessorType = typeof(VrcTextboxOutputProcessor)
+    };
+    #endregion
+
     public void Activate()
     {
         throw new NotImplementedException();
@@ -25,10 +38,7 @@ public class VrcTextboxOutputProcessor : IOutputProcessor
         throw new NotImplementedException();
     }
 
-    public OutputProcessorInfo GetInfo()
-    {
-        throw new NotImplementedException();
-    }
+
 
     public StartStopStatus GetStatus()
     {
