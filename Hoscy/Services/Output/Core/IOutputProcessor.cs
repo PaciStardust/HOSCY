@@ -30,9 +30,9 @@ public interface IOutputProcessor
     #endregion
 
     #region Functionality
-    public bool ProcessMessage(string contents);
-    public bool ProcessNotification(string contents, OutputNotificationPriority priority);
-    public bool Clear();
-    public bool SetProcessingIndicator(bool isProcessing);
+    public void ProcessMessage(string contents);
+    public void ProcessNotification(string contents, OutputNotificationPriority priority);
+    public void Clear();
+    public void SetProcessingIndicator(bool isProcessing);
     #endregion
 }

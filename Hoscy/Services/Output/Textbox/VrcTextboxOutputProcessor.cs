@@ -49,7 +49,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         throw new NotImplementedException();
     }
 
-    public bool Clear()
+    public void Clear()
     {
         throw new NotImplementedException();
     }
@@ -74,17 +74,17 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         throw new NotImplementedException();
     }
 
-    public bool ProcessMessage(string contents)
+    public void ProcessMessage(string contents)
     {
         throw new NotImplementedException();
     }
 
-    public bool ProcessNotification(string contents, OutputNotificationPriority priority)
+    public void ProcessNotification(string contents, OutputNotificationPriority priority)
     {
         throw new NotImplementedException();
     }
 
-    public bool SetProcessingIndicator(bool isProcessing)
+    public void SetProcessingIndicator(bool isProcessing)
     {
         throw new NotImplementedException();
     }
