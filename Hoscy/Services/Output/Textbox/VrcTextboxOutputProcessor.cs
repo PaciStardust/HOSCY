@@ -1,14 +1,34 @@
 using System;
+using System.Collections.Generic;
+using Hoscy.Configuration.Modern;
 using Hoscy.Services.DependencyCore;
+using Hoscy.Services.Osc.SendReceive;
 using Hoscy.Services.Output.Core;
+using Serilog;
 
 namespace Hoscy.Services.Output.Textbox;
 
 [LoadIntoDiContainer(typeof(VrcTextboxOutputProcessor), Lifetime.Transient)]
-public class VrcTextboxOutputProcessor : IOutputProcessor
+public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscSendService sender) : IOutputProcessor
 {
+    #region Injected Services
+    private readonly ILogger _logger = logger.ForContext<VrcTextboxOutputProcessor>();
+    private readonly ConfigModel _config = config;
+    private readonly IOscSendService _sender = sender;
+    #endregion
+
+    #region Processor Variables
+    private (string, OutputNotificationPriority)? _currentNotification = null;
+    private readonly Queue<string> _currentMessages = [];
+    private const int TIMEOUT_MINIMUM_MS = 1250;
+    private bool _isClearPending = false;
+    private DateTime _intendedTimeoutUntil = DateTime.MinValue;
+    #endregion
+
+    #region Events
     public event EventHandler<Exception> OnRuntimeError = delegate { };
     public event EventHandler OnShutdownCompleted = delegate { };
+    #endregion
 
     #region Information
     public OutputProcessorInfo GetInfo()
