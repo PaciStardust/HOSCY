@@ -19,7 +19,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
 
     #region Processor Variables
     private (string, OutputNotificationPriority)? _currentNotification = null;
-    private OutputNotificationPriority? _previousNotificationType = null;
+    private OutputNotificationPriority? _previousNotificationPriority = null;
     private readonly Queue<string> _currentMessages = [];
     private const int TIMEOUT_MINIMUM_MS = 1250;
     private bool _isClearPending = false;
@@ -73,7 +73,29 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     #region Input Processing
     public void ProcessNotification(string contents, OutputNotificationPriority priority)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrWhiteSpace(contents))
+        {
+            if (_currentNotification.HasValue && _currentNotification.Value.Item2 == priority)
+                ClearNotification();
+            return;
+        }
+
+        if (_config.Textbox_Notification_UsePrioritySystem && _currentNotification.HasValue && priority < _currentNotification.Value.Item2)
+        {
+            _logger.Debug("Did not override notification with contents \"{notificationContents}\" and priority {notificationPriority} => priority lower than current {currentPriority}",
+                contents, priority, _currentNotification.Value.Item2);
+            return;
+        }
+
+        var indLen = _config.NotificationIndicatorLength();
+        if (contents.Length > _config.Textbox_Text_MaxDisplayedCharacters - indLen)
+        {
+            contents = contents[..(_config.Textbox_Text_MaxDisplayedCharacters - 1)] + "-";
+        }
+        contents = $"{_config.Textbox_Notification_IndicatorTextStart}{contents}{_config.Textbox_Notification_IndicatorTextEnd}";
+
+        _logger.Information("Setting notification to \"{contents}\" with priority {priority}", contents, priority);
+        _currentNotification = (contents, priority);
     }
 
     public void ProcessMessage(string contents)  
@@ -177,7 +199,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
 
     private void ClearNotification()
     {
-        _previousNotificationType = _currentNotification?.Item2;
+        _previousNotificationPriority = _currentNotification?.Item2;
         _currentNotification = null;
     }
     #endregion
