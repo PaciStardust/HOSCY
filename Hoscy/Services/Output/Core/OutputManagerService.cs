@@ -261,6 +261,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     public void SendMessage(string contents)
     {
         _logger.Debug("Sending {processorCount} processors a message with contents {contentsMessage}", _activeProcessors.Count, contents);
+        OnMessage.Invoke(this, contents);
         foreach (var processor in _activeProcessors)
         {
             processor.ProcessMessage(contents);
@@ -271,6 +272,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     public void SendNotification(string contents, OutputNotificationPriority priority)
     {
         _logger.Debug("Sending {processorCount} processors a notification of priority {priority} with contents {contentsNotification}", _activeProcessors.Count, priority.ToString(), contents);
+        OnNotification.Invoke(this, new OutputNotificationEventArgs(contents, priority));
         foreach (var processor in _activeProcessors)
         {
             processor.ProcessNotification(contents, priority);
@@ -281,6 +283,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     public void Clear()
     {
         _logger.Debug("Sending {processorCount} processors a clear command", _activeProcessors.Count);
+        OnClear(this, EventArgs.Empty);
         foreach (var processor in _activeProcessors)
         {
             processor.Clear();
@@ -291,6 +294,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     public void SetProcessingIndicator(bool isProcessing)
     {
         _logger.Debug("Sending {processorCount} processors command to set processing indicator to {indicatorState}", _activeProcessors.Count, isProcessing);
+        OnProcessingIndicatorSet(this, isProcessing);
         foreach (var processor in _activeProcessors)
         {
             processor.Clear();
