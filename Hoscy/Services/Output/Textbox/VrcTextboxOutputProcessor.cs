@@ -71,6 +71,17 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     #endregion
 
     #region Input Processing
+    public void ProcessMessage(string contents)  
+    {
+        if (string.IsNullOrWhiteSpace(contents)) return;
+
+        foreach (var message in SplitMessageIntoSegments(contents))
+        {
+            _logger.Debug("Added to MessageQueue (Position:{queuePosition}, Length:{messageLength}) Message:\"{messageContents}\"", _currentMessages.Count, message.Length, message);
+            _currentMessages.Enqueue(message);
+        }
+    }   
+
     private const string SPLIT_LONG_WORD_CUTOFF = "-";
     private const string SPLIT_HAS_PREVIOUS_INDICATOR = "... ";
     private const string SPLIT_HAS_AFTER_INDICATOR = " ...";
@@ -174,11 +185,6 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     }
 
     public void Restart()
-    {
-        throw new NotImplementedException();
-    }
-
-    public void ProcessMessage(string contents)  
     {
         throw new NotImplementedException();
     }
