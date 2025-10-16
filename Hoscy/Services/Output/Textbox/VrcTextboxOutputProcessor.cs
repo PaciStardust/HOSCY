@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Hoscy.Configuration.Modern;
 using Hoscy.Services.DependencyCore;
 using Hoscy.Services.Osc.SendReceive;
@@ -167,6 +166,15 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     #endregion
 
     #region Input Cleaning
+    public void Clear()
+    {
+        _logger.Information("Clearing message queue");
+        _currentMessages.Clear();
+        ClearNotification();
+        _isClearPending = true;
+        _intendedTimeoutUntil = DateTime.MinValue;
+    }
+
     private void ClearNotification()
     {
         _previousNotificationType = _currentNotification?.Item2;
@@ -175,11 +183,6 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     #endregion
 
     public void Activate()
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Clear()
     {
         throw new NotImplementedException();
     }
