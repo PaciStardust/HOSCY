@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Hoscy.Configuration.Modern;
 using Hoscy.Services.DependencyCore;
 using Hoscy.Services.Osc.SendReceive;
@@ -18,14 +20,20 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     #endregion
 
     #region Processor Variables
+    //Queue
     private (string, OutputNotificationPriority)? _currentNotification = null;
     private OutputNotificationPriority? _previousNotificationPriority = null;
     private readonly Queue<string> _currentMessages = [];
-    private const int TIMEOUT_MINIMUM_MS = 1250;
-    private bool _isClearPending = false;
-    private DateTime _intendedTimeoutUntil = DateTime.MinValue;
+
+    //Processing Indicator
     private bool _lastSetProcessingState = false;
     private DateTime _lastSentTypingIndicator = DateTime.MinValue;
+
+    //Send Loop
+    private const int TIMEOUT_MINIMUM_MS = 1250;
+    private CancellationTokenSource? _cts = null;
+    private bool _isClearPending = false;
+    private DateTime _intendedTimeoutUntil = DateTime.MinValue;
     #endregion
 
     #region Events
@@ -44,6 +52,106 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         Flags = OutputProcessorInfoFlags.SupportsMessages | OutputProcessorInfoFlags.SupportsNotifications | OutputProcessorInfoFlags.SupportsProcessingIndicator,
         ProcessorType = typeof(VrcTextboxOutputProcessor)
     };
+    #endregion
+
+    #region Logic Loop
+    private async Task ProcessingLoop()
+    {
+        var lastSentNotif = false;
+        while (_cts is not null && !_cts.IsCancellationRequested)
+        {
+            lastSentNotif = await ProcessingLoopLogic(lastSentNotif);
+        }
+    }
+
+    private async Task<bool> ProcessingLoopLogic(bool lastSentNotif) //todo: fix the timeout
+    {
+        var textToSend = string.Empty;
+        var playNotifySound = false;
+        var threadSleep = 10;
+        var sendNotification = false;
+
+        //Messages are available, also stops notifications from loading unless there is none
+        //Only sends once timeout has passed OR the last sent was a notification and skip is enabled
+        if (_currentMessages.Count > 0)
+        {
+            var timeoutBypass = lastSentNotif && _config.Textbox_Notification_SkipWhenMessageAvailable;
+            if (DateTime.Now >= _intendedTimeoutUntil || timeoutBypass)
+            {
+                if (timeoutBypass)
+                {
+                    _logger.Debug("Notification timeout was shortened due to incoming message");
+                }
+
+                textToSend = _currentMessages.Dequeue();
+                playNotifySound = _config.Textbox_Sound_OnMessage;
+                _isClearPending = _config.Textbox_Timeout_AutomaticallyClearMessage;
+            }
+        }
+        //Notification is available
+        //Only sends once timeout has passed OR the last sent was a notification and of the same type
+        else if (_currentNotification is not null)
+        {
+            var timeoutBypass = lastSentNotif && _currentNotification.Value.Item2 == _previousNotificationPriority;
+            if (DateTime.Now >= _intendedTimeoutUntil || timeoutBypass)
+            {
+                if (timeoutBypass)
+                {
+                    _logger.Debug("Notification timeout was shortened due to equal type");
+                }
+
+                textToSend = _currentNotification.Value.Item1;
+                ClearNotification();
+                playNotifySound = _config.Textbox_Sound_OnNotification;
+                _isClearPending = _config.Textbox_Timeout_AutomaticallyClearNotification;
+                sendNotification = true;
+            }
+        }
+        //Automatically clears if needed
+        //Only sends once timeout has passed
+        else if (_isClearPending && DateTime.Now >= _intendedTimeoutUntil)
+        {
+            //Early timeout
+            SendMessage(string.Empty, false);
+            _isClearPending = false;
+            await Task.Delay(TIMEOUT_MINIMUM_MS); //todo: decrease?
+            return lastSentNotif;
+        }
+
+        //Actual sending
+        if (!string.IsNullOrWhiteSpace(textToSend))
+        {
+            //If failed, still set autoclear
+            if (!SendMessage(textToSend, playNotifySound))
+            {
+                _isClearPending = false;
+                return lastSentNotif;
+            }
+
+            var msgTimeout = GetMessageTimeout(textToSend);
+            _intendedTimeoutUntil = DateTime.Now.AddMilliseconds(msgTimeout);
+            threadSleep = TIMEOUT_MINIMUM_MS;
+            lastSentNotif = sendNotification;
+
+            if (sendNotification)
+                _logger.Information("Sent notification with timeout {threadSleep}-{msgTimeout}: {textToSend}", threadSleep, msgTimeout, textToSend);
+            else
+                _logger.Information("Sent message with timeout {msgTimeout}: {textToSend}", msgTimeout, textToSend);
+        }
+
+        await Task.Delay(threadSleep);
+        return lastSentNotif;
+    }
+
+    private bool SendMessage(string empty, bool v)
+    {
+        throw new NotImplementedException();
+    }
+
+    private double GetMessageTimeout(string textToSend)
+    {
+        throw new NotImplementedException();
+    }
     #endregion
 
     #region Processing Indicator
