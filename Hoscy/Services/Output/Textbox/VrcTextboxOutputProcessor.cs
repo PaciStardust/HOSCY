@@ -122,12 +122,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         if (!string.IsNullOrWhiteSpace(textToSend))
         {
             //If failed, still set autoclear
-            if (!SendMessage(textToSend, playNotifySound))
-            {
-                _isClearPending = false;
-                return lastSentNotif;
-            }
-
+            SendMessage(textToSend, playNotifySound);
             var msgTimeout = GetMessageTimeout(textToSend);
             _intendedTimeoutUntil = DateTime.Now.AddMilliseconds(msgTimeout);
             threadSleep = TIMEOUT_MINIMUM_MS;
@@ -143,9 +138,13 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         return lastSentNotif;
     }
 
-    private bool SendMessage(string empty, bool v)
+    private const int VRC_TEXTBOX_LIMIT = 140;
+    private void SendMessage(string message, bool playSound)
     {
-        throw new NotImplementedException();
+        if (message.Length > VRC_TEXTBOX_LIMIT) //Clamp for VRC
+            message = message[..VRC_TEXTBOX_LIMIT];
+
+        _sender.SendToDefaultSyncFireAndForget(_config.Osc_Address_Game_Textbox, message, playSound);
     }
 
     private double GetMessageTimeout(string textToSend)
