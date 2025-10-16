@@ -20,6 +20,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
 
     #region Processor Variables
     private (string, OutputNotificationPriority)? _currentNotification = null;
+    private OutputNotificationPriority? _previousNotificationType = null;
     private readonly Queue<string> _currentMessages = [];
     private const int TIMEOUT_MINIMUM_MS = 1250;
     private bool _isClearPending = false;
@@ -71,6 +72,11 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     #endregion
 
     #region Input Processing
+    public void ProcessNotification(string contents, OutputNotificationPriority priority)
+    {
+        throw new NotImplementedException();
+    }
+
     public void ProcessMessage(string contents)  
     {
         if (string.IsNullOrWhiteSpace(contents)) return;
@@ -92,9 +98,9 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     private List<string> SplitMessageIntoSegments(string message)
     {
         var segments = new List<(int, int)>(); //Should be pairs of values => 1st is start index, 2nd is length
-		var currentSegmentStart = -1;
-		var currentWordStart = -1;
-		var currentSegmentPotentialEnd = -1;
+        var currentSegmentStart = -1;
+        var currentWordStart = -1;
+        var currentSegmentPotentialEnd = -1;
         var maxLength = _config.Textbox_Text_MaxDisplayedCharacters;
         for (var charIndex = 0; charIndex < message.Length; charIndex++)
         {
@@ -103,16 +109,17 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
             {
                 if (!isWordSeparator) //We are now in a word
                 {
-					if (currentSegmentStart == -1) {
-                    	currentSegmentStart = charIndex;
-					}
+                    if (currentSegmentStart == -1)
+                    {
+                        currentSegmentStart = charIndex;
+                    }
                     currentWordStart = charIndex;
                 }
                 continue;
             }
 
             if (!isWordSeparator) continue; //Do not do any logic if we are still in a word
-			
+
             var expectedLength = charIndex - currentSegmentStart;
             if (expectedLength <= maxLength) //Completed word is within limits
             {
@@ -123,20 +130,20 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
 
             if (currentSegmentPotentialEnd != -1) //Not the first word in segment => At least 1 word already fit in
             {
-				segments.Add((currentSegmentStart, currentSegmentPotentialEnd - currentSegmentStart));
-				currentSegmentPotentialEnd = -1;
-				currentSegmentStart = currentWordStart;
+                segments.Add((currentSegmentStart, currentSegmentPotentialEnd - currentSegmentStart));
+                currentSegmentPotentialEnd = -1;
+                currentSegmentStart = currentWordStart;
             }
             else //This word is the first word and too long for bounds
             {
-				segments.Add((currentSegmentStart, charIndex - currentSegmentStart));
+                segments.Add((currentSegmentStart, charIndex - currentSegmentStart));
                 currentSegmentStart = -1;
             }
-			currentWordStart = -1;
+            currentWordStart = -1;
         }
         if (currentSegmentStart != -1) //Handles loop ending on a valid character
         {
-			segments.Add((currentSegmentStart, message.Length - currentSegmentStart));
+            segments.Add((currentSegmentStart, message.Length - currentSegmentStart));
         }
 
         var messageSegments = new List<string>();
@@ -151,11 +158,19 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
                 length = maxLength - 1;
                 aboveLimits = true;
             }
-			
+
             var text = $"{(i > 0 ? SPLIT_HAS_PREVIOUS_INDICATOR : string.Empty)}{message.Substring(segments[i].Item1, length)}{(aboveLimits ? SPLIT_LONG_WORD_CUTOFF : string.Empty)}{(i + 2 < segments.Count ? SPLIT_HAS_AFTER_INDICATOR : string.Empty)}";
             messageSegments.Add(text);
         }
-		return messageSegments;
+        return messageSegments;
+    }
+    #endregion
+
+    #region Input Cleaning
+    private void ClearNotification()
+    {
+        _previousNotificationType = _currentNotification?.Item2;
+        _currentNotification = null;
     }
     #endregion
 
@@ -185,11 +200,6 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     }
 
     public void Restart()
-    {
-        throw new NotImplementedException();
-    }
-
-    public void ProcessNotification(string contents, OutputNotificationPriority priority)
     {
         throw new NotImplementedException();
     }
