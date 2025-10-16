@@ -147,9 +147,16 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         _sender.SendToDefaultSyncFireAndForget(_config.Osc_Address_Game_Textbox, message, playSound);
     }
 
-    private double GetMessageTimeout(string textToSend)
+    private double GetMessageTimeout(string message)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrWhiteSpace(message))
+            return TIMEOUT_MINIMUM_MS; //to avoid hitting ratelimit
+
+        if (!_config.Textbox_Timeout_UseDynamic)
+            return _config.Textbox_Timeout_StaticMs;
+
+        var timeout = (int)(Math.Ceiling(message.Length / 20f) * _config.Textbox_Timeout_DynamicPer20CharactersDisplayedMs);
+        return Math.Max(timeout, _config.Textbox_Timeout_DynamicMinimumMs);
     }
     #endregion
 
