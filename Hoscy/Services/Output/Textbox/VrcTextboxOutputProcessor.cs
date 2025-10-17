@@ -32,6 +32,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     //Send Loop
     private const int TIMEOUT_MINIMUM_MS = 1250;
     private CancellationTokenSource? _cts = null;
+    private Task? _workerTask = null;
     private bool _isClearPending = false;
     private DateTime _intendedTimeoutUntil = DateTime.MinValue;
     #endregion
@@ -320,24 +321,28 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     }
     #endregion
 
+    #region Status
+    public Exception? GetFaultIfExists()
+    {
+        return null;
+    }
+
+    public StartStopStatus GetStatus()
+    {
+        if (!IsRunning()) return StartStopStatus.Stopped;
+        return GetFaultIfExists() is null ? StartStopStatus.Running : StartStopStatus.Faulted;
+    }
+    #endregion
     public void Activate()
     {
         throw new NotImplementedException();
     }
 
-    public Exception? GetFaultIfExists()
-    {
-        throw new NotImplementedException();
-    }
 
-    public StartStopStatus GetStatus()
-    {
-        throw new NotImplementedException();
-    }
 
     public bool IsRunning()
     {
-        throw new NotImplementedException();
+        return _cts is not null || _workerTask is not null;
     }
 
     public void Restart()
