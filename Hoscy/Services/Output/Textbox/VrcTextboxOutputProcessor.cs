@@ -374,7 +374,10 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
 
     public void Restart()
     {
-        throw new NotImplementedException();
+        logger.Information("Restarting Processor {processorName}", _info.Name);
+        Activate();
+        Shutdown();
+        logger.Information("Restarted Processor {processorName}", _info.Name);
     }
     #endregion
 }
