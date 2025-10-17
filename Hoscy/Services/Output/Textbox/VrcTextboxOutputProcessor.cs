@@ -57,11 +57,13 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     #region Logic Loop
     private async Task ProcessingLoop()
     {
+        _logger.Information("Started textbox message processing loop");
         var lastSentNotif = false;
         while (_cts is not null && !_cts.IsCancellationRequested)
         {
             lastSentNotif = await ProcessingLoopLogic(lastSentNotif);
         }
+        _logger.Information("Stopped textbox message processing loop");
     }
 
     private async Task<bool> ProcessingLoopLogic(bool lastSentNotif) //todo: fix the timeout
