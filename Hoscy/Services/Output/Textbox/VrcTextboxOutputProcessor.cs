@@ -333,12 +333,20 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         return GetFaultIfExists() is null ? StartStopStatus.Running : StartStopStatus.Faulted;
     }
     #endregion
+
+    #region Start / Stop
     public void Activate()
     {
-        throw new NotImplementedException();
+        _logger.Information("Starting up message processing loop");
+        if (IsRunning())
+        {
+            _logger.Information("Skipped starting loop, still running");
+            return;
+        }
+        _cts = new CancellationTokenSource();
+        _workerTask = Task.Run(ProcessingLoop);
+        _logger.Information("Loop has been started");
     }
-
-
 
     public bool IsRunning()
     {
@@ -354,4 +362,5 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     {
         throw new NotImplementedException();
     }
+    #endregion
 }
