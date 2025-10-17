@@ -11,7 +11,7 @@ using Serilog;
 namespace Hoscy.Services.Output.Textbox;
 
 [LoadIntoDiContainer(typeof(VrcTextboxOutputProcessor), Lifetime.Transient)]
-public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscSendService sender) : IOutputProcessor
+public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscSendService sender) : IOutputProcessor //todo: create base
 {
     #region Injected Services
     private readonly ILogger _logger = logger.ForContext<VrcTextboxOutputProcessor>();
