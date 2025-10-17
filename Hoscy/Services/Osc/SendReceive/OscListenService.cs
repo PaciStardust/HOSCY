@@ -59,7 +59,7 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
         _logger.Information("Service has been started");
     }
 
-    public override void Stop()
+    public override void Stop() //todo: automatically throw w timeout
     {
         _logger.Information("Stopping Service...");
         _cts?.Cancel();

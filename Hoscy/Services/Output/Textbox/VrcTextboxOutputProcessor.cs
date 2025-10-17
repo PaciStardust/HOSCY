@@ -348,17 +348,31 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         _logger.Information("Loop has been started");
     }
 
+    public void Shutdown() //todo: automatically throw w timeout
+    {
+        _logger.Information("Stopping loop...");
+        _cts?.Cancel();
+        try
+        {
+            _workerTask?.Wait();
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Caught exception while stopping loop");
+        }
+        _logger.Debug("Cleanup of internals...");
+        _cts?.Dispose();
+        _cts = null;
+        _workerTask = null;
+        _logger.Information("Loop stopped");
+    }
+
     public bool IsRunning()
     {
         return _cts is not null || _workerTask is not null;
     }
 
     public void Restart()
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Shutdown()
     {
         throw new NotImplementedException();
     }
