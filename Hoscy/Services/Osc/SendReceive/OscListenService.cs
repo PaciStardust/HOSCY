@@ -65,21 +65,18 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
         _cts?.Cancel();
         try
         {
-            _workerTask?.GetAwaiter().GetResult();
+            _workerTask?.Wait();
         }
-        catch (OperationCanceledException ex)
+        catch (Exception ex)
         {
-            _logger.Debug(ex, "Caught expected exception during shutdown");
+            _logger.Error(ex, "Caught exception while stopping service");
         }
-        finally
-        {
-            _logger.Debug("Cleanup of internals...");
-            _cts?.Dispose();
-            _cts = null;
-            _workerTask = null;
-            _listener?.Dispose();
-            _listener = null;
-        }
+        _logger.Debug("Cleanup of internals...");
+        _cts?.Dispose();
+        _cts = null;
+        _workerTask = null;
+        _listener?.Dispose();
+        _listener = null;
         _logger.Information("Service stopped");
     }
 
@@ -97,10 +94,6 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
             {
                 await DoListen();
             }
-        }
-        catch (OperationCanceledException ex) when (_cts?.IsCancellationRequested ?? false)
-        {
-            _logger.Debug(ex, "Listen loop stopped via CancelException");
         }
         catch (Exception ex)
         {
