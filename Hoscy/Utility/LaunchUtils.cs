@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Timers;
 using Hoscy.Configuration.Legacy;
 using Hoscy.Configuration.Modern;
 using Hoscy.Services.DependencyCore;
@@ -94,5 +95,19 @@ public static class LaunchUtils
         }
         logger?.Information("Located {moduleCount} instances of {baseType}", instances.Count, searchType.FullName);
         return instances;
+    }
+
+    /// <summary>
+    /// Creates and starts a timer to throw an exception in N ms
+    /// </summary>
+    public static Timer CreateTimerToThrowException(Exception exceptionToThrow, int msToThrowIn)
+    {
+        using var timer = new Timer(msToThrowIn)
+        {
+            AutoReset = false
+        };
+        timer.Elapsed += (_, _) => throw exceptionToThrow;
+        timer.Start();
+        return timer;
     }
 }
