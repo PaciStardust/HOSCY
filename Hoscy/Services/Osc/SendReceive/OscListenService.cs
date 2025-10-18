@@ -8,6 +8,7 @@ using Hoscy.Services.DependencyCore;
 using Hoscy.Services.Interfacing;
 using Hoscy.Services.Osc.MessageHandling;
 using Hoscy.Services.Osc.Relay;
+using Hoscy.Utility;
 using LucHeart.CoreOSC;
 using Serilog;
 
@@ -59,15 +60,12 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
         _logger.Information("Listener and listen loop has been started");
     }
 
-    public override void Stop() //todo: automatically throw w timeout
+    public override void Stop()
     {
         _logger.Information("Stopping listen loop...");
         _cts?.Cancel();
-        try
-        {
-            _workerTask?.Wait();
-        }
-        catch (Exception ex)
+        var ex = LaunchUtils.SafelyWaitForTaskWithTimeoutAndLogException(_workerTask, 1000, new StartStopServiceException("Unable to stop listen loop"));
+        if (ex != null)
         {
             _logger.Error(ex, "Caught exception while stopping listen loop");
         }
