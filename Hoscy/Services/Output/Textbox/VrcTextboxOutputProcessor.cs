@@ -11,7 +11,7 @@ using Serilog;
 namespace Hoscy.Services.Output.Textbox;
 
 [LoadIntoDiContainer(typeof(VrcTextboxOutputProcessor), Lifetime.Transient)]
-public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscSendService sender) : IOutputProcessor //todo: create base
+public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscSendService sender) : OutputProcessorBase
 {
     #region Injected Services
     private readonly ILogger _logger = logger.ForContext<VrcTextboxOutputProcessor>();
@@ -38,12 +38,12 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     #endregion
 
     #region Events
-    public event EventHandler<Exception> OnRuntimeError = delegate { };
-    public event EventHandler OnShutdownCompleted = delegate { };
+    public override event EventHandler<Exception> OnRuntimeError = delegate { };
+    public override event EventHandler OnShutdownCompleted = delegate { };
     #endregion
 
     #region Information
-    public OutputProcessorInfo GetInfo()
+    public override OutputProcessorInfo GetInfo()
         => _info;
 
     private readonly OutputProcessorInfo _info = new()
@@ -168,7 +168,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     /// Enables typing indicator for textbox
     /// Note: This only stays on for 5 seconds ingame
     /// </summary>
-    public void SetProcessingIndicator(bool isProcessing)
+    public override void SetProcessingIndicator(bool isProcessing)
     {
         if (!isProcessing && !_lastSetProcessingState) return;
         if (!CanSetProcessingIndicator()) return;
@@ -188,7 +188,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     #endregion
 
     #region Input Processing
-    public void ProcessNotification(string contents, OutputNotificationPriority priority)
+    public override void ProcessNotification(string contents, OutputNotificationPriority priority)
     {
         if (string.IsNullOrWhiteSpace(contents))
         {
@@ -215,7 +215,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         _currentNotification = (contents, priority);
     }
 
-    public void ProcessMessage(string contents)  
+    public override void ProcessMessage(string contents)  
     {
         if (string.IsNullOrWhiteSpace(contents)) return;
 
@@ -305,7 +305,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     #endregion
 
     #region Input Cleaning
-    public void Clear()
+    public override void Clear()
     {
         _logger.Information("Clearing message queue");
         _currentMessages.Clear();
@@ -321,21 +321,8 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     }
     #endregion
 
-    #region Status
-    public Exception? GetFaultIfExists()
-    {
-        return null;
-    }
-
-    public StartStopStatus GetStatus()
-    {
-        if (!IsRunning()) return StartStopStatus.Stopped;
-        return GetFaultIfExists() is null ? StartStopStatus.Running : StartStopStatus.Faulted;
-    }
-    #endregion
-
     #region Start / Stop
-    public void Activate()
+    protected override void ActivateInternal()
     {
         _logger.Information("Starting up message processing loop");
         if (IsRunning())
@@ -348,7 +335,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         _logger.Information("Loop has been started");
     }
 
-    public void Shutdown() //todo: automatically throw w timeout
+    public override void Shutdown() //todo: automatically throw w timeout
     {
         _logger.Information("Stopping loop...");
         _cts?.Cancel();
@@ -367,17 +354,12 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         _logger.Information("Loop stopped");
     }
 
-    public bool IsRunning()
+    public override bool IsRunning()
     {
         return _cts is not null || _workerTask is not null;
     }
 
-    public void Restart()
-    {
-        logger.Information("Restarting Processor {processorName}", _info.Name);
-        Activate();
-        Shutdown();
-        logger.Information("Restarted Processor {processorName}", _info.Name);
-    }
+    public override void Restart()
+        => RestartSimple(_info.Name, _logger);
     #endregion
 }
