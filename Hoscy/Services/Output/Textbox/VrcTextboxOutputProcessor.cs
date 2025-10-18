@@ -6,6 +6,7 @@ using Hoscy.Configuration.Modern;
 using Hoscy.Services.DependencyCore;
 using Hoscy.Services.Osc.SendReceive;
 using Hoscy.Services.Output.Core;
+using Hoscy.Utility;
 using Serilog;
 
 namespace Hoscy.Services.Output.Textbox;
@@ -335,15 +336,13 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         _logger.Information("Loop has been started");
     }
 
-    public override void Shutdown() //todo: automatically throw w timeout
+    public override void Shutdown()
     {
         _logger.Information("Stopping loop...");
         _cts?.Cancel();
-        try
-        {
-            _workerTask?.Wait();
-        }
-        catch (Exception ex)
+        //todo: lower delay once loop has improved
+        var ex = LaunchUtils.SafelyWaitForTaskWithTimeoutAndLogException(_workerTask, 2000, new StartStopServiceException("Message handling loop failed to stop within time limit"));
+        if (ex is not null)
         {
             _logger.Error(ex, "Caught exception while stopping loop");
         }

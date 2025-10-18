@@ -65,7 +65,7 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
         _logger.Information("Stopping listen loop...");
         _cts?.Cancel();
         var ex = LaunchUtils.SafelyWaitForTaskWithTimeoutAndLogException(_workerTask, 1000, new StartStopServiceException("Unable to stop listen loop"));
-        if (ex != null)
+        if (ex is not null)
         {
             _logger.Error(ex, "Caught exception while stopping listen loop");
         }
