@@ -65,19 +65,19 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
         var timer = CreateRefreshTimer(oscQuery, 5000);
         timer.Start();
         _serviceRefreshTimer = timer;
-        _logger.Information("Service started");
+        _logger.Information("OscQuery started");
     }
 
     public override void Stop()
     {
-        _logger.Information("Stopping Service...");
+        _logger.Information("Stopping Service Refresh & OscQuery");
         _serviceRefreshTimer?.Stop();
         _serviceRefreshTimer?.Dispose();
         _serviceRefreshTimer = null;
         _oscQuery?.Dispose();
         _oscQuery = null;
         _hosts.Clear();
-        _logger.Information("Service stopped");
+        _logger.Information("Stopped Service Refresh & OscQuery");
     }
 
     public override bool IsRunning()

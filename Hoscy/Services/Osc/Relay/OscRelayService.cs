@@ -24,23 +24,23 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
     #region Start / Stop 
     protected override void StartInternal()
     {
-        _logger.Information("Starting Relay Service...");
+        _logger.Information("Starting Relay...");
         ReloadValidRelayFilters(_config.Osc_Relay_Filters.ToList());
-        _logger.Information("Started Relay Service");
+        _logger.Information("Started Relay");
     }
 
     public override void Stop()
     {
-        _logger.Information("Stopping Relay Service...");
+        _logger.Information("Stopping Relay...");
         ReloadValidRelayFilters([]);
-        _logger.Information("Stopped Relay Service...");
+        _logger.Information("Stopped Relay...");
     }
 
     public override void Restart()
     {
-        _logger.Information("Restarting Relay Service...");
+        _logger.Information("Restarting Relay...");
         ReloadValidRelayFilters(_config.Osc_Relay_Filters.ToList());
-        _logger.Information("Restarted Relay Service");
+        _logger.Information("Restarted Relay");
     }
 
     public override bool IsRunning()
@@ -55,7 +55,7 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
         foreach (var filter in _filters)
         {
             if (!filter.Matches(message.Address)) continue;
-            _sender.SendSyncFireAndForget(filter.Ip, filter.Port, message.Address, message.Arguments); //todo: should this be fire and forget?
+            _sender.SendSyncFireAndForget(filter.Ip, filter.Port, message.Address, message.Arguments);
         }
     }
 

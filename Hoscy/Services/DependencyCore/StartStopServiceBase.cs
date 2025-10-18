@@ -7,7 +7,7 @@ namespace Hoscy.Services.DependencyCore;
 /// <summary>
 /// Helper class for ease of use for the )StartStopServices
 /// </summary>
-public abstract class StartStopServiceBase : IStartStopService //todo: add Start logging and Stop logging
+public abstract class StartStopServiceBase : IStartStopService
 {
     private Exception? _internalException = null;
 

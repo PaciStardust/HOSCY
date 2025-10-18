@@ -43,10 +43,10 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
 
     protected override void StartInternal()
     {
-        _logger.Information("Starting up Service on localhost:{port}", _config.Osc_Routing_ListenPort);
+        _logger.Information("Starting up listener on localhost:{port}", _config.Osc_Routing_ListenPort);
         if (IsRunning())
         {
-            _logger.Information("Skipped starting Service, still running");
+            _logger.Information("Skipped starting listener, still running");
             return;
         }
         _listener = new(new(IPAddress.Loopback, _config.Osc_Routing_ListenPort))
@@ -54,14 +54,14 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
             EnableTransparentBundleToMessageConversion = true
         };
         _cts = new CancellationTokenSource();
-        _logger.Debug("Starting worker loop");
+        _logger.Debug("Starting listen loop");
         _workerTask = Task.Run(ListenLoop);
-        _logger.Information("Service has been started");
+        _logger.Information("Listener and listen loop has been started");
     }
 
     public override void Stop() //todo: automatically throw w timeout
     {
-        _logger.Information("Stopping Service...");
+        _logger.Information("Stopping listen loop...");
         _cts?.Cancel();
         try
         {
@@ -69,7 +69,7 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Caught exception while stopping service");
+            _logger.Error(ex, "Caught exception while stopping listen loop");
         }
         _logger.Debug("Cleanup of internals...");
         _cts?.Dispose();
@@ -77,7 +77,7 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
         _workerTask = null;
         _listener?.Dispose();
         _listener = null;
-        _logger.Information("Service stopped");
+        _logger.Information("Listen loop stopped");
     }
 
     public override void Restart()
