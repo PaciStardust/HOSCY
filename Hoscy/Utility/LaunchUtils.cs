@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Timers;
 using Hoscy.Configuration.Legacy;
 using Hoscy.Configuration.Modern;
@@ -109,5 +110,29 @@ public static class LaunchUtils
         timer.Elapsed += (_, _) => throw exceptionToThrow;
         timer.Start();
         return timer;
+    }
+
+    
+    /// <summary>
+    /// Waits for the provided task to end and throws an exception if it does not complete in N ms
+    /// </summary>
+    /// <param name="task">Task to be stopped</param>
+    /// <param name="logger">Logger to log exception</param>
+    /// <param name="msToWaitFor">Ms to wait before throwing exception</param>
+    /// <param name="exceptionToThrow">Exception to throw when timing out</param>
+    /// <returns>Exception if occured while waiting</returns>
+    public static Exception? SafelyWaitForTaskWithTimeoutAndLogException(Task? task, int msToWaitFor, Exception exceptionToThrow)
+    {
+        try
+        {
+            using var timer = CreateTimerToThrowException(exceptionToThrow, msToWaitFor);
+            task?.Wait();
+            timer.Stop();
+        }
+        catch (Exception ex)
+        {
+            return ex;
+        }
+        return null;
     }
 }
