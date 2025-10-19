@@ -41,6 +41,7 @@
     <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.3-dev-02320" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.0.1-dev-00953" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+    <PackageReference Include="SoundFlow" Version="1.2.1" />
     <PackageReference Include="VRChat.OSCQuery" Version="0.0.7" />
     <PackageReference Include="WhisperNet" Version="1.12.0" />
   </ItemGroup>
