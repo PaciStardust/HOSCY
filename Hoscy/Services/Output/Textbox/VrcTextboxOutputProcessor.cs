@@ -191,7 +191,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         _lastSentTypingIndicator = isProcessing ? DateTime.Now : DateTime.MinValue;
         _lastSetProcessingState = isProcessing;
 
-        _sender.SendToDefaultSyncFireAndForget("/chatbox/typing", isProcessing ? 1 : 0); //todo: should this be fire and forget?
+        _sender.SendToDefaultSyncFireAndForget("/chatbox/typing", isProcessing ? 1 : 0);
     }
 
     private bool CanSetProcessingIndicator()
@@ -354,8 +354,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     {
         _logger.Information("Stopping loop...");
         _cts?.Cancel();
-        //todo: lower delay once loop has improved
-        var ex = LaunchUtils.SafelyWaitForTaskWithTimeoutAndLogException(_workerTask, 2000, new StartStopServiceException("Message handling loop failed to stop within time limit"));
+        var ex = LaunchUtils.SafelyWaitForTaskWithTimeoutAndLogException(_workerTask, TIMEOUT_WAIT_MS * 2, new StartStopServiceException("Message handling loop failed to stop within time limit"));
         if (ex is not null)
         {
             _logger.Error(ex, "Caught exception while stopping loop");
