@@ -69,7 +69,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         _logger.Information("Stopped textbox message processing loop");
     }
 
-    private async Task ProcessingLoopLogic() //todo: declutter
+    private async Task ProcessingLoopLogic()
     {
         var now = DateTime.Now;
 
@@ -88,6 +88,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         if (_currentMessages.Count > 0)
         {
             var timeoutBypass = _lastSentNotificationPriority is not null && _config.Textbox_Notification_SkipWhenMessageAvailable;
+            
             if (now >= _intendedTimeoutUntil || timeoutBypass)
             {
                 if (timeoutBypass)
@@ -109,6 +110,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
             var timeoutBypass = _lastSentNotificationPriority is not null
                 && _config.Textbox_Notification_UsePrioritySystem
                 && _currentNotification.Value.Item2 >= _lastSentNotificationPriority;
+
             if (now >= _intendedTimeoutUntil || timeoutBypass)
             {
                 if (timeoutBypass)
@@ -132,28 +134,25 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
             SendMessage(string.Empty, false);
             _isClearPending = false;
             _minimumTimeoutUntil = now.AddMilliseconds(TIMEOUT_MINIMUM_MS);
-            await Task.Delay(TIMEOUT_WAIT_MS);
-            return;
+            _intendedTimeoutUntil = DateTime.MinValue;
         }
 
-        //If we do not have anything to send, wait instead
-        if (string.IsNullOrWhiteSpace(textToSend))
+        //Send if we have anything
+        if (!string.IsNullOrWhiteSpace(textToSend))
         {
-            await Task.Delay(TIMEOUT_WAIT_MS);
-            return;
+            SendMessage(textToSend, playTextboxSound);
+            var msgTimeout = GetMessageTimeout(textToSend);
+            _intendedTimeoutUntil = DateTime.Now.AddMilliseconds(msgTimeout);
+
+            if (_lastSentNotificationPriority is not null)
+                _logger.Information("Sent notification with timeout {threadSleep}-{msgTimeout}: {textToSend}", TIMEOUT_MINIMUM_MS, msgTimeout, textToSend);
+            else
+                _logger.Information("Sent message with timeout {threadSleep}-{msgTimeout}: {textToSend}", TIMEOUT_MINIMUM_MS, msgTimeout, textToSend);
+
+            _minimumTimeoutUntil = now.AddMilliseconds(TIMEOUT_MINIMUM_MS);
+            _intendedTimeoutUntil = now.AddMilliseconds(msgTimeout);
         }
         
-        SendMessage(textToSend, playTextboxSound);
-        var msgTimeout = GetMessageTimeout(textToSend);
-        _intendedTimeoutUntil = DateTime.Now.AddMilliseconds(msgTimeout);
-
-        if (_lastSentNotificationPriority is not null)
-            _logger.Information("Sent notification with timeout {threadSleep}-{msgTimeout}: {textToSend}", TIMEOUT_MINIMUM_MS, msgTimeout, textToSend);
-        else
-            _logger.Information("Sent message with timeout {threadSleep}-{msgTimeout}: {textToSend}", TIMEOUT_MINIMUM_MS, msgTimeout, textToSend);
-
-        _minimumTimeoutUntil = now.AddMilliseconds(TIMEOUT_MINIMUM_MS);
-        _intendedTimeoutUntil = now.AddMilliseconds(msgTimeout);
         await Task.Delay(TIMEOUT_WAIT_MS);
     }
 
