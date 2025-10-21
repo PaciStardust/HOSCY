@@ -269,6 +269,12 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     #region Processor => Control
     public void SendMessage(string contents)
     {
+        if (TryPreprocess(contents, out var processedOutput))
+        {
+            if (processedOutput is null) return;
+            contents = processedOutput;
+        }
+
         _logger.Debug("Sending {processorCount} processors a message with contents {contentsMessage}", _activeProcessors.Count, contents);
         OnMessage.Invoke(this, contents);
         foreach (var processor in _activeProcessors)
@@ -280,6 +286,12 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
 
     public void SendNotification(string contents, OutputNotificationPriority priority)
     {
+        if (TryPreprocess(contents, out var processedOutput))
+        {
+            if (processedOutput is null) return;
+            contents = processedOutput;
+        }
+
         _logger.Debug("Sending {processorCount} processors a notification of priority {priority} with contents {contentsNotification}", _activeProcessors.Count, priority.ToString(), contents);
         OnNotification.Invoke(this, new OutputNotificationEventArgs(contents, priority));
         foreach (var processor in _activeProcessors)
