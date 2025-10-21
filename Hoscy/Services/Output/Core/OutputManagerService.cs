@@ -269,9 +269,10 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     #region Processor => Control
     public void SendMessage(string contents)
     {
+        if (string.IsNullOrWhiteSpace(contents)) return;
         if (TryPreprocess(contents, out var processedOutput))
         {
-            if (processedOutput is null) return;
+            if (string.IsNullOrWhiteSpace(processedOutput)) return;
             contents = processedOutput;
         }
 
@@ -286,9 +287,10 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
 
     public void SendNotification(string contents, OutputNotificationPriority priority)
     {
+        if (string.IsNullOrWhiteSpace(contents)) return;
         if (TryPreprocess(contents, out var processedOutput))
         {
-            if (processedOutput is null) return;
+            if (string.IsNullOrWhiteSpace(processedOutput)) return;
             contents = processedOutput;
         }
 
@@ -337,7 +339,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         string? currentOutput = null;
         foreach (var preprocessor in _preprocessors)
         {
-            if (!preprocessor.TryProcess(input, out var processedOutput)) continue;
+            if (!preprocessor.TryProcess(currentOutput ?? input, out var processedOutput)) continue;
 
             if (!preprocessor.ShouldContinueIfHandled())
             {
