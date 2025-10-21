@@ -21,6 +21,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     #region Service Vars
     private readonly List<OutputProcessorInfo> _availableProcessors = [];
     private readonly List<IOutputProcessor> _activeProcessors = [];
+    private readonly List<IOutputPreprocessor> _preprocessors = [];
     #endregion
 
     #region Events
@@ -41,6 +42,8 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         }
 
         _availableProcessors.Clear();
+        _preprocessors.Clear();
+
         var processorsWithInstance = LaunchUtils.GetImplementationsInContainerForClass<IOutputProcessor>(_services, _logger);
         _availableProcessors.AddRange(processorsWithInstance.Select(x => x.GetInfo()));
         if (_availableProcessors.Count == 0)
@@ -48,7 +51,12 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
             _logger.Warning("No Output Processors could be located, Service will have no functionality and will be NOT be marked as running");
             return;
         }
-        _logger.Information("Started up Service with {processorCount} OutputProcessors", _availableProcessors.Count);
+
+        _logger.Information("Loading Preprocessors");
+        var preprocessorsWithInstance = LaunchUtils.GetImplementationsInContainerForClass<IOutputPreprocessor>(_services, _logger);
+        _preprocessors.AddRange(preprocessorsWithInstance.OrderBy(x => x.GetHandlingStage()));
+
+        _logger.Information("Started up Service with {processorCount} OutputProcessors and {preprocessorCount} OutputPreprocessors", _availableProcessors.Count, _preprocessors.Count);
     }
 
     public override bool IsRunning()
