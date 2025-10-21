@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Hoscy.Services.DependencyCore;
 using Hoscy.Services.Interfacing;
@@ -308,6 +309,36 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
             processor.Clear();
         }
         _logger.Debug("Sent {processorCount} processors command to set processing indicator to {indicatorState}", _activeProcessors.Count, isProcessing);
+    }
+    #endregion
+
+    #region Preprocessors
+    /// <summary>
+    /// Tries using preprocessors on text
+    /// </summary>
+    /// <param name="input">String to preprocess</param>
+    /// <param name="output">Preprocessed string if success and not handled entirely by a processor</param>
+    /// <returns>Success</returns>
+    private bool TryPreprocess(string input, out string? output) //todo: config values
+    {
+        _logger.Debug("Preprocessing \"{preProcessorInput}\" ...", input);
+        string? currentOutput = null;
+        foreach (var preprocessor in _preprocessors)
+        {
+            if (!preprocessor.TryProcess(input, out var processedOutput)) continue;
+
+            if (!preprocessor.ShouldContinueIfHandled())
+            {
+                _logger.Debug("Preprocessor {preprocessorName} has done final handling on \"{preProcessorInput}\" with message \"{preProcessorOutput}\"", preprocessor.GetType().Name, input, processedOutput);
+                output = null;
+                return true;
+            }
+
+            _logger.Debug("Preprocessor {preprocessorName} converted \"{currentInput}\" to \"{currentOutput}\"", currentOutput ?? input, processedOutput);
+            currentOutput = processedOutput;
+        }
+        output = currentOutput;
+        return output is not null;
     }
     #endregion
 }
