@@ -483,7 +483,7 @@ public class ConfigModel : ObservableObject
 
     private const string OSC_AFK_NO_STARTTEXT = "Now AFK";
     private string _osc_Afk_StartText = OSC_AFK_NO_STARTTEXT;
-    public string OSC_Afk_StartText
+    public string Osc_Afk_StartText
     {
         get => _osc_Afk_StartText;
         set => SetProperty(ref _osc_Afk_StartText, value.Length > 0 ? value : OSC_AFK_NO_STARTTEXT);
