@@ -308,8 +308,8 @@ internal static class LegacyConfigModelLoader
             Speech_Replacement_RemoveEndPeriod = oldConfig.Speech.RemovePeriod,
             Speech_Replacement_CapitalizeFirstLetter = oldConfig.Speech.CapitalizeFirst,
             Speech_Replacement_IsEnabled = oldConfig.Speech.UseReplacements,
-            Speech_Replacement_Shortcuts = ConvertReplacementDataModel(oldConfig.Speech.Shortcuts),
-            Speech_Replacement_Replacements = ConvertReplacementDataModel(oldConfig.Speech.Replacements),
+            Speech_Replacement_Full = ConvertReplacementDataModel(oldConfig.Speech.Shortcuts),
+            Speech_Replacement_Partial = ConvertReplacementDataModel(oldConfig.Speech.Replacements),
             Speech_Replacement_IgnoredCharactersForShortcuts = oldConfig.Speech.ShortcutIgnoredCharacters,
 
             Textbox_Text_MaxDisplayedCharacters = oldConfig.Textbox.MaxLength,

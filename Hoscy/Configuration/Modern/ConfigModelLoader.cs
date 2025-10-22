@@ -110,8 +110,8 @@ public static class ConfigModelLoader
                         "einen"
                     ];
                 }
-                if (config.Speech_Replacement_Replacements.Count == 0) {
-                    config.Speech_Replacement_Replacements = [
+                if (config.Speech_Replacement_Partial.Count == 0) {
+                    config.Speech_Replacement_Partial = [
                         new("exclamation mark", "!", false),
                         new("question mark", "?", false),
                         new("colon", ":", false),
@@ -130,7 +130,7 @@ public static class ConfigModelLoader
                 }
             }},
             {2, () => {
-                config.Speech_Replacement_Shortcuts.Add(new("box toggle", "[osc] [/avatar/parameters/ToolEnableBox [b]true \"self\"]"));
+                config.Speech_Replacement_Full.Add(new("box toggle", "[osc] [/avatar/parameters/ToolEnableBox [b]true \"self\"]"));
                 if (config.ApiCommunication_Presets.Count > 0) return;
                 config.ApiCommunication_Presets = [
                     new()

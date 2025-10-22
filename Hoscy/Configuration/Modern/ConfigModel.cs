@@ -763,18 +763,18 @@ public class ConfigModel : ObservableObject
         set => SetProperty(ref _speech_Replacement_IsEnabled, value);
     }
 
-    private ObservableCollection<ReplacementDataModel> _speech_Replacement_Shortcuts = [];
-    public ObservableCollection<ReplacementDataModel> Speech_Replacement_Shortcuts
+    private ObservableCollection<ReplacementDataModel> _speech_Replacement_Full = [];
+    public ObservableCollection<ReplacementDataModel> Speech_Replacement_Full
     {
-        get => _speech_Replacement_Shortcuts;
-        set => SetProperty(ref _speech_Replacement_Shortcuts, value);
+        get => _speech_Replacement_Full;
+        set => SetProperty(ref _speech_Replacement_Full, value);
     }
 
-    private ObservableCollection<ReplacementDataModel> _speech_Replacement_Replacements = [];
-    public ObservableCollection<ReplacementDataModel> Speech_Replacement_Replacements
+    private ObservableCollection<ReplacementDataModel> _speech_Replacement_Partial = [];
+    public ObservableCollection<ReplacementDataModel> Speech_Replacement_Partial
     {
-        get => _speech_Replacement_Replacements;
-        set => SetProperty(ref _speech_Replacement_Replacements, value);
+        get => _speech_Replacement_Partial;
+        set => SetProperty(ref _speech_Replacement_Partial, value);
     }
 
     private string _speech_Replacement_IgnoredCharactersForShortcuts = ".?!,。、！？";
