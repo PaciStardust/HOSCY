@@ -41,21 +41,21 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
 
     public bool DetectCommand(string commandString)
     {
-        return commandString.StartsWith(OSC_COMMAND_IDENTIFIER, StringComparison.OrdinalIgnoreCase);
+        _logger.Verbose("Performing OSC command check on string \"{commandString}\"", commandString);
+        if (!commandString.StartsWith(OSC_COMMAND_IDENTIFIER, StringComparison.OrdinalIgnoreCase))
+        {
+            _logger.Verbose("Could not find OSC command identifier in string \"{commandString}\"", commandString);
+            return false;
+        }
+        _logger.Verbose("Detected OSC command identifier in string \"{commandString}\"", commandString);
+        return true;
     }
 
-    public OscCommandState DetectAndHandleCommand(string commandString)
+    public OscCommandState HandleCommand(string commandString)
     {
         if (_cts.IsCancellationRequested) return OscCommandState.Shutdown;
 
-        _logger.Verbose("Performing OSC command check on string \"{commandString}\"", commandString);
-        if (!DetectCommand(commandString))
-        {
-            _logger.Verbose("Could not find OSC command identifier in string \"{commandString}\"", commandString);
-            return OscCommandState.NotCommand;
-        }
-        _logger.Debug("Detected OSC command identifier, attempting to parse string \"{commandString}\"", commandString);
-
+        _logger.Debug("Attempting to parse command string \"{commandString}\"", commandString);
         var commandMatches = OscCommandIdentifierRegex().Matches(commandString);
         if (commandMatches is null || commandMatches.Count == 0)
         {
@@ -87,6 +87,15 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
         PerformTaskCleanup();
         _runningTasks.Add(task);
         return OscCommandState.Success;
+    }
+
+    public OscCommandState DetectAndHandleCommand(string commandString)
+    {
+        if (_cts.IsCancellationRequested) return OscCommandState.Shutdown;
+
+        if (!DetectCommand(commandString)) return OscCommandState.NotCommand;
+
+        return HandleCommand(commandString);
     }
 
     /// <summary>
