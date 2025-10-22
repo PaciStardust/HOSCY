@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using Hoscy.Configuration.Modern;
+using Hoscy.Services.DependencyCore;
 using Hoscy.Services.Output.Core;
 using Serilog;
 
 namespace Hoscy.Services.Output.Preprocessing;
 
+[LoadIntoDiContainer(typeof(FullReplacementOutputPreprocessor), Lifetime.Singleton)]
 /// <summary>
 /// Handles replacing text fully
 /// </summary>
