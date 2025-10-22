@@ -1,6 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using Hoscy.Configuration.Modern;
 using Hoscy.Services.DependencyCore;
@@ -9,78 +7,31 @@ using Serilog;
 
 namespace Hoscy.Services.Output.Preprocessing;
 
-[LoadIntoDiContainer(typeof(FullReplacementOutputPreprocessor), Lifetime.Singleton)]
 /// <summary>
 /// Handles replacing text fully
 /// </summary>
-public class FullReplacementOutputPreprocessor : IOutputPreprocessor
+[LoadIntoDiContainer(typeof(FullReplacementOutputPreprocessor), Lifetime.Singleton)]
+public class FullReplacementOutputPreprocessor(ConfigModel config, ILogger logger) : ReplacementOutputPreprocessorBase<FullReplacementHandler>(config, logger.ForContext<FullReplacementOutputPreprocessor>())
 {
-    private readonly ConfigModel _config;
-    private readonly ILogger _logger;
-    private readonly List<FullReplacementHandler> _handlers = [];
+    #region Simple Overrides
+    public override FullReplacementHandler ConvertToHandler(ReplacementDataModel model)
+        => new(model);
 
-    public FullReplacementOutputPreprocessor(ConfigModel config, ILogger logger)
-    {
-        _config = config;
-        _logger = logger.ForContext<FullReplacementOutputPreprocessor>();
-        ReloadFullReplacements();
-        config.PropertyChanged += OnPropertyChanged;
-    }
+    public override string GetReloadPropertyName()
+        => nameof(_config.Speech_Replacement_Full);
 
-    #region Info
-    public OutputPreprocessorHandlingStage GetHandlingStage()
+    public override ObservableCollection<ReplacementDataModel> GetReplacementModels()
+        => _config.Speech_Replacement_Full;
+
+    public override OutputPreprocessorHandlingStage GetHandlingStage()
         => OutputPreprocessorHandlingStage.Replace;
 
-    public bool ShouldContinueIfHandled()
+    public override bool ShouldContinueIfHandled()
         => true;
     #endregion
 
-    #region Reload
-    private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e) //todo: does this work?
-    {
-        if (e.PropertyName == nameof(_config.Speech_Replacement_Full))
-        {
-            ReloadFullReplacements();
-        }
-    }
-
-    private void ReloadFullReplacements()
-    {
-        _logger.Information("Reloading {replacementModelCount} full replacements", _config.Speech_Replacement_Full.Count);
-        _handlers.Clear();
-
-        var converted = new List<FullReplacementHandler>();
-        var countDisabled = 0;
-        var countBroken = 0;
-
-        foreach (var replacement in _config.Speech_Replacement_Full)
-        {
-            if (!replacement.Enabled)
-            {
-                countDisabled++;
-                continue;
-            }
-
-            try
-            {
-                var handler = new FullReplacementHandler(replacement);
-                converted.Add(handler);
-            }
-            catch (Exception ex)
-            {
-                _logger.Warning(ex, "Could not instantiate full replacement \"{replacementText}\", RegEx might be broken => Skipping and disabling", replacement.Text);
-                replacement.Enabled = false;
-                countBroken++;
-            }
-        }
-
-        _handlers.AddRange(converted);
-        _logger.Information("Reloaded {replacementModelCountLoaded}/{replacementModelCount} full replacements, {disabledCount} disabled, {brokenCount} broken", _handlers.Count, _config.Speech_Replacement_Full.Count, countDisabled, countBroken);
-    }
-    #endregion
-
     #region Processing
-    public bool TryProcess(string input, [NotNullWhen(true)] out string? output)
+    public override bool TryProcess(string input, [NotNullWhen(true)] out string? output)
     {
         foreach (var handler in _handlers)
         {
