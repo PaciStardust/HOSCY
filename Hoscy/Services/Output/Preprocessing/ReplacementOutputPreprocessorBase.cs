@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using Hoscy.Configuration.Modern;
@@ -25,7 +26,7 @@ public abstract class ReplacementOutputPreprocessorBase<T> : IOutputPreprocessor
     #region Abstract
     public abstract T ConvertToHandler(ReplacementDataModel model);
     public abstract string GetReloadPropertyName();
-    public abstract List<ReplacementDataModel> GetReplacementModels();
+    public abstract ObservableCollection<ReplacementDataModel> GetReplacementModels();
     public abstract OutputPreprocessorHandlingStage GetHandlingStage();
     public abstract bool ShouldContinueIfHandled();
     public abstract bool TryProcess(string input, [NotNullWhen(true)] out string? output);
