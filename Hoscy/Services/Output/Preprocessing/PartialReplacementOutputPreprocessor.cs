@@ -22,6 +22,14 @@ public class PartialReplacementOutputPreprocessor : IOutputPreprocessor
         _logger = logger.ForContext<PartialReplacementOutputPreprocessor>();
     }
 
+    #region Info
+    public OutputPreprocessorHandlingStage GetHandlingStage()
+        => OutputPreprocessorHandlingStage.Alter;
+
+    public bool ShouldContinueIfHandled()
+        => true;
+    #endregion
+
     private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         throw new NotImplementedException();
@@ -30,16 +38,6 @@ public class PartialReplacementOutputPreprocessor : IOutputPreprocessor
     private void ReloadPartialReplacements()
     {
         throw new NotImplementedException();
-    }
-
-    public OutputPreprocessorHandlingStage GetHandlingStage()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public bool ShouldContinueIfHandled()
-    {
-        throw new System.NotImplementedException();
     }
 
     public bool TryProcess(string input, [NotNullWhen(true)] out string? output)
