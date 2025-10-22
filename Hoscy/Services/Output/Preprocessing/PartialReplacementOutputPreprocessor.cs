@@ -35,7 +35,7 @@ public class PartialReplacementOutputPreprocessor(ConfigModel config, ILogger lo
     public override bool TryProcess(string input, [NotNullWhen(true)] out string? output)
     {
         output = null;
-        foreach (var handler in _handlers) //todo: clean this
+        foreach (var handler in _handlers)
         {
             output = handler.Replace(output ?? input);
         }
