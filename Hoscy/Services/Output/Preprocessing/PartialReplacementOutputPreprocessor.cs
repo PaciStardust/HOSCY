@@ -9,7 +9,7 @@ using Serilog;
 
 namespace Hoscy.Services.Output.Preprocessing;
 
-[LoadIntoDiContainer(typeof(FullReplacementOutputPreprocessor), Lifetime.Singleton)]
+[LoadIntoDiContainer(typeof(PartialReplacementOutputPreprocessor), Lifetime.Singleton)]
 /// <summary>
 /// Handles partial replacements of text
 /// </summary>
