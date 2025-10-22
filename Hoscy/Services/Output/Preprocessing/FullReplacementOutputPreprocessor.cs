@@ -22,9 +22,9 @@ public class FullReplacementOutputPreprocessor : IOutputPreprocessor
     public FullReplacementOutputPreprocessor(ConfigModel config, ILogger logger)
     {
         _config = config;
+        _logger = logger.ForContext<FullReplacementOutputPreprocessor>();
         ReloadFullReplacements();
         config.PropertyChanged += OnPropertyChanged;
-        _logger = logger.ForContext<FullReplacementOutputPreprocessor>();
     }
 
     #region Info

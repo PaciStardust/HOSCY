@@ -22,9 +22,9 @@ public class PartialReplacementOutputPreprocessor : IOutputPreprocessor //todo: 
     public PartialReplacementOutputPreprocessor(ConfigModel config, ILogger logger)
     {
         _config = config;
+        _logger = logger.ForContext<PartialReplacementOutputPreprocessor>();
         ReloadPartialReplacements();
         config.PropertyChanged += OnPropertyChanged;
-        _logger = logger.ForContext<PartialReplacementOutputPreprocessor>();
     }
 
     #region Info
