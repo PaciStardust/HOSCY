@@ -22,6 +22,16 @@ public abstract class ReplacementOutputPreprocessorBase<T> : IOutputPreprocessor
         _config.PropertyChanged += OnPropertyChanged;
     }
 
+    #region Abstract
+    public abstract T ConvertToHandler(ReplacementDataModel model);
+    public abstract string GetReloadPropertyName();
+    public abstract List<ReplacementDataModel> GetReplacementModels();
+    public abstract OutputPreprocessorHandlingStage GetHandlingStage();
+    public abstract bool ShouldContinueIfHandled();
+    public abstract bool TryProcess(string input, [NotNullWhen(true)] out string? output);
+    #endregion
+
+    #region Updating
     private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e) //todo: does this work?
     {
         if (e.PropertyName == GetReloadPropertyName())
@@ -29,10 +39,6 @@ public abstract class ReplacementOutputPreprocessorBase<T> : IOutputPreprocessor
             ReloadReplacements();
         }
     }
-
-    public abstract T ConvertToHandler(ReplacementDataModel model);
-    public abstract string GetReloadPropertyName();
-    public abstract List<ReplacementDataModel> GetReplacementModels();
 
     public void ReloadReplacements()
     {
@@ -69,8 +75,5 @@ public abstract class ReplacementOutputPreprocessorBase<T> : IOutputPreprocessor
         _logger.Information("Reloaded {replacementModelCountLoaded}/{replacementModelCount} handlers, {disabledCount} disabled, {brokenCount} broken", converted.Count, models.Count, countDisabled, countBroken);
         _handlers.AddRange(converted);
     }
-
-    public abstract OutputPreprocessorHandlingStage GetHandlingStage();
-    public abstract bool ShouldContinueIfHandled();
-    public abstract bool TryProcess(string input, [NotNullWhen(true)] out string? output);
+    #endregion
 }
