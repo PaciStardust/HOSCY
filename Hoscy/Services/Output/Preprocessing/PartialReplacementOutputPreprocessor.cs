@@ -80,8 +80,21 @@ public class PartialReplacementOutputPreprocessor : IOutputPreprocessor //todo: 
     }
     #endregion
 
+    #region Processing
     public bool TryProcess(string input, [NotNullWhen(true)] out string? output)
     {
-        throw new System.NotImplementedException();
+        output = null;
+        foreach (var handler in _handlers) //todo: clean this
+        {
+            output = handler.Replace(output ?? input);
+        }
+
+        if (output is null || string.Equals(input, output, StringComparison.Ordinal))
+        {
+            output = null;
+            return false;
+        }
+        return true;
     }
+    #endregion
 }
