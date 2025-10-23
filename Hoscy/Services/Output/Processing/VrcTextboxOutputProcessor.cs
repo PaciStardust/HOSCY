@@ -9,7 +9,7 @@ using Hoscy.Services.Output.Core;
 using Hoscy.Utility;
 using Serilog;
 
-namespace Hoscy.Services.Output.Textbox;
+namespace Hoscy.Services.Output.Processing;
 
 [LoadIntoDiContainer(typeof(VrcTextboxOutputProcessor), Lifetime.Transient)]
 public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscSendService sender) : OutputProcessorBase
