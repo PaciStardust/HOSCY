@@ -149,9 +149,16 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
     #endregion
 
     #region Translator => Functionality
-    public bool TryTranslate(string input, [NotNullWhen(true)] string? output)
+    public bool TryTranslate(string input, [NotNullWhen(true)] out string? output)
     {
-        throw new NotImplementedException();
+        if (_currentTranslator is null)
+        {
+            _logger.Warning("Skipped translation request for input \"{input}\", no translator running", input);
+            output = null;
+            return false;
+        }
+
+        return _currentTranslator.TryTranslate(input, out output);
     }
     #endregion
 }

@@ -19,6 +19,6 @@ public interface ITranslatorManagerService : IStartStopService
     #endregion
 
     #region Functionality
-    public bool TryTranslate(string input, [NotNullWhen(true)] string? output);
+    public bool TryTranslate(string input, [NotNullWhen(true)] out string? output);
     #endregion
 }
