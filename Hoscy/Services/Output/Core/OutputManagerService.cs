@@ -260,8 +260,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
                 break;
         }
 
-        var searchMatch = _services.GetService(availableMatches[0].ProcessorType) as IOutputProcessor;
-        if (searchMatch is null)
+        if (_services.GetService(availableMatches[0].ProcessorType) is not IOutputProcessor searchMatch)
         {
             _logger.Error("Unable to retrieve Processor {processorName}", info.ProcessorType.FullName);
             throw new DiResolveException($"Unable to retrieve Processor {info.ProcessorType.FullName}");
