@@ -75,7 +75,48 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
     #region Translator => Start / Stop
     public void StartTranslator(string? name = null, string? typeName = null)
     {
-        throw new NotImplementedException();
+        _logger.Information("Attemtping to start translator with name {name} and typeName {typeName}", name, typeName);
+        if (_currentTranslator is not null)
+        {
+            _logger.Information("Skipped starting Translator, still running as {translatorType}", _currentTranslator.GetType().FullName);
+            return;
+        }
+
+        if (name is null && typeName is null)
+        {
+            _logger.Error("Either name or typeName must be provided");
+            throw new ArgumentException("Either name or typeName must be provided");
+        }
+
+        IEnumerable<(string, Type)> filteredTranslatorsEnumerable = _availableTranslators;
+        if (name is not null)
+            filteredTranslatorsEnumerable = filteredTranslatorsEnumerable.Where(x => x.Item1 == name);
+        if (typeName is not null)
+            filteredTranslatorsEnumerable = filteredTranslatorsEnumerable.Where(x => x.Item2.Name == typeName);
+
+        var filteredTranslators = filteredTranslatorsEnumerable.ToArray();
+        if (filteredTranslators.Length == 0)
+        {
+            _logger.Error("No translator found with the given name {name} or typeName {typeName}", name, typeName);
+            throw new ArgumentException($"No translator found with the given name {name} or typeName {typeName}");
+        }
+
+        if (filteredTranslators.Length > 1)
+        {
+            var translatorOptions = string.Join(", ", filteredTranslators.Select(x => $"{x.Item1} ({x.Item2.Name})"));
+            _logger.Warning("Multiple translators found with the given name {name} or typeName {typeName}: {translatorOptions} => picking first");
+        }
+
+        var translatorType = filteredTranslators[0].Item2;
+        if (_services.GetService(translatorType) is not ITranslator translator)
+        {
+            _logger.Error("Failed to get translator instance name {translatorName} and type {translatorType}", name, translatorType.Name);
+            throw new DiResolveException($"Failed to get translator instance name {name} and type {translatorType.Name}");
+        }
+
+        translator.Start();
+        _currentTranslator = translator;
+        _logger.Information("Started translator with name {translatorName} and type {translatorType}", name, translatorType.Name);
     }
 
     public void StopCurrentTranslator()
