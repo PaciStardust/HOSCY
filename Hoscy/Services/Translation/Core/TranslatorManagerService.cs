@@ -73,7 +73,7 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
     #endregion
 
     #region Translator => Start / Stop
-    public void StartTranslator(string name)
+    public void StartTranslator(string? name = null, string? typeName = null)
     {
         throw new NotImplementedException();
     }
