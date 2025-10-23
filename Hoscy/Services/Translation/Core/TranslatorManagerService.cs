@@ -24,8 +24,11 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
     #endregion
 
     #region Info
-    public IReadOnlyList<string> GetAvailableNames()
-        => _availableTranslators.Select(x => x.Item1).ToList();
+    /// <summary>
+    /// Returns the name and type name of translators
+    /// </summary>
+    public IReadOnlyList<(string, string)> GetAvailableNames()
+        => _availableTranslators.Select(x => (x.Item1, x.Item2.Name)).ToList();
 
     public string? GetCurrentName()
         => _currentTranslator?.GetName();
