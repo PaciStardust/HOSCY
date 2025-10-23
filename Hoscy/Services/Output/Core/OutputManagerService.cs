@@ -78,6 +78,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         if (stillActiveProcessors.Length > 0)
         {
             var notStoppedProcessors = string.Join(", ", stillActiveProcessors.Select(x => x.GetType().FullName));
+            _logger.Error("Following MessageProcessors failed to comply with a shutdown call: {notStoppedProcessors}", notStoppedProcessors);
             throw new StartStopServiceException($"Following MessageProcessors failed to comply with a shutdown call: {notStoppedProcessors}");
         }
         _activeProcessors.Clear();

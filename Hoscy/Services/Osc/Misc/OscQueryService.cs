@@ -34,6 +34,7 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
         var udpPort = _listener.GetPort();
         if (!udpPort.HasValue)
         {
+            _logger.Error("Could not retrieve UDP Port from OscListenService");
             throw new StartStopServiceException("Could not retrieve UDP Port from OscListenService");
         }
 
