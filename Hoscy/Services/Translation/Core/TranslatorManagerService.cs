@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Hoscy.Services.DependencyCore;
 using Hoscy.Services.Interfacing;
+using Hoscy.Utility;
 using Serilog;
 
 namespace Hoscy.Services.Translation.Core;
@@ -33,7 +34,24 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
     #region Start / Stop
     protected override void StartInternal()
     {
-        throw new NotImplementedException();
+        _logger.Information("Starting up Service by loading available Translators");
+        if (IsRunning())
+        {
+            _logger.Information("Skipped starting Service, still running");
+            return;
+        }
+
+        _availableTranslators.Clear();
+
+        var translatorsWithInstance = LaunchUtils.GetImplementationsInContainerForClass<ITranslator>(_services, _logger);
+        _availableTranslators.AddRange(translatorsWithInstance.Select(x => (x.GetName(), x.GetType())));
+        if (_availableTranslators.Count == 0)
+        {
+            _logger.Warning("No Translators could be located, Service will have no functionality and will be NOT be marked as running");
+            return;
+        }
+
+        _logger.Information("Started up Service with {translatorCount} Translators", _availableTranslators.Count);
     }
 
     public override void Stop()
@@ -48,7 +66,7 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
 
     public override bool IsRunning()
     {
-        throw new NotImplementedException();
+        return _availableTranslators.Count > 0;
     }
     #endregion
 
