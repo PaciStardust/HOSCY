@@ -56,18 +56,17 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
 
     public override void Stop()
     {
-        throw new NotImplementedException();
+        _logger.Information("Stopping service, shutting down Translator");
+        _currentTranslator?.Stop();
+        _currentTranslator = null;
+        _logger.Information("Stopped service, shut down Translator");
     }
 
     public override void Restart()
-    {
-        throw new NotImplementedException();
-    }
+        => RestartSimple(GetType().Name, _logger);
 
     public override bool IsRunning()
-    {
-        return _availableTranslators.Count > 0;
-    }
+        => _availableTranslators.Count > 0;
     #endregion
 
     #region Translator => Start / Stop
