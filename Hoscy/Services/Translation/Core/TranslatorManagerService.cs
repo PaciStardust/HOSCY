@@ -121,12 +121,27 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
 
     public void StopCurrentTranslator()
     {
-        throw new NotImplementedException();
+        _logger.Information("Stopping current translator");
+        if (_currentTranslator is null)
+        {
+            _logger.Information("Skipping stopping of current translator, no translator running");
+            return;
+        }
+        _currentTranslator.Stop();
+        _currentTranslator = null;
+        _logger.Information("Stopped current translator");
     }
 
     public void RestartCurrentTranslator()
     {
-        throw new NotImplementedException();
+        _logger.Information("Restarting current translator");
+        if (_currentTranslator is null)
+        {
+            _logger.Information("Skipping restart of current translator, no translator running");
+            return;
+        }
+        _currentTranslator.Restart();
+        _logger.Information("Restarted current translator");
     }
 
     public StartStopStatus GetCurrentTranslatorStatus()
