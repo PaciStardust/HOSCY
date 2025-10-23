@@ -144,10 +144,8 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
         _logger.Information("Restarted current translator");
     }
 
-    public StartStopStatus GetCurrentTranslatorStatus()
-    {
-        throw new NotImplementedException();
-    }
+    public StartStopStatus GetCurrentTranslatorStatus() //todo: handle internal errors
+        => _currentTranslator?.GetStatus() ?? StartStopStatus.Stopped;
     #endregion
 
     #region Translator => Functionality
