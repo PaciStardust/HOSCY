@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Hoscy.Services.DependencyCore;
 using Hoscy.Services.Interfacing;
 using Serilog;
@@ -23,14 +24,10 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
 
     #region Info
     public IReadOnlyList<string> GetAvailableNames()
-    {
-        throw new NotImplementedException();
-    }
+        => _availableTranslators.Select(x => x.Item1).ToList();
 
     public string? GetCurrentName()
-    {
-        throw new NotImplementedException();
-    }
+        => _currentTranslator?.GetName();
     #endregion
 
     #region Start / Stop
