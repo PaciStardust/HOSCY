@@ -6,5 +6,5 @@ namespace Hoscy.Services.Translation.Core;
 public interface ITranslator : IStartStopService
 {
     public string GetName();
-    public bool TryTranslate(string input, [NotNullWhen(true)] string? output);
+    public bool TryTranslate(string input, [NotNullWhen(true)] out string? output);
 }
