@@ -60,8 +60,7 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
     public override void Stop()
     {
         _logger.Information("Stopping service, shutting down Translator");
-        _currentTranslator?.Stop();
-        _currentTranslator = null;
+        StopCurrentTranslator();
         _logger.Information("Stopped service, shut down Translator");
     }
 
@@ -113,7 +112,8 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
             _logger.Error("Failed to get translator instance name {translatorName} and type {translatorType}", name, translatorType.Name);
             throw new DiResolveException($"Failed to get translator instance name {name} and type {translatorType.Name}");
         }
-
+        translator.OnRuntimeError -= HandleOnRuntimeError;
+        translator.OnShutdownCompleted -= HandleOnShutdownCompleted;
         translator.Start();
         _currentTranslator = translator;
         _logger.Information("Started translator with name {translatorName} and type {translatorType}", name, translatorType.Name);
@@ -127,9 +127,36 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
             _logger.Information("Skipping stopping of current translator, no translator running");
             return;
         }
+        _currentTranslator.OnShutdownCompleted -= HandleOnShutdownCompleted;
         _currentTranslator.Stop();
-        _currentTranslator = null;
+        CleanupAfterTranslatorShutdown();
         _logger.Information("Stopped current translator");
+    }
+
+    private void HandleOnShutdownCompleted(object? sender, EventArgs e)
+    {
+        if (sender is null) return;
+        _logger.Warning("HandleOnShutdownCompleted called for type {senderType}, this should only happen when a shutdown was called unexpectedly", sender.GetType().FullName);
+        CleanupAfterTranslatorShutdown();
+    }
+
+    private void CleanupAfterTranslatorShutdown()
+    {
+        if (_currentTranslator is not null)
+        {
+            _currentTranslator.OnRuntimeError -= HandleOnRuntimeError;
+            _currentTranslator.OnShutdownCompleted -= HandleOnShutdownCompleted;
+            _currentTranslator = null;
+        }
+        SetFault(null);
+    }
+
+    private void HandleOnRuntimeError(object? sender, Exception ex)
+    {
+        _logger.Error(ex, "Encountered an error in Translator {senderType}", sender?.GetType().FullName);
+        _notify.SendError($"Encountered an error in Translator {sender?.GetType().FullName ?? "???"}",exception: ex);
+        var newEx = _currentTranslator?.GetFaultIfExists();
+        SetFault(ex);
     }
 
     public void RestartCurrentTranslator()
