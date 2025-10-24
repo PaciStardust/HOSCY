@@ -119,9 +119,9 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
 
         SetFault(GetProcessorExceptions());
         var newProcessor = RetrieveProcessorInstanceWithInfo(info);
-        newProcessor.Activate();
         newProcessor.OnRuntimeError += HandleOnRuntimeError;
         newProcessor.OnShutdownCompleted += HandleOnShutdownCompleted;
+        newProcessor.Activate();
         _activeProcessors.Add(newProcessor);
         _logger.Information("Activated Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
     }
