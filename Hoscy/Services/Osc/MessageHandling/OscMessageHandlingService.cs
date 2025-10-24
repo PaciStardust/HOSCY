@@ -51,7 +51,9 @@ public class OscMessageHandlingService(ILogger logger, IBackToFrontNotifyService
     }
 
     public override void Restart()
-        => RestartSimple(GetType().Name, _logger);
+    {
+        RestartSimple(GetType().Name, _logger);
+    }
 
     protected override void StartInternal()
     {

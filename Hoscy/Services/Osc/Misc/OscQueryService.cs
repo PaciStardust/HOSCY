@@ -87,7 +87,9 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
     }
 
     public override void Restart()
-        => RestartSimple(GetType().Name, _logger);
+    {
+        RestartSimple(GetType().Name, _logger);
+    }
     #endregion
 
     #region Functionality

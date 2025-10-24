@@ -83,7 +83,8 @@ public class FilterModel : ObservableObject
             Enabled = false;
         }
     }
-    public string GetLastException() => _lastException;
+    public string GetLastException()
+        => _lastException;
     public bool IsValid => _regex != null;
 
     internal bool Matches(string compare)
@@ -98,5 +99,7 @@ public class FilterModel : ObservableObject
     }
 
     public override string ToString()
-        => $"{(Enabled ? string.Empty : "[x] ")}{_name} ={(_useRegex ? "R" : string.Empty)}{(_ignoreCase ? string.Empty : "C")}> {_filterString}";
+    {
+        return $"{(Enabled ? string.Empty : "[x] ")}{_name} ={(_useRegex ? "R" : string.Empty)}{(_ignoreCase ? string.Empty : "C")}> {_filterString}";
+    }
 }

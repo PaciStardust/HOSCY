@@ -79,7 +79,9 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
     }
 
     public override void Restart()
-        => RestartSimple(GetType().Name, _logger);
+    {
+        RestartSimple(GetType().Name, _logger);
+    }
     #endregion
 
     #region Listening

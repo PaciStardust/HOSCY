@@ -16,7 +16,9 @@ public class PartialReplacementOutputPreprocessor(ConfigModel config, ILogger lo
 {
     #region Simple Overrides
     public override PartialReplacementHandler ConvertToHandler(ReplacementDataModel model)
-        => new(model);
+    {
+        return new(model);
+    }
 
     public override string GetReloadPropertyName()
         => nameof(_config.Speech_Replacement_Partial);

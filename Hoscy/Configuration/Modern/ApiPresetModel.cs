@@ -94,8 +94,10 @@ public class ApiPresetModel : ObservableObject
     }
 
     internal bool IsValid()
-        => !string.IsNullOrWhiteSpace(TargetUrl)
+    {
+        return !string.IsNullOrWhiteSpace(TargetUrl)
         && !string.IsNullOrWhiteSpace(SentData)
         && !string.IsNullOrWhiteSpace(ResultField)
         && !string.IsNullOrWhiteSpace(ContentType);
+    }
 }

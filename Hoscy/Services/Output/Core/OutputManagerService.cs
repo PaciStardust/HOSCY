@@ -84,7 +84,9 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     }
 
     public override void Restart()
-        => RestartSimple(GetType().Name, _logger);
+    {
+        RestartSimple(GetType().Name, _logger);
+    }
     #endregion
 
     #region Info

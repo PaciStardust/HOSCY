@@ -15,7 +15,9 @@ public class FullReplacementOutputPreprocessor(ConfigModel config, ILogger logge
 {
     #region Simple Overrides
     public override FullReplacementHandler ConvertToHandler(ReplacementDataModel model)
-        => new(model);
+    {
+        return new(model);   
+    }
 
     public override string GetReloadPropertyName()
         => nameof(_config.Speech_Replacement_Full);

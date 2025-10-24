@@ -62,5 +62,7 @@ public class CounterModel : ObservableObject
     }
 
     public override string ToString()
-        => $"{(Enabled ? "" : "[x] ")}{Name}: {Count:N0}";
+    {
+        return $"{(Enabled ? "" : "[x] ")}{Name}: {Count:N0}";
+    }
 }

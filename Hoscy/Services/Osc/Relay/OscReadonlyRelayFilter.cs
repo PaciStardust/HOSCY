@@ -29,5 +29,7 @@ public readonly struct OscReadonlyRelayFilter(OscRelayFilterModel model)
     }
 
     public override string ToString()
-        => $"{Name} ={(BlacklistMode ? "B" : string.Empty)}> {Ip}:{Port}";
+    {
+        return $"{Name} ={(BlacklistMode ? "B" : string.Empty)}> {Ip}:{Port}";
+    }
 }

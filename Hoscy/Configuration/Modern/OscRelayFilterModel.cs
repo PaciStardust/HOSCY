@@ -44,11 +44,15 @@ public class OscRelayFilterModel : ObservableObject
 
     private bool _isValid = true;
     public override string ToString()
-        => $"{(_isValid ? "" : "[x]")}{Name} ={(BlacklistMode ? "B" : string.Empty)}> {Ip}:{Port}";
+    {
+        return $"{(_isValid ? "" : "[x]")}{Name} ={(BlacklistMode ? "B" : string.Empty)}> {Ip}:{Port}";
+    }
 
     /// <summary>
     /// Sets validity to be displayed in filter window
     /// </summary>
     public void SetValidity(bool state)
-        => _isValid = state;
+    {
+        _isValid = state;
+    }
 }

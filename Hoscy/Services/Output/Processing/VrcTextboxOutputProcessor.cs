@@ -372,6 +372,8 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     }
 
     public override void Restart()
-        => RestartSimple(_info.Name, _logger);
+    {
+        RestartSimple(_info.Name, _logger);
+    }
     #endregion
 }

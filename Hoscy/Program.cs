@@ -59,13 +59,17 @@ sealed class Program
 
     // Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp(DiContainer container, ILogger logger)
-        => AppBuilder.Configure(() => new App(container))
+    {
+        return AppBuilder.Configure(() => new App(container))
             .UsePlatformDetect()
             .WithInterFont()
             .LogToSerilog(logger);
+    }
 
     public static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<App>()
+    {
+        return AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont();
+    }
 }

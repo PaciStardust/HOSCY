@@ -28,5 +28,7 @@ public interface IWebClient : IStartStopService
     /// Gets a unique identifier for a request
     /// </summary>
     protected static string GetRequestIdentifier()
-        => "R-" + Guid.NewGuid().ToString().Split('-')[0];
+    {
+        return "R-" + Guid.NewGuid().ToString().Split('-')[0];
+    }
 }

@@ -48,5 +48,7 @@ public class ReplacementDataModel : ObservableObject
     }
 
     public override string ToString()
-        => $"{(Enabled ? string.Empty : "[x] ")}{Text} ={(UseRegex ? "R" : string.Empty)}{(IgnoreCase ? string.Empty : "C")}> {Replacement}";
+    {
+        return $"{(Enabled ? string.Empty : "[x] ")}{Text} ={(UseRegex ? "R" : string.Empty)}{(IgnoreCase ? string.Empty : "C")}> {Replacement}";
+    }
 }

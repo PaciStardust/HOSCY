@@ -28,10 +28,14 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
     /// Returns the name and type name of translators
     /// </summary>
     public IReadOnlyList<(string, string)> GetAvailableNames()
-        => _availableTranslators.Select(x => (x.Item1, x.Item2.Name)).ToList();
+    {
+        return _availableTranslators.Select(x => (x.Item1, x.Item2.Name)).ToList();
+    }
 
     public string? GetCurrentName()
-        => _currentTranslator?.GetName();
+    {
+        return _currentTranslator?.GetName();
+    }
     #endregion
 
     #region Start / Stop
@@ -65,10 +69,14 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
     }
 
     public override void Restart()
-        => RestartSimple(GetType().Name, _logger);
+    {
+        RestartSimple(GetType().Name, _logger);
+    }
 
     public override bool IsRunning()
-        => _availableTranslators.Count > 0;
+    {
+        return _availableTranslators.Count > 0;
+    }
     #endregion
 
     #region Translator => Start / Stop
@@ -171,8 +179,10 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
         _logger.Information("Restarted current translator");
     }
 
-    public StartStopStatus GetCurrentTranslatorStatus() //todo: handle internal errors
-        => _currentTranslator?.GetStatus() ?? StartStopStatus.Stopped;
+    public StartStopStatus GetCurrentTranslatorStatus()
+    {
+        return _currentTranslator?.GetStatus() ?? StartStopStatus.Stopped;
+    }
     #endregion
 
     #region Translator => Functionality
