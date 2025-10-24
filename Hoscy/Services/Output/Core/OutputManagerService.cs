@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Hoscy.Services.DependencyCore;
 using Hoscy.Services.Interfacing;
 using Hoscy.Utility;
-using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
 namespace Hoscy.Services.Output.Core;
@@ -155,6 +153,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
 
         activeProcessor.Clear();
         activeProcessor.OnShutdownCompleted -= HandleOnShutdownCompleted; //This is not needed when manually shutting down
+        activeProcessor.Shutdown();
         CleanupAfterProcessorShutdown(activeProcessor);
         _logger.Information("Shut down Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
     }
