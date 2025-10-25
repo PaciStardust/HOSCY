@@ -89,7 +89,7 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient //todo
         return result;
     }
 
-    internal async Task<string?> SendBytes(byte[] bytes)
+    public async Task<string?> SendBytes(byte[] bytes)
     {
         _logger.Debug("{id}: Sending byte request via ApiPreset {presetName}", _identifier, _currentPreset?.Name ?? "NULL");
         if (_currentPreset is null || !_currentPreset.IsValid())
@@ -108,7 +108,7 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient //todo
         return await Send(content);
     }
 
-    internal async Task<string?> SendText(string text)
+    public async Task<string?> SendText(string text)
     {
         _logger.Debug("{id}: Sending text request via ApiPreset {presetName}", _identifier, _currentPreset?.Name ?? "NULL");
         if (_currentPreset is null || !_currentPreset.IsValid())
