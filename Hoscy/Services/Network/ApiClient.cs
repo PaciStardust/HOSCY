@@ -25,7 +25,7 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient //todo
         return _currentPreset is not null;
     }
 
-    public ApiClient AddIdentifier(string identifier)
+    public IApiClient AddIdentifier(string identifier)
     {
         _identifier = identifier;
         return this;
