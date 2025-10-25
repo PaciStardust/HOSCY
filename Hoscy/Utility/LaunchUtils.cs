@@ -126,7 +126,7 @@ public static class LaunchUtils
         try
         {
             using var timer = CreateTimerToThrowException(exceptionToThrow, msToWaitFor);
-            task?.Wait();
+            task?.GetAwaiter().GetResult();
             timer.Stop();
         }
         catch (Exception ex)
