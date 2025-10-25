@@ -2,6 +2,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Hoscy.Configuration.Modern;
+using Hoscy.Services.DependencyCore;
 using Hoscy.Utility;
 using Serilog;
 
@@ -10,20 +11,32 @@ namespace Hoscy.Services.Network;
 /// <summary>
 /// Wrapper for IWebClient to use with ApiPresets, generic for logging
 /// </summary>
-public class ApiClient<T>(IWebClient webClient, ILogger logger) //todo: notify?
+[LoadIntoDiContainer(typeof(IApiClient), Lifetime.Transient)]
+public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient //todo: notify?
 {
     private readonly IWebClient _client = webClient;
-    private readonly ILogger _logger = logger.ForContext<ApiClient<T>>();
-
+    private readonly ILogger _logger = logger.ForContext<ApiClient>();
+    private string _identifier = "Api";
     private ApiPresetModel? _currentPreset = null;
 
     #region Loading
+    public bool IsPresetLoaded()
+    {
+        return _currentPreset is not null;
+    }
+
+    public ApiClient AddIdentifier(string identifier)
+    {
+        _identifier = identifier;
+        return this;
+    }
+
     public bool LoadPreset(ApiPresetModel preset)
     {
-        _logger.Information("Loading new ApiPreset {name}", preset.Name);
+        _logger.Information("{id}: Loading new ApiPreset {name}", _identifier, preset.Name);
         if (preset.Equals(_currentPreset))
         {
-            _logger.Information("Skipped loading new ApiPreset {name}, it is already loaded", preset.Name);
+            _logger.Information("{id}: Skipped loading new ApiPreset {name}, it is already loaded", _identifier, preset.Name);
             return true;
         }
 
@@ -31,7 +44,7 @@ public class ApiClient<T>(IWebClient webClient, ILogger logger) //todo: notify?
 
         if (!preset.IsValid())
         {
-            _logger.Error("Did not load ApiPreset {name} as it is invalid", preset.Name);
+            _logger.Error("{id}: Did not load ApiPreset {name} as it is invalid", _identifier, preset.Name);
             return false;
         }
 
@@ -45,7 +58,7 @@ public class ApiClient<T>(IWebClient webClient, ILogger logger) //todo: notify?
     {
         if (_currentPreset is null || !_currentPreset.IsValid())
         {
-            _logger.Warning("Not sending request as no valid ApiPreset is loaded");
+            _logger.Warning("{id}: Not sending request as no valid ApiPreset is loaded", _identifier);
             return null;
         }
 
@@ -60,35 +73,35 @@ public class ApiClient<T>(IWebClient webClient, ILogger logger) //todo: notify?
 
         if (jsonIn is null)
         {
-            _logger.Warning("Received response for reques, but json is null, returning null");
+            _logger.Warning("{id}: Received response for reques, but json is null, returning null", _identifier);
             return null;
         }
 
         var result = Utils.ExtractFromJson(_currentPreset.ResultField, jsonIn);
         if (result is null)
         {
-            _logger.Warning("Unable to find content with value {resultField}, returning null", _currentPreset.ResultField);
+            _logger.Warning("{id}: Unable to find content with value {resultField}, returning null", _identifier, _currentPreset.ResultField);
         }
         else
         {
-            _logger.Debug("Found content with value {resultField}: {result}", _currentPreset.ResultField, result);
+            _logger.Debug("{id}: Found content with value {resultField}: {result}", _identifier, _currentPreset.ResultField, result);
         }
         return result;
     }
-    
+
     internal async Task<string?> SendBytes(byte[] bytes)
     {
-        _logger.Debug("Sending byte request via ApiPreset {presetName}", _currentPreset?.Name ?? "NULL");
+        _logger.Debug("{id}: Sending byte request via ApiPreset {presetName}", _identifier, _currentPreset?.Name ?? "NULL");
         if (_currentPreset is null || !_currentPreset.IsValid())
         {
-            _logger.Warning("Not sending byte request as no valid ApiPreset is loaded");
+            _logger.Warning("{id}: Not sending byte request as no valid ApiPreset is loaded", _identifier);
             return null;
         }
 
         var content = new ByteArrayContent(bytes);
         if (string.IsNullOrWhiteSpace(_currentPreset.ContentType) || !content.Headers.TryAddWithoutValidation("Content-Type", _currentPreset.ContentType))
         {
-            _logger.Warning("Unable to send data to API as ContentType {contentType} is invalid, are you using the Type suggested by the API's documentation?", _currentPreset.ContentType);
+            _logger.Warning("{id}: Unable to send data to API as ContentType {contentType} is invalid, are you using the Type suggested by the API's documentation?", _identifier, _currentPreset.ContentType);
             return null;
         }
 
@@ -97,17 +110,17 @@ public class ApiClient<T>(IWebClient webClient, ILogger logger) //todo: notify?
 
     internal async Task<string?> SendText(string text)
     {
-        _logger.Debug("Sending text request via ApiPreset {presetName}", _currentPreset?.Name ?? "NULL");
+        _logger.Debug("{id}: Sending text request via ApiPreset {presetName}", _identifier, _currentPreset?.Name ?? "NULL");
         if (_currentPreset is null || !_currentPreset.IsValid())
         {
-            _logger.Warning(messageTemplate: "Not sending text request as no valid ApiPreset is loaded");
+            _logger.Warning(messageTemplate: "{id}: Not sending text request as no valid ApiPreset is loaded", _identifier);
             return null;
         }
 
         var jsonOut = ReplaceToken(_currentPreset.SentData, "[T]", text);
         if (_currentPreset.SentData == jsonOut)
         {
-            _logger.Warning("Unable to send data to data to API as JSON contains no token, have you made sure the JSON option contains \"[T]\"?");
+            _logger.Warning("{id}: Unable to send data to data to API as JSON contains no token, have you made sure the JSON option contains \"[T]\"?", _identifier);
             return null;
         }
 
@@ -127,7 +140,7 @@ public class ApiClient<T>(IWebClient webClient, ILogger logger) //todo: notify?
         {
             if (!content.Headers.TryAddWithoutValidation(headerInfo.Key, headerInfo.Value))
             {
-                _logger.Warning($"Skipped adding header info \"{headerInfo.Key} : {headerInfo.Value}\". As it was deemed invalid, it will be removed");
+                _logger.Warning("{id}: Skipped adding header info \"{headerInfoKey} : {headerInfoValue}\". As it was deemed invalid, it will be removed", _identifier, headerInfo.Key, headerInfo.Value);
                 _currentPreset.HeaderValues.Remove(headerInfo);
             }
         }
@@ -135,7 +148,7 @@ public class ApiClient<T>(IWebClient webClient, ILogger logger) //todo: notify?
 
     public void ClearPreset()
     {
-        _logger.Debug("Cleaing current preset");
+        _logger.Debug("{id}: Clearing current preset", _identifier);
         _currentPreset = null;
     }
 
