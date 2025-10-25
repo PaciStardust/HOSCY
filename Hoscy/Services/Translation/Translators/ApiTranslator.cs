@@ -9,7 +9,7 @@ using Serilog;
 
 namespace Hoscy.Services.Translation.Translators;
 
-public class ApiTranslator(ILogger logger, ConfigModel config, IApiClient client) : ITranslator
+public class ApiTranslator(ILogger logger, ConfigModel config, IApiClient client) : ITranslator //todo: base, use
 {
     private readonly ILogger _logger = logger.ForContext<ApiTranslator>();
     private readonly ConfigModel _config = config;
