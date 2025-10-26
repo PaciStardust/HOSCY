@@ -9,6 +9,6 @@ public interface IApiClient
     public void ClearPreset();
     public bool IsPresetLoaded();
     public bool LoadPreset(ApiPresetModel preset);
-    public Task<string?> SendBytes(byte[] bytes);
-    public Task<string?> SendText(string text);
+    public Task<string> SendBytes(byte[] bytes);
+    public Task<string> SendText(string text);
 }

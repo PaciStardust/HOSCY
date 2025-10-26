@@ -4,7 +4,7 @@ using Hoscy.Services.DependencyCore;
 
 namespace Hoscy.Services.Translation.Core;
 
-public interface ITranslatorManagerService : IStartStopService
+public interface ITranslatorManagerService : IStartStopService //todo: should there just be a IManagerService
 {
     #region Info
     public IReadOnlyList<(string, string)> GetAvailableNames();

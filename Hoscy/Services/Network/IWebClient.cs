@@ -12,8 +12,8 @@ public interface IWebClient : IStartStopService
     /// </summary>
     /// <param name="requestMessage">Message to send</param>
     /// <param name="timeoutMs">Timeout before cancellation</param>
-    /// <returns>Null if failed</returns>
-    public Task<string?> SendAsync(HttpRequestMessage requestMessage, int timeoutMs = 5000);
+    /// <returns>Result</returns>
+    public Task<string> SendAsync(HttpRequestMessage requestMessage, int timeoutMs = 5000);
 
     /// <summary>
     /// Downloads a file
@@ -21,8 +21,7 @@ public interface IWebClient : IStartStopService
     /// <param name="sourceUrl">Url of file to download</param>
     /// <param name="fileLocation">Location to save file to</param>
     /// <param name="timeoutMs">Timeout before cancellation</param>
-    /// <returns>Success</returns>
-    public Task<bool> DownloadAsync(string sourceUrl, string fileLocation, int timeoutMs = 5000);
+    public Task DownloadAsync(string sourceUrl, string fileLocation, int timeoutMs = 5000);
 
     /// <summary>
     /// Gets a unique identifier for a request

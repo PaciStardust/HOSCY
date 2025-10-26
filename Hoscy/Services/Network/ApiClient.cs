@@ -1,3 +1,4 @@
+using System;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace Hoscy.Services.Network;
 /// Wrapper for IWebClient to use with ApiPresets, generic for logging
 /// </summary>
 [LoadIntoDiContainer(typeof(IApiClient), Lifetime.Transient)]
-public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient //todo: notify?
+public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient
 {
     private readonly IWebClient _client = webClient;
     private readonly ILogger _logger = logger.ForContext<ApiClient>();
@@ -54,12 +55,12 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient //todo
     #endregion
 
     #region Sending
-    private async Task<string?> Send(HttpContent content)
+    private async Task<string> Send(HttpContent content)
     {
         if (_currentPreset is null || !_currentPreset.IsValid())
         {
             _logger.Warning("{id}: Not sending request as no valid ApiPreset is loaded", _identifier);
-            return null;
+            throw new InvalidOperationException("No valid ApiPreset loaded");
         }
 
         var requestMessage = new HttpRequestMessage(HttpMethod.Post, _currentPreset.TargetUrl)
@@ -73,14 +74,15 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient //todo
 
         if (jsonIn is null)
         {
-            _logger.Warning("{id}: Received response for reques, but json is null, returning null", _identifier);
-            return null;
+            _logger.Warning("{id}: Received response for request, but json is null", _identifier);
+            throw new HttpRequestException("Received response for request, but json is null");
         }
 
         var result = Utils.ExtractFromJson(_currentPreset.ResultField, jsonIn);
         if (result is null)
         {
-            _logger.Warning("{id}: Unable to find content with value {resultField}, returning null", _identifier, _currentPreset.ResultField);
+            _logger.Warning("{id}: Unable to find content with key {resultField} in result {jsonIn}", _identifier, _currentPreset.ResultField, jsonIn);
+            throw new HttpRequestException($"Unable to find content with key \"{_currentPreset.ResultField}\" in result \"{jsonIn}\"");
         }
         else
         {
@@ -89,39 +91,39 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient //todo
         return result;
     }
 
-    public async Task<string?> SendBytes(byte[] bytes)
+    public async Task<string> SendBytes(byte[] bytes)
     {
         _logger.Debug("{id}: Sending byte request via ApiPreset {presetName}", _identifier, _currentPreset?.Name ?? "NULL");
         if (_currentPreset is null || !_currentPreset.IsValid())
         {
             _logger.Warning("{id}: Not sending byte request as no valid ApiPreset is loaded", _identifier);
-            return null;
+            throw new InvalidOperationException("No valid ApiPreset loaded");
         }
 
         var content = new ByteArrayContent(bytes);
         if (string.IsNullOrWhiteSpace(_currentPreset.ContentType) || !content.Headers.TryAddWithoutValidation("Content-Type", _currentPreset.ContentType))
         {
             _logger.Warning("{id}: Unable to send data to API as ContentType {contentType} is invalid, are you using the Type suggested by the API's documentation?", _identifier, _currentPreset.ContentType);
-            return null;
+            throw new ArgumentException($"Unable to send data to API as ContentType \"{_currentPreset.ContentType}\" is invalid");
         }
 
         return await Send(content);
     }
 
-    public async Task<string?> SendText(string text)
+    public async Task<string> SendText(string text)
     {
         _logger.Debug("{id}: Sending text request via ApiPreset {presetName}", _identifier, _currentPreset?.Name ?? "NULL");
         if (_currentPreset is null || !_currentPreset.IsValid())
         {
             _logger.Warning(messageTemplate: "{id}: Not sending text request as no valid ApiPreset is loaded", _identifier);
-            return null;
+            throw new InvalidOperationException("No valid ApiPreset loaded");
         }
 
         var jsonOut = ReplaceToken(_currentPreset.SentData, "[T]", text);
         if (_currentPreset.SentData == jsonOut)
         {
-            _logger.Warning("{id}: Unable to send data to data to API as JSON contains no token, have you made sure the JSON option contains \"[T]\"?", _identifier);
-            return null;
+            _logger.Warning("{id}: Unable to send data to API as JSON contains no token to replace, have you made sure the JSON option contains \"[T]\"?", _identifier);
+            throw new ArgumentException($"Unable to send data to API as JSON contains no token to replace, have you made sure the JSON option contains \"[T]\"?");
         }
 
         return await Send(new StringContent(jsonOut, Encoding.UTF8, _currentPreset.ContentType));

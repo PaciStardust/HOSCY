@@ -101,17 +101,27 @@ public class ApiTranslator(ILogger logger, ConfigModel config, IApiClient client
         // }
 
         _logger.Debug("Requesting translation of text \"{input}\"", input);
-        var result = _client.SendText(input).GetAwaiter().GetResult();
-
-        if (result is null || string.IsNullOrWhiteSpace(result))
+        try
         {
-            _logger.Debug("Failed translation of text \"{input}\", no output received", input);
+            var result = _client.SendText(input).GetAwaiter().GetResult();
+            if (string.IsNullOrWhiteSpace(result))
+            {
+                _logger.Warning("Failed translation of text \"{input}\", no output received", input);
+                output = null;
+                return false;
+            }
+
+            _logger.Debug("Translated text \"{input}\" to \"{output}\"", input, result);
+            output = result;
+            return true;
+        } catch (Exception ex)
+        {
+            _logger.Error(ex, "Failed translation of text \"{input}\"", input);
+            _runtimeException = ex;
+            OnRuntimeError.Invoke(this, ex);
             output = null;
             return false;
         }
-
-        output = result;
-        return true;
     }
     #endregion
 }
