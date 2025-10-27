@@ -6,7 +6,7 @@ public abstract class StartStopSubmoduleBase<Tidentifier> : StartStopServiceBase
 {
     #region Events
     public event EventHandler<Exception> OnRuntimeError = delegate { };
-    public event EventHandler OnShutdownCompleted = delegate { };
+    public event EventHandler OnShutdownCompleted = delegate { }; //todo: invoke automatically?
     #endregion
 
     #region Info & Status

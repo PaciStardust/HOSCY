@@ -9,24 +9,19 @@ using Serilog;
 
 namespace Hoscy.Services.Translation.Translators;
 
-public class ApiTranslator(ILogger logger, ConfigModel config, IApiClient client) : ITranslator //todo: base, use
+public class ApiTranslator(ILogger logger, ConfigModel config, IApiClient client) : TranslatorBase //todo: use
 {
     private readonly ILogger _logger = logger.ForContext<ApiTranslator>();
     private readonly ConfigModel _config = config;
     private readonly IApiClient _client = client.AddIdentifier(nameof(ApiTranslator));
 
-    public event EventHandler<Exception> OnRuntimeError = delegate {};
-    public event EventHandler OnShutdownCompleted = delegate { };
-
-    private Exception? _runtimeException = null; //todo: needed?
-
     #region Info
-    public string GetIdentifier()
+    public override string GetIdentifier()
         => "Api Translator";
     #endregion
 
     #region Start/Stop
-    public void Start()
+    protected override void StartInternal()
     {
         _logger.Information("Starting Translator with preset {preset}", _config.ApiCommunication_Translation_CurrentPreset);
         var matchingModel = _config.ApiCommunication_Presets.FirstOrDefault(x => x.Name == _config.ApiCommunication_Translation_CurrentPreset);
@@ -45,7 +40,7 @@ public class ApiTranslator(ILogger logger, ConfigModel config, IApiClient client
         _logger.Information("Started Translator with preset {preset}", matchingModel.Name);
     }
 
-    public void Stop()
+    public override void Stop()
     {
         _logger.Information("Stopping Translator");
         if (_client.IsPresetLoaded())
@@ -55,32 +50,19 @@ public class ApiTranslator(ILogger logger, ConfigModel config, IApiClient client
         _logger.Information("Stopped Translator");
     }
 
-    public void Restart()
+    public override void Restart()
     {
-        _logger.Information("Restarting Translator");
-        Stop();
-        Start();
-        _logger.Information("Restarted Translator");
+        RestartSimple(GetType().Name, _logger);
     }
 
-    public bool IsRunning()
+    public override bool IsRunning()
     {
         return _client.IsPresetLoaded();
-    }
-
-    public Exception? GetFaultIfExists()
-        => _runtimeException;
-
-    public StartStopStatus GetStatus()
-    {
-        if (!IsRunning()) return StartStopStatus.Stopped;
-        if (GetFaultIfExists() is not null) return StartStopStatus.Faulted;
-        return StartStopStatus.Running;
     }
     #endregion
 
     #region Functionality
-    public bool TryTranslate(string input, [NotNullWhen(true)] out string? output)
+    public override bool TryTranslate(string input, [NotNullWhen(true)] out string? output)
     {
         input = input.Replace("\"", string.Empty);
 
@@ -117,8 +99,7 @@ public class ApiTranslator(ILogger logger, ConfigModel config, IApiClient client
         } catch (Exception ex)
         {
             _logger.Error(ex, "Failed translation of text \"{input}\"", input);
-            _runtimeException = ex;
-            OnRuntimeError.Invoke(this, ex);
+            SetFault(ex);
             output = null;
             return false;
         }

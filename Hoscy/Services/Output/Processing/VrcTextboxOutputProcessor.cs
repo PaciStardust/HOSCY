@@ -12,7 +12,7 @@ using Serilog;
 namespace Hoscy.Services.Output.Processing;
 
 [LoadIntoDiContainer(typeof(VrcTextboxOutputProcessor), Lifetime.Transient)]
-public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscSendService sender) : OutputProcessorBase
+public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscSendService sender) : OutputProcessorBase //todo: is no event ever called?
 {
     #region Injected Services
     private readonly ILogger _logger = logger.ForContext<VrcTextboxOutputProcessor>();
