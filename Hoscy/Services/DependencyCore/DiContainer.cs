@@ -116,29 +116,29 @@ public class DiContainer
     public void StartServices()
     {
         var sw = Stopwatch.StartNew();
-        _internalLogger.Information("Locating all StartStopServices for startup...");
-        var servicesToStart = RetrieveStartStopServiceInfos();
+        _internalLogger.Information("Locating all IServices for startup...");
+        var servicesToStart = RetrieveServiceInfos();
 
-        _internalLogger.Information("Establishing startup order of {serviceCount} StartStopServices by resolving dependencies... (DI taken {diDuration}ms so far)",
+        _internalLogger.Information("Establishing startup order of {serviceCount} IServices by resolving dependencies... (DI taken {diDuration}ms so far)",
             servicesToStart.Count, sw.ElapsedMilliseconds);
         var (servicesResolvedInOrder, servicesInOrder) = EstablishStartOrder(servicesToStart);
 
-        _internalLogger.Information("Order of {toStart} StartStopServices established, proceeding with startup... (DI taken {diDuration}ms so far)",
+        _internalLogger.Information("Order of {toStart} IAutoStartStopServices established, proceeding with startup... (DI taken {diDuration}ms so far)",
             servicesInOrder.Count, sw.ElapsedMilliseconds);
         for (var i = 0; i < servicesInOrder.Count; i++)
         {
             var subSw = Stopwatch.StartNew();
             var currentService = servicesInOrder[i];
-            _internalLogger.Debug("Starting StartStopServices {currenStart}/{toStart}: {currentService}",
+            _internalLogger.Debug("Starting IAutoStartStopServices {currenStart}/{toStart}: {currentService}",
             i + 1, servicesInOrder.Count, servicesResolvedInOrder[i].FullName);
             currentService.Start();
             subSw.Stop();
-            _internalLogger.Debug("Started StartStopServices {currenStart}/{toStart}: {currentService} (Took {startDuration}ms, DI taken {diDuration}ms so far)",
+            _internalLogger.Debug("Started IAutoStartStopServices {currenStart}/{toStart}: {currentService} (Took {startDuration}ms, DI taken {diDuration}ms so far)",
             i + 1, servicesInOrder.Count, servicesResolvedInOrder[i].FullName, subSw.ElapsedMilliseconds, sw.ElapsedMilliseconds);
         }
 
         sw.Stop();
-        _internalLogger.Information("Successfully started {toStart} StartStopServices in {diDuration}ms", servicesInOrder.Count, sw.ElapsedMilliseconds);
+        _internalLogger.Information("Successfully started {toStart} IAutoStartStopServices in {diDuration}ms", servicesInOrder.Count, sw.ElapsedMilliseconds);
     }
 
     /// <summary>
@@ -147,99 +147,106 @@ public class DiContainer
     public void StopServices()
     {
         var sw = Stopwatch.StartNew();
-        _internalLogger.Information("Locating all StartStopServices for stopping...");
-        var servicesToStop = RetrieveStartStopServiceInfos();
+        _internalLogger.Information("Locating all IServices for stopping...");
+        var servicesToStop = RetrieveServiceInfos();
 
-        _internalLogger.Information("Establishing reversed startup order of {serviceCount} StartStopServices by resolving dependencies... (DI taken {diDuration}ms so far)",
+        _internalLogger.Information("Establishing reversed startup order of {serviceCount} IServices by resolving dependencies... (DI taken {diDuration}ms so far)",
             servicesToStop.Count, sw.ElapsedMilliseconds);
         var (servicesResolvedInOrder, servicesInOrder) = EstablishStartOrder(servicesToStop, true);
 
-        _internalLogger.Information("Order of {toStop} StartStopServices established, proceeding with stopping... (DI taken {diDuration}ms so far)",
+        _internalLogger.Information("Order of {toStop} IAutoStartStopServices established, proceeding with stopping... (DI taken {diDuration}ms so far)",
             servicesInOrder.Count, sw.ElapsedMilliseconds);
         for (var i = 0; i < servicesInOrder.Count; i++)
         {
             var subSw = Stopwatch.StartNew();
             var currentService = servicesInOrder[i];
-            _internalLogger.Debug("Stopping StartStopServices {currenStart}/{toStop}: {currentService}",
+            _internalLogger.Debug("Stopping IAutoStartStopServices {currenStart}/{toStop}: {currentService}",
             i + 1, servicesInOrder.Count, servicesResolvedInOrder[i].FullName);
             currentService.Stop();
             subSw.Stop();
-            _internalLogger.Debug("Stopped StartStopServices {currenStart}/{toStop}: {currentService} (Took {startDuration}ms, DI taken {diDuration}ms so far)",
+            _internalLogger.Debug("Stopped IAutoStartStopServices {currenStart}/{toStop}: {currentService} (Took {startDuration}ms, DI taken {diDuration}ms so far)",
             i + 1, servicesInOrder.Count, servicesResolvedInOrder[i].FullName, subSw.ElapsedMilliseconds, sw.ElapsedMilliseconds);
         }
 
         sw.Stop();
-        _internalLogger.Information("Successfully stopped {toStart} StartStopServices in {diDuration}ms", servicesInOrder.Count, sw.ElapsedMilliseconds);
+        _internalLogger.Information("Successfully stopped {toStart} IAutoStartStopServices in {diDuration}ms", servicesInOrder.Count, sw.ElapsedMilliseconds);
     }
 
     /// <summary>
-    /// Retrieves instance and list of other StartStopServices in constructor if applicable to Type
+    /// Retrieves instance and list of otherr Services in constructor if applicable to Type
     /// </summary>
-    /// <returns>Null if Type is not StartStopService or no Instance is available</returns>
-    private List<(Type, IStartStopService, List<Type>)> RetrieveStartStopServiceInfos() //todo: handle checking everything and only autostarting what is needed with autostartstop
+    /// <returns>Null if Type is not Service or no Instance is available</returns>
+    private List<(Type, IService, List<Type>)> RetrieveServiceInfos()
     {
-        var startStopImplementations = LaunchUtils.GetImplementationsInContainerForClass<IStartStopService>(Services, _internalLogger);
-        var startstopServiceInterface = typeof(IStartStopService);
-        List<(Type, IStartStopService, List<Type>)> servicesToStart = [];
+        var serviceImplementations = LaunchUtils.GetImplementationsInContainerForClass<IService>(Services, _internalLogger);
+        var serviceInterface = typeof(IService);
+        List<(Type, IService, List<Type>)> locatedServices = [];
 
-        foreach (var impl in startStopImplementations)
+        foreach (var impl in serviceImplementations)
         {
             var type = impl.GetType();
             var ctors = type.GetConstructors();
             if (ctors.Length == 0)
             {
-                _internalLogger.Warning("Failed to locate constructor for StartStopService {serviceType}", type.FullName);
+                _internalLogger.Warning("Failed to locate constructor for IService {serviceType}", type.FullName);
                 continue;
             }
             else if (ctors.Length > 0)
             {
-                _internalLogger.Debug("Located multiple constructors for StartStopService {serviceType}, picking first", type.FullName);
+                _internalLogger.Debug("Located multiple constructors for IService {serviceType}, picking first", type.FullName);
             }
 
             var requiredServiceTypes = ctors[0].GetParameters()
                 .Select(x => x.ParameterType)
-                .Where(x => !x.IsInterface && x.IsAssignableTo(startstopServiceInterface))
+                .Where(x => !x.IsInterface && x.IsAssignableTo(serviceInterface))
                 .ToList();
-            _internalLogger.Debug("Assessed {requiredServiceCount} other required StartStopServices for StartStopService {serviceType}",
+            _internalLogger.Debug("Assessed {requiredServiceCount} other required IServices for IService {serviceType}",
                 requiredServiceTypes.Count, type.FullName);
 
-            servicesToStart.Add((type, impl, requiredServiceTypes));
+            locatedServices.Add((type, impl, requiredServiceTypes));
         }
-        return servicesToStart;
+        return locatedServices;
     }
 
     /// <summary>
-    /// Establishing startup order of StartStopServices by resolving dependencies
+    /// Establishing startup order of IAutoStartStopServices by resolving dependencies
     /// </summary>
     /// <returns>A list of types and instances in correct order</returns>
-    public (List<Type>, List<IStartStopService>) EstablishStartOrder(List<(Type, IStartStopService, List<Type>)> servicesToStart, bool reversed = false)
+    public (List<Type>, List<IAutoStartStopService>) EstablishStartOrder(List<(Type, IService, List<Type>)> serviceList, bool reversed = false)
     {
         List<Type> servicesResolvedInOrder = [];
-        List<IStartStopService> servicesInOrder = [];
+        List<IAutoStartStopService> servicesInOrder = [];
         var resolveLoops = 0;
-        while (servicesToStart.Count > 0)
+        while (serviceList.Count > 0)
         {
             resolveLoops++;
-            _internalLogger.Verbose("Starting resolve loop {loopCount}, {toResolve} StartStopServices remain", resolveLoops, servicesToStart.Count);
+            _internalLogger.Verbose("Starting resolve loop {loopCount}, {toResolve} IServices remain", resolveLoops, serviceList.Count);
             bool changesMade = false;
-            for (var i = servicesToStart.Count - 1; i > -1; i--)
+            for (var i = serviceList.Count - 1; i > -1; i--)
             {
-                var serviceInfo = servicesToStart[i];
+                var serviceInfo = serviceList[i];
                 var requiredServiceList = serviceInfo.Item3;
                 requiredServiceList.RemoveAll(servicesResolvedInOrder.Contains);
                 if (requiredServiceList.Count == 0)
                 {
-                    servicesResolvedInOrder.Add(serviceInfo.Item1);
-                    servicesInOrder.Add(serviceInfo.Item2);
-                    servicesToStart.RemoveAt(i);
-                    _internalLogger.Debug("Resolved all dependencies for StartStopService {resolvedService}, startup order is {startupOrder}, {toResolve} still resolving",
-                        serviceInfo.Item1.FullName, servicesInOrder.Count, servicesToStart.Count);
+                    serviceList.RemoveAt(i);
                     changesMade = true;
+                    if (serviceInfo.Item2 is IAutoStartStopService autoStartStopService)
+                    {
+                        servicesResolvedInOrder.Add(serviceInfo.Item1);
+                        servicesInOrder.Add(autoStartStopService);
+                        _internalLogger.Debug("Resolved all dependencies for IAutoStartStopService {resolvedService}, startup order is {startupOrder}, {toResolve} still resolving",
+                        serviceInfo.Item1.FullName, servicesInOrder.Count, serviceList.Count);
+                    } else
+                    {
+                        _internalLogger.Debug("Resolved all dependencies for IService {resolvedService}, no startup needed as not IAutoStartService, {toResolve} still resolving",
+                        serviceInfo.Item1.FullName, servicesInOrder.Count, serviceList.Count);
+                    }
                 }
             }
             if (!changesMade)
             {
-                var brokenServices = string.Join(", ", servicesToStart.Select(x => x.Item1.FullName));
+                var brokenServices = string.Join(", ", serviceList.Select(x => x.Item1.FullName));
                 var ex = new DiResolveException($"Failed to resolve dependency chain in remaining StartStopServices ({brokenServices})");
                 _internalLogger.Fatal(ex, "Unable to resolve dependency chain for the following StartStopServices: {brokenServices}", brokenServices);
                 throw ex;
