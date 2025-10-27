@@ -1,9 +1,11 @@
+using Hoscy.Services.DependencyCore;
+
 namespace Hoscy.Services.Osc.Misc;
 
 /// <summary>
 /// Handling of OSC commands
 /// </summary>
-public interface IOscCommandService
+public interface IOscCommandService : IStartStopService
 {
     /// <summary>
     /// Checks if a string of text is an OSC command

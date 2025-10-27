@@ -1,11 +1,12 @@
 using System.Threading.Tasks;
+using Hoscy.Services.DependencyCore;
 
 namespace Hoscy.Services.Osc.SendReceive;
 
 /// <summary>
 /// Interface for an OSC Sender
 /// </summary>
-public interface IOscSendService
+public interface IOscSendService : IService
 {
     public string GetDefaultIp();
     public ushort GetDefaultPort();

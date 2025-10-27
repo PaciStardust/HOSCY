@@ -1,9 +1,10 @@
 using System.Threading.Tasks;
 using Hoscy.Configuration.Modern;
+using Hoscy.Services.DependencyCore;
 
 namespace Hoscy.Services.Network;
 
-public interface IApiClient
+public interface IApiClient : IService
 {
     public IApiClient AddIdentifier(string identifier);
     public void ClearPreset();

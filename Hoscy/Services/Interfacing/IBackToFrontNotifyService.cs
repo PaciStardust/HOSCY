@@ -1,11 +1,12 @@
 using System;
+using Hoscy.Services.DependencyCore;
 
 namespace Hoscy.Services.Interfacing;
 
 /// <summary>
 /// Service to send Information from the backend services to the frontend to display
 /// </summary>
-public interface IBackToFrontNotifyService
+public interface IBackToFrontNotifyService : IService
 {
     public event EventHandler<BackToFrontNotifyEventArgs> OnInfo;
     public event EventHandler<BackToFrontNotifyEventArgs> OnWarning;

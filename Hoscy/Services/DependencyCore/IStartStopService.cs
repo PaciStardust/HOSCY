@@ -5,7 +5,7 @@ namespace Hoscy.Services.DependencyCore;
 /// <summary>
 /// Represents a service that can be started and stopped
 /// </summary>
-public interface IStartStopService
+public interface IStartStopService : IService
 {
     public void Start();
     public void Stop();
