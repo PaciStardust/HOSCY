@@ -51,6 +51,13 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         Flags = OutputProcessorInfoFlags.SupportsMessages | OutputProcessorInfoFlags.SupportsNotifications | OutputProcessorInfoFlags.SupportsProcessingIndicator,
         ProcessorType = typeof(VrcTextboxOutputProcessor)
     };
+
+    public override TranslationOutputMode GetTranslationOutputMode()
+    {
+        return _config.ApiCommunication_Translation_OfTextbox
+            ? TranslationOutputMode.Both
+            : TranslationOutputMode.Untranslated; 
+    }
     #endregion
 
     #region Logic Loop

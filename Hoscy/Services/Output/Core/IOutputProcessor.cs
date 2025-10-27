@@ -1,10 +1,13 @@
-using System;
 using Hoscy.Services.DependencyCore;
 
 namespace Hoscy.Services.Output.Core;
 
 public interface IOutputProcessor : IStartStopSubmodule<OutputProcessorInfo>
 {
+    #region Info
+    public TranslationOutputMode GetTranslationOutputMode();
+    #endregion
+
     #region Functionality
     public void ProcessMessage(string contents);
     public void ProcessNotification(string contents, OutputNotificationPriority priority);

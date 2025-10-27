@@ -5,6 +5,10 @@ namespace Hoscy.Services.Output.Core;
 
 public abstract class OutputProcessorBase : StartStopSubmoduleBase<OutputProcessorInfo>, IOutputProcessor
 {
+    #region Info
+    public abstract TranslationOutputMode GetTranslationOutputMode();
+    #endregion
+
     #region Functionality
     public abstract void Clear();
     public abstract void ProcessMessage(string contents);
