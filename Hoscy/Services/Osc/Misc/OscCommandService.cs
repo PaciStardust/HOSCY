@@ -272,7 +272,7 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
     {
         var currentCount = _runningTasks.Count;
         _logger.Debug("Performing Task Cleanup, currently {currentCount} in list", currentCount);
-        for (var i = currentCount; i > -1; i--)
+        for (var i = currentCount - 1; i > -1; i--)
         {
             if (_runningTasks[i].IsCompleted)
             {
