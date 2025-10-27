@@ -21,7 +21,7 @@ public class ApiTranslator(ILogger logger, ConfigModel config, IApiClient client
     private Exception? _runtimeException = null; //todo: needed?
 
     #region Info
-    public string GetName()
+    public string GetIdentifier()
         => "Api Translator";
     #endregion
 
