@@ -25,7 +25,7 @@ public abstract class StartStopServiceBase : IStartStopService
     public Exception? GetFaultIfExists()
         => _internalException;
 
-    protected void SetFault(Exception? ex)
+    protected virtual void SetFault(Exception? ex)
     {
         _internalException = ex;
     }

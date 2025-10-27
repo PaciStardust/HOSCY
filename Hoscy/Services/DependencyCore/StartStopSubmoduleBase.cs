@@ -12,4 +12,15 @@ public abstract class StartStopSubmoduleBase<Tidentifier> : StartStopServiceBase
     #region Info & Status
     public abstract Tidentifier GetIdentifier();
     #endregion
+
+    #region Fault Handling
+    protected override void SetFault(Exception? ex)
+    {
+        base.SetFault(ex);
+        if (ex is not null)
+        {
+            OnRuntimeError.Invoke(this, ex);
+        }
+    }
+    #endregion
 }
