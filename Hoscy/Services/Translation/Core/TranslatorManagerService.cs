@@ -34,7 +34,7 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
 
     public string? GetCurrentName()
     {
-        return _currentTranslator?.GetName();
+        return _currentTranslator?.GetIdentifier();
     }
     #endregion
 
@@ -51,7 +51,7 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
         _availableTranslators.Clear();
 
         var translatorsWithInstance = LaunchUtils.GetImplementationsInContainerForClass<ITranslator>(_services, _logger);
-        _availableTranslators.AddRange(translatorsWithInstance.Select(x => (x.GetName(), x.GetType())));
+        _availableTranslators.AddRange(translatorsWithInstance.Select(x => (x.GetIdentifier(), x.GetType())));
         if (_availableTranslators.Count == 0)
         {
             _logger.Warning("No Translators could be located, Service will have no functionality and will be NOT be marked as running");
@@ -121,7 +121,7 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
             throw new DiResolveException($"Failed to get translator instance name {name} and type {translatorType.Name}");
         }
         translator.OnRuntimeError -= HandleOnRuntimeError;
-        translator.OnShutdownCompleted -= HandleOnShutdownCompleted;
+        translator.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
         translator.Start();
         _currentTranslator = translator;
         _logger.Information("Started translator with name {translatorName} and type {translatorType}", name, translatorType.Name);
@@ -135,13 +135,13 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
             _logger.Information("Skipping stopping of current translator, no translator running");
             return;
         }
-        _currentTranslator.OnShutdownCompleted -= HandleOnShutdownCompleted;
+        _currentTranslator.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
         _currentTranslator.Stop();
         CleanupAfterTranslatorShutdown();
         _logger.Information("Stopped current translator");
     }
 
-    private void HandleOnShutdownCompleted(object? sender, EventArgs e)
+    private void HandleOnSubmoduleStopped(object? sender, EventArgs e)
     {
         if (sender is null) return;
         _logger.Warning("HandleOnShutdownCompleted called for type {senderType}, this should only happen when a shutdown was called unexpectedly", sender.GetType().FullName);
@@ -153,7 +153,7 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
         if (_currentTranslator is not null)
         {
             _currentTranslator.OnRuntimeError -= HandleOnRuntimeError;
-            _currentTranslator.OnShutdownCompleted -= HandleOnShutdownCompleted;
+            _currentTranslator.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
             _currentTranslator = null;
         }
         SetFault(null);
@@ -175,7 +175,9 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
             _logger.Information("Skipping restart of current translator, no translator running");
             return;
         }
+        _currentTranslator.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
         _currentTranslator.Restart();
+        _currentTranslator.OnSubmoduleStopped += HandleOnSubmoduleStopped;
         _logger.Information("Restarted current translator");
     }
 
