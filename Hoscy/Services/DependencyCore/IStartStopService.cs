@@ -14,3 +14,8 @@ public interface IStartStopService
     public StartStopStatus GetStatus();
     public Exception? GetFaultIfExists();
 }
+
+/// <summary>
+/// Represents a StartStopService that will be launched automatically
+/// </summary>
+public interface IAutoStartStopService : IStartStopService; //todo: impl

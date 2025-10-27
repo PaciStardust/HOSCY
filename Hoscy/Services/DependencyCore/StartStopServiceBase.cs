@@ -5,7 +5,7 @@ using Serilog;
 namespace Hoscy.Services.DependencyCore;
 
 /// <summary>
-/// Helper class for ease of use for the )StartStopServices
+/// Helper class for ease of use for the StartStopServices
 /// </summary>
 public abstract class StartStopServiceBase : IStartStopService
 {
@@ -52,3 +52,8 @@ public abstract class StartStopServiceBase : IStartStopService
         notify?.SendError(message, exception: ex);
     }
 }
+
+/// <summary>
+/// Helper class for ease of use for the AutoStartStopServices
+/// </summary>
+public abstract class AutoStartStopServiceBase : StartStopServiceBase, IAutoStartStopService;

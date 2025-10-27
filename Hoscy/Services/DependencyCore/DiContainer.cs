@@ -176,7 +176,7 @@ public class DiContainer
     /// Retrieves instance and list of other StartStopServices in constructor if applicable to Type
     /// </summary>
     /// <returns>Null if Type is not StartStopService or no Instance is available</returns>
-    private List<(Type, IStartStopService, List<Type>)> RetrieveStartStopServiceInfos()
+    private List<(Type, IStartStopService, List<Type>)> RetrieveStartStopServiceInfos() //todo: handle checking everything and only autostarting what is needed with autostartstop
     {
         var startStopImplementations = LaunchUtils.GetImplementationsInContainerForClass<IStartStopService>(Services, _internalLogger);
         var startstopServiceInterface = typeof(IStartStopService);

@@ -4,7 +4,6 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Hoscy.Services.DependencyCore;
-using Hoscy.Services.Interfacing;
 using Serilog;
 
 namespace Hoscy.Services.Network;
