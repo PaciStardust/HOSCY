@@ -122,7 +122,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         SetFault(GetProcessorExceptions());
         var newProcessor = RetrieveProcessorInstanceWithInfo(info);
         newProcessor.OnRuntimeError += HandleOnRuntimeError;
-        newProcessor.OnShutdownCompleted += HandleOnShutdownCompleted;
+        newProcessor.OnSubmoduleStopped += HandleOnSubmoduleStopped;
         newProcessor.Start();
         _activeProcessors.Add(newProcessor);
         _logger.Information("Activated Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
@@ -154,13 +154,13 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         }
 
         activeProcessor.Clear();
-        activeProcessor.OnShutdownCompleted -= HandleOnShutdownCompleted; //This is not needed when manually shutting down
+        activeProcessor.OnSubmoduleStopped -= HandleOnSubmoduleStopped; //This is not needed when manually shutting down
         activeProcessor.Stop();
         CleanupAfterProcessorShutdown(activeProcessor);
         _logger.Information("Shut down Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
     }
 
-    private void HandleOnShutdownCompleted(object? sender, EventArgs e)
+    private void HandleOnSubmoduleStopped(object? sender, EventArgs e)
     {
         if (sender is null) return;
         _logger.Warning("HandleOnShutdownCompleted called for type {senderType}, this should only happen when a shutdown was called unexpectedly", sender.GetType().FullName);
@@ -171,7 +171,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     private void CleanupAfterProcessorShutdown(IOutputProcessor processor)
     {
         processor.OnRuntimeError -= HandleOnRuntimeError;
-        processor.OnShutdownCompleted -= HandleOnShutdownCompleted;
+        processor.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
         _activeProcessors.Remove(processor); //todo: TEST => does that work?
         SetFault(GetProcessorExceptions());
     }
@@ -187,9 +187,9 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         }
         else
         {
-            activeProcessor.OnShutdownCompleted -= HandleOnShutdownCompleted;
+            activeProcessor.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
             activeProcessor.Restart();
-            activeProcessor.OnShutdownCompleted += HandleOnShutdownCompleted;
+            activeProcessor.OnSubmoduleStopped += HandleOnSubmoduleStopped;
         }
         _logger.Information("Restarted Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
     }

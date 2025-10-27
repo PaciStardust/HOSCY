@@ -11,6 +11,6 @@ public interface IStartStopSubmodule<Tidentifier> : IStartStopService
     /// <summary>
     /// Event gets called when the processor is stopped
     /// </summary>
-    public event EventHandler OnShutdownCompleted;
+    public event EventHandler OnSubmoduleStopped;
     public Tidentifier GetIdentifier();
 }

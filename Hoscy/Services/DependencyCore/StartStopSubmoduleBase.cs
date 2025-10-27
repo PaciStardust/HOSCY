@@ -6,7 +6,7 @@ public abstract class StartStopSubmoduleBase<Tidentifier> : StartStopServiceBase
 {
     #region Events
     public event EventHandler<Exception> OnRuntimeError = delegate { };
-    public event EventHandler OnShutdownCompleted = delegate { };
+    public event EventHandler OnSubmoduleStopped = delegate { };
     #endregion
 
     #region Info & Status
@@ -28,7 +28,7 @@ public abstract class StartStopSubmoduleBase<Tidentifier> : StartStopServiceBase
     public override void Stop()
     {
         StopInternal();
-        OnShutdownCompleted.Invoke(this, EventArgs.Empty);
+        OnSubmoduleStopped.Invoke(this, EventArgs.Empty);
     }
 
     protected abstract void StopInternal();
