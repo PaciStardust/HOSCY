@@ -10,7 +10,7 @@ using Serilog;
 namespace Hoscy.Services.Translation.Core;
 
 [LoadIntoDiContainer(typeof(ITranslatorManagerService), Lifetime.Singleton)]
-public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger logger, IServiceProvider services) : StartStopServiceBase, ITranslatorManagerService
+public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger logger, IServiceProvider services) : StartStopServiceBase, ITranslatorManagerService //todo: base for manager?
 {
     #region Injected
     private readonly IBackToFrontNotifyService _notify = notify;
@@ -120,8 +120,8 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
             _logger.Error("Failed to get translator instance name {translatorName} and type {translatorType}", name, translatorType.Name);
             throw new DiResolveException($"Failed to get translator instance name {name} and type {translatorType.Name}");
         }
-        translator.OnRuntimeError -= HandleOnRuntimeError;
-        translator.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
+        translator.OnRuntimeError += HandleOnRuntimeError;
+        translator.OnSubmoduleStopped += HandleOnSubmoduleStopped;
         translator.Start();
         _currentTranslator = translator;
         _logger.Information("Started translator with name {translatorName} and type {translatorType}", name, translatorType.Name);

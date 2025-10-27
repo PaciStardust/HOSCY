@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using Hoscy.Services.DependencyCore;
 using Hoscy.Services.Interfacing;
 using Hoscy.Utility;
@@ -16,7 +15,7 @@ namespace Hoscy.Services.Osc.MessageHandling;
 public class OscMessageHandlingService(ILogger logger, IBackToFrontNotifyService notify, IServiceProvider serviceProvider) : StartStopServiceBase, IOscMessageHandlingService
 {
     private readonly ILogger _logger = logger.ForContext<OscMessageHandlingService>();
-    private readonly IBackToFrontNotifyService _notify = notify;
+    private readonly IBackToFrontNotifyService _notify = notify; //todd: impl
     private readonly IServiceProvider _services = serviceProvider;
     private List<IOscMessageHandler>? _handlers = null;
 
