@@ -345,7 +345,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         _logger.Information("Loop has been started");
     }
 
-    public override void Stop()
+    protected override void StopInternal()
     {
         _logger.Information("Stopping loop...");
         _cts?.Cancel();

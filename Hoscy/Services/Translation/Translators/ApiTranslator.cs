@@ -40,7 +40,7 @@ public class ApiTranslator(ILogger logger, ConfigModel config, IApiClient client
         _logger.Information("Started Translator with preset {preset}", matchingModel.Name);
     }
 
-    public override void Stop()
+    protected override void StopInternal()
     {
         _logger.Information("Stopping Translator");
         if (_client.IsPresetLoaded())

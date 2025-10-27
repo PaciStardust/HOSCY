@@ -187,7 +187,9 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         }
         else
         {
+            activeProcessor.OnShutdownCompleted -= HandleOnShutdownCompleted;
             activeProcessor.Restart();
+            activeProcessor.OnShutdownCompleted += HandleOnShutdownCompleted;
         }
         _logger.Information("Restarted Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
     }
