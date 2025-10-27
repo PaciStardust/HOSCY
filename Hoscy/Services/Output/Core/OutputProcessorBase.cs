@@ -3,17 +3,8 @@ using Hoscy.Services.DependencyCore;
 
 namespace Hoscy.Services.Output.Core;
 
-public abstract class OutputProcessorBase : StartStopServiceBase, IOutputProcessor
+public abstract class OutputProcessorBase : StartStopSubmoduleBase<OutputProcessorInfo>, IOutputProcessor
 {
-    #region Events
-    public event EventHandler<Exception> OnRuntimeError = delegate { };
-    public event EventHandler OnShutdownCompleted = delegate { };
-    #endregion
-
-    #region Info & Status
-    public abstract OutputProcessorInfo GetIdentifier();
-    #endregion
-
     #region Functionality
     public abstract void Clear();
     public abstract void ProcessMessage(string contents);
