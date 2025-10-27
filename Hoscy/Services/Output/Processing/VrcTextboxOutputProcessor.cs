@@ -40,13 +40,8 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     private OutputNotificationPriority? _lastSentNotificationPriority = null;
     #endregion
 
-    #region Events
-    public override event EventHandler<Exception> OnRuntimeError = delegate { };
-    public override event EventHandler OnShutdownCompleted = delegate { };
-    #endregion
-
     #region Information
-    public override OutputProcessorInfo GetInfo()
+    public override OutputProcessorInfo GetIdentifier()
         => _info;
 
     private readonly OutputProcessorInfo _info = new()
@@ -337,7 +332,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     #endregion
 
     #region Start / Stop
-    protected override void ActivateInternal()
+    protected override void StartInternal()
     {
         _logger.Information("Starting up message processing loop");
         if (IsRunning())
@@ -350,7 +345,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         _logger.Information("Loop has been started");
     }
 
-    public override void Shutdown()
+    public override void Stop()
     {
         _logger.Information("Stopping loop...");
         _cts?.Cancel();

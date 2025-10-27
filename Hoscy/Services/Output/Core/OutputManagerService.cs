@@ -44,7 +44,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         _preprocessors.Clear();
 
         var processorsWithInstance = LaunchUtils.GetImplementationsInContainerForClass<IOutputProcessor>(_services, _logger);
-        _availableProcessors.AddRange(processorsWithInstance.Select(x => x.GetInfo()));
+        _availableProcessors.AddRange(processorsWithInstance.Select(x => x.GetIdentifier()));
         if (_availableProcessors.Count == 0)
         {
             _logger.Warning("No Output Processors could be located, Service will have no functionality and will be NOT be marked as running");
@@ -69,7 +69,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         _logger.Information("Stopping service, shutting down {activeProcessors} Processors", activeProcessorCount);
         foreach (var processor in _activeProcessors)
         {
-            ShutdownProcessor(processor.GetInfo());
+            ShutdownProcessor(processor.GetIdentifier());
         }
 
         var stillActiveProcessors = _activeProcessors.Where(x => x.IsRunning()).ToArray();
@@ -93,7 +93,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     public IReadOnlyList<OutputProcessorInfo> GetInfos(bool activeOnly)
     {
         return activeOnly
-            ? _activeProcessors.Where(x => x.GetStatus() != StartStopStatus.Stopped).Select(x => x.GetInfo()).ToList()
+            ? _activeProcessors.Where(x => x.GetStatus() != StartStopStatus.Stopped).Select(x => x.GetIdentifier()).ToList()
             : _availableProcessors;
     }
     #endregion
@@ -123,7 +123,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         var newProcessor = RetrieveProcessorInstanceWithInfo(info);
         newProcessor.OnRuntimeError += HandleOnRuntimeError;
         newProcessor.OnShutdownCompleted += HandleOnShutdownCompleted;
-        newProcessor.Activate();
+        newProcessor.Start();
         _activeProcessors.Add(newProcessor);
         _logger.Information("Activated Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
     }
@@ -155,7 +155,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
 
         activeProcessor.Clear();
         activeProcessor.OnShutdownCompleted -= HandleOnShutdownCompleted; //This is not needed when manually shutting down
-        activeProcessor.Shutdown();
+        activeProcessor.Stop();
         CleanupAfterProcessorShutdown(activeProcessor);
         _logger.Information("Shut down Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
     }
@@ -224,7 +224,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
 
     private IOutputProcessor? RetrieveActiveProcessorWithInfo(OutputProcessorInfo info)
     {
-        var activeMatches = _activeProcessors.Where(x => x.GetInfo().ProcessorType == info.ProcessorType).ToArray();
+        var activeMatches = _activeProcessors.Where(x => x.GetIdentifier().ProcessorType == info.ProcessorType).ToArray();
         switch (activeMatches.Length)
         {
             case 0:
