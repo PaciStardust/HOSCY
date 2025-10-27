@@ -3,7 +3,7 @@ using Hoscy.Services.DependencyCore;
 
 namespace Hoscy.Services.Output.Core;
 
-public interface IOutputProcessor
+public interface IOutputProcessor //todo: could be startstop?
 {
     #region Information
     /// <summary>

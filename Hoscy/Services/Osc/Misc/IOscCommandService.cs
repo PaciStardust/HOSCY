@@ -5,7 +5,7 @@ namespace Hoscy.Services.Osc.Misc;
 /// <summary>
 /// Handling of OSC commands
 /// </summary>
-public interface IOscCommandService : IStartStopService
+public interface IOscCommandService : IAutoStartStopService
 {
     /// <summary>
     /// Checks if a string of text is an OSC command

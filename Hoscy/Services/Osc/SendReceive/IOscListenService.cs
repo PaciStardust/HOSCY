@@ -5,7 +5,7 @@ namespace Hoscy.Services.Osc.SendReceive;
 /// <summary>
 /// Identifies an IOscListenService, a service used to receive OSC
 /// </summary>
-public interface IOscListenService : IStartStopService
+public interface IOscListenService : IAutoStartStopService
 {
     public int? GetPort();
 }

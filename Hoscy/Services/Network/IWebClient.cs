@@ -5,7 +5,7 @@ using Hoscy.Services.DependencyCore;
 
 namespace Hoscy.Services.Network;
 
-public interface IWebClient : IStartStopService
+public interface IWebClient : IAutoStartStopService
 {
     /// <summary>
     /// Sends a message and returns a response

@@ -6,7 +6,7 @@ namespace Hoscy.Services.Osc.MessageHandling;
 /// <summary>
 /// Service for OSC Message Handling
 /// </summary>
-public interface IOscMessageHandlingService : IService
+public interface IOscMessageHandlingService : IAutoStartStopService
 {
     public bool HandleMessage(OscMessage message);
 }

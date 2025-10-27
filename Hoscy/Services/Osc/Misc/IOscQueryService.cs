@@ -2,7 +2,7 @@ using Hoscy.Services.DependencyCore;
 
 namespace Hoscy.Services.Osc.Misc;
 
-public interface IOscQueryService : IStartStopService
+public interface IOscQueryService : IAutoStartStopService
 {
     /// <summary>
     /// Returns IP and Port of OscQueryService by name

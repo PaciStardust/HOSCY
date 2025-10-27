@@ -52,8 +52,3 @@ public abstract class StartStopServiceBase : IStartStopService
         notify?.SendError(message, exception: ex);
     }
 }
-
-/// <summary>
-/// Helper class for ease of use for the AutoStartStopServices
-/// </summary>
-public abstract class AutoStartStopServiceBase : StartStopServiceBase, IAutoStartStopService;
