@@ -9,7 +9,7 @@ using Serilog;
 
 namespace Hoscy.Services.Translation.Translators;
 
-public class ApiTranslator(ILogger logger, ConfigModel config, IApiClient client) : TranslatorBase //todo: use
+public class ApiTranslator(ILogger logger, ConfigModel config, IApiClient client) : TranslatorBase
 {
     private readonly ILogger _logger = logger.ForContext<ApiTranslator>();
     private readonly ConfigModel _config = config;
@@ -71,16 +71,6 @@ public class ApiTranslator(ILogger logger, ConfigModel config, IApiClient client
             output = null;
             return false;
         }
-
-        //todo: implement in base?
-        // if (input.Length > _config.ApiCommunication_Translation_MaxTextLength)
-        // {
-        //     if (_config.ApiCommunication_Translation_SkipLongerMessages)
-        //     {
-        //         output = null;
-        //         return false;
-        //     }
-        // }
 
         _logger.Debug("Requesting translation of text \"{input}\"", input);
         try

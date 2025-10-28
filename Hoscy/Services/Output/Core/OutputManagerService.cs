@@ -1,20 +1,24 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Hoscy.Configuration.Modern;
 using Hoscy.Services.DependencyCore;
 using Hoscy.Services.Interfacing;
+using Hoscy.Services.Translation.Core;
 using Hoscy.Utility;
 using Serilog;
 
 namespace Hoscy.Services.Output.Core;
 
 [LoadIntoDiContainer(typeof(IOutputManagerService), Lifetime.Singleton)]
-public class OutputManagerService(ILogger logger, IServiceProvider services, IBackToFrontNotifyService notify) : StartStopServiceBase, IOutputManagerService
+public class OutputManagerService(ILogger logger, IServiceProvider services, IBackToFrontNotifyService notify, ITranslatorManagerService translator, ConfigModel config) : StartStopServiceBase, IOutputManagerService
 {
     #region Injected
     private readonly ILogger _logger = logger.ForContext<OutputManagerService>();
     private readonly IServiceProvider _services = services;
     private readonly IBackToFrontNotifyService _notify = notify;
+    private readonly ITranslatorManagerService _translator = translator;
+    private readonly ConfigModel _config = config;
     #endregion
 
     #region Service Vars
@@ -24,7 +28,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     #endregion
 
     #region Events
-    public event EventHandler<string> OnMessage = delegate { };
+    public event EventHandler<(string, string?)> OnMessage = delegate { };
     public event EventHandler<OutputNotificationEventArgs> OnNotification = delegate {};
     public event EventHandler OnClear = delegate {};
     public event EventHandler<bool> OnProcessingIndicatorSet = delegate {};
@@ -282,13 +286,75 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
             contents = processedOutput;
         }
 
+        if (TryTranslateContentsIfNeeded(contents, out var translatedText))
+        {
+            if (translatedText is null) return;
+            SendMessageTranslatedInternal(contents, translatedText);
+        } else
+        {
+            SendMessageInternal(contents);
+        }
+
+        if (translatedText is not null)
+        {
+            _logger.Debug("Sending {processorCount} processors a message with contents {contentsMessage} and translation {translation}", _activeProcessors.Count, contents, translatedText);
+            OnMessage.Invoke(this, (contents, translatedText));
+            foreach (var processor in _activeProcessors)
+            {
+                var newContents = processor.GetTranslationOutputMode() switch
+                {
+                    TranslationOutputMode.Translation => translatedText,
+                    TranslationOutputMode.Untranslated => contents,
+                    TranslationOutputMode.Both => _config.ApiCommunication_Translation_AppendOriginal
+                        ? $"{translatedText} / {contents}"
+                        : translatedText,
+                    _ => throw new ArgumentException("Unsupported TranslationOutputMode")
+                };
+                processor.ProcessMessage(newContents);
+            }
+            _logger.Debug("Sent {processorCount} processors a message with contents {contentsMessage} and translation {translation}", _activeProcessors.Count, contents, translatedText);
+        }
+        else
+        {
+            _logger.Debug("Sending {processorCount} processors a message with contents {contentsMessage}", _activeProcessors.Count, contents);
+            OnMessage.Invoke(this, (contents, null));
+            foreach (var processor in _activeProcessors)
+            {
+                processor.ProcessMessage(contents);
+            }
+            _logger.Debug("Sent {processorCount} processors a message with contents {contentsMessage}", _activeProcessors.Count, contents);
+        }
+    }
+
+    private void SendMessageInternal(string contents)
+    {
         _logger.Debug("Sending {processorCount} processors a message with contents {contentsMessage}", _activeProcessors.Count, contents);
-        OnMessage.Invoke(this, contents);
+        OnMessage.Invoke(this, (contents, null));
         foreach (var processor in _activeProcessors)
         {
             processor.ProcessMessage(contents);
         }
         _logger.Debug("Sent {processorCount} processors a message with contents {contentsMessage}", _activeProcessors.Count, contents);
+}
+
+    private void SendMessageTranslatedInternal(string contents, string translation)
+    {
+        _logger.Debug("Sending {processorCount} processors a message with contents {contentsMessage} and translation {translation}", _activeProcessors.Count, contents, translation);
+        OnMessage.Invoke(this, (contents, translation));
+        foreach (var processor in _activeProcessors)
+        {
+            var newContents = processor.GetTranslationOutputMode() switch
+            {
+                TranslationOutputMode.Translation => translation,
+                TranslationOutputMode.Untranslated => contents,
+                TranslationOutputMode.Both => _config.ApiCommunication_Translation_AppendOriginal
+                    ? $"{translation} / {contents}"
+                    : translation,
+                _ => throw new ArgumentException("Unsupported TranslationOutputMode")
+            };
+            processor.ProcessMessage(newContents);
+        }
+        _logger.Debug("Sent {processorCount} processors a message with contents {contentsMessage} and translation {translation}", _activeProcessors.Count, contents, translation);
     }
 
     public void SendNotification(string contents, OutputNotificationPriority priority)
@@ -329,6 +395,63 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
             processor.Clear();
         }
         _logger.Debug("Sent {processorCount} processors command to set processing indicator to {indicatorState}", _activeProcessors.Count, isProcessing);
+    }
+
+    private bool IsTranslationEnabled(string input) //todo: use
+    {
+        return _activeProcessors.Any(x => x.GetTranslationOutputMode() != TranslationOutputMode.Untranslated)
+            && !(_config.ApiCommunication_Translation_SkipLongerMessages && input.Length > _config.ApiCommunication_Translation_MaxTextLength);
+    }
+
+    private readonly char[] _filterChars = ['\n', '\t', '\r', ' '];
+    /// <summary>
+    /// Tries to translate if needed
+    /// </summary>
+    /// <param name="contents">Text to translate</param>
+    /// <param name="translatedText">Translated text if sucessfully translated, null if returning false or an error occured</param>
+    /// <returns>Attempted translation?</returns>
+    private bool TryTranslateContentsIfNeeded(string contents, out string? translatedText)
+    {
+        if (!_activeProcessors.Any(x => x.GetTranslationOutputMode() != TranslationOutputMode.Untranslated))
+        {
+            translatedText = null;
+            return false;
+        }
+
+        if (contents.Length > _config.ApiCommunication_Translation_MaxTextLength)
+        {
+            if (_config.ApiCommunication_Translation_SkipLongerMessages)
+            {
+                _logger.Debug("Skipping translation and processing of message with contents {contents} as skipping of messages longer than {charLimit} characters is enabled",
+                    contents, _config.ApiCommunication_Translation_MaxTextLength);
+                translatedText = null;
+                return true;
+            }
+
+            var spaceLocated = false;
+            for (var i = _config.ApiCommunication_Translation_MaxTextLength; i > -1; i--)
+            {
+                if (_filterChars.Contains(contents[i]))
+                {
+                    spaceLocated = true;
+                }
+                else
+                {
+                    if (!spaceLocated) continue;
+                    contents = i > 0
+                        ? contents[..i]
+                        : contents[.._config.ApiCommunication_Translation_MaxTextLength]; //todo: this correct?
+                    break;
+                }
+            }
+        }
+
+        if (!_translator.TryTranslate(contents, out translatedText))
+        {
+            _logger.Warning("Skipping processing of message with contents {contents} as translation failed", contents);
+            return false;
+        }
+        return true;
     }
     #endregion
 

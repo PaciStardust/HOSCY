@@ -10,7 +10,7 @@ using Serilog;
 namespace Hoscy.Services.Translation.Core;
 
 [LoadIntoDiContainer(typeof(ITranslatorManagerService), Lifetime.Singleton)]
-public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger logger, IServiceProvider services) : StartStopServiceBase, ITranslatorManagerService //todo: base for manager?
+public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger logger, IServiceProvider services) : StartStopServiceBase, ITranslatorManagerService
 {
     #region Injected
     private readonly IBackToFrontNotifyService _notify = notify;
