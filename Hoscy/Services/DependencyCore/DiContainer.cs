@@ -198,7 +198,7 @@ public class DiContainer
 
             var requiredServiceTypes = ctors[0].GetParameters()
                 .Select(x => x.ParameterType)
-                .Where(x => !x.IsInterface && x.IsAssignableTo(serviceInterface))
+                .Where(x => x.IsAssignableTo(serviceInterface))
                 .ToList();
             _internalLogger.Debug("Assessed {requiredServiceCount} other required IServices for IService {serviceType}",
                 requiredServiceTypes.Count, type.FullName);
@@ -212,7 +212,7 @@ public class DiContainer
     /// Establishing startup order of IAutoStartStopServices by resolving dependencies
     /// </summary>
     /// <returns>A list of types and instances in correct order</returns>
-    public (List<Type>, List<IAutoStartStopService>) EstablishStartOrder(List<(Type, IService, List<Type>)> serviceList, bool reversed = false)
+    public (List<Type>, List<IAutoStartStopService>) EstablishStartOrder(List<(Type, IService, List<Type>)> serviceList, bool reversed = false) //todo: test
     {
         List<Type> servicesResolvedInOrder = [];
         List<IAutoStartStopService> servicesInOrder = [];
@@ -231,9 +231,11 @@ public class DiContainer
                 {
                     serviceList.RemoveAt(i);
                     changesMade = true;
+                    var resolvesFor = serviceInfo.Item1.GetCustomAttribute<LoadIntoDiContainerAttribute>()?.AsType ?? serviceInfo.Item1;
+                    servicesResolvedInOrder.Add(resolvesFor);
+
                     if (serviceInfo.Item2 is IAutoStartStopService autoStartStopService)
                     {
-                        servicesResolvedInOrder.Add(serviceInfo.Item1);
                         servicesInOrder.Add(autoStartStopService);
                         _internalLogger.Debug("Resolved all dependencies for IAutoStartStopService {resolvedService}, startup order is {startupOrder}, {toResolve} still resolving",
                         serviceInfo.Item1.FullName, servicesInOrder.Count, serviceList.Count);
@@ -253,7 +255,7 @@ public class DiContainer
             }
         }
 
-        if (!reversed)
+        if (reversed)
         {
             servicesResolvedInOrder.Reverse();
             servicesInOrder.Reverse();
