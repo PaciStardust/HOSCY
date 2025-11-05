@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Hoscy.Configuration.Modern;
@@ -27,7 +28,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
 
     //Processing Indicator
     private bool _lastSetProcessingState = false;
-    private DateTime _lastSentTypingIndicator = DateTime.MinValue;
+    private DateTimeOffset _lastSentTypingIndicator = DateTimeOffset.MinValue;
 
     //Send Loop
     private const int TIMEOUT_MINIMUM_MS = 1250;
@@ -35,8 +36,8 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     private CancellationTokenSource? _cts = null;
     private Task? _workerTask = null;
     private bool _isClearPending = false;
-    private DateTime _intendedTimeoutUntil = DateTime.MinValue;
-    private DateTime _minimumTimeoutUntil = DateTime.MinValue;
+    private DateTimeOffset _intendedTimeoutUntil = DateTimeOffset.MinValue;
+    private DateTimeOffset _minimumTimeoutUntil = DateTimeOffset.MinValue;
     private OutputNotificationPriority? _lastSentNotificationPriority = null;
     #endregion
 
@@ -73,7 +74,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
 
     private async Task ProcessingLoopLogic()
     {
-        var now = DateTime.Now;
+        var now = DateTimeOffset.UtcNow;
 
         //If we have not reached the minimum timeout yet, wait a bit and exit
         if (_minimumTimeoutUntil > now)
@@ -136,7 +137,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
             SendMessage(string.Empty, false);
             _isClearPending = false;
             _minimumTimeoutUntil = now.AddMilliseconds(TIMEOUT_MINIMUM_MS);
-            _intendedTimeoutUntil = DateTime.MinValue;
+            _intendedTimeoutUntil = DateTimeOffset.MinValue;
         }
 
         //Send if we have anything
@@ -144,7 +145,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         {
             SendMessage(textToSend, playTextboxSound);
             var msgTimeout = GetMessageTimeout(textToSend);
-            _intendedTimeoutUntil = DateTime.Now.AddMilliseconds(msgTimeout);
+            _intendedTimeoutUntil = DateTimeOffset.UtcNow.AddMilliseconds(msgTimeout);
 
             if (_lastSentNotificationPriority is not null)
                 _logger.Information("Sent notification with timeout {threadSleep}-{msgTimeout}: {textToSend}", TIMEOUT_MINIMUM_MS, msgTimeout, textToSend);
@@ -190,7 +191,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         if (!isProcessing && !_lastSetProcessingState) return;
         if (!CanSetProcessingIndicator()) return;
 
-        _lastSentTypingIndicator = isProcessing ? DateTime.Now : DateTime.MinValue;
+        _lastSentTypingIndicator = isProcessing ? DateTimeOffset.UtcNow : DateTimeOffset.MinValue;
         _lastSetProcessingState = isProcessing;
 
         _sender.SendToDefaultSyncFireAndForget("/chatbox/typing", isProcessing ? 1 : 0);
@@ -198,7 +199,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
 
     private bool CanSetProcessingIndicator()
     {
-        return _lastSentTypingIndicator.AddSeconds(4) > DateTime.Now
+        return _lastSentTypingIndicator.AddSeconds(4) > DateTimeOffset.UtcNow
             && _config.Textbox_Text_TypingIndicatorWhenSpeaking
             && (_config.Input_UseTextbox || _config.Textbox_Text_TypingIndicatorWhenDisabled); //todo: UseTextbox check needs a redo
     }
@@ -328,7 +329,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         _currentMessages.Clear();
         ClearNotification();
         _isClearPending = true;
-        _intendedTimeoutUntil = DateTime.MinValue; //Min timeout never gets cleared because of VRC rate limits
+        _intendedTimeoutUntil = DateTimeOffset.MinValue; //Min timeout never gets cleared because of VRC rate limits
     }
 
     private void ClearNotification()

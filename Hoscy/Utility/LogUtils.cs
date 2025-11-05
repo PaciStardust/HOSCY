@@ -14,7 +14,7 @@ public static class LogUtils
 {
     private const string LOGGING_TEMPLATE = "[{Timestamp:HH:mm:ss.fff}] [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}";
     public static string LogFileName => _logFileName;
-    private static readonly string _logFileName = $"log-{DateTime.Now:MM-dd-yyyy-HH-mm-ss}.txt";
+    private static readonly string _logFileName = $"log-{DateTimeOffset.UtcNow:MM-dd-yyyy-HH-mm-ss}.txt";
 
 
     public static ILogger CreateTemporaryLogger()

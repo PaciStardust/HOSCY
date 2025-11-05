@@ -11,7 +11,7 @@ namespace HoscyWhisperServer
         private readonly Context _context;
 
         internal ExceptionDispatchInfo? StartException { get; private set; }
-        internal DateTime StartTime { get; private init; }
+        internal DateTimeOffset StartTime { get; private init; }
 
         #region Startup
         internal CaptureThread(Context ctx, iAudioCapture capture, bool highPerf)
@@ -28,7 +28,7 @@ namespace HoscyWhisperServer
                     : ThreadPriority.Normal
             };
             _thread.Start();
-            StartTime = DateTime.Now;
+            StartTime = DateTimeOffset.UtcNow;
 
             var loopCounter = 0;
             while (!_callbacks.HasStarted)

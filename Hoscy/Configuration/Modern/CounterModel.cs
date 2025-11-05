@@ -21,8 +21,8 @@ public class CounterModel : ObservableObject
         set => SetProperty(ref _count, value);
     }
 
-    private DateTime _lastUsed = DateTime.MinValue;
-    public DateTime LastUsed
+    private DateTimeOffset _lastUsed = DateTimeOffset.MinValue;
+    public DateTimeOffset LastUsed
     {
         get => _lastUsed;
         set => SetProperty(ref _lastUsed, value);
@@ -58,7 +58,7 @@ public class CounterModel : ObservableObject
     internal void Increase()
     {
         Count++;
-        LastUsed = DateTime.Now;
+        LastUsed = DateTimeOffset.UtcNow;
     }
 
     public override string ToString()

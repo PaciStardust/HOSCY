@@ -2,10 +2,10 @@
 {
     internal readonly struct TimeInterval
     {
-        internal readonly DateTime Start { get; init; } = DateTime.MinValue;
-        internal readonly DateTime End { get; init; } = DateTime.MaxValue;
+        internal readonly DateTimeOffset Start { get; init; } = DateTimeOffset.MinValue;
+        internal readonly DateTimeOffset End { get; init; } = DateTimeOffset.MaxValue;
 
-        internal TimeInterval(DateTime start, DateTime end)
+        internal TimeInterval(DateTimeOffset start, DateTimeOffset end)
         {
             Start = start;
             End = end;

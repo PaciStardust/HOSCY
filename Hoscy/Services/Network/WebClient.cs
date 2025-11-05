@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
@@ -60,14 +61,14 @@ public class WebClient(ILogger logger) : StartStopServiceBase, IWebClient
             throw new InvalidOperationException("HttpClient is not initialized");
         }
 
-        var startTime = DateTime.Now;
+        var sw = Stopwatch.StartNew();
         try
         {
             var cts = new CancellationTokenSource(timeoutMs);
             using var stream = await _client.GetStreamAsync(sourceUrl, cts.Token);
             using var fStream = new FileStream(fileLocation, FileMode.OpenOrCreate);
             await stream.CopyToAsync(fStream);
-            _logger.Debug("{identifier}: Received file at path {fileLocation} from {sourceUrl} in {timePassed}ms", identifier, fileLocation, sourceUrl, (DateTime.Now - startTime).TotalMilliseconds);
+            _logger.Debug("{identifier}: Received file at path {fileLocation} from {sourceUrl} in {timePassed}ms", identifier, fileLocation, sourceUrl, sw.ElapsedMilliseconds);
         }
         catch(Exception ex) {
             if ((ex is TaskCanceledException tce && tce.CancellationToken.IsCancellationRequested) || ex is OperationCanceledException)
@@ -93,7 +94,7 @@ public class WebClient(ILogger logger) : StartStopServiceBase, IWebClient
             throw new InvalidOperationException("HttpClient is not initialized");
         }
 
-        var startTime = DateTime.Now;
+        var sw = Stopwatch.StartNew();
         try
         {
             var cts = new CancellationTokenSource(timeoutMs);
@@ -107,7 +108,7 @@ public class WebClient(ILogger logger) : StartStopServiceBase, IWebClient
                 throw new HttpRequestException($"Request failed with status code {response.StatusCode}");
             }
 
-            _logger.Debug("{identifier}: Received data from request in {timePassed}ms => {jsonIn}", identifier, (DateTime.Now - startTime).TotalMilliseconds, jsonIn);
+            _logger.Debug("{identifier}: Received data from request in {timePassed}ms => {jsonIn}", identifier, sw.ElapsedMilliseconds, jsonIn);
             return jsonIn;
         }
         catch (Exception ex)
