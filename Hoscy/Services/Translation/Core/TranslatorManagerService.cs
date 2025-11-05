@@ -19,7 +19,7 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
     #endregion
 
     #region Service Vars
-    private readonly List<(string, Type)> _availableTranslators = [];
+    private readonly List<(string Name, Type Type)> _availableTranslators = [];
     private ITranslator? _currentTranslator = null;
     #endregion
 
@@ -27,9 +27,9 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
     /// <summary>
     /// Returns the name and type name of translators
     /// </summary>
-    public IReadOnlyList<(string, string)> GetAvailableNames()
+    public IReadOnlyList<(string ProperName, string TypeName)> GetAvailableNames()
     {
-        return _availableTranslators.Select(x => (x.Item1, x.Item2.Name)).ToList();
+        return _availableTranslators.Select(x => (x.Name, x.Type.Name)).ToList();
     }
 
     public string? GetCurrentName()
@@ -95,11 +95,11 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
             throw new ArgumentException("Either name or typeName must be provided");
         }
 
-        IEnumerable<(string, Type)> filteredTranslatorsEnumerable = _availableTranslators;
+        IEnumerable<(string Name, Type Type)> filteredTranslatorsEnumerable = _availableTranslators;
         if (name is not null)
-            filteredTranslatorsEnumerable = filteredTranslatorsEnumerable.Where(x => x.Item1 == name);
+            filteredTranslatorsEnumerable = filteredTranslatorsEnumerable.Where(x => x.Name == name);
         if (typeName is not null)
-            filteredTranslatorsEnumerable = filteredTranslatorsEnumerable.Where(x => x.Item2.Name == typeName);
+            filteredTranslatorsEnumerable = filteredTranslatorsEnumerable.Where(x => x.Type.Name == typeName);
 
         var filteredTranslators = filteredTranslatorsEnumerable.ToArray();
         if (filteredTranslators.Length == 0)
@@ -110,11 +110,11 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
 
         if (filteredTranslators.Length > 1)
         {
-            var translatorOptions = string.Join(", ", filteredTranslators.Select(x => $"{x.Item1} ({x.Item2.Name})"));
+            var translatorOptions = string.Join(", ", filteredTranslators.Select(x => $"{x.Name} ({x.Type.Name})"));
             _logger.Warning("Multiple translators found with the given name {name} or typeName {typeName}: {translatorOptions} => picking first");
         }
 
-        var translatorType = filteredTranslators[0].Item2;
+        var translatorType = filteredTranslators[0].Type;
         if (_services.GetService(translatorType) is not ITranslator translator)
         {
             _logger.Error("Failed to get translator instance name {translatorName} and type {translatorType}", name, translatorType.Name);

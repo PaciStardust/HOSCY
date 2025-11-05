@@ -131,7 +131,7 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
         }
     }
 
-    public (string, int)? GetServiceAddressByName(string name)
+    public (string Ip, int Port)? GetServiceAddressByName(string name)
     {
         var lowerName = name.ToLower();
         return _hosts.TryGetValue(lowerName, out var hostData)

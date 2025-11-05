@@ -7,7 +7,7 @@ namespace Hoscy.Services.Translation.Core;
 public interface ITranslatorManagerService : IAutoStartStopService
 {
     #region Info
-    public IReadOnlyList<(string, string)> GetAvailableNames();
+    public IReadOnlyList<(string ProperName, string TypeName)> GetAvailableNames();
     public string? GetCurrentName();
     #endregion
 

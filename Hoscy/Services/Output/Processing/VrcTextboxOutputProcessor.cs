@@ -22,7 +22,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
 
     #region Processor Variables
     //Queue
-    private (string, OutputNotificationPriority)? _currentNotification = null;
+    private (string Text, OutputNotificationPriority Priority)? _currentNotification = null;
     private readonly Queue<string> _currentMessages = [];
 
     //Processing Indicator
@@ -111,17 +111,17 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         {
             var timeoutBypass = _lastSentNotificationPriority is not null
                 && _config.Textbox_Notification_UsePrioritySystem
-                && _currentNotification.Value.Item2 >= _lastSentNotificationPriority;
+                && _currentNotification.Value.Priority >= _lastSentNotificationPriority;
 
             if (now >= _intendedTimeoutUntil || timeoutBypass)
             {
                 if (timeoutBypass)
                 {
-                    _logger.Debug("Notification timeout was shortened due to last priority {lastPriority} being lower or equal to current {currentPriority}", _lastSentNotificationPriority, _currentNotification.Value.Item2);
+                    _logger.Debug("Notification timeout was shortened due to last priority {lastPriority} being lower or equal to current {currentPriority}", _lastSentNotificationPriority, _currentNotification.Value.Priority);
                 }
 
-                textToSend = _currentNotification.Value.Item1;
-                var prio = _currentNotification.Value.Item2;
+                textToSend = _currentNotification.Value.Text;
+                var prio = _currentNotification.Value.Priority;
                 ClearNotification();
                 playTextboxSound = _config.Textbox_Sound_OnNotification;
                 _lastSentNotificationPriority = prio;
@@ -209,15 +209,15 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     {
         if (string.IsNullOrWhiteSpace(contents))
         {
-            if (_currentNotification.HasValue && _currentNotification.Value.Item2 == priority)
+            if (_currentNotification.HasValue && _currentNotification.Value.Priority == priority)
                 ClearNotification();
             return;
         }
 
-        if (_config.Textbox_Notification_UsePrioritySystem && _currentNotification.HasValue && priority < _currentNotification.Value.Item2)
+        if (_config.Textbox_Notification_UsePrioritySystem && _currentNotification.HasValue && priority < _currentNotification.Value.Priority)
         {
             _logger.Debug("Did not override notification with contents \"{notificationContents}\" and priority {notificationPriority} => priority lower than current {currentPriority}",
-                contents, priority, _currentNotification.Value.Item2);
+                contents, priority, _currentNotification.Value.Priority);
             return;
         }
 
@@ -252,7 +252,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     /// <returns>Split message</returns>
     private List<string> SplitMessageIntoSegments(string message)
     {
-        var segments = new List<(int, int)>(); //Should be pairs of values => 1st is start index, 2nd is length
+        var segments = new List<(int Index, int Length)>(); //Should be pairs of values => 1st is start index, 2nd is length
         var currentSegmentStart = -1;
         var currentWordStart = -1;
         var currentSegmentPotentialEnd = -1;
@@ -306,7 +306,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
 
         for (var i = 0; i < segments.Count; i++)
         {
-            var length = segments[i].Item2;
+            var length = segments[i].Length;
             var aboveLimits = false;
             if (length > maxLength)
             {
@@ -314,7 +314,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
                 aboveLimits = true;
             }
 
-            var text = $"{(i > 0 ? SPLIT_HAS_PREVIOUS_INDICATOR : string.Empty)}{message.Substring(segments[i].Item1, length)}{(aboveLimits ? SPLIT_LONG_WORD_CUTOFF : string.Empty)}{(i + 2 < segments.Count ? SPLIT_HAS_AFTER_INDICATOR : string.Empty)}";
+            var text = $"{(i > 0 ? SPLIT_HAS_PREVIOUS_INDICATOR : string.Empty)}{message.Substring(segments[i].Index, length)}{(aboveLimits ? SPLIT_LONG_WORD_CUTOFF : string.Empty)}{(i + 2 < segments.Count ? SPLIT_HAS_AFTER_INDICATOR : string.Empty)}";
             messageSegments.Add(text);
         }
         return messageSegments;

@@ -136,8 +136,8 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
                 _logger.Warning("Failed parsing OSC subcommand \"{subcommandString}\", specified target \"{target}\" not found", commandMatch.Value, targetText);
                 return null;
             }
-            ipText = target.Value.Item1;
-            parsedPort = target.Value.Item2.ConvertToUshort();
+            ipText = target.Value.Ip;
+            parsedPort = target.Value.Port.ConvertToUshort();
         }
         else if (portText is not null)
         {

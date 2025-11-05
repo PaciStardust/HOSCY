@@ -176,11 +176,11 @@ public class DiContainer
     /// Retrieves instance and list of otherr Services in constructor if applicable to Type
     /// </summary>
     /// <returns>Null if Type is not Service or no Instance is available</returns>
-    private List<(Type, IService, List<Type>)> RetrieveServiceInfos()
+    private List<(Type Type, IService Implementation, List<Type> Dependencies)> RetrieveServiceInfos()
     {
         var serviceImplementations = LaunchUtils.GetImplementationsInContainerForClass<IService>(Services, _internalLogger);
         var serviceInterface = typeof(IService);
-        List<(Type, IService, List<Type>)> locatedServices = [];
+        List<(Type Type, IService Implementation, List<Type> Dependencies)> locatedServices = [];
 
         foreach (var impl in serviceImplementations)
         {
@@ -212,7 +212,7 @@ public class DiContainer
     /// Establishing startup order of IAutoStartStopServices by resolving dependencies
     /// </summary>
     /// <returns>A list of types and instances in correct order</returns>
-    public (List<Type>, List<IAutoStartStopService>) EstablishStartOrder(List<(Type, IService, List<Type>)> serviceList, bool reversed = false) //todo: test
+    public (List<Type> ResolvedOrdered, List<IAutoStartStopService> ToStartOrdered) EstablishStartOrder(List<(Type Type, IService Implementation, List<Type> Dependencies)> serviceList, bool reversed = false) //todo: test
     {
         List<Type> servicesResolvedInOrder = [];
         List<IAutoStartStopService> servicesInOrder = [];
@@ -224,31 +224,31 @@ public class DiContainer
             bool changesMade = false;
             for (var i = serviceList.Count - 1; i > -1; i--)
             {
-                var serviceInfo = serviceList[i];
-                var requiredServiceList = serviceInfo.Item3;
+                var (serviceType, serviceImplementation, serviceDependencies) = serviceList[i];
+                var requiredServiceList = serviceDependencies;
                 requiredServiceList.RemoveAll(servicesResolvedInOrder.Contains);
                 if (requiredServiceList.Count == 0)
                 {
                     serviceList.RemoveAt(i);
                     changesMade = true;
-                    var resolvesFor = serviceInfo.Item1.GetCustomAttribute<LoadIntoDiContainerAttribute>()?.AsType ?? serviceInfo.Item1;
+                    var resolvesFor = serviceType.GetCustomAttribute<LoadIntoDiContainerAttribute>()?.AsType ?? serviceType;
                     servicesResolvedInOrder.Add(resolvesFor);
 
-                    if (serviceInfo.Item2 is IAutoStartStopService autoStartStopService)
+                    if (serviceImplementation is IAutoStartStopService autoStartStopService)
                     {
                         servicesInOrder.Add(autoStartStopService);
                         _internalLogger.Debug("Resolved all dependencies for IAutoStartStopService {resolvedService}, startup order is {startupOrder}, {toResolve} still resolving",
-                        serviceInfo.Item1.FullName, servicesInOrder.Count, serviceList.Count);
+                        serviceType.FullName, servicesInOrder.Count, serviceList.Count);
                     } else
                     {
                         _internalLogger.Debug("Resolved all dependencies for IService {resolvedService}, no startup needed as not IAutoStartService, {toResolve} still resolving",
-                        serviceInfo.Item1.FullName, servicesInOrder.Count, serviceList.Count);
+                        serviceType.FullName, servicesInOrder.Count, serviceList.Count);
                     }
                 }
             }
             if (!changesMade)
             {
-                var brokenServices = string.Join(", ", serviceList.Select(x => x.Item1.FullName));
+                var brokenServices = string.Join(", ", serviceList.Select(x => x.Type.FullName));
                 var ex = new DiResolveException($"Failed to resolve dependency chain in remaining StartStopServices ({brokenServices})");
                 _internalLogger.Fatal(ex, "Unable to resolve dependency chain for the following StartStopServices: {brokenServices}", brokenServices);
                 throw ex;

@@ -8,5 +8,5 @@ public interface IOscQueryService : IAutoStartStopService
     /// Returns IP and Port of OscQueryService by name
     /// </summary>
     /// <returns>Null if not found</returns>
-    public (string, int)? GetServiceAddressByName(string name);
+    public (string Ip, int Port)? GetServiceAddressByName(string name);
 }
