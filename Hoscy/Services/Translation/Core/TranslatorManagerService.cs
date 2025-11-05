@@ -163,7 +163,6 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
     {
         _logger.Error(ex, "Encountered an error in Translator {senderType}", sender?.GetType().FullName);
         _notify.SendError($"Encountered an error in Translator {sender?.GetType().FullName ?? "???"}",exception: ex);
-        var newEx = _currentTranslator?.GetFaultIfExists();
         SetFault(ex);
     }
 
