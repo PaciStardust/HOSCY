@@ -88,7 +88,13 @@ public class DiContainer
 
             var containerAttribute = service.GetCustomAttribute<LoadIntoDiContainerAttribute>();
             if (containerAttribute is null)
+            {
                 continue;
+            }
+            else if (containerAttribute is PrototypeLoadIntoDiContainer prototypeAttribute)
+            {
+                prototypeAttribute.NotifyAboutLoadedPrototype(service, logger);
+            }
 
             logger.Debug("Adding {service} to DI container with lifetime {lifetime}", service.FullName, containerAttribute.Lifetime.ToString());
 
