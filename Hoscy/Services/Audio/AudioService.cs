@@ -43,4 +43,16 @@ public class AudioService(ILogger logger) : StartStopServiceBase, IAudioService
         _audioEngine = new MiniAudioEngine();
         LogStartComplete(GetType(), _logger);
     }
+
+    public SoundFlow.Structs.DeviceInfo[]? GetCaptureDevices()
+    {
+        _audioEngine?.UpdateDevicesInfo();
+        return _audioEngine?.CaptureDevices;
+    }
+
+    public SoundFlow.Structs.DeviceInfo[]? GetPlaybackDevices()
+    {
+        _audioEngine?.UpdateDevicesInfo();
+        return _audioEngine?.PlaybackDevices;
+    }
 }
