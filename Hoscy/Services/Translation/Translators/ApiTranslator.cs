@@ -52,7 +52,7 @@ public class ApiTranslator(ILogger logger, ConfigModel config, IApiClient client
 
     public override void Restart()
     {
-        RestartSimple(GetType().Name, _logger);
+        RestartSimple(GetType(), _logger);
     }
 
     public override bool IsRunning()

@@ -37,12 +37,12 @@ public abstract class StartStopServiceBase : IStartStopService
         return StartStopStatus.Running;
     }
 
-    public void RestartSimple(string serviceName, ILogger logger)
+    public void RestartSimple(Type logType, ILogger logger)
     {
-        logger.Information("Restarting Service {serviceName}", serviceName);
+        LogRestartBegin(logType, logger);
         Stop();
         Start();
-        logger.Information("Restarted Service {serviceName}", serviceName);
+        LogRestartComplete(logType, logger);
     }
 
     public void SetFaultLogAndNotify(Exception ex, ILogger? logger, IBackToFrontNotifyService? notify, string message)

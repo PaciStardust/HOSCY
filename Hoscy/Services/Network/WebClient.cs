@@ -51,7 +51,7 @@ public class WebClient(ILogger logger) : StartStopServiceBase, IWebClient
     
     public override void Restart()
     {
-        RestartSimple(GetType().Name, _logger);
+        RestartSimple(GetType(), _logger);
     }
     #endregion
 
