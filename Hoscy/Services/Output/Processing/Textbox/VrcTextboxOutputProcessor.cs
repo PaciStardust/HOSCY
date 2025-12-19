@@ -10,7 +10,7 @@ using Hoscy.Services.Output.Core;
 using Hoscy.Utility;
 using Serilog;
 
-namespace Hoscy.Services.Output.Processing;
+namespace Hoscy.Services.Output.Processing.Textbox;
 
 [LoadIntoDiContainer(typeof(VrcTextboxOutputProcessor), Lifetime.Transient)]
 public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscSendService sender) : OutputProcessorBase //todo: is no event ever called?
