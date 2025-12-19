@@ -19,6 +19,12 @@ public class WebClient(ILogger logger) : StartStopServiceBase, IWebClient
     protected override void StartInternal()
     {
         _logger.Information("Setting up HttpClient");
+        if (IsRunning())
+        {
+            _logger.Information("Skipped starting HttpClient, still running");
+            return;
+        }
+
         var client = new HttpClient(new SocketsHttpHandler()
         {
             PooledConnectionLifetime = TimeSpan.FromMinutes(1),
