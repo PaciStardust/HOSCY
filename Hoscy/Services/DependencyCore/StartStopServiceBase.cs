@@ -58,6 +58,11 @@ public abstract class StartStopServiceBase : IStartStopService
         logger.Information("{serviceName}: Service starting", logType.Name);
     }
 
+    public void LogStartAlreadyRunning(Type logType, ILogger logger)
+    {
+        logger.Information("{serviceName}: Service start cancelled, already running", logType.Name);
+    }
+
     public void LogStartComplete(Type logType, ILogger logger)
     {
         logger.Information("{serviceName}: Service started", logType.Name);
