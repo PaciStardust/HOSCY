@@ -24,23 +24,23 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
     #region Start / Stop 
     protected override void StartInternal()
     {
-        _logger.Information("Starting Relay...");
+        LogStartBegin(GetType(), _logger);
         ReloadValidRelayFilters(_config.Osc_Relay_Filters.ToList());
-        _logger.Information("Started Relay");
+        LogStartComplete(GetType(), _logger);
     }
 
     public override void Stop()
     {
-        _logger.Information("Stopping Relay...");
+        LogStopBegin(GetType(), _logger);
         ReloadValidRelayFilters([]);
-        _logger.Information("Stopped Relay...");
+        LogStopComplete(GetType(), _logger);
     }
 
     public override void Restart()
     {
-        _logger.Information("Restarting Relay...");
+        LogRestartBegin(GetType(), _logger);
         ReloadValidRelayFilters(_config.Osc_Relay_Filters.ToList());
-        _logger.Information("Restarted Relay");
+        LogRestartComplete(GetType(), _logger);
     }
 
     public override bool IsRunning()

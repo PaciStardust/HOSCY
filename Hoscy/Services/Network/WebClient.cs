@@ -18,10 +18,10 @@ public class WebClient(ILogger logger) : StartStopServiceBase, IWebClient
     #region Start / Stop
     protected override void StartInternal()
     {
-        _logger.Information("Setting up HttpClient");
+        LogStartBegin(GetType(), _logger);
         if (IsRunning())
         {
-            _logger.Information("Skipped starting HttpClient, still running");
+            LogStartAlreadyRunning(GetType(), _logger);
             return;
         }
 
@@ -33,15 +33,15 @@ public class WebClient(ILogger logger) : StartStopServiceBase, IWebClient
 
         //Below is required for Github Access
         client.DefaultRequestHeaders.UserAgent.Add(new("User-Agent", "request"));
-        _logger.Information("HttpClient set up");
+        LogStartComplete(GetType(), _logger);
     }
 
     public override void Stop()
     {
-        _logger.Information("Disposing of HttpClient");
+        LogStopBegin(GetType(), _logger);
         _client?.Dispose();
         _client = null;
-        _logger.Information("Disposed of HttpClient");
+        LogStopComplete(GetType(), _logger);
     }
 
     public override bool IsRunning()

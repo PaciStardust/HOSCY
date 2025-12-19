@@ -24,10 +24,10 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
     #region Start/Stop
     protected override void StartInternal()
     {
-        _logger.Information("Starting up OscQuery");
+        LogStartBegin(GetType(), _logger);
         if (IsRunning())
         {
-            _logger.Information("Skipped starting OscQuery, still running");
+            LogStartAlreadyRunning(GetType(), _logger);
             return;
         }
 
@@ -38,7 +38,7 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
             throw new StartStopServiceException("Could not retrieve UDP Port from OscListenService");
         }
 
-        var msftLogger = new SerilogLoggerFactory(logger)
+        var msftLogger = new SerilogLoggerFactory(_logger)
             .CreateLogger<Vrc.OSCQueryService>();
 
         var oscQuery = new Vrc.OSCQueryServiceBuilder()
@@ -66,19 +66,19 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
         var timer = CreateRefreshTimer(oscQuery, 5000);
         timer.Start();
         _serviceRefreshTimer = timer;
-        _logger.Information("OscQuery started");
+        LogStartComplete(GetType(), _logger);
     }
 
     public override void Stop()
     {
-        _logger.Information("Stopping Service Refresh & OscQuery");
+        LogStopBegin(GetType(), _logger);
         _serviceRefreshTimer?.Stop();
         _serviceRefreshTimer?.Dispose();
         _serviceRefreshTimer = null;
         _oscQuery?.Dispose();
         _oscQuery = null;
         _hosts.Clear();
-        _logger.Information("Stopped Service Refresh & OscQuery");
+        LogStopComplete(GetType(), _logger);
     }
 
     public override bool IsRunning()

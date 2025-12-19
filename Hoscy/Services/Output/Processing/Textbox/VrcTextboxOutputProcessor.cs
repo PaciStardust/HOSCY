@@ -342,20 +342,20 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     #region Start / Stop
     protected override void StartInternal()
     {
-        _logger.Information("Starting up message processing loop");
+        LogStartBegin(GetType(), _logger);
         if (IsRunning())
         {
-            _logger.Information("Skipped starting loop, still running");
+            LogStartAlreadyRunning(GetType(), _logger);
             return;
         }
         _cts = new CancellationTokenSource();
         _workerTask = Task.Run(ProcessingLoop);
-        _logger.Information("Loop has been started");
+        LogStartComplete(GetType(), _logger);
     }
 
     protected override void StopInternal()
     {
-        _logger.Information("Stopping loop...");
+        LogStopBegin(GetType(), _logger);
         _cts?.Cancel();
         var ex = LaunchUtils.SafelyWaitForTaskWithTimeoutAndLogException(_workerTask, TIMEOUT_WAIT_MS * 2, new StartStopServiceException("Message handling loop failed to stop within time limit"));
         if (ex is not null)
@@ -366,7 +366,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         _cts?.Dispose();
         _cts = null;
         _workerTask = null;
-        _logger.Information("Loop stopped");
+        LogStopComplete(GetType(), _logger);
     }
 
     public override bool IsRunning()
