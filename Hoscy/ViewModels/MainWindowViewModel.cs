@@ -1,6 +1,13 @@
-﻿namespace Hoscy.ViewModels;
+﻿using Avalonia.Controls;
+
+namespace Hoscy.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
-    public string Greeting { get; } = "Welcome to Avalonia!";
+    private UserControl _currentView = null!;
+    public UserControl CurrentView
+    {
+        get => _currentView;
+        set => SetProperty(ref _currentView, value);
+    }
 }
