@@ -9,8 +9,9 @@
 
   <Grid ColumnDefinitions="*,*" RowDefinitions="*,2*,*">
     <Image Margin="0,0,8,0" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" Source="avares://Hoscy/Assets/hoscy_circle.ico" />
-    <Border Margin="8,0,0,0" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center">
-      <TextBlock FontWeight="Bold" Foreground="White" FontSize="32">HOSCY</TextBlock>
-    </Border>
+    <StackPanel Margin="8,0,0,0" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Orientation="Horizontal" Spacing="8">
+      <TextBlock Grid.Column="0" FontWeight="Bold" Foreground="White" FontSize="32">HOSCY</TextBlock>
+      <TextBlock Grid.Column="1" Foreground="White" FontSize="24" VerticalAlignment="Bottom">Hiii</TextBlock>
+    </StackPanel>
   </Grid>
 </Window>
