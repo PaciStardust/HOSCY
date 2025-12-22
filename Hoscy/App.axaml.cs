@@ -87,18 +87,19 @@ public partial class App : Application
             DataContext = splashModel
         };
 
+        var mainWindowModel = new MainWindowViewModel()
+        {
+            CurrentView = splashView
+        };
         desktop.MainWindow = new MainWindow
         {
-            DataContext = new MainWindowViewModel()
-            {
-                CurrentView = splashView
-            }
+            DataContext = mainWindowModel
         };
 
-        Task.Run(() => StartApplicationBackgroundTask(splashModel));
+        Task.Run(() => StartApplicationBackgroundTask(mainWindowModel, splashModel));
     }
 
-    private void StartApplicationBackgroundTask(SplashScreenViewModel splashModel)
+    private void StartApplicationBackgroundTask(MainWindowViewModel mainWindowModel, SplashScreenViewModel splashModel)
     {
         Action<string> onProgressAction = new((text) =>
         {
@@ -119,6 +120,14 @@ public partial class App : Application
             //todo: better error handling, moving more logic here
             return;
         }
+
+        Dispatcher.UIThread.Invoke(() =>
+        {
+            mainWindowModel.CurrentView = new MainMenu()
+            {
+                DataContext = new MainMenuViewModel()
+            };
+        });
     }
 
     private void OnShutdownRequested(object? sender, ShutdownRequestedEventArgs e)
