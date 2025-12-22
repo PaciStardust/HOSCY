@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace Hoscy.ViewModels;
+namespace Hoscy.ViewModels.Core;
 
 public class ViewModelBase : ObservableObject
 {

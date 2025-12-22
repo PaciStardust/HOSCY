@@ -1,6 +1,6 @@
 ﻿using Avalonia.Controls;
 
-namespace Hoscy.ViewModels;
+namespace Hoscy.ViewModels.Core;
 
 public class MainMenuViewModel : ViewModelBase
 {

@@ -1,7 +1,7 @@
 using System;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using Hoscy.ViewModels;
+using Hoscy.ViewModels.Core;
 
 namespace Hoscy;
 

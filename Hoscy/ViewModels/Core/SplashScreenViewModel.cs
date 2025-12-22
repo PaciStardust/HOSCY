@@ -1,4 +1,4 @@
-namespace Hoscy.ViewModels;
+namespace Hoscy.ViewModels.Core;
 
 public class SplashScreenViewModel : ViewModelBase //todo: open log on error?
 {

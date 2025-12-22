@@ -1,18 +1,16 @@
 using System;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
-using Avalonia.Logging;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Hoscy.Configuration.Modern;
 using Hoscy.Services.DependencyCore;
 using Hoscy.Utility;
-using Hoscy.ViewModels;
-using Hoscy.Views;
+using Hoscy.ViewModels.Core;
+using Hoscy.Views.Core;
 using Serilog;
 
 namespace Hoscy;

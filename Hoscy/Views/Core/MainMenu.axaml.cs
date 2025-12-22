@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace Hoscy.Views;
+namespace Hoscy.Views.Core;
 
 public partial class MainMenu : UserControl
 {
