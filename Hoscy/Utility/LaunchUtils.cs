@@ -16,7 +16,7 @@ namespace Hoscy.Utility;
 /// </summary>
 public static class LaunchUtils
 {
-    private const string UNKNOWN_VERSION = "???";
+    private const string UNKNOWN_VERSION = "?.?.?";
     private static string? _appVersion;
     /// <summary>
     /// Retrieves the current verion of the App from the assembly

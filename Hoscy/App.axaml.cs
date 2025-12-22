@@ -63,6 +63,9 @@ public partial class App : Application
                 CurrentView = new SplashScreen()
                 {
                     DataContext = new SplashScreenViewModel()
+                    {
+                        VersionText = LaunchUtils.GetVersion()
+                    }
                 }
             },
         };
