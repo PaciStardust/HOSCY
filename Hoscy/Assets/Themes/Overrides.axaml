@@ -69,7 +69,7 @@ xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
     <!-- TextBlock -->
 
     <ControlTheme x:Key="HTextBlock" TargetType="TextBlock">
-        <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource FrontBrush}"/>
         <Setter Property="FontSize" Value="18"/>
         <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
         <Setter Property="TextWrapping" Value="Wrap"/>

@@ -15,9 +15,9 @@
   </Design.DataContext>
 
   <Grid x:Name="MainGrid" Margin="4,6,6,6" ColumnDefinitions="auto,*">
-      <ListBox x:Name="listBox" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,4,0" BorderThickness="0">
+      <ListBox Theme="{StaticResource HListBox}" x:Name="listBox" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,4,0" BorderThickness="0">
           <Border Width="200" Background="{StaticResource ValidBrush}">
-              <TextBlock FontSize="60" TextWrapping="Wrap">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</TextBlock>
+              <TextBlock Theme="{StaticResource HTextBox}" FontSize="60" TextWrapping="Wrap">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</TextBlock>
           </Border> <!-- Placeholder -->
       </ListBox>
 
