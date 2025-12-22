@@ -3,7 +3,6 @@ using Hoscy.Configuration.Modern;
 using Hoscy.Services.DependencyCore;
 using Hoscy.Utility;
 using Serilog;
-using Serilog.Core;
 using System;
 
 namespace Hoscy;

@@ -1,9 +1,13 @@
 using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
+using Avalonia.Logging;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 using Hoscy.Configuration.Modern;
 using Hoscy.Services.DependencyCore;
 using Hoscy.Utility;
@@ -51,24 +55,7 @@ public partial class App : Application
         // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
         DisableAvaloniaDataAnnotationValidation();
 
-
-        desktop.ShutdownRequested += OnShutdownRequested;
-        //todo: intermediary loading window
-        _container.StartServices();
-
-        desktop.MainWindow = new MainWindow
-        {
-            DataContext = new MainWindowViewModel()
-            {
-                CurrentView = new SplashScreen()
-                {
-                    DataContext = new SplashScreenViewModel()
-                    {
-                        VersionText = LaunchUtils.GetVersion()
-                    }
-                }
-            },
-        };
+        StartApplication(desktop);
 
         base.OnFrameworkInitializationCompleted();
     }
@@ -83,6 +70,54 @@ public partial class App : Application
         foreach (var plugin in dataValidationPluginsToRemove)
         {
             BindingPlugins.DataValidators.Remove(plugin);
+        }
+    }
+
+    private void StartApplication(IClassicDesktopStyleApplicationLifetime desktop)
+    {
+        desktop.ShutdownRequested += OnShutdownRequested;
+
+        var splashModel = new SplashScreenViewModel()
+        {
+            VersionText = LaunchUtils.GetVersion(),
+            Progress = "Loading Splash Screen"
+        };
+        var splashView = new SplashScreen()
+        {
+            DataContext = splashModel
+        };
+
+        desktop.MainWindow = new MainWindow
+        {
+            DataContext = new MainWindowViewModel()
+            {
+                CurrentView = splashView
+            }
+        };
+
+        Task.Run(() => StartApplicationBackgroundTask(splashModel));
+    }
+
+    private void StartApplicationBackgroundTask(SplashScreenViewModel splashModel)
+    {
+        Action<string> onProgressAction = new((text) =>
+        {
+            Dispatcher.UIThread.Invoke(() =>
+            {
+               splashModel.Progress = text; 
+            });
+        });
+
+        try
+        {
+            _container.StartServices(onProgressAction);
+            onProgressAction.Invoke("Switching to main UI");
+        } catch (Exception ex)
+        {
+            _logger.Fatal(ex, "Failed starting Services in background");
+            onProgressAction.Invoke("Unable to load, please check logs");
+            //todo: better error handling, moving more logic here
+            return;
         }
     }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using Hoscy.Configuration.Modern;
 using Hoscy.Utility;
 using Microsoft.Extensions.DependencyInjection;
@@ -119,32 +120,35 @@ public class DiContainer
     /// <summary>
     /// Grabs all Services from the container and starts them in an order established using their dependencies
     /// </summary>
-    public void StartServices()
+    public void StartServices(Action<string>? onProgress)
     {
         var sw = Stopwatch.StartNew();
         _internalLogger.Information("Locating all IServices for startup...");
+        onProgress?.Invoke("Locating services to start");
         var servicesToStart = RetrieveServiceInfos();
 
         _internalLogger.Information("Establishing startup order of {serviceCount} IServices by resolving dependencies... (DI taken {diDuration}ms so far)",
             servicesToStart.Count, sw.ElapsedMilliseconds);
+        onProgress?.Invoke($"Establishing startup order of {servicesToStart.Count} services");
         var (servicesResolvedInOrder, servicesInOrder) = EstablishStartOrder(servicesToStart);
 
         _internalLogger.Information("Order of {toStart} IAutoStartStopServices established, proceeding with startup... (DI taken {diDuration}ms so far)",
             servicesInOrder.Count, sw.ElapsedMilliseconds);
         for (var i = 0; i < servicesInOrder.Count; i++)
         {
-            var subSw = Stopwatch.StartNew();
             var currentService = servicesInOrder[i];
-            _internalLogger.Debug("Starting IAutoStartStopServices {currenStart}/{toStart}: {currentService}",
-            i + 1, servicesInOrder.Count, servicesResolvedInOrder[i].FullName);
+            _internalLogger.Debug("Starting IAutoStartStopServices {currenStart}/{toStart}: {currentService} as {currentServiceBase}",
+            i + 1, servicesInOrder.Count, currentService.GetType().Name, servicesResolvedInOrder[i].FullName);
+            onProgress?.Invoke($"Starting service {i + 1}/{servicesInOrder.Count}:\n{currentService.GetType().Name}");
+            var subSw = Stopwatch.StartNew();
             currentService.Start();
             subSw.Stop();
             _internalLogger.Debug("Started IAutoStartStopServices {currenStart}/{toStart}: {currentService} (Took {startDuration}ms, DI taken {diDuration}ms so far)",
             i + 1, servicesInOrder.Count, servicesResolvedInOrder[i].FullName, subSw.ElapsedMilliseconds, sw.ElapsedMilliseconds);
         }
-
         sw.Stop();
         _internalLogger.Information("Successfully started {toStart} IAutoStartStopServices in {diDuration}ms", servicesInOrder.Count, sw.ElapsedMilliseconds);
+        onProgress?.Invoke($"Started {servicesInOrder.Count} services");
     }
 
     /// <summary>
