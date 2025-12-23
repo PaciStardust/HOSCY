@@ -2,6 +2,7 @@
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.DependencyCore;
 using HoscyCore.Utility;
+using HoscyAvaloniaUi.Utility;
 using Serilog;
 using System;
 
@@ -15,7 +16,7 @@ sealed class Program
     [STAThread]
     public static int Main(string[] args)
     {
-        ILogger currentLogger = LogUtils.CreateTemporaryLogger();
+        ILogger currentLogger = AvaloniaLogUtils.CreateTemporaryLogger();
         ConfigModel? config = null;
         DiContainer? container = null;
 

@@ -86,7 +86,7 @@ public class FilterModel : ObservableObject
         => _lastException;
     public bool IsValid => _regex != null;
 
-    internal bool Matches(string compare)
+    public bool Matches(string compare)
     {
         if (!_enabled)
             return false;
