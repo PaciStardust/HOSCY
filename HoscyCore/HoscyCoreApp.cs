@@ -35,7 +35,7 @@ public class HoscyCoreApp(ILogger? initialLogger = null)
         {
             _currentLogger.Information("Switching to new logger");
             onProgress?.Invoke("Switching to new logger");
-            _currentLogger = LogUtils.CreateLoggerFromConfiguration(config).ForContext<HoscyCoreApp>();
+            _currentLogger = LogUtils.CreateLoggerFromConfiguration(config, startParameters.DisableConsoleLog).ForContext<HoscyCoreApp>();
             startParameters.OnNewLoggerCreated?.Invoke(_currentLogger);
         }
 
@@ -50,6 +50,7 @@ public class HoscyCoreApp(ILogger? initialLogger = null)
         _container = DiContainer.LoadFromAssembly(_currentLogger, config, startParameters.AdditionalContainerInserts);
 
         _container.StartServices(onProgress);
+        onProgress?.Invoke("Done!");
         return this;
     }
 

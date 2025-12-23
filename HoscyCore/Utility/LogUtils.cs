@@ -12,17 +12,22 @@ public static class LogUtils
     public static string LogFileName => _logFileName;
     private static readonly string _logFileName = $"log-{DateTimeOffset.UtcNow:MM-dd-yyyy-HH-mm-ss}.txt";
 
-    public static ILogger CreateTemporaryLogger<T>()
+    public static ILogger CreateTemporaryLogger<T>(bool disableConsoleLogging = false)
     {
-        return new LoggerConfiguration()
+        var logConfig = new LoggerConfiguration()
             .MinimumLevel.Debug()
             .Enrich.FromLogContext()
-            .WriteTo.File(LogFileName, outputTemplate: LOGGING_TEMPLATE)
-            .WriteTo.Console(outputTemplate: LOGGING_TEMPLATE)
-            .CreateLogger().ForContext<T>();
+            .WriteTo.File(LogFileName, outputTemplate: LOGGING_TEMPLATE);
+
+        if (!disableConsoleLogging)
+        {
+            logConfig.WriteTo.Console(outputTemplate: LOGGING_TEMPLATE);
+        }
+            
+        return logConfig.CreateLogger().ForContext<T>();
     }
 
-    public static Serilog.Core.Logger CreateLoggerFromConfiguration(ConfigModel config)
+    public static Serilog.Core.Logger CreateLoggerFromConfiguration(ConfigModel config, bool disableConsoleLogging = false)
     {
         var logConfig = new LoggerConfiguration()
             .Enrich.FromLogContext()
@@ -34,7 +39,7 @@ public static class LogUtils
                 return config.Logger_Filters.Any(f => f.Matches(message));
             });
 
-        if (config.Logger_LogToCommandLine)
+        if (config.Logger_LogToCommandLine && !disableConsoleLogging)
         {
             logConfig.WriteTo.Console(outputTemplate: LOGGING_TEMPLATE);
         }
