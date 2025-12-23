@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -13,7 +13,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <Title>HOSCY</Title>
+    <Title>HOSCY Avalonia UI</Title>
     <Authors>Paci Stardust</Authors>
     <Description>Companion for OSC and Communication</Description>
   </PropertyGroup>
@@ -33,16 +33,5 @@
       <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="LucHeart.CoreOSC" Version="1.6.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.9" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-    <PackageReference Include="Serilog" Version="4.3.1-dev-02387" />
-    <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.3-dev-02320" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.1-dev-00953" />
-    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
-    <PackageReference Include="SoundFlow" Version="1.2.1" />
-    <PackageReference Include="VRChat.OSCQuery" Version="0.0.7" />
-    <PackageReference Include="WhisperNet" Version="1.12.0" />
   </ItemGroup>
 </Project>
