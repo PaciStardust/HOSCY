@@ -1,6 +1,6 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-xmlns:conv="clr-namespace:Hoscy.Converters;assembly=Hoscy">
+xmlns:conv="clr-namespace:HoscyAvaloniaUi.Converters;assembly=HoscyAvaloniaUi">
     <Design.PreviewWith>
         <Border Padding="20" Background="{StaticResource BackgroundBaseBrush}" Width="600">
             <StackPanel Theme="{StaticResource HStackLarge}">
