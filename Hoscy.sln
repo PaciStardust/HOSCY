@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HoscyWhisperServer", "Hoscy
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HoscyCore", "HoscyCore\HoscyCore.csproj", "{26AF36FE-7E3C-40DD-8556-AC5EE2E1ACDA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HoscyCli", "HoscyCli\HoscyCli.csproj", "{E74BE2FD-FB85-4F1B-84A4-99E262D7E1FC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{26AF36FE-7E3C-40DD-8556-AC5EE2E1ACDA}.Release|x64.Build.0 = Release|Any CPU
 		{26AF36FE-7E3C-40DD-8556-AC5EE2E1ACDA}.Release|x86.ActiveCfg = Release|Any CPU
 		{26AF36FE-7E3C-40DD-8556-AC5EE2E1ACDA}.Release|x86.Build.0 = Release|Any CPU
+		{E74BE2FD-FB85-4F1B-84A4-99E262D7E1FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E74BE2FD-FB85-4F1B-84A4-99E262D7E1FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E74BE2FD-FB85-4F1B-84A4-99E262D7E1FC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E74BE2FD-FB85-4F1B-84A4-99E262D7E1FC}.Debug|x64.Build.0 = Debug|Any CPU
+		{E74BE2FD-FB85-4F1B-84A4-99E262D7E1FC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E74BE2FD-FB85-4F1B-84A4-99E262D7E1FC}.Debug|x86.Build.0 = Debug|Any CPU
+		{E74BE2FD-FB85-4F1B-84A4-99E262D7E1FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E74BE2FD-FB85-4F1B-84A4-99E262D7E1FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E74BE2FD-FB85-4F1B-84A4-99E262D7E1FC}.Release|x64.ActiveCfg = Release|Any CPU
+		{E74BE2FD-FB85-4F1B-84A4-99E262D7E1FC}.Release|x64.Build.0 = Release|Any CPU
+		{E74BE2FD-FB85-4F1B-84A4-99E262D7E1FC}.Release|x86.ActiveCfg = Release|Any CPU
+		{E74BE2FD-FB85-4F1B-84A4-99E262D7E1FC}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
