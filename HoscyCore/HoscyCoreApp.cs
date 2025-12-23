@@ -7,7 +7,7 @@ namespace HoscyCore;
 
 public class HoscyCoreApp(ILogger? initialLogger = null)
 {
-    private ILogger _currentLogger = initialLogger ?? LogUtils.CreateTemporaryLogger<HoscyCoreApp>();
+    private ILogger _currentLogger = initialLogger?.ForContext<HoscyCoreApp>() ?? LogUtils.CreateTemporaryLogger<HoscyCoreApp>();
     private DiContainer? _container = null;
 
     public HoscyCoreApp Start(HoscyCoreAppStartParameters startParameters)
@@ -31,18 +31,19 @@ public class HoscyCoreApp(ILogger? initialLogger = null)
             }
         }
 
+        if (startParameters.CreateLoggerFromConfiguration)
+        {
+            _currentLogger.Information("Switching to new logger");
+            onProgress?.Invoke("Switching to new logger");
+            _currentLogger = LogUtils.CreateLoggerFromConfiguration(config).ForContext<HoscyCoreApp>();
+            startParameters.OnNewLoggerCreated?.Invoke(_currentLogger);
+        }
+
         if (startParameters.ShouldOpenConsoleIfRequested && config.Logger_OpenWindowOnStartupWindowsOnly)
         {
             _currentLogger.Information("Starting Console");
             onProgress?.Invoke("Starting Console");
             Utils.OpenConsoleOnWindows();
-        }
-
-        if (startParameters.CreateLoggerFromConfiguration)
-        {
-            _currentLogger.Information("Switching to new logger");
-            onProgress?.Invoke("Switching to new logger");
-            _currentLogger = LogUtils.CreateLoggerFromConfiguration(config);
         }
 
         onProgress?.Invoke("Loading DI container");

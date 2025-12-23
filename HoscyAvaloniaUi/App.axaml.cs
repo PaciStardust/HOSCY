@@ -6,12 +6,13 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
-using HoscyCore.Services.DependencyCore;
 using HoscyCore.Utility;
 using HoscyAvaloniaUi.ViewModels.Core;
 using HoscyAvaloniaUi.Views.Core;
 using Serilog;
 using HoscyCore;
+using Avalonia.Logging;
+using HoscyAvaloniaUi.Utility;
 
 namespace HoscyAvaloniaUi;
 
@@ -35,7 +36,7 @@ public partial class App : Application
 
     public override void Initialize()
     {
-        _startLogger.Information("Initializing Avalonia...");
+        _startLogger.Information("Initializing Avalonia");
         AvaloniaXamlLoader.Load(this);
         _startLogger.Information("Initializing Avalonia complete");
     }
@@ -105,16 +106,21 @@ public partial class App : Application
             });
         });
 
-        DiContainer? container = null;
+        Action<ILogger> onNewLoggerLoaded = new((logger) =>
+        {
+            _startLogger = logger.ForContext<App>();
+            _startLogger.Information("New logger received in startup");
+            Logger.Sink = new SerilogAvaloniaSink(_startLogger);
+        });
+
         try
         {
             var startParams = new HoscyCoreAppStartParameters()
             {
-                OnProgress = onProgressAction
+                OnProgress = onProgressAction,
+                OnNewLoggerCreated = onNewLoggerLoaded
             };
             _coreApp.Start(startParams);
-            container = _coreApp.GetContainer();
-            _startLogger = container.GetService<ILogger>()?.ForContext<App>() ?? _startLogger;
             onProgressAction.Invoke("Switching to main UI");
         } catch (Exception ex)
         {

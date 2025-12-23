@@ -15,7 +15,7 @@ public static class LogUtils
     public static ILogger CreateTemporaryLogger<T>()
     {
         return new LoggerConfiguration()
-            .MinimumLevel.Verbose()
+            .MinimumLevel.Debug()
             .Enrich.FromLogContext()
             .WriteTo.File(LogFileName, outputTemplate: LOGGING_TEMPLATE)
             .WriteTo.Console(outputTemplate: LOGGING_TEMPLATE)
