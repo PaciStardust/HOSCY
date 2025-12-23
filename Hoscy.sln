@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hoscy", "Hoscy\Hoscy.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HoscyWhisperServer", "HoscyWhisperServer\HoscyWhisperServer.csproj", "{F880AF78-6AA6-47EF-A4B5-A9AD6B062EA1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HoscyCore", "HoscyCore\HoscyCore.csproj", "{26AF36FE-7E3C-40DD-8556-AC5EE2E1ACDA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{26AF36FE-7E3C-40DD-8556-AC5EE2E1ACDA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
