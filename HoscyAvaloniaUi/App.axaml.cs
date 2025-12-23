@@ -6,14 +6,14 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
-using Hoscy.Configuration.Modern;
-using Hoscy.Services.DependencyCore;
-using Hoscy.Utility;
-using Hoscy.ViewModels.Core;
-using Hoscy.Views.Core;
+using HoscyCore.Configuration.Modern;
+using HoscyCore.Services.DependencyCore;
+using HoscyCore.Utility;
+using HoscyAvaloniaUi.ViewModels.Core;
+using HoscyAvaloniaUi.Views.Core;
 using Serilog;
 
-namespace Hoscy;
+namespace HoscyAvaloniaUi;
 
 public partial class App : Application
 {

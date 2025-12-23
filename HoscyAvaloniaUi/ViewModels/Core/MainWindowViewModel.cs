@@ -1,6 +1,6 @@
 ﻿using Avalonia.Controls;
 
-namespace Hoscy.ViewModels.Core;
+namespace HoscyAvaloniaUi.ViewModels.Core;
 
 public partial class MainWindowViewModel : ViewModelBase
 {

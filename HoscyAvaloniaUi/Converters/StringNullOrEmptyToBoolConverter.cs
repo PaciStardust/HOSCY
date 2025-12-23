@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using Avalonia.Data.Converters;
 
-namespace Hoscy.Converters;
+namespace HoscyAvaloniaUi.Converters;
 
 /// <summary>
 /// Converts a string to bool if null or empty

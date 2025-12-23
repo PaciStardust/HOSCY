@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace Hoscy.Views.Core;
+namespace HoscyAvaloniaUi.Views.Core;
 
 public partial class MainWindow : Window
 {

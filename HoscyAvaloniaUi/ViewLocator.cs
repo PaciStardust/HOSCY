@@ -1,9 +1,9 @@
 using System;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using Hoscy.ViewModels.Core;
+using HoscyAvaloniaUi.ViewModels.Core;
 
-namespace Hoscy;
+namespace HoscyAvaloniaUi;
 
 public class ViewLocator : IDataTemplate
 {

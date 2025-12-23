@@ -1,11 +1,11 @@
 ﻿using Avalonia;
-using Hoscy.Configuration.Modern;
-using Hoscy.Services.DependencyCore;
-using Hoscy.Utility;
+using HoscyCore.Configuration.Modern;
+using HoscyCore.Services.DependencyCore;
+using HoscyCore.Utility;
 using Serilog;
 using System;
 
-namespace Hoscy;
+namespace HoscyAvaloniaUi;
 
 sealed class Program
 {
