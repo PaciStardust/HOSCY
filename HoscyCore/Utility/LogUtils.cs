@@ -12,6 +12,16 @@ public static class LogUtils
     public static string LogFileName => _logFileName;
     private static readonly string _logFileName = $"log-{DateTimeOffset.UtcNow:MM-dd-yyyy-HH-mm-ss}.txt";
 
+    public static ILogger CreateTemporaryLogger<T>()
+    {
+        return new LoggerConfiguration()
+            .MinimumLevel.Verbose()
+            .Enrich.FromLogContext()
+            .WriteTo.File(LogFileName, outputTemplate: LOGGING_TEMPLATE)
+            .WriteTo.Console(outputTemplate: LOGGING_TEMPLATE)
+            .CreateLogger().ForContext<T>();
+    }
+
     public static Serilog.Core.Logger CreateLoggerFromConfiguration(ConfigModel config)
     {
         var logConfig = new LoggerConfiguration()

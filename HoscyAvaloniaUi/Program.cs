@@ -16,7 +16,7 @@ sealed class Program
     [STAThread]
     public static int Main(string[] args)
     {
-        ILogger currentLogger = AvaloniaLogUtils.CreateTemporaryLogger();
+        ILogger currentLogger = LogUtils.CreateTemporaryLogger<Program>();
         ConfigModel? config = null;
         DiContainer? container = null;
 

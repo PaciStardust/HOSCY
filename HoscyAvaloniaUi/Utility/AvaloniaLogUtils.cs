@@ -10,16 +10,6 @@ namespace HoscyAvaloniaUi.Utility;
 /// </summary>
 public static class AvaloniaLogUtils
 {
-    public static ILogger CreateTemporaryLogger()
-    {
-        return new LoggerConfiguration()
-            .MinimumLevel.Verbose()
-            .Enrich.FromLogContext()
-            .WriteTo.File(LogUtils.LogFileName, outputTemplate: LogUtils.LOGGING_TEMPLATE)
-            .WriteTo.Console(outputTemplate: LogUtils.LOGGING_TEMPLATE)
-            .CreateLogger().ForContext<Program>();
-    }
-
     /// <summary>
     /// Route Avalonia Logging to Serilog
     /// </summary>
