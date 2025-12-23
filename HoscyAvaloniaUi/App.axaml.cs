@@ -6,40 +6,38 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
-using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.DependencyCore;
 using HoscyCore.Utility;
 using HoscyAvaloniaUi.ViewModels.Core;
 using HoscyAvaloniaUi.Views.Core;
 using Serilog;
+using HoscyCore;
 
 namespace HoscyAvaloniaUi;
 
 public partial class App : Application
 {
-    private readonly DiContainer _container;
-    private readonly ILogger _logger;
-    private readonly ConfigModel _config;
+    private readonly HoscyCoreApp _coreApp;
+    private ILogger _startLogger;
 
-    public App()
+
+    public App() //todo: fix logger
     {
-        _logger = new LoggerConfiguration().CreateLogger();
-        _config = new();
-        _container = DiContainer.Empty();
+        _startLogger = new LoggerConfiguration().CreateLogger();
+        _coreApp = new(_startLogger);
     }
 
-    public App(DiContainer container)
+    public App(ILogger logger)
     {
-        _container = container;
-        _logger = container.GetRequiredService<ILogger>().ForContext<App>();
-        _config = container.GetRequiredService<ConfigModel>();
+        _startLogger = logger;
+        _coreApp = new(_startLogger);
     }
 
     public override void Initialize()
     {
-        _logger.Information("Initializing Avalonia...");
+        _startLogger.Information("Initializing Avalonia...");
         AvaloniaXamlLoader.Load(this);
-        _logger.Information("Initializing Avalonia complete");
+        _startLogger.Information("Initializing Avalonia complete");
     }
 
     public override void OnFrameworkInitializationCompleted()
@@ -107,15 +105,28 @@ public partial class App : Application
             });
         });
 
+        DiContainer? container = null;
         try
         {
-            _container.StartServices(onProgressAction);
+            var startParams = new HoscyCoreAppStartParameters()
+            {
+                OnProgress = onProgressAction
+            };
+            _coreApp.Start(startParams);
+            container = _coreApp.GetContainer();
+            _startLogger = container.GetService<ILogger>()?.ForContext<App>() ?? _startLogger;
             onProgressAction.Invoke("Switching to main UI");
         } catch (Exception ex)
         {
-            _logger.Fatal(ex, "Failed starting Services in background");
+            _startLogger.Fatal(ex, "Failed starting Services in background");
             onProgressAction.Invoke("Unable to load, please check logs");
-            //todo: better error handling, moving more logic here
+            try
+            {
+                _coreApp.Stop();
+            } catch (Exception ex2)
+            {
+                _startLogger.Error(ex2, "Failed to stop Hoscy correcly");
+            }
             return;
         }
 
@@ -130,16 +141,6 @@ public partial class App : Application
 
     private void OnShutdownRequested(object? sender, ShutdownRequestedEventArgs e)
     {
-        _logger.Information("Shutting down Hoscy...");
-        _config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
-        try
-        {
-            _container.StopServices();
-        }
-        catch (Exception ex)
-        {
-            _logger.Fatal(ex, "Unable to stop Services correctly");
-        }
-        _logger.Information("Hoscy has shut down, goodnight!");
+        _coreApp.Stop();
     }
 }
