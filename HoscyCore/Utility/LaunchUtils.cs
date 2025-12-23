@@ -39,7 +39,7 @@ public static class LaunchUtils
     /// Loads in the config model or generates a new one
     /// </summary>
     /// <returns>Null if creation fails</returns>
-    public static ConfigModel? LoadConfigModel(ILogger logger)
+    public static ConfigModel? LoadConfigModel(ILogger logger, bool createNewIfMissing = true)
     {
 
         ConfigModel? config;
@@ -56,6 +56,11 @@ public static class LaunchUtils
             }
             if (config is null)
             {
+                if (!createNewIfMissing)
+                {
+                    logger.Error("Could not find legacy config file, creation of new file is disabled, returning null");
+                    return null;
+                }
                 logger.Information("Could not find legacy config file, creating new file insted...");
                 config = new();
             }
