@@ -12,17 +12,17 @@ Hoscy-Avalonia is an attempt of mine to completely rewrite HOSCY from the ground
   - ✅ Logging
   - ✅ Config Loading
   - ❌ Displaying startup errors (Currently windows only)
-  - ❌ Loading splash screen
+  - 🆗 Loading splash screen
   - ❌ Version checking & updating
 - ❌ **User Interface**
-  - ❌ Recreation of original Hoscy components
+  - ✅ Recreation of original Hoscy components
   - ❌ Recreation of UI
 - ❌ **Features**
-  - ❌ OSC
-    - ❌ Sending
-    - ❌ Receiving
-    - ❌ Routing
-    - ❌ OscQuery
+  - 🆗 OSC
+    - 🆗 Sending
+    - 🆗 Receiving
+    - 🆗 Routing
+    - 🆗 OscQuery
   - ❌ Hotkeys
   - ❌ Media
     - ❌ Control
