@@ -1,5 +1,6 @@
 namespace HoscyCli.Commands;
 
+//todo: this is bad, this should be a singleton, same with converters
 public class VariableCommand<T>
 {
     private readonly CommandCollection _commands;
