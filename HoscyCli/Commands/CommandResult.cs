@@ -4,5 +4,6 @@ public enum CommandResult
 {
     Success,
     Error,
-    NotFound
+    NotFound,
+    MissingParameter
 }
