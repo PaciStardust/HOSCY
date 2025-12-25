@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Reflection;
 using HoscyCore;
 using HoscyCore.Utility;
 
@@ -26,7 +25,6 @@ class Program
                 process.Start();
                 debugProcess = process;
             }
-            Console.ReadLine();
             #endif
 
             coreApp = new HoscyCoreApp(log);
@@ -39,6 +37,8 @@ class Program
             coreApp.Start(coreAppParams);
             while (true)
             {
+                //todo: logic
+                Console.WriteLine("Type 'exit' to exit");
                 if (Console.ReadLine() == "exit") break;
             }
         } catch (Exception e)
