@@ -1,4 +1,4 @@
-namespace HoscyCli.Commands;
+namespace HoscyCli.Commands.Core;
 
 public enum CommandResult
 {
