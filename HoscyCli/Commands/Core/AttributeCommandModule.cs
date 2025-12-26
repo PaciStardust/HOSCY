@@ -20,17 +20,20 @@ public abstract class AttributeCommandModule : ICommandModule
             }
 
             var methodParameters = method.GetParameters();
-            if (methodParameters.Length != 1)
+            if (methodParameters.Length > 1)
             {
                 throw new ArgumentException($"Method {method.Name} has more than 1 parameter");
             }
 
-            var parameterType = methodParameters[0].ParameterType;
-            if (!parameterType.IsGenericType
-                || parameterType.GetGenericTypeDefinition() != typeof(Nullable<>)
-                || Nullable.GetUnderlyingType(parameterType) != typeof(string))
+            if (methodParameters.Length == 0)
             {
-                throw new ArgumentException($"Method {method.Name} parameter is not correct");
+                _commandInfo.Add((attribute, _ => (CommandResult)method.Invoke(this, [])!));
+                continue;
+            }
+
+            if (methodParameters[0].ParameterType != typeof(string))
+            {
+                throw new ArgumentException($"Method {method.Name} parameter is not string");
             }
 
             _commandInfo.Add((attribute, x => (CommandResult)method.Invoke(this, [x])!));
@@ -68,5 +71,13 @@ public abstract class AttributeCommandModule : ICommandModule
         if (spaceIndex == input.Length - 1)
             return new(input[..^1], null);
         return new(input[..spaceIndex], input[(spaceIndex + 1)..]);
+    }
+
+    [SubCommandModule(["list", "help", "l", "h"], "Lists all available commands.")]
+    public CommandResult List()
+    {
+        var print = string.Join("\n", _commandInfo.Select(info => $"{string.Join("/", info.Attribute.Identifiers[0])} - {info.Attribute.Description}"));
+        Console.WriteLine($"Available Commands:\n{print}");
+        return CommandResult.Success;
     }
 }

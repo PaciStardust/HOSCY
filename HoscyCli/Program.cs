@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using HoscyCli.Commands.Modules;
 using HoscyCore;
 using HoscyCore.Utility;
 
@@ -41,7 +42,8 @@ class Program
                 Console.WriteLine("Type 'exit' to exit");
                 if (Console.ReadLine() == "exit") break;
             }
-        } catch (Exception e)
+        } 
+        catch (Exception e)
         {
             Console.WriteLine($"{e.GetType().FullName}: {e.Message}");
         }
@@ -51,7 +53,8 @@ class Program
             coreApp?.Stop();
             debugProcess?.Kill();
             debugProcess?.Dispose();
-        } catch (Exception e)
+        } 
+        catch (Exception e)
         {
             Console.WriteLine($"{e.GetType().FullName}: {e.Message}");
         }
