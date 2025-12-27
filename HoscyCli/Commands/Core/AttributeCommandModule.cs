@@ -73,10 +73,10 @@ public abstract class AttributeCommandModule : ICommandModule
         return new(input[..spaceIndex], input[(spaceIndex + 1)..]);
     }
 
-    [SubCommandModule(["list", "help", "l", "h"], "Lists all available commands.")]
+    [SubCommandModule(["help", "list", "l", "h"], "Lists all available commands.")]
     public CommandResult List()
     {
-        var print = string.Join("\n", _commandInfo.Select(info => $"{string.Join("/", info.Attribute.Identifiers[0])} - {info.Attribute.Description}"));
+        var print = string.Join("\n", _commandInfo.Select(info => $" - {string.Join("/", info.Attribute.Identifiers[0])} - {info.Attribute.Description}"));
         Console.WriteLine($"Available Commands:\n{print}");
         return CommandResult.Success;
     }

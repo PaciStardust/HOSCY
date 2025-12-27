@@ -32,8 +32,7 @@ public class CliCoreWrapper
         {
             OnProgress = new((s) => Console.WriteLine($"Loading: {s.Replace(Environment.NewLine, " ")}")),
             ShouldOpenConsoleIfRequested = false,
-            DisableConsoleLog = true,
-            AdditionalContainerInserts = (x) => x.AddSingleton<TestCommandModule>()
+            DisableConsoleLog = true
         };
         _coreApp.Start(coreAppParams);
         _logger = _coreApp.GetContainer().GetRequiredService<ILogger>().ForContext<CliCoreWrapper>();
@@ -43,9 +42,8 @@ public class CliCoreWrapper
     {
         if (_coreApp is null) throw new ArgumentNullException(nameof(_coreApp));
         _logger?.Information("Running CLI loop...");
-        var commandModule = _coreApp.GetContainer().GetRequiredService<TestCommandModule>();
+        var commandModule = _coreApp.GetContainer().GetRequiredService<MainCommandModule>();
         var verb = " ";
-        var consoleColor = ConsoleColor.White;
 
         while(true)
         {
@@ -76,7 +74,6 @@ public class CliCoreWrapper
                 CommandResult.MissingParameter => ".",
                 _ => "_"
             };
-            Console.ForegroundColor = consoleColor;
         }
         _logger?.Information("Stopping CLI loop...");
     }
