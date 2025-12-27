@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
-using System.Threading;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Utility;
 using Microsoft.Extensions.DependencyInjection;
@@ -83,7 +79,7 @@ public class DiContainer
         var sw = Stopwatch.StartNew();
         logger.Debug("Loading dependencies from Assembly");
         var addedCount = 0;
-        foreach (var service in Assembly.GetExecutingAssembly().GetTypes())
+        foreach (var service in (Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly()).GetTypes())
         {
             if (service.IsAbstract || service.IsInterface) continue;
 
