@@ -40,18 +40,26 @@ public abstract class AttributeCommandModule : ICommandModule
         }
     }
 
+    public CommandResult ExecutePrependArgs(string command, string prependArgs)
+    {
+        var (Command, Parameters) = Util.SplitAtFirstSpace(command);
+        return string.IsNullOrWhiteSpace(Parameters)
+            ? Execute(Command, prependArgs)
+            : Execute(Command, string.Join(" ", prependArgs, Parameters));
+    }
+
     public CommandResult Execute(string command)
     {
-        var (Command, Parameters) = SplitAtFirstSpace(command);
+        var (Command, Parameters) = Util.SplitAtFirstSpace(command);
         return Execute(Command, Parameters);
     }
 
     public CommandResult Execute(string command, string? args)
     {
         var match = GetSubCommandIndex(command);
-        return match == -1
-            ? CommandResult.NotFound
-            : _commandInfo[match].Func(args);
+        if (match != -1) return _commandInfo[match].Func(args);
+        Console.WriteLine($"{GetType().Name} Unable to locate command {command}");
+        return CommandResult.NotFound;
     }
 
     private int GetSubCommandIndex(string command)
@@ -63,17 +71,7 @@ public abstract class AttributeCommandModule : ICommandModule
         return _commandInfo.FindIndex(x => x.Attribute.ShouldHandle(command, CommandIdentifierMatchMode.Contains));
     }
 
-    private static (string Command, string? Parameters) SplitAtFirstSpace(string input)
-    {
-        var spaceIndex = input.IndexOf(' ');
-        if (spaceIndex == -1)
-            return new(input, null);
-        if (spaceIndex == input.Length - 1)
-            return new(input[..^1], null);
-        return new(input[..spaceIndex], input[(spaceIndex + 1)..]);
-    }
-
-    [SubCommandModule(["help", "list", "l", "h"], "Lists all available commands.")]
+    [SubCommandModule(["help", "list", "l", "h", "?"], "Lists all available commands.")]
     public CommandResult List()
     {
         var print = string.Join("\n", _commandInfo.Select(info => $" - {string.Join("/", info.Attribute.Identifiers[0])} - {info.Attribute.Description}"));

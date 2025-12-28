@@ -4,7 +4,6 @@ using HoscyCli.Commands.Core;
 using HoscyCli.Commands.Modules;
 using HoscyCore;
 using HoscyCore.Utility;
-using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
 namespace HoscyCli;
@@ -71,7 +70,7 @@ public class CliCoreWrapper
                 CommandResult.Success => " ",
                 CommandResult.Error => "!",
                 CommandResult.NotFound => "?",
-                CommandResult.MissingParameter => ".",
+                CommandResult.MissingParameter => "~",
                 _ => "_"
             };
         }
