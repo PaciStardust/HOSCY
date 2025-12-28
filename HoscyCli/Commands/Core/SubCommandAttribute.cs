@@ -1,7 +1,7 @@
 namespace HoscyCli.Commands.Core;
 
 [AttributeUsage(AttributeTargets.Method)]
-public class SubCommandModuleAttribute(string[] identifiers, string description) : Attribute
+public class SubCommandModuleAttribute(string[] identifiers, string description = "") : Attribute
 {
     public string[] Identifiers { get; } = identifiers;
     public string Description { get; } = description;
