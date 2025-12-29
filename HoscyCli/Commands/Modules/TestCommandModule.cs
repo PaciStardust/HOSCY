@@ -5,9 +5,9 @@ using HoscyCore.Services.DependencyCore;
 namespace HoscyCli.Commands.Modules;
 
 [LoadIntoDiContainer(typeof(TestCommandModule), Lifetime.Singleton)]
-public class TestCommandModule(VariableCommandModule variableCm) : AttributeCommandModule
+public class TestCommandModule(SimpleVariableCommandModule variableCm) : AttributeCommandModule
 {
-    private readonly VariableCommandModule _variableCm = variableCm;
+    private readonly SimpleVariableCommandModule _variableCm = variableCm;
 
     [SubCommandModule(["echo"], "Echo a message")]
     public CommandResult Echo(string? message)

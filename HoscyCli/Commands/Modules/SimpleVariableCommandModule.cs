@@ -7,8 +7,8 @@ using Serilog.Events;
 
 namespace HoscyCli.Commands.Modules;
 
-[LoadIntoDiContainer(typeof(VariableCommandModule), Lifetime.Singleton)]
-public class VariableCommandModule(ConfigModel config) : AttributeCommandModule
+[LoadIntoDiContainer(typeof(SimpleVariableCommandModule), Lifetime.Singleton)]
+public class SimpleVariableCommandModule(ConfigModel config) : AttributeCommandModule
 {
     private readonly ConfigModel _config = config;
 
