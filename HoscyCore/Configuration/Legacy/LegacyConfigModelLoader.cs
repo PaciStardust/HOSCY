@@ -339,7 +339,7 @@ internal static class LegacyConfigModelLoader
     }
 
     #region Conversion Helpers
-    private static ObservableCollection<ReplacementDataModel> ConvertReplacementDataModel(List<LegacyReplacementDataModel> replacements)
+    private static List<ReplacementDataModel> ConvertReplacementDataModel(List<LegacyReplacementDataModel> replacements)
     {
         return new(replacements.Select(old => new ReplacementDataModel()
         {
@@ -351,7 +351,7 @@ internal static class LegacyConfigModelLoader
         }));
     }
 
-    private static ObservableCollection<CounterModel> ConvertCounterModel(List<LegacyCounterModel> counters)
+    private static List<CounterModel> ConvertCounterModel(List<LegacyCounterModel> counters)
     {
         return new(counters.Select(old => new CounterModel()
         {
@@ -364,7 +364,7 @@ internal static class LegacyConfigModelLoader
         }));
     }
 
-    private static ObservableCollection<OscRelayFilterModel> ConvertOscRoutingFilterModel(List<LegacyOscRoutingFilterModel> routingFilters)
+    private static List<OscRelayFilterModel> ConvertOscRoutingFilterModel(List<LegacyOscRoutingFilterModel> routingFilters)
     {
         return new(routingFilters.Select(old => new OscRelayFilterModel()
         {
@@ -376,7 +376,7 @@ internal static class LegacyConfigModelLoader
         }));
     }
 
-    private static ObservableCollection<FilterModel> ConvertFilterModel(List<LegacyFilterModel> filters)
+    private static List<FilterModel> ConvertFilterModel(List<LegacyFilterModel> filters)
     {
         return new(filters.Select(old => new FilterModel()
         {
@@ -388,12 +388,12 @@ internal static class LegacyConfigModelLoader
         }));
     }
 
-    private static ObservableCollection<KeyValuePair<Tkey, Tvalue>> ConvertDictionary<Tkey, Tvalue>(Dictionary<Tkey, Tvalue> dict) where Tkey : notnull
+    private static Dictionary<Tkey, Tvalue> ConvertDictionary<Tkey, Tvalue>(Dictionary<Tkey, Tvalue> dict) where Tkey : notnull
     {
         return new(dict.Select(old => new KeyValuePair<Tkey, Tvalue>(old.Key, old.Value)));
     }
 
-    private static ObservableCollection<AzureTtsVoiceModel> ConvertAzureTtsVoiceModel(List<LegacyAzureTtsVoiceModel> azureTtsVoices)
+    private static List<AzureTtsVoiceModel> ConvertAzureTtsVoiceModel(List<LegacyAzureTtsVoiceModel> azureTtsVoices)
     {
         return new(azureTtsVoices.Select(old => new AzureTtsVoiceModel()
         {
@@ -403,7 +403,7 @@ internal static class LegacyConfigModelLoader
         }));
     }
 
-    private static ObservableCollection<ApiPresetModel> ConvertApiPresetModel(List<LegacyApiPresetModel> presets)
+    private static List<ApiPresetModel> ConvertApiPresetModel(List<LegacyApiPresetModel> presets)
     {
         return new(presets.Select(old => new ApiPresetModel()
         {

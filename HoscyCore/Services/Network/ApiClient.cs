@@ -140,7 +140,7 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient
             if (!content.Headers.TryAddWithoutValidation(headerInfo.Key, headerInfo.Value))
             {
                 _logger.Warning("{id}: Skipped adding header info \"{headerInfoKey} : {headerInfoValue}\". As it was deemed invalid, it will be removed", _identifier, headerInfo.Key, headerInfo.Value);
-                _currentPreset.HeaderValues.Remove(headerInfo);
+                _currentPreset.HeaderValues.Remove(headerInfo.Key);
             }
         }
     }

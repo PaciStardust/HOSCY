@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using HoscyCore.Utility;
 using Serilog.Core;
@@ -13,8 +12,8 @@ public class ConfigModel : ObservableObject
 
     #region ApiCommunication
 
-    private ObservableCollection<ApiPresetModel> _apiCommunication_Presets = [];
-    public ObservableCollection<ApiPresetModel> ApiCommunication_Presets
+    private List<ApiPresetModel> _apiCommunication_Presets = [];
+    public List<ApiPresetModel> ApiCommunication_Presets
     {
         get => _apiCommunication_Presets;
         set => SetProperty(ref _apiCommunication_Presets, value);
@@ -123,8 +122,8 @@ public class ConfigModel : ObservableObject
         set => SetProperty(ref _apiCommunication_Azure_CurrentTtsVoice, value);
     }
 
-    private ObservableCollection<AzureTtsVoiceModel> _apiCommunication_Azure_TtsVoices = [];
-    public ObservableCollection<AzureTtsVoiceModel> ApiCommunication_Azure_TtsVoices
+    private List<AzureTtsVoiceModel> _apiCommunication_Azure_TtsVoices = [];
+    public List<AzureTtsVoiceModel> ApiCommunication_Azure_TtsVoices
     {
         get => _apiCommunication_Azure_TtsVoices;
         set => SetProperty(ref _apiCommunication_Azure_TtsVoices, value);
@@ -132,15 +131,15 @@ public class ConfigModel : ObservableObject
     public int GetTtsVoiceIndex(string name)
             => ApiCommunication_Azure_TtsVoices.GetListIndex(x => x.Name == name);
 
-    private ObservableCollection<string> _apiCommunication_Azure_Phrases = [];
-    public ObservableCollection<string> ApiCommunication_Azure_Phrases
+    private HashSet<string> _apiCommunication_Azure_Phrases = [];
+    public HashSet<string> ApiCommunication_Azure_Phrases
     {
         get => _apiCommunication_Azure_Phrases;
         set => SetProperty(ref _apiCommunication_Azure_Phrases, value);
     }
 
-    private ObservableCollection<string> _apiCommunication_Azure_RecognitionLanguages = [];
-    public ObservableCollection<string> ApiCommunication_Azure_RecognitionLanguages
+    private HashSet<string> _apiCommunication_Azure_RecognitionLanguages = [];
+    public HashSet<string> ApiCommunication_Azure_RecognitionLanguages
     {
         get => _apiCommunication_Azure_RecognitionLanguages;
         set => SetProperty(ref _apiCommunication_Azure_RecognitionLanguages, value);
@@ -192,8 +191,8 @@ public class ConfigModel : ObservableObject
         set => SetProperty(ref _input_CanBeTranslated, value);
     }
 
-    private ObservableCollection<KeyValuePair<string, string>> _input_Presets = [];
-    public ObservableCollection<KeyValuePair<string, string>> Input_Presets
+    private Dictionary<string, string> _input_Presets = [];
+    public Dictionary<string, string> Input_Presets
     {
         get => _input_Presets;
         set => SetProperty(ref _input_Presets, value);
@@ -238,8 +237,8 @@ public class ConfigModel : ObservableObject
     public LoggingLevelSwitch Logger_MinimumSeverityGetSwitch()
         => _logger_MinimumSeveritySwitch;
 
-    private ObservableCollection<FilterModel> _logger_Filters = [];
-    public ObservableCollection<FilterModel> Logger_Filters
+    private List<FilterModel> _logger_Filters = [];
+    public List<FilterModel> Logger_Filters
     {
         get => _logger_Filters;
         set => SetProperty(ref _logger_Filters, value);
@@ -271,8 +270,8 @@ public class ConfigModel : ObservableObject
         set => SetProperty(ref _osc_Routing_ListenPort, Utils.MinMax(value, -1, 65535));
     }
 
-    private ObservableCollection<OscRelayFilterModel> _osc_Relay_Filters = [];
-    public ObservableCollection<OscRelayFilterModel> Osc_Relay_Filters
+    private List<OscRelayFilterModel> _osc_Relay_Filters = [];
+    public List<OscRelayFilterModel> Osc_Relay_Filters
     {
         get => _osc_Relay_Filters;
         set => SetProperty(ref _osc_Relay_Filters, value);
@@ -451,8 +450,8 @@ public class ConfigModel : ObservableObject
         set => SetProperty(ref _osc_Counters_DisplayCooldown, Utils.MinMax(value, 0, 300));
     }
 
-    private ObservableCollection<CounterModel> _osc_Counters_List = [];
-    public ObservableCollection<CounterModel> Osc_Counters_List
+    private List<CounterModel> _osc_Counters_List = [];
+    public List<CounterModel> Osc_Counters_List
     {
         get => _osc_Counters_List;
         set => SetProperty(ref _osc_Counters_List, value);
@@ -598,8 +597,8 @@ public class ConfigModel : ObservableObject
     }
 
     // VOSK
-    private ObservableCollection<KeyValuePair<string, string>> _speech_Vosk_Models = [];
-    public ObservableCollection<KeyValuePair<string, string>> Speech_Vosk_Models
+    private Dictionary<string, string> _speech_Vosk_Models = [];
+    public Dictionary<string, string> Speech_Vosk_Models
     {
         get => _speech_Vosk_Models;
         set => SetProperty(ref _speech_Vosk_Models, value);
@@ -620,8 +619,8 @@ public class ConfigModel : ObservableObject
     }
 
     // WHISPER
-    private ObservableCollection<KeyValuePair<string, string>> _speech_Whisper_Models = [];
-    public ObservableCollection<KeyValuePair<string, string>> Speech_Whisper_Models
+    private Dictionary<string, string> _speech_Whisper_Models = [];
+    public Dictionary<string, string> Speech_Whisper_Models
     {
         get => _speech_Whisper_Models;
         set => SetProperty(ref _speech_Whisper_Models, value);
@@ -676,8 +675,8 @@ public class ConfigModel : ObservableObject
         set => SetProperty(ref _speech_Whisper_Language, value);
     }
 
-    private ObservableCollection<KeyValuePair<string, string>> _speech_Whisper_NoiseFilter = [];
-    public ObservableCollection<KeyValuePair<string, string>> Speech_Whisper_NoiseFilter
+    private Dictionary<string, string> _speech_Whisper_NoiseFilter = [];
+    public Dictionary<string, string> Speech_Whisper_NoiseFilter
     {
         get => _speech_Whisper_NoiseFilter;
         set => SetProperty(ref _speech_Whisper_NoiseFilter, value);
@@ -734,8 +733,8 @@ public class ConfigModel : ObservableObject
     }
 
     // Replacement
-    private ObservableCollection<string> _speech_Replacement_NoiseFilter = [];
-    public ObservableCollection<string> Speech_Replacement_NoiseFilter
+    private HashSet<string> _speech_Replacement_NoiseFilter = [];
+    public HashSet<string> Speech_Replacement_NoiseFilter
     {
         get => _speech_Replacement_NoiseFilter;
         set => SetProperty(ref _speech_Replacement_NoiseFilter, value);
@@ -762,15 +761,15 @@ public class ConfigModel : ObservableObject
         set => SetProperty(ref _speech_Replacement_IsEnabled, value);
     }
 
-    private ObservableCollection<ReplacementDataModel> _speech_Replacement_Full = [];
-    public ObservableCollection<ReplacementDataModel> Speech_Replacement_Full
+    private List<ReplacementDataModel> _speech_Replacement_Full = [];
+    public List<ReplacementDataModel> Speech_Replacement_Full
     {
         get => _speech_Replacement_Full;
         set => SetProperty(ref _speech_Replacement_Full, value);
     }
 
-    private ObservableCollection<ReplacementDataModel> _speech_Replacement_Partial = [];
-    public ObservableCollection<ReplacementDataModel> Speech_Replacement_Partial
+    private List<ReplacementDataModel> _speech_Replacement_Partial = [];
+    public List<ReplacementDataModel> Speech_Replacement_Partial
     {
         get => _speech_Replacement_Partial;
         set => SetProperty(ref _speech_Replacement_Partial, value);
@@ -960,8 +959,8 @@ public class ConfigModel : ObservableObject
         set => SetProperty(ref _textbox_Media_ExtraText, value);
     }
 
-    private ObservableCollection<FilterModel> _textbox_Media_Filters = [];
-    public ObservableCollection<FilterModel> Textbox_Media_Filters
+    private List<FilterModel> _textbox_Media_Filters = [];
+    public List<FilterModel> Textbox_Media_Filters
     {
         get => _textbox_Media_Filters;
         set => SetProperty(ref _textbox_Media_Filters, value);

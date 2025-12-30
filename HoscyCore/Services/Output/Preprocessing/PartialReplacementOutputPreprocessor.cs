@@ -22,7 +22,7 @@ public class PartialReplacementOutputPreprocessor(ConfigModel config, ILogger lo
     public override string GetReloadPropertyName()
         => nameof(_config.Speech_Replacement_Partial);
 
-    public override ObservableCollection<ReplacementDataModel> GetReplacementModels()
+    public override List<ReplacementDataModel> GetReplacementModels()
         => _config.Speech_Replacement_Partial;
 
     public override OutputPreprocessorHandlingStage GetHandlingStage()

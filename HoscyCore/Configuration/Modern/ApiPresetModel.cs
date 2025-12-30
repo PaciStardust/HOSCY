@@ -1,6 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using HoscyCore.Utility;
-using System.Collections.ObjectModel;
 using System.Net.Http.Headers;
 
 namespace HoscyCore.Configuration.Modern;
@@ -22,8 +21,8 @@ public class ApiPresetModel : ObservableObject
         set => SetProperty(ref _sentData, value);
     }
 
-    public ObservableCollection<KeyValuePair<string, string>> _headerValues = [];
-    public ObservableCollection<KeyValuePair<string, string>> HeaderValues
+    public Dictionary<string, string> _headerValues = [];
+    public Dictionary<string, string> HeaderValues
     {
         get => _headerValues;
         set => SetProperty(ref _headerValues, value);

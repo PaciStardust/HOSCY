@@ -24,7 +24,7 @@ public abstract class ReplacementOutputPreprocessorBase<T> : IOutputPreprocessor
     #region Abstract
     public abstract T ConvertToHandler(ReplacementDataModel model);
     public abstract string GetReloadPropertyName();
-    public abstract ObservableCollection<ReplacementDataModel> GetReplacementModels();
+    public abstract List<ReplacementDataModel> GetReplacementModels();
     public abstract OutputPreprocessorHandlingStage GetHandlingStage();
     public abstract bool ShouldContinueIfHandled();
     public abstract bool TryProcess(string input, [NotNullWhen(true)] out string? output);

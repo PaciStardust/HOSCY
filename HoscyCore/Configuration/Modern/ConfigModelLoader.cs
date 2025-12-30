@@ -137,8 +137,8 @@ public static class ConfigModelLoader
                         ContentType = "application/json",
                         HeaderValues = new()
                         {
-                            new("Ocp-Apim-Subscription-Key", "[YOUR KEY]"),
-                            new("Ocp-Apim-Subscription-Region", "[YOUR REGION]")
+                            { "Ocp-Apim-Subscription-Key", "[YOUR KEY]" },
+                            { "Ocp-Apim-Subscription-Region", "[YOUR REGION]" }
                         }
                     },
                     new()
@@ -150,8 +150,8 @@ public static class ConfigModelLoader
                         ContentType = "audio/wav; codecs=audio/pcm; samplerate=16000",
                         HeaderValues =
                         {
-                            new( "Ocp-Apim-Subscription-Key", "[YOUR KEY]" ),
-                            new( "Accept", "true" )
+                            { "Ocp-Apim-Subscription-Key", "[YOUR KEY]" },
+                            { "Accept", "true" }
                         }
                     },
                     new()
@@ -183,13 +183,13 @@ public static class ConfigModelLoader
             }},
             {5, () => {
                 if (config.Speech_Whisper_NoiseFilter.Count > 0) return;
-                config.Speech_Whisper_NoiseFilter = [
-                    new( "Laughing", "laugh" ),
-                    new( "Popping", "pop" ),
-                    new( "Whistling", "whistl" ),
-                    new( "Sighing", "sigh" ),
-                    new( "Humming", "hum" )
-                ];
+                config.Speech_Whisper_NoiseFilter = new() {
+                    { "Laughing", "laugh" },
+                    { "Popping", "pop" },
+                    { "Whistling", "whistl" },
+                    { "Sighing", "sigh" },
+                    { "Humming", "hum" }
+                };
             }}
         };
 

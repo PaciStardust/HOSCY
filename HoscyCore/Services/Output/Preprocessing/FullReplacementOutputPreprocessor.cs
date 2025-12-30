@@ -22,7 +22,7 @@ public class FullReplacementOutputPreprocessor(ConfigModel config, ILogger logge
     public override string GetReloadPropertyName()
         => nameof(_config.Speech_Replacement_Full);
 
-    public override ObservableCollection<ReplacementDataModel> GetReplacementModels()
+    public override List<ReplacementDataModel> GetReplacementModels()
         => _config.Speech_Replacement_Full;
 
     public override OutputPreprocessorHandlingStage GetHandlingStage()
