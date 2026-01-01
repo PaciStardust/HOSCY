@@ -12,7 +12,7 @@ public class FieldModificatorCommandModule(ConfigModel config) : AttributeComman
 {
     private readonly ConfigModel _config = config;
 
-    [SubCommandModule(["set", "s", "="], "Set a variable")]
+    [SubCommandModule(["set", "s", "="], "Set a variable")] //todo: complex not error
     public CommandResult SetProperty(string? nameAndValue)
     {
         if (string.IsNullOrWhiteSpace(nameAndValue)) return CommandResult.MissingParameter;
@@ -20,13 +20,18 @@ public class FieldModificatorCommandModule(ConfigModel config) : AttributeComman
 
         if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(value)) return CommandResult.MissingParameter;
         var info = GetPropertyInfo(name);
+        if (!info.CanWrite)
+        {
+            Console.WriteLine($"Unable to set type {info.PropertyType.Name}, it is readonly");
+            return CommandResult.Error;
+        }
 
         if (!IsSimpleType(info.PropertyType))
         {
             Console.WriteLine($"Unable to directly set type {info.PropertyType.Name}, please use editor instead");
             return CommandResult.Error;
         }
-        SetValue(info, _config, value); //todo: does this work?
+        SetValue(info, _config, value);
         DisplayFieldInfo(info, _config);       
         return CommandResult.Success;
     }
@@ -45,6 +50,84 @@ public class FieldModificatorCommandModule(ConfigModel config) : AttributeComman
         return CommandResult.Success;
     }
 
+    [SubCommandModule(["editor", "e", "*"], "Edit a variable value")] 
+    public CommandResult EditProperty(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return CommandResult.MissingParameter;
+        var info = GetPropertyInfo(name);
+        if (IsSimpleType(info.PropertyType))
+        {
+            AskForValue(info, _config);
+        }
+        else
+        {
+            AskForComplexProperty(info, _config);
+        }
+        return CommandResult.Success;
+    }
+
+    public void AskForValue(PropertyInfo info, object targetObj)
+    {
+        while (true)
+        {
+            DisplayFieldInfo(info, targetObj);
+            Console.Write("New value / '!exit' > ");
+            var input = Console.ReadLine();
+            if (input == "!exit") break;
+            if (input is null) continue;
+
+            try
+            {
+                SetValue(info, targetObj, input);
+                DisplayFieldInfo(info, targetObj);
+                break;
+            }
+            catch (Exception e)
+            {
+                Util.DisplayEx(e);
+            }
+        }
+    }
+
+    public void AskForComplexProperty(PropertyInfo complexInfo, object parentObj)
+    {
+        var complexProps = complexInfo.PropertyType.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(x => x.CanRead).ToArray();
+        if (complexProps.Length == 0) throw new ArgumentException($"Complex property {complexInfo.PropertyType.Name} has no readable properties");
+        var currentComplex = complexInfo.GetValue(parentObj)!;
+
+        while (true)
+        {
+            Console.Write($"\nEditing complex value {complexInfo.Name}\n\nCurrent values:\n{GenerateComplexList(complexProps, currentComplex)}\n\nNr to edit / '!exit' > ");
+            var input = Console.ReadLine();
+            if (input == "!exit") break;
+            if (input is null) continue;
+            if (!int.TryParse(input, out var idx) || idx < 0 || idx >= complexProps.Length)
+            {
+                Console.WriteLine("Input value is not a valid number (Press any key)");
+                Console.ReadKey();
+                continue;
+            }
+            var selected = complexProps[idx];
+            if (!selected.CanWrite)
+            {
+                Console.WriteLine("Value is readonly (Press any key)");
+                Console.ReadKey();
+                continue;
+            }
+            AskForValue(selected, currentComplex);
+        }
+    }
+
+    private string GenerateComplexList(PropertyInfo[] infos, object targetObj)
+    {
+        var i = 0;
+        return string.Join("\n", infos.Select(x =>
+        {
+            var value = IsSimpleType(x.PropertyType) ? x.GetValue(targetObj)?.ToString() ?? "[NULL]" : "[COMPLEX]";
+            return $" {i++} - {(x.CanWrite ? string.Empty : "[R] ")}{x.Name} ({x.PropertyType.Name}): {value}";
+        }));
+    }
+
     private void DisplayFieldInfo(PropertyInfo info, object targetObj)
     {
         Console.WriteLine($"Field {info.Name} is of type {info.PropertyType.Name} and is currently set to {info.GetValue(targetObj)}");
@@ -52,13 +135,6 @@ public class FieldModificatorCommandModule(ConfigModel config) : AttributeComman
         {
             Console.WriteLine($"Possible values: {string.Join(", ", Enum.GetNames(info.PropertyType))}");
         }
-    }
-
-    public void DeconstructComplex(object obj)
-    {
-        var type = obj.GetType();
-        var props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-        //todo: ?
     }
 
     public void SetValue(PropertyInfo info, object targetObj, string stringValue)
@@ -113,8 +189,9 @@ public class FieldModificatorCommandModule(ConfigModel config) : AttributeComman
 
     private PropertyInfo GetPropertyInfo(string name)
     {
-        var match = _config.GetType().GetProperty(name);
-        return match ?? throw new ArgumentException(name);
+        var match = _config.GetType().GetProperty(name) ?? throw new ArgumentException($"Unable to find property {name}");
+        if (!match.CanRead) throw new ArgumentException($"Property {name} is not readable");
+        return match;
     }
 }
 
