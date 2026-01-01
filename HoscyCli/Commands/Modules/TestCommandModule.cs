@@ -5,9 +5,9 @@ using HoscyCore.Services.DependencyCore;
 namespace HoscyCli.Commands.Modules;
 
 [LoadIntoDiContainer(typeof(TestCommandModule), Lifetime.Singleton)]
-public class TestCommandModule(SimpleVariableCommandModule variableCm) : AttributeCommandModule
+public class TestCommandModule(FieldModificatorCommandModule modCm) : AttributeCommandModule
 {
-    private readonly SimpleVariableCommandModule _variableCm = variableCm;
+    private readonly FieldModificatorCommandModule _modCm = modCm;
 
     [SubCommandModule(["echo"], "Echo a message")]
     public CommandResult Echo(string? message)
@@ -20,6 +20,6 @@ public class TestCommandModule(SimpleVariableCommandModule variableCm) : Attribu
     public CommandResult OscAfkDuration(string? message)
     {
         if (string.IsNullOrWhiteSpace(message)) return CommandResult.MissingParameter;
-        return _variableCm.ExecutePrependArgs(message, nameof(ConfigModel.Osc_Afk_ShowDuration));
+        return _modCm.ExecutePrependArgs(message, nameof(ConfigModel.Osc_Afk_ShowDuration));
     }
 }
