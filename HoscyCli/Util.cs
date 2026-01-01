@@ -11,4 +11,9 @@ public static class Util
             return new(input[..^1], null);
         return new(input[..spaceIndex], input[(spaceIndex + 1)..]);
     }
+
+    public static void DisplayEx(Exception e)
+    {
+        Console.WriteLine($"{e.GetType().FullName}: {e.Message}\n{e.StackTrace}");
+    }
 }

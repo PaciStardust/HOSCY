@@ -61,16 +61,16 @@ public class CliCoreWrapper
             catch (Exception e)
             {
                 _logger?.Error(e, "Failed to execute command");
-                Console.WriteLine($"{e.GetType().FullName}: {e.Message}");
+                Util.DisplayEx(e);
                 result = CommandResult.Error;
             }
 
             verb = result switch
             {
                 CommandResult.Success => " ",
-                CommandResult.Error => "!",
-                CommandResult.NotFound => "?",
-                CommandResult.MissingParameter => "~",
+                CommandResult.Error => "Error",
+                CommandResult.NotFound => "Not Found",
+                CommandResult.MissingParameter => "Param Missing",
                 _ => "_"
             };
         }

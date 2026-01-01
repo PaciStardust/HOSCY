@@ -13,7 +13,7 @@ class Program
         } 
         catch (Exception e)
         {
-            Console.WriteLine($"{e.GetType().FullName}: {e.Message}");
+            Util.DisplayEx(e);
         }
         
         try
@@ -22,7 +22,7 @@ class Program
         } 
         catch (Exception e)
         {
-            Console.WriteLine($"{e.GetType().FullName}: {e.Message}");
+            Util.DisplayEx(e);
         }
     }
 }
