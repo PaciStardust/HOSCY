@@ -71,45 +71,32 @@ public class FieldModificatorCommandModule(ConfigModel config) : AttributeComman
         return CommandResult.Success;
     }
 
-    private static readonly Dictionary<Type, string> _collectionTypeConverters = new()
+    private static readonly Dictionary<Guid, string> _collectionTypeConverters = new()
     {
-        {typeof(IList<>), nameof(AskForList)},
-        {typeof(ISet<>), nameof(AskForSet)},
-        {typeof(IDictionary<,>), nameof(AskForDict)}
+        {typeof(IList<>).GUID, nameof(AskForList)},
+        {typeof(ISet<>).GUID, nameof(AskForSet)},
+        {typeof(IDictionary<,>).GUID, nameof(AskForDict)}
     };
 
     private static void AskForEnumerable(PropertyInfo info, object targetObj)
     {
         var collectionObj = info.GetValue(targetObj) ?? throw new ArgumentException($"Unable to retrieve field {info.Name}");
-        var interfaces = info.PropertyType.GetInterfaces();
-        var genericArgs = info.PropertyType.GenericTypeArguments;
+        var genericPropType = info.PropertyType.IsConstructedGenericType ? info.PropertyType.GetGenericTypeDefinition() : info.PropertyType;
+        var matchingType = genericPropType.GetInterfaces().FirstOrDefault(x => _collectionTypeConverters.ContainsKey(x.GUID))
+            ?? throw new ArgumentException($"Can not convert field {info.Name} into an editable collection");
 
-        // Finding the converters with the correct count of generic arguments
-        var matchingParams = _collectionTypeConverters.Where(x => x.Key.GetGenericArguments().Length == genericArgs.Length).ToArray();
-        if (matchingParams.Length == 0) 
-            throw new ArgumentException($"Unable to edit collection {info.Name}, no collections with {genericArgs.Length} generic args found");
+        //Get correct method
+        var methodName = _collectionTypeConverters[matchingType.GUID];
+        var method = typeof(FieldModificatorCommandModule).GetMethod(methodName, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+            ?? throw new ArgumentException($"Unable to find menu menu method {methodName} for field {info.Name}");
 
-        foreach (var (k,v) in matchingParams)
-        {
-            //Check if this is the correct collection type
-            var impl = k.MakeGenericType(genericArgs);
-            if(!interfaces.Contains(impl)) continue;
+        //Parameter check
+        var methodParams = method.GetParameters();
+        if (methodParams.Length != 1 || methodParams[0].ParameterType.GUID != matchingType.GUID) 
+            throw new ArgumentException($"Parameter for method does not match");
 
-            //Checking if the supplied method is usable
-            var method = typeof(FieldModificatorCommandModule).GetMethod(v, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
-                ?? throw new ArgumentException($"Unable to find menu menu method {v} for field {info.Name}");
-            if (method.GetGenericArguments().Length != genericArgs.Length)
-                throw new ArgumentException($"Generic argument count mismatch between field {info.Name} and method {v}");
-
-            var methodParams = method.GetParameters();
-            if (methodParams.Length != 1 || !methodParams[0].ParameterType.IsGenericType || methodParams[0].ParameterType.Name != k.Name) 
-                throw new ArgumentException($"Parameter for method {v} does not match");
-
-            //Invoke the method
-            method.MakeGenericMethod(genericArgs).Invoke(null, [collectionObj]);
-            return;
-        }
-        throw new ArgumentException($"Can not convert field {info.Name} into an editable collection");
+        //Invoke the method
+        method.MakeGenericMethod(info.PropertyType.GenericTypeArguments).Invoke(null, [collectionObj]);
     }
 
     private static void AskForList<T>(IList<T> list)
