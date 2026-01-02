@@ -2,6 +2,7 @@ using HoscyCli.Commands.Core;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.DependencyCore;
 using Serilog.Events;
+using System.Collections;
 using System.Globalization;
 using System.Reflection;
 
@@ -59,6 +60,10 @@ public class FieldModificatorCommandModule(ConfigModel config) : AttributeComman
         {
             AskForValue(info, _config);
         }
+        else if (info.PropertyType.IsGenericType && info.PropertyType.GetInterface(nameof(IEnumerable<>)) is not null)
+        {
+            AskForEnumerable(info, _config);
+        } 
         else
         {
             AskForComplexProperty(info, _config);
@@ -66,7 +71,63 @@ public class FieldModificatorCommandModule(ConfigModel config) : AttributeComman
         return CommandResult.Success;
     }
 
-    public void AskForValue(PropertyInfo info, object targetObj)
+    private static readonly Dictionary<Type, string> _collectionTypeConverters = new()
+    {
+        {typeof(IList<>), nameof(AskForList)},
+        {typeof(ISet<>), nameof(AskForSet)},
+        {typeof(IDictionary<,>), nameof(AskForDict)}
+    };
+
+    private static void AskForEnumerable(PropertyInfo info, object targetObj)
+    {
+        var collectionObj = info.GetValue(targetObj) ?? throw new ArgumentException($"Unable to retrieve field {info.Name}");
+        var interfaces = info.PropertyType.GetInterfaces();
+        var genericArgs = info.PropertyType.GenericTypeArguments;
+
+        // Finding the converters with the correct count of generic arguments
+        var matchingParams = _collectionTypeConverters.Where(x => x.Key.GetGenericArguments().Length == genericArgs.Length).ToArray();
+        if (matchingParams.Length == 0) 
+            throw new ArgumentException($"Unable to edit collection {info.Name}, no collections with {genericArgs.Length} generic args found");
+
+        foreach (var (k,v) in matchingParams)
+        {
+            //Check if this is the correct collection type
+            var impl = k.MakeGenericType(genericArgs);
+            if(!interfaces.Contains(impl)) continue;
+
+            //Checking if the supplied method is usable
+            var method = typeof(FieldModificatorCommandModule).GetMethod(v, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+                ?? throw new ArgumentException($"Unable to find menu menu method {v} for field {info.Name}");
+            if (method.GetGenericArguments().Length != genericArgs.Length)
+                throw new ArgumentException($"Generic argument count mismatch between field {info.Name} and method {v}");
+
+            var methodParams = method.GetParameters();
+            if (methodParams.Length != 1 || !methodParams[0].ParameterType.IsGenericType || methodParams[0].ParameterType.Name != k.Name) 
+                throw new ArgumentException($"Parameter for method {v} does not match");
+
+            //Invoke the method
+            method.MakeGenericMethod(genericArgs).Invoke(null, [collectionObj]);
+            return;
+        }
+        throw new ArgumentException($"Can not convert field {info.Name} into an editable collection");
+    }
+
+    private static void AskForList<T>(IList<T> list)
+    {
+        Console.WriteLine("list");
+    }
+
+    private static void AskForDict<T1,T2>(IDictionary<T1,T2> list)
+    {
+        Console.WriteLine("dict");
+    }
+
+    private static void AskForSet<T>(ISet<T> set)
+    {
+        Console.WriteLine("set");
+    }
+
+    private static void AskForValue(PropertyInfo info, object targetObj)
     {
         while (true)
         {
@@ -89,7 +150,7 @@ public class FieldModificatorCommandModule(ConfigModel config) : AttributeComman
         }
     }
 
-    public void AskForComplexProperty(PropertyInfo complexInfo, object parentObj)
+    private static void AskForComplexProperty(PropertyInfo complexInfo, object parentObj)
     {
         var complexProps = complexInfo.PropertyType.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(x => x.CanRead).ToArray();
         if (complexProps.Length == 0) throw new ArgumentException($"Complex property {complexInfo.PropertyType.Name} has no readable properties");
@@ -118,7 +179,7 @@ public class FieldModificatorCommandModule(ConfigModel config) : AttributeComman
         }
     }
 
-    private string GenerateComplexList(PropertyInfo[] infos, object targetObj)
+    private static string GenerateComplexList(PropertyInfo[] infos, object targetObj)
     {
         var i = 0;
         return string.Join("\n", infos.Select(x =>
@@ -128,7 +189,7 @@ public class FieldModificatorCommandModule(ConfigModel config) : AttributeComman
         }));
     }
 
-    private void DisplayFieldInfo(PropertyInfo info, object targetObj)
+    private static void DisplayFieldInfo(PropertyInfo info, object targetObj)
     {
         Console.WriteLine($"Field {info.Name} is of type {info.PropertyType.Name} and is currently set to {info.GetValue(targetObj)}");
         if (info.PropertyType.IsEnum)
@@ -137,7 +198,7 @@ public class FieldModificatorCommandModule(ConfigModel config) : AttributeComman
         }
     }
 
-    public void SetValue(PropertyInfo info, object targetObj, string stringValue)
+    public static void SetValue(PropertyInfo info, object targetObj, string stringValue)
     {
         var value = ParseValueString(stringValue, info.PropertyType);
         info.SetValue(targetObj, value);
