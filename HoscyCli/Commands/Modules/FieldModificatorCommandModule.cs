@@ -56,19 +56,24 @@ public class FieldModificatorCommandModule(ConfigModel config) : AttributeComman
     {
         if (string.IsNullOrWhiteSpace(name)) return CommandResult.MissingParameter;
         var info = GetPropertyInfo(name);
+        EditPropertyInternal(info, _config);
+        return CommandResult.Success;
+    }
+
+    public static void EditPropertyInternal(PropertyInfo info, object targetObj)
+    {
         if (IsSimpleType(info.PropertyType))
         {
-            AskForValue(info, _config);
+            AskForValue(info, targetObj);
         }
         else if (info.PropertyType.IsGenericType && info.PropertyType.GetInterface(nameof(IEnumerable<>)) is not null)
         {
-            AskForEnumerable(info, _config);
+            AskForEnumerable(info, targetObj);
         } 
         else
         {
-            AskForComplexProperty(info, _config);
+            AskForComplexProperty(info, targetObj);
         }
-        return CommandResult.Success;
     }
 
     private static readonly Dictionary<Guid, string> _collectionTypeConverters = new()
@@ -92,26 +97,104 @@ public class FieldModificatorCommandModule(ConfigModel config) : AttributeComman
 
         //Parameter check
         var methodParams = method.GetParameters();
-        if (methodParams.Length != 1 || methodParams[0].ParameterType.GUID != matchingType.GUID) 
+        if (methodParams.Length != 2 || methodParams[0].ParameterType.GUID != matchingType.GUID || methodParams[1].ParameterType.GUID != typeof(string).GUID) 
             throw new ArgumentException($"Parameter for method does not match");
 
         //Invoke the method
-        method.MakeGenericMethod(info.PropertyType.GenericTypeArguments).Invoke(null, [collectionObj]);
+        method.MakeGenericMethod(info.PropertyType.GenericTypeArguments).Invoke(null, [collectionObj, info.Name]);
     }
 
-    private static void AskForList<T>(IList<T> list)
+    private static void AskForList<T>(IList<T> list, string id)
     {
-        Console.WriteLine("list");
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            id = "Unknown List";
+        }
+        bool canWrite = list is IReadOnlyList<T>;
+
+        while (true)
+        {
+            var i = 0;
+            var listElementString = string.Join("\n", list.Select(x => $" {i++} - {x}"));
+
+            Console.Write($"\nEditing list {id}\n\nCurrent values:\n{listElementString}\n\n's' to select / 'm' m to move / 'i' to insert at / 'r' to remove / '!exit'\n> ");
+            var command = ParseCollectionCommand(Console.ReadLine() ?? string.Empty);
+            if (command == CollectionCommand.Unknown)
+            {
+                Console.WriteLine("Please enter a valid command (Press any key)");
+                Console.ReadKey();
+                continue;   
+            }
+            if (command == CollectionCommand.Exit) break;
+            Console.Write("Position? > ");
+            if (!int.TryParse(Console.ReadLine(), out var idx) || idx < 0 || idx >= list.Count + 1)
+            {
+                Console.WriteLine("Input value is not a valid number (Press any key)");
+                Console.ReadKey();
+                continue;
+            }
+            switch(command)
+            {
+                case CollectionCommand.Select:
+                {
+                    var item = list.GetType().GetProperties();
+                    Console.ReadKey();
+                    break; //todo: this
+                }
+                case CollectionCommand.Move:
+                {
+                    Console.Write("At? > ");
+                    if (!int.TryParse(Console.ReadLine(), out var idx2) || idx2 < 0 || idx2 >= list.Count + 1)
+                    {
+                        Console.WriteLine("Input value is not a valid number (Press any key)");
+                        Console.ReadKey();
+                        continue;
+                    }
+                    var item = list[int.Min(idx, list.Count - 1)];
+                    list.RemoveAt(int.Min(idx, list.Count - 1));
+                    list.Insert(idx2-1, item);
+                    break;
+                }
+                case CollectionCommand.Remove:
+                {
+                    list.RemoveAt(int.Min(idx, list.Count - 1));
+                    break;
+                }
+                case CollectionCommand.Insert:
+                {
+                    var newInstance = Activator.CreateInstance<T>();
+                    if (newInstance is null)
+                    {
+                        Console.WriteLine($"New instance of class {typeof(T).Name} could not be created");
+                        Console.ReadKey();
+                    }
+                    list.Insert(idx, newInstance);
+                    break;
+                }
+            }
+        }
     }
 
-    private static void AskForDict<T1,T2>(IDictionary<T1,T2> list)
+    private static void AskForDict<T1,T2>(IDictionary<T1,T2> list, string id)
     {
         Console.WriteLine("dict");
     }
 
-    private static void AskForSet<T>(ISet<T> set)
+    private static void AskForSet<T>(ISet<T> set, string id)
     {
         Console.WriteLine("set");
+    }
+
+    private static CollectionCommand ParseCollectionCommand(string value)
+    {
+        return value.ToLowerInvariant() switch {
+            "!exit" => CollectionCommand.Exit,
+            "s" => CollectionCommand.Select,
+            "m" => CollectionCommand.Move,
+            "r" => CollectionCommand.Remove,
+            "i" => CollectionCommand.Insert,
+            _ => CollectionCommand.Unknown
+        };
     }
 
     private static void AskForValue(PropertyInfo info, object targetObj)
@@ -240,6 +323,16 @@ public class FieldModificatorCommandModule(ConfigModel config) : AttributeComman
         var match = _config.GetType().GetProperty(name) ?? throw new ArgumentException($"Unable to find property {name}");
         if (!match.CanRead) throw new ArgumentException($"Property {name} is not readable");
         return match;
+    }
+
+    private enum CollectionCommand
+    {
+        Select,
+        Remove,
+        Insert,
+        Move,
+        Exit,
+        Unknown
     }
 }
 
