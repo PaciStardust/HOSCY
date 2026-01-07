@@ -1,6 +1,5 @@
 using System.Globalization;
 using System.Reflection;
-using System.Text;
 using HoscyCli.Commands.Core;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.DependencyCore;
