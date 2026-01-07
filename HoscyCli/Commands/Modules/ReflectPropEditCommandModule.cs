@@ -241,7 +241,7 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
             var listElementIndex = 0;
             var listElementString = string.Join("\n", list.Select(x => $" {listElementIndex++} - {x}"));
 
-            var command = AskForCollectionCommand($"list {id}", listElementString, commandString, allowedCommands);
+            var command = AskForCollectionCommand(id, listElementString, commandString, allowedCommands);
             if (command == CollectionCommand.Unknown)
             {
                 ReadKeyError("Please enter a valid command");
@@ -268,7 +268,7 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
                     if (pos2 is null) return;
                     var item = list[pos.Value.IndexLimit];
                     list.RemoveAt(pos.Value.IndexLimit);
-                    list.Insert(pos2.Value.PlusOneIndexLimit-1, item);
+                    list.Insert(pos2.Value.PlusOneIndexLimit, item);
                 },
                 onRemove: () =>
                 {
@@ -276,13 +276,13 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
                 },
                 onInsert: () =>
                 {
-                    var newInstance = Activator.CreateInstance<T>();
+                    var newInstance = ActivatorCreateInstance<T>();
                     if (newInstance is null)
                     {
                         ReadKeyError($"New instance of class {typeof(T).Name} could not be created");
                         return;
                     }
-                    list.Insert(pos.Value.IndexLimit, newInstance);
+                    list.Insert(pos.Value.PlusOneIndexLimit, newInstance);
                 }
             );
         }
@@ -290,12 +290,143 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
 
     private static void OpenDictEditor<T1,T2>(IDictionary<T1,T2> dict, string id)
     {
-        Console.WriteLine("dict");
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            id = "Unknown Dictionary";
+        }
+        bool canWrite = dict is IReadOnlyDictionary<T1,T2>;
+        CollectionCommand[] allowedCommands = canWrite 
+            ? [CollectionCommand.Select, CollectionCommand.Insert, CollectionCommand.Remove]
+            : [CollectionCommand.Select];
+        var commandString = GetCommandString(allowedCommands);
+
+        while (true)
+        {
+            var keyArray = dict.Keys.ToArray();
+            var keyElementIndex = 0;
+            var keyElementString = string.Join("\n", keyArray.Select(x => $" {keyElementIndex++} - {x} => {dict[x]}"));
+
+            var command = AskForCollectionCommand(id, keyElementString, commandString, allowedCommands);
+            if (command == CollectionCommand.Unknown)
+            {
+                ReadKeyError("Please enter a valid command");
+                continue;   
+            }
+            if (command == CollectionCommand.Exit) break;
+
+            var pos = command != CollectionCommand.Insert ? AskForIndex("Position?", keyArray.Length) : (0,0);
+            if (pos is null) continue;
+
+            HandleCommand(command,
+                onSelect: () =>
+                {
+                    var idSub = $"Dictionary element {keyArray[pos.Value.IndexLimit]}";
+                    HandleType(typeof(T2),
+                        onSimple: () => dict[keyArray[pos.Value.IndexLimit]] = (T2)AskForSimpleTypeValue(typeof(T2), dict[keyArray[pos.Value.IndexLimit]]!, idSub),
+                        onComplex: () => OpenComplexEditor(dict[keyArray[pos.Value.IndexLimit]]!, idSub),
+                        onCollection: () => OpenCollectionEditor(dict[keyArray[pos.Value.IndexLimit]]!, idSub)
+                    );
+                },
+                onRemove: () =>
+                {
+                    dict.Remove(keyArray[pos.Value.IndexLimit]);
+                },
+                onInsert: () =>
+                {
+                    ReadKeyError("Configure Key");
+                    var keyInstance = ActivatorCreateInstance<T1>();
+                    if (keyInstance is null)
+                    {
+                        ReadKeyError($"New instance of class {typeof(T1).Name} could not be created");
+                        return;
+                    }
+                    var keyId = "New key";
+                    HandleType(typeof(T1),
+                        onSimple: () => keyInstance = (T1)AskForSimpleTypeValue(typeof(T1), keyInstance!, keyId),
+                        onComplex: () => OpenComplexEditor(keyInstance!, keyId),
+                        onCollection: () => OpenCollectionEditor(keyInstance!, keyId)
+                    );
+
+                    ReadKeyError("Configure Value");
+                    var valueInstance = ActivatorCreateInstance<T2>();
+                    if (valueInstance is null)
+                    {
+                        ReadKeyError($"New instance of class {typeof(T1).Name} could not be created");
+                        return;
+                    }
+                    var valueId = "New value";
+                    HandleType(typeof(T2),
+                        onSimple: () => valueInstance = (T2)AskForSimpleTypeValue(typeof(T2), valueInstance!, valueId),
+                        onComplex: () => OpenComplexEditor(valueInstance!, valueId),
+                        onCollection: () => OpenCollectionEditor(valueInstance!, valueId)
+                    );
+
+                    if (!dict.TryAdd(keyInstance, valueInstance))
+                    {
+                        ReadKeyError($"Key/Value pair could not be added to dictionary");
+                    }
+                }
+            );
+        }
     }
 
     private static void OpenSetEditor<T>(ISet<T> set, string id)
     {
-        Console.WriteLine("set");
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            id = "Unknown Set";
+        }
+        bool canWrite = set is IReadOnlySet<T>;
+        CollectionCommand[] allowedCommands = canWrite 
+            ? [CollectionCommand.Insert, CollectionCommand.Remove]
+            : [CollectionCommand.Select];
+        var commandString = GetCommandString(allowedCommands);
+
+        while (true)
+        {
+            var setArray = set.ToArray();
+            var setArrayElementIndex = 0;
+            var setArrayElementString = string.Join("\n", setArray.Select(x => $" {setArrayElementIndex++} - {x}"));
+
+            var command = AskForCollectionCommand(id, setArrayElementString, commandString, allowedCommands);
+            if (command == CollectionCommand.Unknown)
+            {
+                ReadKeyError("Please enter a valid command");
+                continue;   
+            }
+            if (command == CollectionCommand.Exit) break;
+
+            var pos = command != CollectionCommand.Insert ? AskForIndex("Position?", setArray.Length) : (0,0);
+            if (pos is null) continue;
+             
+            HandleCommand(command,
+                onRemove: () =>
+                {
+                    set.Remove(setArray[pos.Value.IndexLimit]);
+                },
+                onInsert: () =>
+                {
+                    var newInstance = ActivatorCreateInstance<T>();
+                    if (newInstance is null)
+                    {
+                        ReadKeyError($"New instance of class {typeof(T).Name} could not be created");
+                        return;
+                    }
+
+                    var valueId = "Set item";
+                    HandleType(typeof(T),
+                        onSimple: () => newInstance = (T)AskForSimpleTypeValue(typeof(T), newInstance!, valueId),
+                        onComplex: () => OpenComplexEditor(newInstance!, valueId),
+                        onCollection: () => OpenCollectionEditor(newInstance!, valueId)
+                    );
+
+                    if (!set.Add(newInstance))
+                    {
+                        ReadKeyError($"Item could not be added to set");
+                    }
+                }
+            );
+        }
     }
 
     private static readonly Dictionary<CollectionCommand, (string Parsed, string Desc)> _commandInfos = new()
@@ -325,7 +456,7 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
         if (string.IsNullOrWhiteSpace(key)) return CollectionCommand.Unknown;
 
         var keyLower = key.ToLowerInvariant();
-        var results = _commandInfos.Where(x => x.Value.Desc == keyLower).ToArray();
+        var results = _commandInfos.Where(x => x.Value.Parsed == keyLower).ToArray();
         var actualResult = results.Length == 0 ? CollectionCommand.Unknown : results[0].Key;
         return actualResult != CollectionCommand.Exit && !availableCommands.Contains(actualResult)
             ? CollectionCommand.Unknown
@@ -370,6 +501,13 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
     {
         Console.WriteLine($"{message} (Press any key)");
         Console.ReadKey();
+    }
+
+    private static T ActivatorCreateInstance<T>()
+    {
+        if (typeof(T).IsAbstract || typeof(T).IsInterface) throw new ArgumentException("Cannot create an instance of abstract or interface type");
+        if (typeof(T).GUID == typeof(string).GUID) return (T)(object)"New String";
+        return Activator.CreateInstance<T>();
     }
     #endregion
 }
