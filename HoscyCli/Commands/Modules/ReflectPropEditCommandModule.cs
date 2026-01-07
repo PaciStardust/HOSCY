@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Reflection;
+using System.Text;
 using HoscyCli.Commands.Core;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.DependencyCore;
@@ -165,19 +166,16 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
             if (input is null) continue;
             if (!int.TryParse(input, out var idx) || idx < 0 || idx >= complexProps.Length)
             {
-                Console.WriteLine("Input value is not a valid number (Press any key)");
-                Console.ReadKey();
+                ReadKeyError("Input value is not a valid number");
                 continue;
             }
             var selected = complexProps[idx];
             if (!selected.CanWrite)
             {
-                Console.WriteLine("Value is readonly (Press any key)");
-                Console.ReadKey();
+                ReadKeyError("Value is readonly");
                 continue;
             }
 
-            //todo: test, fixup?
             HandleType(selected.PropertyType,
                 () => selected.SetValue(complexObj, AskForSimpleTypeValue(selected.PropertyType, selected.GetValue(complexObj)!, selected.Name)),
                 () => OpenComplexEditor(selected.GetValue(complexObj)!, selected.Name),
@@ -226,84 +224,71 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
         method.MakeGenericMethod(collectionType.GenericTypeArguments).Invoke(null, [collectionObj, id]);
     }
 
-    private static void OpenListEditor<T>(IList<T> list, string id) //todo: refactor
+    private static void OpenListEditor<T>(IList<T> list, string id)
     {
         if (string.IsNullOrWhiteSpace(id))
         {
             id = "Unknown List";
         }
         bool canWrite = list is IReadOnlyList<T>;
+        CollectionCommand[] allowedCommands = canWrite 
+            ? [CollectionCommand.Select, CollectionCommand.Move, CollectionCommand.Insert, CollectionCommand.Remove]
+            : [CollectionCommand.Select];
+        var commandString = GetCommandString(allowedCommands);
 
         while (true)
         {
-            var i = 0;
-            var listElementString = string.Join("\n", list.Select(x => $" {i++} - {x}"));
+            var listElementIndex = 0;
+            var listElementString = string.Join("\n", list.Select(x => $" {listElementIndex++} - {x}"));
 
-            Console.Write($"\nEditing list {id}\n\nCurrent values:\n{listElementString}\n\n's' to select / 'm' m to move / 'i' to insert at / 'r' to remove / '!exit'\n> ");
-            var command = ParseCollectionCommand(Console.ReadLine() ?? string.Empty);
+            var command = AskForCollectionCommand($"list {id}", listElementString, commandString, allowedCommands);
             if (command == CollectionCommand.Unknown)
             {
-                Console.WriteLine("Please enter a valid command (Press any key)");
-                Console.ReadKey();
+                ReadKeyError("Please enter a valid command");
                 continue;   
             }
             if (command == CollectionCommand.Exit) break;
-            Console.Write("Position? > ");
-            if (!int.TryParse(Console.ReadLine(), out var idx) || idx < 0 || idx >= list.Count + 1)
-            {
-                Console.WriteLine("Input value is not a valid number (Press any key)");
-                Console.ReadKey();
-                continue;
-            }
-            switch(command)
-            {
-                case CollectionCommand.Select:
-                {
-                    idx = int.Min(idx, list.Count - 1);
 
-                    var idSub = $"List element {idx}";
+            var pos = AskForIndex("Position?", list.Count);
+            if (pos is null) continue;
+             
+            HandleCommand(command,
+                onSelect: () =>
+                {
+                    var idSub = $"List element {pos.Value.IndexLimit}";
                     HandleType(typeof(T),
-                    () => list[idx] = (T)AskForSimpleTypeValue(typeof(T), list[idx]!, idSub),
-                    () => OpenComplexEditor(list[idx]!, idSub),
-                    () => OpenCollectionEditor(list[idx]!, idSub)
+                        onSimple: () => list[pos.Value.IndexLimit] = (T)AskForSimpleTypeValue(typeof(T), list[pos.Value.IndexLimit]!, idSub),
+                        onComplex: () => OpenComplexEditor(list[pos.Value.IndexLimit]!, idSub),
+                        onCollection: () => OpenCollectionEditor(list[pos.Value.IndexLimit]!, idSub)
                     );
-                    break;
-                }
-                case CollectionCommand.Move:
+                },
+                onMove: () =>
                 {
-                    Console.Write("At? > ");
-                    if (!int.TryParse(Console.ReadLine(), out var idx2) || idx2 < 0 || idx2 >= list.Count + 1)
-                    {
-                        Console.WriteLine("Input value is not a valid number (Press any key)");
-                        Console.ReadKey();
-                        continue;
-                    }
-                    var item = list[int.Min(idx, list.Count - 1)];
-                    list.RemoveAt(int.Min(idx, list.Count - 1));
-                    list.Insert(idx2-1, item);
-                    break;
-                }
-                case CollectionCommand.Remove:
+                    var pos2 = AskForIndex("At?", list.Count);
+                    if (pos2 is null) return;
+                    var item = list[pos.Value.IndexLimit];
+                    list.RemoveAt(pos.Value.IndexLimit);
+                    list.Insert(pos2.Value.PlusOneIndexLimit-1, item);
+                },
+                onRemove: () =>
                 {
-                    list.RemoveAt(int.Min(idx, list.Count - 1));
-                    break;
-                }
-                case CollectionCommand.Insert:
+                    list.RemoveAt(pos.Value.IndexLimit);
+                },
+                onInsert: () =>
                 {
                     var newInstance = Activator.CreateInstance<T>();
                     if (newInstance is null)
                     {
-                        Console.WriteLine($"New instance of class {typeof(T).Name} could not be created");
-                        Console.ReadKey();
+                        ReadKeyError($"New instance of class {typeof(T).Name} could not be created");
+                        return;
                     }
-                    list.Insert(idx, newInstance);
-                    break;
+                    list.Insert(pos.Value.IndexLimit, newInstance);
                 }
-            }
+            );
         }
     }
 
-    private static void OpenDictEditor<T1,T2>(IDictionary<T1,T2> doct, string id)
+    private static void OpenDictEditor<T1,T2>(IDictionary<T1,T2> dict, string id)
     {
         Console.WriteLine("dict");
     }
@@ -313,17 +298,61 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
         Console.WriteLine("set");
     }
 
-    private static CollectionCommand ParseCollectionCommand(string value)
+    private static readonly Dictionary<CollectionCommand, (string Parsed, string Desc)> _commandInfos = new()
     {
-        return value.ToLowerInvariant() switch {
-            "!exit" => CollectionCommand.Exit,
-            "s" => CollectionCommand.Select,
-            "m" => CollectionCommand.Move,
-            "r" => CollectionCommand.Remove,
-            "i" => CollectionCommand.Insert,
-            _ => CollectionCommand.Unknown
-        };
+      {CollectionCommand.Exit,      ("!exit", "to exit")},
+      {CollectionCommand.Insert,    ("i", "to insert")},
+      {CollectionCommand.Move,      ("m", "to move")},
+      {CollectionCommand.Remove,    ("r", "to remove")},
+      {CollectionCommand.Select,    ("s", "to select")}  
+    };
+    private static string GetCommandString(CollectionCommand[] availableCommands)
+    {
+        var cmdStrings = availableCommands.Distinct()
+            .Where(x => _commandInfos.ContainsKey(x) && x != CollectionCommand.Exit && x != CollectionCommand.Unknown)
+            .Select(x => { var (parsed, desc) = _commandInfos[x]; return $"{parsed} {desc}"; })
+            .ToList();
+
+        var (exitParsed, exitDesc) = _commandInfos[CollectionCommand.Exit];
+        cmdStrings.Add($"{exitParsed} {exitDesc}");
+        return string.Join(" / ", cmdStrings);
     }
+
+    private static CollectionCommand AskForCollectionCommand(string collectionName, string currentValues, string commandString, CollectionCommand[] availableCommands)
+    {
+        Console.Write($"\nEditing {collectionName}\n\nCurrent values:\n{currentValues}\n\n{commandString}\n> ");
+        var key = Console.ReadLine();
+        if (string.IsNullOrWhiteSpace(key)) return CollectionCommand.Unknown;
+
+        var keyLower = key.ToLowerInvariant();
+        var results = _commandInfos.Where(x => x.Value.Desc == keyLower).ToArray();
+        var actualResult = results.Length == 0 ? CollectionCommand.Unknown : results[0].Key;
+        return actualResult != CollectionCommand.Exit && !availableCommands.Contains(actualResult)
+            ? CollectionCommand.Unknown
+            : actualResult;
+    }
+
+    public static (int IndexLimit, int PlusOneIndexLimit)? AskForIndex(string question, int length)
+    {
+        Console.Write($"{question} > ");
+        if (!int.TryParse(Console.ReadLine(), out var idx) || idx < 0 || idx > length)
+        {
+            ReadKeyError("Input value is not a valid number");
+            return null;
+        }
+        return (int.Min(idx, length-1), idx);
+    }
+
+    private static void HandleCommand(CollectionCommand command, Action? onSelect = null, Action? onRemove = null, Action? onInsert = null, Action? onMove = null)
+    {
+        switch(command)
+        {
+            case CollectionCommand.Select: onSelect?.Invoke(); break;
+            case CollectionCommand.Remove: onRemove?.Invoke(); break;
+            case CollectionCommand.Insert: onInsert?.Invoke(); break;
+            case CollectionCommand.Move: onMove?.Invoke(); break;
+        }
+    } 
 
     private enum CollectionCommand
     {
@@ -333,6 +362,14 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
         Move,
         Exit,
         Unknown
+    }
+    #endregion
+
+    #region Util
+    private static void ReadKeyError(string message)
+    {
+        Console.WriteLine($"{message} (Press any key)");
+        Console.ReadKey();
     }
     #endregion
 }
