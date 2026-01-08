@@ -1,3 +1,5 @@
+using System.Collections.Frozen;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reflection;
 using HoscyCli.Commands.Core;
@@ -74,7 +76,7 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
     #endregion
 
     #region Simple Types
-    private static readonly Dictionary<Type, Func<string, object>> _simpleTypeConverters = new()
+    private static readonly FrozenDictionary<Type, Func<string, object>> _simpleTypeConverters = new Dictionary<Type, Func<string, object>>()
     {
         {typeof(string),        (s) => s},
         {typeof(int),           (s) => int.Parse(s, NumberStyles.Any)},
@@ -82,7 +84,7 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
         {typeof(float),         (s) => float.Parse(s, NumberStyles.Any, CultureInfo.InvariantCulture)},
         {typeof(LogEventLevel), (s) => ConvertEnum<LogEventLevel>(s)},
         {typeof(ushort),        (s) => ushort.Parse(s, NumberStyles.Any)}
-    };
+    }.ToFrozenDictionary();
 
     private static bool IsSimpleType(Type t)
     {
@@ -94,8 +96,8 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
         return _simpleTypeConverters[targetType].Invoke(value);
     }   
 
-    private static readonly string[] _trueStrings = ["true", "t", "1", "yes", "on"];
-    private static readonly string[] _falseStrings = ["false", "f", "0", "no", "off"];
+    private static readonly FrozenSet<string> _trueStrings = ["true", "t", "1", "yes", "on"];
+    private static readonly FrozenSet<string> _falseStrings = ["false", "f", "0", "no", "off"];
     public static bool ConvertBool(string value)
     {
         value = value.ToLower();
@@ -195,12 +197,12 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
     #endregion
 
     #region Collections
-    private static readonly Dictionary<Guid, string> _collectionTypeConverters = new()
+    private static readonly FrozenDictionary<Guid, string> _collectionTypeConverters = new Dictionary<Guid, string>()
     {
         {typeof(IList<>).GUID, nameof(OpenListEditor)},
         {typeof(ISet<>).GUID, nameof(OpenSetEditor)},
         {typeof(IDictionary<,>).GUID, nameof(OpenDictEditor)}
-    };
+    }.ToFrozenDictionary();
 
     private static void OpenCollectionEditor(object collectionObj, string id)
     {
@@ -428,14 +430,14 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
         }
     }
 
-    private static readonly Dictionary<CollectionCommand, (string Parsed, string Desc)> _commandInfos = new()
+    private static readonly FrozenDictionary<CollectionCommand, (string Parsed, string Desc)> _commandInfos = new Dictionary<CollectionCommand, (string Parsed, string Desc)>()
     {
       {CollectionCommand.Exit,      ("!exit", "to exit")},
       {CollectionCommand.Insert,    ("i", "to insert")},
       {CollectionCommand.Move,      ("m", "to move")},
       {CollectionCommand.Remove,    ("r", "to remove")},
       {CollectionCommand.Select,    ("s", "to select")}  
-    };
+    }.ToFrozenDictionary();
     private static string GetCommandString(CollectionCommand[] availableCommands)
     {
         var cmdStrings = availableCommands.Distinct()

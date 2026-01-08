@@ -16,17 +16,8 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
     private readonly List<Task> _runningTasks = [];
     private readonly CancellationTokenSource _cts = new();
 
-    [GeneratedRegex(
-        @"\[ *(?<address>(?:\/[^\ #\*,\/?\[\]\{\}]+)+)(?<values>(?: +\[(?:[fF]\]-?[0-9]+(?:\.[0-9]+)?|[iI]\]\-?[0-9]+|[sS]\]""[^""]*""|[bB]\](?:[tT]rue|[fF]alse)))+)(?: +(?:(?<ip>(?:(?:25[0-5]|(?:2[0-4]|1\d|[1-9]|)\d)\.?\b){4}):(?<port>[0-9]{1,5})|""(?<target>[^""]*)""))?(?: +[wW](?<wait>[0-9]+))? *\]",
-        RegexOptions.CultureInvariant
-    )]
-    private static partial Regex OscCommandIdentifierRegex();
-
-    [GeneratedRegex(
-        @" +\[(?<type>[iIfFbBsS])\](?:""(?<value>[^""]*)""|(?<value>[a-zA-Z]+|[0-9\.\-]*))",
-        RegexOptions.CultureInvariant
-    )]
-    private static partial Regex OscParameterExtractorRegex();
+    private static readonly Regex _oscCommandIdentifier = new(@"\[ *(?<address>(?:\/[^\ #\*,\/?\[\]\{\}]+)+)(?<values>(?: +\[(?:[fF]\]-?[0-9]+(?:\.[0-9]+)?|[iI]\]\-?[0-9]+|[sS]\]""[^""]*""|[bB]\](?:[tT]rue|[fF]alse)))+)(?: +(?:(?<ip>(?:(?:25[0-5]|(?:2[0-4]|1\d|[1-9]|)\d)\.?\b){4}):(?<port>[0-9]{1,5})|""(?<target>[^""]*)""))?(?: +[wW](?<wait>[0-9]+))? *\]",RegexOptions.CultureInvariant);
+    private static readonly Regex _oscParameterExtractor = new(@" +\[(?<type>[iIfFbBsS])\](?:""(?<value>[^""]*)""|(?<value>[a-zA-Z]+|[0-9\.\-]*))", RegexOptions.CultureInvariant);
 
     private const string OSC_COMMAND_IDENTIFIER = "[OSC]";
     private const int OSC_COMMAND_MAX_UNINTERRUPTED_WAIT = 50;
@@ -52,7 +43,7 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
         if (_cts.IsCancellationRequested) return OscCommandState.Shutdown;
 
         _logger.Debug("Attempting to parse command string \"{commandString}\"", commandString);
-        var commandMatches = OscCommandIdentifierRegex().Matches(commandString);
+        var commandMatches = _oscCommandIdentifier.Matches(commandString);
         if (commandMatches is null || commandMatches.Count == 0)
         {
             _logger.Warning("Failed parsing OSC command, it did not match the filter");
@@ -167,7 +158,7 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
     private List<object> ParseOscVariables(string valuesText)
     {
         _logger.Verbose("Parsing OSC variables \"{valuesText}\"", valuesText);
-        var variableMatches = OscParameterExtractorRegex().Matches(valuesText);
+        var variableMatches = _oscParameterExtractor.Matches(valuesText);
         var parsedVariables = new List<object>();
 
         foreach (Match variableMatch in variableMatches)
