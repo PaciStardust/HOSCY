@@ -5,15 +5,15 @@ namespace HoscyCli.Commands.Modules;
 
 [LoadIntoDiContainer(typeof(MainCommandModule), Lifetime.Singleton)]
 public class MainCommandModule(
-    TestCommandModule testCm
+    ConfigCommandModule configCm
 ) : AttributeCommandModule
 {
-    private readonly TestCommandModule _testCm = testCm;
+    private readonly ConfigCommandModule _configCm = configCm;
 
-    [SubCommandModule(["test"], "For testing purposes")]
+    [SubCommandModule(["config"], "Edit the config file")]
     public CommandResult Test(string? args)
     {
         if (args is null) return CommandResult.MissingParameter;
-        return _testCm.Execute(args);
+        return _configCm.Execute(args);
     }
 }

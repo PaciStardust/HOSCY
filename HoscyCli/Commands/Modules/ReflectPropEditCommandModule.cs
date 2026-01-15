@@ -32,7 +32,7 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
         return CommandResult.Success;
     }
 
-    [SubCommandModule(["set", "s", "<"], "Set a variable")]
+    [SubCommandModule(["set", "s", "<", "edit", "e"], "Set a variable")]
     public CommandResult SetProperty(string? name)
     {
         if (string.IsNullOrWhiteSpace(name)) return CommandResult.MissingParameter;
@@ -58,7 +58,7 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
     #endregion
 
     #region Selection
-    public static void HandleType(Type type, Action onSimple, Action onComplex, Action onCollection)
+    private static void HandleType(Type type, Action onSimple, Action onComplex, Action onCollection)
     {
         if (IsSimpleType(type))
         {
@@ -98,7 +98,7 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
 
     private static readonly FrozenSet<string> _trueStrings = ["true", "t", "1", "yes", "on"];
     private static readonly FrozenSet<string> _falseStrings = ["false", "f", "0", "no", "off"];
-    public static bool ConvertBool(string value)
+    private static bool ConvertBool(string value)
     {
         value = value.ToLower();
         if (_trueStrings.Contains(value)) return true;
@@ -252,7 +252,7 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
 
             var pos = AskForIndex("Position?", list.Count);
             if (pos is null) continue;
-             
+            
             HandleCommand(command,
                 onSelect: () =>
                 {
@@ -399,7 +399,7 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
 
             var pos = command != CollectionCommand.Insert ? AskForIndex("Position?", setArray.Length) : (0,0);
             if (pos is null) continue;
-             
+            
             HandleCommand(command,
                 onRemove: () =>
                 {
@@ -432,11 +432,11 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
 
     private static readonly FrozenDictionary<CollectionCommand, (string Parsed, string Desc)> _commandInfos = new Dictionary<CollectionCommand, (string Parsed, string Desc)>()
     {
-      {CollectionCommand.Exit,      ("!exit", "to exit")},
-      {CollectionCommand.Insert,    ("i", "to insert")},
-      {CollectionCommand.Move,      ("m", "to move")},
-      {CollectionCommand.Remove,    ("r", "to remove")},
-      {CollectionCommand.Select,    ("s", "to select")}  
+        {CollectionCommand.Exit,      ("!exit", "to exit")},
+        {CollectionCommand.Insert,    ("i", "to insert")},
+        {CollectionCommand.Move,      ("m", "to move")},
+        {CollectionCommand.Remove,    ("r", "to remove")},
+        {CollectionCommand.Select,    ("s", "to select")}  
     }.ToFrozenDictionary();
     private static string GetCommandString(CollectionCommand[] availableCommands)
     {
@@ -464,7 +464,7 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
             : actualResult;
     }
 
-    public static (int IndexLimit, int PlusOneIndexLimit)? AskForIndex(string question, int length)
+    private static (int IndexLimit, int PlusOneIndexLimit)? AskForIndex(string question, int length)
     {
         Console.Write($"{question} > ");
         if (!int.TryParse(Console.ReadLine(), out var idx) || idx < 0 || idx > length)
@@ -509,6 +509,12 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
         if (typeof(T).IsAbstract || typeof(T).IsInterface) throw new ArgumentException("Cannot create an instance of abstract or interface type");
         if (typeof(T).GUID == typeof(string).GUID) return (T)(object)"New String";
         return Activator.CreateInstance<T>();
+    }
+
+    public static string[] GetAllConfigValues()
+    {
+        var props = typeof(ConfigModel).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+        return props?.Select(x => x.Name).ToArray() ?? [];
     }
     #endregion
 }
