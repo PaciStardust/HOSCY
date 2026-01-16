@@ -47,7 +47,7 @@ public class ConfigCommandModule(ReflectPropEditCommandModule reflectionCm, Conf
                 ? null 
                 : _allProps[index]
             : _allProps.FirstOrDefault(x => x.Equals(command, StringComparison.OrdinalIgnoreCase));
-        if (OnFalse(match is null, "No property match found for input")) return CommandResult.Error;
+        if (OnTrue(match is null, "No property match found for input")) return CommandResult.Error;
         return _reflectionCm.Execute(parameters, match);
     }
 
