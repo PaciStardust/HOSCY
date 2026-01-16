@@ -58,7 +58,7 @@ public abstract class AttributeCommandModule : ICommandModule
     {
         var match = GetSubCommandIndex(command);
         if (match != -1) return _commandInfo[match].Func(args);
-        Console.WriteLine($"{GetType().Name} Unable to locate command {command}");
+        Console.WriteLine($"{GetType().Name} is unable to locate command {command}");
         return CommandResult.NotFound;
     }
 
@@ -71,7 +71,7 @@ public abstract class AttributeCommandModule : ICommandModule
         return _commandInfo.FindIndex(x => x.Attribute.ShouldHandle(command, CommandIdentifierMatchMode.Contains));
     }
 
-    [SubCommandModule(["help", "list", "l", "h", "?"], "Lists all available commands.")]
+    [SubCommandModule(["help", "?"], "Lists all available commands.")]
     public CommandResult List()
     {
         var print = string.Join("\n", _commandInfo.Select(info => $" - {string.Join("/", info.Attribute.Identifiers[0])} - {info.Attribute.Description}"));

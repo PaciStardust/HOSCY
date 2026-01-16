@@ -14,7 +14,7 @@ public class ConfigCommandModule(ReflectPropEditCommandModule reflectionCm, Conf
     private readonly ConfigModel _config = config;
     private readonly ILogger _logger = logger.ForContext<ConfigCommandModule>();
 
-    [SubCommandModule(["all", "a"], "Get all editable properties (additional text filters)")]
+    [SubCommandModule(["list", "l", "all", "a"], "Get all editable properties (additional text filters)")]
     public CommandResult GetAll(string? filter)
     {
         var allProps = ReflectPropEditCommandModule.GetAllConfigValues();
@@ -31,15 +31,14 @@ public class ConfigCommandModule(ReflectPropEditCommandModule reflectionCm, Conf
         return CommandResult.Success;
     }
 
-    [SubCommandModule(["pick", "p"], "Pick an editable property")]
+    [SubCommandModule(["pick"], "Pick an editable property")]
     public CommandResult PickOne(string? message)
     {
         if (string.IsNullOrWhiteSpace(message)) return CommandResult.MissingParameter;
         var (command, parameters) = Util.SplitAtFirstSpace(message);
         if (string.IsNullOrWhiteSpace(parameters))
         {
-            Console.WriteLine("No command found to further handle this property");
-            return CommandResult.MissingParameter;
+            parameters = "set";
         }
 
         var match = int.TryParse(command, out var index) 
