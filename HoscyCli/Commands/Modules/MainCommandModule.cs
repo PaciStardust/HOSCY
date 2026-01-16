@@ -15,14 +15,14 @@ public class MainCommandModule(
     [SubCommandModule(["config"], "Edit the config file")]
     public CommandResult Config(string? args)
     {
-        if (!IsNotEmpty(args, "Subcommand required for config command")) return CommandResult.MissingParameter;
+        if (OnEmpty(args, "Subcommand required for config command")) return CommandResult.MissingParameter;
         return _configCm.Execute(args);
     }
 
     [SubCommandModule(["services"], "Manage all services")]
     public CommandResult Services(string? args)
     {
-        if (!IsNotEmpty(args, "Subcommand required for services command")) return CommandResult.MissingParameter;
+        if (OnEmpty(args, "Subcommand required for services command")) return CommandResult.MissingParameter;
         return _serviceCm.Execute(args);
     }
 }

@@ -80,25 +80,35 @@ public abstract class AttributeCommandModule : ICommandModule
         return CommandResult.Success;
     }
 
-    protected static bool IsNotEmpty([NotNullWhen(true)] string? args, string message)
+    protected static bool OnEmpty([NotNullWhen(false)] string? args, string message)
     {
         if (string.IsNullOrWhiteSpace(args))
         {
             Console.WriteLine(message);
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
-    protected static bool IsValidInteger(string? args, [NotNullWhen(true)] out int? validInt, int minInc, int maxExc, string message)
+    protected static bool OnFalse(bool check, string message)
+    {
+        if (!check)
+        {
+            Console.WriteLine(message);
+            return true;
+        }
+        return false;
+    }
+
+    protected static bool OnInvalidInt(string? args, [NotNullWhen(false)] out int? validInt, int minInc, int maxExc, string message)
     {
         if (!int.TryParse(args, out var parsed) || parsed < minInc || parsed >= maxExc)
         {
             validInt = null;
             Console.WriteLine(message);
-            return false;
+            return true;
         }
         validInt = parsed;
-        return true;
+        return false;
     }
 }

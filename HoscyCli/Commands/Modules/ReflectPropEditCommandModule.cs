@@ -19,7 +19,7 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
     [SubCommandModule(["get", "g", ">"], "Get a variable")]
     public CommandResult GetProperty(string? name)
     {
-        if (!IsNotEmpty(name, "Variable to retrieve must be specified")) return CommandResult.MissingParameter;
+        if (OnEmpty(name, "Variable to retrieve must be specified")) return CommandResult.MissingParameter;
         var info = GetPropertyInfo(name);
         HandleType(info.PropertyType,
         () => DisplaySimpleInfo(info.PropertyType, info.GetValue(_config)!, info.Name),
@@ -36,7 +36,7 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
     [SubCommandModule(["set", "s", "<", "edit", "e"], "Set a variable")]
     public CommandResult SetProperty(string? name)
     {
-        if (!IsNotEmpty(name, "Variable to edit must be specified")) return CommandResult.MissingParameter;
+        if (OnEmpty(name, "Variable to edit must be specified")) return CommandResult.MissingParameter;
         var info = GetPropertyInfo(name);
         HandleType(info.PropertyType,
             () =>

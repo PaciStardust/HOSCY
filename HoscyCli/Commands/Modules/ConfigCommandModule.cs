@@ -34,7 +34,7 @@ public class ConfigCommandModule(ReflectPropEditCommandModule reflectionCm, Conf
     [SubCommandModule(["pick"], "Pick an editable property")]
     public CommandResult PickOne(string? message)
     {
-        if (!IsNotEmpty(message, "You must specify a property to edit")) return CommandResult.MissingParameter;
+        if (OnEmpty(message, "You must specify a property to edit")) return CommandResult.MissingParameter;
 
         var (command, parameters) = Util.SplitAtFirstSpace(message);
         if (string.IsNullOrWhiteSpace(parameters))
@@ -47,11 +47,7 @@ public class ConfigCommandModule(ReflectPropEditCommandModule reflectionCm, Conf
                 ? null 
                 : _allProps[index]
             : _allProps.FirstOrDefault(x => x.Equals(command, StringComparison.OrdinalIgnoreCase));
-        if (match is null)
-        {
-            Console.WriteLine("No property match found for input");
-            return CommandResult.Error;
-        }
+        if (OnFalse(match is null, "No property match found for input")) return CommandResult.Error;
         return _reflectionCm.Execute(parameters, match);
     }
 
@@ -59,11 +55,7 @@ public class ConfigCommandModule(ReflectPropEditCommandModule reflectionCm, Conf
     public CommandResult Save(string? _)
     {
         var success = _config.TrySave(PathUtils.PathConfigFolder,ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
-        if (!success)
-        {
-            Console.WriteLine("Saving failed!");
-            return CommandResult.Error;
-        }
+        if (OnFalse(success, "Saving failed!")) return CommandResult.Error;
         return CommandResult.Success;
     }
 }
