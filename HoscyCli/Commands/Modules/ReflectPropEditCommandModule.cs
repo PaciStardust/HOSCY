@@ -13,6 +13,7 @@ namespace HoscyCli.Commands.Modules;
 public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommandModule
 {
     private readonly ConfigModel _config = config;
+    private const string EMPTY_INDICATOR = "[EMPTY]";
 
     #region Entrypoint
     [SubCommandModule(["get", "g", ">"], "Get a variable")]
@@ -188,11 +189,12 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
     private static string GenerateComplexList(PropertyInfo[] infos, object targetObj)
     {
         var i = 0;
-        return string.Join("\n", infos.Select(x =>
+        var retString = string.Join("\n", infos.Select(x =>
         {
             var value = IsSimpleType(x.PropertyType) ? x.GetValue(targetObj)?.ToString() ?? "[NULL]" : "[COMPLEX]";
             return $" {i++} - {(x.CanWrite ? string.Empty : "[R] ")}{x.Name} ({x.PropertyType.Name}): {value}";
         }));
+        return string.IsNullOrWhiteSpace(retString) ? EMPTY_INDICATOR : retString;
     }
     #endregion
 
@@ -241,6 +243,10 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
         {
             var listElementIndex = 0;
             var listElementString = string.Join("\n", list.Select(x => $" {listElementIndex++} - {x}"));
+            if (string.IsNullOrWhiteSpace(listElementString))
+            {
+                listElementString = EMPTY_INDICATOR;
+            }
 
             var command = AskForCollectionCommand(id, listElementString, commandString, allowedCommands);
             if (command == CollectionCommand.Unknown)
@@ -306,6 +312,10 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
             var keyArray = dict.Keys.ToArray();
             var keyElementIndex = 0;
             var keyElementString = string.Join("\n", keyArray.Select(x => $" {keyElementIndex++} - {x} => {dict[x]}"));
+            if (string.IsNullOrWhiteSpace(keyElementString))
+            {
+                keyElementString = EMPTY_INDICATOR;
+            }
 
             var command = AskForCollectionCommand(id, keyElementString, commandString, allowedCommands);
             if (command == CollectionCommand.Unknown)
@@ -387,7 +397,11 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
         {
             var setArray = set.ToArray();
             var setArrayElementIndex = 0;
-            var setArrayElementString = string.Join("\n", setArray.Select(x => $" {setArrayElementIndex++} - {x}"));
+            var setArrayElementString = string.Join(separator: "\n", setArray.Select(x => $" {setArrayElementIndex++} - {x}"));
+            if (string.IsNullOrWhiteSpace(setArrayElementString))
+            {
+                setArrayElementString = EMPTY_INDICATOR;
+            }
 
             var command = AskForCollectionCommand(id, setArrayElementString, commandString, allowedCommands);
             if (command == CollectionCommand.Unknown)
