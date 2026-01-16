@@ -79,7 +79,9 @@ public class DiContainer
         var sw = Stopwatch.StartNew();
         logger.Debug("Loading dependencies from Assembly");
         var addedCount = 0;
-        foreach (var service in (Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly()).GetTypes())
+        var allServices = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).Distinct();
+
+        foreach (var service in allServices) 
         {
             if (service.IsAbstract || service.IsInterface) continue;
 
