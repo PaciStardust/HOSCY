@@ -34,7 +34,8 @@ public class ConfigCommandModule(ReflectPropEditCommandModule reflectionCm, Conf
     [SubCommandModule(["pick"], "Pick an editable property")]
     public CommandResult PickOne(string? message)
     {
-        if (string.IsNullOrWhiteSpace(message)) return CommandResult.MissingParameter;
+        if (!IsNotEmpty(message, "You must specify a property to edit")) return CommandResult.MissingParameter;
+
         var (command, parameters) = Util.SplitAtFirstSpace(message);
         if (string.IsNullOrWhiteSpace(parameters))
         {

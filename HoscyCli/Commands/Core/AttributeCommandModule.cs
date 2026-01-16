@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace HoscyCli.Commands.Core;
@@ -77,5 +78,27 @@ public abstract class AttributeCommandModule : ICommandModule
         var print = string.Join("\n", _commandInfo.Select(info => $" - {string.Join("/", info.Attribute.Identifiers[0])} - {info.Attribute.Description}"));
         Console.WriteLine($"Available Commands:\n{print}");
         return CommandResult.Success;
+    }
+
+    protected static bool IsNotEmpty([NotNullWhen(true)] string? args, string message)
+    {
+        if (string.IsNullOrWhiteSpace(args))
+        {
+            Console.WriteLine(message);
+            return false;
+        }
+        return true;
+    }
+
+    protected static bool IsValidInteger(string? args, [NotNullWhen(true)] out int? validInt, int minInc, int maxExc, string message)
+    {
+        if (!int.TryParse(args, out var parsed) || parsed < minInc || parsed >= maxExc)
+        {
+            validInt = null;
+            Console.WriteLine(message);
+            return false;
+        }
+        validInt = parsed;
+        return true;
     }
 }

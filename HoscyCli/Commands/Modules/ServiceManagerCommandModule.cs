@@ -79,12 +79,9 @@ public class ServiceManagerCommandModule : AttributeCommandModule {
         } 
         else
         {
-            if (!int.TryParse(args, out var idx) || idx < 0 || idx >= _services.Length)
-            {
-                Console.WriteLine("Specified argument not a valid index");
-                return CommandResult.Error;
-            }
-            var selected = _services[idx];
+            if (!IsValidInteger(args, out var idx, 0, _services.Length, "Specified argument not a valid index")) return CommandResult.Error;
+            
+            var selected = _services[idx.Value];
             if (selected is not IStartStopService startStopService)
             {
                 Console.WriteLine($"Service {selected.GetType().Name} does not have a status");
