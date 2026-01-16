@@ -100,6 +100,16 @@ public abstract class AttributeCommandModule : ICommandModule
         return false;
     }
 
+    protected static bool OnTrue(bool check, string message)
+    {
+        if (check)
+        {
+            Console.WriteLine(message);
+            return true;
+        }
+        return false;
+    }
+
     protected static bool OnInvalidInt(string? args, [NotNullWhen(false)] out int? validInt, int minInc, int maxExc, string message)
     {
         if (!int.TryParse(args, out var parsed) || parsed < minInc || parsed >= maxExc)

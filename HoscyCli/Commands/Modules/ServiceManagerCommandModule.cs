@@ -79,20 +79,17 @@ public class ServiceManagerCommandModule : AttributeCommandModule {
         } 
         else
         {
-            if (!IsValidInteger(args, out var idx, 0, _services.Length, "Specified argument not a valid index")) return CommandResult.Error;
+            if (OnInvalidInt(args, out var idx, 0, _services.Length, "Specified argument not a valid index"))
+                return CommandResult.Error;
             
             var selected = _services[idx.Value];
-            if (selected is not IStartStopService startStopService)
-            {
-                Console.WriteLine($"Service {selected.GetType().Name} does not have a status");
+            var startStopService = selected as IStartStopService;
+            if (OnTrue(startStopService is null, $"Service {selected.GetType().Name} does not have a status"))
                 return CommandResult.Success;
-            }
-            var serviceEx = startStopService.GetFaultIfExists();
-            if (serviceEx is null)
-            {
-                Console.WriteLine($"Service {selected.GetType().Name} does not have an error");
+
+            var serviceEx = startStopService!.GetFaultIfExists();
+            if (OnTrue(serviceEx is null, $"Service {selected.GetType().Name} does not have an error"))
                 return CommandResult.Success;
-            }
 
             var exceptions = new List<Exception>();
             while (serviceEx != null)
@@ -105,6 +102,57 @@ public class ServiceManagerCommandModule : AttributeCommandModule {
             var message = $"Errors from {selected.GetType().Name}:\n\n{string.Join("\n\n--------------\n\n", exStrings)}";
             Console.WriteLine(message);
         }
+        return CommandResult.Success;
+    }
+
+    [SubCommandModule(["up"], "Starts a service")]
+    public CommandResult ServiceUp(string? args)
+    {
+        if (OnInvalidInt(args, out var validInt, 0, _services.Length, "You must specify a service to start"))
+            return CommandResult.MissingParameter;
+        var selected = _services[validInt.Value];
+
+        var startStopService = selected as IStartStopService;
+        if (OnTrue(startStopService is null, "Selected service does not support starting")) 
+            return CommandResult.Error;
+
+        _logger.Information($"Manually starting service: {selected.GetType().Name}");
+        startStopService!.Start();
+        _logger.Information($"Manually started service: {selected.GetType().Name}");
+        return CommandResult.Success;
+    }
+
+    [SubCommandModule(["down"], "Stops a service")]
+    public CommandResult ServiceDown(string? args)
+    {
+        if (OnInvalidInt(args, out var validInt, 0, _services.Length, "You must specify a service to stop"))
+            return CommandResult.MissingParameter;
+        var selected = _services[validInt.Value];
+
+        var startStopService = selected as IStartStopService;
+        if (OnTrue(startStopService is null, "Selected service does not support stopping")) 
+            return CommandResult.Error;
+
+        _logger.Information($"Manually stopping service: {selected.GetType().Name}");
+        startStopService!.Stop();
+        _logger.Information($"Manually stopping service: {selected.GetType().Name}");
+        return CommandResult.Success;
+    }
+
+    [SubCommandModule(["restart"], "Restarts a service")]
+    public CommandResult ServiceRestart(string? args)
+    {
+        if (OnInvalidInt(args, out var validInt, 0, _services.Length, "You must specify a service to restart"))
+            return CommandResult.MissingParameter;
+        var selected = _services[validInt.Value];
+
+        var startStopService = selected as IStartStopService;
+        if (OnTrue(startStopService is null, "Selected service does not support restarting")) 
+            return CommandResult.Error;
+
+        _logger.Information($"Manually restarting service: {selected.GetType().Name}");
+        startStopService!.Restart();
+        _logger.Information($"Manually restarting service: {selected.GetType().Name}");
         return CommandResult.Success;
     }
 }
