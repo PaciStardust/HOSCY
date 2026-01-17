@@ -6,23 +6,36 @@ namespace HoscyCli.Commands.Modules;
 [LoadIntoDiContainer(typeof(MainCommandModule), Lifetime.Singleton)]
 public class MainCommandModule(
     ConfigCommandModule configCm,
-    ServiceManagerCommandModule serviceCm
+    ServiceManagerCommandModule serviceCm,
+    OscCommandModule oscCm
 ) : AttributeCommandModule
 {
     private readonly ConfigCommandModule _configCm = configCm;
     private readonly ServiceManagerCommandModule _serviceCm = serviceCm;
+    private readonly OscCommandModule _oscCm = oscCm;
+
 
     [SubCommandModule(["config"], "Edit the config file")]
-    public CommandResult Config(string? args)
+    public CommandResult CmdConfig(string? args)
     {
-        if (OnEmpty(args, "Subcommand required for config command")) return CommandResult.MissingParameter;
+        if (OnEmpty(args, GetParameterError("config"))) return CommandResult.MissingParameter;
         return _configCm.Execute(args);
     }
 
     [SubCommandModule(["services"], "Manage all services")]
-    public CommandResult Services(string? args)
+    public CommandResult CmdServices(string? args)
     {
-        if (OnEmpty(args, "Subcommand required for services command")) return CommandResult.MissingParameter;
+        if (OnEmpty(args, GetParameterError("services"))) return CommandResult.MissingParameter;
         return _serviceCm.Execute(args);
     }
+
+    [SubCommandModule(["osc"], "Manage OSC")]
+    public CommandResult CmdOsc(string? args)
+    {
+        if (OnEmpty(args, GetParameterError("osc"))) return CommandResult.MissingParameter;
+        return _oscCm.Execute(args);
+    }
+
+    private string GetParameterError(string commandName) 
+        => $"Subcommand required for {commandName} command";
 }
