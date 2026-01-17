@@ -11,7 +11,7 @@ public class AfkService(ConfigModel config, IOutputManagerService output, ILogge
 {
     private readonly ConfigModel _config = config;
     private readonly IOutputManagerService _output = output;
-    private readonly ILogger _logger = logger;
+    private readonly ILogger _logger = logger.ForContext<AfkService>();
 
     private System.Timers.Timer? _afkTimer;
     private DateTime _afkStarted = DateTime.Now;
@@ -58,14 +58,16 @@ public class AfkService(ConfigModel config, IOutputManagerService output, ILogge
         if (_config.Afk_TimesDisplayedBeforeDoublingInterval > 0)
         {
             _afkTimesChecked++;
-            var cycle = _afkTimesChecked / _config.Afk_TimesDisplayedBeforeDoublingInterval;
+            var cycle = (_afkTimesChecked / _config.Afk_TimesDisplayedBeforeDoublingInterval) + 1;
             var modulo = Math.Pow(2, (int)Math.Log(cycle, 2));
 
             if (_afkTimesChecked % modulo != 0)
                 return;
         }
 
-        var message = $"{_config.Afk_StatusText} {(e.SignalTime.AddMilliseconds(500) - _afkStarted).ToString(@"hh\:mm\:ss")}";
+        var time = (e.SignalTime.AddMilliseconds(500) - _afkStarted).ToString(@"hh\:mm\:ss");
+        _logger.Debug("Displaying AFK timer at {afkTime}", time);
+        var message = $"{_config.Afk_StatusText} {time}";
         _output.SendNotification(message, _afkNotificationPriority);
     }
     #endregion

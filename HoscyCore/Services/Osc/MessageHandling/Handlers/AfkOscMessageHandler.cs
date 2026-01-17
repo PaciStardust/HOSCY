@@ -23,7 +23,7 @@ public class AfkOscMessageHandler(ILogger logger, IAfkService afkService, Config
             _logger.Warning("OSC AFK packet did not have bool as first arg");
             return true;
         }
-        _logger.Debug($"OSC AFK packet is set to {afkState}");
+        _logger.Debug("OSC AFK packet is set to {afkState}", afkState);
         if (afkState)
         {
             _afkService.StartAfk();
