@@ -41,7 +41,7 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
 
     public override bool IsRunning()
     {
-        return true;
+        return _filters.Count > 0 || GetInvalidFilterNames().Length > 0;
     }
     #endregion
 

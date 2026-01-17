@@ -61,7 +61,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
 
     public override bool IsRunning()
     {
-        return _availableProcessors.Count > 0;
+        return _activeProcessors.Count > 0 || _preprocessors.Count > 0;
     }
 
     public override void Stop()

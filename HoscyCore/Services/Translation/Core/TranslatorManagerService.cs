@@ -72,7 +72,7 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
 
     public override bool IsRunning()
     {
-        return _availableTranslators.Count > 0;
+        return _currentTranslator is not null;
     }
     #endregion
 
