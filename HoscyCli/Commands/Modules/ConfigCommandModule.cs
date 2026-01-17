@@ -52,7 +52,7 @@ public class ConfigCommandModule(ReflectPropEditCommandModule reflectionCm, Conf
     }
 
     [SubCommandModule(["save", "s"], "Save the config file")]
-    public CommandResult Save(string? _)
+    public CommandResult Save()
     {
         var success = _config.TrySave(PathUtils.PathConfigFolder,ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
         if (OnFalse(success, "Saving failed!")) return CommandResult.Error;

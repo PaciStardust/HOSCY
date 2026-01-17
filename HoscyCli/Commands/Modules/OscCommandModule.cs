@@ -16,7 +16,7 @@ public class OscCommandModule(IOscRelayService oscRelay, IOscListenService oscLi
     private readonly ReflectPropEditCommandModule _reflectCm = reflectCm;
 
     [SubCommandModule(["status"], "Display overall OSC status")]
-    public CommandResult CmdDisplayStatus(string? _)
+    public CommandResult CmdDisplayStatus()
     {
         var relayError = _oscRelay.GetFaultIfExists();
 
@@ -31,7 +31,7 @@ public class OscCommandModule(IOscRelayService oscRelay, IOscListenService oscLi
     }
 
     [SubCommandModule(["filters"], "Edit relay filters")]
-    public CommandResult CmdEditRelayFilters(string? _)
+    public CommandResult CmdEditRelayFilters()
     {
         _reflectCm.SetProperty(nameof(ConfigModel.Osc_Relay_Filters));
         _oscRelay.Restart();
@@ -39,21 +39,21 @@ public class OscCommandModule(IOscRelayService oscRelay, IOscListenService oscLi
     }
 
     [SubCommandModule(["ip-out"], "Edit the outbound ip")]
-    public CommandResult CmdEditIpOut(string? _)
+    public CommandResult CmdEditIpOut()
     {
         _reflectCm.SetProperty(nameof(ConfigModel.Osc_Routing_TargetIp));
         return CommandResult.Success;
     }
 
     [SubCommandModule(["port-out"], "Edit the outbound port")]
-    public CommandResult CmdEditPortOut(string? _)
+    public CommandResult CmdEditPortOut()
     {
         _reflectCm.SetProperty(nameof(ConfigModel.Osc_Routing_TargetPort));
         return CommandResult.Success;
     }
 
     [SubCommandModule(["port-in"], "Edit the inbound port")]
-    public CommandResult CmdEditPortIn(string? _)
+    public CommandResult CmdEditPortIn()
     {
         _reflectCm.SetProperty(nameof(ConfigModel.Osc_Routing_ListenPort)); //todo: this is a bit scuffed
         _oscQuery.Stop();

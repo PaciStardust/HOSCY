@@ -17,7 +17,7 @@ public class ServiceManagerCommandModule : AttributeCommandModule {
     }        
 
     [SubCommandModule(["list", "l", "all", "a"], "List all running services")]
-    public CommandResult List(string? _)
+    public CommandResult List()
     {
         var serviceString = GenerateServiceString(_services);
         Console.WriteLine(serviceString);
