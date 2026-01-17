@@ -7,9 +7,9 @@ using Serilog;
 namespace HoscyCore.Services.Osc.MessageHandling.Handlers;
 
 [PrototypeLoadIntoDiContainer(typeof(AfkOscMessageHandler))]
-public class AfkOscMessageHandler(ILogger logger, AfkService afkService, ConfigModel config) : IOscMessageHandler
+public class AfkOscMessageHandler(ILogger logger, IAfkService afkService, ConfigModel config) : IOscMessageHandler
 {
-    private readonly AfkService _afkService = afkService;
+    private readonly IAfkService _afkService = afkService;
     private readonly ILogger _logger = logger.ForContext<AfkOscMessageHandler>();
     private readonly ConfigModel _config = config;
 
