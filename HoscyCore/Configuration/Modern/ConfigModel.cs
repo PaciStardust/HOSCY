@@ -457,50 +457,53 @@ public class ConfigModel : ObservableObject
         set => SetProperty(ref _osc_Counters_List, value);
     }
 
-    //AFK
-    private bool _osc_Afk_ShowDuration = false;
-    public bool Osc_Afk_ShowDuration
+    #endregion
+
+    #region AFK
+    
+    private bool _afk_ShowDuration = false;
+    public bool Afk_ShowDuration
     {
-        get => _osc_Afk_ShowDuration;
-        set => SetProperty(ref _osc_Afk_ShowDuration, value);
+        get => _afk_ShowDuration;
+        set => SetProperty(ref _afk_ShowDuration, value);
     }
 
-    private float _osc_Afk_BaseDurationDisplayIntervalSeconds = 15f;
-    public float Osc_Afk_BaseDurationDisplayIntervalSeconds
+    private float _afk_BaseDurationDisplayIntervalSeconds = 15f;
+    public float Afk_BaseDurationDisplayIntervalSeconds
     {
-        get => _osc_Afk_BaseDurationDisplayIntervalSeconds;
-        set => SetProperty(ref _osc_Afk_BaseDurationDisplayIntervalSeconds, Utils.MinMax(value, 5, 300));
+        get => _afk_BaseDurationDisplayIntervalSeconds;
+        set => SetProperty(ref _afk_BaseDurationDisplayIntervalSeconds, Utils.MinMax(value, 5, 300));
     }
 
-    private int _osc_Afk_TimesDisplayedBeforeDoublingInterval = 12;
-    public int Osc_Afk_TimesDisplayedBeforeDoublingInterval
+    private int _afk_TimesDisplayedBeforeDoublingInterval = 12;
+    public int Afk_TimesDisplayedBeforeDoublingInterval
     {
-        get => _osc_Afk_TimesDisplayedBeforeDoublingInterval;
-        set => SetProperty(ref _osc_Afk_TimesDisplayedBeforeDoublingInterval, Utils.MinMax(value, 0, 60));
+        get => _afk_TimesDisplayedBeforeDoublingInterval;
+        set => SetProperty(ref _afk_TimesDisplayedBeforeDoublingInterval, Utils.MinMax(value, 0, 60));
     }
 
-    private const string OSC_AFK_NO_STARTTEXT = "Now AFK";
-    private string _osc_Afk_StartText = OSC_AFK_NO_STARTTEXT;
-    public string Osc_Afk_StartText
+    private const string AFK_NO_STARTTEXT = "Now AFK";
+    private string _afk_StartText = AFK_NO_STARTTEXT;
+    public string Afk_StartText
     {
-        get => _osc_Afk_StartText;
-        set => SetProperty(ref _osc_Afk_StartText, value.Length > 0 ? value : OSC_AFK_NO_STARTTEXT);
+        get => _afk_StartText;
+        set => SetProperty(ref _afk_StartText, value.Length > 0 ? value : AFK_NO_STARTTEXT);
     }
 
-    private const string OSC_AFK_NO_ENDTEXT = "No longer AFK";
-    private string _osc_Afk_EndText = OSC_AFK_NO_ENDTEXT;
-    public string Osc_Afk_EndText
+    private const string AFK_NO_ENDTEXT = "No longer AFK";
+    private string _afk_EndText = AFK_NO_ENDTEXT;
+    public string Afk_EndText
     {
-        get => _osc_Afk_EndText;
-        set => SetProperty(ref _osc_Afk_EndText, value.Length > 0 ? value : OSC_AFK_NO_ENDTEXT);
+        get => _afk_EndText;
+        set => SetProperty(ref _afk_EndText, value.Length > 0 ? value : AFK_NO_ENDTEXT);
     }
 
-    private const string OSC_AFK_NO_STATUSTEXT = "AFK since";
-    private string _osc_Afk_StatusText = OSC_AFK_NO_STATUSTEXT;
-    public string Osc_Afk_StatusText
+    private const string AFK_NO_STATUSTEXT = "AFK since";
+    private string _afk_StatusText = AFK_NO_STATUSTEXT;
+    public string Afk_StatusText
     {
-        get => _osc_Afk_StatusText;
-        set => SetProperty(ref _osc_Afk_StatusText, value.Length > 0 ? value : OSC_AFK_NO_STATUSTEXT);
+        get => _afk_StatusText;
+        set => SetProperty(ref _afk_StatusText, value.Length > 0 ? value : AFK_NO_STATUSTEXT);
     }
 
     #endregion

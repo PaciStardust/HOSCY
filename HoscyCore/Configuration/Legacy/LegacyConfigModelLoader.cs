@@ -254,12 +254,12 @@ internal static class LegacyConfigModelLoader
             Osc_Counters_DisplayCooldown = oldConfig.Osc.CounterDisplayCooldown,
             Osc_Counters_List = ConvertCounterModel(oldConfig.Osc.Counters),
 
-            Osc_Afk_ShowDuration = oldConfig.Osc.ShowAfkDuration,
-            Osc_Afk_BaseDurationDisplayIntervalSeconds = oldConfig.Osc.AfkDuration,
-            Osc_Afk_TimesDisplayedBeforeDoublingInterval = int.TryParse(Math.Round(oldConfig.Osc.AfkDoubleDuration).ToString(), out var parsed) ? parsed : 0,
-            Osc_Afk_StartText = oldConfig.Osc.AfkStartText,
-            Osc_Afk_EndText = oldConfig.Osc.AfkEndText,
-            Osc_Afk_StatusText = oldConfig.Osc.AfkStatusText,
+            Afk_ShowDuration = oldConfig.Osc.ShowAfkDuration,
+            Afk_BaseDurationDisplayIntervalSeconds = oldConfig.Osc.AfkDuration,
+            Afk_TimesDisplayedBeforeDoublingInterval = int.TryParse(Math.Round(oldConfig.Osc.AfkDoubleDuration).ToString(), out var parsed) ? parsed : 0,
+            Afk_StartText = oldConfig.Osc.AfkStartText,
+            Afk_EndText = oldConfig.Osc.AfkEndText,
+            Afk_StatusText = oldConfig.Osc.AfkStatusText,
 
             Speech_Send_OverTextbox = oldConfig.Speech.UseTextbox,
             Speech_Send_OverTts = oldConfig.Speech.UseTts,
