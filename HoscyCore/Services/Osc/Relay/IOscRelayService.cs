@@ -12,4 +12,10 @@ public interface IOscRelayService : IAutoStartStopService
     /// Relays message to other locations
     /// </summary>
     public void HandleRelay(OscMessage message);
+
+    /// <summary>
+    /// Displays names of invalid filters
+    /// </summary>
+    /// <returns></returns>
+    public string[] GetInvalidFilterNames();
 }

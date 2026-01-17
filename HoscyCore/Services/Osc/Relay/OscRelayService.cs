@@ -15,7 +15,6 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
     private readonly IOscSendService _sender = sender;
     private readonly IBackToFrontNotifyService _notify = notify;
 
-    public bool HasInvalidFilters { get; private set; } = false;
     private List<OscReadonlyRelayFilter> _filters = [];
 
     #region Start / Stop 
@@ -61,7 +60,6 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
         const string OSC_TEST_ADDRESS = "/osctest123";
 
         _logger.Information("Loading relay filters...");
-        HasInvalidFilters = false;
         _filters.Clear();
         List<OscReadonlyRelayFilter> filters = [];
         if (filterModels.Count == 0)
@@ -83,7 +81,6 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
             {
                 _logger.Warning("Skipping creation of listener \"{filterName}\" as its values are invalid (Name / Port / Ip / Filters)", readonlyFilter.Name);
                 filterModel.SetValidity(false);
-                HasInvalidFilters = true;
                 continue;
             }
 
@@ -94,6 +91,25 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
 
         _filters = filters;
         _logger.Information("{currentFilterCount}/{allFiltersCount} filters have been loaded", filters.Count, filterModels.Count);
+
+        var invalidFilters = GetInvalidFilterNames();
+        if (invalidFilters.Length > 0)
+        {
+            var filterString = $"The following filters are invalid: {string.Join(", ", invalidFilters)}";
+            var argEx = new ArgumentException(filterString);
+            SetFaultLogAndNotify(argEx, _logger, _notify, filterString);
+        } else
+        {
+            SetFault(null);
+        }
+    }
+
+    public string[] GetInvalidFilterNames()
+    {
+        return _config.Osc_Relay_Filters
+            .Where(x => !x.GetValidity())
+            .Select(x => x.Name)
+            .ToArray();
     }
     #endregion
 }
