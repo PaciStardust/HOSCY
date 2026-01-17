@@ -338,9 +338,9 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     protected override void StartInternal()
     {
         LogStartBegin(GetType(), _logger);
-        if (IsRunning())
+        if (IsStarted())
         {
-            LogStartAlreadyRunning(GetType(), _logger);
+            LogStartAlreadyStarted(GetType(), _logger);
             return;
         }
         _cts = new CancellationTokenSource();
@@ -364,10 +364,10 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         LogStopComplete(GetType(), _logger);
     }
 
-    public override bool IsRunning()
-    {
-        return _cts is not null || _workerTask is not null;
-    }
+    protected override bool IsStarted()
+        => _cts is not null || _workerTask is not null;
+    protected override bool IsProcessing()
+        => IsStarted();
 
     public override void Restart()
     {

@@ -19,8 +19,6 @@ public abstract class StartStopServiceBase : IStartStopService
 
     public abstract void Stop();
     public abstract void Restart();
-    public abstract bool IsRunning();
-
     public Exception? GetFaultIfExists()
         => _internalException;
 
@@ -29,12 +27,16 @@ public abstract class StartStopServiceBase : IStartStopService
         _internalException = ex;
     }
 
-    public StartStopStatus GetStatus()
+    public ServiceStatus GetCurrentStatus()
     {
-        if (!IsRunning()) return StartStopStatus.Stopped;
-        if (GetFaultIfExists() is not null) return StartStopStatus.Faulted;
-        return StartStopStatus.Running;
+        if (!IsStarted()) return ServiceStatus.Stopped;
+        if (GetFaultIfExists() is not null) return ServiceStatus.Faulted;
+        if (IsProcessing()) return ServiceStatus.Processing;
+        return ServiceStatus.Started;
     }
+
+    protected abstract bool IsStarted();
+    protected abstract bool IsProcessing();
 
     public void RestartSimple(Type logType, ILogger logger)
     {
@@ -57,9 +59,9 @@ public abstract class StartStopServiceBase : IStartStopService
         logger.Information("{serviceName}: Service starting", logType.Name);
     }
 
-    public void LogStartAlreadyRunning(Type logType, ILogger logger)
+    public void LogStartAlreadyStarted(Type logType, ILogger logger)
     {
-        logger.Information("{serviceName}: Service start cancelled, already running", logType.Name);
+        logger.Information("{serviceName}: Service start cancelled, already started", logType.Name);
     }
 
     public void LogStartComplete(Type logType, ILogger logger)

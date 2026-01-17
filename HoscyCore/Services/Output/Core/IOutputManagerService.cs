@@ -15,7 +15,7 @@ public interface IOutputManagerService : IAutoStartStopService
     public void ActivateProcessor(OutputProcessorInfo info);
     public void ShutdownProcessor(OutputProcessorInfo info);
     public void RestartProcessor(OutputProcessorInfo info);
-    public StartStopStatus GetProcessorStatus(OutputProcessorInfo info);
+    public ServiceStatus GetProcessorStatus(OutputProcessorInfo info);
     #endregion
 
     #region Processor Control

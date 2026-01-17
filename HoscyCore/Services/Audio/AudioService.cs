@@ -11,10 +11,10 @@ public class AudioService(ILogger logger) : StartStopServiceBase, IAudioService
     private AudioEngine? _audioEngine;
     private readonly ILogger _logger = logger.ForContext<AudioService>();
 
-    public override bool IsRunning()
-    {
-        return _audioEngine is not null;
-    }
+    protected override bool IsStarted()
+        => _audioEngine is not null;
+    protected override bool IsProcessing()
+        => IsStarted();
 
     public override void Restart()
     {
@@ -35,9 +35,9 @@ public class AudioService(ILogger logger) : StartStopServiceBase, IAudioService
     protected override void StartInternal()
     {
         LogStartBegin(GetType(), _logger);
-        if (IsRunning())
+        if (IsStarted())
         {
-            LogStartAlreadyRunning(GetType(), _logger);
+            LogStartAlreadyStarted(GetType(), _logger);
             return;
         }
         _audioEngine = new MiniAudioEngine();

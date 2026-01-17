@@ -39,7 +39,7 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
     protected override void StartInternal()
     {
         _logger.Information("Starting up Service by loading available Translators");
-        if (IsRunning())
+        if (IsStarted())
         {
             _logger.Information("Skipped starting Service, still running");
             return;
@@ -70,10 +70,10 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
         RestartSimple(GetType(), _logger);
     }
 
-    public override bool IsRunning()
-    {
-        return _currentTranslator is not null;
-    }
+    protected override bool IsStarted()
+        => _availableTranslators.Count > 0;
+    protected override bool IsProcessing()
+        => IsStarted() && _currentTranslator is not null;
     #endregion
 
     #region Translator => Start / Stop
@@ -177,9 +177,9 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
         _logger.Information("Restarted current translator");
     }
 
-    public StartStopStatus GetCurrentTranslatorStatus()
+    public ServiceStatus GetCurrentTranslatorStatus()
     {
-        return _currentTranslator?.GetStatus() ?? StartStopStatus.Stopped;
+        return _currentTranslator?.GetCurrentStatus() ?? ServiceStatus.Stopped;
     }
     #endregion
 

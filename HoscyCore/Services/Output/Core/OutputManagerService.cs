@@ -35,7 +35,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     protected override void StartInternal()
     {
         _logger.Information("Starting up Service by loading available OutputProcessors");
-        if (IsRunning())
+        if (IsStarted())
         {
             _logger.Information("Skipped starting Service, still running");
             return;
@@ -59,10 +59,10 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         _logger.Information("Started up Service with {processorCount} OutputProcessors and {preprocessorCount} OutputPreprocessors", _availableProcessors.Count, _preprocessors.Count);
     }
 
-    public override bool IsRunning()
-    {
-        return _activeProcessors.Count > 0 || _preprocessors.Count > 0;
-    }
+    protected override bool IsStarted()
+        => _preprocessors.Count > 0 || _availableProcessors.Count > 0;
+    protected override bool IsProcessing()
+        => IsStarted() || _activeProcessors.Count > 0;
 
     public override void Stop()
     {
@@ -73,7 +73,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
             ShutdownProcessor(processor.GetIdentifier());
         }
 
-        var stillActiveProcessors = _activeProcessors.Where(x => x.IsRunning()).ToArray();
+        var stillActiveProcessors = _activeProcessors.Where(x => x.GetCurrentStatus() != ServiceStatus.Stopped).ToArray();
         if (stillActiveProcessors.Length > 0)
         {
             var notStoppedProcessors = string.Join(", ", stillActiveProcessors.Select(x => x.GetType().FullName));
@@ -94,7 +94,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     public IReadOnlyList<OutputProcessorInfo> GetInfos(bool activeOnly)
     {
         return activeOnly
-            ? _activeProcessors.Where(x => x.GetStatus() != StartStopStatus.Stopped).Select(x => x.GetIdentifier()).ToList()
+            ? _activeProcessors.Where(x => x.GetCurrentStatus() != ServiceStatus.Stopped).Select(x => x.GetIdentifier()).ToList()
             : _availableProcessors;
     }
     #endregion
@@ -129,19 +129,17 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         _logger.Information("Activated Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
     }
 
-    public StartStopStatus GetProcessorStatus(OutputProcessorInfo info)
+    public ServiceStatus GetProcessorStatus(OutputProcessorInfo info)
     {
         var activeProcessor = RetrieveActiveProcessorWithInfo(info);
-        if (activeProcessor is null)
-        {
-            return StartStopStatus.Stopped;
-        }
-        if (activeProcessor.GetStatus() == StartStopStatus.Stopped)
+        if (activeProcessor is null) return ServiceStatus.Stopped;
+        var activeStatus = activeProcessor.GetCurrentStatus();
+        if (activeStatus == ServiceStatus.Stopped)
         {
             _logger.Warning("GetProcessorStatus: Retrieved stopped Processor with name {processorName} and type {processorType} from active list",
                 info.Name, info.ProcessorType.FullName);
         }
-        return activeProcessor.GetStatus();
+        return activeStatus;
     }
 
     public void ShutdownProcessor(OutputProcessorInfo info)
@@ -233,13 +231,13 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
             case 0:
                 return null;
             case 1:
-                if (!activeMatches[0].IsRunning())
+                if (activeMatches[0].GetCurrentStatus() == ServiceStatus.Stopped)
                 {
                     _logger.Warning("Processor with name {processorName} and type {processorType} was retrieved from active list despite being marked as stopped", info.Name, info.GetType().FullName);
                 }
                 return activeMatches[0];
             default:
-                if (activeMatches.Any(x => !x.IsRunning()))
+                if (activeMatches.Any(x => x.GetCurrentStatus() == ServiceStatus.Stopped))
                 {
                     _logger.Warning("One or multiple processors retrieved from active list are marked as stopped");
                 }

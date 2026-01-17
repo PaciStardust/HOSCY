@@ -23,9 +23,9 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
     protected override void StartInternal()
     {
         LogStartBegin(GetType(), _logger);
-        if (IsRunning())
+        if (IsStarted())
         {
-            LogStartAlreadyRunning(GetType(), _logger);
+            LogStartAlreadyStarted(GetType(), _logger);
             return;
         }
 
@@ -79,10 +79,10 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
         LogStopComplete(GetType(), _logger);
     }
 
-    public override bool IsRunning()
-    {
-        return _oscQuery is not null || _serviceRefreshTimer is not null;
-    }
+    protected override bool IsStarted()
+        => _oscQuery is not null || _serviceRefreshTimer is not null;
+    protected override bool IsProcessing()
+        => IsStarted();
 
     public override void Restart()
     {

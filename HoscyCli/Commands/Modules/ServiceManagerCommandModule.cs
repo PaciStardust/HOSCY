@@ -35,13 +35,14 @@ public class ServiceManagerCommandModule : AttributeCommandModule {
     {
         var serviceType = service.GetType();
         var serviceLoadedForType = serviceType.GetCustomAttribute<LoadIntoDiContainerAttribute>()?.AsType;
-        StartStopStatus? serviceStatus = service is IStartStopService startStopService ? startStopService.GetStatus() : null;  
+        ServiceStatus? serviceStatus = service is IStartStopService startStopService ? startStopService.GetCurrentStatus() : null;  
 
         var statusIcon = serviceStatus.HasValue ? serviceStatus.Value switch
         {
-            StartStopStatus.Running => '+',
-            StartStopStatus.Stopped => '~',
-            StartStopStatus.Faulted => '!',
+            ServiceStatus.Stopped => '~',
+            ServiceStatus.Faulted => '!',
+            ServiceStatus.Started => '+',
+            ServiceStatus.Processing => '*',
             _ => '?'
         } : ' ';
 

@@ -53,10 +53,10 @@ public class ApiTranslator(ILogger logger, ConfigModel config, IApiClient client
         RestartSimple(GetType(), _logger);
     }
 
-    public override bool IsRunning()
-    {
-        return _client.IsPresetLoaded();
-    }
+    protected override bool IsStarted()
+        => _client.IsPresetLoaded();
+    protected override bool IsProcessing()
+        => IsStarted();
     #endregion
 
     #region Functionality

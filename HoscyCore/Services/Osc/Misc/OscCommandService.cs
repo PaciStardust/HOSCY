@@ -278,10 +278,10 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
         return;
     }
 
-    public override bool IsRunning()
-    {
-        return !_cts.IsCancellationRequested;
-    }
+    protected override bool IsStarted()
+        => !_cts.IsCancellationRequested;
+    protected override bool IsProcessing()
+        => IsStarted();
 
     public override void Restart()
     {

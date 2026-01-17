@@ -14,7 +14,7 @@ public interface ITranslatorManagerService : IAutoStartStopService
     public void StartTranslator(string? name = null, string? typeName = null);
     public void StopCurrentTranslator();
     public void RestartCurrentTranslator();
-    public StartStopStatus GetCurrentTranslatorStatus();
+    public ServiceStatus GetCurrentTranslatorStatus();
     #endregion
 
     #region Functionality

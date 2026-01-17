@@ -8,8 +8,7 @@ public interface IStartStopService : IService
     public void Start();
     public void Stop();
     public void Restart();
-    public bool IsRunning(); //todo: should this differentiate between "running" and "actually doing something"?
-    public StartStopStatus GetStatus();
+    public ServiceStatus GetCurrentStatus();
     public Exception? GetFaultIfExists();
 }
 

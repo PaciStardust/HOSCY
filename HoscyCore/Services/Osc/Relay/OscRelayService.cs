@@ -15,7 +15,7 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
     private readonly IOscSendService _sender = sender;
     private readonly IBackToFrontNotifyService _notify = notify;
 
-    private List<OscReadonlyRelayFilter> _filters = [];
+    private List<OscReadonlyRelayFilter>? _filters = [];
 
     #region Start / Stop 
     protected override void StartInternal()
@@ -29,6 +29,7 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
     {
         LogStopBegin(GetType(), _logger);
         ReloadValidRelayFilters([]);
+        _filters = null;
         LogStopComplete(GetType(), _logger);
     }
 
@@ -39,15 +40,16 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
         LogRestartComplete(GetType(), _logger);
     }
 
-    public override bool IsRunning()
-    {
-        return _filters.Count > 0 || GetInvalidFilterNames().Length > 0;
-    }
+    protected override bool IsStarted()
+        => _filters is not null;
+    protected override bool IsProcessing()
+        => IsStarted() && _filters!.Count > 0;
     #endregion
 
     #region Functionality
     public void HandleRelay(OscMessage message)
     {
+        if (_filters is null) return;
         foreach (var filter in _filters)
         {
             if (!filter.Matches(message.Address)) continue;
@@ -60,7 +62,7 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
         const string OSC_TEST_ADDRESS = "/osctest123";
 
         _logger.Information("Loading relay filters...");
-        _filters.Clear();
+        _filters?.Clear();
         List<OscReadonlyRelayFilter> filters = [];
         if (filterModels.Count == 0)
         {

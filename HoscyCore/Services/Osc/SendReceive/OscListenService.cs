@@ -28,20 +28,20 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
     private Task? _workerTask = null;
 
     #region Start Stop
-    public override bool IsRunning()
-    {
-        return _workerTask is not null || _cts is not null || _listener is not null;
-    }
+    protected override bool IsStarted()
+        => _workerTask is not null || _cts is not null || _listener is not null;
+    protected override bool IsProcessing()
+        => IsStarted();
 
     public int? GetPort()
     {
-        return IsRunning() ? _config.Osc_Routing_ListenPort : null;
+        return IsStarted() ? _config.Osc_Routing_ListenPort : null;
     }
 
     protected override void StartInternal()
     {
         _logger.Information("Starting up listener on localhost:{port}", _config.Osc_Routing_ListenPort);
-        if (IsRunning())
+        if (IsStarted())
         {
             _logger.Information("Skipped starting listener, still running");
             return;

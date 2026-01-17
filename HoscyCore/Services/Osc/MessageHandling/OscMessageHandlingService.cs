@@ -13,7 +13,7 @@ namespace HoscyCore.Services.Osc.MessageHandling;
 public class OscMessageHandlingService(ILogger logger, IBackToFrontNotifyService notify, IServiceProvider serviceProvider) : StartStopServiceBase, IOscMessageHandlingService
 {
     private readonly ILogger _logger = logger.ForContext<OscMessageHandlingService>();
-    private readonly IBackToFrontNotifyService _notify = notify; //todd: impl
+    private readonly IBackToFrontNotifyService _notify = notify; //todo: impl
     private readonly IServiceProvider _services = serviceProvider;
     private List<IOscMessageHandler>? _handlers = null;
 
@@ -35,10 +35,10 @@ public class OscMessageHandlingService(ILogger logger, IBackToFrontNotifyService
     //todo: modules for all handling
 
     #region StartStop
-    public override bool IsRunning()
-    {
-        return _handlers is not null;
-    }
+    protected override bool IsStarted()
+        => _handlers is not null;
+    protected override bool IsProcessing()
+        => IsStarted() && _handlers!.Count > 0;
 
     public override void Stop()
     {

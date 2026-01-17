@@ -14,9 +14,9 @@ public class WebClient(ILogger logger) : StartStopServiceBase, IWebClient
     protected override void StartInternal()
     {
         LogStartBegin(GetType(), _logger);
-        if (IsRunning())
+        if (IsStarted())
         {
-            LogStartAlreadyRunning(GetType(), _logger);
+            LogStartAlreadyStarted(GetType(), _logger);
             return;
         }
 
@@ -39,10 +39,10 @@ public class WebClient(ILogger logger) : StartStopServiceBase, IWebClient
         LogStopComplete(GetType(), _logger);
     }
 
-    public override bool IsRunning()
-    {
-        return _client is not null;
-    }
+    protected override bool IsStarted()
+        => _client is not null;
+    protected override bool IsProcessing()
+        => IsStarted();
     
     public override void Restart()
     {
