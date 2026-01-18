@@ -249,10 +249,10 @@ internal static class LegacyConfigModelLoader
             Osc_Address_Media_Info = oldConfig.Osc.AddressMediaInfo,
             Osc_Address_Media_Toggle = oldConfig.Osc.AddressMediaToggle,
 
-            Osc_Counters_ShowNotification = oldConfig.Osc.ShowCounterNotifications,
-            Osc_Counters_DisplayDuration = oldConfig.Osc.CounterDisplayDuration,
-            Osc_Counters_DisplayCooldown = oldConfig.Osc.CounterDisplayCooldown,
-            Osc_Counters_List = ConvertCounterModel(oldConfig.Osc.Counters),
+            Counters_ShowNotification = oldConfig.Osc.ShowCounterNotifications,
+            Counters_DisplayDuration = oldConfig.Osc.CounterDisplayDuration,
+            Counters_DisplayCooldown = oldConfig.Osc.CounterDisplayCooldown,
+            Counters_List = ConvertCounterModel(oldConfig.Osc.Counters),
 
             Afk_ShowDuration = oldConfig.Osc.ShowAfkDuration,
             Afk_BaseDurationDisplayIntervalSeconds = oldConfig.Osc.AfkDuration,

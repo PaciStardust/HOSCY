@@ -428,33 +428,37 @@ public class ConfigModel : ObservableObject
         set => SetProperty(ref _osc_Address_Media_Toggle, value);
     }
 
+    #endregion 
+
+    #region Counters
+
     //COUNTERS
-    private bool _osc_Counters_ShowNotification;
-    public bool Osc_Counters_ShowNotification
+    private bool _counters_ShowNotification;
+    public bool Counters_ShowNotification
     {
-        get => _osc_Counters_ShowNotification;
-        set => SetProperty(ref _osc_Counters_ShowNotification, value);
+        get => _counters_ShowNotification;
+        set => SetProperty(ref _counters_ShowNotification, value);
     }
 
-    private float _osc_Counters_DisplayDuration = 10f;
-    public float Osc_Counters_DisplayDuration
+    private float _counters_DisplayDuration = 10f;
+    public float Counters_DisplayDuration
     {
-        get => _osc_Counters_DisplayDuration;
-        set => SetProperty(ref _osc_Counters_DisplayDuration, Utils.MinMax(value, 0.01f, 30));
+        get => _counters_DisplayDuration;
+        set => SetProperty(ref _counters_DisplayDuration, Utils.MinMax(value, 0.01f, 30));
     }
 
-    private float _osc_Counters_DisplayCooldown = 0f;
-    public float Osc_Counters_DisplayCooldown
+    private float _counters_DisplayCooldown = 0f;
+    public float Counters_DisplayCooldown
     {
-        get => _osc_Counters_DisplayCooldown;
-        set => SetProperty(ref _osc_Counters_DisplayCooldown, Utils.MinMax(value, 0, 300));
+        get => _counters_DisplayCooldown;
+        set => SetProperty(ref _counters_DisplayCooldown, Utils.MinMax(value, 0, 300));
     }
 
-    private List<CounterModel> _osc_Counters_List = [];
-    public List<CounterModel> Osc_Counters_List
+    private List<CounterModel> _counters_List = [];
+    public List<CounterModel> Counters_List
     {
-        get => _osc_Counters_List;
-        set => SetProperty(ref _osc_Counters_List, value);
+        get => _counters_List;
+        set => SetProperty(ref _counters_List, value);
     }
 
     #endregion
