@@ -250,8 +250,8 @@ internal static class LegacyConfigModelLoader
             Osc_Address_Media_Toggle = oldConfig.Osc.AddressMediaToggle,
 
             Counters_ShowNotification = oldConfig.Osc.ShowCounterNotifications,
-            Counters_DisplayDuration = oldConfig.Osc.CounterDisplayDuration,
-            Counters_DisplayCooldown = oldConfig.Osc.CounterDisplayCooldown,
+            Counters_DisplayDurationSeconds = oldConfig.Osc.CounterDisplayDuration,
+            Counters_DisplayCooldownSeconds = oldConfig.Osc.CounterDisplayCooldown,
             Counters_List = ConvertCounterModel(oldConfig.Osc.Counters),
 
             Afk_ShowDuration = oldConfig.Osc.ShowAfkDuration,

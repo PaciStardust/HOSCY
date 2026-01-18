@@ -440,18 +440,18 @@ public class ConfigModel : ObservableObject
         set => SetProperty(ref _counters_ShowNotification, value);
     }
 
-    private float _counters_DisplayDuration = 10f;
-    public float Counters_DisplayDuration
+    private float _counters_DisplayDurationSeconds = 10f;
+    public float Counters_DisplayDurationSeconds
     {
-        get => _counters_DisplayDuration;
-        set => SetProperty(ref _counters_DisplayDuration, Utils.MinMax(value, 0.01f, 30));
+        get => _counters_DisplayDurationSeconds;
+        set => SetProperty(ref _counters_DisplayDurationSeconds, Utils.MinMax(value, 0.01f, 30));
     }
 
-    private float _counters_DisplayCooldown = 0f;
-    public float Counters_DisplayCooldown
+    private float _counters_DisplayCooldownSeconds = 0f;
+    public float Counters_DisplayCooldownSeconds
     {
-        get => _counters_DisplayCooldown;
-        set => SetProperty(ref _counters_DisplayCooldown, Utils.MinMax(value, 0, 300));
+        get => _counters_DisplayCooldownSeconds;
+        set => SetProperty(ref _counters_DisplayCooldownSeconds, Utils.MinMax(value, 0, 300));
     }
 
     private List<CounterModel> _counters_List = [];
