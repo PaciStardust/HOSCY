@@ -22,7 +22,7 @@ public partial class App : Application
     private ILogger _startLogger;
 
 
-    public App() //todo: fix logger
+    public App()
     {
         _startLogger = new LoggerConfiguration().CreateLogger();
         _coreApp = new(_startLogger);
