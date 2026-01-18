@@ -19,7 +19,8 @@ public static class LogUtils
         var logConfig = new LoggerConfiguration()
             .MinimumLevel.Debug()
             .Enrich.FromLogContext()
-            .WriteTo.File(LogFileName, outputTemplate: LOGGING_TEMPLATE);
+            .WriteTo.File(LogFileName, outputTemplate: LOGGING_TEMPLATE)
+            .WriteTo.Debug(outputTemplate: LOGGING_TEMPLATE);
 
         if (!disableConsoleLogging)
         {
@@ -34,6 +35,7 @@ public static class LogUtils
         var logConfig = new LoggerConfiguration()
             .Enrich.FromLogContext()
             .WriteTo.File(LogFileName, outputTemplate: LOGGING_TEMPLATE)
+            .WriteTo.Debug(outputTemplate: LOGGING_TEMPLATE)
             .MinimumLevel.ControlledBy(config.Debug_LogMinimumSeverityGetSwitch())
             .Filter.ByExcluding(x =>
             {
