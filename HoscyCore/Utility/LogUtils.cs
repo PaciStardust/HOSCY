@@ -10,7 +10,9 @@ public static class LogUtils
 {
     public const string LOGGING_TEMPLATE = "[{Timestamp:HH:mm:ss.fff}] [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}";
     public static string LogFileName => _logFileName;
-    private static readonly string _logFileName = $"log-{DateTimeOffset.UtcNow:MM-dd-yyyy-HH-mm-ss}.txt"; //todo: automatic wiping
+    private const string LOG_FILE_START = "log-";
+    private const string LOG_FILE_END = ".txt";
+    private static readonly string _logFileName = $"{LOG_FILE_START}{DateTimeOffset.UtcNow:MM-dd-yyyy-HH-mm-ss}{LOG_FILE_END}";
 
     public static ILogger CreateTemporaryLogger<T>(bool disableConsoleLogging = false)
     {
@@ -45,5 +47,47 @@ public static class LogUtils
         }
 
         return logConfig.CreateLogger();
+    }
+
+    public static void TryCleanLogs(string directory, ILogger logger)
+    {
+        logger.Information("Attempting to clean up old logs in directory \"{directory}\"", directory);
+        try
+        {
+            if (!Directory.Exists(directory))
+            {
+                logger.Warning($"Log directory does not exist: {directory}");
+                return;
+            }
+
+            var logFilesToDelete = Directory.GetFiles(directory)
+                .Where(x => {
+                    var fName = Path.GetFileName(x);
+                    return fName.StartsWith(LOG_FILE_START) && fName.EndsWith(LOG_FILE_END);
+                })
+                .Select(x => (x, File.GetCreationTimeUtc(x)))
+                .OrderByDescending(x => x.Item2)
+                .Skip(5)
+                .ToArray();
+
+            if (logFilesToDelete.Length == 0)
+            {
+                logger.Information("No old log files to delete.");
+                return;
+            }
+
+            logger.Debug("Deleting {count} old log files");
+            foreach(var (file, _) in logFilesToDelete)
+            {
+                logger.Debug("Deleting old log file: \"{file}\"", file);
+                File.Delete(path: file);
+                logger.Debug("Deleted old log file: \"{file}\"", file);
+            }
+            logger.Debug("Deleted {count} old log files");
+        }
+        catch (Exception ex)
+        {
+            logger.Error(ex, "Failed to clean up old log files");
+        }
     }
 }

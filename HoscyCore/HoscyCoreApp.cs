@@ -20,6 +20,8 @@ public class HoscyCoreApp(ILogger? initialLogger = null)
         _currentLogger.Warning("Starting HOSCY Version {hoscyVersion}", version);
         onProgress?.Invoke($"Loading HOSCY Version {version}");
 
+        LogUtils.TryCleanLogs(PathUtils.PathExecutableFolder, _currentLogger);
+
         if (config is null)
         {
             onProgress?.Invoke("Loading Config");
