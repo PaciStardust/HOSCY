@@ -79,16 +79,16 @@ public class OscSendService(ILogger logger, ConfigModel config, IBackToFrontNoti
         var packet = new OscMessage(address, args);
         try
         {
-            _logger.Verbose("Sending packet to {targetIp}->{targetPort}->{address} with parameters {params}",
+            _logger.Verbose("Sending packet to {targetIp}->{targetPort}->\"{address}\" with parameters {params}",
             ipForLog, portForLog, address, args);
             await sender.SendAsync(packet);
-            _logger.Verbose("Sent packet to {targetIp}->{targetPort}->{address} with parameters {params}",
+            _logger.Verbose("Sent packet to {targetIp}->{targetPort}->\"{address}\" with parameters {params}",
             ipForLog, portForLog, address, args);
             return true;
         }
         catch (Exception ex)
         {
-            _logger.Warning(ex, "Failed to send packet to {targetIp}->{targetPort}->{address} with parameters {params}",
+            _logger.Warning(ex, "Failed to send packet to {targetIp}->{targetPort}->\"{address}\" with parameters {params}",
             ipForLog, portForLog, address, args);
             return false;
         }

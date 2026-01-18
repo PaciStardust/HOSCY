@@ -73,7 +73,7 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
         foreach (var filterModel in filterModels)
         {
             var readonlyFilter = new OscReadonlyRelayFilter(filterModel);
-            _logger.Debug("Checking validity of Relay Filter {filterName}", readonlyFilter.Name);
+            _logger.Debug("Checking validity of Relay Filter \"{filterName}\"", readonlyFilter.Name);
 
             var result = !string.IsNullOrWhiteSpace(readonlyFilter.Ip)
                 && !string.IsNullOrWhiteSpace(readonlyFilter.Name)
@@ -88,7 +88,7 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
 
             filterModel.SetValidity(true);
             filters.Add(readonlyFilter);
-            _logger.Debug("Relay Filter {filterName} is valid and has been added to list", readonlyFilter.Name);
+            _logger.Debug("Relay Filter \"{filterName}\" is valid and has been added to list", readonlyFilter.Name);
         }
 
         _filters = filters;

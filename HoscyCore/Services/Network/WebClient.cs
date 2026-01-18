@@ -54,7 +54,7 @@ public class WebClient(ILogger logger) : StartStopServiceBase, IWebClient
     public async Task DownloadAsync(string sourceUrl, string fileLocation, int timeoutMs = 5000)
     {
         var identifier = IWebClient.GetRequestIdentifier();
-        _logger.Debug("{identifier}: Downloading file from {url}", identifier);
+        _logger.Debug("{identifier}: Downloading file from \"{url}\"", identifier);
 
         if (_client is null)
         {
@@ -69,16 +69,16 @@ public class WebClient(ILogger logger) : StartStopServiceBase, IWebClient
             using var stream = await _client.GetStreamAsync(sourceUrl, cts.Token);
             using var fStream = new FileStream(fileLocation, FileMode.OpenOrCreate);
             await stream.CopyToAsync(fStream);
-            _logger.Debug("{identifier}: Received file at path {fileLocation} from {sourceUrl} in {timePassed}ms", identifier, fileLocation, sourceUrl, sw.ElapsedMilliseconds);
+            _logger.Debug("{identifier}: Received file at path \"{fileLocation}\" from \"{sourceUrl}\" in {timePassed}ms", identifier, fileLocation, sourceUrl, sw.ElapsedMilliseconds);
         }
         catch(Exception ex) {
             if ((ex is TaskCanceledException tce && tce.CancellationToken.IsCancellationRequested) || ex is OperationCanceledException)
             {
-                _logger.Warning("{identifier}: Download from {url} timed out after {timeout}ms", identifier, sourceUrl, timeoutMs);
+                _logger.Warning("{identifier}: Download from \"{url}\" timed out after {timeout}ms", identifier, sourceUrl, timeoutMs);
             }
             else
             {
-                _logger.Error(ex, "{identifier}: Download from {url} failed", identifier, sourceUrl);
+                _logger.Error(ex, "{identifier}: Download from \"{url}\" failed", identifier, sourceUrl);
             }
             throw;
         }
@@ -87,7 +87,7 @@ public class WebClient(ILogger logger) : StartStopServiceBase, IWebClient
     public async Task<string> SendAsync(HttpRequestMessage requestMessage, int timeoutMs = 5000)
     {
         var identifier = IWebClient.GetRequestIdentifier();
-        _logger.Debug("{identifier} => Sending {requestMethod} request to {requestUri}", identifier, requestMessage.Method, requestMessage.RequestUri);
+        _logger.Debug("{identifier} => Sending \"{requestMethod}\" request to \"{requestUri}\"", identifier, requestMessage.Method, requestMessage.RequestUri);
 
         if (_client is null)
         {
@@ -104,7 +104,7 @@ public class WebClient(ILogger logger) : StartStopServiceBase, IWebClient
 
             if (!response.IsSuccessStatusCode)
             {
-                _logger.Error("{identifier}: Request has received status code \"{responseStatusCode}\" ({intResponseStatusCode}){responseJson}",
+                _logger.Error("{identifier}: Request has received status code \"{responseStatusCode}\" ({intResponseStatusCode}) \"{responseJson}\"",
                     identifier, response.StatusCode, (int)response.StatusCode, string.IsNullOrWhiteSpace(jsonIn) ? "" : $" ({jsonIn})");
                 throw new HttpRequestException($"Request failed with status code {response.StatusCode}");
             }
@@ -116,11 +116,11 @@ public class WebClient(ILogger logger) : StartStopServiceBase, IWebClient
         {
             if ((ex is TaskCanceledException tce && tce.CancellationToken.IsCancellationRequested) || ex is OperationCanceledException)
             {
-                _logger.Warning("{identifier}: Request to {requestUri} timed out after {timeout}ms", identifier, requestMessage.RequestUri, timeoutMs);
+                _logger.Warning("{identifier}: Request to \"{requestUri}\" timed out after {timeout}ms", identifier, requestMessage.RequestUri, timeoutMs);
             }
             else
             {
-                _logger.Error(ex, "{identifier}: Request to {requestUri} failed", identifier, requestMessage.RequestUri);
+                _logger.Error(ex, "{identifier}: Request to \"{requestUri}\" failed", identifier, requestMessage.RequestUri);
             }
             throw;
         }

@@ -102,21 +102,21 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     #region Processor => Start / Stop
     public void ActivateProcessor(OutputProcessorInfo info)
     {
-        _logger.Information("Activating Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
+        _logger.Information("Activating Processor with name \"{processorName}\" and type \"{processorType}\"", info.Name, info.GetType().FullName);
         var activeMatch = RetrieveActiveProcessorWithInfo(info);
         if (activeMatch is not null)
         {
-            _logger.Information("Terminating old Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
+            _logger.Information("Terminating old Processor with name \"{processorName}\" and type \"{processorType}\"", info.Name, info.GetType().FullName);
             ShutdownProcessor(info);
         }
         activeMatch = RetrieveActiveProcessorWithInfo(info);
         if (activeMatch is null)
         {
-            _logger.Information("Terminated old Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
+            _logger.Information("Terminated old Processor with name \"{processorName}\" and type \"{processorType}\"", info.Name, info.GetType().FullName);
         }
         else
         {
-            _logger.Error("Failed to terminate old Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
+            _logger.Error("Failed to terminate old Processor with name \"{processorName}\" and type \"{processorType}\"", info.Name, info.GetType().FullName);
             throw new StartStopServiceException($"Unable to shut down Processor {info.ProcessorType.FullName}");
         }
 
@@ -126,7 +126,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         newProcessor.OnSubmoduleStopped += HandleOnSubmoduleStopped;
         newProcessor.Start();
         _activeProcessors.Add(newProcessor);
-        _logger.Information("Activated Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
+        _logger.Information("Activated Processor with name \"{processorName}\" and type \"{processorType}\"", info.Name, info.GetType().FullName);
     }
 
     public ServiceStatus GetProcessorStatus(OutputProcessorInfo info)
@@ -136,7 +136,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         var activeStatus = activeProcessor.GetCurrentStatus();
         if (activeStatus == ServiceStatus.Stopped)
         {
-            _logger.Warning("GetProcessorStatus: Retrieved stopped Processor with name {processorName} and type {processorType} from active list",
+            _logger.Warning("GetProcessorStatus: Retrieved stopped Processor with name \"{processorName}\" and type \"{processorType}\" from active list",
                 info.Name, info.ProcessorType.FullName);
         }
         return activeStatus;
@@ -144,11 +144,11 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
 
     public void ShutdownProcessor(OutputProcessorInfo info)
     {
-        _logger.Information("Shutting down Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
+        _logger.Information("Shutting down Processor with name \"{processorName}\" and type \"{processorType}\"", info.Name, info.GetType().FullName);
         var activeProcessor = RetrieveActiveProcessorWithInfo(info);
         if (activeProcessor is null)
         {
-            _logger.Information("Processor with name {processorName} and type {processorType} is not active or does not exist", info.Name, info.GetType().FullName);
+            _logger.Information("Processor with name \"{processorName}\" and type \"{processorType}\" is not active or does not exist", info.Name, info.GetType().FullName);
             return;
         }
 
@@ -156,13 +156,13 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         activeProcessor.OnSubmoduleStopped -= HandleOnSubmoduleStopped; //This is not needed when manually shutting down
         activeProcessor.Stop();
         CleanupAfterProcessorShutdown(activeProcessor);
-        _logger.Information("Shut down Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
+        _logger.Information("Shut down Processor with name \"{processorName}\" and type \"{processorType}\"", info.Name, info.GetType().FullName);
     }
 
     private void HandleOnSubmoduleStopped(object? sender, EventArgs e)
     {
         if (sender is null) return;
-        _logger.Warning("HandleOnShutdownCompleted called for type {senderType}, this should only happen when a shutdown was called unexpectedly", sender.GetType().FullName);
+        _logger.Warning("HandleOnShutdownCompleted called for type \"{senderType}\", this should only happen when a shutdown was called unexpectedly", sender.GetType().FullName);
         if (sender is not IOutputProcessor processor) return;
         CleanupAfterProcessorShutdown(processor);
     }
@@ -177,11 +177,11 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
 
     public void RestartProcessor(OutputProcessorInfo info)
     {
-        _logger.Information("Restarting Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
+        _logger.Information("Restarting Processor with name \"{processorName}\" and type \"{processorType}\"", info.Name, info.GetType().FullName);
         var activeProcessor = RetrieveActiveProcessorWithInfo(info);
         if (activeProcessor is null)
         {
-            _logger.Information("Could not fine active Processor with name {processorName} and type {processorType}, starting instead", info.Name, info.GetType().FullName);
+            _logger.Information("Could not fine active Processor with name \"{processorName}\" and type \"{processorType}\", starting instead", info.Name, info.GetType().FullName);
             ActivateProcessor(info);
         }
         else
@@ -190,12 +190,12 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
             activeProcessor.Restart();
             activeProcessor.OnSubmoduleStopped += HandleOnSubmoduleStopped;
         }
-        _logger.Information("Restarted Processor with name {processorName} and type {processorType}", info.Name, info.GetType().FullName);
+        _logger.Information("Restarted Processor with name \"{processorName}\" and type \"{processorType}\"", info.Name, info.GetType().FullName);
     }
 
     private void HandleOnRuntimeError(object? sender, Exception ex)
     {
-        _logger.Error(ex, "Encountered an error in Message Processor {senderType}", sender?.GetType().FullName);
+        _logger.Error(ex, "Encountered an error in Message Processor \"{senderType}\"", sender?.GetType().FullName);
         _notify.SendError($"Encountered an error in Message Processor {sender?.GetType().FullName ?? "???"}",exception: ex);
         var newCollectiveException = GetProcessorExceptions();
         if (ex is null)
@@ -233,7 +233,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
             case 1:
                 if (activeMatches[0].GetCurrentStatus() == ServiceStatus.Stopped)
                 {
-                    _logger.Warning("Processor with name {processorName} and type {processorType} was retrieved from active list despite being marked as stopped", info.Name, info.GetType().FullName);
+                    _logger.Warning("Processor with name \"{processorName}\" and type \"{processorType}\" was retrieved from active list despite being marked as stopped", info.Name, info.GetType().FullName);
                 }
                 return activeMatches[0];
             default:
@@ -241,7 +241,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
                 {
                     _logger.Warning("One or multiple processors retrieved from active list are marked as stopped");
                 }
-                _logger.Warning("Found multiple active {procCount} processors for InfoType {infoType}", activeMatches.Length, info.ProcessorType.FullName);
+                _logger.Warning("Found multiple active {procCount} processors for InfoType \"{infoType}\"", activeMatches.Length, info.ProcessorType.FullName);
                 return activeMatches[0];
         }
     }
@@ -253,18 +253,18 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         switch (availableMatches.Length)
         {
             case 0:
-                _logger.Warning("Could not find any available processors for InfoType {infoType}", info.ProcessorType.FullName);
+                _logger.Warning("Could not find any available processors for InfoType \"{infoType}\"", info.ProcessorType.FullName);
                 throw new ArgumentException($"Could not find any available processors for InfoType {info.ProcessorType.FullName}");
             case 1:
                 break;
             default:
-                _logger.Warning("Found multiple {procCount} processors for InfoType {infoType}", availableMatches.Length, info.ProcessorType.FullName);
+                _logger.Warning("Found multiple {procCount} processors for InfoType \"{infoType}\"", availableMatches.Length, info.ProcessorType.FullName);
                 break;
         }
 
         if (_services.GetService(availableMatches[0].ProcessorType) is not IOutputProcessor searchMatch)
         {
-            _logger.Error("Unable to retrieve Processor {processorName}", info.ProcessorType.FullName);
+            _logger.Error("Unable to retrieve Processor \"{processorName}\"", info.ProcessorType.FullName);
             throw new DiResolveException($"Unable to retrieve Processor {info.ProcessorType.FullName}");
         }
         return searchMatch;
@@ -292,7 +292,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
 
         if (translatedText is not null)
         {
-            _logger.Debug("Sending {processorCount} processors a message with contents {contentsMessage} and translation {translation}", _activeProcessors.Count, contents, translatedText);
+            _logger.Debug("Sending {processorCount} processors a message with contents \"{contentsMessage}\" and translation \"{translation}\"", _activeProcessors.Count, contents, translatedText);
             OnMessage.Invoke(this, (contents, translatedText));
             foreach (var processor in _activeProcessors)
             {
@@ -307,34 +307,34 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
                 };
                 processor.ProcessMessage(newContents);
             }
-            _logger.Debug("Sent {processorCount} processors a message with contents {contentsMessage} and translation {translation}", _activeProcessors.Count, contents, translatedText);
+            _logger.Debug("Sent {processorCount} processors a message with contents \"{contentsMessage}\" and translation \"{translation}\"", _activeProcessors.Count, contents, translatedText);
         }
         else
         {
-            _logger.Debug("Sending {processorCount} processors a message with contents {contentsMessage}", _activeProcessors.Count, contents);
+            _logger.Debug("Sending {processorCount} processors a message with contents \"{contentsMessage}\"", _activeProcessors.Count, contents);
             OnMessage.Invoke(this, (contents, null));
             foreach (var processor in _activeProcessors)
             {
                 processor.ProcessMessage(contents);
             }
-            _logger.Debug("Sent {processorCount} processors a message with contents {contentsMessage}", _activeProcessors.Count, contents);
+            _logger.Debug("Sent {processorCount} processors a message with contents \"{contentsMessage}\"", _activeProcessors.Count, contents);
         }
     }
 
     private void SendMessageInternal(string contents)
     {
-        _logger.Debug("Sending {processorCount} processors a message with contents {contentsMessage}", _activeProcessors.Count, contents);
+        _logger.Debug("Sending {processorCount} processors a message with contents \"{contentsMessage}\"", _activeProcessors.Count, contents);
         OnMessage.Invoke(this, (contents, null));
         foreach (var processor in _activeProcessors)
         {
             processor.ProcessMessage(contents);
         }
-        _logger.Debug("Sent {processorCount} processors a message with contents {contentsMessage}", _activeProcessors.Count, contents);
+        _logger.Debug("Sent {processorCount} processors a message with contents \"{contentsMessage}\"", _activeProcessors.Count, contents);
 }
 
     private void SendMessageTranslatedInternal(string contents, string translation)
     {
-        _logger.Debug("Sending {processorCount} processors a message with contents {contentsMessage} and translation {translation}", _activeProcessors.Count, contents, translation);
+        _logger.Debug("Sending {processorCount} processors a message with contents \"{contentsMessage}\" and translation \"{translation}\"", _activeProcessors.Count, contents, translation);
         OnMessage.Invoke(this, (contents, translation));
         foreach (var processor in _activeProcessors)
         {
@@ -349,7 +349,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
             };
             processor.ProcessMessage(newContents);
         }
-        _logger.Debug("Sent {processorCount} processors a message with contents {contentsMessage} and translation {translation}", _activeProcessors.Count, contents, translation);
+        _logger.Debug("Sent {processorCount} processors a message with contents \"{contentsMessage}\" and translation \"{translation}\"", _activeProcessors.Count, contents, translation);
     }
 
     public void SendNotification(string contents, OutputNotificationPriority priority)
@@ -361,13 +361,13 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
             contents = processedOutput;
         }
 
-        _logger.Debug("Sending {processorCount} processors a notification of priority {priority} with contents {contentsNotification}", _activeProcessors.Count, priority.ToString(), contents);
+        _logger.Debug("Sending {processorCount} processors a notification of priority {priority} with contents \"{contentsNotification}\"", _activeProcessors.Count, priority.ToString(), contents);
         OnNotification.Invoke(this, new OutputNotificationEventArgs(contents, priority));
         foreach (var processor in _activeProcessors)
         {
             processor.ProcessNotification(contents, priority);
         }
-        _logger.Debug("Sent {processorCount} processors a notification of priority {priority} with contents {contentsNotification}", _activeProcessors.Count, priority.ToString(), contents);
+        _logger.Debug("Sent {processorCount} processors a notification of priority {priority} with contents \"{contentsNotification}\"", _activeProcessors.Count, priority.ToString(), contents);
     }
 
     public void Clear()
@@ -417,7 +417,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         {
             if (_config.ApiCommunication_Translation_SkipLongerMessages)
             {
-                _logger.Debug("Skipping translation and processing of message with contents {contents} as skipping of messages longer than {charLimit} characters is enabled",
+                _logger.Debug("Skipping translation and processing of message with contents \"{contents}\" as skipping of messages longer than {charLimit} characters is enabled",
                     contents, _config.ApiCommunication_Translation_MaxTextLength);
                 translatedText = null;
                 return true;
@@ -443,7 +443,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
 
         if (!_translator.TryTranslate(contents, out translatedText))
         {
-            _logger.Warning("Skipping processing of message with contents {contents} as translation failed", contents);
+            _logger.Warning("Skipping processing of message with contents \"{contents}\" as translation failed", contents);
             return false;
         }
         return true;
@@ -467,12 +467,12 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
 
             if (!preprocessor.ShouldContinueIfHandled())
             {
-                _logger.Debug("Preprocessor {preprocessorName} has done final handling on \"{preProcessorInput}\" with message \"{preProcessorOutput}\"", preprocessor.GetType().Name, input, processedOutput);
+                _logger.Debug("Preprocessor \"{preprocessorName}\" has done final handling on \"{preProcessorInput}\" with message \"{preProcessorOutput}\"", preprocessor.GetType().Name, input, processedOutput);
                 output = null;
                 return true;
             }
 
-            _logger.Debug("Preprocessor {preprocessorName} converted \"{currentInput}\" to \"{currentOutput}\"", currentOutput ?? input, processedOutput);
+            _logger.Debug("Preprocessor \"{preprocessorName}\" converted \"{currentInput}\" to \"{currentOutput}\"", currentOutput ?? input, processedOutput);
             currentOutput = processedOutput;
         }
         output = currentOutput;

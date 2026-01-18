@@ -102,7 +102,7 @@ public partial class App : Application
         {
             Dispatcher.UIThread.Invoke(() =>
             {
-               splashModel.Progress = text; 
+                splashModel.Progress = text; 
             });
         });
 

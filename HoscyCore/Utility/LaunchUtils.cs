@@ -90,13 +90,13 @@ public static class LaunchUtils
 
             if (container.GetService(diType) is not T instance)
             {
-                logger?.Debug("Could not locate instance of {baseType} {serviceType}", searchType.FullName, type.FullName);
+                logger?.Debug("Could not locate instance of \"{baseType}\" \"{serviceType}\"", searchType.FullName, type.FullName);
                 continue;
             }
-            logger?.Debug("Located instance of {baseType} {serviceType}", searchType.FullName, type.FullName);
+            logger?.Debug("Located instance of \"{baseType}\" \"{serviceType}\"", searchType.FullName, type.FullName);
             instances.Add(instance);
         }
-        logger?.Information("Located {moduleCount} instances of {baseType}", instances.Count, searchType.FullName);
+        logger?.Information("Located {moduleCount} instances of \"{baseType}\"", instances.Count, searchType.FullName);
         return instances;
     }
 

@@ -96,11 +96,11 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
     /// </summary>
     private void AddHostInfoFromServiceProfile(Vrc.OSCQueryServiceProfile profile, Dictionary<string, Vrc.HostInfo> hosts)
     {
-        _logger.Debug("Received ServiceProfile {profileName}", profile.name);
+        _logger.Debug("Received ServiceProfile \"{profileName}\"", profile.name);
         var hostInfo = Vrc.Extensions.GetHostInfo(profile.address, profile.port).GetAwaiter().GetResult();
         if (hostInfo == null)
         {
-            _logger.Warning("Failed to grab HostInfo for ServiceProfile {profileName}", profile.name);
+            _logger.Warning("Failed to grab HostInfo for ServiceProfile \"{profileName}\"", profile.name);
             throw new ArgumentException("Failed to grab HostInfo for ServiceProfile " + profile.name);
         }
 
@@ -108,7 +108,7 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
         if (!hosts.ContainsKey(lowerName))
         {
             hosts[lowerName] = hostInfo;
-            _logger.Debug("Adding HostInfo {hostInfoName} (IP={hostIp} Port={hostPort}) from ServiceProfile {profileName} to hosts list",
+            _logger.Debug("Adding HostInfo {hostInfoName} (IP={hostIp} Port={hostPort}) from ServiceProfile \"{profileName}\" to hosts list",
                 lowerName, hostInfo.oscIP, hostInfo.oscPort, profile.name);
         }
     }

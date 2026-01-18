@@ -15,7 +15,7 @@ public static class ConfigModelLoader
     public static ConfigModel? TryLoad(string cfgFolder, string cfgFilename, ILogger logger)
     {
         var path = Path.Combine(cfgFolder, cfgFilename);
-        logger.Information("Attempting to load Config at path {configPath}", path);
+        logger.Information("Attempting to load Config at path \"{configPath}\"", path);
         try
         {
             if (!Directory.Exists(cfgFolder)) return null;
@@ -28,12 +28,12 @@ public static class ConfigModelLoader
         }
         catch (JsonReaderException ex)
         {
-            logger.Error(ex, "Unable to read JSON file at {configPath} correctly", path);
+            logger.Error(ex, "Unable to read JSON file at \"{configPath}\" correctly", path);
             throw;
         }
         catch (Exception ex)
         {
-            logger.Error(ex, "Unexpected error while reading JSON file at {configPath}", path);
+            logger.Error(ex, "Unexpected error while reading JSON file at \"{configPath}\"", path);
             throw;
         }
 
@@ -47,19 +47,19 @@ public static class ConfigModelLoader
     public static bool TrySave(this ConfigModel model, string cfgFolder, string cfgFilename, ILogger logger)
     {
         var path = Path.Combine(cfgFolder, cfgFilename);
-        logger.Information("Attempting to save Config at path {configPath}", path);
+        logger.Information("Attempting to save Config at path \"{configPath}\"", path);
         try
         {
             if (!Directory.Exists(cfgFolder))
             {
-                logger.Information("Config directory {directoryPath} not found, attempting creation", cfgFolder);
+                logger.Information("Config directory \"{directoryPath}\" not found, attempting creation", cfgFolder);
                 Directory.CreateDirectory(cfgFolder);
-                logger.Information("Created config directory {directoryPath}", cfgFolder);
+                logger.Information("Created config directory \"{directoryPath}\"", cfgFolder);
             }
 
             var jsonText = JsonConvert.SerializeObject(model, Formatting.Indented);
             File.WriteAllText(path, jsonText, Encoding.UTF8);
-            logger.Information("Saved Config at path {configPath}", path);
+            logger.Information("Saved Config at path \"{configPath}\"", path);
         }
         catch (Exception ex)
         {
@@ -77,13 +77,13 @@ public static class ConfigModelLoader
     {
         try
         {
-            logger.Information("Attempting creation of backup of config file at {backupPath}", path);
+            logger.Information("Attempting creation of backup of config file at \"{backupPath}\"", path);
             File.WriteAllText(path, contents, Encoding.UTF8);
-            logger.Information("Succeeded creation of backup of config file at {backupPath}", path);
+            logger.Information("Succeeded creation of backup of config file at \"{backupPath}\"", path);
         }
         catch (Exception ex)
         {
-            logger.Error(ex, "Failed creation of backup of config file at {backupPath}", path);
+            logger.Error(ex, "Failed creation of backup of config file at \"{backupPath}\"", path);
             return false;
         }
         return true;

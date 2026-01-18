@@ -18,7 +18,7 @@ internal static class LegacyConfigModelLoader
     internal static LegacyConfigModel? TryLoad(string configFolder, string configFilename, ILogger logger) //Yes I am aware this code is duplicated and should be fixed
     {
         var path = Path.Combine(configFolder, configFilename);
-        logger.Information("Attempting to load LegacyConfig at path {legacyConfigPath}", path);
+        logger.Information("Attempting to load LegacyConfig at path \"{legacyConfigPath}\"", path);
         try
         {
             if (!Directory.Exists(configFolder)) return null;
@@ -30,12 +30,12 @@ internal static class LegacyConfigModelLoader
         }
         catch (JsonReaderException ex)
         {
-            logger.Error(ex, "Unable to read legacy JSON file at {legacyConfigPath} correctly", path);
+            logger.Error(ex, "Unable to read legacy JSON file at \"{legacyConfigPath}\" correctly", path);
             throw;
         }
         catch (Exception ex)
         {
-            logger.Error(ex, "Unexpected error while reading legacy JSON file at {legacyConfigPath}", path);
+            logger.Error(ex, "Unexpected error while reading legacy JSON file at \"{legacyConfigPath}\"", path);
             throw;
         }
 

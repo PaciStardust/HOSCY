@@ -79,10 +79,10 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
     #region Translator => Start / Stop
     public void StartTranslator(string? name = null, string? typeName = null)
     {
-        _logger.Information("Attemtping to start translator with name {name} and typeName {typeName}", name, typeName);
+        _logger.Information("Attemtping to start translator with name \"{name}\" and typeName \"{typeName}\"", name, typeName);
         if (_currentTranslator is not null)
         {
-            _logger.Information("Skipped starting Translator, still running as {translatorType}", _currentTranslator.GetType().FullName);
+            _logger.Information("Skipped starting Translator, still running as \"{translatorType}\"", _currentTranslator.GetType().FullName);
             return;
         }
 
@@ -101,27 +101,27 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
         var filteredTranslators = filteredTranslatorsEnumerable.ToArray();
         if (filteredTranslators.Length == 0)
         {
-            _logger.Error("No translator found with the given name {name} or typeName {typeName}", name, typeName);
+            _logger.Error("No translator found with the given name \"{name}\" or typeName \"{typeName}\"", name, typeName);
             throw new ArgumentException($"No translator found with the given name {name} or typeName {typeName}");
         }
 
         if (filteredTranslators.Length > 1)
         {
             var translatorOptions = string.Join(", ", filteredTranslators.Select(x => $"{x.Name} ({x.Type.Name})"));
-            _logger.Warning("Multiple translators found with the given name {name} or typeName {typeName}: {translatorOptions} => picking first");
+            _logger.Warning("Multiple translators found with the given name \"{name}\" or typeName \"{typeName}\": {translatorOptions} => picking first");
         }
 
         var translatorType = filteredTranslators[0].Type;
         if (_services.GetService(translatorType) is not ITranslator translator)
         {
-            _logger.Error("Failed to get translator instance name {translatorName} and type {translatorType}", name, translatorType.Name);
+            _logger.Error("Failed to get translator instance name \"{translatorName}\" and type \"{translatorType}\"", name, translatorType.Name);
             throw new DiResolveException($"Failed to get translator instance name {name} and type {translatorType.Name}");
         }
         translator.OnRuntimeError += HandleOnRuntimeError;
         translator.OnSubmoduleStopped += HandleOnSubmoduleStopped;
         translator.Start();
         _currentTranslator = translator;
-        _logger.Information("Started translator with name {translatorName} and type {translatorType}", name, translatorType.Name);
+        _logger.Information("Started translator with name \"{translatorName}\" and type \"{translatorType}\"", name, translatorType.Name);
     }
 
     public void StopCurrentTranslator()
@@ -141,7 +141,7 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
     private void HandleOnSubmoduleStopped(object? sender, EventArgs e)
     {
         if (sender is null) return;
-        _logger.Warning("HandleOnShutdownCompleted called for type {senderType}, this should only happen when a shutdown was called unexpectedly", sender.GetType().FullName);
+        _logger.Warning("HandleOnShutdownCompleted called for type \"{senderType}\", this should only happen when a shutdown was called unexpectedly", sender.GetType().FullName);
         CleanupAfterTranslatorShutdown();
     }
 
@@ -158,7 +158,7 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
 
     private void HandleOnRuntimeError(object? sender, Exception ex)
     {
-        _logger.Error(ex, "Encountered an error in Translator {senderType}", sender?.GetType().FullName);
+        _logger.Error(ex, "Encountered an error in Translator \"{senderType}\"", sender?.GetType().FullName);
         _notify.SendError($"Encountered an error in Translator {sender?.GetType().FullName ?? "???"}",exception: ex);
         SetFault(ex);
     }

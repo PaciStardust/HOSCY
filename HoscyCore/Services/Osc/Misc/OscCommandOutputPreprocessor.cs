@@ -28,7 +28,7 @@ public class OscCommandOutputPreprocessor(IOscCommandService cmd, ILogger logger
             return false;
         }
 
-        _logger.Debug("Detected command, {command}, forwarding to service");
+        _logger.Debug("Detected command \"{command}\", forwarding to service");
         var result = _cmd.HandleCommand(input);
         output = $"Command => {result}";
         return true;

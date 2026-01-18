@@ -26,8 +26,6 @@ public class CounterOscMessageHandler(IOutputManagerService output, ConfigModel 
         if (!counterMatch.Enabled || (now - counterMatch.LastUsed).TotalSeconds < counterMatch.Cooldown)
             return true;
 
-        //todo: config
-        //todo: make most logging use proper quotes
         counterMatch.Increase();
         _logger.Debug("Counter \"{counterName}\" ({counterParameter}) increased to {counterCount}", counterMatch.Name, counterMatch.FullParameter(), counterMatch.Count);
 

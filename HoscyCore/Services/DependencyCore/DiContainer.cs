@@ -95,7 +95,7 @@ public class DiContainer
                 prototypeAttribute.NotifyAboutLoadedPrototype(service, logger);
             }
 
-            logger.Debug("Adding {service} to DI container with lifetime {lifetime}", service.FullName, containerAttribute.Lifetime.ToString());
+            logger.Debug("Adding \"{service}\" to DI container with lifetime {lifetime}", service.FullName, containerAttribute.Lifetime.ToString());
 
             switch (containerAttribute.Lifetime)
             {
@@ -196,19 +196,19 @@ public class DiContainer
             var ctors = type.GetConstructors();
             if (ctors.Length == 0)
             {
-                _internalLogger.Warning("Failed to locate constructor for IService {serviceType}", type.FullName);
+                _internalLogger.Warning("Failed to locate constructor for IService \"{serviceType}\"", type.FullName);
                 continue;
             }
             else if (ctors.Length > 0)
             {
-                _internalLogger.Debug("Located multiple constructors for IService {serviceType}, picking first", type.FullName);
+                _internalLogger.Debug("Located multiple constructors for IService \"{serviceType}\", picking first", type.FullName);
             }
 
             var requiredServiceTypes = ctors[0].GetParameters()
                 .Select(x => x.ParameterType)
                 .Where(x => x.IsAssignableTo(serviceInterface))
                 .ToList();
-            _internalLogger.Debug("Assessed {requiredServiceCount} other required IServices for IService {serviceType}",
+            _internalLogger.Debug("Assessed {requiredServiceCount} other required IServices for IService \"{serviceType}\"",
                 requiredServiceTypes.Count, type.FullName);
 
             locatedServices.Add((type, impl, requiredServiceTypes));
@@ -245,11 +245,11 @@ public class DiContainer
                     if (serviceImplementation is IAutoStartStopService autoStartStopService)
                     {
                         servicesInOrder.Add(autoStartStopService);
-                        _internalLogger.Debug("Resolved all dependencies for IAutoStartStopService {resolvedService}, startup order is {startupOrder}, {toResolve} still resolving",
+                        _internalLogger.Debug("Resolved all dependencies for IAutoStartStopService \"{resolvedService}\", startup order is {startupOrder}, {toResolve} still resolving",
                         serviceType.FullName, servicesInOrder.Count, serviceList.Count);
                     } else
                     {
-                        _internalLogger.Debug("Resolved all dependencies for IService {resolvedService}, no startup needed as not IAutoStartService, {toResolve} still resolving",
+                        _internalLogger.Debug("Resolved all dependencies for IService \"{resolvedService}\", no startup needed as not IAutoStartService, {toResolve} still resolving",
                         serviceType.FullName, servicesInOrder.Count, serviceList.Count);
                     }
                 }
@@ -258,7 +258,7 @@ public class DiContainer
             {
                 var brokenServices = string.Join(", ", serviceList.Select(x => x.Type.FullName));
                 var ex = new DiResolveException($"Failed to resolve dependency chain in remaining StartStopServices ({brokenServices})");
-                _internalLogger.Fatal(ex, "Unable to resolve dependency chain for the following StartStopServices: {brokenServices}", brokenServices);
+                _internalLogger.Fatal(ex, "Unable to resolve dependency chain for the following StartStopServices: \"{brokenServices}\"", brokenServices);
                 throw ex;
             }
         }

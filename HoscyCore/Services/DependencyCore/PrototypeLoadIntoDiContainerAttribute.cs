@@ -6,6 +6,6 @@ public class PrototypeLoadIntoDiContainer(Type asType, Lifetime lifetime = Lifet
 {
     public void NotifyAboutLoadedPrototype(Type impl, ILogger logger)
     {
-        logger.Fatal($"!!! LOADED PROTOTYPE {impl.FullName} AS {AsType.FullName} - THIS SHOULD ONLY BE USED FOR TESTING !!!");
+        logger.Fatal("!!! LOADED PROTOTYPE \"{implName}\" AS \"{asTypeName}\" - THIS SHOULD ONLY BE USED FOR TESTING !!!", impl.FullName, AsType.FullName);
     }
 }

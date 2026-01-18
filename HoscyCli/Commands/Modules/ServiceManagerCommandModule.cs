@@ -117,9 +117,9 @@ public class ServiceManagerCommandModule : AttributeCommandModule {
         if (OnTrue(startStopService is null, "Selected service does not support starting")) 
             return CommandResult.Error;
 
-        _logger.Information($"Manually starting service: {selected.GetType().Name}");
+        _logger.Information("Manually starting service: \"{serviceName}\"", selected.GetType().Name);
         startStopService!.Start();
-        _logger.Information($"Manually started service: {selected.GetType().Name}");
+        _logger.Information("Manually started service: \"{serviceName}\"", selected.GetType().Name);
         return CommandResult.Success;
     }
 
@@ -134,9 +134,9 @@ public class ServiceManagerCommandModule : AttributeCommandModule {
         if (OnTrue(startStopService is null, "Selected service does not support stopping")) 
             return CommandResult.Error;
 
-        _logger.Information($"Manually stopping service: {selected.GetType().Name}");
+        _logger.Information("Manually stopping service: \"{serviceName}\"", selected.GetType().Name);
         startStopService!.Stop();
-        _logger.Information($"Manually stopping service: {selected.GetType().Name}");
+        _logger.Information("Manually stopping service: \"{serviceName}\"", selected.GetType().Name);
         return CommandResult.Success;
     }
 
@@ -151,9 +151,9 @@ public class ServiceManagerCommandModule : AttributeCommandModule {
         if (OnTrue(startStopService is null, "Selected service does not support restarting")) 
             return CommandResult.Error;
 
-        _logger.Information($"Manually restarting service: {selected.GetType().Name}");
+        _logger.Information("Manually restarting service: \"{serviceName}\"", selected.GetType().Name);
         startStopService!.Restart();
-        _logger.Information($"Manually restarting service: {selected.GetType().Name}");
+        _logger.Information("Manually restarting service: \"{serviceName}\"", selected.GetType().Name);
         return CommandResult.Success;
     }
 }

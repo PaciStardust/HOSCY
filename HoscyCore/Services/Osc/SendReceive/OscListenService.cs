@@ -118,7 +118,7 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
                 ? "[NULL]"
                 : $"{arg.GetType().Name}({arg})" ?? "???");
         }
-        _logger.Debug("Packet has been received on port {thisPort} with address {messageAddress} => {argInfo}",
+        _logger.Debug("Packet has been received on port {thisPort} with address \"{messageAddress}\" => {argInfo}",
             GetPort(), res.Address, argsInfo);
 
         var handled = _messageHandler.HandleMessage(res);

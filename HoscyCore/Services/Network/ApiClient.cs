@@ -31,10 +31,10 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient
 
     public bool LoadPreset(ApiPresetModel preset)
     {
-        _logger.Information("{id}: Loading new ApiPreset {name}", _identifier, preset.Name);
+        _logger.Information("{id}: Loading new ApiPreset \"{name}\"", _identifier, preset.Name);
         if (preset.Equals(_currentPreset))
         {
-            _logger.Information("{id}: Skipped loading new ApiPreset {name}, it is already loaded", _identifier, preset.Name);
+            _logger.Information("{id}: Skipped loading new ApiPreset \"{name}\", it is already loaded", _identifier, preset.Name);
             return true;
         }
 
@@ -42,7 +42,7 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient
 
         if (!preset.IsValid())
         {
-            _logger.Error("{id}: Did not load ApiPreset {name} as it is invalid", _identifier, preset.Name);
+            _logger.Error("{id}: Did not load ApiPreset \"{name}\" as it is invalid", _identifier, preset.Name);
             return false;
         }
 
@@ -78,19 +78,19 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient
         var result = Utils.ExtractFromJson(_currentPreset.ResultField, jsonIn);
         if (result is null)
         {
-            _logger.Warning("{id}: Unable to find content with key {resultField} in result {jsonIn}", _identifier, _currentPreset.ResultField, jsonIn);
+            _logger.Warning("{id}: Unable to find content with key \"{resultField}\" in result \"{jsonIn}\"", _identifier, _currentPreset.ResultField, jsonIn);
             throw new HttpRequestException($"Unable to find content with key \"{_currentPreset.ResultField}\" in result \"{jsonIn}\"");
         }
         else
         {
-            _logger.Debug("{id}: Found content with value {resultField}: {result}", _identifier, _currentPreset.ResultField, result);
+            _logger.Debug("{id}: Found content with value \"{resultField}\": {result}", _identifier, _currentPreset.ResultField, result);
         }
         return result;
     }
 
     public async Task<string> SendBytes(byte[] bytes)
     {
-        _logger.Debug("{id}: Sending byte request via ApiPreset {presetName}", _identifier, _currentPreset?.Name ?? "NULL");
+        _logger.Debug("{id}: Sending byte request via ApiPreset \"{presetName}\"", _identifier, _currentPreset?.Name ?? "NULL");
         if (_currentPreset is null || !_currentPreset.IsValid())
         {
             _logger.Warning("{id}: Not sending byte request as no valid ApiPreset is loaded", _identifier);
@@ -100,7 +100,7 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient
         var content = new ByteArrayContent(bytes);
         if (string.IsNullOrWhiteSpace(_currentPreset.ContentType) || !content.Headers.TryAddWithoutValidation("Content-Type", _currentPreset.ContentType))
         {
-            _logger.Warning("{id}: Unable to send data to API as ContentType {contentType} is invalid, are you using the Type suggested by the API's documentation?", _identifier, _currentPreset.ContentType);
+            _logger.Warning("{id}: Unable to send data to API as ContentType \"{contentType}\" is invalid, are you using the Type suggested by the API's documentation?", _identifier, _currentPreset.ContentType);
             throw new ArgumentException($"Unable to send data to API as ContentType \"{_currentPreset.ContentType}\" is invalid");
         }
 
@@ -109,7 +109,7 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient
 
     public async Task<string> SendText(string text)
     {
-        _logger.Debug("{id}: Sending text request via ApiPreset {presetName}", _identifier, _currentPreset?.Name ?? "NULL");
+        _logger.Debug("{id}: Sending text request via ApiPreset \"{presetName}\"", _identifier, _currentPreset?.Name ?? "NULL");
         if (_currentPreset is null || !_currentPreset.IsValid())
         {
             _logger.Warning(messageTemplate: "{id}: Not sending text request as no valid ApiPreset is loaded", _identifier);
@@ -139,7 +139,7 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient
         {
             if (!content.Headers.TryAddWithoutValidation(headerInfo.Key, headerInfo.Value))
             {
-                _logger.Warning("{id}: Skipped adding header info \"{headerInfoKey} : {headerInfoValue}\". As it was deemed invalid, it will be removed", _identifier, headerInfo.Key, headerInfo.Value);
+                _logger.Warning("{id}: Skipped adding header info \"{headerInfoKey}\" : \"{headerInfoValue}\". As it was deemed invalid, it will be removed", _identifier, headerInfo.Key, headerInfo.Value);
                 _currentPreset.HeaderValues.Remove(headerInfo.Key);
             }
         }

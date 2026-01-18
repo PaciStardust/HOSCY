@@ -51,7 +51,7 @@ public class CliCoreWrapper
             Console.WriteLine();
             if (string.IsNullOrWhiteSpace(input)) continue;
             if (input.Equals("exit", StringComparison.OrdinalIgnoreCase)) break;
-            _logger?.Information($"Running command: {input}");
+            _logger?.Information("Running command: \"{input}\"", input);
 
             CommandResult result;
             try
