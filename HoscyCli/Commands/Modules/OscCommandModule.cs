@@ -33,23 +33,21 @@ public class OscCommandModule(IOscRelayService oscRelay, IOscListenService oscLi
     [SubCommandModule(["filters"], "Edit relay filters")]
     public CommandResult CmdEditRelayFilters()
     {
-        _reflectCm.SetProperty(nameof(ConfigModel.Osc_Relay_Filters));
+        var res = _reflectCm.SetProperty(nameof(ConfigModel.Osc_Relay_Filters));
         _oscRelay.Restart();
-        return CommandResult.Success;
+        return res;
     }
 
     [SubCommandModule(["ip-out"], "Edit the outbound ip")]
     public CommandResult CmdEditIpOut()
     {
-        _reflectCm.SetProperty(nameof(ConfigModel.Osc_Routing_TargetIp));
-        return CommandResult.Success;
+        return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Routing_TargetIp));
     }
 
     [SubCommandModule(["port-out"], "Edit the outbound port")]
     public CommandResult CmdEditPortOut()
     {
-        _reflectCm.SetProperty(nameof(ConfigModel.Osc_Routing_TargetPort));
-        return CommandResult.Success;
+        return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Routing_TargetPort));
     }
 
     [SubCommandModule(["port-in"], "Edit the inbound port")]
