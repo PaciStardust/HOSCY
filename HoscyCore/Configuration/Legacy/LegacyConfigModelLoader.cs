@@ -216,10 +216,10 @@ internal static class LegacyConfigModelLoader
             Input_CanBeTranslated = oldConfig.Input.AllowTranslation,
             Input_Presets = ConvertDictionary(oldConfig.Input.Presets),
 
-            Logger_OpenWindowOnStartupWindowsOnly = oldConfig.Debug.OpenLogWindow,
-            Logger_CheckForUpdatesOnStartup = oldConfig.Debug.CheckUpdates,
-            Logger_MinimumSeverity = Serilog.Events.LogEventLevel.Debug, //we omit this for now
-            Logger_Filters = ConvertFilterModel(oldConfig.Debug.LogFilters),
+            Debug_LogViaCmdOnWindows = oldConfig.Debug.OpenLogWindow,
+            Debug_CheckForUpdatesOnStartup = oldConfig.Debug.CheckUpdates,
+            Debug_LogMinimumSeverity = Serilog.Events.LogEventLevel.Debug, //we omit this for now
+            Debug_LogFilters = ConvertFilterModel(oldConfig.Debug.LogFilters),
 
             Osc_Routing_TargetIp = oldConfig.Osc.Ip,
             Osc_Routing_TargetPort = oldConfig.Osc.Port.ConvertToUshort(),

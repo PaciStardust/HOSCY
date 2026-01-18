@@ -34,14 +34,14 @@ public static class LogUtils
         var logConfig = new LoggerConfiguration()
             .Enrich.FromLogContext()
             .WriteTo.File(LogFileName, outputTemplate: LOGGING_TEMPLATE)
-            .MinimumLevel.ControlledBy(config.Logger_MinimumSeverityGetSwitch())
+            .MinimumLevel.ControlledBy(config.Debug_LogMinimumSeverityGetSwitch())
             .Filter.ByExcluding(x =>
             {
                 var message = x.RenderMessage();
-                return config.Logger_Filters.Any(f => f.Matches(message));
+                return config.Debug_LogFilters.Any(f => f.Matches(message));
             });
 
-        if (config.Logger_LogToCommandLine && !disableConsoleLogging)
+        if (config.Debug_LogViaTerminal && !disableConsoleLogging)
         {
             logConfig.WriteTo.Console(outputTemplate: LOGGING_TEMPLATE);
         }

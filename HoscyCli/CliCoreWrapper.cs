@@ -1,5 +1,3 @@
-using System.Diagnostics;
-using System.Runtime.InteropServices;
 using HoscyCli.Commands.Core;
 using HoscyCli.Commands.Modules;
 using HoscyCore;
@@ -11,7 +9,6 @@ namespace HoscyCli;
 public class CliCoreWrapper
 {
     private HoscyCoreApp? _coreApp = null;
-    private Process? _debugProcess = null;
     private ILogger? _logger = null;
 
     public void Start()
@@ -19,18 +16,11 @@ public class CliCoreWrapper
         if (_coreApp is not null) return;
         _logger = LogUtils.CreateTemporaryLogger<CliCoreWrapper>(disableConsoleLogging: true);
 
-        #if DEBUG
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-        {
-            StartDebugTerminal(_logger);
-        }
-        #endif
-
         _coreApp = new HoscyCoreApp(_logger);
         var coreAppParams = new HoscyCoreAppStartParameters()
         {
             OnProgress = new((s) => Console.WriteLine($"Loading: {s.Replace(Environment.NewLine, " ")}")),
-            ShouldOpenConsoleIfRequested = false,
+            ShouldOpenConsoleIfRequested = true,
             DisableConsoleLog = true
         };
         _coreApp.Start(coreAppParams);
@@ -82,27 +72,5 @@ public class CliCoreWrapper
         _logger?.Information("Stopping CLI...");
         _coreApp?.Stop();
         _coreApp = null;
-        _debugProcess?.Kill();
-        _debugProcess?.Dispose();
-        _debugProcess = null;
-    }
-
-    private void StartDebugTerminal(ILogger logger)
-    {
-        if (_debugProcess is not null) return;
-        logger.Information("Starting debug terminal...");
-        Console.WriteLine("Type your preferred terminal to follow logs (ex: 'foot')"); //todo: make this a config option
-        var terminal = Console.ReadLine();
-
-        if (string.IsNullOrWhiteSpace(terminal)) return;
-
-        var startInfo = new ProcessStartInfo()
-        {
-            FileName = terminal,
-            Arguments = $"-e tail -f {LogUtils.LogFileName}",
-            UseShellExecute = true
-        };
-        var process = Process.Start(startInfo);
-        _debugProcess = process;
     }
 }

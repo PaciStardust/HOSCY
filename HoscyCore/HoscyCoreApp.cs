@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.DependencyCore;
 using HoscyCore.Utility;
@@ -6,10 +5,11 @@ using Serilog;
 
 namespace HoscyCore;
 
-public class HoscyCoreApp(ILogger? initialLogger = null)
+public class HoscyCoreApp(ILogger? initialLogger = null) //todo: redo debug later?
 {
     private ILogger _currentLogger = initialLogger?.ForContext<HoscyCoreApp>() ?? LogUtils.CreateTemporaryLogger<HoscyCoreApp>();
     private DiContainer? _container = null;
+    private HoscyCoreAppDebug? _debug = null;
 
     public HoscyCoreApp Start(HoscyCoreAppStartParameters startParameters)
     {
@@ -42,12 +42,9 @@ public class HoscyCoreApp(ILogger? initialLogger = null)
             startParameters.OnNewLoggerCreated?.Invoke(_currentLogger);
         }
 
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && startParameters.ShouldOpenConsoleIfRequested && config.Logger_OpenWindowOnStartupWindowsOnly)
-        {
-            _currentLogger.Information("Starting Console");
-            onProgress?.Invoke("Starting Console");
-            WinApi.OpenConsole();
-        }
+        onProgress?.Invoke("Starting external logging");
+        _debug = new(_currentLogger);
+        _debug.Start(startParameters, config);
 
         onProgress?.Invoke("Loading DI container");
         _container = DiContainer.LoadFromAssembly(_currentLogger, config, startParameters.AdditionalContainerInserts);
@@ -70,6 +67,8 @@ public class HoscyCoreApp(ILogger? initialLogger = null)
         {
             _currentLogger.Fatal(ex, "Unable to stop Services correctly");
         }
+        _debug?.Stop();
+        _debug = null;
         _currentLogger.Information("HOSCY has shut down, goodnight!");
     }
 

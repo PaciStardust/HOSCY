@@ -200,48 +200,68 @@ public class ConfigModel : ObservableObject
 
     #endregion
 
-    #region Logger 
-
-    private bool _logger_OpenWindowOnStartupWindowsOnly;
-    public bool Logger_OpenWindowOnStartupWindowsOnly
+    #region Debug 
+    private bool _debug_CheckForUpdatesOnStartup = true;
+    public bool Debug_CheckForUpdatesOnStartup
     {
-        get => _logger_OpenWindowOnStartupWindowsOnly;
-        set => SetProperty(ref _logger_OpenWindowOnStartupWindowsOnly, value);
+        get => _debug_CheckForUpdatesOnStartup;
+        set => SetProperty(ref _debug_CheckForUpdatesOnStartup, value);
     }
 
-    private bool _logger_LogToCommandline = true;
-    public bool Logger_LogToCommandLine
+    private bool _debug_LogViaCmdOnWindows;
+    public bool Debug_LogViaCmdOnWindows
     {
-        get => _logger_LogToCommandline;
-        set => SetProperty(ref _logger_LogToCommandline, value);
+        get => _debug_LogViaCmdOnWindows;
+        set => SetProperty(ref _debug_LogViaCmdOnWindows, value);
     }
 
-    private bool _logger_CheckForUpdatesOnStartup = true;
-    public bool Logger_CheckForUpdatesOnStartup
+    private bool _debug_LogViaTerminal;
+    public bool Debug_LogViaTerminal
     {
-        get => _logger_CheckForUpdatesOnStartup;
-        set => SetProperty(ref _logger_CheckForUpdatesOnStartup, value);
+        get => _debug_LogViaTerminal;
+        set => SetProperty(ref _debug_LogViaTerminal, value);
     }
 
-    private LogEventLevel _logger_MinimumSeverity = LogEventLevel.Debug;
-    private readonly LoggingLevelSwitch _logger_MinimumSeveritySwitch = new(LogEventLevel.Debug);
-    public LogEventLevel Logger_MinimumSeverity
+    private bool _debug_LogViaFileFollow;
+    public bool Debug_LogViaFileFollow
     {
-        get => _logger_MinimumSeverity;
+        get => _debug_LogViaFileFollow;
+        set => SetProperty(ref _debug_LogViaFileFollow, value);
+    }
+
+    private string _debug_LogFileFollowProcess = "foot";
+    public string Debug_LogFileFollowProcess
+    {
+        get => _debug_LogFileFollowProcess;
+        set => SetProperty(ref _debug_LogFileFollowProcess, value);
+    }
+
+    private string _debug_LogFileFollowCommand = "-e tail -f [LOGFILE]";
+    public string Debug_LogFileFollowCommand
+    {
+        get => _debug_LogFileFollowCommand;
+        set => SetProperty(ref _debug_LogFileFollowCommand, value);
+    }
+
+    private LogEventLevel _debug_LogMinimumSeverity = LogEventLevel.Debug;
+    private readonly LoggingLevelSwitch _debug_LogMinimumSeveritySwitch = new(LogEventLevel.Debug);
+    public LogEventLevel Debug_LogMinimumSeverity
+    {
+        get => _debug_LogMinimumSeverity;
         set
         {
-            SetProperty(ref _logger_MinimumSeverity, value);
-            _logger_MinimumSeveritySwitch.MinimumLevel = value;
+            SetProperty(ref _debug_LogMinimumSeverity, value);
+            _debug_LogMinimumSeveritySwitch.MinimumLevel = value;
         }
     }
-    public LoggingLevelSwitch Logger_MinimumSeverityGetSwitch()
-        => _logger_MinimumSeveritySwitch;
+    public LoggingLevelSwitch Debug_LogMinimumSeverityGetSwitch()
+        => _debug_LogMinimumSeveritySwitch;
 
-    private List<FilterModel> _logger_Filters = [];
-    public List<FilterModel> Logger_Filters
+    private List<FilterModel> _debug_LogFilters = [];
+    public List<FilterModel> Debug_LogFilters
     {
-        get => _logger_Filters;
-        set => SetProperty(ref _logger_Filters, value);
+        get => _debug_LogFilters;
+        set => SetProperty(ref _debug_LogFilters, value);
     }
 
     #endregion

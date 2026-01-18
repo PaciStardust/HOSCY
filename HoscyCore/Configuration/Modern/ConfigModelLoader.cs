@@ -166,8 +166,8 @@ public static class ConfigModelLoader
                 ];
             }},
             {4, () => {
-                if (config.Logger_Filters.Count != 0) return;
-                config.Logger_Filters = [
+                if (config.Debug_LogFilters.Count != 0) return;
+                config.Debug_LogFilters = [
                     new("VRC Angular", "/Angular"),
                     new("VRC Grounded", "/Grounded"),
                     new("VRC Velocity", "/Velocity"),
