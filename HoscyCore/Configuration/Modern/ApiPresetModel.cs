@@ -88,7 +88,7 @@ public class ApiPresetModel : ObservableObject
     public int ConnectionTimeout
     {
         get => _connectionTimeout;
-        set => SetProperty(ref _connectionTimeout, Utils.MinMax(value, 25, 60000));
+        set => SetProperty(ref _connectionTimeout, value.MinMax(25, 60000));
     }
 
     internal bool IsValid()

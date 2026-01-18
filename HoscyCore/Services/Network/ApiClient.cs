@@ -75,7 +75,7 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient
             throw new HttpRequestException("Received response for request, but json is null");
         }
 
-        var result = Utils.ExtractFromJson(_currentPreset.ResultField, jsonIn);
+        var result = OtherUtils.ExtractFromJson(_currentPreset.ResultField, jsonIn);
         if (result is null)
         {
             _logger.Warning("{id}: Unable to find content with key \"{resultField}\" in result \"{jsonIn}\"", _identifier, _currentPreset.ResultField, jsonIn);

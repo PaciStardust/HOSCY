@@ -53,7 +53,7 @@ public class OscCommandModule(IOscRelayService oscRelay, IOscListenService oscLi
     [SubCommandModule(["port-in"], "Edit the inbound port")]
     public CommandResult CmdEditPortIn()
     {
-        _reflectCm.SetProperty(nameof(ConfigModel.Osc_Routing_ListenPort)); //todo: this is a bit scuffed
+        _reflectCm.SetProperty(nameof(ConfigModel.Osc_Routing_ListenPort));
         _oscQuery.Stop();
         _oscListen.Restart(); 
         _oscQuery.Start();

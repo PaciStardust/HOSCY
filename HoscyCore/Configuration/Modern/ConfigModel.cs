@@ -33,7 +33,7 @@ public class ConfigModel : ObservableObject
     public int ApiCommunication_Recognition_MaxRecordingTime
     {
         get => _apiCommunication_Recognition_MaxRecordingTime;
-        set => SetProperty(ref _apiCommunication_Recognition_MaxRecordingTime, Utils.MinMax(value, 1, 300));
+        set => SetProperty(ref _apiCommunication_Recognition_MaxRecordingTime, value.MinMax( 1, 300));
     }
 
     //TRANSLATION
@@ -55,7 +55,7 @@ public class ConfigModel : ObservableObject
     public int ApiCommunication_Translation_MaxTextLength
     {
         get => _apiCommunication_Translation_MaxTextLength;
-        set => SetProperty(ref _apiCommunication_Translation_MaxTextLength, Utils.MinMax(value, 1, short.MaxValue));
+        set => SetProperty(ref _apiCommunication_Translation_MaxTextLength, value.MinMax(1, short.MaxValue));
     }
 
     private bool _apiCommunication_Translation_OfTts;
@@ -260,14 +260,14 @@ public class ConfigModel : ObservableObject
     public ushort Osc_Routing_TargetPort
     {
         get => _osc_Routing_TargetPort;
-        set => SetProperty(ref _osc_Routing_TargetPort, Utils.MinMax(value, ushort.MinValue, ushort.MaxValue));
+        set => SetProperty(ref _osc_Routing_TargetPort, value.MinMax(ushort.MinValue, ushort.MaxValue));
     }
 
     private int _osc_Routing_ListenPort = 9001;
     public int Osc_Routing_ListenPort
     {
         get => _osc_Routing_ListenPort;
-        set => SetProperty(ref _osc_Routing_ListenPort, Utils.MinMax(value, -1, 65535));
+        set => SetProperty(ref _osc_Routing_ListenPort, value.MinMax(-1, 65535));
     }
 
     private List<OscRelayFilterModel> _osc_Relay_Filters = [];
@@ -444,14 +444,14 @@ public class ConfigModel : ObservableObject
     public float Counters_DisplayDurationSeconds
     {
         get => _counters_DisplayDurationSeconds;
-        set => SetProperty(ref _counters_DisplayDurationSeconds, Utils.MinMax(value, 0.01f, 30));
+        set => SetProperty(ref _counters_DisplayDurationSeconds, value.MinMax(0.01f, 30));
     }
 
     private float _counters_DisplayCooldownSeconds = 0f;
     public float Counters_DisplayCooldownSeconds
     {
         get => _counters_DisplayCooldownSeconds;
-        set => SetProperty(ref _counters_DisplayCooldownSeconds, Utils.MinMax(value, 0, 300));
+        set => SetProperty(ref _counters_DisplayCooldownSeconds, value.MinMax(0, 300));
     }
 
     private List<CounterModel> _counters_List = [];
@@ -476,14 +476,14 @@ public class ConfigModel : ObservableObject
     public float Afk_BaseDurationDisplayIntervalSeconds
     {
         get => _afk_BaseDurationDisplayIntervalSeconds;
-        set => SetProperty(ref _afk_BaseDurationDisplayIntervalSeconds, Utils.MinMax(value, 5, 300));
+        set => SetProperty(ref _afk_BaseDurationDisplayIntervalSeconds, value.MinMax(5, 300));
     }
 
     private int _afk_TimesDisplayedBeforeDoublingInterval = 12;
     public int Afk_TimesDisplayedBeforeDoublingInterval
     {
         get => _afk_TimesDisplayedBeforeDoublingInterval;
-        set => SetProperty(ref _afk_TimesDisplayedBeforeDoublingInterval, Utils.MinMax(value, 0, 60));
+        set => SetProperty(ref _afk_TimesDisplayedBeforeDoublingInterval, value.MinMax(1, 60));
     }
 
     private const string AFK_NO_STARTTEXT = "Now AFK";
@@ -593,7 +593,7 @@ public class ConfigModel : ObservableObject
     public int Speech_Tts_MaximumLength
     {
         get => _speech_Tts_MaximumLength;
-        set => SetProperty(ref _speech_Tts_MaximumLength, Utils.MinMax(value, 1, short.MaxValue));
+        set => SetProperty(ref _speech_Tts_MaximumLength, value.MinMax(1, short.MaxValue));
     }
 
     private bool _speech_Tts_SkipLongerMessages = true;
@@ -622,7 +622,7 @@ public class ConfigModel : ObservableObject
     public int Speech_Vosk_NewWordWaitTimeMs
     {
         get => _speech_Vosk_NewWordWaitTimeMs;
-        set => SetProperty(ref _speech_Vosk_NewWordWaitTimeMs, Utils.MinMax(value, 500, 30000));
+        set => SetProperty(ref _speech_Vosk_NewWordWaitTimeMs,value.MinMax(500, 30000));
     }
 
     // WHISPER
@@ -693,35 +693,35 @@ public class ConfigModel : ObservableObject
     public int Speech_Whisper_ThreadUsed
     {
         get => _speech_Whisper_ThreadsUsed;
-        set => SetProperty(ref _speech_Whisper_ThreadsUsed, Utils.MinMax(value, short.MinValue, short.MaxValue));
+        set => SetProperty(ref _speech_Whisper_ThreadsUsed, value.MinMax(short.MinValue, short.MaxValue));
     }
 
     private int _speech_Whisper_MaxContext = 0;
     public int Speech_Whisper_MaxContext
     {
         get => _speech_Whisper_MaxContext;
-        set => SetProperty(ref _speech_Whisper_MaxContext, Utils.MinMax(value, -1, short.MaxValue));
+        set => SetProperty(ref _speech_Whisper_MaxContext, value.MinMax(-1, short.MaxValue));
     }
 
     private int _speech_Whisper_MaxSegmentLength = 0;
     public int Speech_Whisper_MaxSegmentLength
     {
         get => _speech_Whisper_MaxSegmentLength;
-        set => SetProperty(ref _speech_Whisper_MaxSegmentLength, Utils.MinMax(value, 0, short.MaxValue));
+        set => SetProperty(ref _speech_Whisper_MaxSegmentLength, value.MinMax(0, short.MaxValue));
     }
 
     private float _speech_Whisper_MaxRecognitionDurationSeconds = 16;
     public float Speech_Whisper_MaxRecognitionDurationSeconds
     {
         get => _speech_Whisper_MaxRecognitionDurationSeconds;
-        set => SetProperty(ref _speech_Whisper_MaxRecognitionDurationSeconds, Utils.MinMax(value, 2, short.MaxValue));
+        set => SetProperty(ref _speech_Whisper_MaxRecognitionDurationSeconds, value.MinMax(2, short.MaxValue));
     }
 
     private float _speech_Whisper_RecognitionPauseDurationSeconds = 0.5f;
     public float Speech_Whisper_RecognitionPauseDurationSeconds
     {
         get => _speech_Whisper_RecognitionPauseDurationSeconds;
-        set => SetProperty(ref _speech_Whisper_RecognitionPauseDurationSeconds, Utils.MinMax(value, 0.05f, short.MaxValue));
+        set => SetProperty(ref _speech_Whisper_RecognitionPauseDurationSeconds, value.MinMax(0.05f, short.MaxValue));
     }
 
     private string _speech_Whisper_GraphicsAdapter = string.Empty;
@@ -798,7 +798,7 @@ public class ConfigModel : ObservableObject
     public int Textbox_Text_MaxDisplayedCharacters
     {
         get => _textbox_Text_MaxDisplayedCharacters;
-        set => SetProperty(ref _textbox_Text_MaxDisplayedCharacters, Utils.MinMax(value, 10, 130));
+        set => SetProperty(ref _textbox_Text_MaxDisplayedCharacters, value.MinMax(10, 130));
     }
 
     private bool _textbox_Text_TypingIndicatorWhenSpeaking;
@@ -820,21 +820,21 @@ public class ConfigModel : ObservableObject
     public int Textbox_Timeout_DynamicPer20CharactersDisplayedMs
     {
         get => _textbox_Timeout_DynamicPer20CharactersDisplayedMs;
-        set => SetProperty(ref _textbox_Timeout_DynamicPer20CharactersDisplayedMs, Utils.MinMax(value, 250, 10000));
+        set => SetProperty(ref _textbox_Timeout_DynamicPer20CharactersDisplayedMs, value.MinMax(250, 10000));
     }
 
     private int _textbox_Timeout_DynamicMinimumMs = 3000;
     public int Textbox_Timeout_DynamicMinimumMs
     {
         get => _textbox_Timeout_DynamicMinimumMs;
-        set => SetProperty(ref _textbox_Timeout_DynamicMinimumMs, Utils.MinMax(value, 1250, 30000));
+        set => SetProperty(ref _textbox_Timeout_DynamicMinimumMs, value.MinMax(1250, 30000));
     }
 
     private int _textbox_Timeout_StaticMs = 5000;
     public int Textbox_Timeout_StaticMs
     {
         get => _textbox_Timeout_StaticMs;
-        set => SetProperty(ref _textbox_Timeout_StaticMs, Utils.MinMax(value, 1250, 30000));
+        set => SetProperty(ref _textbox_Timeout_StaticMs, value.MinMax(1250, 30000));
     }
 
     private bool _textbox_Timeout_UseDynamic = true;

@@ -45,7 +45,7 @@ public class CounterModel : ObservableObject
     public float Cooldown
     {
         get => _cooldown;
-        set => SetProperty(ref _cooldown, Utils.MinMax(value, 0, 3600));
+        set => SetProperty(ref _cooldown, value.MinMax(0, 3600));
     }
 
     private string _parameter = "Parameter";

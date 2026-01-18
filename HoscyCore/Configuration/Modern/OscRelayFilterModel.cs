@@ -18,7 +18,7 @@ public class OscRelayFilterModel : ObservableObject
     public ushort Port
     {
         get => _port;
-        set => SetProperty(ref _port, Utils.MinMax(value, ushort.MinValue, ushort.MaxValue));
+        set => SetProperty(ref _port, value.MinMax(ushort.MinValue, ushort.MaxValue));
     }
 
     private string _ip = "127.0.0.1";

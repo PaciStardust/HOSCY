@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.DependencyCore;
 using HoscyCore.Utility;
@@ -39,11 +40,11 @@ public class HoscyCoreApp(ILogger? initialLogger = null)
             startParameters.OnNewLoggerCreated?.Invoke(_currentLogger);
         }
 
-        if (startParameters.ShouldOpenConsoleIfRequested && config.Logger_OpenWindowOnStartupWindowsOnly)
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && startParameters.ShouldOpenConsoleIfRequested && config.Logger_OpenWindowOnStartupWindowsOnly)
         {
             _currentLogger.Information("Starting Console");
             onProgress?.Invoke("Starting Console");
-            Utils.OpenConsoleOnWindows();
+            WinApi.OpenConsole();
         }
 
         onProgress?.Invoke("Loading DI container");
