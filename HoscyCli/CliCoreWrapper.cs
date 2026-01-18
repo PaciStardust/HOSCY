@@ -91,7 +91,7 @@ public class CliCoreWrapper
     {
         if (_debugProcess is not null) return;
         logger.Information("Starting debug terminal...");
-        Console.WriteLine("Type your preferred terminal to follow logs (ex: 'foot')");
+        Console.WriteLine("Type your preferred terminal to follow logs (ex: 'foot')"); //todo: make this a config option
         var terminal = Console.ReadLine();
 
         if (string.IsNullOrWhiteSpace(terminal)) return;
