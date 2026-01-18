@@ -21,7 +21,7 @@ public static class ConfigModelLoader
             if (!Directory.Exists(cfgFolder)) return null;
             if (!File.Exists(path)) return null;
             string configData = File.ReadAllText(path, Encoding.UTF8);
-            TryCreateRawBackup(path + ".backup", configData, logger);
+            TryCreateRawBackup(configData, path + ".backup", logger);
             var newData = JsonConvert.DeserializeObject<ConfigModel>(configData);
             if (newData is not null)
                 return newData;
