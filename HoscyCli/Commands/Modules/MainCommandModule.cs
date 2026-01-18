@@ -8,13 +8,15 @@ public class MainCommandModule(
     ConfigCommandModule configCm,
     ServiceManagerCommandModule serviceCm,
     OscCommandModule oscCm,
-    AfkCommandModule afkCm
+    AfkCommandModule afkCm,
+    CounterCommandModule counterCm
 ) : AttributeCommandModule
 {
     private readonly ConfigCommandModule _configCm = configCm;
     private readonly ServiceManagerCommandModule _serviceCm = serviceCm;
     private readonly OscCommandModule _oscCm = oscCm;
     private readonly AfkCommandModule _afkCm = afkCm;
+    private readonly CounterCommandModule _counterCm = counterCm;
 
 
     [SubCommandModule(["config"], "Edit the config file")]
@@ -43,6 +45,13 @@ public class MainCommandModule(
     {
         if (OnEmpty(args, GetParameterError("afk"))) return CommandResult.MissingParameter;
         return _afkCm.Execute(args);
+    }
+
+    [SubCommandModule(["counters"], "Manage counters")]
+    public CommandResult CmdCounters(string? args)
+    {
+        if (OnEmpty(args, GetParameterError("counters"))) return CommandResult.MissingParameter;
+        return _counterCm.Execute(args);
     }
 
     private string GetParameterError(string commandName) 
