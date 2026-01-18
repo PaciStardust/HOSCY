@@ -7,12 +7,14 @@ namespace HoscyCli.Commands.Modules;
 public class MainCommandModule(
     ConfigCommandModule configCm,
     ServiceManagerCommandModule serviceCm,
-    OscCommandModule oscCm
+    OscCommandModule oscCm,
+    AfkCommandModule afkCm
 ) : AttributeCommandModule
 {
     private readonly ConfigCommandModule _configCm = configCm;
     private readonly ServiceManagerCommandModule _serviceCm = serviceCm;
     private readonly OscCommandModule _oscCm = oscCm;
+    private readonly AfkCommandModule _afkCm = afkCm;
 
 
     [SubCommandModule(["config"], "Edit the config file")]
@@ -34,6 +36,13 @@ public class MainCommandModule(
     {
         if (OnEmpty(args, GetParameterError("osc"))) return CommandResult.MissingParameter;
         return _oscCm.Execute(args);
+    }
+
+    [SubCommandModule(["afk"], "Manage AFK")]
+    public CommandResult CmdAfk(string? args)
+    {
+        if (OnEmpty(args, GetParameterError("afk"))) return CommandResult.MissingParameter;
+        return _afkCm.Execute(args);
     }
 
     private string GetParameterError(string commandName) 
