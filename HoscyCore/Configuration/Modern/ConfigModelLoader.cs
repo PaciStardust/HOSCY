@@ -50,10 +50,10 @@ public static class ConfigModelLoader
         logger.Information("Attempting to save Config at path {configPath}", path);
         try
         {
-            if (!Directory.Exists(path))
+            if (!Directory.Exists(cfgFolder))
             {
                 logger.Information("Config directory {directoryPath} not found, attempting creation", cfgFolder);
-                Directory.CreateDirectory(path);
+                Directory.CreateDirectory(cfgFolder);
                 logger.Information("Created config directory {directoryPath}", cfgFolder);
             }
 
