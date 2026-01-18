@@ -34,6 +34,13 @@ public class CounterModel : ObservableObject
         set => SetProperty(ref _enabled, value);
     }
 
+    private bool _doDisplay = true;
+    public bool DoDisplay
+    {
+        get => _doDisplay;
+        set => SetProperty(ref _doDisplay, value);
+    }
+
     private float _cooldown;
     public float Cooldown
     {
