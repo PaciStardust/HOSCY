@@ -54,37 +54,37 @@ public abstract class StartStopServiceBase : IStartStopService
     }
 
     #region Standard Log
-    public void LogStartBegin(Type logType, ILogger logger)
+    protected void LogStartBegin(Type logType, ILogger logger)
     {
         logger.Information("{serviceName}: Service starting", logType.Name);
     }
 
-    public void LogStartAlreadyStarted(Type logType, ILogger logger)
+    protected void LogStartAlreadyStarted(Type logType, ILogger logger)
     {
         logger.Information("{serviceName}: Service start cancelled, already started", logType.Name);
     }
 
-    public void LogStartComplete(Type logType, ILogger logger)
+    protected void LogStartComplete(Type logType, ILogger logger)
     {
         logger.Information("{serviceName}: Service started", logType.Name);
     }
 
-    public void LogRestartBegin(Type logType, ILogger logger)
+    protected void LogRestartBegin(Type logType, ILogger logger)
     {
         logger.Information("{serviceName}: Service restarting", logType.Name);
     }
 
-    public void LogRestartComplete(Type logType, ILogger logger)
+    protected void LogRestartComplete(Type logType, ILogger logger)
     {
         logger.Information("{serviceName}: Service restarted", logType.Name);
     }
 
-    public void LogStopBegin(Type logType, ILogger logger)
+    protected void LogStopBegin(Type logType, ILogger logger)
     {
         logger.Information("{serviceName}: Service stopping", logType.Name);
     }
 
-    public void LogStopComplete(Type logType, ILogger logger)
+    protected void LogStopComplete(Type logType, ILogger logger)
     {
         logger.Information("{serviceName}: Service stopped", logType.Name);
     }
