@@ -258,7 +258,7 @@ internal static class LegacyConfigModelLoader
             Afk_BaseDurationDisplayIntervalSeconds = oldConfig.Osc.AfkDuration,
             Afk_TimesDisplayedBeforeDoublingInterval = int.TryParse(Math.Round(oldConfig.Osc.AfkDoubleDuration).ToString(), out var parsed) ? parsed : 0,
             Afk_StartText = oldConfig.Osc.AfkStartText,
-            Afk_EndText = oldConfig.Osc.AfkEndText,
+            Afk_StopText = oldConfig.Osc.AfkEndText,
             Afk_StatusText = oldConfig.Osc.AfkStatusText,
 
             Speech_Send_OverTextbox = oldConfig.Speech.UseTextbox,

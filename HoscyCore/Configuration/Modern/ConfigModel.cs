@@ -492,7 +492,7 @@ public class ConfigModel : ObservableObject
 
     private const string AFK_NO_ENDTEXT = "No longer AFK";
     private string _afk_EndText = AFK_NO_ENDTEXT;
-    public string Afk_EndText
+    public string Afk_StopText
     {
         get => _afk_EndText;
         set => SetProperty(ref _afk_EndText, value.Length > 0 ? value : AFK_NO_ENDTEXT);
