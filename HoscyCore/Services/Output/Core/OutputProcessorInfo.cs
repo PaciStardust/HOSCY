@@ -15,24 +15,9 @@ public record OutputProcessorInfo
 /// Flags to determine settings to be displayed in UI
 /// </summary>
 [Flags]
-public enum OutputProcessorInfoFlags //todo: these needed?
+public enum OutputProcessorInfoFlags
 {
-    SupportsMessages = 1,
-    SupportsNotifications = 2,
-    SupportsProcessingIndicator = 4,
-    SupportsClearing = 8, //todo: ?
-    OutputAsText = 16,
-    OutputAsAudio = 32, //todo: ?
-    OutputAsOther = 64
+    OutputsAsText = 1,
+    OutputsAsAudio = 2,
+    OutputsAsOther = 4
 }
-
-/*
-TODO: Sketch
-
-Some module wants to process text
--> Output Processor
--> Needs to deliver some info about "What do I allow" (preprocessing, output modes)
--> Filtering gets applied
--> Translation gets applied?
--> Gets sent to processor
-*/
