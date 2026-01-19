@@ -275,12 +275,18 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     public void SendMessage(string contents, OutputMessageSettings settings) //todo: this needs a fundamental redesign for flexibility
     {
         if (string.IsNullOrWhiteSpace(contents)) return;
-        if (TryPreprocess(contents, out var processedOutput))
+
+        //todo: filter processors here
+
+        //todo: filter preprocessors here
+        if (!settings.Flags.HasFlag(OutputMessageSettingsFlags.DoNotPreprocess) 
+            && TryPreprocess(contents, out var processedOutput))
         {
             if (string.IsNullOrWhiteSpace(processedOutput)) return;
             contents = processedOutput;
         }
 
+        //todo: check if translation is even enabled
         if (TryTranslateContentsIfNeeded(contents, out var translatedText))
         {
             if (translatedText is null) return;
@@ -290,6 +296,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
             SendMessageInternal(contents);
         }
 
+        //todo: ???
         if (translatedText is not null)
         {
             _logger.Debug("Sending {processorCount} processors a message with contents \"{contentsMessage}\" and translation \"{translation}\"", _activeProcessors.Count, contents, translatedText);
