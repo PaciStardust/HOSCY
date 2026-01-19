@@ -276,7 +276,14 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     {
         if (string.IsNullOrWhiteSpace(contents)) return;
 
-        //todo: filter processors here
+        var compatibleProcessors = _activeProcessors
+            .Where(x => IsProcessorCompatible(x, settings))
+            .ToArray();
+        if (compatibleProcessors.Length == 0)
+        {
+            _logger.Warning("Message \"{message}\" was not processed as no processors fit the criteria", contents);
+            return;
+        }
 
         //todo: filter preprocessors here
         if (!settings.Flags.HasFlag(OutputMessageSettingsFlags.DoNotPreprocess) 
@@ -301,7 +308,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         {
             _logger.Debug("Sending {processorCount} processors a message with contents \"{contentsMessage}\" and translation \"{translation}\"", _activeProcessors.Count, contents, translatedText);
             OnMessage.Invoke(this, (contents, translatedText));
-            foreach (var processor in _activeProcessors)
+            foreach (var processor in compatibleProcessors)
             {
                 var newContents = processor.GetTranslationOutputMode() switch
                 {
@@ -320,12 +327,22 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         {
             _logger.Debug("Sending {processorCount} processors a message with contents \"{contentsMessage}\"", _activeProcessors.Count, contents);
             OnMessage.Invoke(this, (contents, null));
-            foreach (var processor in _activeProcessors)
+            foreach (var processor in compatibleProcessors)
             {
                 processor.ProcessMessage(contents);
             }
             _logger.Debug("Sent {processorCount} processors a message with contents \"{contentsMessage}\"", _activeProcessors.Count, contents);
         }
+    }
+
+    private bool IsProcessorCompatible(IOutputProcessor processor, OutputMessageSettings settings) //todo: Does this work?
+    {
+        var id = processor.GetIdentifier();
+        var isNotCompatible = (settings.Flags.HasFlag(OutputMessageSettingsFlags.SkipProcessorsWithTextOutput) && id.Flags.HasFlag(OutputProcessorInfoFlags.OutputAsText))
+            || (settings.Flags.HasFlag(OutputMessageSettingsFlags.SkipProcessorsWithOtherOutput) && id.Flags.HasFlag(OutputProcessorInfoFlags.OutputAsOther))
+            || (settings.Flags.HasFlag(OutputMessageSettingsFlags.SkipProcessorsWithAudioOutput) && id.Flags.HasFlag(OutputProcessorInfoFlags.OutputAsAudio))
+            || settings.IgnoredProcessors.Any(x => x.Equals(id.Name, StringComparison.OrdinalIgnoreCase));
+        return !isNotCompatible;
     }
 
     private void SendMessageInternal(string contents)

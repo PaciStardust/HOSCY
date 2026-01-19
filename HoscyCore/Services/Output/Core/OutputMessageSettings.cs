@@ -10,9 +10,9 @@ public struct OutputMessageSettings
 [Flags]
 public enum OutputMessageSettingsFlags
 {
-    DontSendViaText = 1,
-    DontSendViaAudio = 2,
-    DontSendViaOthers = 4,
+    SkipProcessorsWithTextOutput = 1,
+    SkipProcessorsWithAudioOutput = 2,
+    SkipProcessorsWithOtherOutput = 4,
     DoNotTranslate = 8,
     DoNotPreprocess = 16
 }
