@@ -281,7 +281,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
             .ToArray();
         if (compatibleProcessors.Length == 0)
         {
-            _logger.Warning("Message \"{message}\" was not processed as no processors fit the criteria", contents);
+            _logger.Warning("Message with contents \"{message}\" was not processed as no processors fit the criteria", contents);
             return;
         }
 
@@ -307,9 +307,9 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     private bool IsProcessorCompatible(IOutputProcessor processor, OutputSettingsFlags settings) //todo: [TEST] Does this filter work?
     {
         var id = processor.GetIdentifier();
-        var isNotCompatible = (settings.HasFlag(OutputSettingsFlags.SkipProcessorsWithTextOutput) && id.Flags.HasFlag(OutputProcessorInfoFlags.OutputAsText))
-            || (settings.HasFlag(OutputSettingsFlags.SkipProcessorsWithOtherOutput) && id.Flags.HasFlag(OutputProcessorInfoFlags.OutputAsOther))
-            || (settings.HasFlag(OutputSettingsFlags.SkipProcessorsWithAudioOutput) && id.Flags.HasFlag(OutputProcessorInfoFlags.OutputAsAudio));
+        var isNotCompatible = (settings.HasFlag(OutputSettingsFlags.SkipProcessorsWithTextOutput) && id.Flags.HasFlag(OutputProcessorInfoFlags.OutputsAsText))
+            || (settings.HasFlag(OutputSettingsFlags.SkipProcessorsWithOtherOutput) && id.Flags.HasFlag(OutputProcessorInfoFlags.OutputsAsOther))
+            || (settings.HasFlag(OutputSettingsFlags.SkipProcessorsWithAudioOutput) && id.Flags.HasFlag(OutputProcessorInfoFlags.OutputsAsAudio));
         return !isNotCompatible;
     }
 
@@ -344,22 +344,32 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         _logger.Debug("Sent {processorCount} processors a message with contents \"{contentsMessage}\" and translation \"{translation}\"", processors.Length, contents, translation);
     }
 
-    public void SendNotification(string contents, OutputNotificationPriority priority) //todo: [FIX] Should this not also respect output rules?
+    public void SendNotification(string contents, OutputNotificationPriority priority, OutputSettingsFlags settings)
     {
         if (string.IsNullOrWhiteSpace(contents)) return;
-        if (TryPreprocess(contents, out var processedOutput)) //todo: [FIX] Since when are these preprocessed?
+
+        var compatibleProcessors = _activeProcessors
+            .Where(x => IsProcessorCompatible(x, settings))
+            .ToArray();
+        if (compatibleProcessors.Length == 0)
+        {
+            _logger.Warning("Notification with contents \"{message}\" was not processed as no processors fit the criteria", contents);
+            return;
+        }
+
+        if (!settings.HasFlag(OutputSettingsFlags.DoNotPreprocess) && TryPreprocess(contents, out var processedOutput))
         {
             if (string.IsNullOrWhiteSpace(processedOutput)) return;
             contents = processedOutput;
         }
 
-        _logger.Debug("Sending {processorCount} processors a notification of priority {priority} with contents \"{contentsNotification}\"", _activeProcessors.Count, priority.ToString(), contents);
+        _logger.Debug("Sending {processorCount} processors a notification of priority {priority} with contents \"{contentsNotification}\"", compatibleProcessors.Length, priority.ToString(), contents);
         OnNotification.Invoke(this, new OutputNotificationEventArgs(contents, priority));
-        foreach (var processor in _activeProcessors)
+        foreach (var processor in compatibleProcessors)
         {
             processor.ProcessNotification(contents, priority);
         }
-        _logger.Debug("Sent {processorCount} processors a notification of priority {priority} with contents \"{contentsNotification}\"", _activeProcessors.Count, priority.ToString(), contents);
+        _logger.Debug("Sent {processorCount} processors a notification of priority {priority} with contents \"{contentsNotification}\"", compatibleProcessors.Length, priority.ToString(), contents);
     }
 
     public void Clear()
