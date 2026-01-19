@@ -32,7 +32,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     #endregion
 
     #region Start / Stop
-    protected override void StartInternal()
+    protected override void StartInternal() //todo: automatic starting of processors?
     {
         _logger.Information("Starting up Service by loading available OutputProcessors");
         if (IsStarted())
@@ -272,7 +272,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     #endregion
 
     #region Processor => Control
-    public void SendMessage(string contents)
+    public void SendMessage(string contents) //todo: this needs a fundamental redesign for flexibility
     {
         if (string.IsNullOrWhiteSpace(contents)) return;
         if (TryPreprocess(contents, out var processedOutput))

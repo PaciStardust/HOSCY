@@ -4,7 +4,8 @@ namespace HoscyCore.Services.Output.Core;
 
 public interface IOutputProcessor : IStartStopSubmodule<OutputProcessorInfo>
 {
-    #region Info
+    #region Info 
+    //todo: use info
     public TranslationOutputMode GetTranslationOutputMode();
     #endregion
 
