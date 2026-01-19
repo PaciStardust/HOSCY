@@ -37,7 +37,7 @@ public class CounterOscMessageHandler(IOutputManagerService output, ConfigModel 
         {
             _counterLastDisplay = now;
             _logger.Information("Sending counter notification \"{counterNotification}\"", counterString);
-            _output.SendNotification(counterString, OutputNotificationPriority.Low);
+            _output.SendNotification(counterString, OutputNotificationPriority.Low, OutputSettingsFlags.AllowTextOutput);
         }
         return true;
     }
