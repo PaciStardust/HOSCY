@@ -32,7 +32,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     #endregion
 
     #region Start / Stop
-    protected override void StartInternal() //todo: automatic starting of processors?
+    protected override void StartInternal() //todo: [FEAT] Automatic starting of processors
     {
         _logger.Information("Starting up Service by loading available OutputProcessors");
         if (IsStarted())
@@ -171,7 +171,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     {
         processor.OnRuntimeError -= HandleOnRuntimeError;
         processor.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
-        _activeProcessors.Remove(processor); //todo: TEST => does that work?
+        _activeProcessors.Remove(processor); //todo: [TEST] Do active processors get cleaned up correctly?
         SetFault(GetProcessorExceptions());
     }
 
@@ -304,7 +304,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         }
     }
 
-    private bool IsProcessorCompatible(IOutputProcessor processor, OutputSettingsFlags settings) //todo: Does this work?
+    private bool IsProcessorCompatible(IOutputProcessor processor, OutputSettingsFlags settings) //todo: [TEST] Does this filter work?
     {
         var id = processor.GetIdentifier();
         var isNotCompatible = (settings.HasFlag(OutputSettingsFlags.SkipProcessorsWithTextOutput) && id.Flags.HasFlag(OutputProcessorInfoFlags.OutputAsText))
@@ -344,10 +344,10 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         _logger.Debug("Sent {processorCount} processors a message with contents \"{contentsMessage}\" and translation \"{translation}\"", processors.Length, contents, translation);
     }
 
-    public void SendNotification(string contents, OutputNotificationPriority priority) //todo: should this not also respect output rules?
+    public void SendNotification(string contents, OutputNotificationPriority priority) //todo: [FIX] Should this not also respect output rules?
     {
         if (string.IsNullOrWhiteSpace(contents)) return;
-        if (TryPreprocess(contents, out var processedOutput)) //todo: since when are these preprocessed?
+        if (TryPreprocess(contents, out var processedOutput)) //todo: [FIX] Since when are these preprocessed?
         {
             if (string.IsNullOrWhiteSpace(processedOutput)) return;
             contents = processedOutput;
@@ -383,7 +383,39 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         }
         _logger.Debug("Sent {processorCount} processors command to set processing indicator to {indicatorState}", _activeProcessors.Count, isProcessing);
     }
+    #endregion
 
+    #region Preprocessors
+    /// <summary>
+    /// Tries using preprocessors on text
+    /// </summary>
+    /// <param name="input">String to preprocess</param>
+    /// <param name="output">Preprocessed string if success and not handled entirely by a processor</param>
+    /// <returns>Success</returns>
+    private bool TryPreprocess(string input, out string? output) //todo: [FEAT] config values
+    {
+        _logger.Debug("Preprocessing \"{preProcessorInput}\" ...", input);
+        string? currentOutput = null;
+        foreach (var preprocessor in _preprocessors)
+        {
+            if (!preprocessor.TryProcess(currentOutput ?? input, out var processedOutput)) continue;
+
+            if (!preprocessor.ShouldContinueIfHandled())
+            {
+                _logger.Debug("Preprocessor \"{preprocessorName}\" has done final handling on \"{preProcessorInput}\" with message \"{preProcessorOutput}\"", preprocessor.GetType().Name, input, processedOutput);
+                output = null;
+                return true;
+            }
+
+            _logger.Debug("Preprocessor \"{preprocessorName}\" converted \"{currentInput}\" to \"{currentOutput}\"", currentOutput ?? input, processedOutput);
+            currentOutput = processedOutput;
+        }
+        output = currentOutput;
+        return output is not null;
+    }
+    #endregion
+
+    #region Translation
     private readonly char[] _filterChars = ['\n', '\t', '\r', ' '];
     /// <summary>
     /// Tries to translate if needed
@@ -391,11 +423,11 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     /// <param name="contents">Text to translate</param>
     /// <param name="translatedText">Translated text if sucessfully translated, null if returning false or an error occured</param>
     /// <returns>Attempted translation?</returns>
-    private bool TryTranslateContentsIfNeeded(string contents, IOutputProcessor[] processors, out string? translatedText) //todo: fallback option?
+    private bool TryTranslateContentsIfNeeded(string contents, IOutputProcessor[] processors, out string? translatedText) //todo: [FEAT] Fallback option?
     {
         if (!processors.Any(x => x.GetTranslationOutputMode() != TranslationOutputMode.Untranslated))
         {
-            translatedText = null; //todo: ???
+            translatedText = null; //todo: [FIX] ???
             return false;
         }
 
@@ -421,7 +453,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
                     if (!spaceLocated) continue;
                     contents = i > 0
                         ? contents[..i]
-                        : contents[.._config.ApiCommunication_Translation_MaxTextLength]; //todo: this correct?
+                        : contents[.._config.ApiCommunication_Translation_MaxTextLength]; //todo: [TEST] Does this crop correctly?
                     break;
                 }
             }
@@ -433,36 +465,6 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
             return false;
         }
         return true;
-    }
-    #endregion
-
-    #region Preprocessors
-    /// <summary>
-    /// Tries using preprocessors on text
-    /// </summary>
-    /// <param name="input">String to preprocess</param>
-    /// <param name="output">Preprocessed string if success and not handled entirely by a processor</param>
-    /// <returns>Success</returns>
-    private bool TryPreprocess(string input, out string? output) //todo: config values
-    {
-        _logger.Debug("Preprocessing \"{preProcessorInput}\" ...", input);
-        string? currentOutput = null;
-        foreach (var preprocessor in _preprocessors)
-        {
-            if (!preprocessor.TryProcess(currentOutput ?? input, out var processedOutput)) continue;
-
-            if (!preprocessor.ShouldContinueIfHandled())
-            {
-                _logger.Debug("Preprocessor \"{preprocessorName}\" has done final handling on \"{preProcessorInput}\" with message \"{preProcessorOutput}\"", preprocessor.GetType().Name, input, processedOutput);
-                output = null;
-                return true;
-            }
-
-            _logger.Debug("Preprocessor \"{preprocessorName}\" converted \"{currentInput}\" to \"{currentOutput}\"", currentOutput ?? input, processedOutput);
-            currentOutput = processedOutput;
-        }
-        output = currentOutput;
-        return output is not null;
     }
     #endregion
 }
