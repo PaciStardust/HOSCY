@@ -3,6 +3,7 @@ namespace HoscyCore.Services.Output.Core;
 [Flags]
 public enum OutputSettingsFlags
 {
+    NotSet = 0,
     SkipProcessorsWithTextOutput = 1,
     SkipProcessorsWithAudioOutput = 2,
     SkipProcessorsWithOtherOutput = 4,
