@@ -44,7 +44,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     {
         Name = "VRChat Textbox",
         Description = "Sends Output to the VRChat Textbox via OSC",
-        Flags = OutputProcessorInfoFlags.SupportsMessages | OutputProcessorInfoFlags.SupportsNotifications | OutputProcessorInfoFlags.SupportsProcessingIndicator,
+        Flags = OutputProcessorInfoFlags.OutputsAsText,
         ProcessorType = typeof(VrcTextboxOutputProcessor)
     };
 

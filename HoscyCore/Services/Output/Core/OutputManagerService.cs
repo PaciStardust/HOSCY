@@ -285,14 +285,14 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
             return;
         }
 
-        if (!settings.HasFlag(OutputSettingsFlags.DoNotPreprocess) 
+        if (settings.HasFlag(OutputSettingsFlags.DoPreprocess) 
             && TryPreprocess(contents, out var processedOutput))
         {
             if (string.IsNullOrWhiteSpace(processedOutput)) return;
             contents = processedOutput;
         }
 
-        if (!settings.HasFlag(OutputSettingsFlags.DoNotTranslate) 
+        if (settings.HasFlag(OutputSettingsFlags.DoTranslate) 
             && TryTranslateContentsIfNeeded(contents, compatibleProcessors, out var translatedText))
         {
             if (translatedText is null) return;
@@ -307,10 +307,9 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     private bool IsProcessorCompatible(IOutputProcessor processor, OutputSettingsFlags settings) //todo: [TEST] Does this filter work?
     {
         var id = processor.GetIdentifier();
-        var isNotCompatible = (settings.HasFlag(OutputSettingsFlags.SkipProcessorsWithTextOutput) && id.Flags.HasFlag(OutputProcessorInfoFlags.OutputsAsText))
-            || (settings.HasFlag(OutputSettingsFlags.SkipProcessorsWithOtherOutput) && id.Flags.HasFlag(OutputProcessorInfoFlags.OutputsAsOther))
-            || (settings.HasFlag(OutputSettingsFlags.SkipProcessorsWithAudioOutput) && id.Flags.HasFlag(OutputProcessorInfoFlags.OutputsAsAudio));
-        return !isNotCompatible;
+        return (settings.HasFlag(OutputSettingsFlags.AllowTextOutput) && id.Flags.HasFlag(OutputProcessorInfoFlags.OutputsAsText))
+            || (settings.HasFlag(OutputSettingsFlags.AllowOtherOutput) && id.Flags.HasFlag(OutputProcessorInfoFlags.OutputsAsOther))
+            || (settings.HasFlag(OutputSettingsFlags.AllowAudioOutput) && id.Flags.HasFlag(OutputProcessorInfoFlags.OutputsAsAudio));
     }
 
     private void SendMessageInternal(string contents, IOutputProcessor[] processors)
@@ -357,7 +356,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
             return;
         }
 
-        if (!settings.HasFlag(OutputSettingsFlags.DoNotPreprocess) && TryPreprocess(contents, out var processedOutput))
+        if (settings.HasFlag(OutputSettingsFlags.DoPreprocess) && TryPreprocess(contents, out var processedOutput))
         {
             if (string.IsNullOrWhiteSpace(processedOutput)) return;
             contents = processedOutput;

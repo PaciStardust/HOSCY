@@ -17,7 +17,7 @@ public record OutputProcessorInfo
 [Flags]
 public enum OutputProcessorInfoFlags
 {
-    NotSet = 0,
+    None = 0,
     OutputsAsText = 1,
     OutputsAsAudio = 2,
     OutputsAsOther = 4
