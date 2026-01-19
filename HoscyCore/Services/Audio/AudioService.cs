@@ -6,7 +6,7 @@ using SoundFlow.Backends.MiniAudio;
 namespace HoscyCore.Services.Audio;
 
 [PrototypeLoadIntoDiContainer(typeof(IAudioService), Lifetime.Singleton)]
-public class AudioService(ILogger logger) : StartStopServiceBase, IAudioService
+public class AudioService(ILogger logger) : StartStopServiceBase, IAudioService //todo: [TEST] Can devices be retrieved?
 {
     private AudioEngine? _audioEngine;
     private readonly ILogger _logger = logger.ForContext<AudioService>();

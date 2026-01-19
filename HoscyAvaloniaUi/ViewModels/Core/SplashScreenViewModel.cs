@@ -1,6 +1,6 @@
 namespace HoscyAvaloniaUi.ViewModels.Core;
 
-public class SplashScreenViewModel : ViewModelBase //todo: open log on error?
+public class SplashScreenViewModel : ViewModelBase //todo: [FEAT] Open log on error?
 {
     private string _versionText = "v.?.?.?";
     public string VersionText

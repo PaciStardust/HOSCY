@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using System.Text;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Utility;
@@ -7,7 +6,7 @@ using Serilog;
 
 namespace HoscyCore.Configuration.Legacy;
 
-internal static class LegacyConfigModelLoader
+internal static class LegacyConfigModelLoader //todo: [TEST] Does the conversion work?
 {
     public const string DEFAULT_FILE_NAME = "config.json";
 

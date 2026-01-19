@@ -31,7 +31,7 @@ public abstract class ReplacementOutputPreprocessorBase<T> : IOutputPreprocessor
     #endregion
 
     #region Updating
-    private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e) //todo: does this work?
+    private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e) //todo: [FIX] Is this needed?
     {
         if (e.PropertyName == GetReloadPropertyName())
         {

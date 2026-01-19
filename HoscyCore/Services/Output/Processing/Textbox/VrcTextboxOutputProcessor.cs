@@ -8,8 +8,10 @@ using Serilog;
 namespace HoscyCore.Services.Output.Processing.Textbox;
 
 [LoadIntoDiContainer(typeof(VrcTextboxOutputProcessor), Lifetime.Transient)]
-public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscSendService sender) : OutputProcessorBase //todo: is no event ever called?
+public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscSendService sender) : OutputProcessorBase 
 {
+    //todo: [TEST] Does the textbox work?
+    //todo: [FIX] Is no event ever called?
     #region Injected Services
     private readonly ILogger _logger = logger.ForContext<VrcTextboxOutputProcessor>();
     private readonly ConfigModel _config = config;
@@ -196,7 +198,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     {
         return _lastSentTypingIndicator.AddSeconds(4) > DateTimeOffset.UtcNow
             && _config.Textbox_Text_TypingIndicatorWhenSpeaking
-            && (_config.Input_UseTextbox || _config.Textbox_Text_TypingIndicatorWhenDisabled); //todo: UseTextbox check needs a redo
+            && (_config.Input_UseTextbox || _config.Textbox_Text_TypingIndicatorWhenDisabled); //todo: [REFACTOR] UseTextbox check needs a redo
     }
     #endregion
 

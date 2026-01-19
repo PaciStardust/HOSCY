@@ -15,7 +15,7 @@ namespace HoscyCore.Services.Osc.SendReceive;
 /// </summary>
 [LoadIntoDiContainer(typeof(IOscListenService), Lifetime.Singleton)]
 public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNotifyService notify, IOscMessageHandlingService messageHandler, IOscRelayService relay)
-    : StartStopServiceBase, IOscListenService
+    : StartStopServiceBase, IOscListenService //todo: [TEST] Does receiving work?
 {
     private readonly ConfigModel _config = config;
     private readonly ILogger _logger = logger.ForContext<OscListenService>();

@@ -8,6 +8,7 @@ namespace HoscyCore.Configuration.Modern;
 
 public class ConfigModel : ObservableObject
 {
+    //todo: [REFACTOR] Which of these will be obsolete?
     public int ConfigVersion { get; set; } = 0;
 
     #region ApiCommunication
@@ -87,7 +88,6 @@ public class ConfigModel : ObservableObject
     }
 
     //todo: [REFACTOR] Naming of these variables
-    //todo: [ORGA] Add a lot more todo orga
     private bool _apiCommunication_Translation_SendIfUnavailable = true;
     public bool ApiCommunication_Translation_SendIfUnavailable
     {

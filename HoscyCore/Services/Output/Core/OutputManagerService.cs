@@ -434,7 +434,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     /// <returns>Attempted translation?</returns>
     private bool TryTranslateContentsIfNeeded(string contents, IOutputProcessor[] processors, out string? translatedText)
     {
-        //TODO: [REFACTOR] Should this logic not mostly be in the translation service?
+        //todo: [REFACTOR] Should this logic not mostly be in the translation service?
         if (!processors.Any(x => x.GetTranslationOutputMode() != TranslationOutputMode.Untranslated))
         {
             _logger.Warning("Attempted translation of message with contents \"{contents}\", but could not find a suitable translator", contents);

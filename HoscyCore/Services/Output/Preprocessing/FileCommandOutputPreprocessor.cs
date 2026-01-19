@@ -10,13 +10,11 @@ namespace HoscyCore.Services.Output.Preprocessing;
 /// Handles reading from files as a command
 /// </summary>
 [LoadIntoDiContainer(typeof(FileCommandOutputPreprocessor), Lifetime.Singleton)]
-public partial class FileCommandOutputPreprocessor(ILogger logger) : IOutputPreprocessor
+public partial class FileCommandOutputPreprocessor(ILogger logger) : IOutputPreprocessor //todo: [TEST] Do files work?
 {
     private readonly ILogger _logger = logger.ForContext<FileCommandOutputPreprocessor>();
-
     private const string COMMAND_PREFIX = "[file]";
-    [GeneratedRegex(@$"{COMMAND_PREFIX} *", RegexOptions.IgnoreCase)]
-    private static partial Regex CommandPrefixRemover();
+    private static readonly Regex _commandPrefixRemover = new(@$"{COMMAND_PREFIX} *", RegexOptions.IgnoreCase);
 
     public OutputPreprocessorHandlingStage GetHandlingStage()
         => OutputPreprocessorHandlingStage.ReplaceLate;
@@ -33,7 +31,7 @@ public partial class FileCommandOutputPreprocessor(ILogger logger) : IOutputPrep
         }
 
         _logger.Debug("File command detected \"{fileCommand}\", attempting to load", input);
-        var filePath = CommandPrefixRemover().Replace(input, string.Empty);
+        var filePath = _commandPrefixRemover.Replace(input, string.Empty);
         try
         {
             var lines = File.ReadLines(filePath);

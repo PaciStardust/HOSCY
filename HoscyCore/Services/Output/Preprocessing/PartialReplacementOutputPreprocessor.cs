@@ -13,6 +13,7 @@ namespace HoscyCore.Services.Output.Preprocessing;
 [LoadIntoDiContainer(typeof(PartialReplacementOutputPreprocessor), Lifetime.Singleton)]
 public class PartialReplacementOutputPreprocessor(ConfigModel config, ILogger logger) : ReplacementOutputPreprocessorBase<PartialReplacementHandler>(config, logger.ForContext<PartialReplacementOutputPreprocessor>())
 {
+    //todo: [TEST] Do replacements work?
     #region Simple Overrides
     public override PartialReplacementHandler ConvertToHandler(ReplacementDataModel model)
     {
