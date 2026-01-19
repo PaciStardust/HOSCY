@@ -86,6 +86,22 @@ public class ConfigModel : ObservableObject
         set => SetProperty(ref _apiCommunication_Translation_AppendOriginal, value);
     }
 
+    //todo: [REFACTOR] Naming of these variables
+    //todo: [ORGA] Add a lot more todo orga
+    private bool _apiCommunication_Translation_SendIfUnavailable = true;
+    public bool ApiCommunication_Translation_SendIfUnavailable
+    {
+        get => _apiCommunication_Translation_SendIfUnavailable;
+        set => SetProperty(ref _apiCommunication_Translation_SendIfUnavailable, value);
+    }
+
+    private bool _apiCommunication_Translation_SendIfFailed;
+    public bool ApiCommunication_Translation_SendIfFailed
+    {
+        get => _apiCommunication_Translation_SendIfFailed;
+        set => SetProperty(ref _apiCommunication_Translation_SendIfFailed, value);
+    }
+
     //AZURE
     private string _apiCommunication_Azure_Region = string.Empty;
     public string ApiCommunication_Azure_Region

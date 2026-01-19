@@ -425,6 +425,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     /// <returns>Attempted translation?</returns>
     private bool TryTranslateContentsIfNeeded(string contents, IOutputProcessor[] processors, out string? translatedText) //todo: [FEAT] Fallback option?
     {
+        //TODO: [REFACTOR] Should this logic not mostly be in the translation service?
         if (!processors.Any(x => x.GetTranslationOutputMode() != TranslationOutputMode.Untranslated))
         {
             translatedText = null; //todo: [FIX] ???
