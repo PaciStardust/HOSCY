@@ -19,7 +19,7 @@ public interface IOutputManagerService : IAutoStartStopService
     #endregion
 
     #region Processor Control
-    public void SendMessage(string contents, OutputMessageSettings settings);
+    public void SendMessage(string contents, OutputSettingsFlags settings);
     public void SendNotification(string contents, OutputNotificationPriority priority);
     public void Clear();
     public void SetProcessingIndicator(bool isProcessing);

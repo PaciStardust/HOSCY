@@ -4,7 +4,6 @@ namespace HoscyCore.Services.Output.Core;
 
 public interface IOutputPreprocessor
 {
-    public string GetName(); //todo: needed?
     public OutputPreprocessorHandlingStage GetHandlingStage();
 
     /// <summary>

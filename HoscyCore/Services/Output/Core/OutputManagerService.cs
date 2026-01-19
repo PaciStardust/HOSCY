@@ -272,7 +272,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     #endregion
 
     #region Processor => Control
-    public void SendMessage(string contents, OutputMessageSettings settings) //todo: this needs a fundamental redesign for flexibility
+    public void SendMessage(string contents, OutputSettingsFlags settings) //todo: this needs a fundamental redesign for flexibility
     {
         if (string.IsNullOrWhiteSpace(contents)) return;
 
@@ -286,7 +286,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         }
 
         //todo: filter preprocessors here
-        if (!settings.Flags.HasFlag(OutputMessageSettingsFlags.DoNotPreprocess) 
+        if (!settings.HasFlag(OutputSettingsFlags.DoNotPreprocess) 
             && TryPreprocess(contents, out var processedOutput))
         {
             if (string.IsNullOrWhiteSpace(processedOutput)) return;
@@ -335,13 +335,12 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         }
     }
 
-    private bool IsProcessorCompatible(IOutputProcessor processor, OutputMessageSettings settings) //todo: Does this work?
+    private bool IsProcessorCompatible(IOutputProcessor processor, OutputSettingsFlags settings) //todo: Does this work?
     {
         var id = processor.GetIdentifier();
-        var isNotCompatible = (settings.Flags.HasFlag(OutputMessageSettingsFlags.SkipProcessorsWithTextOutput) && id.Flags.HasFlag(OutputProcessorInfoFlags.OutputAsText))
-            || (settings.Flags.HasFlag(OutputMessageSettingsFlags.SkipProcessorsWithOtherOutput) && id.Flags.HasFlag(OutputProcessorInfoFlags.OutputAsOther))
-            || (settings.Flags.HasFlag(OutputMessageSettingsFlags.SkipProcessorsWithAudioOutput) && id.Flags.HasFlag(OutputProcessorInfoFlags.OutputAsAudio))
-            || settings.IgnoredProcessors.Any(x => x.Equals(id.Name, StringComparison.OrdinalIgnoreCase));
+        var isNotCompatible = (settings.HasFlag(OutputSettingsFlags.SkipProcessorsWithTextOutput) && id.Flags.HasFlag(OutputProcessorInfoFlags.OutputAsText))
+            || (settings.HasFlag(OutputSettingsFlags.SkipProcessorsWithOtherOutput) && id.Flags.HasFlag(OutputProcessorInfoFlags.OutputAsOther))
+            || (settings.HasFlag(OutputSettingsFlags.SkipProcessorsWithAudioOutput) && id.Flags.HasFlag(OutputProcessorInfoFlags.OutputAsAudio));
         return !isNotCompatible;
     }
 
@@ -376,10 +375,10 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         _logger.Debug("Sent {processorCount} processors a message with contents \"{contentsMessage}\" and translation \"{translation}\"", _activeProcessors.Count, contents, translation);
     }
 
-    public void SendNotification(string contents, OutputNotificationPriority priority)
+    public void SendNotification(string contents, OutputNotificationPriority priority) //todo: should this not also respect output rules?
     {
         if (string.IsNullOrWhiteSpace(contents)) return;
-        if (TryPreprocess(contents, out var processedOutput))
+        if (TryPreprocess(contents, out var processedOutput)) //todo: since when are these preprocessed?
         {
             if (string.IsNullOrWhiteSpace(processedOutput)) return;
             contents = processedOutput;
