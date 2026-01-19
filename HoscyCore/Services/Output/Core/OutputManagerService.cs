@@ -272,7 +272,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     #endregion
 
     #region Processor => Control
-    public void SendMessage(string contents) //todo: this needs a fundamental redesign for flexibility
+    public void SendMessage(string contents, OutputMessageSettings settings) //todo: this needs a fundamental redesign for flexibility
     {
         if (string.IsNullOrWhiteSpace(contents)) return;
         if (TryPreprocess(contents, out var processedOutput))
