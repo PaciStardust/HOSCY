@@ -392,7 +392,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     /// <param name="input">String to preprocess</param>
     /// <param name="output">Preprocessed string if success and not handled entirely by a processor</param>
     /// <returns>Success</returns>
-    private bool TryPreprocess(string input, out string? output) //todo: [FEAT] config values
+    private bool TryPreprocess(string input, out string? output)
     {
         _logger.Debug("Preprocessing \"{preProcessorInput}\" ...", input);
         string? currentOutput = null;
@@ -423,13 +423,14 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     /// <param name="contents">Text to translate</param>
     /// <param name="translatedText">Translated text if sucessfully translated, null if returning false or an error occured</param>
     /// <returns>Attempted translation?</returns>
-    private bool TryTranslateContentsIfNeeded(string contents, IOutputProcessor[] processors, out string? translatedText) //todo: [FEAT] Fallback option?
+    private bool TryTranslateContentsIfNeeded(string contents, IOutputProcessor[] processors, out string? translatedText)
     {
         //TODO: [REFACTOR] Should this logic not mostly be in the translation service?
         if (!processors.Any(x => x.GetTranslationOutputMode() != TranslationOutputMode.Untranslated))
         {
-            translatedText = null; //todo: [FIX] ???
-            return false;
+            _logger.Warning("Attempted translation of message with contents \"{contents}\", but could not find a suitable translator", contents);
+            translatedText = null;
+            return !_config.ApiCommunication_Translation_SendIfUnavailable;
         }
 
         if (contents.Length > _config.ApiCommunication_Translation_MaxTextLength)
@@ -454,7 +455,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
                     if (!spaceLocated) continue;
                     contents = i > 0
                         ? contents[..i]
-                        : contents[.._config.ApiCommunication_Translation_MaxTextLength]; //todo: [TEST] Does this crop correctly?
+                        : contents[.._config.ApiCommunication_Translation_MaxTextLength]; //todo: [TEST] Does this crop correctly and do return values work?
                     break;
                 }
             }
@@ -462,8 +463,8 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
 
         if (!_translator.TryTranslate(contents, out translatedText))
         {
-            _logger.Warning("Skipping processing of message with contents \"{contents}\" as translation failed", contents);
-            return false;
+            _logger.Warning("Translation of message with contents \"{contents}\" failed", contents);
+            return !_config.ApiCommunication_Translation_SendIfFailed;
         }
         return true;
     }
