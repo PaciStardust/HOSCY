@@ -272,7 +272,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     #endregion
 
     #region Processor => Control
-    public void SendMessage(string contents, OutputSettingsFlags settings) //todo: this needs a fundamental redesign for flexibility
+    public void SendMessage(string contents, OutputSettingsFlags settings)
     {
         if (string.IsNullOrWhiteSpace(contents)) return;
 
@@ -285,7 +285,6 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
             return;
         }
 
-        //todo: filter preprocessors here
         if (!settings.HasFlag(OutputSettingsFlags.DoNotPreprocess) 
             && TryPreprocess(contents, out var processedOutput))
         {
@@ -293,45 +292,15 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
             contents = processedOutput;
         }
 
-        //todo: check if translation is even enabled
-        if (TryTranslateContentsIfNeeded(contents, out var translatedText))
+        if (!settings.HasFlag(OutputSettingsFlags.DoNotTranslate) 
+            && TryTranslateContentsIfNeeded(contents, compatibleProcessors, out var translatedText))
         {
             if (translatedText is null) return;
-            SendMessageTranslatedInternal(contents, translatedText);
-        } else
-        {
-            SendMessageInternal(contents);
-        }
-
-        //todo: ???
-        if (translatedText is not null)
-        {
-            _logger.Debug("Sending {processorCount} processors a message with contents \"{contentsMessage}\" and translation \"{translation}\"", _activeProcessors.Count, contents, translatedText);
-            OnMessage.Invoke(this, (contents, translatedText));
-            foreach (var processor in compatibleProcessors)
-            {
-                var newContents = processor.GetTranslationOutputMode() switch
-                {
-                    TranslationOutputMode.Translation => translatedText,
-                    TranslationOutputMode.Untranslated => contents,
-                    TranslationOutputMode.Both => _config.ApiCommunication_Translation_AppendOriginal
-                        ? $"{translatedText} / {contents}"
-                        : translatedText,
-                    _ => throw new ArgumentException("Unsupported TranslationOutputMode")
-                };
-                processor.ProcessMessage(newContents);
-            }
-            _logger.Debug("Sent {processorCount} processors a message with contents \"{contentsMessage}\" and translation \"{translation}\"", _activeProcessors.Count, contents, translatedText);
-        }
+            SendMessageTranslatedInternal(contents, translatedText, compatibleProcessors);
+        } 
         else
         {
-            _logger.Debug("Sending {processorCount} processors a message with contents \"{contentsMessage}\"", _activeProcessors.Count, contents);
-            OnMessage.Invoke(this, (contents, null));
-            foreach (var processor in compatibleProcessors)
-            {
-                processor.ProcessMessage(contents);
-            }
-            _logger.Debug("Sent {processorCount} processors a message with contents \"{contentsMessage}\"", _activeProcessors.Count, contents);
+            SendMessageInternal(contents, compatibleProcessors);
         }
     }
 
@@ -344,22 +313,22 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         return !isNotCompatible;
     }
 
-    private void SendMessageInternal(string contents)
+    private void SendMessageInternal(string contents, IOutputProcessor[] processors)
     {
-        _logger.Debug("Sending {processorCount} processors a message with contents \"{contentsMessage}\"", _activeProcessors.Count, contents);
+        _logger.Debug("Sending {processorCount} processors a message with contents \"{contentsMessage}\"", processors.Length, contents);
         OnMessage.Invoke(this, (contents, null));
-        foreach (var processor in _activeProcessors)
+        foreach (var processor in processors)
         {
             processor.ProcessMessage(contents);
         }
-        _logger.Debug("Sent {processorCount} processors a message with contents \"{contentsMessage}\"", _activeProcessors.Count, contents);
+        _logger.Debug("Sent {processorCount} processors a message with contents \"{contentsMessage}\"", processors.Length, contents);
 }
 
-    private void SendMessageTranslatedInternal(string contents, string translation)
+    private void SendMessageTranslatedInternal(string contents, string translation, IOutputProcessor[] processors)
     {
-        _logger.Debug("Sending {processorCount} processors a message with contents \"{contentsMessage}\" and translation \"{translation}\"", _activeProcessors.Count, contents, translation);
+        _logger.Debug("Sending {processorCount} processors a message with contents \"{contentsMessage}\" and translation \"{translation}\"", processors.Length, contents, translation);
         OnMessage.Invoke(this, (contents, translation));
-        foreach (var processor in _activeProcessors)
+        foreach (var processor in processors)
         {
             var newContents = processor.GetTranslationOutputMode() switch
             {
@@ -372,7 +341,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
             };
             processor.ProcessMessage(newContents);
         }
-        _logger.Debug("Sent {processorCount} processors a message with contents \"{contentsMessage}\" and translation \"{translation}\"", _activeProcessors.Count, contents, translation);
+        _logger.Debug("Sent {processorCount} processors a message with contents \"{contentsMessage}\" and translation \"{translation}\"", processors.Length, contents, translation);
     }
 
     public void SendNotification(string contents, OutputNotificationPriority priority) //todo: should this not also respect output rules?
@@ -415,12 +384,6 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         _logger.Debug("Sent {processorCount} processors command to set processing indicator to {indicatorState}", _activeProcessors.Count, isProcessing);
     }
 
-    private bool IsTranslationEnabled(string input) //todo: use
-    {
-        return _activeProcessors.Any(x => x.GetTranslationOutputMode() != TranslationOutputMode.Untranslated)
-            && !(_config.ApiCommunication_Translation_SkipLongerMessages && input.Length > _config.ApiCommunication_Translation_MaxTextLength);
-    }
-
     private readonly char[] _filterChars = ['\n', '\t', '\r', ' '];
     /// <summary>
     /// Tries to translate if needed
@@ -428,11 +391,11 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     /// <param name="contents">Text to translate</param>
     /// <param name="translatedText">Translated text if sucessfully translated, null if returning false or an error occured</param>
     /// <returns>Attempted translation?</returns>
-    private bool TryTranslateContentsIfNeeded(string contents, out string? translatedText)
+    private bool TryTranslateContentsIfNeeded(string contents, IOutputProcessor[] processors, out string? translatedText) //todo: fallback option?
     {
-        if (!_activeProcessors.Any(x => x.GetTranslationOutputMode() != TranslationOutputMode.Untranslated))
+        if (!processors.Any(x => x.GetTranslationOutputMode() != TranslationOutputMode.Untranslated))
         {
-            translatedText = null;
+            translatedText = null; //todo: ???
             return false;
         }
 
