@@ -32,7 +32,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     #endregion
 
     #region Start / Stop
-    protected override void StartInternal()
+    protected override void StartInternal() //todo: [FEAT] Automatic starting of processors
     {
         _logger.Information("Starting up Service by loading available OutputProcessors");
         if (IsStarted())
@@ -171,7 +171,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     {
         processor.OnRuntimeError -= HandleOnRuntimeError;
         processor.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
-        _activeProcessors.Remove(processor); //todo: TEST => does that work?
+        _activeProcessors.Remove(processor); //todo: [TEST] Do active processors get cleaned up correctly?
         SetFault(GetProcessorExceptions());
     }
 
@@ -272,71 +272,62 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     #endregion
 
     #region Processor => Control
-    public void SendMessage(string contents)
+    public void SendMessage(string contents, OutputSettingsFlags settings)
     {
         if (string.IsNullOrWhiteSpace(contents)) return;
-        if (TryPreprocess(contents, out var processedOutput))
+
+        var compatibleProcessors = _activeProcessors
+            .Where(x => IsProcessorCompatible(x, settings))
+            .ToArray();
+        if (compatibleProcessors.Length == 0)
+        {
+            _logger.Warning("Message with contents \"{message}\" was not processed as no processors fit the criteria", contents);
+            return;
+        }
+
+        if (settings.HasFlag(OutputSettingsFlags.DoPreprocess) 
+            && TryPreprocess(contents, out var processedOutput))
         {
             if (string.IsNullOrWhiteSpace(processedOutput)) return;
             contents = processedOutput;
         }
 
-        if (TryTranslateContentsIfNeeded(contents, out var translatedText))
+        if (settings.HasFlag(OutputSettingsFlags.DoTranslate) 
+            && TryTranslateContentsIfNeeded(contents, compatibleProcessors, out var translatedText))
         {
             if (translatedText is null) return;
-            SendMessageTranslatedInternal(contents, translatedText);
-        } else
-        {
-            SendMessageInternal(contents);
-        }
-
-        if (translatedText is not null)
-        {
-            _logger.Debug("Sending {processorCount} processors a message with contents \"{contentsMessage}\" and translation \"{translation}\"", _activeProcessors.Count, contents, translatedText);
-            OnMessage.Invoke(this, (contents, translatedText));
-            foreach (var processor in _activeProcessors)
-            {
-                var newContents = processor.GetTranslationOutputMode() switch
-                {
-                    TranslationOutputMode.Translation => translatedText,
-                    TranslationOutputMode.Untranslated => contents,
-                    TranslationOutputMode.Both => _config.ApiCommunication_Translation_AppendOriginal
-                        ? $"{translatedText} / {contents}"
-                        : translatedText,
-                    _ => throw new ArgumentException("Unsupported TranslationOutputMode")
-                };
-                processor.ProcessMessage(newContents);
-            }
-            _logger.Debug("Sent {processorCount} processors a message with contents \"{contentsMessage}\" and translation \"{translation}\"", _activeProcessors.Count, contents, translatedText);
-        }
+            SendMessageTranslatedInternal(contents, translatedText, compatibleProcessors);
+        } 
         else
         {
-            _logger.Debug("Sending {processorCount} processors a message with contents \"{contentsMessage}\"", _activeProcessors.Count, contents);
-            OnMessage.Invoke(this, (contents, null));
-            foreach (var processor in _activeProcessors)
-            {
-                processor.ProcessMessage(contents);
-            }
-            _logger.Debug("Sent {processorCount} processors a message with contents \"{contentsMessage}\"", _activeProcessors.Count, contents);
+            SendMessageInternal(contents, compatibleProcessors);
         }
     }
 
-    private void SendMessageInternal(string contents)
+    private bool IsProcessorCompatible(IOutputProcessor processor, OutputSettingsFlags settings) //todo: [TEST] Does this filter work?
     {
-        _logger.Debug("Sending {processorCount} processors a message with contents \"{contentsMessage}\"", _activeProcessors.Count, contents);
+        var id = processor.GetIdentifier();
+        return (settings.HasFlag(OutputSettingsFlags.AllowTextOutput) && id.Flags.HasFlag(OutputProcessorInfoFlags.OutputsAsText))
+            || (settings.HasFlag(OutputSettingsFlags.AllowOtherOutput) && id.Flags.HasFlag(OutputProcessorInfoFlags.OutputsAsOther))
+            || (settings.HasFlag(OutputSettingsFlags.AllowAudioOutput) && id.Flags.HasFlag(OutputProcessorInfoFlags.OutputsAsAudio));
+    }
+
+    private void SendMessageInternal(string contents, IOutputProcessor[] processors)
+    {
+        _logger.Debug("Sending {processorCount} processors a message with contents \"{contentsMessage}\"", processors.Length, contents);
         OnMessage.Invoke(this, (contents, null));
-        foreach (var processor in _activeProcessors)
+        foreach (var processor in processors)
         {
             processor.ProcessMessage(contents);
         }
-        _logger.Debug("Sent {processorCount} processors a message with contents \"{contentsMessage}\"", _activeProcessors.Count, contents);
+        _logger.Debug("Sent {processorCount} processors a message with contents \"{contentsMessage}\"", processors.Length, contents);
 }
 
-    private void SendMessageTranslatedInternal(string contents, string translation)
+    private void SendMessageTranslatedInternal(string contents, string translation, IOutputProcessor[] processors)
     {
-        _logger.Debug("Sending {processorCount} processors a message with contents \"{contentsMessage}\" and translation \"{translation}\"", _activeProcessors.Count, contents, translation);
+        _logger.Debug("Sending {processorCount} processors a message with contents \"{contentsMessage}\" and translation \"{translation}\"", processors.Length, contents, translation);
         OnMessage.Invoke(this, (contents, translation));
-        foreach (var processor in _activeProcessors)
+        foreach (var processor in processors)
         {
             var newContents = processor.GetTranslationOutputMode() switch
             {
@@ -349,25 +340,35 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
             };
             processor.ProcessMessage(newContents);
         }
-        _logger.Debug("Sent {processorCount} processors a message with contents \"{contentsMessage}\" and translation \"{translation}\"", _activeProcessors.Count, contents, translation);
+        _logger.Debug("Sent {processorCount} processors a message with contents \"{contentsMessage}\" and translation \"{translation}\"", processors.Length, contents, translation);
     }
 
-    public void SendNotification(string contents, OutputNotificationPriority priority)
+    public void SendNotification(string contents, OutputNotificationPriority priority, OutputSettingsFlags settings)
     {
         if (string.IsNullOrWhiteSpace(contents)) return;
-        if (TryPreprocess(contents, out var processedOutput))
+
+        var compatibleProcessors = _activeProcessors
+            .Where(x => IsProcessorCompatible(x, settings))
+            .ToArray();
+        if (compatibleProcessors.Length == 0)
+        {
+            _logger.Warning("Notification with contents \"{message}\" was not processed as no processors fit the criteria", contents);
+            return;
+        }
+
+        if (settings.HasFlag(OutputSettingsFlags.DoPreprocess) && TryPreprocess(contents, out var processedOutput))
         {
             if (string.IsNullOrWhiteSpace(processedOutput)) return;
             contents = processedOutput;
         }
 
-        _logger.Debug("Sending {processorCount} processors a notification of priority {priority} with contents \"{contentsNotification}\"", _activeProcessors.Count, priority.ToString(), contents);
+        _logger.Debug("Sending {processorCount} processors a notification of priority {priority} with contents \"{contentsNotification}\"", compatibleProcessors.Length, priority.ToString(), contents);
         OnNotification.Invoke(this, new OutputNotificationEventArgs(contents, priority));
-        foreach (var processor in _activeProcessors)
+        foreach (var processor in compatibleProcessors)
         {
             processor.ProcessNotification(contents, priority);
         }
-        _logger.Debug("Sent {processorCount} processors a notification of priority {priority} with contents \"{contentsNotification}\"", _activeProcessors.Count, priority.ToString(), contents);
+        _logger.Debug("Sent {processorCount} processors a notification of priority {priority} with contents \"{contentsNotification}\"", compatibleProcessors.Length, priority.ToString(), contents);
     }
 
     public void Clear()
@@ -391,13 +392,39 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         }
         _logger.Debug("Sent {processorCount} processors command to set processing indicator to {indicatorState}", _activeProcessors.Count, isProcessing);
     }
+    #endregion
 
-    private bool IsTranslationEnabled(string input) //todo: use
+    #region Preprocessors
+    /// <summary>
+    /// Tries using preprocessors on text
+    /// </summary>
+    /// <param name="input">String to preprocess</param>
+    /// <param name="output">Preprocessed string if success and not handled entirely by a processor</param>
+    /// <returns>Success</returns>
+    private bool TryPreprocess(string input, out string? output)
     {
-        return _activeProcessors.Any(x => x.GetTranslationOutputMode() != TranslationOutputMode.Untranslated)
-            && !(_config.ApiCommunication_Translation_SkipLongerMessages && input.Length > _config.ApiCommunication_Translation_MaxTextLength);
-    }
+        _logger.Debug("Preprocessing \"{preProcessorInput}\" ...", input);
+        string? currentOutput = null;
+        foreach (var preprocessor in _preprocessors)
+        {
+            if (!preprocessor.TryProcess(currentOutput ?? input, out var processedOutput)) continue;
 
+            if (!preprocessor.ShouldContinueIfHandled())
+            {
+                _logger.Debug("Preprocessor \"{preprocessorName}\" has done final handling on \"{preProcessorInput}\" with message \"{preProcessorOutput}\"", preprocessor.GetType().Name, input, processedOutput);
+                output = null;
+                return true;
+            }
+
+            _logger.Debug("Preprocessor \"{preprocessorName}\" converted \"{currentInput}\" to \"{currentOutput}\"", currentOutput ?? input, processedOutput);
+            currentOutput = processedOutput;
+        }
+        output = currentOutput;
+        return output is not null;
+    }
+    #endregion
+
+    #region Translation
     private readonly char[] _filterChars = ['\n', '\t', '\r', ' '];
     /// <summary>
     /// Tries to translate if needed
@@ -405,12 +432,14 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     /// <param name="contents">Text to translate</param>
     /// <param name="translatedText">Translated text if sucessfully translated, null if returning false or an error occured</param>
     /// <returns>Attempted translation?</returns>
-    private bool TryTranslateContentsIfNeeded(string contents, out string? translatedText)
+    private bool TryTranslateContentsIfNeeded(string contents, IOutputProcessor[] processors, out string? translatedText)
     {
-        if (!_activeProcessors.Any(x => x.GetTranslationOutputMode() != TranslationOutputMode.Untranslated))
+        //TODO: [REFACTOR] Should this logic not mostly be in the translation service?
+        if (!processors.Any(x => x.GetTranslationOutputMode() != TranslationOutputMode.Untranslated))
         {
+            _logger.Warning("Attempted translation of message with contents \"{contents}\", but could not find a suitable translator", contents);
             translatedText = null;
-            return false;
+            return !_config.ApiCommunication_Translation_SendIfUnavailable;
         }
 
         if (contents.Length > _config.ApiCommunication_Translation_MaxTextLength)
@@ -435,7 +464,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
                     if (!spaceLocated) continue;
                     contents = i > 0
                         ? contents[..i]
-                        : contents[.._config.ApiCommunication_Translation_MaxTextLength]; //todo: this correct?
+                        : contents[.._config.ApiCommunication_Translation_MaxTextLength]; //todo: [TEST] Does this crop correctly and do return values work?
                     break;
                 }
             }
@@ -443,40 +472,10 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
 
         if (!_translator.TryTranslate(contents, out translatedText))
         {
-            _logger.Warning("Skipping processing of message with contents \"{contents}\" as translation failed", contents);
-            return false;
+            _logger.Warning("Translation of message with contents \"{contents}\" failed", contents);
+            return !_config.ApiCommunication_Translation_SendIfFailed;
         }
         return true;
-    }
-    #endregion
-
-    #region Preprocessors
-    /// <summary>
-    /// Tries using preprocessors on text
-    /// </summary>
-    /// <param name="input">String to preprocess</param>
-    /// <param name="output">Preprocessed string if success and not handled entirely by a processor</param>
-    /// <returns>Success</returns>
-    private bool TryPreprocess(string input, out string? output) //todo: config values
-    {
-        _logger.Debug("Preprocessing \"{preProcessorInput}\" ...", input);
-        string? currentOutput = null;
-        foreach (var preprocessor in _preprocessors)
-        {
-            if (!preprocessor.TryProcess(currentOutput ?? input, out var processedOutput)) continue;
-
-            if (!preprocessor.ShouldContinueIfHandled())
-            {
-                _logger.Debug("Preprocessor \"{preprocessorName}\" has done final handling on \"{preProcessorInput}\" with message \"{preProcessorOutput}\"", preprocessor.GetType().Name, input, processedOutput);
-                output = null;
-                return true;
-            }
-
-            _logger.Debug("Preprocessor \"{preprocessorName}\" converted \"{currentInput}\" to \"{currentOutput}\"", currentOutput ?? input, processedOutput);
-            currentOutput = processedOutput;
-        }
-        output = currentOutput;
-        return output is not null;
     }
     #endregion
 }
