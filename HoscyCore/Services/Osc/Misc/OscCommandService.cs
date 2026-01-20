@@ -8,7 +8,7 @@ using Serilog;
 namespace HoscyCore.Services.Osc.Misc;
 
 [LoadIntoDiContainer(typeof(IOscCommandService), Lifetime.Singleton)]
-public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery, IOscSendService sender) : StartStopServiceBase, IOscCommandService
+public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery, IOscSendService sender) : StartStopServiceBase, IOscCommandService //todo: [TEST] Does this work?
 {
     private readonly ILogger _logger = logger.ForContext<OscCommandService>();
     private readonly IOscQueryService _oscQuery = oscQuery;

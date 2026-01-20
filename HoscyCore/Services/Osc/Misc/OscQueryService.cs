@@ -39,13 +39,17 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
         var msftLogger = new SerilogLoggerFactory(_logger)
             .CreateLogger<Vrc.OSCQueryService>();
 
+        var id = Guid.NewGuid().ToString()[..8];
+        var tcpPort = Vrc.Extensions.GetAvailableTcpPort();
         var oscQuery = new Vrc.OSCQueryServiceBuilder()
-            .WithServiceName("HoscyOscQuery")
-            .WithTcpPort(Vrc.Extensions.GetAvailableTcpPort())
+            .WithServiceName($"HOSCY-{id}")
+            .WithTcpPort(tcpPort)
             .WithUdpPort(udpPort.Value)
             .WithLogger(msftLogger)
-            .WithDiscovery(new Vrc.MeaModDiscovery(msftLogger))
+            .WithDefaults()
             .Build();
+
+        _logger.Information("Runnung OscQuery with UDP {udp}, TCP {tcp} and ID {id}", udpPort.Value, tcpPort, id);
 
         oscQuery.AddEndpoint("/*", "[,]", Vrc.Attributes.AccessValues.ReadWrite, null,
             "Any -> HOSCY sends and receives anything for routing and custom commands");
@@ -53,10 +57,6 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
         _logger.Information("Retrieving current OscQueryServices");
 
         _hosts.Clear();
-        foreach (var profile in oscQuery.GetOSCQueryServices())
-        {
-            AddHostInfoFromServiceProfile(profile, _hosts);
-        }
         oscQuery.OnOscQueryServiceAdded += (profile) => TryAddHostInfoFromServiceProfile(profile, _hosts);
         _oscQuery = oscQuery;
 
@@ -94,7 +94,7 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
     /// <summary>
     /// Adds HostInfo to list
     /// </summary>
-    private void AddHostInfoFromServiceProfile(Vrc.OSCQueryServiceProfile profile, Dictionary<string, Vrc.HostInfo> hosts)
+    private void AddHostInfoFromServiceProfile(Vrc.OSCQueryServiceProfile profile, Dictionary<string, Vrc.HostInfo> hosts) //todo: [FEAT] better logging, lifetime?
     {
         _logger.Debug("Received ServiceProfile \"{profileName}\"", profile.name);
         var hostInfo = Vrc.Extensions.GetHostInfo(profile.address, profile.port).GetAwaiter().GetResult();
