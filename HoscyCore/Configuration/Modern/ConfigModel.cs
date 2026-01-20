@@ -8,259 +8,215 @@ namespace HoscyCore.Configuration.Modern;
 
 public class ConfigModel : ObservableObject
 {
-    //todo: [REFACTOR] Which of these will be obsolete?
     public int ConfigVersion { get; set; } = 0;
 
-    #region ApiCommunication
-
-    private List<ApiPresetModel> _apiCommunication_Presets = [];
-    public List<ApiPresetModel> ApiCommunication_Presets
+    #region AFK
+    /// <summary>
+    /// Show how long afk has been ongoing
+    /// </summary>
+    public bool Afk_ShowDuration
     {
-        get => _apiCommunication_Presets;
-        set => SetProperty(ref _apiCommunication_Presets, value);
+        get => _afk_ShowDuration;
+        set => SetProperty(ref _afk_ShowDuration, value);
     }
-    public int ApiCommunication_Presets_GetIndex(string name)
-        => ApiCommunication_Presets.GetListIndex(x => x.Name == name);
+    private bool _afk_ShowDuration = false;
 
-    //RECOGNITION
-    private string _apiCommunication_Recognition_CurrentPreset = string.Empty;
-    public string ApiCommunication_Recognition_CurrentPreset
+    /// <summary>
+    /// The base amount of time (in seconds) between displaying afk updates
+    /// </summary>
+    public float Afk_BaseDurationDisplayIntervalSeconds
     {
-        get => _apiCommunication_Recognition_CurrentPreset;
-        set => SetProperty(ref _apiCommunication_Recognition_CurrentPreset, value);
+        get => _afk_BaseDurationDisplayIntervalSeconds;
+        set => SetProperty(ref _afk_BaseDurationDisplayIntervalSeconds, value.MinMax(5, 300));
     }
+    private float _afk_BaseDurationDisplayIntervalSeconds = 15f;
 
-    private int _apiCommunication_Recognition_MaxRecordingTime = 30;
-    public int ApiCommunication_Recognition_MaxRecordingTime
+    /// <summary>
+    /// How often should the afk update be displayed before doubling the time between updates?
+    /// </summary>
+    public int Afk_TimesDisplayedBeforeDoublingInterval
     {
-        get => _apiCommunication_Recognition_MaxRecordingTime;
-        set => SetProperty(ref _apiCommunication_Recognition_MaxRecordingTime, value.MinMax( 1, 300));
+        get => _afk_TimesDisplayedBeforeDoublingInterval;
+        set => SetProperty(ref _afk_TimesDisplayedBeforeDoublingInterval, value.MinMax(1, 60));
     }
+    private int _afk_TimesDisplayedBeforeDoublingInterval = 12;
 
-    //TRANSLATION
-    private string _apiCommunication_Translation_CurrentPreset = string.Empty;
-    public string ApiCommunication_Translation_CurrentPreset
+    /// <summary>
+    /// Text to display when starting AFK
+    /// </summary>
+    public string Afk_StartText
     {
-        get => _apiCommunication_Translation_CurrentPreset;
-        set => SetProperty(ref _apiCommunication_Translation_CurrentPreset, value);
+        get => _afk_StartText;
+        set => SetProperty(ref _afk_StartText, value.Length > 0 ? value : AFK_NO_STARTTEXT);
     }
+    private const string AFK_NO_STARTTEXT = "Now AFK";
+    private string _afk_StartText = AFK_NO_STARTTEXT;
 
-    private bool _apiCommunication_Translation_SkipLongerMessages = true;
-    public bool ApiCommunication_Translation_SkipLongerMessages
+    /// <summary>
+    /// Text to display when stopping AFK
+    /// </summary>
+    public string Afk_StopText
     {
-        get => _apiCommunication_Translation_SkipLongerMessages;
-        set => SetProperty(ref _apiCommunication_Translation_SkipLongerMessages, value);
+        get => _afk_EndText;
+        set => SetProperty(ref _afk_EndText, value.Length > 0 ? value : AFK_NO_ENDTEXT);
     }
+    private const string AFK_NO_ENDTEXT = "No longer AFK";
+    private string _afk_EndText = AFK_NO_ENDTEXT;
 
-    private int _apiCommunication_Translation_MaxTextLength = 2000;
-    public int ApiCommunication_Translation_MaxTextLength
+    /// <summary>
+    /// Text to display as AFK update
+    /// </summary>
+    public string Afk_StatusText
     {
-        get => _apiCommunication_Translation_MaxTextLength;
-        set => SetProperty(ref _apiCommunication_Translation_MaxTextLength, value.MinMax(1, short.MaxValue));
+        get => _afk_StatusText;
+        set => SetProperty(ref _afk_StatusText, value.Length > 0 ? value : AFK_NO_STATUSTEXT);
     }
-
-    private bool _apiCommunication_Translation_OfTts;
-    public bool ApiCommunication_Translation_OfTts
-    {
-        get => _apiCommunication_Translation_OfTts;
-        set => SetProperty(ref _apiCommunication_Translation_OfTts, value);
-    }
-
-    private bool _apiCommunication_Translation_OfTextbox;
-    public bool ApiCommunication_Translation_OfTextbox
-    {
-        get => _apiCommunication_Translation_OfTextbox;
-        set => SetProperty(ref _apiCommunication_Translation_OfTextbox, value);
-    }
-
-    private bool _apiCommunication_Translation_OfExternalSources;
-    public bool ApiCommunication_Translation_OfExternalSources
-    {
-        get => _apiCommunication_Translation_OfExternalSources;
-        set => SetProperty(ref _apiCommunication_Translation_OfExternalSources, value);
-    }
-
-    private bool _apiCommunication_Translation_AppendOriginal;
-    public bool ApiCommunication_Translation_AppendOriginal
-    {
-        get => _apiCommunication_Translation_AppendOriginal;
-        set => SetProperty(ref _apiCommunication_Translation_AppendOriginal, value);
-    }
-
-    //todo: [REFACTOR] Naming of these variables
-    private bool _apiCommunication_Translation_SendIfUnavailable = true;
-    public bool ApiCommunication_Translation_SendIfUnavailable
-    {
-        get => _apiCommunication_Translation_SendIfUnavailable;
-        set => SetProperty(ref _apiCommunication_Translation_SendIfUnavailable, value);
-    }
-
-    private bool _apiCommunication_Translation_SendIfFailed;
-    public bool ApiCommunication_Translation_SendIfFailed
-    {
-        get => _apiCommunication_Translation_SendIfFailed;
-        set => SetProperty(ref _apiCommunication_Translation_SendIfFailed, value);
-    }
-
-    //AZURE
-    private string _apiCommunication_Azure_Region = string.Empty;
-    public string ApiCommunication_Azure_Region
-    {
-        get => _apiCommunication_Azure_Region;
-        set => SetProperty(ref _apiCommunication_Azure_Region, value);
-    }
-
-    private string _apiCommunication_Azure_Key = string.Empty;
-    public string ApiCommunication_Azure_Key
-    {
-        get => _apiCommunication_Azure_Key;
-        set => SetProperty(ref _apiCommunication_Azure_Key, value);
-    }
-
-    private string _apiCommunication_Azure_CustomEndpointSpeech = string.Empty;
-    public string ApiCommunication_Azure_CustomEndpointSpeech
-    {
-        get => _apiCommunication_Azure_CustomEndpointSpeech;
-        set => SetProperty(ref _apiCommunication_Azure_CustomEndpointSpeech, value);
-    }
-
-    private string _apiCommunication_Azure_CustomEndpointRecognition = string.Empty;
-    public string ApiCommunication_Azure_CustomEndpointRecognition
-    {
-        get => _apiCommunication_Azure_CustomEndpointRecognition;
-        set => SetProperty(ref _apiCommunication_Azure_CustomEndpointRecognition, value);
-    }
-
-    private string _apiCommunication_Azure_CurrentTtsVoice = string.Empty;
-    public string ApiCommunication_Azure_CurrentTtsVoice
-    {
-        get => _apiCommunication_Azure_CurrentTtsVoice;
-        set => SetProperty(ref _apiCommunication_Azure_CurrentTtsVoice, value);
-    }
-
-    private List<AzureTtsVoiceModel> _apiCommunication_Azure_TtsVoices = [];
-    public List<AzureTtsVoiceModel> ApiCommunication_Azure_TtsVoices
-    {
-        get => _apiCommunication_Azure_TtsVoices;
-        set => SetProperty(ref _apiCommunication_Azure_TtsVoices, value);
-    }
-    public int GetTtsVoiceIndex(string name)
-            => ApiCommunication_Azure_TtsVoices.GetListIndex(x => x.Name == name);
-
-    private HashSet<string> _apiCommunication_Azure_Phrases = [];
-    public HashSet<string> ApiCommunication_Azure_Phrases
-    {
-        get => _apiCommunication_Azure_Phrases;
-        set => SetProperty(ref _apiCommunication_Azure_Phrases, value);
-    }
-
-    private HashSet<string> _apiCommunication_Azure_RecognitionLanguages = [];
-    public HashSet<string> ApiCommunication_Azure_RecognitionLanguages
-    {
-        get => _apiCommunication_Azure_RecognitionLanguages;
-        set => SetProperty(ref _apiCommunication_Azure_RecognitionLanguages, value);
-    }
-
-    private bool _apiCommunication_Azure_OverrideNormalTts;
-    public bool ApiCommunication_Azure_OverrideNormalTts
-    {
-        get => _apiCommunication_Azure_OverrideNormalTts;
-        set => SetProperty(ref _apiCommunication_Azure_OverrideNormalTts, value);
-    }
-
+    private const string AFK_NO_STATUSTEXT = "AFK since";
+    private string _afk_StatusText = AFK_NO_STATUSTEXT;
     #endregion
 
-    #region Input
-
-    private bool _input_UseTts;
-    public bool Input_UseTts
+    #region API
+    /// <summary>
+    /// List of all API Presets that are used in various locations
+    /// </summary>
+    public List<ApiPresetModel> Api_Presets
     {
-        get => _input_UseTts;
-        set => SetProperty(ref _input_UseTts, value);
+        get => _api_Presets;
+        set => SetProperty(ref _api_Presets, value);
     }
-
-    private bool _input_UseTextbox = true;
-    public bool Input_UseTextbox
-    {
-        get => _input_UseTextbox;
-        set => SetProperty(ref _input_UseTextbox, value);
-    }
-
-    private bool _input_CanTriggerCommands = true;
-    public bool Input_CanTriggerCommands
-    {
-        get => _input_CanTriggerCommands;
-        set => SetProperty(ref _input_CanTriggerCommands, value);
-    }
-
-    private bool _input_CanTriggerReplace = true;
-    public bool Input_CanTriggerReplace
-    {
-        get => _input_CanTriggerReplace;
-        set => SetProperty(ref _input_CanTriggerReplace, value);
-    }
-
-    private bool _input_CanBeTranslated = true;
-    public bool Input_CanBeTranslated
-    {
-        get => _input_CanBeTranslated;
-        set => SetProperty(ref _input_CanBeTranslated, value);
-    }
-
-    private Dictionary<string, string> _input_Presets = [];
-    public Dictionary<string, string> Input_Presets
-    {
-        get => _input_Presets;
-        set => SetProperty(ref _input_Presets, value);
-    }
-
+    private List<ApiPresetModel> _api_Presets = [];
+    public int Api_Presets_GetIndex(string name)
+        => Api_Presets.GetListIndex(x => x.Name == name);
     #endregion
 
-    #region Debug 
-    private bool _debug_CheckForUpdatesOnStartup = true;
-    public bool Debug_CheckForUpdatesOnStartup
+    #region Azure
+    /// <summary>
+    /// Region of Azure Services
+    /// </summary>
+    public string AzureServices_Region //todo: [IMPL] To be implemented
+    {
+        get => _azureServices_Region;
+        set => SetProperty(ref _azureServices_Region, value);
+    }
+    private string _azureServices_Region = string.Empty;
+
+    /// <summary>
+    /// API Key to use with Azure
+    /// </summary>
+    public string AzureServices_ApiKey //todo: [IMPL] To be implemented
+    {
+        get => _azureServices_ApiKey;
+        set => SetProperty(ref _azureServices_ApiKey, value);
+    }
+    private string _azureServices_ApiKey = string.Empty;
+    #endregion
+
+    #region Counters
+    /// <summary>
+    /// Display counter notifications
+    /// </summary>
+    public bool Counters_ShowNotification
+    {
+        get => _counters_ShowNotification;
+        set => SetProperty(ref _counters_ShowNotification, value);
+    }
+    private bool _counters_ShowNotification;
+
+    /// <summary>
+    /// How long (in seconds) should a recently triggered counter appear in notifications
+    /// </summary>
+    public float Counters_DisplayDurationSeconds
+    {
+        get => _counters_DisplayDurationSeconds;
+        set => SetProperty(ref _counters_DisplayDurationSeconds, value.MinMax(0.01f, 30));
+    }
+    private float _counters_DisplayDurationSeconds = 10f;
+
+    /// <summary>
+    /// How long (in seconds) should the timer notification be on cooldown
+    /// </summary>
+    public float Counters_DisplayCooldownSeconds
+    {
+        get => _counters_DisplayCooldownSeconds;
+        set => SetProperty(ref _counters_DisplayCooldownSeconds, value.MinMax(0, 300));
+    }
+    private float _counters_DisplayCooldownSeconds = 0f;
+
+    /// <summary>
+    /// List of all counters
+    /// </summary>
+    public List<CounterModel> Counters_List
+    {
+        get => _counters_List;
+        set => SetProperty(ref _counters_List, value);
+    }
+    private List<CounterModel> _counters_List = [];
+    #endregion
+
+    #region Debug
+    /// <summary>
+    /// Check for updates on startup?
+    /// </summary>
+    public bool Debug_CheckForUpdatesOnStartup //todo: [IMPL] To be implemented
     {
         get => _debug_CheckForUpdatesOnStartup;
         set => SetProperty(ref _debug_CheckForUpdatesOnStartup, value);
     }
+    private bool _debug_CheckForUpdatesOnStartup = true;
 
-    private bool _debug_LogViaCmdOnWindows;
+    /// <summary>
+    /// Open a Windows Debug Window on startup?
+    /// </summary>
     public bool Debug_LogViaCmdOnWindows
     {
         get => _debug_LogViaCmdOnWindows;
         set => SetProperty(ref _debug_LogViaCmdOnWindows, value);
     }
+    private bool _debug_LogViaCmdOnWindows;
 
-    private bool _debug_LogViaTerminal;
+    /// <summary>
+    /// Log to terminal when launched in one?
+    /// </summary>
     public bool Debug_LogViaTerminal
     {
         get => _debug_LogViaTerminal;
         set => SetProperty(ref _debug_LogViaTerminal, value);
     }
+    private bool _debug_LogViaTerminal;
 
-    private bool _debug_LogViaFileFollow;
+    /// <summary>
+    /// Log to a separate terminal by following the log file
+    /// </summary>
     public bool Debug_LogViaFileFollow
     {
         get => _debug_LogViaFileFollow;
         set => SetProperty(ref _debug_LogViaFileFollow, value);
     }
+    private bool _debug_LogViaFileFollow;
 
-    private string _debug_LogFileFollowProcess = "foot";
+    /// <summary>
+    /// Process to use for following the log file
+    /// </summary>
     public string Debug_LogFileFollowProcess
     {
         get => _debug_LogFileFollowProcess;
         set => SetProperty(ref _debug_LogFileFollowProcess, value);
     }
+    private string _debug_LogFileFollowProcess = "foot";
 
-    private string _debug_LogFileFollowCommand = "-e tail -f [LOGFILE]";
+    /// <summary>
+    /// Command to use for following the log file
+    /// </summary>
     public string Debug_LogFileFollowCommand
     {
         get => _debug_LogFileFollowCommand;
         set => SetProperty(ref _debug_LogFileFollowCommand, value);
     }
+    private string _debug_LogFileFollowCommand = "-e tail -f [LOGFILE]";
 
-    private LogEventLevel _debug_LogMinimumSeverity = LogEventLevel.Debug;
-    private readonly LoggingLevelSwitch _debug_LogMinimumSeveritySwitch = new(LogEventLevel.Debug);
+    /// <summary>
+    /// Minimum log severity to display
+    /// </summary>
     public LogEventLevel Debug_LogMinimumSeverity
     {
         get => _debug_LogMinimumSeverity;
@@ -270,744 +226,1293 @@ public class ConfigModel : ObservableObject
             _debug_LogMinimumSeveritySwitch.MinimumLevel = value;
         }
     }
+    private readonly LoggingLevelSwitch _debug_LogMinimumSeveritySwitch = new(LogEventLevel.Debug);
+    private LogEventLevel _debug_LogMinimumSeverity = LogEventLevel.Debug;
     public LoggingLevelSwitch Debug_LogMinimumSeverityGetSwitch()
         => _debug_LogMinimumSeveritySwitch;
 
-    private List<FilterModel> _debug_LogFilters = [];
+    /// <summary>
+    /// Log filters to apply
+    /// </summary>
     public List<FilterModel> Debug_LogFilters
     {
         get => _debug_LogFilters;
         set => SetProperty(ref _debug_LogFilters, value);
     }
-
+    private List<FilterModel> _debug_LogFilters = [];
     #endregion
 
-    #region OSC
+    #region Devices
+    /// <summary>
+    /// ID of microphone
+    /// </summary>
+    public string Device_CurrentMicrophoneId //todo: [IMPL] To be implemented
+    {
+        get => _device_CurrentMicrophoneId;
+        set => SetProperty(ref _device_CurrentMicrophoneId, value);
+    }
+    private string _device_CurrentMicrophoneId = string.Empty;
 
-    //ROUTING
-    private string _osc_Routing_TargetIp = "127.0.0.1";
+    /// <summary>
+    /// ID of speaker for processed audio
+    /// </summary>
+    public string Device_CurrentSpeakerProcessedId //todo: [IMPL] To be implemented
+    {
+        get => _device_CurrentSpeakerProcessedId;
+        set => SetProperty(ref _device_CurrentSpeakerProcessedId, value);
+    }
+    private string _device_CurrentSpeakerProcessedId = string.Empty;
+
+    /// <summary>
+    /// ID of speaker for system audio
+    /// </summary>
+    public string Device_CurrentSpeakerSystemId //todo: [IMPL] To be implemented, needed?
+    {
+        get => _device_CurrentSpeakerSystemId;
+        set => SetProperty(ref _device_CurrentSpeakerSystemId, value);
+    }
+    private string _device_CurrentSpeakerSystemId = string.Empty;
+    #endregion
+
+    #region External Input
+    /// <summary>
+    /// Should external input be sent to audio processors
+    /// </summary>
+    public bool ExternalInput_SendViaAudio //todo: [IMPL] To be implemented
+    {
+        get => _externalInput_SendViaAudio;
+        set => SetProperty(ref _externalInput_SendViaAudio, value);
+    }
+    private bool _externalInput_SendViaAudio;
+
+    /// <summary>
+    /// Should external input be sent to text processors
+    /// </summary>
+    public bool ExternalInput_SendViaText //todo: [IMPL] To be implemented
+    {
+        get => _externalInput_SendViaText;
+        set => SetProperty(ref _externalInput_SendViaText, value);
+    }
+    private bool _externalInput_SendViaText = true;
+
+    /// <summary>
+    /// Should external input be sent to other processors
+    /// </summary>
+    public bool ExternalInput_SendViaOther //todo: [IMPL] To be implemented
+    {
+        get => _externalInput_SendViaOther;
+        set => SetProperty(ref _externalInput_SendViaOther, value);
+    }
+    private bool _externalInput_SendViaOther = true;
+
+    /// <summary>
+    /// Can external input trigger commands?
+    /// </summary>
+    public bool ExternalInput_CanTriggerCommands //todo: [IMPL] To be implemented
+    {
+        get => _externalInput_CanTriggerCommands;
+        set => SetProperty(ref _externalInput_CanTriggerCommands, value);
+    }
+    private bool _externalInput_CanTriggerCommands = true;
+
+    /// <summary>
+    /// Can external input trigger replacements?
+    /// </summary>
+    public bool ExternalInput_CanTriggerReplace //todo: [IMPL] To be implemented
+    {
+        get => _externalInput_CanTriggerReplace;
+        set => SetProperty(ref _externalInput_CanTriggerReplace, value);
+    }
+    private bool _externalInput_CanTriggerReplace = true;
+
+    /// <summary>
+    /// Should input from external sources be translated
+    /// </summary>
+    public bool ExternalInput_CanBeTranslated //todo: [IMPL] Implement this
+    {
+        get => _externalInput_CanBeTranslated;
+        set => SetProperty(ref _externalInput_CanBeTranslated, value);
+    }
+    private bool _externalInput_CanBeTranslated;
+    #endregion
+
+    #region Manual Input
+    /// <summary>
+    /// Should manual input be sent to audio processors
+    /// </summary>
+    public bool ManualInput_SendViaAudio //todo: [IMPL] To be implemented
+    {
+        get => _manualInput_SendViaAudio;
+        set => SetProperty(ref _manualInput_SendViaAudio, value);
+    }
+    private bool _manualInput_SendViaAudio;
+
+    /// <summary>
+    /// Should manual input be sent to text processors
+    /// </summary>
+    public bool ManualInput_SendViaText //todo: [IMPL] To be implemented
+    {
+        get => _manualInput_SendViaText;
+        set => SetProperty(ref _manualInput_SendViaText, value);
+    }
+    private bool _manualInput_SendViaText = true;
+
+    /// <summary>
+    /// Should manual input be sent to other processors
+    /// </summary>
+    public bool ManualInput_SendViaOther //todo: [IMPL] To be implemented
+    {
+        get => _manualInput_SendViaOther;
+        set => SetProperty(ref _manualInput_SendViaOther, value);
+    }
+    private bool _manualInput_SendViaOther = true;
+
+    /// <summary>
+    /// Can manual input trigger commands?
+    /// </summary>
+    public bool ManualInput_CanTriggerCommands //todo: [IMPL] To be implemented
+    {
+        get => _manualInput_CanTriggerCommands;
+        set => SetProperty(ref _manualInput_CanTriggerCommands, value);
+    }
+    private bool _manualInput_CanTriggerCommands = true;
+
+    /// <summary>
+    /// Can manual input trigger replacements?
+    /// </summary>
+    public bool ManualInput_CanTriggerReplace //todo: [IMPL] To be implemented
+    {
+        get => _manualInput_CanTriggerReplace;
+        set => SetProperty(ref _manualInput_CanTriggerReplace, value);
+    }
+    private bool _manualInput_CanTriggerReplace = true;
+
+    /// <summary>
+    /// Can manual input trigger translation?
+    /// </summary>
+    public bool ManualInput_CanBeTranslated //todo: [IMPL] To be implemented
+    {
+        get => _manualInput_CanBeTranslated;
+        set => SetProperty(ref _manualInput_CanBeTranslated, value);
+    }
+    private bool _manualInput_CanBeTranslated = true;
+
+    /// <summary>
+    /// Text presets for manual input
+    /// </summary>
+    public Dictionary<string, string> ManualInput_TextPresets //todo: [IMPL] To be implemented
+    {
+        get => _manualInput_TextPresets;
+        set => SetProperty(ref _manualInput_TextPresets, value);
+    }
+    private Dictionary<string, string> _manualInput_TextPresets = [];
+    #endregion
+
+    #region Media
+    /// <summary>
+    /// Show media status as notification
+    /// </summary>
+    public bool Media_ShowStatus //todo: [IMPL] To be implemented
+    {
+        get => _media_ShowStatus;
+        set => SetProperty(ref _media_ShowStatus, value);
+    }
+    private bool _media_ShowStatus;
+
+    /// <summary>
+    /// Additionally show album text
+    /// </summary>
+    public bool Media_AddAlbumToText //todo: [IMPL] To be implemented
+    {
+        get => _media_AddAlbumToText;
+        set => SetProperty(ref _media_AddAlbumToText, value);
+    }
+    private bool _media_AddAlbumToText;
+
+    /// <summary>
+    /// Swap artist name and song name
+    /// </summary>
+    public bool Media_SwapArtistAndSongInText //todo: [IMPL] To be implemented
+    {
+        get => _media_SwapArtistAndSongInText;
+        set => SetProperty(ref _media_SwapArtistAndSongInText, value);
+    }
+    private bool _media_SwapArtistAndSongInText;
+
+    /// <summary>
+    /// Verb used at the start of notification
+    /// </summary>
+    public string Media_PlayingVerb //todo: [IMPL] To be implemented
+    {
+        get => _media_PlayingVerb;
+        set => SetProperty(ref _media_PlayingVerb, value.Length > 0 ? value : NO_MEDIA_PLAYINGVERB);
+    }
+    private const string NO_MEDIA_PLAYINGVERB = "Playing";
+    private string _media_PlayingVerb = NO_MEDIA_PLAYINGVERB;
+
+    /// <summary>
+    /// Word used between artist and song name
+    /// </summary>
+    public string Media_IntermediateWord //todo: [IMPL] To be implemented
+    {
+        get => _media_IntermediateWord;
+        set => SetProperty(ref _media_IntermediateWord, value.Length > 0 ? value : NO_MEDIA_INTERMEDIATEWORD);
+    }
+    private const string NO_MEDIA_INTERMEDIATEWORD = "by";
+    private string _media_IntermediateWord = NO_MEDIA_INTERMEDIATEWORD;
+
+    /// <summary>
+    /// Word used in front of album
+    /// </summary>
+    public string Media_AlbumWord //todo: [IMPL] To be implemented
+    {
+        get => _media_AlbumWord;
+        set => SetProperty(ref _media_AlbumWord, value.Length > 0 ? value : NO_MEDIA_ALBUMWORD);
+    }
+    private const string NO_MEDIA_ALBUMWORD = "on";
+    private string _media_AlbumWord = NO_MEDIA_ALBUMWORD;
+
+    /// <summary>
+    /// Extra text at the end
+    /// </summary>
+    public string Media_ExtraText //todo: [IMPL] To be implemented
+    {
+        get => _media_ExtraText;
+        set => SetProperty(ref _media_ExtraText, value);
+    }
+    private string _media_ExtraText = string.Empty;
+
+    /// <summary>
+    /// Filtered out words
+    /// </summary>
+    public List<FilterModel> Media_Filters //todo: [IMPL] To be implemented
+    {
+        get => _media_Filters;
+        set => SetProperty(ref _media_Filters, value);
+    }
+    private List<FilterModel> _media_Filters = [];
+    #endregion
+
+    #region OSC - General
+    /// <summary>
+    /// Default IP to send OSC to
+    /// </summary>
     public string Osc_Routing_TargetIp
     {
         get => _osc_Routing_TargetIp;
         set => SetProperty(ref _osc_Routing_TargetIp, value);
     }
+    private string _osc_Routing_TargetIp = "127.0.0.1";
 
-    private ushort _osc_Routing_TargetPort = 9000;
+    /// <summary>
+    /// Default Port to send OSC to
+    /// </summary>
     public ushort Osc_Routing_TargetPort
     {
         get => _osc_Routing_TargetPort;
         set => SetProperty(ref _osc_Routing_TargetPort, value.MinMax(ushort.MinValue, ushort.MaxValue));
     }
+    private ushort _osc_Routing_TargetPort = 9000;
 
-    private int _osc_Routing_ListenPort = 9001;
+    /// <summary>
+    /// Port to listen for OSC on
+    /// </summary>
     public int Osc_Routing_ListenPort
     {
         get => _osc_Routing_ListenPort;
         set => SetProperty(ref _osc_Routing_ListenPort, value.MinMax(-1, 65535));
     }
+    private int _osc_Routing_ListenPort = 9001;
 
-    private List<OscRelayFilterModel> _osc_Relay_Filters = [];
+    /// <summary>
+    /// List of places to relay OSC to
+    /// </summary>
     public List<OscRelayFilterModel> Osc_Relay_Filters
     {
         get => _osc_Relay_Filters;
         set => SetProperty(ref _osc_Relay_Filters, value);
     }
+    private List<OscRelayFilterModel> _osc_Relay_Filters = [];
 
-    private bool _osc_Relay_IgnoreIfHandled = true;
+    /// <summary>
+    /// Should incoming OSC still be relayed if handled by HOSCY (ex: counters & afk)
+    /// </summary>
     public bool Osc_Relay_IgnoreIfHandled
     {
         get => _osc_Relay_IgnoreIfHandled;
         set => SetProperty(ref _osc_Relay_IgnoreIfHandled, value);
     }
+    private bool _osc_Relay_IgnoreIfHandled = true;
+    #endregion
 
-    //Address - Tool
-    private string _osc_Address_Tool_ManualMute = "/avatar/parameters/ToolMute";
-    public string Osc_Address_Tool_ManualMute
+    #region OSC - Addresses
+    /// <summary>
+    /// OSC Address to (un)mute recognition when received
+    /// </summary>
+    public string Osc_Address_Tool_ToggleMute //todo: [IMPL] To be implemented
     {
-        get => _osc_Address_Tool_ManualMute;
-        set => SetProperty(ref _osc_Address_Tool_ManualMute, value);
+        get => _osc_Address_Tool_ToggleMute;
+        set => SetProperty(ref _osc_Address_Tool_ToggleMute, value);
     }
+    private string _osc_Address_Tool_ToggleMute = "/avatar/parameters/ToolMute";
 
-    private string _osc_Address_Tool_SkipSpeech = "/avatar/parameters/ToolSkipSpeech";
-    public string Osc_Address_Tool_SkipSpeech
+    /// <summary>
+    /// OSC Address to skip audio when received
+    /// </summary>
+    public string Osc_Address_Tool_SkipAudio //todo: [IMPL] To be implemented
     {
-        get => _osc_Address_Tool_SkipSpeech;
-        set => SetProperty(ref _osc_Address_Tool_SkipSpeech, value);
+        get => _osc_Address_Tool_SkipAudio;
+        set => SetProperty(ref _osc_Address_Tool_SkipAudio, value);
     }
+    private string _osc_Address_Tool_SkipAudio = "/avatar/parameters/ToolSkipSpeech";
 
-    private string _osc_Address_Tool_SkipTextbox = "/avatar/parameters/ToolSkipBox";
-    public string Osc_Address_Tool_SkipTextbox
+    /// <summary>
+    /// OSC Address to skip text when received
+    /// </summary>
+    public string Osc_Address_Tool_SkipText //todo: [IMPL] To be implemented
     {
-        get => _osc_Address_Tool_SkipTextbox;
-        set => SetProperty(ref _osc_Address_Tool_SkipTextbox, value);
+        get => _osc_Address_Tool_SkipText;
+        set => SetProperty(ref _osc_Address_Tool_SkipText, value);
     }
+    private string _osc_Address_Tool_SkipText = "/avatar/parameters/ToolSkipBox";
 
-    private string _osc_Address_Tool_EnableReplacements = "/avatar/parameters/ToolEnableReplacements";
-    public string Osc_Address_Tool_EnableReplacements
+    /// <summary>
+    /// OSC Address to toggle replacements
+    /// </summary>
+    public string Osc_Address_Tool_ToggleReplacements //todo: [IMPL] To be implemented or changed
     {
-        get => _osc_Address_Tool_EnableReplacements;
-        set => SetProperty(ref _osc_Address_Tool_EnableReplacements, value);
+        get => _osc_Address_Tool_ToggleReplacements;
+        set => SetProperty(ref _osc_Address_Tool_ToggleReplacements, value);
     }
+    private string _osc_Address_Tool_ToggleReplacements = "/avatar/parameters/ToolEnableReplacements";
 
-    private string _osc_Address_Tool_EnableTextbox = "/avatar/parameters/ToolEnableBox";
-    public string Osc_Address_Tool_EnableTextbox
+    /// <summary>
+    /// OSC Address to toggle to output to text
+    /// </summary>
+    public string Osc_Address_Tool_ToogleOutputToText //todo: [IMPL] To be implemented
     {
-        get => _osc_Address_Tool_EnableTextbox;
-        set => SetProperty(ref _osc_Address_Tool_EnableTextbox, value);
+        get => _osc_Address_Tool_ToggleOutputToText;
+        set => SetProperty(ref _osc_Address_Tool_ToggleOutputToText, value);
     }
+    private string _osc_Address_Tool_ToggleOutputToText = "/avatar/parameters/ToolEnableBox";
 
-    private string _osc_Address_Tool_EnableTts = "/avatar/parameters/ToolEnableTts";
-    public string Osc_Address_Tool_EnableTts
+    /// <summary>
+    /// OSC Address to toggle to output to other
+    /// </summary>
+    public string Osc_Address_Tool_ToogleSpeechToOther //todo: [IMPL] To be implemented
     {
-        get => _osc_Address_Tool_EnableTts;
-        set => SetProperty(ref _osc_Address_Tool_EnableTts, value);
+        get => _osc_Address_Tool_ToggleOutputToOther;
+        set => SetProperty(ref _osc_Address_Tool_ToggleOutputToOther, value);
     }
+    private string _osc_Address_Tool_ToggleOutputToOther = "/avatar/parameters/ToolEnableOther";
 
-    private string _osc_Address_Tool_EnableAutoMute = "/avatar/parameters/ToolEnableAutoMute";
-    public string Osc_Address_Tool_EnableAutoMute
+    /// <summary>
+    /// OSC Address to toggle to output to audio
+    /// </summary>
+    public string Osc_Address_Tool_ToggleOutputToAudio //todo: [IMPL] To be implemented
     {
-        get => _osc_Address_Tool_EnableAutoMute;
-        set => SetProperty(ref _osc_Address_Tool_EnableAutoMute, value);
+        get => _osc_Address_Tool_ToggleOutputToAudio;
+        set => SetProperty(ref _osc_Address_Tool_ToggleOutputToAudio, value);
     }
+    private string _osc_Address_Tool_ToggleOutputToAudio = "/avatar/parameters/ToolEnableTts";
 
-    private string _osc_Address_Tool_SetMicListening = "/avatar/parameters/MicListening";
-    public string Osc_Address_Tool_SetMicListening
+    /// <summary>
+    /// OSC Address to toggle recognition auto mute
+    /// </summary>
+    public string Osc_Address_Tool_ToggleRecognitionAutoMute //todo: [IMPL] To be implemented
     {
-        get => _osc_Address_Tool_SetMicListening;
-        set => SetProperty(ref _osc_Address_Tool_SetMicListening, value);
+        get => _osc_Address_Tool_ToggleRecognitionAutoMute;
+        set => SetProperty(ref _osc_Address_Tool_ToggleRecognitionAutoMute, value);
     }
+    private string _osc_Address_Tool_ToggleRecognitionAutoMute = "/avatar/parameters/ToolEnableAutoMute";
 
-    //Address - Game
-    private string _osc_Address_Game_Mute = "/avatar/parameters/MuteSelf";
-    public string Osc_Address_Game_Mute
+    /// <summary>
+    /// OSC Address sent out when recognition status changes
+    /// </summary>
+    public string Osc_Address_Tool_NotificationForRecognitionListening //todo: [IMPL] To be implemented
+    {
+        get => _osc_Address_Tool_NotificationForRecognitionListening;
+        set => SetProperty(ref _osc_Address_Tool_NotificationForRecognitionListening, value);
+    }
+    private string _osc_Address_Tool_NotificationForRecognitionListening = "/avatar/parameters/MicListening";
+
+    /// <summary>
+    /// OSC Address the game sends out when muted
+    /// </summary>
+    public string Osc_Address_Game_Mute //todo: [IMPL] To be implemented
     {
         get => _osc_Address_Game_Mute;
         set => SetProperty(ref _osc_Address_Game_Mute, value);
     }
+    private string _osc_Address_Game_Mute = "/avatar/parameters/MuteSelf";
 
-    private string _osc_Address_Game_Afk = "/avatar/parameters/AFK";
+    /// <summary>
+    /// OSC Address the game sends out when afk
+    /// </summary>
     public string Osc_Address_Game_Afk
     {
         get => _osc_Address_Game_Afk;
         set => SetProperty(ref _osc_Address_Game_Afk, value);
     }
+    private string _osc_Address_Game_Afk = "/avatar/parameters/AFK";
 
-    private string _osc_Address_Game_Textbox = "/chatbox/input";
+    /// <summary>
+    /// OSC Address the game listens to for textbox usage
+    /// </summary>
     public string Osc_Address_Game_Textbox
     {
         get => _osc_Address_Game_Textbox;
         set => SetProperty(ref _osc_Address_Game_Textbox, value);
     }
+    private string _osc_Address_Game_Textbox = "/chatbox/input";
 
-    //Address - Input
-    private string _osc_Address_Input_TextboxMessage = "/hoscy/message";
-    public string Osc_Address_Input_TextboxMessage
+    /// <summary>
+    /// OSC Address to send to tool for external messages to be sent as text
+    /// </summary>
+    public string Osc_Address_Input_TextMessage //todo: [IMPL] To be implemented
     {
-        get => _osc_Address_Input_TextboxMessage;
-        set => SetProperty(ref _osc_Address_Input_TextboxMessage, value);
+        get => _osc_Address_Input_TextMessage;
+        set => SetProperty(ref _osc_Address_Input_TextMessage, value);
     }
+    private string _osc_Address_Input_TextMessage = "/hoscy/message";
 
-    private string _osc_Address_Input_Tts = "/hoscy/tts";
-    public string Osc_Address_Input_Tts
+    /// <summary>
+    /// OSC Address to send to tool for external notifications to be sent as text
+    /// </summary>
+    public string Osc_Address_Input_TextNotification //todo: [IMPL] To be implemented
     {
-        get => _osc_Address_Input_Tts;
-        set => SetProperty(ref _osc_Address_Input_Tts, value);
+        get => _osc_Address_Input_TextNotification;
+        set => SetProperty(ref _osc_Address_Input_TextNotification, value);
     }
+    private string _osc_Address_Input_TextNotification = "/hoscy/notification";
 
-    private string _osc_Address_Input_TextboxNotification = "/hoscy/notification";
-    public string Osc_Address_Input_TextboxNotification
+    /// <summary>
+    /// OSC Address to send to tool for external text to be sent as audio
+    /// </summary>
+    public string Osc_Address_Input_Audio //todo: [IMPL] To be implemented
     {
-        get => _osc_Address_Input_TextboxNotification;
-        set => SetProperty(ref _osc_Address_Input_TextboxNotification, value);
+        get => _osc_Address_Input_Audio;
+        set => SetProperty(ref _osc_Address_Input_Audio, value);
     }
+    private string _osc_Address_Input_Audio = "/hoscy/tts";
 
-    //Address - Media
-    private string _osc_Address_Media_Pause = "/avatar/parameters/MediaPause";
-    public string Osc_Address_Media_Pause
+    /// <summary>
+    /// OSC Address to send to tool for external text to be sent as other
+    /// </summary>
+    public string Osc_Address_Input_Other //todo: [IMPL] To be implemented
+    {
+        get => _osc_Address_Input_Other;
+        set => SetProperty(ref _osc_Address_Input_Other, value);
+    }
+    private string _osc_Address_Input_Other = "/hoscy/other";
+
+    /// <summary>
+    /// OSC Address to send to tool to pause media
+    /// </summary>
+    public string Osc_Address_Media_Pause //todo: [IMPL] To be implemented
     {
         get => _osc_Address_Media_Pause;
         set => SetProperty(ref _osc_Address_Media_Pause, value);
     }
+    private string _osc_Address_Media_Pause = "/avatar/parameters/MediaPause";
 
-    private string _osc_Address_Media_Unpause = "/avatar/parameters/MediaUnpause";
-    public string Osc_Address_Media_Unpause
+    /// <summary>
+    /// OSC Address to send to tool to unpause media
+    /// </summary>
+    public string Osc_Address_Media_Unpause //todo: [IMPL] To be implemented
     {
         get => _osc_Address_Media_Unpause;
         set => SetProperty(ref _osc_Address_Media_Unpause, value);
     }
+    private string _osc_Address_Media_Unpause = "/avatar/parameters/MediaUnpause";
 
-    private string _osc_Address_Media_Rewind = "/avatar/parameters/MediaRewind";
-    public string Osc_Address_Media_Rewind
+    /// <summary>
+    /// OSC Address to send to tool to rewind media
+    /// </summary>
+    public string Osc_Address_Media_Rewind //todo: [IMPL] To be implemented
     {
         get => _osc_Address_Media_Rewind;
         set => SetProperty(ref _osc_Address_Media_Rewind, value);
     }
+    private string _osc_Address_Media_Rewind = "/avatar/parameters/MediaRewind";
 
-    private string _osc_Address_Media_Skip = "/avatar/parameters/MediaSkip";
-    public string Osc_Address_Media_Skip
+    /// <summary>
+    /// OSC Address to send to tool to skip media
+    /// </summary>
+    public string Osc_Address_Media_Skip //todo: [IMPL] To be implemented
     {
         get => _osc_Address_Media_Skip;
         set => SetProperty(ref _osc_Address_Media_Skip, value);
     }
+    private string _osc_Address_Media_Skip = "/avatar/parameters/MediaSkip";
 
-    private string _osc_Address_Media_Info = "/avatar/parameters/MediaInfo";
-    public string Osc_Address_Media_Info
+    /// <summary>
+    /// OSC Address to send to tool to display media info
+    /// </summary>
+    public string Osc_Address_Media_Info //todo: [IMPL] To be implemented
     {
         get => _osc_Address_Media_Info;
         set => SetProperty(ref _osc_Address_Media_Info, value);
     }
+    private string _osc_Address_Media_Info = "/avatar/parameters/MediaInfo";
 
-    private string _osc_Address_Media_Toggle = "/avatar/parameters/MediaToggle";
-    public string Osc_Address_Media_Toggle
+    /// <summary>
+    /// OSC Address to send to tool to toggle media playback
+    /// </summary>
+    public string Osc_Address_Media_Toggle //todo: [IMPL] To be implemented
     {
         get => _osc_Address_Media_Toggle;
         set => SetProperty(ref _osc_Address_Media_Toggle, value);
     }
+    private string _osc_Address_Media_Toggle = "/avatar/parameters/MediaToggle";
+    #endregion
 
+    #region Preprocessing
+    /// <summary>
+    /// Enables/Disables replacements entirely
+    /// </summary>
+    public bool Preprocessing_DoReplacements //todo: [IMPL] To be implemented, even useful?
+    {
+        get => _preprocessing_DoReplacements;
+        set => SetProperty(ref _preprocessing_DoReplacements, value);
+    }
+    private bool _preprocessing_DoReplacements = true;
+
+    /// <summary>
+    /// List of full replacements to use
+    /// </summary>
+    public List<ReplacementDataModel> Preprocessing_ReplacementsFull
+    {
+        get => _preprocessing_ReplacementsFull;
+        set => SetProperty(ref _preprocessing_ReplacementsFull, value);
+    }
+    private List<ReplacementDataModel> _preprocessing_ReplacementsFull = [];
+
+    /// <summary>
+    /// List of partial replacements to use
+    /// </summary>
+    public List<ReplacementDataModel> Preprocessing_ReplacementsPartial
+    {
+        get => _preprocessing_ReplacementsPartial;
+        set => SetProperty(ref _preprocessing_ReplacementsPartial, value);
+    }
+    private List<ReplacementDataModel> _preprocessing_ReplacementsPartial = [];
+
+    /// <summary>
+    /// Characters that get ignored for full replacements
+    /// </summary>
+    public string Preprocessing_ReplacementFullIgnoredCharacters //todo: [IMPL] To be implemented
+    {
+        get => _preprocessing_ReplacementFullIgnoredCharacters;
+        set => SetProperty(ref _preprocessing_ReplacementFullIgnoredCharacters, value);
+    }
+    private string _preprocessing_ReplacementFullIgnoredCharacters = ".?!,。、！？";
+    #endregion
+
+    #region Recognition - General
+    /// <summary>
+    /// Allow sending recognition result over text
+    /// </summary>
+    public bool Recognition_Send_OverText //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Send_OverText;
+        set => SetProperty(ref _recognition_Send_OverText, value);
+    }
+    private bool _recognition_Send_OverText = true;
+
+    /// <summary>
+    /// Allow sending recognition result over audio
+    /// </summary>
+    public bool Recognition_Send_OverAudio //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Send_OverAudio;
+        set => SetProperty(ref _recognition_Send_OverAudio, value);
+    }
+    private bool _recognition_Send_OverAudio = false;
+
+    /// <summary>
+    /// Allow sending recognition result over other
+    /// </summary>
+    public bool Recognition_Send_OverOther //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Send_OverOther;
+        set => SetProperty(ref _recognition_Send_OverOther, value);
+    }
+    private bool _recognition_Send_OverOther = false;
+
+    /// <summary>
+    /// Should recognition be unmuted when started
+    /// </summary>
+    public bool Recognition_Mute_StartUnmuted //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Mute_StartUnmuted;
+        set => SetProperty(ref _recognition_Mute_StartUnmuted, value);
+    }
+    private bool _recognition_Mute_StartUnmuted = true;
+
+    /// <summary>
+    /// Should a sound be played on (un)mute
+    /// </summary>
+    public bool Recognition_Mute_PlaySound //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Mute_PlaySound;
+        set => SetProperty(ref _recognition_Mute_PlaySound, value);
+    }
+    private bool _recognition_Mute_PlaySound = false;
+
+    /// <summary>
+    /// Should recognition be muted when the game is muted
+    /// </summary>
+    public bool Recognition_Mute_OnGameMute //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Mute_OnGameMute;
+        set => SetProperty(ref _recognition_Mute_OnGameMute, value);
+    }
+    private bool _recognition_Mute_OnGameMute = true;
+
+    /// <summary>
+    /// Module to use for recognition
+    /// </summary>
+    public string Recognition_SelectedModuleName //todo: [IMPL] To be implemented
+    {
+        get => _recognition_SelectedModuleName;
+        set => SetProperty(ref _recognition_SelectedModuleName, value);
+    }
+    private string _recognition_SelectedModuleName = string.Empty;
+
+    /// <summary>
+    /// Noise filtered out by recognizers
+    /// </summary>
+    public HashSet<string> Recognition_Fixup_NoiseFilter //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Fixup_NoiseFilter;
+        set => SetProperty(ref _recognition_Fixup_NoiseFilter, value);
+    }
+    private HashSet<string> _recognition_Fixup_NoiseFilter = [];
+
+    /// <summary>
+    /// Remove the period at the end of a message
+    /// </summary>
+    public bool Recognition_Fixup_RemoveEndPeriod //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Fixup_RemoveEndPeriod;
+        set => SetProperty(ref _recognition_Fixup_RemoveEndPeriod, value);
+    }
+    private bool _recognition_Fixup_RemoveEndPeriod = true;
+
+    /// <summary>
+    /// Capitalizes the first character of the message
+    /// </summary>
+    public bool Recognition_Fixup_CapitalizeFirstLetter //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Fixup_CapitalizeFirstLetter;
+        set => SetProperty(ref _recognition_Fixup_CapitalizeFirstLetter, value);
+    }
+    private bool _recognition_Fixup_CapitalizeFirstLetter = true;
+    #endregion
+
+    #region Recognition - API
+    /// <summary>
+    /// API Preset for API Speech Recognition
+    /// </summary>
+    public string Recognition_Api_Preset //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Api_Preset;
+        set => SetProperty(ref _recognition_Api_Preset, value);
+    }
+    private string _recognition_Api_Preset = string.Empty;
+
+    /// <summary>
+    /// Maximum recording time for API Speech Recognition in seconds 
+    /// </summary>
+    public int Recognition_Api_MaxRecordingTime //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Api_MaxRecordingTime;
+        set => SetProperty(ref _recognition_Api_MaxRecordingTime, value.MinMax( 1, 300));
+    }
+    private int _recognition_Api_MaxRecordingTime = 30;
+    #endregion
+
+    #region Recognition - Azure
+    /// <summary>
+    /// Custom endpoint for Azure Speech Recognition
+    /// </summary>
+    public string Recognition_Azure_CustomEndpoint //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Azure_CustomEndpoint;
+        set => SetProperty(ref _recognition_Azure_CustomEndpoint, value);
+    }
+    private string _recognition_Azure_CustomEndpoint = string.Empty;
+
+    /// <summary>
+    /// Preset phrases for Azure Speech Recognition
+    /// </summary>
+    public HashSet<string> Recognition_Azure_PresetPhrases //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Azure_Phrases;
+        set => SetProperty(ref _recognition_Azure_Phrases, value);
+    }
+    private HashSet<string> _recognition_Azure_Phrases = [];
+
+    /// <summary>
+    /// List of Languages for Azure Speech Recognition
+    /// </summary>
+    public HashSet<string> Recognition_Azure_Languages //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Azure_Languages;
+        set => SetProperty(ref _recognition_Azure_Languages, value);
+    }
+    private HashSet<string> _recognition_Azure_Languages = [];
+    #endregion
+
+    #region Recognition - Vosk
+    /// <summary>
+    /// List of available vosk models with file path
+    /// </summary>
+    public Dictionary<string, string> Recognition_Vosk_Models //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Vosk_Models;
+        set => SetProperty(ref _recognition_Vosk_Models, value);
+    }
+    private Dictionary<string, string> _recognition_Vosk_Models = [];
+
+    /// <summary>
+    /// Currently used vosk model
+    /// </summary>
+    public string Recognition_Vosk_CurrentModel //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Vosk_CurrentModel;
+        set => SetProperty(ref _recognition_Vosk_CurrentModel, value);
+    }
+    private string _recognition_Vosk_CurrentModel = string.Empty;
+
+    /// <summary>
+    /// Time to wait in MS for new word before stopping sentence
+    /// </summary>
+    public int Recognition_Vosk_NewWordWaitTimeMs //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Vosk_NewWordWaitTimeMs;
+        set => SetProperty(ref _recognition_Vosk_NewWordWaitTimeMs,value.MinMax(500, 30000));
+    }
+    private int _recognition_Vosk_NewWordWaitTimeMs = 2500;
+    #endregion
+
+    #region Recognition - Whisper
+    /// <summary>
+    /// List of whisper models with file path
+    /// </summary>
+    public Dictionary<string, string> Recognition_Whisper_Models //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Whisper_Models;
+        set => SetProperty(ref _recognition_Whisper_Models, value);
+    }
+    private Dictionary<string, string> _recognition_Whisper_Models = [];
+
+    /// <summary>
+    /// Currently in use whisper model
+    /// </summary>
+    public string Recognition_Whisper_CurrentModel //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Whisper_CurrentModel;
+        set => SetProperty(ref _recognition_Whisper_CurrentModel, value);
+    }
+    private string _recognition_Whisper_CurrentModel = string.Empty;
+
+    /// <summary>
+    /// Enable single segment mode for higher accuracy but reduced functionality
+    /// </summary>
+    public bool Recognition_Whisper_UseSingleSegmentMode //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Whisper_UseSingleSegmentMode;
+        set => SetProperty(ref _recognition_Whisper_UseSingleSegmentMode, value);
+    }
+    private bool _recognition_Whisper_UseSingleSegmentMode = true;
+
+    /// <summary>
+    /// Translate to English if the detected language is not English
+    /// </summary>
+    public bool Recognition_Whisper_TranslateToEnglish //todo: [IMPL] To be implemented? Even needed in rework?
+    {
+        get => _recognition_Whisper_TranslateToEnglish;
+        set => SetProperty(ref _recognition_Whisper_TranslateToEnglish, value);
+    }
+    private bool _recognition_Whisper_TranslateToEnglish = false;
+
+    /// <summary>
+    /// Fixes random brackets in the output "('( ( (')"
+    /// </summary>
+    public bool Recognition_Whisper_RemoveRandomBrackets //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Whisper_RemoveRandomBrackets;
+        set => SetProperty(ref _recognition_Whisper_RemoveRandomBrackets, value);
+    }
+    private bool _recognition_Whisper_RemoveRandomBrackets = true;
+
+    /// <summary>
+    /// (Not recommended) Increase the priority of the whisper process
+    /// </summary>
+    public bool Recognition_Whisper_IncreaseThreadPriority //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Whisper_IncreaseThreadPriority;
+        set => SetProperty(ref _recognition_Whisper_IncreaseThreadPriority, value);
+    }
+    private bool _recognition_Whisper_IncreaseThreadPriority = false;
+
+    /// <summary>
+    /// Write noises that have been filtered out to the logs
+    /// </summary>
+    public bool Recognition_Whisper_LogFilteredNoises //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Whisper_LogFilteredNoises;
+        set => SetProperty(ref _recognition_Whisper_LogFilteredNoises, value);
+    }
+    private bool _recognition_Whisper_LogFilteredNoises = false;
+
+    /// <summary>
+    /// List of allowed whisper noises
+    /// </summary>
+    public Dictionary<string, string> Recognition_Whisper_NoiseFilter //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Whisper_NoiseFilter;
+        set => SetProperty(ref _recognition_Whisper_NoiseFilter, value);
+    }
+    private Dictionary<string, string> _recognition_Whisper_NoiseFilter = [];
+
+    /// <summary>
+    /// Speaking language
+    /// </summary>
+    public eLanguage Recognition_Whisper_Language //todo: [IMPL] To be implemented and should really not be an actual type, autodetect?
+    {
+        get => _recognition_Whisper_Language;
+        set => SetProperty(ref _recognition_Whisper_Language, value);
+    }
+    private eLanguage _recognition_Whisper_Language = eLanguage.English;
+
+    /// <summary>
+    /// Amount of threads used by whisper. 0 = All, -n = All but n threads
+    /// </summary>
+    public int Recognition_Whisper_ThreadUsed //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Whisper_ThreadsUsed;
+        set => SetProperty(ref _recognition_Whisper_ThreadsUsed, value.MinMax(short.MinValue, short.MaxValue));
+    }
+    private int _recognition_Whisper_ThreadsUsed = -4;
+
+    /// <summary>
+    /// Maxiumum amount of context tokens
+    /// </summary>
+    public int Recognition_Whisper_MaxContext //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Whisper_MaxContext;
+        set => SetProperty(ref _recognition_Whisper_MaxContext, value.MinMax(-1, short.MaxValue));
+    }
+    private int _recognition_Whisper_MaxContext = 0;
+
+    /// <summary>
+    /// Maximum segment length
+    /// </summary>
+    public int Recognition_Whisper_MaxSegmentLength //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Whisper_MaxSegmentLength;
+        set => SetProperty(ref _recognition_Whisper_MaxSegmentLength, value.MinMax(0, short.MaxValue));
+    }
+    private int _recognition_Whisper_MaxSegmentLength = 0;
+
+    /// <summary>
+    /// Cutoff time for a sentence in seconds
+    /// </summary>
+    public float Recognition_Whisper_MaxSentenceDurationSeconds //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Whisper_MaxSentenceDurationSeconds;
+        set => SetProperty(ref _recognition_Whisper_MaxSentenceDurationSeconds, value.MinMax(2, short.MaxValue));
+    }
+    private float _recognition_Whisper_MaxSentenceDurationSeconds = 16;
+
+    /// <summary>
+    /// Duration to recognize a pause in seconds
+    /// </summary>
+    public float Recognition_Whisper_DetectPauseDurationSeconds //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Whisper_DetectPauseDurationSeconds;
+        set => SetProperty(ref _recognition_Whisper_DetectPauseDurationSeconds, value.MinMax(0.05f, short.MaxValue));
+    }
+    private float _recognition_Whisper_DetectPauseDurationSeconds = 0.5f;
+
+    /// <summary>
+    /// GPU to use
+    /// </summary>
+    public string Recognition_Whisper_GraphicsAdapter //todo: [IMPL] To be implemented, cpu mode?
+    {
+        get => _recognition_Whisper_GraphicsAdapter;
+        set => SetProperty(ref _recognition_Whisper_GraphicsAdapter, value);
+    }
+    private string _recognition_Whisper_GraphicsAdapter = string.Empty;
+    #endregion
+
+    #region Recognition - Windows
+    /// <summary>
+    /// Model Id for Windows Recognition
+    /// </summary>
+    public string Recognition_Windows_ModelId //todo: [IMPL] To be implemented?
+    {
+        get => _recognition_Windows_ModelId;
+        set => SetProperty(ref _recognition_Windows_ModelId, value);
+    }
+    private string _recognition_Windows_ModelId = string.Empty;
+    #endregion
+
+    #region Translation - General
+    /// <summary>
+    /// Skip longer messages for API Translation, will be cropped otherwise
+    /// </summary>
+    public bool Translation_SkipLongerMessages
+    {
+        get => _translation_SkipLongerMessages;
+        set => SetProperty(ref _translation_SkipLongerMessages, value);
+    }
+    private bool _translation_SkipLongerMessages = true;
+
+    /// <summary>
+    /// Max Text Length for Translation 
+    /// </summary>
+    public int Translation_MaxTextLength
+    {
+        get => _translation_MaxTextLength;
+        set => SetProperty(ref _translation_MaxTextLength, value.MinMax(1, short.MaxValue));
+    }
+    private int _translation_MaxTextLength = 2000;
+
+    /// <summary>
+    /// Allow audio output to be translated
+    /// </summary>
+    public bool Translation_OfAudioOutput //todo: [IMPL] To be implemented
+    {
+        get => _translation_OfAudioOutput;
+        set => SetProperty(ref _translation_OfAudioOutput, value);
+    }
+    private bool _translation_OfAudioOutput = true;
+
+    /// <summary>
+    /// Allow text output to be translated
+    /// </summary>
+    public bool Translation_OfTextOutput //todo: [IMPL] To be implemented
+    {
+        get => _translation_OfTextOutput;
+        set => SetProperty(ref _translation_OfTextOutput, value);
+    }
+    private bool _translation_OfTextOutput = true;
+
+    /// <summary>
+    /// Allow other output to be translated
+    /// </summary>
+    public bool Translation_OfOtherOutput //todo: [IMPL] To be implemented
+    {
+        get => _translation_OfOtherOutput;
+        set => SetProperty(ref _translation_OfOtherOutput, value);
+    }
+    private bool _translation_OfOtherOutput = true;
+
+    /// <summary>
+    /// Should original text be appended to translation
+    /// </summary>
+    public bool Translation_AppendOriginal
+    {
+        get => _translation_AppendOriginal;
+        set => SetProperty(ref _translation_AppendOriginal, value);
+    }
+    private bool _translation_AppendOriginal;
+
+    /// <summary>
+    /// Send untranslated text if nothing can output translation
+    /// </summary>
+    public bool Translation_SendUntranslatedIfUnavailable
+    {
+        get => _translation_SendUntranslatedIfUnavailable;
+        set => SetProperty(ref _translation_SendUntranslatedIfUnavailable, value);
+    }
+    private bool _translation_SendUntranslatedIfUnavailable = true;
+
+    /// <summary>
+    /// Send untranslated if translation fails
+    /// </summary>
+    public bool Translation_SendUntranslatedIfFailed
+    {
+        get => _translation_SendUntranslatedIfFailed;
+        set => SetProperty(ref _translation_SendUntranslatedIfFailed, value);
+    }
+    private bool _translation_SendUntranslatedIfFailed;
+    #endregion
+
+    #region Translation - Api
+    /// <summary>
+    /// API Preset for API Translation 
+    /// </summary>
+    public string Translation_Api_Preset
+    {
+        get => _translation_Api_Preset;
+        set => SetProperty(ref _translation_Api_Preset, value);
+    }
+    private string _translation_Api_Preset = string.Empty;
+    #endregion
+
+    #region Voice - General
+    /// <summary>
+    /// Volume of Voice Audio
+    /// </summary>
+    public int Voice_AudioVolumePercent //todo: [IMPL] To be implemented
+    {
+        get => _voice_AudioVolumePercent;
+        set => SetProperty(ref _voice_AudioVolumePercent, value);
+    }
+    private int _voice_AudioVolumePercent = 50;
+
+    /// <summary>
+    /// Maximum length of text to be converted to voice
+    /// </summary>
+    public int Voice_MaximumTextLength //todo: [IMPL] To be implemented
+    {
+        get => _voice_MaximumTextLength;
+        set => SetProperty(ref _voice_MaximumTextLength, value.MinMax(1, short.MaxValue));
+    }
+    private int _voice_MaximumTextLength = 500;
+
+    /// <summary>
+    /// Should longer text be skipped? Will be cut otherwise
+    /// </summary>
+    public bool Voice_SkipLongerText //todo: [IMPL] To be implemented
+    {
+        get => _voice_SkipLongerText;
+        set => SetProperty(ref _voice_SkipLongerText, value);
+    }
+    private bool _voice_SkipLongerText = true;
     #endregion 
 
-    #region Counters
-
-    //COUNTERS
-    private bool _counters_ShowNotification;
-    public bool Counters_ShowNotification
+    #region Voice - Azure
+    /// <summary>
+    /// List of voices to use with Azure TTS
+    /// </summary>
+    public List<AzureTtsVoiceModel> Voice_Azure_VoiceList //todo: [IMPL] To be implemented
     {
-        get => _counters_ShowNotification;
-        set => SetProperty(ref _counters_ShowNotification, value);
+        get => _voice_Azure_Voices;
+        set => SetProperty(ref _voice_Azure_Voices, value);
     }
+    private List<AzureTtsVoiceModel> _voice_Azure_Voices = [];
+    public int Voice_Azure_GetVoiceIndex(string name)
+            => Voice_Azure_VoiceList.GetListIndex(x => x.Name == name);
 
-    private float _counters_DisplayDurationSeconds = 10f;
-    public float Counters_DisplayDurationSeconds
+    /// <summary>
+    /// Currently selected voice from list
+    /// </summary>
+    public string Voice_Azure_CurrentVoice //todo: [IMPL] To be implemented
     {
-        get => _counters_DisplayDurationSeconds;
-        set => SetProperty(ref _counters_DisplayDurationSeconds, value.MinMax(0.01f, 30));
+        get => _voice_Azure_CurrentVoice;
+        set => SetProperty(ref _voice_Azure_CurrentVoice, value);
     }
+    private string _voice_Azure_CurrentVoice = string.Empty;
 
-    private float _counters_DisplayCooldownSeconds = 0f;
-    public float Counters_DisplayCooldownSeconds
+    /// <summary>
+    /// Custom endpoint for Azure Voices
+    /// </summary>
+    public string Voice_Azure_CustomEndpoint //todo: [IMPL] To be implemented
     {
-        get => _counters_DisplayCooldownSeconds;
-        set => SetProperty(ref _counters_DisplayCooldownSeconds, value.MinMax(0, 300));
+        get => _voice_Azure_CustomEndpoint;
+        set => SetProperty(ref _voice_Azure_CustomEndpoint, value);
     }
+    private string _voice_Azure_CustomEndpoint = string.Empty;
 
-    private List<CounterModel> _counters_List = [];
-    public List<CounterModel> Counters_List
+    /// <summary>
+    /// Override Normal Voice with Azure
+    /// </summary>
+    public bool Voice_Azure_OverrideNormal //todo: [REFACTOR] Is this needed? Should this not be a module name?
     {
-        get => _counters_List;
-        set => SetProperty(ref _counters_List, value);
+        get => _voice_Azure_OverrideNormal;
+        set => SetProperty(ref _voice_Azure_OverrideNormal, value);
     }
-
+    private bool _voice_Azure_OverrideNormal;
     #endregion
 
-    #region AFK
-    
-    private bool _afk_ShowDuration = false;
-    public bool Afk_ShowDuration
+    #region Voice - Microsoft
+    /// <summary>
+    /// ID of Microsoft TTS model
+    /// </summary>
+    public string Voice_Microsoft_ModelId //todo: [IMPL] To be implemented
     {
-        get => _afk_ShowDuration;
-        set => SetProperty(ref _afk_ShowDuration, value);
+        get => _voice_Microsoft_TtsId;
+        set => SetProperty(ref _voice_Microsoft_TtsId, value);
     }
-
-    private float _afk_BaseDurationDisplayIntervalSeconds = 15f;
-    public float Afk_BaseDurationDisplayIntervalSeconds
-    {
-        get => _afk_BaseDurationDisplayIntervalSeconds;
-        set => SetProperty(ref _afk_BaseDurationDisplayIntervalSeconds, value.MinMax(5, 300));
-    }
-
-    private int _afk_TimesDisplayedBeforeDoublingInterval = 12;
-    public int Afk_TimesDisplayedBeforeDoublingInterval
-    {
-        get => _afk_TimesDisplayedBeforeDoublingInterval;
-        set => SetProperty(ref _afk_TimesDisplayedBeforeDoublingInterval, value.MinMax(1, 60));
-    }
-
-    private const string AFK_NO_STARTTEXT = "Now AFK";
-    private string _afk_StartText = AFK_NO_STARTTEXT;
-    public string Afk_StartText
-    {
-        get => _afk_StartText;
-        set => SetProperty(ref _afk_StartText, value.Length > 0 ? value : AFK_NO_STARTTEXT);
-    }
-
-    private const string AFK_NO_ENDTEXT = "No longer AFK";
-    private string _afk_EndText = AFK_NO_ENDTEXT;
-    public string Afk_StopText
-    {
-        get => _afk_EndText;
-        set => SetProperty(ref _afk_EndText, value.Length > 0 ? value : AFK_NO_ENDTEXT);
-    }
-
-    private const string AFK_NO_STATUSTEXT = "AFK since";
-    private string _afk_StatusText = AFK_NO_STATUSTEXT;
-    public string Afk_StatusText
-    {
-        get => _afk_StatusText;
-        set => SetProperty(ref _afk_StatusText, value.Length > 0 ? value : AFK_NO_STATUSTEXT);
-    }
-
+    private string _voice_Microsoft_TtsId = string.Empty;
     #endregion
 
-    #region Speech
-
-    // SEND
-    private bool _speech_Send_OverTextbox = true;
-    public bool Speech_Send_OverTextbox
+    #region VRC Textbox
+    /// <summary>
+    /// Should translated content be sent to the VRC Textbox?
+    /// </summary>
+    public bool VrcTextbox_Output_DoTranslate //todo: [REFACTOR] Should this even be a thing?
     {
-        get => _speech_Send_OverTextbox;
-        set => SetProperty(ref _speech_Send_OverTextbox, value);
+        get => _vrcTextbox_Output_DoTranslate;
+        set => SetProperty(ref _vrcTextbox_Output_DoTranslate, value);
     }
+    private bool _vrcTextbox_Output_DoTranslate;
 
-    private bool _speech_Send_OverTts = false;
-    public bool Speech_Send_OverTts
+    /// <summary>
+    /// Maximum of characters displayed
+    /// </summary>
+    public int VrcTextbox_Output_MaxDisplayedCharacters
     {
-        get => _speech_Send_OverTts;
-        set => SetProperty(ref _speech_Send_OverTts, value);
+        get => _vrcTextbox_Output_MaxDisplayedCharacters;
+        set => SetProperty(ref _vrcTextbox_Output_MaxDisplayedCharacters, value.MinMax(10, 130));
     }
+    private int _vrcTextbox_Output_MaxDisplayedCharacters = 130;
 
-    // MUTECONTROL
-    private bool _speech_Mute_StartUnmuted = true;
-    public bool Speech_Mute_StartUnmuted
+    /// <summary>
+    /// Display the typing indicator when speaking
+    /// </summary>
+    public bool VrcTextbox_Indicator_WhenSpeaking //todo: [FIX] Needs overhaul???
     {
-        get => _speech_Mute_StartUnmuted;
-        set => SetProperty(ref _speech_Mute_StartUnmuted, value);
+        get => _vrcTextbox_Indicator_WhenSpeaking;
+        set => SetProperty(ref _vrcTextbox_Indicator_WhenSpeaking, value);
     }
+    private bool _vrcTextbox_Indicator_WhenSpeaking;
 
-    private bool _speech_Mute_PlaySound = false;
-    public bool Speech_Mute_PlaySound
+    /// <summary>
+    /// Display the typing indicator when not even outputting
+    /// </summary>
+    public bool VrcTextbox_Indicator_WhenDisabled //todo: [FIX] Needs overhaul???
     {
-        get => _speech_Mute_PlaySound;
-        set => SetProperty(ref _speech_Mute_PlaySound, value);
+        get => _vrcTextbox_Indicator_WhenDisabled;
+        set => SetProperty(ref _vrcTextbox_Indicator_WhenDisabled, value);
     }
+    private bool _vrcTextbox_Indicator_WhenDisabled;
 
-    private bool _speech_Mute_OnGameMute = true;
-    public bool Speech_Mute_OnGameMute
+    /// <summary>
+    /// Ms of timeout per 20 characters displayed at same time
+    /// </summary>
+    public int VrcTextbox_Timeout_DynamicPer20CharactersDisplayedMs
     {
-        get => _speech_Mute_OnGameMute;
-        set => SetProperty(ref _speech_Mute_OnGameMute, value);
+        get => _vrcTextbox_Timeout_DynamicPer20CharactersDisplayedMs;
+        set => SetProperty(ref _vrcTextbox_Timeout_DynamicPer20CharactersDisplayedMs, value.MinMax(250, 10000));
     }
+    private int _vrcTextbox_Timeout_DynamicPer20CharactersDisplayedMs = 1250;
 
-    // DEVICES
-    private string _speech_Device_CurrentMicrophoneId = string.Empty;
-    public string Speech_Device_CurrentMicrophoneId
+    /// <summary>
+    /// Minimum timeout in ms when using dynamic timeout
+    /// </summary>
+    public int VrcTextbox_Timeout_DynamicMinimumMs
     {
-        get => _speech_Device_CurrentMicrophoneId;
-        set => SetProperty(ref _speech_Device_CurrentMicrophoneId, value);
+        get => _vrcTextbox_Timeout_DynamicMinimumMs;
+        set => SetProperty(ref _vrcTextbox_Timeout_DynamicMinimumMs, value.MinMax(1250, 30000));
     }
+    private int _vrcTextbox_Timeout_DynamicMinimumMs = 3000;
 
-    private string _speech_Device_CurrentSpeakerId = string.Empty;
-    public string Speech_Device_CurrentSpeakerId
+    /// <summary>
+    /// Timeout in ms when using static timeout
+    /// </summary>
+    public int VrcTextbox_Timeout_StaticMs
     {
-        get => _speech_Device_CurrentSpeakerId;
-        set => SetProperty(ref _speech_Device_CurrentSpeakerId, value);
+        get => _vrcTextbox_Timeout_StaticMs;
+        set => SetProperty(ref _vrcTextbox_Timeout_StaticMs, value.MinMax(1250, 30000));
     }
+    private int _vrcTextbox_Timeout_StaticMs = 5000;
 
-    // SHARED
-    private string _speech_Shared_ModelName = string.Empty;
-    public string Speech_Shared_ModelName
+    /// <summary>
+    /// Use dynamic display timeout
+    /// </summary>
+    public bool VrcTextbox_Timeout_UseDynamic
     {
-        get => _speech_Shared_ModelName;
-        set => SetProperty(ref _speech_Shared_ModelName, value);
+        get => _vrcTextbox_Timeout_UseDynamic;
+        set => SetProperty(ref _vrcTextbox_Timeout_UseDynamic, value);
     }
+    private bool _vrcTextbox_Timeout_UseDynamic = true;
 
-    // TTS
-    private string _speech_Tts_MicrosoftTtsId = string.Empty;
-    public string Speech_Tts_MicrosoftTtsId
+    /// <summary>
+    /// Automatically clear after notifications
+    /// </summary>
+    public bool VrcTextbox_Timeout_AutomaticallyClearNotification
     {
-        get => _speech_Tts_MicrosoftTtsId;
-        set => SetProperty(ref _speech_Tts_MicrosoftTtsId, value);
+        get => _vrcTextbox_Timeout_AutomaticallyClearNotification;
+        set => SetProperty(ref _vrcTextbox_Timeout_AutomaticallyClearNotification, value);
     }
+    private bool _vrcTextbox_Timeout_AutomaticallyClearNotification = true;
 
-    private int _speech_Tts_AudioVolumePercent = 50;
-    public int Speech_Tts_AudioVolumePercent
+    /// <summary>
+    /// Automatically clear after message
+    /// </summary>
+    public bool VrcTextbox_Timeout_AutomaticallyClearMessage
     {
-        get => _speech_Tts_AudioVolumePercent;
-        set => SetProperty(ref _speech_Tts_AudioVolumePercent, value);
+        get => _vrcTextbox_Timeout_AutomaticallyClearMessage;
+        set => SetProperty(ref _vrcTextbox_Timeout_AutomaticallyClearMessage, value);
     }
+    private bool _vrcTextbox_Timeout_AutomaticallyClearMessage;
 
-    private int _speech_Tts_MaximumLength = 500;
-    public int Speech_Tts_MaximumLength
+    /// <summary>
+    /// Text to the left of a notification
+    /// </summary>
+    public string VrcTextbox_Notification_IndicatorTextStart
     {
-        get => _speech_Tts_MaximumLength;
-        set => SetProperty(ref _speech_Tts_MaximumLength, value.MinMax(1, short.MaxValue));
-    }
-
-    private bool _speech_Tts_SkipLongerMessages = true;
-    public bool Speech_Tts_SkipLongerMessages
-    {
-        get => _speech_Tts_SkipLongerMessages;
-        set => SetProperty(ref _speech_Tts_SkipLongerMessages, value);
-    }
-
-    // VOSK
-    private Dictionary<string, string> _speech_Vosk_Models = [];
-    public Dictionary<string, string> Speech_Vosk_Models
-    {
-        get => _speech_Vosk_Models;
-        set => SetProperty(ref _speech_Vosk_Models, value);
-    }
-
-    private string _speech_Vosk_CurrentModel = string.Empty;
-    public string Speech_Vosk_CurrentModel
-    {
-        get => _speech_Vosk_CurrentModel;
-        set => SetProperty(ref _speech_Vosk_CurrentModel, value);
-    }
-
-    private int _speech_Vosk_NewWordWaitTimeMs = 2500;
-    public int Speech_Vosk_NewWordWaitTimeMs
-    {
-        get => _speech_Vosk_NewWordWaitTimeMs;
-        set => SetProperty(ref _speech_Vosk_NewWordWaitTimeMs,value.MinMax(500, 30000));
-    }
-
-    // WHISPER
-    private Dictionary<string, string> _speech_Whisper_Models = [];
-    public Dictionary<string, string> Speech_Whisper_Models
-    {
-        get => _speech_Whisper_Models;
-        set => SetProperty(ref _speech_Whisper_Models, value);
-    }
-
-    private string _speech_Whisper_CurrentModel = string.Empty;
-    public string Speech_Whisper_CurrentModel
-    {
-        get => _speech_Whisper_CurrentModel;
-        set => SetProperty(ref _speech_Whisper_CurrentModel, value);
-    }
-
-    private bool _speech_Whisper_UseSingleSegmentMode = true; // (Higher accuracy, reduced functionality)
-    public bool Speech_Whisper_UseSingleSegmentMode
-    {
-        get => _speech_Whisper_UseSingleSegmentMode;
-        set => SetProperty(ref _speech_Whisper_UseSingleSegmentMode, value);
-    }
-
-    private bool _speech_Whisper_TranslateToEnglish = false;
-    public bool Speech_Whisper_TranslateToEnglish
-    {
-        get => _speech_Whisper_TranslateToEnglish;
-        set => SetProperty(ref _speech_Whisper_TranslateToEnglish, value);
-    }
-
-    private bool _speech_Whisper_UseBracketFix = true; //Fixes the bracket issue ('( ( (')
-    public bool Speech_Whisper_UseBracketFix
-    {
-        get => _speech_Whisper_UseBracketFix;
-        set => SetProperty(ref _speech_Whisper_UseBracketFix, value);
-    }
-
-    private bool _speech_Whisper_IncreaseThreadPriority = false;
-    public bool Speech_Whisper_IncreaseThreadPriority
-    {
-        get => _speech_Whisper_IncreaseThreadPriority;
-        set => SetProperty(ref _speech_Whisper_IncreaseThreadPriority, value);
-    }
-
-    private bool _speech_Whisper_LogFilteredNoises = false;
-    public bool Speech_Whisper_LogFilteredNoises
-    {
-        get => _speech_Whisper_LogFilteredNoises;
-        set => SetProperty(ref _speech_Whisper_LogFilteredNoises, value);
-    }
-
-    private eLanguage _speech_Whisper_Language = eLanguage.English;
-    public eLanguage Speech_Whisper_Language
-    {
-        get => _speech_Whisper_Language;
-        set => SetProperty(ref _speech_Whisper_Language, value);
-    }
-
-    private Dictionary<string, string> _speech_Whisper_NoiseFilter = [];
-    public Dictionary<string, string> Speech_Whisper_NoiseFilter
-    {
-        get => _speech_Whisper_NoiseFilter;
-        set => SetProperty(ref _speech_Whisper_NoiseFilter, value);
-    }
-
-    private int _speech_Whisper_ThreadsUsed = -4; // 0 = All, -n = All but n
-    public int Speech_Whisper_ThreadUsed
-    {
-        get => _speech_Whisper_ThreadsUsed;
-        set => SetProperty(ref _speech_Whisper_ThreadsUsed, value.MinMax(short.MinValue, short.MaxValue));
-    }
-
-    private int _speech_Whisper_MaxContext = 0;
-    public int Speech_Whisper_MaxContext
-    {
-        get => _speech_Whisper_MaxContext;
-        set => SetProperty(ref _speech_Whisper_MaxContext, value.MinMax(-1, short.MaxValue));
-    }
-
-    private int _speech_Whisper_MaxSegmentLength = 0;
-    public int Speech_Whisper_MaxSegmentLength
-    {
-        get => _speech_Whisper_MaxSegmentLength;
-        set => SetProperty(ref _speech_Whisper_MaxSegmentLength, value.MinMax(0, short.MaxValue));
-    }
-
-    private float _speech_Whisper_MaxRecognitionDurationSeconds = 16;
-    public float Speech_Whisper_MaxRecognitionDurationSeconds
-    {
-        get => _speech_Whisper_MaxRecognitionDurationSeconds;
-        set => SetProperty(ref _speech_Whisper_MaxRecognitionDurationSeconds, value.MinMax(2, short.MaxValue));
-    }
-
-    private float _speech_Whisper_RecognitionPauseDurationSeconds = 0.5f;
-    public float Speech_Whisper_RecognitionPauseDurationSeconds
-    {
-        get => _speech_Whisper_RecognitionPauseDurationSeconds;
-        set => SetProperty(ref _speech_Whisper_RecognitionPauseDurationSeconds, value.MinMax(0.05f, short.MaxValue));
-    }
-
-    private string _speech_Whisper_GraphicsAdapter = string.Empty;
-    public string Speech_Whisper_GraphicsAdapter
-    {
-        get => _speech_Whisper_GraphicsAdapter;
-        set => SetProperty(ref _speech_Whisper_GraphicsAdapter, value);
-    }
-
-    // Windows
-    private string _speech_Windows_ModelId = string.Empty;
-    public string Speech_Windows_ModelId
-    {
-        get => _speech_Windows_ModelId;
-        set => SetProperty(ref _speech_Windows_ModelId, value);
-    }
-
-    // Replacement
-    private HashSet<string> _speech_Replacement_NoiseFilter = [];
-    public HashSet<string> Speech_Replacement_NoiseFilter
-    {
-        get => _speech_Replacement_NoiseFilter;
-        set => SetProperty(ref _speech_Replacement_NoiseFilter, value);
-    }
-
-    private bool _speech_Replacement_RemoveEndPeriod = true;
-    public bool Speech_Replacement_RemoveEndPeriod
-    {
-        get => _speech_Replacement_RemoveEndPeriod;
-        set => SetProperty(ref _speech_Replacement_RemoveEndPeriod, value);
-    }
-
-    private bool _speech_Replacement_CapitalizeFirstLetter = true;
-    public bool Speech_Replacement_CapitalizeFirstLetter
-    {
-        get => _speech_Replacement_CapitalizeFirstLetter;
-        set => SetProperty(ref _speech_Replacement_CapitalizeFirstLetter, value);
-    }
-
-    private bool _speech_Replacement_IsEnabled = true;
-    public bool Speech_Replacement_IsEnabled
-    {
-        get => _speech_Replacement_IsEnabled;
-        set => SetProperty(ref _speech_Replacement_IsEnabled, value);
-    }
-
-    private List<ReplacementDataModel> _speech_Replacement_Full = [];
-    public List<ReplacementDataModel> Speech_Replacement_Full
-    {
-        get => _speech_Replacement_Full;
-        set => SetProperty(ref _speech_Replacement_Full, value);
-    }
-
-    private List<ReplacementDataModel> _speech_Replacement_Partial = [];
-    public List<ReplacementDataModel> Speech_Replacement_Partial
-    {
-        get => _speech_Replacement_Partial;
-        set => SetProperty(ref _speech_Replacement_Partial, value);
-    }
-
-    private string _speech_Replacement_IgnoredCharactersForShortcuts = ".?!,。、！？";
-    public string Speech_Replacement_IgnoredCharactersForShortcuts
-    {
-        get => _speech_Replacement_IgnoredCharactersForShortcuts;
-        set => SetProperty(ref _speech_Replacement_IgnoredCharactersForShortcuts, value);
-    }
-
-    #endregion
-
-    #region Textbox
-
-    // Text
-    private int _textbox_Text_MaxDisplayedCharacters = 130;
-    public int Textbox_Text_MaxDisplayedCharacters
-    {
-        get => _textbox_Text_MaxDisplayedCharacters;
-        set => SetProperty(ref _textbox_Text_MaxDisplayedCharacters, value.MinMax(10, 130));
-    }
-
-    private bool _textbox_Text_TypingIndicatorWhenSpeaking;
-    public bool Textbox_Text_TypingIndicatorWhenSpeaking
-    {
-        get => _textbox_Text_TypingIndicatorWhenSpeaking;
-        set => SetProperty(ref _textbox_Text_TypingIndicatorWhenSpeaking, value);
-    }
-
-    private bool _textbox_Text_TypingIndicatorWhenDisabled;
-    public bool Textbox_Text_TypingIndicatorWhenDisabled
-    {
-        get => _textbox_Text_TypingIndicatorWhenDisabled;
-        set => SetProperty(ref _textbox_Text_TypingIndicatorWhenDisabled, value);
-    }
-
-    // Timeout
-    private int _textbox_Timeout_DynamicPer20CharactersDisplayedMs = 1250;
-    public int Textbox_Timeout_DynamicPer20CharactersDisplayedMs
-    {
-        get => _textbox_Timeout_DynamicPer20CharactersDisplayedMs;
-        set => SetProperty(ref _textbox_Timeout_DynamicPer20CharactersDisplayedMs, value.MinMax(250, 10000));
-    }
-
-    private int _textbox_Timeout_DynamicMinimumMs = 3000;
-    public int Textbox_Timeout_DynamicMinimumMs
-    {
-        get => _textbox_Timeout_DynamicMinimumMs;
-        set => SetProperty(ref _textbox_Timeout_DynamicMinimumMs, value.MinMax(1250, 30000));
-    }
-
-    private int _textbox_Timeout_StaticMs = 5000;
-    public int Textbox_Timeout_StaticMs
-    {
-        get => _textbox_Timeout_StaticMs;
-        set => SetProperty(ref _textbox_Timeout_StaticMs, value.MinMax(1250, 30000));
-    }
-
-    private bool _textbox_Timeout_UseDynamic = true;
-    public bool Textbox_Timeout_UseDynamic
-    {
-        get => _textbox_Timeout_UseDynamic;
-        set => SetProperty(ref _textbox_Timeout_UseDynamic, value);
-    }
-
-    private bool _textbox_Timeout_AutomaticallyClearNotification = true;
-    public bool Textbox_Timeout_AutomaticallyClearNotification
-    {
-        get => _textbox_Timeout_AutomaticallyClearNotification;
-        set => SetProperty(ref _textbox_Timeout_AutomaticallyClearNotification, value);
-    }
-
-    private bool _textbox_Timeout_AutomaticallyClearMessage;
-    public bool Textbox_Timeout_AutomaticallyClearMessage
-    {
-        get => _textbox_Timeout_AutomaticallyClearMessage;
-        set => SetProperty(ref _textbox_Timeout_AutomaticallyClearMessage, value);
-    }
-
-    // Notification
-    private string _textbox_Notification_IndicatorTextStart = "〈";
-    private string _textbox_Notification_IndicatorTextEnd = "〉";
-    private int _textbox_Notification_IndicatorTextLength = 2;
-    public string Textbox_Notification_IndicatorTextStart //Text to the left of a notification
-    {
-        get => _textbox_Notification_IndicatorTextStart;
+        get => _vrcTextbox_Notification_IndicatorTextStart;
         set
         {
-            SetProperty(ref _textbox_Notification_IndicatorTextStart, value.Length < 4 ? value : value[..3]);
-            _textbox_Notification_IndicatorTextLength = CalcNotificationIndicatorLength();
+            SetProperty(ref _vrcTextbox_Notification_IndicatorTextStart, value.Length < 4 ? value : value[..3]);
+            _vrcTextbox_Notification_IndicatorTextLength = VrcTextbox_CalcNotificationIndicatorLength();
         }
     }
-    public string Textbox_Notification_IndicatorTextEnd //Text to the right of a notification
+    /// <summary>
+    /// Text to the right of a notification
+    /// </summary>
+    public string VrcTextbox_Notification_IndicatorTextEnd
     {
-        get => _textbox_Notification_IndicatorTextEnd;
+        get => _vrcTextbox_Notification_IndicatorTextEnd;
         set
         {
-            SetProperty(ref _textbox_Notification_IndicatorTextEnd, value.Length < 4 ? value : value[..3]);
-            _textbox_Notification_IndicatorTextLength = CalcNotificationIndicatorLength();
+            SetProperty(ref _vrcTextbox_Notification_IndicatorTextEnd, value.Length < 4 ? value : value[..3]);
+            _vrcTextbox_Notification_IndicatorTextLength = VrcTextbox_CalcNotificationIndicatorLength();
         }
     }
-    private int CalcNotificationIndicatorLength()
-    => _textbox_Notification_IndicatorTextEnd.Length + _textbox_Notification_IndicatorTextStart.Length;
-    internal int NotificationIndicatorLength() => _textbox_Notification_IndicatorTextLength;
+    private string _vrcTextbox_Notification_IndicatorTextStart = "〈";
+    private string _vrcTextbox_Notification_IndicatorTextEnd = "〉";
+    private int _vrcTextbox_Notification_IndicatorTextLength = 2;
+    private int VrcTextbox_CalcNotificationIndicatorLength()
+    => _vrcTextbox_Notification_IndicatorTextEnd.Length + _vrcTextbox_Notification_IndicatorTextStart.Length;
+    public int VrcTextbox_NotificationIndicatorLength() => _vrcTextbox_Notification_IndicatorTextLength;
 
-    private bool _textbox_Notification_UsePrioritySystem = true;
-    public bool Textbox_Notification_UsePrioritySystem
+    /// <summary>
+    /// Use notification priority system
+    /// </summary>
+    public bool VrcTextbox_Notification_UsePrioritySystem
     {
-        get => _textbox_Notification_UsePrioritySystem;
-        set => SetProperty(ref _textbox_Notification_UsePrioritySystem, value);
+        get => _vrcTextbox_Notification_UsePrioritySystem;
+        set => SetProperty(ref _vrcTextbox_Notification_UsePrioritySystem, value);
     }
+    private bool _vrcTextbox_Notification_UsePrioritySystem = true;
 
-    private bool _textbox_Notification_SkipWhenMessageAvailable = true;
-    public bool Textbox_Notification_SkipWhenMessageAvailable
+    /// <summary>
+    /// Skip notifications when there is an available message
+    /// </summary>
+    public bool VrcTextbox_Notification_SkipWhenMessageAvailable
     {
-        get => _textbox_Notification_SkipWhenMessageAvailable;
-        set => SetProperty(ref _textbox_Notification_SkipWhenMessageAvailable, value);
+        get => _vrcTextbox_Notification_SkipWhenMessageAvailable;
+        set => SetProperty(ref _vrcTextbox_Notification_SkipWhenMessageAvailable, value);
     }
+    private bool _vrcTextbox_Notification_SkipWhenMessageAvailable = true;
 
-    // Sound
-    private bool _textbox_Sound_OnMessage = true;
-    public bool Textbox_Sound_OnMessage
+    /// <summary>
+    /// Play sound on message
+    /// </summary>
+    public bool VrcTextbox_Sound_OnMessage
     {
-        get => _textbox_Sound_OnMessage;
-        set => SetProperty(ref _textbox_Sound_OnMessage, value);
+        get => _vrcTextbox_Sound_OnMessage;
+        set => SetProperty(ref _vrcTextbox_Sound_OnMessage, value);
     }
+    private bool _vrcTextbox_Sound_OnMessage = true;
 
-    private bool _textbox_Sound_OnNotification;
-    public bool Textbox_Sound_OnNotification
+    /// <summary>
+    /// Play sound on notification
+    /// </summary>
+    public bool VrcTextbox_Sound_OnNotification
     {
-        get => _textbox_Sound_OnNotification;
-        set => SetProperty(ref _textbox_Sound_OnNotification, value);
+        get => _vrcTextbox_Sound_OnNotification;
+        set => SetProperty(ref _vrcTextbox_Sound_OnNotification, value);
     }
-
-    // Media
-    private bool _textbox_Media_ShowStatus;
-    public bool Textbox_Media_ShowStatus
-    {
-        get => _textbox_Media_ShowStatus;
-        set => SetProperty(ref _textbox_Media_ShowStatus, value);
-    }
-
-    private bool _textbox_Media_AddAlbumToText;
-    public bool Textbox_Media_AddAlbumToText
-    {
-        get => _textbox_Media_AddAlbumToText;
-        set => SetProperty(ref _textbox_Media_AddAlbumToText, value);
-    }
-
-    private bool _textbox_Media_SwapArtistAndSongInText;
-    public bool Textbox_Media_SwapArtistAndSongInText
-    {
-        get => _textbox_Media_SwapArtistAndSongInText;
-        set => SetProperty(ref _textbox_Media_SwapArtistAndSongInText, value);
-    }
-
-    private const string NO_MEDIA_PLAYINGVERB = "Playing";
-    private string _textbox_Media_PlayingVerb = NO_MEDIA_PLAYINGVERB;
-    public string Textbox_Media_PlayingVerb
-    {
-        get => _textbox_Media_PlayingVerb;
-        set => SetProperty(ref _textbox_Media_PlayingVerb, value.Length > 0 ? value : NO_MEDIA_PLAYINGVERB);
-    }
-
-    private const string NO_MEDIA_ARTISTVERB = "by";
-    private string _textbox_Media_ArtistVerb = NO_MEDIA_ARTISTVERB;
-    public string Textbox_Media_ArtistVerb
-    {
-        get => _textbox_Media_ArtistVerb;
-        set => SetProperty(ref _textbox_Media_ArtistVerb, value.Length > 0 ? value : NO_MEDIA_ARTISTVERB);
-    }
-
-    private const string NO_MEDIA_ALBUMVERB = "on";
-    private string _textbox_Media_AlbumVerb = NO_MEDIA_ALBUMVERB;
-    public string Textbox_Media_AlbumVerb
-    {
-        get => _textbox_Media_AlbumVerb;
-        set => SetProperty(ref _textbox_Media_AlbumVerb, value.Length > 0 ? value : NO_MEDIA_ALBUMVERB);
-    }
-
-    private string _textbox_Media_ExtraText = string.Empty;
-    public string Textbox_Media_ExtraText
-    {
-        get => _textbox_Media_ExtraText;
-        set => SetProperty(ref _textbox_Media_ExtraText, value);
-    }
-
-    private List<FilterModel> _textbox_Media_Filters = [];
-    public List<FilterModel> Textbox_Media_Filters
-    {
-        get => _textbox_Media_Filters;
-        set => SetProperty(ref _textbox_Media_Filters, value);
-    }
-
+    private bool _vrcTextbox_Sound_OnNotification;
     #endregion
 }

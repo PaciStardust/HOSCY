@@ -52,7 +52,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
 
     public override TranslationOutputMode GetTranslationOutputMode()
     {
-        return _config.ApiCommunication_Translation_OfTextbox
+        return _config.VrcTextbox_Output_DoTranslate
             ? TranslationOutputMode.Both
             : TranslationOutputMode.Untranslated; 
     }
@@ -87,7 +87,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         //Only sends once timeout has passed OR the last sent was a notification and skip is enabled
         if (_currentMessages.Count > 0)
         {
-            var timeoutBypass = _lastSentNotificationPriority is not null && _config.Textbox_Notification_SkipWhenMessageAvailable;
+            var timeoutBypass = _lastSentNotificationPriority is not null && _config.VrcTextbox_Notification_SkipWhenMessageAvailable;
             
             if (now >= _intendedTimeoutUntil || timeoutBypass)
             {
@@ -97,9 +97,9 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
                 }
 
                 textToSend = _currentMessages.Dequeue();
-                playTextboxSound = _config.Textbox_Sound_OnMessage;
+                playTextboxSound = _config.VrcTextbox_Sound_OnMessage;
                 _lastSentNotificationPriority = null;
-                _isClearPending = _config.Textbox_Timeout_AutomaticallyClearMessage;
+                _isClearPending = _config.VrcTextbox_Timeout_AutomaticallyClearMessage;
             }
         }
 
@@ -108,7 +108,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         else if (_currentNotification is not null)
         {
             var timeoutBypass = _lastSentNotificationPriority is not null
-                && _config.Textbox_Notification_UsePrioritySystem
+                && _config.VrcTextbox_Notification_UsePrioritySystem
                 && _currentNotification.Value.Priority >= _lastSentNotificationPriority;
 
             if (now >= _intendedTimeoutUntil || timeoutBypass)
@@ -121,9 +121,9 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
                 textToSend = _currentNotification.Value.Text;
                 var prio = _currentNotification.Value.Priority;
                 ClearNotification();
-                playTextboxSound = _config.Textbox_Sound_OnNotification;
+                playTextboxSound = _config.VrcTextbox_Sound_OnNotification;
                 _lastSentNotificationPriority = prio;
-                _isClearPending = _config.Textbox_Timeout_AutomaticallyClearNotification;
+                _isClearPending = _config.VrcTextbox_Timeout_AutomaticallyClearNotification;
             }
         }
 
@@ -170,11 +170,11 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         if (string.IsNullOrWhiteSpace(message))
             return TIMEOUT_MINIMUM_MS; //to avoid hitting ratelimit
 
-        if (!_config.Textbox_Timeout_UseDynamic)
-            return _config.Textbox_Timeout_StaticMs;
+        if (!_config.VrcTextbox_Timeout_UseDynamic)
+            return _config.VrcTextbox_Timeout_StaticMs;
 
-        var timeout = (int)(Math.Ceiling(message.Length / 20f) * _config.Textbox_Timeout_DynamicPer20CharactersDisplayedMs);
-        return Math.Max(timeout, _config.Textbox_Timeout_DynamicMinimumMs);
+        var timeout = (int)(Math.Ceiling(message.Length / 20f) * _config.VrcTextbox_Timeout_DynamicPer20CharactersDisplayedMs);
+        return Math.Max(timeout, _config.VrcTextbox_Timeout_DynamicMinimumMs);
     }
     #endregion
 
@@ -197,8 +197,8 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     private bool CanSetProcessingIndicator()
     {
         return _lastSentTypingIndicator.AddSeconds(4) > DateTimeOffset.UtcNow
-            && _config.Textbox_Text_TypingIndicatorWhenSpeaking
-            && (_config.Input_UseTextbox || _config.Textbox_Text_TypingIndicatorWhenDisabled); //todo: [REFACTOR] UseTextbox check needs a redo
+            && _config.VrcTextbox_Indicator_WhenSpeaking
+            && (_config.ManualInput_SendViaText || _config.VrcTextbox_Indicator_WhenDisabled); //todo: [REFACTOR] UseTextbox check needs a redo
     }
     #endregion
 
@@ -212,19 +212,19 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
             return;
         }
 
-        if (_config.Textbox_Notification_UsePrioritySystem && _currentNotification.HasValue && priority < _currentNotification.Value.Priority)
+        if (_config.VrcTextbox_Notification_UsePrioritySystem && _currentNotification.HasValue && priority < _currentNotification.Value.Priority)
         {
             _logger.Debug("Did not override notification with contents \"{notificationContents}\" and priority {notificationPriority} => priority lower than current {currentPriority}",
                 contents, priority, _currentNotification.Value.Priority);
             return;
         }
 
-        var indLen = _config.NotificationIndicatorLength();
-        if (contents.Length > _config.Textbox_Text_MaxDisplayedCharacters - indLen)
+        var indLen = _config.VrcTextbox_NotificationIndicatorLength();
+        if (contents.Length > _config.VrcTextbox_Output_MaxDisplayedCharacters - indLen)
         {
-            contents = contents[..(_config.Textbox_Text_MaxDisplayedCharacters - 1)] + "-";
+            contents = contents[..(_config.VrcTextbox_Output_MaxDisplayedCharacters - 1)] + "-";
         }
-        contents = $"{_config.Textbox_Notification_IndicatorTextStart}{contents}{_config.Textbox_Notification_IndicatorTextEnd}";
+        contents = $"{_config.VrcTextbox_Notification_IndicatorTextStart}{contents}{_config.VrcTextbox_Notification_IndicatorTextEnd}";
 
         _logger.Information("Setting notification to \"{contents}\" with priority {priority}", contents, priority);
         _currentNotification = (contents, priority);
@@ -254,7 +254,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         var currentSegmentStart = -1;
         var currentWordStart = -1;
         var currentSegmentPotentialEnd = -1;
-        var maxLength = _config.Textbox_Text_MaxDisplayedCharacters;
+        var maxLength = _config.VrcTextbox_Output_MaxDisplayedCharacters;
         for (var charIndex = 0; charIndex < message.Length; charIndex++)
         {
             var isWordSeparator = message[charIndex] == ' ' || message[charIndex] == '\r' || message[charIndex] == '\n' || message[charIndex] == '\t';

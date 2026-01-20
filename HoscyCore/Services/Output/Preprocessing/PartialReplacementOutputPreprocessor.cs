@@ -21,10 +21,10 @@ public class PartialReplacementOutputPreprocessor(ConfigModel config, ILogger lo
     }
 
     public override string GetReloadPropertyName()
-        => nameof(_config.Speech_Replacement_Partial);
+        => nameof(_config.Preprocessing_ReplacementsPartial);
 
     public override List<ReplacementDataModel> GetReplacementModels()
-        => _config.Speech_Replacement_Partial;
+        => _config.Preprocessing_ReplacementsPartial;
 
     public override OutputPreprocessorHandlingStage GetHandlingStage()
         => OutputPreprocessorHandlingStage.Alter;

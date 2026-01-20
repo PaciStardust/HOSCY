@@ -333,7 +333,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
             {
                 TranslationOutputMode.Translation => translation,
                 TranslationOutputMode.Untranslated => contents,
-                TranslationOutputMode.Both => _config.ApiCommunication_Translation_AppendOriginal
+                TranslationOutputMode.Both => _config.Translation_AppendOriginal
                     ? $"{translation} / {contents}"
                     : translation,
                 _ => throw new ArgumentException("Unsupported TranslationOutputMode")
@@ -437,23 +437,23 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         //todo: [REFACTOR] Should this logic not mostly be in the translation service?
         if (!processors.Any(x => x.GetTranslationOutputMode() != TranslationOutputMode.Untranslated))
         {
-            _logger.Warning("Attempted translation of message with contents \"{contents}\", but could not find a suitable translator", contents);
+            _logger.Warning("Attempted translation of message with contents \"{contents}\", but could not find a suitable output", contents);
             translatedText = null;
-            return !_config.ApiCommunication_Translation_SendIfUnavailable;
+            return !_config.Translation_SendUntranslatedIfUnavailable;
         }
 
-        if (contents.Length > _config.ApiCommunication_Translation_MaxTextLength)
+        if (contents.Length > _config.Translation_MaxTextLength)
         {
-            if (_config.ApiCommunication_Translation_SkipLongerMessages)
+            if (_config.Translation_SkipLongerMessages)
             {
                 _logger.Debug("Skipping translation and processing of message with contents \"{contents}\" as skipping of messages longer than {charLimit} characters is enabled",
-                    contents, _config.ApiCommunication_Translation_MaxTextLength);
+                    contents, _config.Translation_MaxTextLength);
                 translatedText = null;
                 return true;
             }
 
             var spaceLocated = false;
-            for (var i = _config.ApiCommunication_Translation_MaxTextLength; i > -1; i--)
+            for (var i = _config.Translation_MaxTextLength; i > -1; i--)
             {
                 if (_filterChars.Contains(contents[i]))
                 {
@@ -464,7 +464,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
                     if (!spaceLocated) continue;
                     contents = i > 0
                         ? contents[..i]
-                        : contents[.._config.ApiCommunication_Translation_MaxTextLength]; //todo: [TEST] Does this crop correctly and do return values work?
+                        : contents[.._config.Translation_MaxTextLength]; //todo: [TEST] Does this crop correctly and do return values work?
                     break;
                 }
             }
@@ -473,7 +473,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         if (!_translator.TryTranslate(contents, out translatedText))
         {
             _logger.Warning("Translation of message with contents \"{contents}\" failed", contents);
-            return !_config.ApiCommunication_Translation_SendIfFailed;
+            return !_config.Translation_SendUntranslatedIfFailed;
         }
         return true;
     }

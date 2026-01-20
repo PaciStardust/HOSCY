@@ -13,6 +13,7 @@ namespace HoscyCore.Services.Output.Preprocessing;
 [LoadIntoDiContainer(typeof(FullReplacementOutputPreprocessor), Lifetime.Singleton)]
 public class FullReplacementOutputPreprocessor(ConfigModel config, ILogger logger) : ReplacementOutputPreprocessorBase<FullReplacementHandler>(config, logger.ForContext<FullReplacementOutputPreprocessor>())
 {
+    //todo: [TEST] Do replacements work?
     #region Simple Overrides
     public override FullReplacementHandler ConvertToHandler(ReplacementDataModel model)
     {
@@ -20,10 +21,10 @@ public class FullReplacementOutputPreprocessor(ConfigModel config, ILogger logge
     }
 
     public override string GetReloadPropertyName()
-        => nameof(_config.Speech_Replacement_Full);
+        => nameof(_config.Preprocessing_ReplacementsFull);
 
     public override List<ReplacementDataModel> GetReplacementModels()
-        => _config.Speech_Replacement_Full;
+        => _config.Preprocessing_ReplacementsFull;
 
     public override OutputPreprocessorHandlingStage GetHandlingStage()
         => OutputPreprocessorHandlingStage.Replace;

@@ -21,12 +21,12 @@ public class ApiTranslator(ILogger logger, ConfigModel config, IApiClient client
     #region Start/Stop
     protected override void StartInternal()
     {
-        _logger.Information("Starting Translator with preset \"{preset}\"", _config.ApiCommunication_Translation_CurrentPreset);
-        var matchingModel = _config.ApiCommunication_Presets.FirstOrDefault(x => x.Name == _config.ApiCommunication_Translation_CurrentPreset);
+        _logger.Information("Starting Translator with preset \"{preset}\"", _config.Translation_Api_Preset);
+        var matchingModel = _config.Api_Presets.FirstOrDefault(x => x.Name == _config.Translation_Api_Preset);
         if (matchingModel is null)
         {
-            _logger.Error("Could not find preset \"{preset}\"", _config.ApiCommunication_Translation_CurrentPreset);
-            throw new StartStopServiceException($"Could not find preset {_config.ApiCommunication_Translation_CurrentPreset}");
+            _logger.Error("Could not find preset \"{preset}\"", _config.Translation_Api_Preset);
+            throw new StartStopServiceException($"Could not find preset {_config.Translation_Api_Preset}");
         }
 
         var loaded = _client.LoadPreset(matchingModel);

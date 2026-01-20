@@ -97,16 +97,16 @@ public static class ConfigModelLoader
         Dictionary<int, Action> steps = new()
         {
             { 1, () => {
-                if (config.Speech_Replacement_NoiseFilter.Count == 0)
+                if (config.Recognition_Fixup_NoiseFilter.Count == 0)
                 {
-                    config.Speech_Replacement_NoiseFilter = [
+                    config.Recognition_Fixup_NoiseFilter = [
                         "the",
                         "and",
                         "einen"
                     ];
                 }
-                if (config.Speech_Replacement_Partial.Count == 0) {
-                    config.Speech_Replacement_Partial = [
+                if (config.Preprocessing_ReplacementsPartial.Count == 0) {
+                    config.Preprocessing_ReplacementsPartial = [
                         new("exclamation mark", "!", false),
                         new("question mark", "?", false),
                         new("colon", ":", false),
@@ -125,9 +125,9 @@ public static class ConfigModelLoader
                 }
             }},
             {2, () => {
-                config.Speech_Replacement_Full.Add(new("box toggle", "[osc] [/avatar/parameters/ToolEnableBox [b]true \"self\"]"));
-                if (config.ApiCommunication_Presets.Count > 0) return;
-                config.ApiCommunication_Presets = [
+                config.Preprocessing_ReplacementsFull.Add(new("box toggle", "[osc] [/avatar/parameters/ToolEnableBox [b]true \"self\"]"));
+                if (config.Api_Presets.Count > 0) return;
+                config.Api_Presets = [
                     new()
                     {
                         Name = "Example - Azure to DE",
@@ -182,8 +182,8 @@ public static class ConfigModelLoader
                 ];
             }},
             {5, () => {
-                if (config.Speech_Whisper_NoiseFilter.Count > 0) return;
-                config.Speech_Whisper_NoiseFilter = new() {
+                if (config.Recognition_Whisper_NoiseFilter.Count > 0) return;
+                config.Recognition_Whisper_NoiseFilter = new() {
                     { "Laughing", "laugh" },
                     { "Popping", "pop" },
                     { "Whistling", "whistl" },

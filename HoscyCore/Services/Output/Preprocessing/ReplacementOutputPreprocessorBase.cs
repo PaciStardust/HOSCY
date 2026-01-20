@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using HoscyCore.Configuration.Modern;
@@ -18,7 +17,6 @@ public abstract class ReplacementOutputPreprocessorBase<T> : IOutputPreprocessor
         _config = config;
         _logger = logger;
         ReloadReplacements();
-        _config.PropertyChanged += OnPropertyChanged;
     }
 
     #region Abstract
@@ -31,14 +29,6 @@ public abstract class ReplacementOutputPreprocessorBase<T> : IOutputPreprocessor
     #endregion
 
     #region Updating
-    private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e) //todo: [FIX] Is this needed?
-    {
-        if (e.PropertyName == GetReloadPropertyName())
-        {
-            ReloadReplacements();
-        }
-    }
-
     public void ReloadReplacements()
     {
         _handlers.Clear();
