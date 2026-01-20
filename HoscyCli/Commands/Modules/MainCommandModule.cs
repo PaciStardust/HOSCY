@@ -9,7 +9,8 @@ public class MainCommandModule(
     ServiceManagerCommandModule serviceCm,
     OscCommandModule oscCm,
     AfkCommandModule afkCm,
-    CounterCommandModule counterCm
+    CounterCommandModule counterCm,
+    AudioCommandModule audioCm
 ) : AttributeCommandModule
 {
     private readonly ConfigCommandModule _configCm = configCm;
@@ -17,6 +18,7 @@ public class MainCommandModule(
     private readonly OscCommandModule _oscCm = oscCm;
     private readonly AfkCommandModule _afkCm = afkCm;
     private readonly CounterCommandModule _counterCm = counterCm;
+    private readonly AudioCommandModule _audioCm = audioCm;
 
 
     [SubCommandModule(["config"], "Edit the config file")]
@@ -52,6 +54,13 @@ public class MainCommandModule(
     {
         if (OnEmpty(args, GetParameterError("counters"))) return CommandResult.MissingParameter;
         return _counterCm.Execute(args);
+    }
+
+    [SubCommandModule(["audio"], "Manage audio")]
+    public CommandResult CmdAudio(string? args)
+    {
+        if (OnEmpty(args, GetParameterError("audio"))) return CommandResult.MissingParameter;
+        return _audioCm.Execute(args);
     }
 
     private string GetParameterError(string commandName) 
