@@ -267,8 +267,8 @@ internal static class LegacyConfigModelLoader //todo: [TEST] Does the conversion
             Recognition_Mute_PlaySound = oldConfig.Speech.PlayMuteSound,
             Recognition_Mute_OnGameMute = oldConfig.Speech.MuteOnVrcMute,
 
-            Device_CurrentMicrophoneId = oldConfig.Speech.MicId,
-            Device_CurrentSpeakerProcessedId = oldConfig.Speech.SpeakerId,
+            Audio_CurrentMicrophoneId = oldConfig.Speech.MicId,
+            Audio_CurrentSpeakerProcessedId = oldConfig.Speech.SpeakerId,
 
             Recognition_SelectedModuleName = oldConfig.Speech.ModelName,
 

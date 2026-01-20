@@ -89,6 +89,38 @@ public class ConfigModel : ObservableObject
         => Api_Presets.GetListIndex(x => x.Name == name);
     #endregion
 
+    #region Audio
+    /// <summary>
+    /// ID of microphone
+    /// </summary>
+    public string Audio_CurrentMicrophoneId //todo: [IMPL] To be implemented
+    {
+        get => _audio_CurrentMicrophoneId;
+        set => SetProperty(ref _audio_CurrentMicrophoneId, value);
+    }
+    private string _audio_CurrentMicrophoneId = string.Empty;
+
+    /// <summary>
+    /// ID of speaker for processed audio
+    /// </summary>
+    public string Audio_CurrentSpeakerProcessedId //todo: [IMPL] To be implemented
+    {
+        get => _audio_CurrentSpeakerProcessedId;
+        set => SetProperty(ref _audio_CurrentSpeakerProcessedId, value);
+    }
+    private string _audio_CurrentSpeakerProcessedId = string.Empty;
+
+    /// <summary>
+    /// ID of speaker for system audio
+    /// </summary>
+    public string Audio_CurrentSpeakerSystemId //todo: [IMPL] To be implemented, needed?
+    {
+        get => _audio_CurrentSpeakerSystemId;
+        set => SetProperty(ref _audio_CurrentSpeakerSystemId, value);
+    }
+    private string _audio_CurrentSpeakerSystemId = string.Empty;
+    #endregion
+
     #region Azure
     /// <summary>
     /// Region of Azure Services
@@ -240,38 +272,6 @@ public class ConfigModel : ObservableObject
         set => SetProperty(ref _debug_LogFilters, value);
     }
     private List<FilterModel> _debug_LogFilters = [];
-    #endregion
-
-    #region Devices
-    /// <summary>
-    /// ID of microphone
-    /// </summary>
-    public string Device_CurrentMicrophoneId //todo: [IMPL] To be implemented
-    {
-        get => _device_CurrentMicrophoneId;
-        set => SetProperty(ref _device_CurrentMicrophoneId, value);
-    }
-    private string _device_CurrentMicrophoneId = string.Empty;
-
-    /// <summary>
-    /// ID of speaker for processed audio
-    /// </summary>
-    public string Device_CurrentSpeakerProcessedId //todo: [IMPL] To be implemented
-    {
-        get => _device_CurrentSpeakerProcessedId;
-        set => SetProperty(ref _device_CurrentSpeakerProcessedId, value);
-    }
-    private string _device_CurrentSpeakerProcessedId = string.Empty;
-
-    /// <summary>
-    /// ID of speaker for system audio
-    /// </summary>
-    public string Device_CurrentSpeakerSystemId //todo: [IMPL] To be implemented, needed?
-    {
-        get => _device_CurrentSpeakerSystemId;
-        set => SetProperty(ref _device_CurrentSpeakerSystemId, value);
-    }
-    private string _device_CurrentSpeakerSystemId = string.Empty;
     #endregion
 
     #region External Input
