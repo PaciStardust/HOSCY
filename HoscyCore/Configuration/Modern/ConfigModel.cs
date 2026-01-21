@@ -340,7 +340,7 @@ public class ConfigModel : ObservableObject
     /// <summary>
     /// Should manual input be sent to audio processors
     /// </summary>
-    public bool ManualInput_SendViaAudio //todo: [IMPL] To be implemented
+    public bool ManualInput_SendViaAudio
     {
         get => _manualInput_SendViaAudio;
         set => SetProperty(ref _manualInput_SendViaAudio, value);
@@ -350,7 +350,7 @@ public class ConfigModel : ObservableObject
     /// <summary>
     /// Should manual input be sent to text processors
     /// </summary>
-    public bool ManualInput_SendViaText //todo: [IMPL] To be implemented
+    public bool ManualInput_SendViaText
     {
         get => _manualInput_SendViaText;
         set => SetProperty(ref _manualInput_SendViaText, value);
@@ -360,7 +360,7 @@ public class ConfigModel : ObservableObject
     /// <summary>
     /// Should manual input be sent to other processors
     /// </summary>
-    public bool ManualInput_SendViaOther //todo: [IMPL] To be implemented
+    public bool ManualInput_SendViaOther
     {
         get => _manualInput_SendViaOther;
         set => SetProperty(ref _manualInput_SendViaOther, value);
@@ -370,7 +370,7 @@ public class ConfigModel : ObservableObject
     /// <summary>
     /// Can manual input trigger commands?
     /// </summary>
-    public bool ManualInput_DoPreprocessFull //todo: [IMPL] To be implemented
+    public bool ManualInput_DoPreprocessFull
     {
         get => _manualInput_DoPreprocessFull;
         set => SetProperty(ref _manualInput_DoPreprocessFull, value);
@@ -380,7 +380,7 @@ public class ConfigModel : ObservableObject
     /// <summary>
     /// Can manual input trigger replacements?
     /// </summary>
-    public bool ManualInput_DoPreprocessPartial //todo: [IMPL] To be implemented
+    public bool ManualInput_DoPreprocessPartial
     {
         get => _manualInput_DoPreprocessPartial;
         set => SetProperty(ref _manualInput_DoPreprocessPartial, value);
@@ -390,7 +390,7 @@ public class ConfigModel : ObservableObject
     /// <summary>
     /// Can manual input trigger translation?
     /// </summary>
-    public bool ManualInput_DoTranslate //todo: [IMPL] To be implemented
+    public bool ManualInput_DoTranslate
     {
         get => _manualInput_DoTranslate;
         set => SetProperty(ref _manualInput_DoTranslate, value);
