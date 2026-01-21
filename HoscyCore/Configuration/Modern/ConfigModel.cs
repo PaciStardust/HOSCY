@@ -278,7 +278,7 @@ public class ConfigModel : ObservableObject
     /// <summary>
     /// Should external input be sent to audio processors
     /// </summary>
-    public bool ExternalInput_SendViaAudio //todo: [IMPL] To be implemented
+    public bool ExternalInput_SendViaAudio
     {
         get => _externalInput_SendViaAudio;
         set => SetProperty(ref _externalInput_SendViaAudio, value);
@@ -288,7 +288,7 @@ public class ConfigModel : ObservableObject
     /// <summary>
     /// Should external input be sent to text processors
     /// </summary>
-    public bool ExternalInput_SendViaText //todo: [IMPL] To be implemented
+    public bool ExternalInput_SendViaText
     {
         get => _externalInput_SendViaText;
         set => SetProperty(ref _externalInput_SendViaText, value);
@@ -298,7 +298,7 @@ public class ConfigModel : ObservableObject
     /// <summary>
     /// Should external input be sent to other processors
     /// </summary>
-    public bool ExternalInput_SendViaOther //todo: [IMPL] To be implemented
+    public bool ExternalInput_SendViaOther
     {
         get => _externalInput_SendViaOther;
         set => SetProperty(ref _externalInput_SendViaOther, value);
@@ -308,7 +308,7 @@ public class ConfigModel : ObservableObject
     /// <summary>
     /// Can external input trigger commands?
     /// </summary>
-    public bool ExternalInput_DoPreprocessFull //todo: [IMPL] To be implemented
+    public bool ExternalInput_DoPreprocessFull
     {
         get => _externalInput_DoPreprocessFull;
         set => SetProperty(ref _externalInput_DoPreprocessFull, value);
@@ -318,7 +318,7 @@ public class ConfigModel : ObservableObject
     /// <summary>
     /// Can external input trigger replacements?
     /// </summary>
-    public bool ExternalInput_DoPreprocessPartial //todo: [IMPL] To be implemented
+    public bool ExternalInput_DoPreprocessPartial
     {
         get => _externalInput_DoPreprocessPartial;
         set => SetProperty(ref _externalInput_DoPreprocessPartial, value);
@@ -328,7 +328,7 @@ public class ConfigModel : ObservableObject
     /// <summary>
     /// Should input from external sources be translated
     /// </summary>
-    public bool ExternalInput_DoTranslate //todo: [IMPL] Implement this
+    public bool ExternalInput_DoTranslate
     {
         get => _externalInput_DoTranslate;
         set => SetProperty(ref _externalInput_DoTranslate, value);
