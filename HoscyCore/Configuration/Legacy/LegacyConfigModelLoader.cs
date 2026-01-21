@@ -211,9 +211,9 @@ internal static class LegacyConfigModelLoader //todo: [TEST] Does the conversion
 
             ManualInput_SendViaAudio = oldConfig.Input.UseTts,
             ManualInput_SendViaText = oldConfig.Input.UseTextbox,
-            ManualInput_CanTriggerCommands = oldConfig.Input.TriggerCommands,
-            ManualInput_CanTriggerReplace = oldConfig.Input.TriggerReplace,
-            ManualInput_CanBeTranslated = oldConfig.Input.AllowTranslation,
+            ManualInput_DoPreprocessFull = oldConfig.Input.TriggerCommands,
+            ManualInput_DoPreprocessPartial = oldConfig.Input.TriggerReplace,
+            ManualInput_DoTranslate = oldConfig.Input.AllowTranslation,
             ManualInput_TextPresets = ConvertDictionary(oldConfig.Input.Presets),
 
             Debug_LogViaCmdOnWindows = oldConfig.Debug.OpenLogWindow,

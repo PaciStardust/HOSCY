@@ -370,32 +370,32 @@ public class ConfigModel : ObservableObject
     /// <summary>
     /// Can manual input trigger commands?
     /// </summary>
-    public bool ManualInput_CanTriggerCommands //todo: [IMPL] To be implemented
+    public bool ManualInput_DoPreprocessFull //todo: [IMPL] To be implemented
     {
-        get => _manualInput_CanTriggerCommands;
-        set => SetProperty(ref _manualInput_CanTriggerCommands, value);
+        get => _manualInput_DoPreprocessFull;
+        set => SetProperty(ref _manualInput_DoPreprocessFull, value);
     }
-    private bool _manualInput_CanTriggerCommands = true;
+    private bool _manualInput_DoPreprocessFull = true;
 
     /// <summary>
     /// Can manual input trigger replacements?
     /// </summary>
-    public bool ManualInput_CanTriggerReplace //todo: [IMPL] To be implemented
+    public bool ManualInput_DoPreprocessPartial //todo: [IMPL] To be implemented
     {
-        get => _manualInput_CanTriggerReplace;
-        set => SetProperty(ref _manualInput_CanTriggerReplace, value);
+        get => _manualInput_DoPreprocessPartial;
+        set => SetProperty(ref _manualInput_DoPreprocessPartial, value);
     }
-    private bool _manualInput_CanTriggerReplace = true;
+    private bool _manualInput_DoPreprocessPartial = true;
 
     /// <summary>
     /// Can manual input trigger translation?
     /// </summary>
-    public bool ManualInput_CanBeTranslated //todo: [IMPL] To be implemented
+    public bool ManualInput_DoTranslate //todo: [IMPL] To be implemented
     {
-        get => _manualInput_CanBeTranslated;
-        set => SetProperty(ref _manualInput_CanBeTranslated, value);
+        get => _manualInput_DoTranslate;
+        set => SetProperty(ref _manualInput_DoTranslate, value);
     }
-    private bool _manualInput_CanBeTranslated = true;
+    private bool _manualInput_DoTranslate = true;
 
     /// <summary>
     /// Text presets for manual input
