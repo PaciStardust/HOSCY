@@ -10,7 +10,8 @@ public class MainCommandModule(
     OscCommandModule oscCm,
     AfkCommandModule afkCm,
     CounterCommandModule counterCm,
-    AudioCommandModule audioCm
+    AudioCommandModule audioCm,
+    ExternalInputCommandModule exInputCm
 ) : AttributeCommandModule
 {
     private readonly ConfigCommandModule _configCm = configCm;
@@ -19,7 +20,7 @@ public class MainCommandModule(
     private readonly AfkCommandModule _afkCm = afkCm;
     private readonly CounterCommandModule _counterCm = counterCm;
     private readonly AudioCommandModule _audioCm = audioCm;
-
+    private readonly ExternalInputCommandModule _exInputCm = exInputCm;
 
     [SubCommandModule(["config"], "Edit the config file")]
     public CommandResult CmdConfig(string? args)
@@ -61,6 +62,13 @@ public class MainCommandModule(
     {
         if (OnEmpty(args, GetParameterError("audio"))) return CommandResult.MissingParameter;
         return _audioCm.Execute(args);
+    }
+
+    [SubCommandModule(["externalinput", "ex-in"], "Manage external output")]
+    public CommandResult CmdExIn(string? args)
+    {
+        if (OnEmpty(args, GetParameterError("external input"))) return CommandResult.MissingParameter;
+        return _exInputCm.Execute(args);
     }
 
     private string GetParameterError(string commandName) 
