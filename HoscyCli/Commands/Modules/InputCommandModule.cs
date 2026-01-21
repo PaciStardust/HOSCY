@@ -12,21 +12,39 @@ public class InputCommandModule(IInputService input, ReflectPropEditCommandModul
     private readonly ReflectPropEditCommandModule _reflectCm = reflectCm;
 
     #region External
-    [SubCommandModule(["e-send"], "Send an external message")]
-    public CommandResult CmdExSend(string? args)
+    [SubCommandModule(["e-t-send"], "Send an external text message")]
+    public CommandResult CmdExTextSend(string? args)
     {
         if (OnEmpty(args, "Must provide contents to send")) return CommandResult.MissingParameter;
-        _input.SendExternalMessage(args);
-        Console.WriteLine($"Sent external message: {args}");
+        _input.SendExternalTextMessage(args);
+        Console.WriteLine($"Sent external text message: {args}");
         return CommandResult.Success;   
     }
 
-    [SubCommandModule(["e-notify"], "Send an external notification")]
-    public CommandResult CmdExNotify(string? args)
+    [SubCommandModule(["e-a-send"], "Send an external audio message")]
+    public CommandResult CmdExAudioSend(string? args)
     {
-        if (OnEmpty(args: args, "Must provide contents to send")) return CommandResult.MissingParameter;
-        _input.SendExternalNotification(args);
-        Console.WriteLine($"Sent external notification: {args}");
+        if (OnEmpty(args, "Must provide contents to send")) return CommandResult.MissingParameter;
+        _input.SendExternalAudioMessage(args);
+        Console.WriteLine($"Sent external audio message: {args}");
+        return CommandResult.Success;   
+    }
+
+    [SubCommandModule(["e-o-send"], "Send an external other message")]
+    public CommandResult CmdExOtherSend(string? args)
+    {
+        if (OnEmpty(args, "Must provide contents to send")) return CommandResult.MissingParameter;
+        _input.SendExternalOtherMessage(args);
+        Console.WriteLine($"Sent external other message: {args}");
+        return CommandResult.Success;   
+    }
+
+    [SubCommandModule(["e-t-notify"], "Send an external notification")]
+    public CommandResult CmdExTextNotify(string? args)
+    {
+        if (OnEmpty(args: args, message: "Must provide contents to send")) return CommandResult.MissingParameter;
+        _input.SendExternalTextNotification(args);
+        Console.WriteLine($"Sent external text notification: {args}");
         return CommandResult.Success;   
     }
 
@@ -46,24 +64,6 @@ public class InputCommandModule(IInputService input, ReflectPropEditCommandModul
     public CommandResult CmdExTranslate()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.ExternalInput_DoTranslate));
-    }
-
-    [SubCommandModule(["e-audio"], "Edit external SendViaAudio Flag")]
-    public CommandResult CmdExSendViaAudio()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.ExternalInput_SendViaAudio));
-    }
-
-    [SubCommandModule(["e-other"], "Edit external SendViaOther Flag")]
-    public CommandResult CmdExSendViaOther()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.ExternalInput_SendViaOther));
-    }
-
-    [SubCommandModule(["e-text"], "Edit external SendViaText Flag")]
-    public CommandResult CmdExSendViaText()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.ExternalInput_SendViaText));
     }
     #endregion
 

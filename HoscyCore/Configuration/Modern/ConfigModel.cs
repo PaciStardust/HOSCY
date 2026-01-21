@@ -276,36 +276,6 @@ public class ConfigModel : ObservableObject
 
     #region External Input
     /// <summary>
-    /// Should external input be sent to audio processors
-    /// </summary>
-    public bool ExternalInput_SendViaAudio
-    {
-        get => _externalInput_SendViaAudio;
-        set => SetProperty(ref _externalInput_SendViaAudio, value);
-    }
-    private bool _externalInput_SendViaAudio;
-
-    /// <summary>
-    /// Should external input be sent to text processors
-    /// </summary>
-    public bool ExternalInput_SendViaText
-    {
-        get => _externalInput_SendViaText;
-        set => SetProperty(ref _externalInput_SendViaText, value);
-    }
-    private bool _externalInput_SendViaText = true;
-
-    /// <summary>
-    /// Should external input be sent to other processors
-    /// </summary>
-    public bool ExternalInput_SendViaOther
-    {
-        get => _externalInput_SendViaOther;
-        set => SetProperty(ref _externalInput_SendViaOther, value);
-    }
-    private bool _externalInput_SendViaOther = true;
-
-    /// <summary>
     /// Can external input trigger commands?
     /// </summary>
     public bool ExternalInput_DoPreprocessFull

@@ -6,6 +6,8 @@ namespace HoscyCore.Services.Misc;
 public interface IInputService : IService
 {
     public void SendManualMessage(string contents);
-    public void SendExternalMessage(string contents);
-    public void SendExternalNotification(string contents, OutputNotificationPriority prio = OutputNotificationPriority.Medium);
+    public void SendExternalTextMessage(string contents);
+    public void SendExternalTextNotification(string contents, OutputNotificationPriority prio = OutputNotificationPriority.Medium);
+    public void SendExternalAudioMessage(string contents);
+    public void SendExternalOtherMessage(string contents);
 }

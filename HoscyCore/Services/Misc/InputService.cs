@@ -34,30 +34,42 @@ public class InputService(ConfigModel config, IOutputManagerService output, ILog
     #endregion
 
     #region External
-    public void SendExternalMessage(string contents)
+    public void SendExternalTextMessage(string contents)
+    {
+        SendExternalMessage(contents, OutputSettingsFlags.AllowTextOutput, "text");
+    }
+
+    public void SendExternalAudioMessage(string contents)
+    {
+        SendExternalMessage(contents, OutputSettingsFlags.AllowAudioOutput, "audio");
+    }
+
+    public void SendExternalOtherMessage(string contents)
+    {
+        SendExternalMessage(contents, OutputSettingsFlags.AllowOtherOutput, "other");
+    }
+
+    private void SendExternalMessage(string contents, OutputSettingsFlags extraFlag, string logText)
     {
         if (string.IsNullOrWhiteSpace(contents)) return;
-        var flags = GenerateExternalFlags();
-        _logger.Debug("Sending external input message \"{message}\"", contents);
+        var flags = GenerateExternalProcessingFlags() | extraFlag;
+        _logger.Debug("Sending external {logText} message \"{message}\"", logText, contents);
         _output.SendMessage(contents, flags);
-        _logger.Verbose("Sent external input message \"{message}\"", contents);
+        _logger.Verbose("Sent external {logText} message \"{message}\"", logText, contents);
     }
 
-    public void SendExternalNotification(string contents, OutputNotificationPriority prio = OutputNotificationPriority.Medium)
+    public void SendExternalTextNotification(string contents, OutputNotificationPriority prio = OutputNotificationPriority.Medium)
     {
         if (string.IsNullOrWhiteSpace(contents)) return;
-        var flags = GenerateExternalFlags();
-        _logger.Debug("Sending external input notification \"{message}\"", contents);
+        var flags = GenerateExternalProcessingFlags() | OutputSettingsFlags.AllowTextOutput;
+        _logger.Debug("Sending external text notification \"{message}\"", contents);
         _output.SendNotification(contents, prio, flags);
-        _logger.Verbose("Sent external input notification \"{message}\"", contents);
+        _logger.Verbose("Sent external text notification \"{message}\"", contents);
     }
 
-    private OutputSettingsFlags GenerateExternalFlags()
+    private OutputSettingsFlags GenerateExternalProcessingFlags()
     {
-        return (_config.ExternalInput_SendViaText ? OutputSettingsFlags.AllowTextOutput : OutputSettingsFlags.None)
-            | (_config.ExternalInput_SendViaAudio ? OutputSettingsFlags.AllowAudioOutput : OutputSettingsFlags.None)
-            | (_config.ExternalInput_SendViaOther ? OutputSettingsFlags.AllowOtherOutput : OutputSettingsFlags.None)
-            | (_config.ExternalInput_DoTranslate ? OutputSettingsFlags.DoTranslate : OutputSettingsFlags.None)
+        return (_config.ExternalInput_DoTranslate ? OutputSettingsFlags.DoTranslate : OutputSettingsFlags.None)
             | (_config.ExternalInput_DoPreprocessPartial ? OutputSettingsFlags.DoPreprocessPartial : OutputSettingsFlags.None)
             | (_config.ExternalInput_DoPreprocessFull ? OutputSettingsFlags.DoPreprocessFull : OutputSettingsFlags.None);
     }
