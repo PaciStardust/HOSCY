@@ -276,6 +276,13 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     {
         if (string.IsNullOrWhiteSpace(contents)) return;
 
+        var compatiblePreprocessors = _preprocessors.Where(x => IsPreprocessorCompatible(x, settings)).ToArray();
+        if (compatiblePreprocessors.Length > 0 && TryPreprocess(contents, compatiblePreprocessors, out var processedOutput))
+        {
+            if (string.IsNullOrWhiteSpace(processedOutput)) return;
+            contents = processedOutput;
+        }
+
         var compatibleProcessors = _activeProcessors
             .Where(x => IsProcessorCompatible(x, settings))
             .ToArray();
@@ -283,13 +290,6 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         {
             _logger.Warning("Message with contents \"{message}\" was not processed as no processors fit the criteria", contents);
             return;
-        }
-
-        var compatiblePreprocessors = _preprocessors.Where(x => IsPreprocessorCompatible(x, settings)).ToArray();
-        if (compatibleProcessors.Length > 0 && TryPreprocess(contents, compatiblePreprocessors, out var processedOutput))
-        {
-            if (string.IsNullOrWhiteSpace(processedOutput)) return;
-            contents = processedOutput;
         }
 
         if (settings.HasFlag(OutputSettingsFlags.DoTranslate) 
