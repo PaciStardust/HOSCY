@@ -16,7 +16,7 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
     private readonly IOscListenService _listener = listener;
 
     private Vrc.OSCQueryService? _oscQuery = null;
-    private readonly Dictionary<string, Vrc.HostInfo> _hosts = [];
+    private readonly Dictionary<string, (Vrc.HostInfo Host, DateTimeOffset LastHeard)> _hosts = [];
     private Timer? _serviceRefreshTimer = null;
 
     #region Start/Stop
@@ -59,7 +59,7 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
         _oscQuery = oscQuery;
 
         _logger.Debug("Starting service refresh timer");
-        var timer = CreateRefreshTimer(oscQuery, 5000);
+        var timer = CreateRefreshTimer(_oscQuery, _hosts, _logger, 5000);
         timer.Start();
         _serviceRefreshTimer = timer;
         LogStartComplete(GetType(), _logger);
@@ -92,9 +92,14 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
     /// <summary>
     /// Adds HostInfo to list
     /// </summary>
-    private void AddHostInfoFromServiceProfile(Vrc.OSCQueryServiceProfile profile, Dictionary<string, Vrc.HostInfo> hosts) //todo: [FEAT] better logging, lifetime?
+    private void AddHostInfoFromServiceProfile(Vrc.OSCQueryServiceProfile profile, Dictionary<string, (Vrc.HostInfo Host, DateTimeOffset LastHeard)> hosts)
     {
-        _logger.Verbose("Received ServiceProfile \"{profileName}\"", profile.name);
+        var lowerName = profile.name.ToLower();
+        if (!hosts.ContainsKey(lowerName))
+        {
+            _logger.Debug("Received ServiceProfile \"{profileName}\"", profile.name);
+        }
+
         var hostInfo = Vrc.Extensions.GetHostInfo(profile.address, profile.port).GetAwaiter().GetResult();
         if (hostInfo == null)
         {
@@ -102,19 +107,19 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
             throw new ArgumentException("Failed to grab HostInfo for ServiceProfile " + profile.name);
         }
 
-        var lowerName = hostInfo.name.ToLower();
+        // We do not log refreshes
         if (!hosts.ContainsKey(lowerName))
         {
-            hosts[lowerName] = hostInfo;
             _logger.Debug("Adding HostInfo {hostInfoName} (IP={hostIp} Port={hostPort}) from ServiceProfile \"{profileName}\" to hosts list",
                 lowerName, hostInfo.oscIP, hostInfo.oscPort, profile.name);
         }
+        hosts[lowerName] = (hostInfo, DateTimeOffset.UtcNow);
     }
 
     /// <summary>
     /// Safely adds HostInfo to list
     /// </summary>
-    private void TryAddHostInfoFromServiceProfile(Vrc.OSCQueryServiceProfile profile, Dictionary<string, Vrc.HostInfo> hosts)
+    private void TryAddHostInfoFromServiceProfile(Vrc.OSCQueryServiceProfile profile, Dictionary<string, (Vrc.HostInfo Host, DateTimeOffset LastHeard)> hosts)
     {
         try
         {
@@ -131,7 +136,7 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
     {
         var lowerName = name.ToLower();
         return _hosts.TryGetValue(lowerName, out var hostData)
-            ? (hostData.oscIP, hostData.oscPort)
+            ? (hostData.Host.oscIP, hostData.Host.oscPort)
             : null;
     }
     #endregion
@@ -140,14 +145,31 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
     /// <summary>
     /// Creates a timer for refreshing services 
     /// </summary>
-    private static Timer CreateRefreshTimer(Vrc.OSCQueryService service, int intervalMs)
+    private static Timer CreateRefreshTimer(Vrc.OSCQueryService service, Dictionary<string, (Vrc.HostInfo Host, DateTimeOffset LastHeard)> hosts, Serilog.ILogger logger, int intervalMs)
     {
         var timer = new Timer(intervalMs)
         {
             AutoReset = true
         };
-        timer.Elapsed += (_, _) => service.RefreshServices();
+        timer.Elapsed += (_, _) => TimerElapsed(service, hosts, logger);
         return timer;
+    }
+
+    private static void TimerElapsed(Vrc.OSCQueryService service, Dictionary<string, (Vrc.HostInfo Host, DateTimeOffset LastHeard)> hosts, Serilog.ILogger logger)
+    {
+        service.RefreshServices();
+
+        var limit = DateTimeOffset.UtcNow.AddMinutes(-3);
+        var missing = hosts.Where(kvp => kvp.Value.LastHeard < limit)
+            .Select(kvp => kvp.Key).ToArray();
+        
+        if (missing.Length == 0) return;
+
+        foreach(var key in missing)
+        {
+            logger.Debug("Removing host \"{host}\" because of expired lifetime", key);
+            hosts.Remove(key);
+        }
     }
     #endregion
 }
