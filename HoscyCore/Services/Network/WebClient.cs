@@ -87,7 +87,7 @@ public class WebClient(ILogger logger) : StartStopServiceBase, IWebClient
     public async Task<string> SendAsync(HttpRequestMessage requestMessage, int timeoutMs = 5000)
     {
         var identifier = IWebClient.GetRequestIdentifier();
-        _logger.Debug("{identifier} => Sending \"{requestMethod}\" request to \"{requestUri}\"", identifier, requestMessage.Method, requestMessage.RequestUri);
+        _logger.Verbose("{identifier} => Sending \"{requestMethod}\" request to \"{requestUri}\"", identifier, requestMessage.Method, requestMessage.RequestUri);
 
         if (_client is null)
         {
@@ -109,7 +109,7 @@ public class WebClient(ILogger logger) : StartStopServiceBase, IWebClient
                 throw new HttpRequestException($"Request failed with status code {response.StatusCode}");
             }
 
-            _logger.Debug("{identifier}: Received data from request in {timePassed}ms => {jsonIn}", identifier, sw.ElapsedMilliseconds, jsonIn);
+            _logger.Verbose("{identifier}: Received data from request in {timePassed}ms => {jsonIn}", identifier, sw.ElapsedMilliseconds, jsonIn);
             return jsonIn;
         }
         catch (Exception ex)

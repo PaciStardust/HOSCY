@@ -50,7 +50,7 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
             return OscCommandState.Malformed;
         }
 
-        _logger.Debug("{commandMatchCount} OSC command matches found in string \"{commandString}\", parsing individual commands", commandMatches.Count, commandString);
+        _logger.Verbose("{commandMatchCount} OSC command matches found in string \"{commandString}\", parsing individual commands", commandMatches.Count, commandString);
         var commandInfos = new List<OscCommandInfo>();
         foreach (Match commandMatch in commandMatches)
         {
@@ -220,12 +220,12 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
         {
             if (_cts.IsCancellationRequested)
             {
-                _logger.Debug("{taskId}: Cancelled early during step {step}", taskId, i + 1);
+                _logger.Verbose("{taskId}: Cancelled early during step {step}", taskId, i + 1);
                 return Task.CompletedTask;
             }
 
             var cmdInfo = commandInfos[i];
-            _logger.Debug("{taskId}: Step {step}/{cmdCount} sending {cmdInfo}", taskId, i + 1, cmdCount, cmdInfo.ToString());
+            _logger.Verbose("{taskId}: Step {step}/{cmdCount} sending {cmdInfo}", taskId, i + 1, cmdCount, cmdInfo.ToString());
             if (!_sender.SendSync(cmdInfo.Ip ?? _sender.GetDefaultIp(), cmdInfo.Port ?? _sender.GetDefaultPort(), cmdInfo.Address, cmdInfo.Arguments))
             {
                 _logger.Warning("{taskId}: Step {step}/{cmdCount} with info {cmdInfo} failed to send", taskId, i + 1, cmdCount, cmdInfo.ToString());
@@ -233,7 +233,7 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
             }
             if (i != cmdCount - 1 && cmdInfo.Wait.HasValue && cmdInfo.Wait.Value > 0)
             {
-                _logger.Debug("{taskId}: Step {step}/{cmdCount} waiting for {timeout}ms after execution", taskId, i + 1, cmdCount, cmdInfo.Wait);
+                _logger.Verbose("{taskId}: Step {step}/{cmdCount} waiting for {timeout}ms after execution", taskId, i + 1, cmdCount, cmdInfo.Wait);
                 var timeToWait = cmdInfo.Wait.Value;
                 while (timeToWait > 0) //this loop ensures that we can exit within 50ms of the token being cancelled
                 {
@@ -258,7 +258,7 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
     public int PerformTaskCleanup()
     {
         var currentCount = _runningTasks.Count;
-        _logger.Debug("Performing Task Cleanup, currently {currentCount} in list", currentCount);
+        _logger.Verbose("Performing Task Cleanup, currently {currentCount} in list", currentCount);
         for (var i = currentCount - 1; i > -1; i--)
         {
             if (_runningTasks[i].IsCompleted)
@@ -266,7 +266,7 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
                 _runningTasks.RemoveAt(i);
             }
         }
-        _logger.Debug("Performed Task Cleanup, currently {oldCount} => {currentCount} in list", currentCount, _runningTasks.Count);
+        _logger.Verbose("Performed Task Cleanup, currently {oldCount} => {currentCount} in list", currentCount, _runningTasks.Count);
         return _runningTasks.Count;
     }
     #endregion
@@ -274,7 +274,7 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
     #region Start / Stop
     protected override void StartInternal()
     {
-        _logger.Information("Service \"started\", StartStop is only implemented for a clean shutdown");
+        _logger.Debug("Service \"started\", StartStop is only implemented for a clean shutdown");
         return;
     }
 
@@ -285,29 +285,29 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
 
     public override void Restart()
     {
-        _logger.Information("Service \"restarted\", StartStop is only implemented for a clean shutdown");
+        _logger.Debug("Service \"restarted\", StartStop is only implemented for a clean shutdown");
     }
 
     public override void Stop()
     {
-        _logger.Information("Service stopping, ensuring all tasks ended");
+        _logger.Debug("Service stopping, ensuring all tasks ended");
         _cts.Cancel();
 
         var remain = PerformTaskCleanup();
         if (remain > 0)
         {
-            _logger.Information("{remain} tasks are still running, waiting a timer period to allow them to safely stop", remain);
+            _logger.Verbose("{remain} tasks are still running, waiting a timer period to allow them to safely stop", remain);
             Thread.Sleep(OSC_COMMAND_MAX_UNINTERRUPTED_WAIT + 1); //This should ensure all tasks to have a chance of exiting unless stuck
             remain = PerformTaskCleanup();
             if (remain > 0)
             {
-                _logger.Information("{remain} tasks refused to stop in expected duration, forcing shutdown", remain);
+                _logger.Verbose("{remain} tasks refused to stop in expected duration, forcing shutdown", remain);
                 _runningTasks.Clear();
             }
         }
 
         _cts.Dispose();
-        _logger.Information("Service is stopped");
+        _logger.Debug("Service is stopped");
     }
     #endregion
 }

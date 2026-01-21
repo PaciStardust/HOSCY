@@ -21,7 +21,7 @@ public class ApiTranslator(ILogger logger, ConfigModel config, IApiClient client
     #region Start/Stop
     protected override void StartInternal()
     {
-        _logger.Information("Starting Translator with preset \"{preset}\"", _config.Translation_Api_Preset);
+        _logger.Debug("Starting Translator with preset \"{preset}\"", _config.Translation_Api_Preset);
         var matchingModel = _config.Api_Presets.FirstOrDefault(x => x.Name == _config.Translation_Api_Preset);
         if (matchingModel is null)
         {
@@ -35,17 +35,17 @@ public class ApiTranslator(ILogger logger, ConfigModel config, IApiClient client
             _logger.Error("Could not find load \"{preset}\"", matchingModel.Name);
             throw new StartStopServiceException($"Could not load preset {matchingModel.Name}, check logs for more information");
         }
-        _logger.Information("Started Translator with preset \"{preset}\"", matchingModel.Name);
+        _logger.Debug("Started Translator with preset \"{preset}\"", matchingModel.Name);
     }
 
     protected override void StopInternal()
     {
-        _logger.Information("Stopping Translator");
+        _logger.Debug("Stopping Translator");
         if (_client.IsPresetLoaded())
         {
             _client.ClearPreset();
         }
-        _logger.Information("Stopped Translator");
+        _logger.Debug("Stopped Translator");
     }
 
     public override void Restart()
@@ -70,7 +70,7 @@ public class ApiTranslator(ILogger logger, ConfigModel config, IApiClient client
             return false;
         }
 
-        _logger.Debug("Requesting translation of text \"{input}\"", input);
+        _logger.Verbose("Requesting translation of text \"{input}\"", input);
         try
         {
             var result = _client.SendText(input).GetAwaiter().GetResult();
@@ -81,7 +81,7 @@ public class ApiTranslator(ILogger logger, ConfigModel config, IApiClient client
                 return false;
             }
 
-            _logger.Debug("Translated text \"{input}\" to \"{output}\"", input, result);
+            _logger.Verbose("Translated text \"{input}\" to \"{output}\"", input, result);
             output = result;
             return true;
         } catch (Exception ex)

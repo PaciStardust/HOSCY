@@ -83,6 +83,7 @@ public static class LaunchUtils
     {
         List<T> instances = [];
         var searchType = typeof(T);
+        logger?.Debug("Locating instances of \"{baseType}\"", searchType.FullName);
         foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
         {
             if (type.IsInterface || type.IsAbstract || !type.IsAssignableTo(searchType)) continue;
@@ -93,10 +94,10 @@ public static class LaunchUtils
                 logger?.Debug("Could not locate instance of \"{baseType}\" \"{serviceType}\"", searchType.FullName, type.FullName);
                 continue;
             }
-            logger?.Debug("Located instance of \"{baseType}\" \"{serviceType}\"", searchType.FullName, type.FullName);
+            logger?.Verbose("Located instance of \"{baseType}\" \"{serviceType}\"", searchType.FullName, type.FullName);
             instances.Add(instance);
         }
-        logger?.Information("Located {moduleCount} instances of \"{baseType}\"", instances.Count, searchType.FullName);
+        logger?.Debug("Located {moduleCount} instances of \"{baseType}\"", instances.Count, searchType.FullName);
         return instances;
     }
 

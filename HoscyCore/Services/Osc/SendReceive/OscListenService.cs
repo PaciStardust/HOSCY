@@ -40,10 +40,10 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
 
     protected override void StartInternal()
     {
-        _logger.Information("Starting up listener on localhost:{port}", _config.Osc_Routing_ListenPort);
+        _logger.Debug("Starting up listener on localhost:{port}", _config.Osc_Routing_ListenPort);
         if (IsStarted())
         {
-            _logger.Information("Skipped starting listener, still running");
+            _logger.Debug("Skipped starting listener, still running");
             return;
         }
         _listener = new(new(IPAddress.Loopback, _config.Osc_Routing_ListenPort))
@@ -53,12 +53,12 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
         _cts = new CancellationTokenSource();
         _logger.Debug("Starting listen loop");
         _workerTask = Task.Run(ListenLoop);
-        _logger.Information("Listener and listen loop has been started");
+        _logger.Debug("Listener and listen loop has been started");
     }
 
     public override void Stop()
     {
-        _logger.Information("Stopping listen loop...");
+        _logger.Debug("Stopping listen loop...");
         _cts?.Cancel();
         var ex = LaunchUtils.SafelyWaitForTaskWithTimeoutAndLogException(_workerTask, 1000, new StartStopServiceException("Unable to stop listen loop"));
         if (ex is not null)
@@ -71,7 +71,7 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
         _workerTask = null;
         _listener?.Dispose();
         _listener = null;
-        _logger.Information("Listen loop stopped");
+        _logger.Debug("Listen loop stopped");
     }
 
     public override void Restart()
@@ -118,7 +118,7 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
                 ? "[NULL]"
                 : $"{arg.GetType().Name}({arg})" ?? "???");
         }
-        _logger.Debug("Packet has been received on port {thisPort} with address \"{messageAddress}\" => {argInfo}",
+        _logger.Verbose("Packet has been received on port {thisPort} with address \"{messageAddress}\" => {argInfo}",
             GetPort(), res.Address, argsInfo);
 
         var handled = _messageHandler.HandleMessage(res);

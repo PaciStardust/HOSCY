@@ -77,7 +77,7 @@ public class DiContainer
     private static void AddFromAssembly(IServiceCollection collection, ILogger logger)
     {
         var sw = Stopwatch.StartNew();
-        logger.Debug("Loading dependencies from Assembly");
+        logger.Information("Loading dependencies from Assembly");
         var addedCount = 0;
         var allServices = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).Distinct();
 
@@ -125,12 +125,12 @@ public class DiContainer
         onProgress?.Invoke("Locating services to start");
         var servicesToStart = RetrieveServiceInfos();
 
-        _internalLogger.Information("Establishing startup order of {serviceCount} IServices by resolving dependencies... (DI taken {diDuration}ms so far)",
+        _internalLogger.Debug("Establishing startup order of {serviceCount} IServices by resolving dependencies... (DI taken {diDuration}ms so far)",
             servicesToStart.Count, sw.ElapsedMilliseconds);
         onProgress?.Invoke($"Establishing startup order of {servicesToStart.Count} services");
         var (servicesResolvedInOrder, servicesInOrder) = EstablishStartOrder(servicesToStart);
 
-        _internalLogger.Information("Order of {toStart} IAutoStartStopServices established, proceeding with startup... (DI taken {diDuration}ms so far)",
+        _internalLogger.Debug("Order of {toStart} IAutoStartStopServices established, proceeding with startup... (DI taken {diDuration}ms so far)",
             servicesInOrder.Count, sw.ElapsedMilliseconds);
         for (var i = 0; i < servicesInOrder.Count; i++)
         {
@@ -145,7 +145,7 @@ public class DiContainer
             i + 1, servicesInOrder.Count, servicesResolvedInOrder[i].FullName, subSw.ElapsedMilliseconds, sw.ElapsedMilliseconds);
         }
         sw.Stop();
-        _internalLogger.Information("Successfully started {toStart} IAutoStartStopServices in {diDuration}ms", servicesInOrder.Count, sw.ElapsedMilliseconds);
+        _internalLogger.Debug("Successfully started {toStart} IAutoStartStopServices in {diDuration}ms", servicesInOrder.Count, sw.ElapsedMilliseconds);
         onProgress?.Invoke($"Started {servicesInOrder.Count} services");
     }
 
@@ -158,11 +158,11 @@ public class DiContainer
         _internalLogger.Information("Locating all IServices for stopping...");
         var servicesToStop = RetrieveServiceInfos();
 
-        _internalLogger.Information("Establishing reversed startup order of {serviceCount} IServices by resolving dependencies... (DI taken {diDuration}ms so far)",
+        _internalLogger.Debug("Establishing reversed startup order of {serviceCount} IServices by resolving dependencies... (DI taken {diDuration}ms so far)",
             servicesToStop.Count, sw.ElapsedMilliseconds);
         var (servicesResolvedInOrder, servicesInOrder) = EstablishStartOrder(servicesToStop, true);
 
-        _internalLogger.Information("Order of {toStop} IAutoStartStopServices established, proceeding with stopping... (DI taken {diDuration}ms so far)",
+        _internalLogger.Debug("Order of {toStop} IAutoStartStopServices established, proceeding with stopping... (DI taken {diDuration}ms so far)",
             servicesInOrder.Count, sw.ElapsedMilliseconds);
         for (var i = 0; i < servicesInOrder.Count; i++)
         {
@@ -177,7 +177,7 @@ public class DiContainer
         }
 
         sw.Stop();
-        _internalLogger.Information("Successfully stopped {toStart} IAutoStartStopServices in {diDuration}ms", servicesInOrder.Count, sw.ElapsedMilliseconds);
+        _internalLogger.Debug("Successfully stopped {toStart} IAutoStartStopServices in {diDuration}ms", servicesInOrder.Count, sw.ElapsedMilliseconds);
     }
 
     /// <summary>

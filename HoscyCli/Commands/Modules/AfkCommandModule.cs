@@ -23,7 +23,7 @@ public class AfkCommandModule(IAfkService afkService, ILogger logger, ReflectPro
     [SubCommandModule(["start"], "Start AFK status")] 
     public CommandResult CmdStart()
     {
-        _logger.Information("Manually starting AFK");
+        _logger.Debug("Manually starting AFK");
         _afkService.StartAfk();
         Console.WriteLine("Started AFK");
         return CommandResult.Success;
@@ -32,7 +32,7 @@ public class AfkCommandModule(IAfkService afkService, ILogger logger, ReflectPro
     [SubCommandModule(["stop"], "Stop AFK status")] 
     public CommandResult CmdStop()
     {
-        _logger.Information("Manually stopping AFK");
+        _logger.Debug("Manually stopping AFK");
         _afkService.StopAfk();
         Console.WriteLine("Stopped AFK");
         return CommandResult.Success;

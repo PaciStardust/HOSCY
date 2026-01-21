@@ -18,12 +18,12 @@ public class AfkOscMessageHandler(ILogger logger, IAfkService afkService, Config
         if(!message.Address.Equals(_config.Osc_Address_Game_Afk, StringComparison.OrdinalIgnoreCase))
             return false;
 
-        _logger.Information("Received OSC AFK packet");
+        _logger.Debug("Received OSC AFK packet");
         if (message.Arguments.Length == 0 || message.Arguments[0] is not bool afkState) {
             _logger.Warning("OSC AFK packet did not have bool as first arg");
             return true;
         }
-        _logger.Debug("OSC AFK packet is set to {afkState}", afkState);
+        _logger.Verbose("OSC AFK packet is set to {afkState}", afkState);
         if (afkState)
         {
             _afkService.StartAfk();
@@ -31,7 +31,7 @@ public class AfkOscMessageHandler(ILogger logger, IAfkService afkService, Config
         {
             _afkService.StopAfk();
         }
-        _logger.Information("Handled OSC AFK packet");
+        _logger.Verbose("Handled OSC AFK packet");
         return true;
     }
 }

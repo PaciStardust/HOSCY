@@ -16,7 +16,7 @@ internal class HoscyCoreAppDebug(ILogger logger)
     {
         if(_started)
         {
-            _logger.Information("Debug already started, skipping start");
+            _logger.Debug("Debug already started, skipping start");
             return;
         }
         _started = true;
@@ -27,7 +27,7 @@ internal class HoscyCoreAppDebug(ILogger logger)
         {
             _logger.Information("Starting windows console logger");
             WinApi.OpenConsole();
-            _logger.Information("Started windows console logger");
+            _logger.Debug("Started windows console logger");
             return;
         }
 
@@ -55,7 +55,7 @@ internal class HoscyCoreAppDebug(ILogger logger)
                     UseShellExecute = true,
                 };
                 _debugProcess = Process.Start(startInfo);
-                _logger.Information("Started debug terminal");
+                _logger.Debug("Started debug terminal");
             }
             catch (Exception ex)
             {
@@ -77,7 +77,7 @@ internal class HoscyCoreAppDebug(ILogger logger)
             _debugProcess.WaitForExit();
             _debugProcess.Dispose();
             _debugProcess = null;
-            _logger.Information("Stopped debug process");
+            _logger.Debug("Stopped debug process");
         } catch (Exception ex)
         {
             _logger.Error(ex, "Unable to stop debug process");

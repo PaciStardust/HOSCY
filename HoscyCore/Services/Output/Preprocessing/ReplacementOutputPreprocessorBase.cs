@@ -34,7 +34,7 @@ public abstract class ReplacementOutputPreprocessorBase<T> : IOutputPreprocessor
         _handlers.Clear();
 
         var models = GetReplacementModels();
-        _logger.Information("Reloading {replacementModelCount} handlers", models);
+        _logger.Debug("Reloading {replacementModelCount} handlers", models);
 
         var converted = new List<T>();
         var countDisabled = 0;
@@ -61,7 +61,7 @@ public abstract class ReplacementOutputPreprocessorBase<T> : IOutputPreprocessor
             }
         }
 
-        _logger.Information("Reloaded {replacementModelCountLoaded}/{replacementModelCount} handlers, {disabledCount} disabled, {brokenCount} broken", converted.Count, models.Count, countDisabled, countBroken);
+        _logger.Debug("Reloaded {replacementModelCountLoaded}/{replacementModelCount} handlers, {disabledCount} disabled, {brokenCount} broken", converted.Count, models.Count, countDisabled, countBroken);
         _handlers.AddRange(converted);
     }
     #endregion

@@ -152,13 +152,14 @@ internal static class LegacyConfigModelLoader //todo: [TEST] Does the conversion
         var newestVersion = steps.Keys.Max();
         if (config.ConfigVersion == newestVersion)
         {
-            logger.Information("Legacy config is already at version {newestVersion}, skipping upgrade", newestVersion);
+            logger.Debug("Legacy config is already at version {newestVersion}, skipping upgrade", newestVersion);
+            return config;
         }
         logger.Information("Legacy config is at version {currentVersion}, newst is {newestVersion}, starting upgrade", config.ConfigVersion, newestVersion);
 
         foreach (var (version, action) in steps.OrderBy(x => x.Key))
         {
-            logger.Information("Upgrading legacy config from version {oldVersion} to version {newVersion}, newest is {newestVersion}", config.ConfigVersion, version, newestVersion);
+            logger.Debug("Upgrading legacy config from version {oldVersion} to version {newVersion}, newest is {newestVersion}", config.ConfigVersion, version, newestVersion);
             try
             {
                 action();
@@ -169,9 +170,9 @@ internal static class LegacyConfigModelLoader //todo: [TEST] Does the conversion
                 logger.Error(ex, "Failed to upgrade legacy config from version {oldVersion} to version {newVersion}, newest is {newestVersion}", config.ConfigVersion, version, newestVersion);
                 throw;
             }
-            logger.Information("Upgraded legacy config from version {oldVersion} to version {newVersion}, newest is {newestVersion}", config.ConfigVersion, version, newestVersion);
+            logger.Debug("Upgraded legacy config from version {oldVersion} to version {newVersion}, newest is {newestVersion}", config.ConfigVersion, version, newestVersion);
         }
-        logger.Information("Finished upgrading legacy config to version {newestVersion}", newestVersion);
+        logger.Debug("Finished upgrading legacy config to version {newestVersion}", newestVersion);
         return config;
     }
 

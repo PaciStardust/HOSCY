@@ -17,7 +17,7 @@ public class HoscyCoreApp(ILogger? initialLogger = null) //todo: [REFACTOR] Redo
         var config = startParameters.PreloadedConfig;
 
         var version = LaunchUtils.GetVersion();
-        _currentLogger.Warning("Starting HOSCY Version {hoscyVersion}", version);
+        _currentLogger.Information("Starting HOSCY Version {hoscyVersion}", version);
         onProgress?.Invoke($"Loading HOSCY Version {version}");
 
         LogUtils.TryCleanLogs(PathUtils.PathExecutableFolder, _currentLogger);

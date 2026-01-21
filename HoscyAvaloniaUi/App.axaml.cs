@@ -38,7 +38,7 @@ public partial class App : Application
     {
         _startLogger.Information("Initializing Avalonia");
         AvaloniaXamlLoader.Load(this);
-        _startLogger.Information("Initializing Avalonia complete");
+        _startLogger.Debug("Initializing Avalonia complete");
     }
 
     public override void OnFrameworkInitializationCompleted()
@@ -109,7 +109,7 @@ public partial class App : Application
         Action<ILogger> onNewLoggerLoaded = new((logger) =>
         {
             _startLogger = logger.ForContext<App>();
-            _startLogger.Information("New logger received in startup");
+            _startLogger.Debug("New logger received in startup");
             Logger.Sink = new SerilogAvaloniaSink(_startLogger);
         });
 

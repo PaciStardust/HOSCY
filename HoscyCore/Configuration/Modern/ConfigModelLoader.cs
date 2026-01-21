@@ -52,14 +52,14 @@ public static class ConfigModelLoader
         {
             if (!Directory.Exists(cfgFolder))
             {
-                logger.Information("Config directory \"{directoryPath}\" not found, attempting creation", cfgFolder);
+                logger.Debug("Config directory \"{directoryPath}\" not found, attempting creation", cfgFolder);
                 Directory.CreateDirectory(cfgFolder);
-                logger.Information("Created config directory \"{directoryPath}\"", cfgFolder);
+                logger.Debug("Created config directory \"{directoryPath}\"", cfgFolder);
             }
 
             var jsonText = JsonConvert.SerializeObject(model, Formatting.Indented);
             File.WriteAllText(path, jsonText, Encoding.UTF8);
-            logger.Information("Saved Config at path \"{configPath}\"", path);
+            logger.Debug("Saved Config at path \"{configPath}\"", path);
         }
         catch (Exception ex)
         {
@@ -79,7 +79,7 @@ public static class ConfigModelLoader
         {
             logger.Information("Attempting creation of backup of config file at \"{backupPath}\"", path);
             File.WriteAllText(path, contents, Encoding.UTF8);
-            logger.Information("Succeeded creation of backup of config file at \"{backupPath}\"", path);
+            logger.Debug("Succeeded creation of backup of config file at \"{backupPath}\"", path);
         }
         catch (Exception ex)
         {
@@ -196,13 +196,14 @@ public static class ConfigModelLoader
         var newestVersion = steps.Keys.Max();
         if (config.ConfigVersion == newestVersion)
         {
-            logger.Information("Config is already at version {newestVersion}, skipping upgrade", newestVersion);
+            logger.Debug("Config is already at version {newestVersion}, skipping upgrade", newestVersion);
+            return config;
         }
         logger.Information("Config is at version {currentVersion}, newest is {newestVersion}, starting upgrade", config.ConfigVersion, newestVersion);
 
         foreach (var (version, action) in steps.OrderBy(x => x.Key))
         {
-            logger.Information("Upgrading config from version {oldVersion} to version {newVersion}, newest is {newestVersion}", config.ConfigVersion, version, newestVersion);
+            logger.Debug("Upgrading config from version {oldVersion} to version {newVersion}, newest is {newestVersion}", config.ConfigVersion, version, newestVersion);
             try
             {
                 action();
@@ -213,9 +214,9 @@ public static class ConfigModelLoader
                 logger.Error(ex, "Failed to upgrade config from version {oldVersion} to version {newVersion}, newest is {newestVersion}", config.ConfigVersion, version, newestVersion);
                 throw;
             }
-            logger.Information("Upgraded config from version {oldVersion} to version {newVersion}, newest is {newestVersion}", config.ConfigVersion, version, newestVersion);
+            logger.Debug("Upgraded config from version {oldVersion} to version {newVersion}, newest is {newestVersion}", config.ConfigVersion, version, newestVersion);
         }
-        logger.Information("Finished upgrading config to version {newestVersion}", newestVersion);
+        logger.Debug("Finished upgrading config to version {newestVersion}", newestVersion);
         return config;
     }
 }

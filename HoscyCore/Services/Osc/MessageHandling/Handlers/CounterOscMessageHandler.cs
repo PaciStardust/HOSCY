@@ -27,7 +27,7 @@ public class CounterOscMessageHandler(IOutputManagerService output, ConfigModel 
             return true;
 
         counterMatch.Increase();
-        _logger.Debug("Counter \"{counterName}\" ({counterParameter}) increased to {counterCount}", counterMatch.Name, counterMatch.FullParameter(), counterMatch.Count);
+        _logger.Verbose("Counter \"{counterName}\" ({counterParameter}) increased to {counterCount}", counterMatch.Name, counterMatch.FullParameter(), counterMatch.Count);
 
         if (!counterMatch.DoDisplay || !_config.Counters_ShowNotification || (now - _counterLastDisplay).TotalSeconds < _config.Counters_DisplayCooldownSeconds)
             return true;
@@ -36,7 +36,7 @@ public class CounterOscMessageHandler(IOutputManagerService output, ConfigModel 
         if (!string.IsNullOrWhiteSpace(counterString))
         {
             _counterLastDisplay = now;
-            _logger.Information("Sending counter notification \"{counterNotification}\"", counterString);
+            _logger.Debug("Sending counter notification \"{counterNotification}\"", counterString);
             _output.SendNotification(counterString, OutputNotificationPriority.Low, OutputSettingsFlags.AllowTextOutput);
         }
         return true;

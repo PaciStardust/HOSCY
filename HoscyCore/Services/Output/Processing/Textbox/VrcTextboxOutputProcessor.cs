@@ -61,12 +61,12 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     #region Logic Loop
     private async Task ProcessingLoop()
     {
-        _logger.Information("Started textbox message processing loop");
+        _logger.Debug("Started textbox message processing loop");
         while (_cts is not null && !_cts.IsCancellationRequested)
         {
             await ProcessingLoopLogic();
         }
-        _logger.Information("Stopped textbox message processing loop");
+        _logger.Debug("Stopped textbox message processing loop");
     }
 
     private async Task ProcessingLoopLogic()
@@ -93,7 +93,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
             {
                 if (timeoutBypass)
                 {
-                    _logger.Debug("Notification timeout was shortened due to incoming message");
+                    _logger.Verbose("Notification timeout was shortened due to incoming message");
                 }
 
                 textToSend = _currentMessages.Dequeue();
@@ -115,7 +115,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
             {
                 if (timeoutBypass)
                 {
-                    _logger.Debug("Notification timeout was shortened due to last priority {lastPriority} being lower or equal to current {currentPriority}", _lastSentNotificationPriority, _currentNotification.Value.Priority);
+                    _logger.Verbose("Notification timeout was shortened due to last priority {lastPriority} being lower or equal to current {currentPriority}", _lastSentNotificationPriority, _currentNotification.Value.Priority);
                 }
 
                 textToSend = _currentNotification.Value.Text;
@@ -145,9 +145,9 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
             _intendedTimeoutUntil = DateTimeOffset.UtcNow.AddMilliseconds(msgTimeout);
 
             if (_lastSentNotificationPriority is not null)
-                _logger.Information("Sent notification with timeout {threadSleep}-{msgTimeout}: {textToSend}", TIMEOUT_MINIMUM_MS, msgTimeout, textToSend);
+                _logger.Debug("Sent notification with timeout {threadSleep}-{msgTimeout}: {textToSend}", TIMEOUT_MINIMUM_MS, msgTimeout, textToSend);
             else
-                _logger.Information("Sent message with timeout {threadSleep}-{msgTimeout}: {textToSend}", TIMEOUT_MINIMUM_MS, msgTimeout, textToSend);
+                _logger.Debug("Sent message with timeout {threadSleep}-{msgTimeout}: {textToSend}", TIMEOUT_MINIMUM_MS, msgTimeout, textToSend);
 
             _minimumTimeoutUntil = now.AddMilliseconds(TIMEOUT_MINIMUM_MS);
             _intendedTimeoutUntil = now.AddMilliseconds(msgTimeout);
@@ -214,7 +214,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
 
         if (_config.VrcTextbox_Notification_UsePrioritySystem && _currentNotification.HasValue && priority < _currentNotification.Value.Priority)
         {
-            _logger.Debug("Did not override notification with contents \"{notificationContents}\" and priority {notificationPriority} => priority lower than current {currentPriority}",
+            _logger.Verbose("Did not override notification with contents \"{notificationContents}\" and priority {notificationPriority} => priority lower than current {currentPriority}",
                 contents, priority, _currentNotification.Value.Priority);
             return;
         }
@@ -226,7 +226,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         }
         contents = $"{_config.VrcTextbox_Notification_IndicatorTextStart}{contents}{_config.VrcTextbox_Notification_IndicatorTextEnd}";
 
-        _logger.Information("Setting notification to \"{contents}\" with priority {priority}", contents, priority);
+        _logger.Debug("Setting notification to \"{contents}\" with priority {priority}", contents, priority);
         _currentNotification = (contents, priority);
     }
 
@@ -236,7 +236,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
 
         foreach (var message in SplitMessageIntoSegments(contents))
         {
-            _logger.Debug("Added to MessageQueue (Position:{queuePosition}, Length:{messageLength}) Message:\"{messageContents}\"", _currentMessages.Count, message.Length, message);
+            _logger.Verbose("Added to MessageQueue (Position:{queuePosition}, Length:{messageLength}) Message:\"{messageContents}\"", _currentMessages.Count, message.Length, message);
             _currentMessages.Enqueue(message);
         }
     }   
@@ -322,7 +322,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     #region Input Cleaning
     public override void Clear()
     {
-        _logger.Information("Clearing message queue");
+        _logger.Debug("Clearing message queue");
         _currentMessages.Clear();
         ClearNotification();
         _isClearPending = true;

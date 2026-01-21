@@ -18,7 +18,7 @@ public class ExternalInputService(ConfigModel config, IOutputManagerService outp
         var flags = GenerateFlags();
         _logger.Debug("Sending manual input message \"{message}\"", contents);
         _output.SendMessage(contents, flags);
-        _logger.Debug("Sent manual input message \"{message}\"", contents);
+        _logger.Verbose("Sent manual input message \"{message}\"", contents);
     }
 
     public void SendNotification(string contents, OutputNotificationPriority prio = OutputNotificationPriority.Medium)
@@ -27,7 +27,7 @@ public class ExternalInputService(ConfigModel config, IOutputManagerService outp
         var flags = GenerateFlags();
         _logger.Debug("Sending manual input notification \"{message}\"", contents);
         _output.SendNotification(contents, prio, flags);
-        _logger.Debug("Sent manual input notification \"{message}\"", contents);
+        _logger.Verbose("Sent manual input notification \"{message}\"", contents);
     }
 
     private OutputSettingsFlags GenerateFlags()

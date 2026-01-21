@@ -6,7 +6,7 @@ namespace HoscyCore.Utility;
 /// <summary>
 /// Utilities for creating a logger and routing logging
 /// </summary>
-public static class LogUtils //todo: [REFACTOR] Use ILogger<T> and refactor log design
+public static class LogUtils
 {
     public const string LOGGING_TEMPLATE = "[{Timestamp:HH:mm:ss.fff}] [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}";
     public static string LogFileName => _logFileName;
@@ -17,7 +17,7 @@ public static class LogUtils //todo: [REFACTOR] Use ILogger<T> and refactor log 
     public static ILogger CreateTemporaryLogger<T>(bool disableConsoleLogging = false)
     {
         var logConfig = new LoggerConfiguration()
-            .MinimumLevel.Debug()
+            .MinimumLevel.Verbose()
             .Enrich.FromLogContext()
             .WriteTo.File(LogFileName, outputTemplate: LOGGING_TEMPLATE)
             .WriteTo.Debug(outputTemplate: LOGGING_TEMPLATE);
@@ -53,7 +53,7 @@ public static class LogUtils //todo: [REFACTOR] Use ILogger<T> and refactor log 
 
     public static void TryCleanLogs(string directory, ILogger logger)
     {
-        logger.Information("Attempting to clean up old logs in directory \"{directory}\"", directory);
+        logger.Debug("Attempting to clean up old logs in directory \"{directory}\"", directory);
         try
         {
             if (!Directory.Exists(directory))
@@ -74,7 +74,7 @@ public static class LogUtils //todo: [REFACTOR] Use ILogger<T> and refactor log 
 
             if (logFilesToDelete.Length == 0)
             {
-                logger.Information("No old log files to delete.");
+                logger.Debug("No old log files to delete.");
                 return;
             }
 

@@ -24,7 +24,7 @@ public class AfkService(ConfigModel config, IOutputManagerService output, ILogge
     {
         if (IsProcessing())
         {
-            _logger.Information("AFK timer can not be started when already running");
+            _logger.Debug("AFK timer can not be started when already running");
             return;
         }
         if (!_config.Afk_ShowDuration)
@@ -41,7 +41,7 @@ public class AfkService(ConfigModel config, IOutputManagerService output, ILogge
         _afkTimer = new(_config.Afk_BaseDurationDisplayIntervalSeconds * 1000);
         _afkTimer.Elapsed += AfkTimerElapsed;
         _afkTimer.Start();
-        _logger.Information("AFK timer started");
+        _logger.Debug("AFK timer started");
     }
 
     public void StopAfk()
@@ -51,7 +51,7 @@ public class AfkService(ConfigModel config, IOutputManagerService output, ILogge
         _afkTimer?.Stop();
         _afkTimer?.Dispose();
         _afkTimer = null;
-        _logger.Information("Stopped AFK timer");
+        _logger.Debug("Stopped AFK timer");
     }
 
     private void AfkTimerElapsed(object? sender, ElapsedEventArgs e)
@@ -84,14 +84,14 @@ public class AfkService(ConfigModel config, IOutputManagerService output, ILogge
 
     protected override void StartInternal()
     {
-        _logger.Information("AfkService start/stop only exists for shutdown cleanup!");
+        _logger.Verbose("AfkService start/stop only exists for shutdown cleanup!");
     }
 
     public override void Stop()
     {
-        _logger.Information("Stopping AfkService, stopping timer if needed");
+        _logger.Debug("Stopping AfkService, stopping timer if needed");
         StopAfk();
-        _logger.Information("Stopped AfkService");
+        _logger.Debug("Stopped AfkService");
     }
     #endregion
 }

@@ -49,12 +49,10 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
             .WithDefaults()
             .Build();
 
-        _logger.Information("Runnung OscQuery with UDP {udp}, TCP {tcp} and ID {id}", udpPort.Value, tcpPort, id);
+        _logger.Debug("Runnung OscQuery with UDP {udp}, TCP {tcp} and ID {id}", udpPort.Value, tcpPort, id);
 
         oscQuery.AddEndpoint("/*", "[,]", Vrc.Attributes.AccessValues.ReadWrite, null,
             "Any -> HOSCY sends and receives anything for routing and custom commands");
-
-        _logger.Information("Retrieving current OscQueryServices");
 
         _hosts.Clear();
         oscQuery.OnOscQueryServiceAdded += (profile) => TryAddHostInfoFromServiceProfile(profile, _hosts);
@@ -96,7 +94,7 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
     /// </summary>
     private void AddHostInfoFromServiceProfile(Vrc.OSCQueryServiceProfile profile, Dictionary<string, Vrc.HostInfo> hosts) //todo: [FEAT] better logging, lifetime?
     {
-        _logger.Debug("Received ServiceProfile \"{profileName}\"", profile.name);
+        _logger.Verbose("Received ServiceProfile \"{profileName}\"", profile.name);
         var hostInfo = Vrc.Extensions.GetHostInfo(profile.address, profile.port).GetAwaiter().GetResult();
         if (hostInfo == null)
         {

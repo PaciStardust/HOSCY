@@ -42,9 +42,9 @@ public class OscMessageHandlingService(ILogger logger, IBackToFrontNotifyService
 
     public override void Stop()
     {
-        _logger.Information("Clearing module list");
+        _logger.Debug("Clearing module list");
         _handlers = null;
-        _logger.Information("Cleared module list");
+        _logger.Debug("Cleared module list");
     }
 
     public override void Restart()
@@ -54,7 +54,7 @@ public class OscMessageHandlingService(ILogger logger, IBackToFrontNotifyService
 
     protected override void StartInternal()
     {
-        _logger.Information("Loading Message Handlers");
+        _logger.Debug("Loading Message Handlers");
         _handlers = LaunchUtils.GetImplementationsInContainerForClass<IOscMessageHandler>(_services, _logger);
     }
     #endregion

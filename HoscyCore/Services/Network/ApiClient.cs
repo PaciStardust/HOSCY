@@ -31,10 +31,10 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient //todo
 
     public bool LoadPreset(ApiPresetModel preset)
     {
-        _logger.Information("{id}: Loading new ApiPreset \"{name}\"", _identifier, preset.Name);
+        _logger.Debug("{id}: Loading new ApiPreset \"{name}\"", _identifier, preset.Name);
         if (preset.Equals(_currentPreset))
         {
-            _logger.Information("{id}: Skipped loading new ApiPreset \"{name}\", it is already loaded", _identifier, preset.Name);
+            _logger.Verbose("{id}: Skipped loading new ApiPreset \"{name}\", it is already loaded", _identifier, preset.Name);
             return true;
         }
 
@@ -83,14 +83,14 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient //todo
         }
         else
         {
-            _logger.Debug("{id}: Found content with value \"{resultField}\": {result}", _identifier, _currentPreset.ResultField, result);
+            _logger.Verbose("{id}: Found content with value \"{resultField}\": {result}", _identifier, _currentPreset.ResultField, result);
         }
         return result;
     }
 
     public async Task<string> SendBytes(byte[] bytes)
     {
-        _logger.Debug("{id}: Sending byte request via ApiPreset \"{presetName}\"", _identifier, _currentPreset?.Name ?? "NULL");
+        _logger.Verbose("{id}: Sending byte request via ApiPreset \"{presetName}\"", _identifier, _currentPreset?.Name ?? "NULL");
         if (_currentPreset is null || !_currentPreset.IsValid())
         {
             _logger.Warning("{id}: Not sending byte request as no valid ApiPreset is loaded", _identifier);
@@ -109,7 +109,7 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient //todo
 
     public async Task<string> SendText(string text)
     {
-        _logger.Debug("{id}: Sending text request via ApiPreset \"{presetName}\"", _identifier, _currentPreset?.Name ?? "NULL");
+        _logger.Verbose("{id}: Sending text request via ApiPreset \"{presetName}\"", _identifier, _currentPreset?.Name ?? "NULL");
         if (_currentPreset is null || !_currentPreset.IsValid())
         {
             _logger.Warning(messageTemplate: "{id}: Not sending text request as no valid ApiPreset is loaded", _identifier);
