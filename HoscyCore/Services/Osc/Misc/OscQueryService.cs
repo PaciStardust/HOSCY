@@ -135,6 +135,9 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
     public (string Ip, int Port)? GetServiceAddressByName(string name)
     {
         var lowerName = name.ToLower();
+        if (lowerName == "self" && _oscQuery is not null) 
+            return (_oscQuery.HostInfo.oscIP, _oscQuery.HostInfo.oscPort);
+
         return _hosts.TryGetValue(lowerName, out var hostData)
             ? (hostData.Host.oscIP, hostData.Host.oscPort)
             : null;

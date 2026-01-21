@@ -28,10 +28,8 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
 
     public bool DetectCommand(string commandString)
     {
-        _logger.Verbose("Performing OSC command check on string \"{commandString}\"", commandString);
         if (!commandString.StartsWith(OSC_COMMAND_IDENTIFIER, StringComparison.OrdinalIgnoreCase))
         {
-            _logger.Verbose("Could not find OSC command identifier in string \"{commandString}\"", commandString);
             return false;
         }
         _logger.Verbose("Detected OSC command identifier in string \"{commandString}\"", commandString);
