@@ -28,14 +28,14 @@ public class CounterModel : ObservableObject
     }
 
     private bool _enabled = true;
-    public bool Enabled
+    public bool Enabled //todo: [TEST]
     {
         get => _enabled;
         set => SetProperty(ref _enabled, value);
     }
 
     private bool _doDisplay = true;
-    public bool DoDisplay
+    public bool DoDisplay //todo: [TEST]
     {
         get => _doDisplay;
         set => SetProperty(ref _doDisplay, value);

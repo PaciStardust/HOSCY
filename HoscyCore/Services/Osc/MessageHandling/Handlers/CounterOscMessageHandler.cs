@@ -7,7 +7,7 @@ using Serilog;
 namespace HoscyCore.Services.Osc.MessageHandling.Handlers;
 
 [PrototypeLoadIntoDiContainer(typeof(CounterOscMessageHandler))]
-public class CounterOscMessageHandler(IOutputManagerService output, ConfigModel config, ILogger logger) : IOscMessageHandler //todo: [TEST] Does this trigger?
+public class CounterOscMessageHandler(IOutputManagerService output, ConfigModel config, ILogger logger) : IOscMessageHandler
 {
     private readonly IOutputManagerService _output = output;
     private readonly ConfigModel _config = config;
@@ -15,7 +15,7 @@ public class CounterOscMessageHandler(IOutputManagerService output, ConfigModel 
 
     private DateTimeOffset _counterLastDisplay = DateTimeOffset.MinValue;
 
-    public bool HandleMessage(OscMessage message)
+    public bool HandleMessage(OscMessage message) //todo: [FIX] true/false check
     {
         var now = DateTimeOffset.UtcNow;
 

@@ -33,7 +33,7 @@ public class FilterModel : ObservableObject
     }
 
     private bool _enabled = true;
-    public bool Enabled
+    public bool Enabled //todo: [TEST]
     {
         get => _enabled;
         set
@@ -44,7 +44,7 @@ public class FilterModel : ObservableObject
     }
 
     private bool _ignoreCase = true;
-    public bool IgnoreCase
+    public bool IgnoreCase //todo: [TEST]
     {
         get => _ignoreCase;
         set
@@ -55,7 +55,7 @@ public class FilterModel : ObservableObject
     }
 
     private bool _useRegex = false;
-    public bool UseRegex
+    public bool UseRegex //todo: [TEST]
     {
         get => _useRegex;
         set

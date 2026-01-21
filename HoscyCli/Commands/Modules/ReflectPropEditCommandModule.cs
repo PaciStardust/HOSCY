@@ -84,7 +84,8 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
         {typeof(bool),          (s) => ConvertBool(s)},
         {typeof(float),         (s) => float.Parse(s, NumberStyles.Any, CultureInfo.InvariantCulture)},
         {typeof(LogEventLevel), (s) => ConvertEnum<LogEventLevel>(s)},
-        {typeof(ushort),        (s) => ushort.Parse(s, NumberStyles.Any)}
+        {typeof(ushort),        (s) => ushort.Parse(s, NumberStyles.Any)},
+        {typeof(uint),          (s) => uint.Parse(s, NumberStyles.Any)}
     }.ToFrozenDictionary();
 
     private static bool IsSimpleType(Type t)

@@ -10,7 +10,7 @@ namespace HoscyCore.Services.Osc.SendReceive;
 /// <summary>
 /// Default Sender for OSC
 /// </summary>
-[LoadIntoDiContainer(typeof(IOscSendService), Lifetime.Singleton)] //todo: [TEST] Does sending work?
+[LoadIntoDiContainer(typeof(IOscSendService), Lifetime.Singleton)]
 public class OscSendService(ILogger logger, ConfigModel config, IBackToFrontNotifyService notify) : IOscSendService
 {
     private readonly Dictionary<string, OscSender> _senders = [];

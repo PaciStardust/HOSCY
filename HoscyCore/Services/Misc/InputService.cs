@@ -17,9 +17,9 @@ public class InputService(ConfigModel config, IOutputManagerService output, ILog
     {
         if (string.IsNullOrWhiteSpace(contents)) return;
         var flags = GenerateManualFlags();
-        _logger.Debug("Sending manual input message \"{message}\"", contents);
+        _logger.Debug("Forwarding manual input message \"{message}\"", contents);
         _output.SendMessage(contents, flags);
-        _logger.Verbose("Sent manual input message \"{message}\"", contents);
+        _logger.Verbose("Forwarded manual input message \"{message}\"", contents);
     }
 
     private OutputSettingsFlags GenerateManualFlags()
@@ -53,18 +53,18 @@ public class InputService(ConfigModel config, IOutputManagerService output, ILog
     {
         if (string.IsNullOrWhiteSpace(contents)) return;
         var flags = GenerateExternalProcessingFlags() | extraFlag;
-        _logger.Debug("Sending external {logText} message \"{message}\"", logText, contents);
+        _logger.Debug("Forwarding external {logText} message \"{message}\"", logText, contents);
         _output.SendMessage(contents, flags);
-        _logger.Verbose("Sent external {logText} message \"{message}\"", logText, contents);
+        _logger.Verbose("Forwarded external {logText} message \"{message}\"", logText, contents);
     }
 
     public void SendExternalTextNotification(string contents, OutputNotificationPriority prio = OutputNotificationPriority.Medium)
     {
         if (string.IsNullOrWhiteSpace(contents)) return;
         var flags = GenerateExternalProcessingFlags() | OutputSettingsFlags.AllowTextOutput;
-        _logger.Debug("Sending external text notification \"{message}\"", contents);
+        _logger.Debug("Forwarding external text notification \"{message}\"", contents);
         _output.SendNotification(contents, prio, flags);
-        _logger.Verbose("Sent external text notification \"{message}\"", contents);
+        _logger.Verbose("Forwarded external text notification \"{message}\"", contents);
     }
 
     private OutputSettingsFlags GenerateExternalProcessingFlags()

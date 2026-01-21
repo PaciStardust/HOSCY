@@ -7,7 +7,7 @@ using Serilog;
 namespace HoscyCore.Services.Osc.MessageHandling.Handlers;
 
 [PrototypeLoadIntoDiContainer(typeof(AfkOscMessageHandler))]
-public class AfkOscMessageHandler(ILogger logger, IAfkService afkService, ConfigModel config) : IOscMessageHandler //todo: [TEST] Does this trigger?
+public class AfkOscMessageHandler(ILogger logger, IAfkService afkService, ConfigModel config) : IOscMessageHandler
 {
     private readonly IAfkService _afkService = afkService;
     private readonly ILogger _logger = logger.ForContext<AfkOscMessageHandler>();
