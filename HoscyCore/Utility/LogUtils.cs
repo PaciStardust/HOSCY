@@ -6,7 +6,7 @@ namespace HoscyCore.Utility;
 /// <summary>
 /// Utilities for creating a logger and routing logging
 /// </summary>
-public static class LogUtils
+public static class LogUtils //todo: [REFACTOR] Use ILogger<T> and refactor log design
 {
     public const string LOGGING_TEMPLATE = "[{Timestamp:HH:mm:ss.fff}] [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}";
     public static string LogFileName => _logFileName;
