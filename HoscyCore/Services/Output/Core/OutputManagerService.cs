@@ -285,8 +285,8 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
             return;
         }
 
-        if (settings.HasFlag(OutputSettingsFlags.DoPreprocess) 
-            && TryPreprocess(contents, out var processedOutput))
+        var compatiblePreprocessors = _preprocessors.Where(x => IsPreprocessorCompatible(x, settings)).ToArray();
+        if (compatibleProcessors.Length > 0 && TryPreprocess(contents, compatiblePreprocessors, out var processedOutput))
         {
             if (string.IsNullOrWhiteSpace(processedOutput)) return;
             contents = processedOutput;
@@ -356,7 +356,8 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
             return;
         }
 
-        if (settings.HasFlag(OutputSettingsFlags.DoPreprocess) && TryPreprocess(contents, out var processedOutput))
+        var compatiblePreprocessors = _preprocessors.Where(x => IsPreprocessorCompatible(x, settings)).ToArray();
+        if (compatibleProcessors.Length > 0 && TryPreprocess(contents, compatiblePreprocessors, out var processedOutput))
         {
             if (string.IsNullOrWhiteSpace(processedOutput)) return;
             contents = processedOutput;
@@ -401,11 +402,11 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     /// <param name="input">String to preprocess</param>
     /// <param name="output">Preprocessed string if success and not handled entirely by a processor</param>
     /// <returns>Success</returns>
-    private bool TryPreprocess(string input, out string? output)
+    private bool TryPreprocess(string input, IOutputPreprocessor[] preprocessors, out string? output)
     {
         _logger.Verbose("Preprocessing \"{preProcessorInput}\" ...", input);
         string? currentOutput = null;
-        foreach (var preprocessor in _preprocessors)
+        foreach (var preprocessor in preprocessors)
         {
             if (!preprocessor.TryProcess(currentOutput ?? input, out var processedOutput)) continue;
 
@@ -421,6 +422,13 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         }
         output = currentOutput;
         return output is not null;
+    }
+
+    private bool IsPreprocessorCompatible(IOutputPreprocessor preprocessor, OutputSettingsFlags settings) //todo: [TEST] Does this filter work?
+    {
+        return preprocessor.IsFullReplace()
+            ? settings.HasFlag(OutputSettingsFlags.DoPreprocessFull)
+            : settings.HasFlag(OutputSettingsFlags.DoPreprocessPartial);
     }
     #endregion
 

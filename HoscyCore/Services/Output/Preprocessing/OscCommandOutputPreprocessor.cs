@@ -1,9 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
 using HoscyCore.Services.DependencyCore;
+using HoscyCore.Services.Osc.Misc;
 using HoscyCore.Services.Output.Core;
 using Serilog;
 
-namespace HoscyCore.Services.Osc.Misc;
+namespace HoscyCore.Services.Output.Preprocessing;
 
 /// <summary>
 /// Preprocesssor for OSC Commands
@@ -16,6 +17,9 @@ public class OscCommandOutputPreprocessor(IOscCommandService cmd, ILogger logger
 
     public OutputPreprocessorHandlingStage GetHandlingStage()
         => OutputPreprocessorHandlingStage.Final;
+
+    public bool IsFullReplace()
+        => true;
 
     public bool ShouldContinueIfHandled()
         => false;

@@ -29,6 +29,9 @@ public class FullReplacementOutputPreprocessor(ConfigModel config, ILogger logge
     public override OutputPreprocessorHandlingStage GetHandlingStage()
         => OutputPreprocessorHandlingStage.Replace;
 
+    public override bool IsFullReplace()
+        => true;
+
     public override bool ShouldContinueIfHandled()
         => true;
     #endregion

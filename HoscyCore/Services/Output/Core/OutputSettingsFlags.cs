@@ -8,7 +8,9 @@ public enum OutputSettingsFlags
     AllowAudioOutput = 2,
     AllowOtherOutput = 4,
     DoTranslate = 8,
-    DoPreprocess = 16,
+    DoPreprocessPartial = 16,
+    DoPreprocessFull = 32,
+    DoPreprocessAll = DoPreprocessPartial | DoPreprocessFull,
     AllowAllOutputs = AllowTextOutput | AllowAudioOutput | AllowOtherOutput,
-    AllowAllTransforms = DoTranslate | DoPreprocess
+    AllowAllTransforms = DoTranslate | DoPreprocessAll
 }

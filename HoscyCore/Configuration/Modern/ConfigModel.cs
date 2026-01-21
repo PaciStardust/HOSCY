@@ -308,32 +308,32 @@ public class ConfigModel : ObservableObject
     /// <summary>
     /// Can external input trigger commands?
     /// </summary>
-    public bool ExternalInput_CanTriggerCommands //todo: [IMPL] To be implemented
+    public bool ExternalInput_DoPreprocessFull //todo: [IMPL] To be implemented
     {
-        get => _externalInput_CanTriggerCommands;
-        set => SetProperty(ref _externalInput_CanTriggerCommands, value);
+        get => _externalInput_DoPreprocessFull;
+        set => SetProperty(ref _externalInput_DoPreprocessFull, value);
     }
-    private bool _externalInput_CanTriggerCommands = true;
+    private bool _externalInput_DoPreprocessFull = true;
 
     /// <summary>
     /// Can external input trigger replacements?
     /// </summary>
-    public bool ExternalInput_CanTriggerReplace //todo: [IMPL] To be implemented
+    public bool ExternalInput_DoPreprocessPartial //todo: [IMPL] To be implemented
     {
-        get => _externalInput_CanTriggerReplace;
-        set => SetProperty(ref _externalInput_CanTriggerReplace, value);
+        get => _externalInput_DoPreprocessPartial;
+        set => SetProperty(ref _externalInput_DoPreprocessPartial, value);
     }
-    private bool _externalInput_CanTriggerReplace = true;
+    private bool _externalInput_DoPreprocessPartial = true;
 
     /// <summary>
     /// Should input from external sources be translated
     /// </summary>
-    public bool ExternalInput_CanBeTranslated //todo: [IMPL] Implement this
+    public bool ExternalInput_DoTranslate //todo: [IMPL] Implement this
     {
-        get => _externalInput_CanBeTranslated;
-        set => SetProperty(ref _externalInput_CanBeTranslated, value);
+        get => _externalInput_DoTranslate;
+        set => SetProperty(ref _externalInput_DoTranslate, value);
     }
-    private bool _externalInput_CanBeTranslated;
+    private bool _externalInput_DoTranslate;
     #endregion
 
     #region Manual Input

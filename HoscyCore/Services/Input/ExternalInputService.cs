@@ -35,7 +35,8 @@ public class ExternalInputService(ConfigModel config, IOutputManagerService outp
         return (_config.ExternalInput_SendViaText ? OutputSettingsFlags.AllowTextOutput : OutputSettingsFlags.None)
             | (_config.ExternalInput_SendViaAudio ? OutputSettingsFlags.AllowAudioOutput : OutputSettingsFlags.None)
             | (_config.ExternalInput_SendViaOther ? OutputSettingsFlags.AllowOtherOutput : OutputSettingsFlags.None)
-            | (_config.ExternalInput_CanBeTranslated ? OutputSettingsFlags.DoTranslate : OutputSettingsFlags.None)
-            | (_config.ExternalInput_CanTriggerReplace ? OutputSettingsFlags.DoPreprocess : OutputSettingsFlags.None); //todo: [FEAT] Cut between Commands and Preprocess 
+            | (_config.ExternalInput_DoTranslate ? OutputSettingsFlags.DoTranslate : OutputSettingsFlags.None)
+            | (_config.ExternalInput_DoPreprocessPartial ? OutputSettingsFlags.DoPreprocessPartial : OutputSettingsFlags.None)
+            | (_config.ExternalInput_DoPreprocessFull ? OutputSettingsFlags.DoPreprocessFull : OutputSettingsFlags.None);
     }
 }

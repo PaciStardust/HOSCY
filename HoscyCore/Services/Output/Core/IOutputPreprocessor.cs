@@ -7,6 +7,12 @@ public interface IOutputPreprocessor
     public OutputPreprocessorHandlingStage GetHandlingStage();
 
     /// <summary>
+    /// Indicates if text is fully replaced
+    /// </summary>
+    /// <returns></returns>
+    public bool IsFullReplace();
+
+    /// <summary>
     /// Indicates if processing should continue if processing successful
     /// </summary>
     public bool ShouldContinueIfHandled();

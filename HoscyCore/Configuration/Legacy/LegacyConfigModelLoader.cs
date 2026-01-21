@@ -196,7 +196,7 @@ internal static class LegacyConfigModelLoader //todo: [TEST] Does the conversion
             Translation_MaxTextLength = oldConfig.Api.TranslationMaxTextLength,
             Translation_OfAudioOutput = oldConfig.Api.TranslateTts,
             VrcTextbox_Output_DoTranslate = oldConfig.Api.TranslateTextbox,
-            ExternalInput_CanBeTranslated = oldConfig.Api.TranslationAllowExternal,
+            ExternalInput_DoTranslate = oldConfig.Api.TranslationAllowExternal,
             Translation_AppendOriginal = oldConfig.Api.AddOriginalAfterTranslate,
 
             AzureServices_Region = oldConfig.Api.AzureRegion,

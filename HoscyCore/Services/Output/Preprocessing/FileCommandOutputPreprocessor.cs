@@ -19,6 +19,9 @@ public partial class FileCommandOutputPreprocessor(ILogger logger) : IOutputPrep
     public OutputPreprocessorHandlingStage GetHandlingStage()
         => OutputPreprocessorHandlingStage.ReplaceLate;
 
+    public bool IsFullReplace()
+        => true;
+
     public bool ShouldContinueIfHandled()
         => true;
 
