@@ -29,7 +29,7 @@ public interface IOutputManagerService : IAutoStartStopService
     /// <summary>
     /// Event gets called whenever a message gets processed
     /// </summary>
-    public event EventHandler<(string, string?)> OnMessage;
+    public event EventHandler<OutputMessageEventArgs> OnMessage;
     /// <summary>
     /// Event gets called whenever a notification gets processed
     /// </summary>

@@ -25,7 +25,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     #endregion
 
     #region Events
-    public event EventHandler<(string, string?)> OnMessage = delegate { };
+    public event EventHandler<OutputMessageEventArgs> OnMessage = delegate { };
     public event EventHandler<OutputNotificationEventArgs> OnNotification = delegate {};
     public event EventHandler OnClear = delegate {};
     public event EventHandler<bool> OnProcessingIndicatorSet = delegate {};
@@ -288,6 +288,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
             .ToArray();
         if (compatibleProcessors.Length == 0)
         {
+            OnMessage.Invoke(this, new(contents, [], null));
             _logger.Warning("Message with contents \"{message}\" was not processed as no processors fit the criteria", contents);
             return;
         }
@@ -315,7 +316,8 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     private void SendMessageInternal(string contents, IOutputProcessor[] processors)
     {
         _logger.Verbose("Sending {processorCount} processors a message with contents \"{contentsMessage}\"", processors.Length, contents);
-        OnMessage.Invoke(this, (contents, null));
+        var processorNames = processors.Select(x => x.GetIdentifier().Name).ToArray();
+        OnMessage.Invoke(this, new(contents, processorNames, null));
         foreach (var processor in processors)
         {
             processor.ProcessMessage(contents);
@@ -326,7 +328,8 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     private void SendMessageTranslatedInternal(string contents, string translation, IOutputProcessor[] processors)
     {
         _logger.Verbose("Sending {processorCount} processors a message with contents \"{contentsMessage}\" and translation \"{translation}\"", processors.Length, contents, translation);
-        OnMessage.Invoke(this, (contents, translation));
+        var processorNames = processors.Select(x => x.GetIdentifier().Name).ToArray();
+        OnMessage.Invoke(this, new(contents, processorNames, translation));
         foreach (var processor in processors)
         {
             var newContents = processor.GetTranslationOutputMode() switch
@@ -347,24 +350,26 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
     {
         if (string.IsNullOrWhiteSpace(contents)) return;
 
-        var compatibleProcessors = _activeProcessors
-            .Where(x => IsProcessorCompatible(x, settings))
-            .ToArray();
-        if (compatibleProcessors.Length == 0)
-        {
-            _logger.Warning("Notification with contents \"{message}\" was not processed as no processors fit the criteria", contents);
-            return;
-        }
-
         var compatiblePreprocessors = _preprocessors.Where(x => IsPreprocessorCompatible(x, settings)).ToArray();
-        if (compatibleProcessors.Length > 0 && TryPreprocess(contents, compatiblePreprocessors, out var processedOutput))
+        if (compatiblePreprocessors.Length > 0 && TryPreprocess(contents, compatiblePreprocessors, out var processedOutput))
         {
             if (string.IsNullOrWhiteSpace(processedOutput)) return;
             contents = processedOutput;
         }
 
+        var compatibleProcessors = _activeProcessors
+            .Where(x => IsProcessorCompatible(x, settings))
+            .ToArray();
+        if (compatibleProcessors.Length == 0)
+        {
+            OnNotification.Invoke(this, new(contents, [], priority));
+            _logger.Warning("Notification with contents \"{message}\" was not processed as no processors fit the criteria", contents);
+            return;
+        }
+
         _logger.Verbose("Sending {processorCount} processors a notification of priority {priority} with contents \"{contentsNotification}\"", compatibleProcessors.Length, priority.ToString(), contents);
-        OnNotification.Invoke(this, new OutputNotificationEventArgs(contents, priority));
+        var processorNames = compatibleProcessors.Select(x => x.GetIdentifier().Name).ToArray();
+        OnNotification.Invoke(this, new(contents, processorNames, priority));
         foreach (var processor in compatibleProcessors)
         {
             processor.ProcessNotification(contents, priority);
