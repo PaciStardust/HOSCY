@@ -8,11 +8,19 @@ using Serilog;
 namespace HoscyCore.Services.Output.Core;
 
 [LoadIntoDiContainer(typeof(IOutputManagerService), Lifetime.Singleton)]
-public class OutputManagerService(ILogger logger, IServiceProvider services, IBackToFrontNotifyService notify, ITranslatorManagerService translator, ConfigModel config) : StartStopServiceBase, IOutputManagerService
+public class OutputManagerService(
+    ILogger logger, 
+    ContainerBulkLoader<IOutputProcessor> bulkLoaderProcessor, 
+    ContainerBulkLoader<IOutputPreprocessor> bulkLoaderPreprocessor, 
+    IBackToFrontNotifyService notify, 
+    ITranslatorManagerService translator, 
+    ConfigModel config
+) : StartStopServiceBase, IOutputManagerService
 {
     #region Injected
     private readonly ILogger _logger = logger.ForContext<OutputManagerService>();
-    private readonly IServiceProvider _services = services;
+    private readonly ContainerBulkLoader<IOutputProcessor> _bulkLoaderProcessor = bulkLoaderProcessor;
+    private readonly ContainerBulkLoader<IOutputPreprocessor> _bulkLoaderPreprocessor = bulkLoaderPreprocessor;
     private readonly IBackToFrontNotifyService _notify = notify;
     private readonly ITranslatorManagerService _translator = translator;
     private readonly ConfigModel _config = config;
@@ -44,8 +52,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         _availableProcessors.Clear();
         _preprocessors.Clear();
 
-        var processorsWithInstance = LaunchUtils.GetImplementationsInContainerForClass<IOutputProcessor>(_services, _logger);
-        _availableProcessors.AddRange(processorsWithInstance.Select(x => x.GetIdentifier()));
+        _availableProcessors.AddRange(_bulkLoaderProcessor.GetInstances().Select(x => x. GetIdentifier()));
         if (_availableProcessors.Count == 0)
         {
             _logger.Warning("No Output Processors could be located, Service will have no functionality and will be NOT be marked as running");
@@ -53,7 +60,7 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
         }
 
         _logger.Debug("Loading Preprocessors");
-        var preprocessorsWithInstance = LaunchUtils.GetImplementationsInContainerForClass<IOutputPreprocessor>(_services, _logger);
+        var preprocessorsWithInstance = _bulkLoaderPreprocessor.GetInstances();
         _preprocessors.AddRange(preprocessorsWithInstance.OrderBy(x => x.GetHandlingStage()));
 
         _logger.Debug("Started up Service with {processorCount} OutputProcessors and {preprocessorCount} OutputPreprocessors", _availableProcessors.Count, _preprocessors.Count);
@@ -262,7 +269,8 @@ public class OutputManagerService(ILogger logger, IServiceProvider services, IBa
                 break;
         }
 
-        if (_services.GetService(availableMatches[0].ProcessorType) is not IOutputProcessor searchMatch)
+        var searchMatch = _bulkLoaderProcessor.GetInstance(availableMatches[0].ProcessorType);
+        if (searchMatch is null)
         {
             _logger.Error("Unable to retrieve Processor \"{processorName}\"", info.ProcessorType.FullName);
             throw new DiResolveException($"Unable to retrieve Processor {info.ProcessorType.FullName}");

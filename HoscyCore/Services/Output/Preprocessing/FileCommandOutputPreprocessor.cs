@@ -9,7 +9,7 @@ namespace HoscyCore.Services.Output.Preprocessing;
 /// <summary>
 /// Handles reading from files as a command
 /// </summary>
-[LoadIntoDiContainer(typeof(FileCommandOutputPreprocessor), Lifetime.Singleton)]
+[LoadIntoDiContainer(typeof(FileCommandOutputPreprocessor), Lifetime.Transient)]
 public partial class FileCommandOutputPreprocessor(ILogger logger) : IOutputPreprocessor //todo: [TEST] Do files work?
 {
     private readonly ILogger _logger = logger.ForContext<FileCommandOutputPreprocessor>();

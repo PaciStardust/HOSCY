@@ -1,6 +1,5 @@
 using HoscyCore.Services.DependencyCore;
 using HoscyCore.Services.Interfacing;
-using HoscyCore.Utility;
 using LucHeart.CoreOSC;
 using Serilog;
 
@@ -10,12 +9,12 @@ namespace HoscyCore.Services.Osc.MessageHandling;
 /// Service to handle osc messages
 /// </summary>
 [LoadIntoDiContainer(typeof(IOscMessageHandlingService), Lifetime.Singleton)]
-public class OscMessageHandlingService(ILogger logger, IBackToFrontNotifyService notify, IServiceProvider serviceProvider) : StartStopServiceBase, IOscMessageHandlingService
+public class OscMessageHandlingService(ILogger logger, IBackToFrontNotifyService notify, ContainerBulkLoader<IOscMessageHandler> bulkLoader) : StartStopServiceBase, IOscMessageHandlingService
 {
     private readonly ILogger _logger = logger.ForContext<OscMessageHandlingService>();
     private readonly IBackToFrontNotifyService _notify = notify; //todo: [FIX] Should this not be implemented?
-    private readonly IServiceProvider _services = serviceProvider;
-    private List<IOscMessageHandler>? _handlers = null;
+    private IOscMessageHandler[]? _handlers = null;
+    private readonly ContainerBulkLoader<IOscMessageHandler> _bulkLoader = bulkLoader;
 
     /// <summary>
     /// Sends message to all message handlers
@@ -38,7 +37,7 @@ public class OscMessageHandlingService(ILogger logger, IBackToFrontNotifyService
     protected override bool IsStarted()
         => _handlers is not null;
     protected override bool IsProcessing()
-        => IsStarted() && _handlers!.Count > 0;
+        => IsStarted() && _handlers!.Length > 0;
 
     public override void Stop()
     {
@@ -55,7 +54,7 @@ public class OscMessageHandlingService(ILogger logger, IBackToFrontNotifyService
     protected override void StartInternal()
     {
         _logger.Debug("Loading Message Handlers");
-        _handlers = LaunchUtils.GetImplementationsInContainerForClass<IOscMessageHandler>(_services, _logger);
+        _handlers = _bulkLoader.GetInstances().ToArray();
     }
     #endregion
 }

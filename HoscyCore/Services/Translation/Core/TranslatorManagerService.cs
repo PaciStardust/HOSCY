@@ -7,12 +7,12 @@ using Serilog;
 namespace HoscyCore.Services.Translation.Core;
 
 [LoadIntoDiContainer(typeof(ITranslatorManagerService), Lifetime.Singleton)]
-public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger logger, IServiceProvider services) : StartStopServiceBase, ITranslatorManagerService
+public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger logger, ContainerBulkLoader<ITranslator> bulkLoader) : StartStopServiceBase, ITranslatorManagerService
 {
     #region Injected
     private readonly IBackToFrontNotifyService _notify = notify;
     private readonly ILogger _logger = logger.ForContext<TranslatorManagerService>();
-    private readonly IServiceProvider _services = services;
+    private readonly ContainerBulkLoader<ITranslator> _bulkLoader = bulkLoader;
     #endregion
 
     #region Service Vars
@@ -46,8 +46,7 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
         }
 
         _availableTranslators.Clear();
-
-        var translatorsWithInstance = LaunchUtils.GetImplementationsInContainerForClass<ITranslator>(_services, _logger);
+        var translatorsWithInstance = _bulkLoader.GetInstances();
         _availableTranslators.AddRange(translatorsWithInstance.Select(x => (x.GetIdentifier(), x.GetType())));
         if (_availableTranslators.Count == 0)
         {
@@ -112,7 +111,8 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
         }
 
         var translatorType = filteredTranslators[0].Type;
-        if (_services.GetService(translatorType) is not ITranslator translator)
+        var translator = _bulkLoader.GetInstance(translatorType);
+        if (translator is null)
         {
             _logger.Error("Failed to get translator instance name \"{translatorName}\" and type \"{translatorType}\"", name, translatorType.Name);
             throw new DiResolveException($"Failed to get translator instance name {name} and type {translatorType.Name}");

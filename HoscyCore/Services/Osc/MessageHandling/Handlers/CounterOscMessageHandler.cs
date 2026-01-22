@@ -6,7 +6,7 @@ using Serilog;
 
 namespace HoscyCore.Services.Osc.MessageHandling.Handlers;
 
-[PrototypeLoadIntoDiContainer(typeof(CounterOscMessageHandler))]
+[PrototypeLoadIntoDiContainer(typeof(CounterOscMessageHandler), Lifetime.Transient)]
 public class CounterOscMessageHandler(IOutputManagerService output, ConfigModel config, ILogger logger) : IOscMessageHandler
 {
     private readonly IOutputManagerService _output = output;

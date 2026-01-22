@@ -6,7 +6,7 @@ using Serilog;
 
 namespace HoscyCore.Services.Osc.MessageHandling.Handlers;
 
-[PrototypeLoadIntoDiContainer(typeof(AfkOscMessageHandler))]
+[PrototypeLoadIntoDiContainer(typeof(AfkOscMessageHandler), Lifetime.Transient)]
 public class AfkOscMessageHandler(ILogger logger, IAfkService afkService, ConfigModel config) : IOscMessageHandler
 {
     private readonly IAfkService _afkService = afkService;

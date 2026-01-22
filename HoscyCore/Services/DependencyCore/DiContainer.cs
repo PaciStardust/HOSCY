@@ -188,6 +188,9 @@ public class DiContainer
     {
         var serviceImplementations = LaunchUtils.GetImplementationsInContainerForClass<IService>(Services, _internalLogger);
         var serviceInterface = typeof(IService);
+        var serviceProviderType = typeof(IServiceProvider);
+        var bulkLoaderNoGenericType = typeof(ContainerBulkLoader<>).GetGenericTypeDefinition();
+
         List<(Type Type, IService Implementation, List<Type> Dependencies)> locatedServices = [];
 
         foreach (var impl in serviceImplementations)
@@ -204,10 +207,32 @@ public class DiContainer
                 _internalLogger.Debug("Located multiple constructors for IService \"{serviceType}\", picking first", type.FullName);
             }
 
-            var requiredServiceTypes = ctors[0].GetParameters()
-                .Select(x => x.ParameterType)
-                .Where(x => x.IsAssignableTo(serviceInterface))
-                .ToList();
+            List<Type> requiredServiceTypes = [];
+            foreach(var parameter in ctors[0].GetParameters())
+            {
+                var parameterType = parameter.ParameterType;
+
+                if (parameterType.IsAssignableTo(serviceProviderType))
+                {
+                    _internalLogger.Error("Service \"{service}\" attempts to inject \"{serviceCollection}\", please use \"{bulk}\" instead",
+                    type.FullName, serviceProviderType.Name, bulkLoaderNoGenericType.Name);
+                    throw new DiResolveException($"Service \"{type.FullName}\" attempts to inject \"{serviceProviderType.Name}\", please use \"{bulkLoaderNoGenericType.Name}\" instead");
+                }
+
+                if (parameterType.IsConstructedGenericType && bulkLoaderNoGenericType.GUID == parameterType.GetGenericTypeDefinition().GUID)
+                {
+                    var bulkTypes = serviceImplementations
+                        .Select(x => x.GetType())
+                        .Where(x => x.IsAssignableTo(parameterType.GetGenericArguments()[0]));
+                    requiredServiceTypes.AddRange(bulkTypes);
+                    continue;
+                }
+
+                if (parameterType.IsAssignableTo(serviceInterface))
+                {
+                    requiredServiceTypes.Add(parameterType);
+                }
+            }
             _internalLogger.Debug("Assessed {requiredServiceCount} other required IServices for IService \"{serviceType}\"",
                 requiredServiceTypes.Count, type.FullName);
 

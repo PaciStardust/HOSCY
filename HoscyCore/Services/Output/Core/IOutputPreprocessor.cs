@@ -1,8 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
+using HoscyCore.Services.DependencyCore;
 
 namespace HoscyCore.Services.Output.Core;
 
-public interface IOutputPreprocessor
+public interface IOutputPreprocessor : IService
 {
     public OutputPreprocessorHandlingStage GetHandlingStage();
 
