@@ -245,7 +245,7 @@ public class DiContainer
     /// Establishing startup order of IAutoStartStopServices by resolving dependencies
     /// </summary>
     /// <returns>A list of types and instances in correct order</returns>
-    public (List<Type> ResolvedOrdered, List<IAutoStartStopService> ToStartOrdered) EstablishStartOrder(List<(Type Type, IService Implementation, List<Type> Dependencies)> serviceList, bool reversed = false)
+    private (List<Type> ResolvedOrdered, List<IAutoStartStopService> ToStartOrdered) EstablishStartOrder(List<(Type Type, IService Implementation, List<Type> Dependencies)> serviceList, bool reversed = false)
     {
         List<Type> servicesResolvedInOrder = [];
         List<IAutoStartStopService> servicesInOrder = [];
