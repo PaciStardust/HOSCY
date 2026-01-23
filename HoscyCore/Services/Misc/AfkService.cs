@@ -14,7 +14,7 @@ public class AfkService(ConfigModel config, IOutputManagerService output, ILogge
     private readonly ILogger _logger = logger.ForContext<AfkService>();
 
     private System.Timers.Timer? _afkTimer;
-    private DateTime _afkStarted = DateTime.Now;
+    private DateTimeOffset _afkStarted = DateTimeOffset.UtcNow;
     private uint _afkTimesChecked = 0;
     private static readonly OutputNotificationPriority _afkNotificationPriority = OutputNotificationPriority.Important;
     private static readonly OutputSettingsFlags _outputFlags = OutputSettingsFlags.AllowTextOutput;
@@ -58,15 +58,16 @@ public class AfkService(ConfigModel config, IOutputManagerService output, ILogge
     {
         if (_config.Afk_TimesDisplayedBeforeDoublingInterval > 0)
         {
-            _afkTimesChecked++;
-            var cycle = (_afkTimesChecked / _config.Afk_TimesDisplayedBeforeDoublingInterval) + 1;
+            var cycle = (_afkTimesChecked++ / _config.Afk_TimesDisplayedBeforeDoublingInterval) + 1;
             var modulo = Math.Pow(2, (int)Math.Log(cycle, 2));
+
+            _logger.Fatal("C {c} M {m}", cycle, modulo);
 
             if (_afkTimesChecked % modulo != 0)
                 return;
         }
 
-        var time = (e.SignalTime.AddMilliseconds(500) - _afkStarted).ToString(@"hh\:mm\:ss");
+        var time = (DateTimeOffset.UtcNow - _afkStarted).ToString(@"hh\:mm\:ss");
         _logger.Debug("Displaying AFK timer at {afkTime}", time);
         var message = $"{_config.Afk_StatusText} {time}";
         _output.SendNotification(message, _afkNotificationPriority, _outputFlags);
