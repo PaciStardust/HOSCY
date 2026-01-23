@@ -6,7 +6,7 @@ namespace HoscyCoreTests.Tests;
 
 public class AudioServiceTests : TestBaseForService<AudioServiceTests>
 {
-    private IAudioService _audioService = null!;
+    private AudioService _audioService = null!;
 
     protected override void OneTimeSetupExtra()
     {
