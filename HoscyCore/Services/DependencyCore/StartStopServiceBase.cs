@@ -38,7 +38,7 @@ public abstract class StartStopServiceBase : IStartStopService
     protected abstract bool IsStarted();
     protected abstract bool IsProcessing();
 
-    public void RestartSimple(Type logType, ILogger logger)
+    protected void RestartSimple(Type logType, ILogger logger)
     {
         LogRestartBegin(logType, logger);
         Stop();
@@ -46,7 +46,7 @@ public abstract class StartStopServiceBase : IStartStopService
         LogRestartComplete(logType, logger);
     }
 
-    public void SetFaultLogAndNotify(Exception ex, ILogger? logger, IBackToFrontNotifyService? notify, string message)
+    protected void SetFaultLogAndNotify(Exception ex, ILogger? logger, IBackToFrontNotifyService? notify, string message)
     {
         SetFault(ex);
         logger?.Error(ex, message);
