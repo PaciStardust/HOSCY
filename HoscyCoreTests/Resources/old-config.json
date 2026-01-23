@@ -1,0 +1,371 @@
+﻿{
+  "ConfigVersion": 5,
+  "Osc": {
+    "Ip": "127.0.0.1",
+    "Port": 9000,
+    "PortListen": 9001,
+    "RoutingFilters": [],
+    "AddressManualMute": "/avatar/parameters/ToolMute",
+    "AddressManualSkipSpeech": "/avatar/parameters/ToolSkipSpeech",
+    "AddressManualSkipBox": "/avatar/parameters/ToolSkipBox",
+    "AddressEnableReplacements": "/avatar/parameters/ToolEnableReplacements",
+    "AddressEnableTextbox": "/avatar/parameters/ToolEnableBox",
+    "AddressEnableTts": "/avatar/parameters/ToolEnableTts",
+    "AddressEnableAutoMute": "/avatar/parameters/ToolEnableAutoMute",
+    "AddressListeningIndicator": "/avatar/parameters/MicListening",
+    "AddressGameMute": "/avatar/parameters/MuteSelf",
+    "AddressGameAfk": "/avatar/parameters/AFK",
+    "AddressGameTextbox": "/chatbox/input",
+    "AddressAddTextbox": "/hoscy/message",
+    "AddressAddTts": "/hoscy/tts",
+    "AddressAddNotification": "/hoscy/notification",
+    "AddressMediaPause": "/avatar/parameters/MediaPause",
+    "AddressMediaUnpause": "/avatar/parameters/MediaUnpause",
+    "AddressMediaRewind": "/avatar/parameters/MediaRewind",
+    "AddressMediaSkip": "/avatar/parameters/MediaSkip",
+    "AddressMediaInfo": "/avatar/parameters/MediaInfo",
+    "AddressMediaToggle": "/avatar/parameters/MediaToggle",
+    "ShowCounterNotifications": false,
+    "CounterDisplayDuration": 10.0,
+    "CounterDisplayCooldown": 0.0,
+    "Counters": [],
+    "ShowAfkDuration": false,
+    "AfkDuration": 15.0,
+    "AfkDoubleDuration": 12.0,
+    "AfkStartText": "Now AFK",
+    "AfkEndText": "No longer AFK",
+    "AfkStatusText": "AFK since"
+  },
+  "Speech": {
+    "UseTextbox": true,
+    "UseTts": false,
+    "MicId": "",
+    "StartUnmuted": true,
+    "PlayMuteSound": false,
+    "MuteOnVrcMute": true,
+    "ModelName": "",
+    "TtsId": "",
+    "SpeakerId": "",
+    "SpeakerVolumeInt": 50,
+    "MaxLenTtsString": 500,
+    "SkipLongerMessages": true,
+    "VoskModels": {},
+    "VoskModelCurrent": "",
+    "VoskTimeout": 2500,
+    "WhisperModels": {},
+    "WhisperModelCurrent": "",
+    "WhisperSingleSegment": true,
+    "WhisperToEnglish": false,
+    "WhisperBracketFix": true,
+    "WhisperHighPerformance": false,
+    "WhisperLogFilteredNoises": false,
+    "WhisperLanguage": 28261,
+    "WhisperNoiseFilter": {
+      "Laughing": "laugh",
+      "Popping": "pop",
+      "Whistling": "whistl",
+      "Sighing": "sigh",
+      "Humming": "hum"
+    },
+    "WhisperThreads": -4,
+    "WhisperMaxContext": 0,
+    "WhisperMaxSegLen": 0,
+    "WhisperRecMaxDuration": 16.0,
+    "WhisperRecPauseDuration": 0.5,
+    "WhisperGraphicsAdapter": "",
+    "WinModelId": "",
+    "NoiseFilter": [
+      "the",
+      "and",
+      "einen"
+    ],
+    "RemovePeriod": true,
+    "CapitalizeFirst": true,
+    "UseReplacements": true,
+    "Shortcuts": [
+      {
+        "Text": "box toggle",
+        "Replacement": "[osc] [/avatar/parameters/ToolEnableBox [b]true \"self\"]",
+        "Enabled": true,
+        "UseRegex": false,
+        "IgnoreCase": true
+      }
+    ],
+    "Replacements": [
+      {
+        "Text": "exclamation mark",
+        "Replacement": "!",
+        "Enabled": true,
+        "UseRegex": false,
+        "IgnoreCase": false
+      },
+      {
+        "Text": "question mark",
+        "Replacement": "?",
+        "Enabled": true,
+        "UseRegex": false,
+        "IgnoreCase": false
+      },
+      {
+        "Text": "colon",
+        "Replacement": ":",
+        "Enabled": true,
+        "UseRegex": false,
+        "IgnoreCase": false
+      },
+      {
+        "Text": "semicolon",
+        "Replacement": ";",
+        "Enabled": true,
+        "UseRegex": false,
+        "IgnoreCase": false
+      },
+      {
+        "Text": "open parenthesis",
+        "Replacement": "(",
+        "Enabled": true,
+        "UseRegex": false,
+        "IgnoreCase": false
+      },
+      {
+        "Text": "closed parenthesis",
+        "Replacement": ")",
+        "Enabled": true,
+        "UseRegex": false,
+        "IgnoreCase": false
+      },
+      {
+        "Text": "open bracket",
+        "Replacement": "(",
+        "Enabled": true,
+        "UseRegex": false,
+        "IgnoreCase": false
+      },
+      {
+        "Text": "closed bracket",
+        "Replacement": ")",
+        "Enabled": true,
+        "UseRegex": false,
+        "IgnoreCase": false
+      },
+      {
+        "Text": "minus",
+        "Replacement": "-",
+        "Enabled": true,
+        "UseRegex": false,
+        "IgnoreCase": false
+      },
+      {
+        "Text": "plus",
+        "Replacement": "+",
+        "Enabled": true,
+        "UseRegex": false,
+        "IgnoreCase": false
+      },
+      {
+        "Text": "slash",
+        "Replacement": "/",
+        "Enabled": true,
+        "UseRegex": false,
+        "IgnoreCase": false
+      },
+      {
+        "Text": "backslash",
+        "Replacement": "\\",
+        "Enabled": true,
+        "UseRegex": false,
+        "IgnoreCase": false
+      },
+      {
+        "Text": "hashtag",
+        "Replacement": "#",
+        "Enabled": true,
+        "UseRegex": false,
+        "IgnoreCase": false
+      },
+      {
+        "Text": "asterisk",
+        "Replacement": "*",
+        "Enabled": true,
+        "UseRegex": false,
+        "IgnoreCase": false
+      }
+    ],
+    "ShortcutIgnoredCharacters": ".?!,。、！？"
+  },
+  "Textbox": {
+    "MaxLength": 130,
+    "TimeoutMultiplier": 1250,
+    "MinimumTimeout": 3000,
+    "DefaultTimeout": 5000,
+    "DynamicTimeout": true,
+    "AutomaticClearNotification": true,
+    "AutomaticClearMessage": false,
+    "UseIndicatorWhenSpeaking": true,
+    "UseIndicatorWithoutBox": false,
+    "NotificationIndicatorLeft": "〈",
+    "NotificationIndicatorRight": "〉",
+    "SoundOnMessage": true,
+    "SoundOnNotification": false,
+    "UseNotificationPriority": true,
+    "UseNotificationSkip": true,
+    "MediaShowStatus": false,
+    "MediaAddAlbum": false,
+    "MediaSwapArtistAndSong": false,
+    "MediaPlayingVerb": "Playing",
+    "MediaArtistVerb": "by",
+    "MediaAlbumVerb": "on",
+    "MediaExtra": "",
+    "MediaFilters": []
+  },
+  "Input": {
+    "UseTts": false,
+    "UseTextbox": true,
+    "TriggerCommands": true,
+    "TriggerReplace": true,
+    "AllowTranslation": true,
+    "Presets": {}
+  },
+  "Api": {
+    "Presets": [
+      {
+        "Name": "Example - Azure to DE",
+        "SentData": "[{\"Text\" : \"[T]\"}]",
+        "HeaderValues": {
+          "Ocp-Apim-Subscription-Key": "[YOUR KEY]",
+          "Ocp-Apim-Subscription-Region": "[YOUR REGION]"
+        },
+        "ContentType": "application/json",
+        "ResultField": "text",
+        "TargetUrl": "https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&to=de",
+        "Authorization": "",
+        "ConnectionTimeout": 3000
+      },
+      {
+        "Name": "Example - Azure Recognition",
+        "SentData": "",
+        "HeaderValues": {
+          "Ocp-Apim-Subscription-Key": "[YOUR KEY]",
+          "Accept": "true"
+        },
+        "ContentType": "audio/wav; codecs=audio/pcm; samplerate=16000",
+        "ResultField": "Display Text",
+        "TargetUrl": "https://northeurope.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1?language=en-US",
+        "Authorization": "",
+        "ConnectionTimeout": 3000
+      },
+      {
+        "Name": "Example - DeepL to DE",
+        "SentData": "text=[T]&target_lang=DE",
+        "HeaderValues": {},
+        "ContentType": "application/x-www-form-urlencoded",
+        "ResultField": "text",
+        "TargetUrl": "https://api-free.deepl.com/v2/translate",
+        "Authorization": "DeepL-Auth-Key [YOUR KEY]",
+        "ConnectionTimeout": 3000
+      }
+    ],
+    "RecognitionPreset": "",
+    "RecognitionMaxRecordingTime": 30,
+    "TranslationPreset": "",
+    "TranslationSkipLongerMessages": true,
+    "TranslationMaxTextLength": 2000,
+    "AzureRegion": "",
+    "AzureKey": "",
+    "AzureCustomEndpointSpeech": "",
+    "AzureCustomEndpointRecognition": "",
+    "AzureTtsVoiceCurrent": "",
+    "AzurePhrases": [],
+    "AzureRecognitionLanguages": [],
+    "AzureTtsVoices": [],
+    "TranslateTts": false,
+    "TranslateTextbox": false,
+    "TranslationAllowExternal": false,
+    "AddOriginalAfterTranslate": false,
+    "UseAzureTts": false
+  },
+  "Debug": {
+    "OpenLogWindow": false,
+    "CheckUpdates": true,
+    "MinimumLogSeverity": 1,
+    "LogFilters": [
+      {
+        "Name": "VRC Angular",
+        "FilterString": "/Angular",
+        "Enabled": true,
+        "IgnoreCase": true,
+        "UseRegex": false
+      },
+      {
+        "Name": "VRC Grounded",
+        "FilterString": "/Grounded",
+        "Enabled": true,
+        "IgnoreCase": true,
+        "UseRegex": false
+      },
+      {
+        "Name": "VRC Velocity",
+        "FilterString": "/Velocity",
+        "Enabled": true,
+        "IgnoreCase": true,
+        "UseRegex": false
+      },
+      {
+        "Name": "VRC Upright",
+        "FilterString": "/Upright",
+        "Enabled": true,
+        "IgnoreCase": true,
+        "UseRegex": false
+      },
+      {
+        "Name": "VRC Voice",
+        "FilterString": "/Voice",
+        "Enabled": true,
+        "IgnoreCase": true,
+        "UseRegex": false
+      },
+      {
+        "Name": "VRC Viseme",
+        "FilterString": "/Viseme",
+        "Enabled": true,
+        "IgnoreCase": true,
+        "UseRegex": false
+      },
+      {
+        "Name": "VRC Gesture",
+        "FilterString": "/Gesture",
+        "Enabled": true,
+        "IgnoreCase": true,
+        "UseRegex": false
+      },
+      {
+        "Name": "VRC Angle",
+        "FilterString": "_Angle",
+        "Enabled": true,
+        "IgnoreCase": true,
+        "UseRegex": false
+      },
+      {
+        "Name": "VRC Stretch",
+        "FilterString": "_Stretch",
+        "Enabled": true,
+        "IgnoreCase": true,
+        "UseRegex": false
+      },
+      {
+        "Name": "Notification Timeout",
+        "FilterString": "Notification timeout was",
+        "Enabled": true,
+        "IgnoreCase": true,
+        "UseRegex": false
+      },
+      {
+        "Name": "Notification Override",
+        "FilterString": "Did not override",
+        "Enabled": true,
+        "IgnoreCase": true,
+        "UseRegex": false
+      }
+    ]
+  }
+}
