@@ -9,14 +9,14 @@ using Timer = System.Timers.Timer;
 namespace HoscyCore.Services.Osc.Misc;
 
 [LoadIntoDiContainer(typeof(IOscQueryService), Lifetime.Singleton)]
-public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService notify, IOscListenService listener) : StartStopServiceBase, IOscQueryService
+public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService notify, IOscListenService listener, OscQueryHostRegistry hostRegistry) : StartStopServiceBase, IOscQueryService
 {
     private readonly Serilog.ILogger _logger = logger.ForContext<OscQueryService>();
     private readonly IBackToFrontNotifyService _notify = notify;
     private readonly IOscListenService _listener = listener;
+    private readonly OscQueryHostRegistry _hostRegistry = hostRegistry;
 
     private Vrc.OSCQueryService? _oscQuery = null;
-    private readonly Dictionary<string, (Vrc.HostInfo Host, DateTimeOffset LastHeard)> _hosts = [];
     private Timer? _serviceRefreshTimer = null;
 
     #region Start/Stop
@@ -54,12 +54,14 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
         oscQuery.AddEndpoint("/*", "[,]", Vrc.Attributes.AccessValues.ReadWrite, null,
             "Any -> HOSCY sends and receives anything for routing and custom commands");
 
-        _hosts.Clear();
-        oscQuery.OnOscQueryServiceAdded += (profile) => TryAddHostInfoFromServiceProfile(profile, _hosts);
+        _hostRegistry.Clear();
+        oscQuery.OnOscQueryServiceAdded += (profile) => TryAddHostInfoFromServiceProfile(profile);
         _oscQuery = oscQuery;
 
+        _hostRegistry.SetSelf(_oscQuery.HostInfo.oscIP, _oscQuery.HostInfo.oscPort);
+
         _logger.Debug("Starting service refresh timer");
-        var timer = CreateRefreshTimer(_oscQuery, _hosts, _logger, 5000);
+        var timer = CreateRefreshTimer(_oscQuery, _hostRegistry, 5000);
         timer.Start();
         _serviceRefreshTimer = timer;
         LogStartComplete(GetType(), _logger);
@@ -73,7 +75,7 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
         _serviceRefreshTimer = null;
         _oscQuery?.Dispose();
         _oscQuery = null;
-        _hosts.Clear();
+        _hostRegistry.Clear();
         LogStopComplete(GetType(), _logger);
     }
 
@@ -89,41 +91,15 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
     #endregion
 
     #region Functionality
-    /// <summary>
-    /// Adds HostInfo to list
-    /// </summary>
-    private void AddHostInfoFromServiceProfile(Vrc.OSCQueryServiceProfile profile, Dictionary<string, (Vrc.HostInfo Host, DateTimeOffset LastHeard)> hosts)
-    {
-        var lowerName = profile.name.ToLower();
-        if (!hosts.ContainsKey(lowerName))
-        {
-            _logger.Debug("Received ServiceProfile \"{profileName}\"", profile.name);
-        }
-
-        var hostInfo = Vrc.Extensions.GetHostInfo(profile.address, profile.port).GetAwaiter().GetResult();
-        if (hostInfo == null)
-        {
-            _logger.Warning("Failed to grab HostInfo for ServiceProfile \"{profileName}\"", profile.name);
-            throw new ArgumentException("Failed to grab HostInfo for ServiceProfile " + profile.name);
-        }
-
-        // We do not log refreshes
-        if (!hosts.ContainsKey(lowerName))
-        {
-            _logger.Debug("Adding HostInfo {hostInfoName} (IP={hostIp} Port={hostPort}) from ServiceProfile \"{profileName}\" to hosts list",
-                lowerName, hostInfo.oscIP, hostInfo.oscPort, profile.name);
-        }
-        hosts[lowerName] = (hostInfo, DateTimeOffset.UtcNow);
-    }
 
     /// <summary>
     /// Safely adds HostInfo to list
     /// </summary>
-    private void TryAddHostInfoFromServiceProfile(Vrc.OSCQueryServiceProfile profile, Dictionary<string, (Vrc.HostInfo Host, DateTimeOffset LastHeard)> hosts)
+    private void TryAddHostInfoFromServiceProfile(Vrc.OSCQueryServiceProfile profile)
     {
         try
         {
-            AddHostInfoFromServiceProfile(profile, hosts);
+            _hostRegistry.AddHostInfoFromServiceProfile(profile);
         }
         catch (Exception ex)
         {
@@ -132,47 +108,23 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
         }
     }
 
-    public (string Ip, int Port)? GetServiceAddressByName(string name)
-    {
-        var lowerName = name.ToLower();
-        if (lowerName == "self" && _oscQuery is not null) 
-            return (_oscQuery.HostInfo.oscIP, _oscQuery.HostInfo.oscPort);
-
-        return _hosts.TryGetValue(lowerName, out var hostData)
-            ? (hostData.Host.oscIP, hostData.Host.oscPort)
-            : null;
-    }
-    #endregion
-
-    #region Utils
     /// <summary>
     /// Creates a timer for refreshing services 
     /// </summary>
-    private static Timer CreateRefreshTimer(Vrc.OSCQueryService service, Dictionary<string, (Vrc.HostInfo Host, DateTimeOffset LastHeard)> hosts, Serilog.ILogger logger, int intervalMs)
+    private static Timer CreateRefreshTimer(Vrc.OSCQueryService service, OscQueryHostRegistry hostRegistry, int intervalMs)
     {
         var timer = new Timer(intervalMs)
         {
             AutoReset = true
         };
-        timer.Elapsed += (_, _) => TimerElapsed(service, hosts, logger);
+        timer.Elapsed += (_, _) => TimerElapsed(service, hostRegistry);
         return timer;
     }
 
-    private static void TimerElapsed(Vrc.OSCQueryService service, Dictionary<string, (Vrc.HostInfo Host, DateTimeOffset LastHeard)> hosts, Serilog.ILogger logger)
+    private static void TimerElapsed(Vrc.OSCQueryService service, OscQueryHostRegistry hostRegistry)
     {
         service.RefreshServices();
-
-        var limit = DateTimeOffset.UtcNow.AddMinutes(-3);
-        var missing = hosts.Where(kvp => kvp.Value.LastHeard < limit)
-            .Select(kvp => kvp.Key).ToArray();
-        
-        if (missing.Length == 0) return;
-
-        foreach(var key in missing)
-        {
-            logger.Debug("Removing host \"{host}\" because of expired lifetime", key);
-            hosts.Remove(key);
-        }
+        hostRegistry.CleanOldEntries();
     }
     #endregion
 }

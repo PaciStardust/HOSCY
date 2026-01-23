@@ -8,10 +8,10 @@ using Serilog;
 namespace HoscyCore.Services.Osc.Misc;
 
 [LoadIntoDiContainer(typeof(IOscCommandService), Lifetime.Singleton)]
-public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery, IOscSendService sender) : StartStopServiceBase, IOscCommandService //todo: [TEST] Does this work?
+public partial class OscCommandService(ILogger logger, OscQueryHostRegistry hostRegistry, IOscSendService sender) : StartStopServiceBase, IOscCommandService
 {
     private readonly ILogger _logger = logger.ForContext<OscCommandService>();
-    private readonly IOscQueryService _oscQuery = oscQuery;
+    private readonly OscQueryHostRegistry _hostRegistry = hostRegistry;
     private readonly IOscSendService _sender = sender;
     private readonly List<Task> _runningTasks = [];
     private readonly CancellationTokenSource _cts = new();
@@ -115,7 +115,7 @@ public partial class OscCommandService(ILogger logger, IOscQueryService oscQuery
         ushort? parsedPort;
         if (targetText is not null)
         {
-            var target = _oscQuery.GetServiceAddressByName(targetText);
+            var target = _hostRegistry.GetServiceAddressByName(targetText);
             if (!target.HasValue)
             {
                 _logger.Warning("Failed parsing OSC subcommand \"{subcommandString}\", specified target \"{target}\" not found", commandMatch.Value, targetText);
