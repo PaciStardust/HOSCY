@@ -6,16 +6,15 @@ using Serilog;
 
 namespace HoscyCoreTests.Tests;
 
-public class DiContainerTests : TestBase<DiContainerTests>
+public class DiContainerTests : TestBaseForService<DiContainerTests>
 {
-    private DiContainer? _container;
+    private DiContainer _container = null!;
     private readonly ConfigModel _config = new()
     {
         Afk_StartText = "Hi I am a Config"
     };
 
-    [Test, Order(int.MinValue)]
-    public void Start()
+    protected override void OneTimeSetupExtra()
     {
         _container = DiContainer.LoadFromAssembly(_logger, _config, x =>
         {
@@ -41,10 +40,8 @@ public class DiContainerTests : TestBase<DiContainerTests>
         Assert.That(shouldPass2, Is.Not.Null, "Di Test shouldve worked");
     }
 
-    [Test, Order(int.MaxValue)]
-    public void Stop()
+    protected override void OneTimeTearDownExtra()
     {
-        Assert.That(_container, Is.Not.Null, "Container is null!");
         _container.StopServices();
     }
 }

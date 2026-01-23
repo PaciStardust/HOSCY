@@ -6,16 +6,15 @@ using Serilog;
 
 namespace HoscyCoreTests.Tests;
 
-public class HoscyCoreAppTests : TestBase<HoscyCoreAppTests>
+public class HoscyCoreAppTests : TestBaseForService<HoscyCoreAppTests>
 {
-    private HoscyCoreApp? _coreApp;
+    private HoscyCoreApp _coreApp = null!;
     private readonly ConfigModel _config = new()
     {
         Afk_StartText = "Hi I am a Config"
     };
 
-    [Test, Order(int.MinValue)]
-    public void Start()
+    protected override void OneTimeSetupExtra()
     {
         var coreApp = new HoscyCoreApp(_logger);
         var config = new HoscyCoreAppStartParameters()
@@ -53,10 +52,8 @@ public class HoscyCoreAppTests : TestBase<HoscyCoreAppTests>
         Assert.That(shouldPass2, Is.Not.Null, "Di Test shouldve worked");
     }
 
-    [Test, Order(int.MaxValue)]
-    public void Stop()
+    protected override void OneTimeTearDownExtra()
     {
-        Assert.That(_coreApp, Is.Not.Null, "Core App is null!");
         _coreApp.Stop();
     }
 }

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Serilog;
 
 namespace HoscyCoreTests.Utils;
@@ -13,8 +14,11 @@ public abstract class TestBase<T>
     {
         _logger.Information("OneTimeSetup - {TestFixture}", TestContext.CurrentContext.Test.ClassName);
         _tempFolder = TestUtils.GenerateTempFolder();
+        var startupTimer = Stopwatch.StartNew();
         OneTimeSetupExtra();
-        _logger.Information("OneTimeSetup Done - {TestFixture}", TestContext.CurrentContext.Test.ClassName);
+        startupTimer.Stop();
+        TestContext.Out.WriteLine($"Startup time: {startupTimer.ElapsedMilliseconds} ms");
+        _logger.Information("OneTimeSetup Done - {TestFixture} - {time}ms", TestContext.CurrentContext.Test.ClassName, startupTimer.ElapsedMilliseconds);
     }
     protected virtual void OneTimeSetupExtra() {}
 
@@ -41,8 +45,11 @@ public abstract class TestBase<T>
     public void OneTimeTearDown()
     {
         _logger.Information("OneTimeTearDown - {TestFixture}", TestContext.CurrentContext.Test.ClassName);
+        var teardownTimer = Stopwatch.StartNew();
         OneTimeTearDownExtra();
-        _logger.Information("OneTimeTearDown Done - {TestFixture}", TestContext.CurrentContext.Test.ClassName);
+        teardownTimer.Stop();
+        TestContext.Out.WriteLine($"Shutdown time: {teardownTimer.ElapsedMilliseconds} ms");
+        _logger.Information("OneTimeTearDown Done - {TestFixture} - {time}ms", TestContext.CurrentContext.Test.ClassName, teardownTimer.ElapsedMilliseconds);
     }
     protected virtual void OneTimeTearDownExtra() {}
 }

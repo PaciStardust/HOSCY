@@ -4,12 +4,11 @@ using HoscyCoreTests.Utils;
 
 namespace HoscyCoreTests.Tests;
 
-public class AudioServiceTests : TestBase<AudioServiceTests>
+public class AudioServiceTests : TestBaseForService<AudioServiceTests>
 {
-    private IAudioService? _audioService;
+    private IAudioService _audioService = null!;
 
-    [Test, Order(int.MinValue)]
-    public void Start()
+    protected override void OneTimeSetupExtra()
     {
         _audioService = new AudioService(_logger);
         _audioService.Start();
@@ -19,13 +18,16 @@ public class AudioServiceTests : TestBase<AudioServiceTests>
     }
 
     [Test, Order(int.MaxValue)]
-    public void Stop()
+    public void FinalTest()
     {
-        Assert.That(_audioService, Is.Not.Null, "AudioService is null!");
         var status = _audioService.GetCurrentStatus();
         Assert.That(status, Is.AnyOf(ServiceStatus.Started, ServiceStatus.Processing), "Service status not started");
+    }
+
+    protected override void OneTimeTearDownExtra()
+    {
         _audioService.Stop();
-        status = _audioService.GetCurrentStatus();
+        var status = _audioService.GetCurrentStatus();
         Assert.That(status, Is.EqualTo(ServiceStatus.Stopped), "Service status not stopped");
     }
 }
