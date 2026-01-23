@@ -7,10 +7,15 @@ namespace HoscyCoreTests.Utils;
 
 public static class TestUtils
 {
-    private static readonly string _mainFolder = Path.Combine(Assembly.GetExecutingAssembly().Location, RESOURCE_FOLDER);
+    private static readonly string _mainFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
 
     private const string RESOURCE_FOLDER = "Resources";
     private const string TEMP_FOLDER = "TestTemp";
+
+    public static string GetResourceFolder()
+    {
+        return Path.Join(_mainFolder, RESOURCE_FOLDER);
+    }
 
     public static string GetResourcePath(string resourceName)
     {

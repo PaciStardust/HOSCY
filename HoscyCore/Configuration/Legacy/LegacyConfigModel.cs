@@ -2,7 +2,7 @@ using Whisper;
 
 namespace HoscyCore.Configuration.Legacy;
 
-internal class LegacyConfigModel
+public class LegacyConfigModel
 {
     public int ConfigVersion { get; set; } = 0;
 
@@ -14,7 +14,7 @@ internal class LegacyConfigModel
     public LegacyConfigLoggerModel Debug { get; init; } = new();
 }
 
-internal class LegacyConfigApiModel
+public class LegacyConfigApiModel
 {
     public List<LegacyApiPresetModel> Presets { get; set; } = [];
     public string RecognitionPreset { get; set; } = string.Empty;
@@ -37,7 +37,7 @@ internal class LegacyConfigApiModel
     public bool UseAzureTts { get; set; }
 }
 
-internal class LegacyConfigInputModel
+public class LegacyConfigInputModel
 {
     public bool UseTts { get; set; }
     public bool UseTextbox { get; set; }
@@ -47,14 +47,14 @@ internal class LegacyConfigInputModel
     public Dictionary<string, string> Presets { get; set; } = [];
 }
 
-internal class LegacyConfigLoggerModel
+public class LegacyConfigLoggerModel
 {
     public bool OpenLogWindow { get; set; }
     public bool CheckUpdates { get; set; } = true;
     public List<LegacyFilterModel> LogFilters { get; set; } = [];
 }
 
-internal class LegacyConfigOscModel
+public class LegacyConfigOscModel
 {
     public string Ip { get; set; } = "127.0.0.1";
     public int Port { get; set; } = 9000;
@@ -92,7 +92,7 @@ internal class LegacyConfigOscModel
     public string AfkStatusText { get; set; } = "AFK since";
 }
 
-internal class LegacyConfigSpeechModel
+public class LegacyConfigSpeechModel
 {
     public bool UseTextbox { get; set; } = true;
     public bool UseTts { get; set; }
@@ -134,7 +134,7 @@ internal class LegacyConfigSpeechModel
     public string ShortcutIgnoredCharacters { get; set; } = ".?!,。、！？";
 }
 
-internal class LegacyConfigTextboxModel
+public class LegacyConfigTextboxModel
 {
     public int MaxLength { get; set; } = 130;
     public int TimeoutMultiplier { get; set; } = 1250;
@@ -161,7 +161,7 @@ internal class LegacyConfigTextboxModel
     public List<LegacyFilterModel> MediaFilters { get; set; } = [];
 }
 
-internal class LegacyApiPresetModel
+public class LegacyApiPresetModel
 {
     public string Name { get; set; } = "Unnamed Preset";
     public string SentData { get; set; } = @"{""data"" : ""[T]""}";
@@ -173,14 +173,14 @@ internal class LegacyApiPresetModel
     public int ConnectionTimeout { get; set; } = 3000;
 }
 
-internal class LegacyAzureTtsVoiceModel
+public class LegacyAzureTtsVoiceModel
 {
     public string Name { get; set; } = "New Voice";
     public string Voice { get; set; } = string.Empty;
     public string Language { get; set; } = string.Empty;
 }
 
-internal class LegacyCounterModel
+public class LegacyCounterModel
 {
     public string Name { get; set; } = "Unnamed Counter";
     public uint Count { get; set; } = 0;
@@ -190,7 +190,7 @@ internal class LegacyCounterModel
     public string Parameter { get; set; } = "Parameter";
 }
 
-internal class LegacyFilterModel(string name, string filterString)
+public class LegacyFilterModel(string name, string filterString)
 {
     public string Name { get; set; } = name;
     public string FilterString { get; set; } = filterString;
@@ -199,7 +199,7 @@ internal class LegacyFilterModel(string name, string filterString)
     public bool UseRegex { get; set; } = false;
 }
 
-internal class LegacyOscRoutingFilterModel
+public class LegacyOscRoutingFilterModel
 {
     public string Name { get; set; } = "Unnamed Filter";
     public int Port { get; set; } = -1;
@@ -208,7 +208,7 @@ internal class LegacyOscRoutingFilterModel
     public bool BlacklistMode { get; set; } = false;
 }
 
-internal class LegacyReplacementDataModel(string text, string replacement, bool ignoreCase = true)
+public class LegacyReplacementDataModel(string text, string replacement, bool ignoreCase = true)
 {
     public string Text { get; set; } = text;
     public string Replacement { get; set; } = replacement;

@@ -6,7 +6,7 @@ using Serilog;
 
 namespace HoscyCore.Configuration.Legacy;
 
-internal static class LegacyConfigModelLoader //todo: [TEST] Does the conversion work?
+public static class LegacyConfigModelLoader
 {
     public const string DEFAULT_FILE_NAME = "config.json";
 
@@ -14,7 +14,7 @@ internal static class LegacyConfigModelLoader //todo: [TEST] Does the conversion
     /// Loads a legacy config file
     /// </summary>
     /// <returns>Null when no config could be loaded</returns>
-    internal static LegacyConfigModel? TryLoad(string configFolder, string configFilename, ILogger logger) //Yes I am aware this code is duplicated and should be fixed
+    public static LegacyConfigModel? TryLoad(string configFolder, string configFilename, ILogger logger) //Yes I am aware this code is duplicated and should be fixed
     {
         var path = Path.Combine(configFolder, configFilename);
         logger.Information("Attempting to load LegacyConfig at path \"{legacyConfigPath}\"", path);
@@ -44,7 +44,7 @@ internal static class LegacyConfigModelLoader //todo: [TEST] Does the conversion
     /// <summary>
     /// Upgrades a LegacyConfigModel
     /// </summary>
-    internal static LegacyConfigModel Upgrade(this LegacyConfigModel config, ILogger logger)
+    public static LegacyConfigModel Upgrade(this LegacyConfigModel config, ILogger logger)
     {
         Dictionary<int, Action> steps = new()
         {
@@ -179,7 +179,7 @@ internal static class LegacyConfigModelLoader //todo: [TEST] Does the conversion
     /// <summary>
     /// Migrates a LegacyConfigModel to a new ConfigModel
     /// </summary>
-    internal static ConfigModel Migrate(this LegacyConfigModel oldConfig, ILogger logger)
+    public static ConfigModel Migrate(this LegacyConfigModel oldConfig, ILogger logger)
     {
         logger.Information("Migrating legacy config to new format");
         return new ConfigModel()
