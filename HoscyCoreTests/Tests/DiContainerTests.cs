@@ -1,6 +1,7 @@
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.DependencyCore;
 using HoscyCoreTests.Utils;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
 namespace HoscyCoreTests.Tests;
@@ -16,7 +17,10 @@ public class DiContainerTests : TestBase<DiContainerTests>
     [Test, Order(int.MinValue)]
     public void Start()
     {
-        _container = DiContainer.LoadFromAssembly(_logger, _config);
+        _container = DiContainer.LoadFromAssembly(_logger, _config, x =>
+        {
+            x.AddSingleton<DiTestService2>();
+        });
         _container.StartServices(null);
     }
 
@@ -28,6 +32,13 @@ public class DiContainerTests : TestBase<DiContainerTests>
         Assert.That(newLogger, Is.Not.Null, "Logger from container is null");
         var newConfig = _container.GetRequiredService<ConfigModel>();
         Assert.That(newConfig.Afk_StartText, Is.EqualTo(_config.Afk_StartText), "Did not retrieve init config");
+
+        var shouldPass = _container.GetService<IDiTestService>();
+        Assert.That(shouldPass, Is.Not.Null, "Di Test shouldve worked");
+        var shouldFail = _container.GetService<DiTestService>();
+        Assert.That(shouldFail, Is.Null, "Di Test shouldve not worked");
+        var shouldPass2 = _container.GetService<DiTestService2>();
+        Assert.That(shouldPass2, Is.Not.Null, "Di Test shouldve worked");
     }
 
     [Test, Order(int.MaxValue)]
