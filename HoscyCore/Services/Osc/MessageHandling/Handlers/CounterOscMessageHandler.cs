@@ -15,14 +15,16 @@ public class CounterOscMessageHandler(IOutputManagerService output, ConfigModel 
 
     private DateTimeOffset _counterLastDisplay = DateTimeOffset.MinValue;
 
-    public bool HandleMessage(OscMessage message) //todo: [FIX] true/false check
+    public bool HandleMessage(OscMessage message)
     {
-        var now = DateTimeOffset.UtcNow;
+        if (message.Arguments.Length == 0 || message.Arguments[0] is not bool value || !value)
+            return false;
 
         var counterMatch = _config.Counters_List.FirstOrDefault(x => x.FullParameter().Equals(message.Address, StringComparison.OrdinalIgnoreCase));
         if (counterMatch is null)
             return false;
 
+        var now = DateTimeOffset.UtcNow;
         if (!counterMatch.Enabled || (now - counterMatch.LastUsed).TotalSeconds < counterMatch.Cooldown)
             return true;
 
