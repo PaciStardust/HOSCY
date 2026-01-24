@@ -22,11 +22,11 @@ public class WebClientTests : TestBaseForService<WebClientTests>
         await _client.DownloadAsync("https://paci.dev/", path);
         
         var fileInfo = new FileInfo(path);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(fileInfo.Exists, "File does not exist");
             Assert.That(fileInfo.Length, Is.GreaterThan(0), "File should not be empty");
-        });
+        };
     }
 
     [Test]

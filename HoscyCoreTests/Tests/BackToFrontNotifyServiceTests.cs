@@ -39,7 +39,7 @@ public class BackToFrontNotifyServiceTests : TestBase<BackToFrontNotifyServiceTe
         notify.SendError(TTL_ERROR, MSG_ERROR, new Exception(TTL_ERROR));
         notify.SendFatal(TTL_FATAL, MSG_FATAL, new Exception(TTL_FATAL));
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(target_info.Item1, Is.EqualTo(TTL_INFO), "Info Title");
             Assert.That(target_info.Item2, Is.Empty, "Info Message");
@@ -56,6 +56,6 @@ public class BackToFrontNotifyServiceTests : TestBase<BackToFrontNotifyServiceTe
             Assert.That(target_fatal.Item1, Is.EqualTo(TTL_FATAL), "Fatal Title");
             Assert.That(target_fatal.Item2, Is.EqualTo(MSG_FATAL), "Fatal Message");
             Assert.That(target_ex_fatal?.Message, Is.EqualTo(TTL_FATAL), "Fatal Ex");
-        });
+        };
     }
 }

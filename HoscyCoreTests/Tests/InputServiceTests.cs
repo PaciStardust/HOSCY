@@ -63,13 +63,13 @@ public class InputServiceTests : TestBase<InputServiceTests>
             _input.SendExternalTextNotification(TEXT_N, prio);
 
 
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(_output.Messages, Has.Count.EqualTo(offset + 3), $"{i}: Not correct message count");
                 Assert.That(_output.Notifications, Has.Count.EqualTo(i+1), $"{i}: Not correct notification count");
-            });
+            };
 
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(_output.Messages[offset].Message, Is.EqualTo(AUDIO), $"{i}: Audio message wrong");
                 Assert.That(_output.Messages[offset].Flags, Is.EqualTo(expectedOutput | OutputSettingsFlags.AllowAudioOutput), $"{i}: Audio flags wrong");
@@ -83,7 +83,7 @@ public class InputServiceTests : TestBase<InputServiceTests>
                 Assert.That(_output.Notifications[i].Message, Is.EqualTo(TEXT_N), $"{i}: Notification message wrong");
                 Assert.That(_output.Notifications[i].Flags, Is.EqualTo(expectedOutput | OutputSettingsFlags.AllowTextOutput), $"{i}: Notification flags wrong");
                 Assert.That(_output.Notifications[i].Prio, Is.EqualTo(prio), $"{i}: Notification prio wrong");
-            });
+            };
         }
     }
 
@@ -114,11 +114,11 @@ public class InputServiceTests : TestBase<InputServiceTests>
             _input.SendManualMessage(message);
 
             Assert.That(_output.Messages, Has.Count.EqualTo(i+1), $"{i}: Not correct message count");
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(_output.Messages[i].Message, Is.EqualTo(message), $"{i}: Message wrong");
                 Assert.That(_output.Messages[i].Flags, Is.EqualTo(expectedOutput), $"{i}: Message flags wrong");
-            });
+            };
         }
     }
 
@@ -131,10 +131,10 @@ public class InputServiceTests : TestBase<InputServiceTests>
         _input.SendExternalTextNotification(string.Empty);
         _input.SendManualMessage(string.Empty);
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(_output.Messages, Is.Empty, "Messages should be empty");
             Assert.That(_output.Notifications, Is.Empty, "Notifications should be empty");
-        });
+        };
     }
 }
