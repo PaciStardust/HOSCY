@@ -6,7 +6,7 @@ using HoscyCore.Services.Misc;
 namespace HoscyCli.Commands.Modules;
 
 [PrototypeLoadIntoDiContainer(typeof(InputCommandModule))]
-public class InputCommandModule(IInputService input, ReflectPropEditCommandModule reflectCm) : AttributeCommandModule
+public class InputCommandModule(IInputService input, ReflectPropEditCommandModule reflectCm) : AttributeCommandModule //todo: [FEAT] presets
 {
     private readonly IInputService _input = input;
     private readonly ReflectPropEditCommandModule _reflectCm = reflectCm;
