@@ -74,8 +74,7 @@ public class ApiPresetModel : ObservableObject
                     : new(authSplit[0], string.Join(' ', authSplit[1..]))
                 );
             }
-            catch { }
-            finally
+            catch
             {
                 SetProperty(ref _authorization, string.Empty);
                 SetProperty(ref _authenticationHeader, null);

@@ -57,22 +57,18 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient //todo
     #endregion
 
     #region Sending
-    private async Task<string> SendAsync(HttpContent content)
+    private async Task<string> SendAsync(HttpContent content, ApiPresetModel preset)
     {
-        if (_currentPreset is null || !_currentPreset.IsValid())
-        {
-            _logger.Warning("{id}: Not sending request as no valid ApiPreset is loaded", _identifier);
-            throw new InvalidOperationException("No valid ApiPreset loaded");
-        }
-
-        var requestMessage = new HttpRequestMessage(HttpMethod.Post, _currentPreset.TargetUrl)
+        ClientHealthCheck();
+        
+        var requestMessage = new HttpRequestMessage(HttpMethod.Post, preset.TargetUrl)
         {
             Content = content
         };
 
         AddHeaders(requestMessage);
 
-        var jsonIn = await _client.SendAsync(requestMessage, _currentPreset.ConnectionTimeout);
+        var jsonIn = await _client.SendAsync(requestMessage, preset.ConnectionTimeout);
 
         if (jsonIn is null)
         {
@@ -80,15 +76,15 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient //todo
             throw new HttpRequestException("Received response for request, but json is null");
         }
 
-        var result = OtherUtils.ExtractFromJson(_currentPreset.ResultField, jsonIn);
+        var result = OtherUtils.ExtractFromJson(preset.ResultField, jsonIn);
         if (result is null)
         {
-            _logger.Warning("{id}: Unable to find content with key \"{resultField}\" in result \"{jsonIn}\"", _identifier, _currentPreset.ResultField, jsonIn);
-            throw new HttpRequestException($"Unable to find content with key \"{_currentPreset.ResultField}\" in result \"{jsonIn}\"");
+            _logger.Warning("{id}: Unable to find content with key \"{resultField}\" in result \"{jsonIn}\"", _identifier, preset.ResultField, jsonIn);
+            throw new HttpRequestException($"Unable to find content with key \"{preset.ResultField}\" in result \"{jsonIn}\"");
         }
         else
         {
-            _logger.Verbose("{id}: Found content with value \"{resultField}\": {result}", _identifier, _currentPreset.ResultField, result);
+            _logger.Verbose("{id}: Found content with value \"{resultField}\": {result}", _identifier, preset.ResultField, result);
         }
         return result;
     }
@@ -96,39 +92,51 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient //todo
     public async Task<string> SendBytesAsync(byte[] bytes)
     {
         _logger.Verbose("{id}: Sending byte request via ApiPreset \"{presetName}\"", _identifier, _currentPreset?.Name ?? "NULL");
-        if (_currentPreset is null || !_currentPreset.IsValid())
-        {
-            _logger.Warning("{id}: Not sending byte request as no valid ApiPreset is loaded", _identifier);
-            throw new InvalidOperationException("No valid ApiPreset loaded");
-        }
+        PresetHealthCheck();
 
         var content = new ByteArrayContent(bytes);
-        if (string.IsNullOrWhiteSpace(_currentPreset.ContentType) || !content.Headers.TryAddWithoutValidation("Content-Type", _currentPreset.ContentType))
+        if (string.IsNullOrWhiteSpace(_currentPreset!.ContentType) || !content.Headers.TryAddWithoutValidation("Content-Type", _currentPreset.ContentType))
         {
             _logger.Warning("{id}: Unable to send data to API as ContentType \"{contentType}\" is invalid, are you using the Type suggested by the API's documentation?", _identifier, _currentPreset.ContentType);
             throw new ArgumentException($"Unable to send data to API as ContentType \"{_currentPreset.ContentType}\" is invalid");
         }
 
-        return await SendAsync(content);
+        return await SendAsync(content, _currentPreset);
     }
 
     public async Task<string> SendTextAsync(string text)
     {
         _logger.Verbose("{id}: Sending text request via ApiPreset \"{presetName}\"", _identifier, _currentPreset?.Name ?? "NULL");
-        if (_currentPreset is null || !_currentPreset.IsValid())
-        {
-            _logger.Warning(messageTemplate: "{id}: Not sending text request as no valid ApiPreset is loaded", _identifier);
-            throw new InvalidOperationException("No valid ApiPreset loaded");
-        }
+        PresetHealthCheck();
 
-        var jsonOut = ReplaceToken(_currentPreset.SentData, "[T]", text);
+        var jsonOut = ReplaceToken(_currentPreset!.SentData, "[T]", text);
         if (_currentPreset.SentData == jsonOut)
         {
             _logger.Warning("{id}: Unable to send data to API as JSON contains no token to replace, have you made sure the JSON option contains \"[T]\"?", _identifier);
             throw new ArgumentException($"Unable to send data to API as JSON contains no token to replace, have you made sure the JSON option contains \"[T]\"?");
         }
 
-        return await SendAsync(new StringContent(jsonOut, Encoding.UTF8, _currentPreset.ContentType));
+        return await SendAsync(new StringContent(jsonOut, Encoding.UTF8, _currentPreset.ContentType), _currentPreset);
+    }
+    #endregion
+
+    #region Health Check
+    private void ClientHealthCheck()
+    {
+        if (_client.GetCurrentStatus() == ServiceStatus.Stopped)
+        {
+            _logger.Warning(messageTemplate: "{id}: Not sending request as WebClient is stopped", _identifier);
+            throw new InvalidOperationException("Client has been stopped");
+        }
+    }
+
+    private void PresetHealthCheck()
+    {
+        if (_currentPreset is null || !_currentPreset.IsValid())
+        {
+            _logger.Warning(messageTemplate: "{id}: Not sending request as no valid ApiPreset is loaded", _identifier);
+            throw new InvalidOperationException("No valid ApiPreset loaded");
+        }
     }
     #endregion
 
