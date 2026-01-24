@@ -74,7 +74,7 @@ public class ApiTranslator(ILogger logger, ConfigModel config, IApiClient client
         _logger.Verbose("Requesting translation of text \"{input}\"", input);
         try
         {
-            var result = _client.SendText(input).GetAwaiter().GetResult();
+            var result = _client.SendTextAsync(input).GetAwaiter().GetResult();
             if (string.IsNullOrWhiteSpace(result))
             {
                 _logger.Warning("Failed translation of text \"{input}\", no output received", input);

@@ -8,7 +8,8 @@ public interface IApiClient : IService
     public IApiClient AddIdentifier(string identifier);
     public void ClearPreset();
     public bool IsPresetLoaded();
+    public bool IsPresetValid();
     public bool LoadPreset(ApiPresetModel preset);
-    public Task<string> SendBytes(byte[] bytes);
-    public Task<string> SendText(string text);
+    public Task<string> SendBytesAsync(byte[] bytes);
+    public Task<string> SendTextAsync(string text);
 }

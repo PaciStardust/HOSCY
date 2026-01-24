@@ -23,6 +23,11 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient //todo
         return _currentPreset is not null;
     }
 
+    public bool IsPresetValid()
+    {
+        return _currentPreset is not null && _currentPreset.IsValid();
+    }
+
     public IApiClient AddIdentifier(string identifier)
     {
         _identifier = identifier;
@@ -52,7 +57,7 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient //todo
     #endregion
 
     #region Sending
-    private async Task<string> Send(HttpContent content)
+    private async Task<string> SendAsync(HttpContent content)
     {
         if (_currentPreset is null || !_currentPreset.IsValid())
         {
@@ -88,7 +93,7 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient //todo
         return result;
     }
 
-    public async Task<string> SendBytes(byte[] bytes)
+    public async Task<string> SendBytesAsync(byte[] bytes)
     {
         _logger.Verbose("{id}: Sending byte request via ApiPreset \"{presetName}\"", _identifier, _currentPreset?.Name ?? "NULL");
         if (_currentPreset is null || !_currentPreset.IsValid())
@@ -104,10 +109,10 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient //todo
             throw new ArgumentException($"Unable to send data to API as ContentType \"{_currentPreset.ContentType}\" is invalid");
         }
 
-        return await Send(content);
+        return await SendAsync(content);
     }
 
-    public async Task<string> SendText(string text)
+    public async Task<string> SendTextAsync(string text)
     {
         _logger.Verbose("{id}: Sending text request via ApiPreset \"{presetName}\"", _identifier, _currentPreset?.Name ?? "NULL");
         if (_currentPreset is null || !_currentPreset.IsValid())
@@ -123,7 +128,7 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient //todo
             throw new ArgumentException($"Unable to send data to API as JSON contains no token to replace, have you made sure the JSON option contains \"[T]\"?");
         }
 
-        return await Send(new StringContent(jsonOut, Encoding.UTF8, _currentPreset.ContentType));
+        return await SendAsync(new StringContent(jsonOut, Encoding.UTF8, _currentPreset.ContentType));
     }
     #endregion
 
