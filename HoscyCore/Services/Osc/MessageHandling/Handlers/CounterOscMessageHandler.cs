@@ -25,7 +25,7 @@ public class CounterOscMessageHandler(IOutputManagerService output, ConfigModel 
             return false;
 
         var now = DateTimeOffset.UtcNow;
-        if (!counterMatch.Enabled || (now - counterMatch.LastUsed).TotalSeconds < counterMatch.Cooldown)
+        if (!counterMatch.Enabled || (now - counterMatch.LastUsed).TotalSeconds < counterMatch.CooldownSeconds)
             return true;
 
         counterMatch.Increase();

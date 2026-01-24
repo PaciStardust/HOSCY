@@ -42,7 +42,7 @@ public class CounterModel : ObservableObject
     }
 
     private float _cooldown;
-    public float Cooldown
+    public float CooldownSeconds
     {
         get => _cooldown;
         set => SetProperty(ref _cooldown, value.MinMax(0, 3600));

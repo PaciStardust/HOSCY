@@ -359,7 +359,7 @@ public static class LegacyConfigModelLoader
             Count = old.Count,
             LastUsed = old.LastUsed,
             Enabled = old.Enabled,
-            Cooldown = old.Cooldown,
+            CooldownSeconds = old.Cooldown,
             Parameter = old.Parameter
         }));
     }
