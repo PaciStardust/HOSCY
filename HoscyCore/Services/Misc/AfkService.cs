@@ -61,8 +61,6 @@ public class AfkService(ConfigModel config, IOutputManagerService output, ILogge
             var cycle = (_afkTimesChecked++ / _config.Afk_TimesDisplayedBeforeDoublingInterval) + 1;
             var modulo = Math.Pow(2, (int)Math.Log(cycle, 2));
 
-            _logger.Fatal("C {c} M {m}", cycle, modulo);
-
             if (_afkTimesChecked % modulo != 0)
                 return;
         }

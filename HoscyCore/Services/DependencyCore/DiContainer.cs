@@ -83,36 +83,44 @@ public class DiContainer
 
         foreach (var service in allServices) 
         {
-            if (service.IsAbstract || service.IsInterface) continue;
-
-            var containerAttribute = service.GetCustomAttribute<LoadIntoDiContainerAttribute>();
-            if (containerAttribute is null)
+            if (TryAddTypeToCollection(collection, service, logger))
             {
-                continue;
+                addedCount++;
             }
-            else if (containerAttribute is PrototypeLoadIntoDiContainer prototypeAttribute)
-            {
-                prototypeAttribute.NotifyAboutLoadedPrototype(service, logger);
-            }
-
-            logger.Debug("Adding \"{service}\" to DI container with lifetime {lifetime}", service.FullName, containerAttribute.Lifetime.ToString());
-
-            switch (containerAttribute.Lifetime)
-            {
-                case Lifetime.Transient:
-                    collection.AddTransient(containerAttribute.AsType, service);
-                    break;
-                case Lifetime.Scoped:
-                    collection.AddScoped(containerAttribute.AsType, service);
-                    break;
-                default:
-                    collection.AddSingleton(containerAttribute.AsType, service);
-                    break;
-            }
-            addedCount++;
         }
         sw.Stop();
         logger.Debug("Loaded {addedCount} dependencies in {loadTime}ms", addedCount, sw.ElapsedMilliseconds);
+    }
+
+    private static bool TryAddTypeToCollection(IServiceCollection collection, Type service, ILogger logger)
+    {
+        if (service.IsAbstract || service.IsInterface) return false;
+
+        var containerAttribute = service.GetCustomAttribute<LoadIntoDiContainerAttribute>();
+        if (containerAttribute is null)
+        {
+            return false;
+        }
+        else if (containerAttribute is PrototypeLoadIntoDiContainer prototypeAttribute)
+        {
+            prototypeAttribute.NotifyAboutLoadedPrototype(service, logger);
+        }
+
+        logger.Debug("Adding \"{service}\" to DI container with lifetime {lifetime}", service.FullName, containerAttribute.Lifetime.ToString());
+
+        switch (containerAttribute.Lifetime)
+        {
+            case Lifetime.Transient:
+                collection.AddTransient(containerAttribute.AsType, service);
+                break;
+            case Lifetime.Scoped:
+                collection.AddScoped(containerAttribute.AsType, service);
+                break;
+            default:
+                collection.AddSingleton(containerAttribute.AsType, service);
+                break;
+        }
+        return true;
     }
 
     /// <summary>
