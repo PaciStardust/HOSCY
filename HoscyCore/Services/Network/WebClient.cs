@@ -28,6 +28,7 @@ public class WebClient(ILogger logger) : StartStopServiceBase, IWebClient
 
         //Below is required for Github Access
         client.DefaultRequestHeaders.UserAgent.Add(new("User-Agent", "request"));
+        _client = client;
         LogStartComplete(GetType(), _logger);
     }
 
