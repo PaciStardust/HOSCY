@@ -35,7 +35,7 @@ public abstract class ReplacementOutputPreprocessorBase<T> : IOutputPreprocessor
         _handlers.Clear();
 
         var models = GetReplacementModels();
-        _logger.Debug("Reloading {replacementModelCount} handlers", models);
+        _logger.Debug("Reloading {replacementModelCount} handlers", models.Count);
 
         var converted = new List<T>();
         var countDisabled = 0;

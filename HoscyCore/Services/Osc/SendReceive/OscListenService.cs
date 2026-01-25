@@ -91,6 +91,11 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
                 await DoListen();
             }
         }
+        catch (OperationCanceledException ex)
+        {
+            _logger.Debug(ex, "Listen Loop was cancelled");
+            return;
+        }
         catch (Exception ex)
         {
             SetFaultLogAndNotify(ex, _logger, _notify, "Listen Loop encountered an unexpected error");
