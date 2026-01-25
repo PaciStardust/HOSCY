@@ -3,10 +3,10 @@ using HoscyCore.Utility;
 using Serilog;
 
 [LoadIntoDiContainer(typeof(ContainerBulkLoader<>))]
-public class ContainerBulkLoader<T>(IServiceProvider serviceProvider, ILogger logger) where T : class, IService
+public class ContainerBulkLoader<T>(IServiceProvider serviceProvider, ILogger logger) : IContainerBulkLoader<T> where T : class, IService
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
-    private readonly ILogger _logger = logger.ForContext<ContainerBulkLoader<T>>();
+    private readonly ILogger _logger = logger.ForContext(typeof(ContainerBulkLoader<>));
 
     public IEnumerable<T> GetInstances()
     {

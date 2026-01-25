@@ -205,7 +205,7 @@ public class DiContainer
         var serviceImplementations = LaunchUtils.GetImplementationsInContainerForClass<IService>(Services, _internalLogger);
         var serviceInterface = typeof(IService);
         var serviceProviderType = typeof(IServiceProvider);
-        var bulkLoaderNoGenericType = typeof(ContainerBulkLoader<>).GetGenericTypeDefinition();
+        var bulkLoaderNoGenericType = typeof(IContainerBulkLoader<>).GetGenericTypeDefinition();
 
         List<(Type Type, IService Implementation, List<Type> Dependencies)> locatedServices = [];
 
@@ -220,7 +220,7 @@ public class DiContainer
             }
             else if (ctors.Length > 0)
             {
-                _internalLogger.Debug("Located multiple constructors for IService \"{serviceType}\", picking first", type.FullName);
+                _internalLogger.Verbose("Located multiple constructors for IService \"{serviceType}\", picking first", type.FullName);
             }
 
             List<Type> requiredServiceTypes = [];
@@ -249,7 +249,7 @@ public class DiContainer
                     requiredServiceTypes.Add(parameterType);
                 }
             }
-            _internalLogger.Debug("Assessed {requiredServiceCount} other required IServices for IService \"{serviceType}\"",
+            _internalLogger.Verbose("Assessed {requiredServiceCount} other required IServices for IService \"{serviceType}\"",
                 requiredServiceTypes.Count, type.FullName);
 
             locatedServices.Add((type, impl, requiredServiceTypes));
@@ -286,11 +286,11 @@ public class DiContainer
                     if (serviceImplementation is IAutoStartStopService autoStartStopService)
                     {
                         servicesInOrder.Add(autoStartStopService);
-                        _internalLogger.Debug("Resolved all dependencies for IAutoStartStopService \"{resolvedService}\", startup order is {startupOrder}, {toResolve} still resolving",
+                        _internalLogger.Verbose("Resolved all dependencies for IAutoStartStopService \"{resolvedService}\", startup order is {startupOrder}, {toResolve} still resolving",
                         serviceType.FullName, servicesInOrder.Count, serviceList.Count);
                     } else
                     {
-                        _internalLogger.Debug("Resolved all dependencies for IService \"{resolvedService}\", no startup needed as not IAutoStartService, {toResolve} still resolving",
+                        _internalLogger.Verbose("Resolved all dependencies for IService \"{resolvedService}\", no startup needed as not IAutoStartService, {toResolve} still resolving",
                         serviceType.FullName, servicesInOrder.Count, serviceList.Count);
                     }
                 }
