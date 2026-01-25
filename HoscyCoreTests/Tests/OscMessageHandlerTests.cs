@@ -352,4 +352,60 @@ public class OscMessageHandlerTests : TestBase<OscMessageHandlerTests>
             Assert.That(output.Notifications[idx].Flags, Is.EqualTo(expectedFlag), "Notification has the wrong flags");
         }
     }
+
+    [Test]
+    public void TestExternalInputMessageHandler()
+    {
+        var config = new ConfigModel();
+        var input = new MockInputService();
+        var handler = new ExternalInputMessageHandler(config, input, _logger);
+
+        //Send inapplicable message
+        var message = new OscMessage("/test", false);
+        var result = handler.HandleMessage(message);
+        Assert.That(result, Is.False, "Handler should not have handled the message");
+
+        AssertExternalInput(handler, _config.Osc_Address_Input_Audio, "AudioTest",
+        () => input.AudioMessages, (x) => input.AudioMessages[x]);
+
+        AssertExternalInput(handler, _config.Osc_Address_Input_Other, "OtherTest",
+        () => input.OtherMessages, (x) => input.OtherMessages[x]);
+
+        AssertExternalInput(handler, _config.Osc_Address_Input_TextMessage, "TextMessageTest",
+        () => input.TextMessages, (x) => input.TextMessages[x]);
+
+        AssertExternalInput(handler, _config.Osc_Address_Input_TextNotification, "TextNotifTest",
+        () => input.TextNotification, (x) => input.TextNotification[x].Item1);
+    }
+
+    private void AssertExternalInput<T>(ExternalInputMessageHandler handler, string address, string testText, Func<List<T>> getList, Func<int, string> getListString)
+    {
+        //Wrong parameter
+        var message = new OscMessage(address, false);
+        var result = handler.HandleMessage(message);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result, Is.True, "Handler should have handled the message");
+            Assert.That(getList(), Is.Empty, "Input service should not have received an audio message");
+        }
+
+        //Empty parameter
+        message = new OscMessage(address, string.Empty);
+        result = handler.HandleMessage(message);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result, Is.True, "Handler should have handled the message");
+            Assert.That(getList(), Is.Empty, "Input service should not have received a message");
+        }
+
+        //Correct Parameter
+        message = new OscMessage(address, testText);
+        result = handler.HandleMessage(message);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result, Is.True, "Handler should have handled the message");
+            Assert.That(getList(), Has.Count.EqualTo(1), "Input service should have received a message");
+        }
+        Assert.That(getListString(0), Is.EqualTo(testText), "Received incorrect message");
+    }
 }

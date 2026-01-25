@@ -51,6 +51,8 @@ public class ExternalInputMessageHandler(ConfigModel config, IInputService input
             return;
         }
 
+        if (string.IsNullOrWhiteSpace(contents)) return;
+
         _logger.Verbose("External input packet \"{address}\" is set to \"{contents}\"", message.Address, contents);
         switch (mode)
         {
