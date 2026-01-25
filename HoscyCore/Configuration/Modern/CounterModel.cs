@@ -59,9 +59,9 @@ public class CounterModel : ObservableObject
             SetProperty(ref _fullParameter, value.StartsWith('/') ? value : "/avatar/parameters/" + value);
         }
     }
-    internal string FullParameter() => _fullParameter;
+    public string FullParameter() => _fullParameter;
 
-    internal void Increase()
+    public void Increase()
     {
         Count++;
         LastUsed = DateTimeOffset.UtcNow;
