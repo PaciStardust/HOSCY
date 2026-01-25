@@ -2,7 +2,7 @@ using HoscyCore.Services.DependencyCore;
 using HoscyCore.Utility;
 using Serilog;
 
-[LoadIntoDiContainer(typeof(ContainerBulkLoader<>))]
+[LoadIntoDiContainer(typeof(IContainerBulkLoader<>))]
 public class ContainerBulkLoader<T>(IServiceProvider serviceProvider, ILogger logger) : IContainerBulkLoader<T> where T : class, IService
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
