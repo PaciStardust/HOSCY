@@ -178,10 +178,18 @@ public class DiContainer
             var currentService = servicesInOrder[i];
             _internalLogger.Debug("Stopping IAutoStartStopServices {currenStart}/{toStop}: {currentService}",
             i + 1, servicesInOrder.Count, servicesResolvedInOrder[i].FullName);
-            currentService.Stop();
-            subSw.Stop();
-            _internalLogger.Debug("Stopped IAutoStartStopServices {currenStart}/{toStop}: {currentService} (Took {startDuration}ms, DI taken {diDuration}ms so far)",
+            try
+            {
+                currentService.Stop();
+                subSw.Stop();
+                _internalLogger.Debug("Stopped IAutoStartStopServices {currenStart}/{toStop}: {currentService} (Took {startDuration}ms, DI taken {diDuration}ms so far)",
             i + 1, servicesInOrder.Count, servicesResolvedInOrder[i].FullName, subSw.ElapsedMilliseconds, sw.ElapsedMilliseconds);
+            } catch (Exception ex)
+            {
+                subSw.Stop();
+                _internalLogger.Error(ex, "Failed to stop IAutoStartStopServices {currenStart}/{toStop}: {currentService} (Took {startDuration}ms, DI taken {diDuration}ms so far)",
+                i + 1, servicesInOrder.Count, servicesResolvedInOrder[i].FullName, subSw.ElapsedMilliseconds, sw.ElapsedMilliseconds);
+            }
         }
 
         sw.Stop();
