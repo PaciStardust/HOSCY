@@ -1,5 +1,4 @@
 using HoscyCore.Services.DependencyCore;
-using HoscyCore.Services.Interfacing;
 using LucHeart.CoreOSC;
 using Serilog;
 
@@ -9,10 +8,9 @@ namespace HoscyCore.Services.Osc.MessageHandling;
 /// Service to handle osc messages
 /// </summary>
 [LoadIntoDiContainer(typeof(IOscMessageHandlingService), Lifetime.Singleton)]
-public class OscMessageHandlingService(ILogger logger, IBackToFrontNotifyService notify, ContainerBulkLoader<IOscMessageHandler> bulkLoader) : StartStopServiceBase, IOscMessageHandlingService
+public class OscMessageHandlingService(ILogger logger, ContainerBulkLoader<IOscMessageHandler> bulkLoader) : StartStopServiceBase, IOscMessageHandlingService
 {
     private readonly ILogger _logger = logger.ForContext<OscMessageHandlingService>();
-    private readonly IBackToFrontNotifyService _notify = notify; //todo: [FIX] Should this not be implemented?
     private IOscMessageHandler[]? _handlers = null;
     private readonly ContainerBulkLoader<IOscMessageHandler> _bulkLoader = bulkLoader;
 
