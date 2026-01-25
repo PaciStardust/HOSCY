@@ -2,7 +2,6 @@ using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.DependencyCore;
 using HoscyCore.Services.Interfacing;
 using HoscyCore.Services.Translation.Core;
-using HoscyCore.Utility;
 using Serilog;
 
 namespace HoscyCore.Services.Output.Core;
@@ -10,8 +9,8 @@ namespace HoscyCore.Services.Output.Core;
 [LoadIntoDiContainer(typeof(IOutputManagerService), Lifetime.Singleton)]
 public class OutputManagerService(
     ILogger logger, 
-    ContainerBulkLoader<IOutputProcessor> bulkLoaderProcessor, 
-    ContainerBulkLoader<IOutputPreprocessor> bulkLoaderPreprocessor, 
+    IContainerBulkLoader<IOutputProcessor> bulkLoaderProcessor, 
+    IContainerBulkLoader<IOutputPreprocessor> bulkLoaderPreprocessor, 
     IBackToFrontNotifyService notify, 
     ITranslatorManagerService translator, 
     ConfigModel config
@@ -19,8 +18,8 @@ public class OutputManagerService(
 {
     #region Injected
     private readonly ILogger _logger = logger.ForContext<OutputManagerService>();
-    private readonly ContainerBulkLoader<IOutputProcessor> _bulkLoaderProcessor = bulkLoaderProcessor;
-    private readonly ContainerBulkLoader<IOutputPreprocessor> _bulkLoaderPreprocessor = bulkLoaderPreprocessor;
+    private readonly IContainerBulkLoader<IOutputProcessor> _bulkLoaderProcessor = bulkLoaderProcessor;
+    private readonly IContainerBulkLoader<IOutputPreprocessor> _bulkLoaderPreprocessor = bulkLoaderPreprocessor;
     private readonly IBackToFrontNotifyService _notify = notify;
     private readonly ITranslatorManagerService _translator = translator;
     private readonly ConfigModel _config = config;

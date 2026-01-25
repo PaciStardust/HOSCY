@@ -8,11 +8,11 @@ namespace HoscyCore.Services.Osc.MessageHandling;
 /// Service to handle osc messages
 /// </summary>
 [LoadIntoDiContainer(typeof(IOscMessageHandlingService), Lifetime.Singleton)]
-public class OscMessageHandlingService(ILogger logger, ContainerBulkLoader<IOscMessageHandler> bulkLoader) : StartStopServiceBase, IOscMessageHandlingService
+public class OscMessageHandlingService(ILogger logger, IContainerBulkLoader<IOscMessageHandler> bulkLoader) : StartStopServiceBase, IOscMessageHandlingService
 {
     private readonly ILogger _logger = logger.ForContext<OscMessageHandlingService>();
     private IOscMessageHandler[]? _handlers = null;
-    private readonly ContainerBulkLoader<IOscMessageHandler> _bulkLoader = bulkLoader;
+    private readonly IContainerBulkLoader<IOscMessageHandler> _bulkLoader = bulkLoader;
 
     /// <summary>
     /// Sends message to all message handlers
