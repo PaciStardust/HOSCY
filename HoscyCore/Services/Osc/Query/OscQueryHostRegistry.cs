@@ -45,9 +45,23 @@ public class OscQueryHostRegistry(ILogger logger)
         if (lowerName == "self")
             return _self;
 
-        return _hosts.TryGetValue(lowerName, out var hostData)
+        (string, int)? returnValue = _hosts.TryGetValue(lowerName, out var hostData)
             ? (hostData.Host.oscIP, hostData.Host.oscPort)
             : null;
+
+        if (returnValue is not null)
+            return returnValue;
+
+        var returnKeys = _hosts
+            .Select(x => x.Key)
+            .Where(x => x.StartsWith(lowerName, StringComparison.OrdinalIgnoreCase))
+            .ToArray();
+        
+        if (returnKeys.Length == 0)
+            return null;
+
+        var keyValue = _hosts[returnKeys[0]].Host;
+        return (keyValue.oscIP, keyValue.oscPort);
     }
 
     public void Clear()

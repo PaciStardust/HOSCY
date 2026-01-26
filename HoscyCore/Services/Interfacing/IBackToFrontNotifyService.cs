@@ -5,7 +5,7 @@ namespace HoscyCore.Services.Interfacing;
 /// <summary>
 /// Service to send Information from the backend services to the frontend to display
 /// </summary>
-public interface IBackToFrontNotifyService : IService
+public interface IBackToFrontNotifyService : IService //todo: [REFACTOR] Should these be unified?
 {
     public event EventHandler<BackToFrontNotifyEventArgs> OnInfo;
     public event EventHandler<BackToFrontNotifyEventArgs> OnWarning;
