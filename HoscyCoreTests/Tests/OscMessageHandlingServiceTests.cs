@@ -22,8 +22,7 @@ public class OscMessageHandlingServiceTests : TestBaseForService<OscMessageHandl
 
         _handlingService = new(_logger, _bulkLoader);
         _handlingService.Start();
-
-        Assert.That(_handlingService.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Processing), "Status should be processing");
+        AssertServiceProcessing(_handlingService);
     }
 
     [Test]
@@ -89,5 +88,6 @@ public class OscMessageHandlingServiceTests : TestBaseForService<OscMessageHandl
     protected override void OneTimeTearDownExtra()
     {
         _handlingService.Stop();
+        AssertServiceStopped(_handlingService);
     }
 }

@@ -17,6 +17,7 @@ public class AfkServiceTests : TestBaseForService<AfkServiceTests>
         var afk = new AfkService(_config, _output, _logger);
         afk.Start();
         _afk = afk;
+        AssertServiceStarted(_afk);
     }
 
     const string START = "AFKNOW";
@@ -154,5 +155,6 @@ public class AfkServiceTests : TestBaseForService<AfkServiceTests>
     protected override void OneTimeTearDownExtra()
     {
         _afk.Stop();
+        AssertServiceStopped(_afk);
     }
 }

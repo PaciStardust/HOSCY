@@ -12,7 +12,7 @@ public class WebClientTests : TestBaseForService<WebClientTests>
         _client = new WebClient(_logger);
         _client.Start();
 
-        AssertServiceStarted(_client);
+        AssertServiceProcessing(_client);
     }
 
     [Test]

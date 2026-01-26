@@ -12,13 +12,13 @@ public class AudioServiceTests : TestBaseForService<AudioServiceTests>
         _audioService = new AudioService(_logger);
         _audioService.Start();
 
-        AssertServiceStarted(_audioService);
+        AssertServiceProcessing(_audioService);
     }
 
     [Test, Order(int.MaxValue)]
     public void FinalTest()
     {
-        AssertServiceStarted(_audioService);
+        AssertServiceProcessing(_audioService);
     }
 
     protected override void OneTimeTearDownExtra()
