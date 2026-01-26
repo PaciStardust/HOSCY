@@ -7,10 +7,9 @@ using Serilog;
 
 namespace HoscyCore.Services.Output.Processing.Textbox;
 
-[LoadIntoDiContainer(typeof(VrcTextboxOutputProcessor), Lifetime.Transient)]
+[LoadIntoDiContainer(typeof(VrcTextboxOutputProcessor), Lifetime.Transient)] //todo: [TEST] Write tests for this
 public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscSendService sender) : OutputProcessorBase 
 {
-    //todo: [TEST] Does the textbox work?
     //todo: [FIX] Is no event ever called?
     #region Injected Services
     private readonly ILogger _logger = logger.ForContext<VrcTextboxOutputProcessor>();

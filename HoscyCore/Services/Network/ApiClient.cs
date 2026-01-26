@@ -10,7 +10,7 @@ namespace HoscyCore.Services.Network;
 /// Wrapper for IWebClient to use with ApiPresets, generic for logging
 /// </summary>
 [LoadIntoDiContainer(typeof(IApiClient), Lifetime.Transient)]
-public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient //todo: [TEST] Does loading work?
+public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient
 {
     private readonly IWebClient _client = webClient;
     private readonly ILogger _logger = logger.ForContext<ApiClient>();

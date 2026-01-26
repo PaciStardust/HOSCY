@@ -7,7 +7,7 @@ using Serilog;
 
 namespace HoscyCore.Services.Translation.Translators;
 
-[PrototypeLoadIntoDiContainer(typeof(ApiTranslator), Lifetime.Transient)] //todo: [TEST] Does the translator work
+[PrototypeLoadIntoDiContainer(typeof(ApiTranslator), Lifetime.Transient)] //todo: [TEST] Write tests for this
 public class ApiTranslator(ILogger logger, ConfigModel config, IApiClient client) : TranslatorBase
 {
     private readonly ILogger _logger = logger.ForContext<ApiTranslator>();

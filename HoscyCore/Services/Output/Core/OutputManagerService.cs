@@ -6,7 +6,7 @@ using Serilog;
 
 namespace HoscyCore.Services.Output.Core;
 
-[LoadIntoDiContainer(typeof(IOutputManagerService), Lifetime.Singleton)]
+[LoadIntoDiContainer(typeof(IOutputManagerService), Lifetime.Singleton)] //todo: [TEST] Write tests for this
 public class OutputManagerService(
     ILogger logger, 
     IContainerBulkLoader<IOutputProcessor> bulkLoaderProcessor, 

@@ -214,7 +214,7 @@ public class OscMessageHandlerTests : TestBase<OscMessageHandlerTests>
     }
 
     [Test]
-    public void TestCounterHandlerOutput() //todo: refactor
+    public void TestCounterHandlerOutput()
     {
         _config.Counters_List.Clear();
         var counterA = new CounterModel()

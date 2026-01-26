@@ -10,10 +10,9 @@ namespace HoscyCore.Services.Output.Preprocessing;
 /// <summary>
 /// Handles partial replacements of text
 /// </summary>
-[LoadIntoDiContainer(typeof(PartialReplacementOutputPreprocessor), Lifetime.Transient)]
+[LoadIntoDiContainer(typeof(PartialReplacementOutputPreprocessor), Lifetime.Transient)] //todo: [TEST] Write tests for this
 public class PartialReplacementOutputPreprocessor(ConfigModel config, ILogger logger) : ReplacementOutputPreprocessorBase<PartialReplacementHandler>(config, logger.ForContext<PartialReplacementOutputPreprocessor>())
 {
-    //todo: [TEST] Do replacements work?
     #region Simple Overrides
     public override PartialReplacementHandler ConvertToHandler(ReplacementDataModel model)
     {

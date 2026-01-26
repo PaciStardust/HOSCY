@@ -6,7 +6,7 @@ using Serilog;
 
 namespace HoscyCore.Services.Translation.Core;
 
-[LoadIntoDiContainer(typeof(ITranslatorManagerService), Lifetime.Singleton)]
+[LoadIntoDiContainer(typeof(ITranslatorManagerService), Lifetime.Singleton)] //todo: [TEST] Write tests for this
 public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger logger, IContainerBulkLoader<ITranslator> bulkLoader) : StartStopServiceBase, ITranslatorManagerService
 {
     #region Injected

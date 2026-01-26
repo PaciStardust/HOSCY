@@ -9,7 +9,7 @@ namespace HoscyCore.Services.Output.Preprocessing;
 /// <summary>
 /// Preprocesssor for OSC Commands
 /// </summary
-[LoadIntoDiContainer(typeof(OscCommandOutputPreprocessor), Lifetime.Transient)]
+[LoadIntoDiContainer(typeof(OscCommandOutputPreprocessor), Lifetime.Transient)] //todo: [TEST] Write tests for this
 public class OscCommandOutputPreprocessor(IOscCommandService cmd, ILogger logger) : IOutputPreprocessor
 {
     private readonly IOscCommandService _cmd = cmd;

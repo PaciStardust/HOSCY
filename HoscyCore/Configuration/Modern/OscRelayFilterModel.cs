@@ -36,7 +36,7 @@ public class OscRelayFilterModel : ObservableObject
     }
 
     private bool _blacklistMode;
-    public bool BlacklistMode //todo: [TEST]
+    public bool BlacklistMode
     {
         get => _blacklistMode;
         set => SetProperty(ref _blacklistMode, value);
