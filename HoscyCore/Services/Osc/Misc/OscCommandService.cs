@@ -16,7 +16,7 @@ public partial class OscCommandService(ILogger logger, OscQueryHostRegistry host
     private readonly List<Task> _runningTasks = [];
     private readonly CancellationTokenSource _cts = new();
 
-    private static readonly Regex _oscCommandIdentifier = new(@"\[ *(?<address>(?:\/[^\ #\*,\/?\[\]\{\}]+)+)(?<values>(?: +\[(?:[fF]\]-?[0-9]+(?:\.[0-9]+)?|[iI]\]\-?[0-9]+|[sS]\]""[^""]*""|[bB]\](?:[tT]rue|[fF]alse)))+)(?: +(?:(?<ip>(?:(?:25[0-5]|(?:2[0-4]|1\d|[1-9]|)\d)\.?\b){4}):(?<port>[0-9]{1,5})|""(?<target>[^""]*)""))?(?: +[wW](?<wait>[0-9]+))? *\]",RegexOptions.CultureInvariant);
+    private static readonly Regex _oscCommandIdentifier = new(@"\[ *(?<address>(?:\/[^\ #\*,\/?\[\]\{\}]+)+)(?<values>(?: +\[(?:[fF]\]-?[0-9]+(?:\.[0-9]+)?|[iI]\]\-?[0-9]+|[sS]\]""[^""]*""|[bB]\](?:[tT](?:rue)?|[fF](?:alse)?|[0-1])))+)(?: +(?<ip>(?:(?:25[0-5]|(?:2[0-4]|1\d|[1-9]|)\d)\.?\b){4})?:(?<port>[0-9]{1,5})?)?(?: +""(?<target>[^""]*)"")?(?: +[wW](?<wait>[0-9]+))? *\]",RegexOptions.CultureInvariant);
     private static readonly Regex _oscParameterExtractor = new(@" +\[(?<type>[iIfFbBsS])\](?:""(?<value>[^""]*)""|(?<value>[a-zA-Z]+|[0-9\.\-]*))", RegexOptions.CultureInvariant);
 
     private const string OSC_COMMAND_IDENTIFIER = "[OSC]";
@@ -112,19 +112,8 @@ public partial class OscCommandService(ILogger logger, OscQueryHostRegistry host
             parsedWait = parsedWaitTmp;
         }
 
-        ushort? parsedPort;
-        if (targetText is not null)
-        {
-            var target = _hostRegistry.GetServiceAddressByName(targetText);
-            if (!target.HasValue)
-            {
-                _logger.Warning("Failed parsing OSC subcommand \"{subcommandString}\", specified target \"{target}\" not found", commandMatch.Value, targetText);
-                return null;
-            }
-            ipText = target.Value.Ip;
-            parsedPort = target.Value.Port.ConvertToUshort();
-        }
-        else if (portText is not null)
+        ushort? parsedPort;        
+        if (portText is not null)
         {
             if (!ushort.TryParse(portText, out var parsedPortTmp))
             {
@@ -132,10 +121,21 @@ public partial class OscCommandService(ILogger logger, OscQueryHostRegistry host
                 return null;
             }
             parsedPort = parsedPortTmp;
-        }
-        else
+        } else
         {
             parsedPort = null;
+        }
+
+        if (targetText is not null && (ipText is null || portText is null))
+        {
+            var target = _hostRegistry.GetServiceAddressByName(targetText);
+            if (!target.HasValue)
+            {
+                _logger.Warning("Failed parsing OSC subcommand \"{subcommandString}\", specified target \"{target}\" not found", commandMatch.Value, targetText);
+                return null;
+            }
+            ipText ??= target.Value.Ip;
+            parsedPort ??= target.Value.Port.ConvertToUshort();
         }
 
         var info = new OscCommandInfo()
@@ -177,7 +177,7 @@ public partial class OscCommandService(ILogger logger, OscQueryHostRegistry host
                     continue;
 
                 case "b":
-                    parsedVariables.Add(value.Equals("true", StringComparison.OrdinalIgnoreCase));
+                    parsedVariables.Add(value.StartsWith("t", StringComparison.OrdinalIgnoreCase) || value == "1");
                     continue;
 
                 case "f":
@@ -253,7 +253,7 @@ public partial class OscCommandService(ILogger logger, OscQueryHostRegistry host
     /// Checks list of tasks for any that are completed and removes them
     /// </summary>
     /// <returns>Currently running task count</returns>
-    public int PerformTaskCleanup()
+    private int PerformTaskCleanup()
     {
         var currentCount = _runningTasks.Count;
         _logger.Verbose("Performing Task Cleanup, currently {currentCount} in list", currentCount);
