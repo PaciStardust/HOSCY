@@ -1,11 +1,12 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 using HoscyCore.Services.DependencyCore;
+using HoscyCore.Services.Osc.Query;
 using HoscyCore.Services.Osc.SendReceive;
 using HoscyCore.Utility;
 using Serilog;
 
-namespace HoscyCore.Services.Osc.Misc;
+namespace HoscyCore.Services.Osc.Command;
 
 [LoadIntoDiContainer(typeof(IOscCommandService), Lifetime.Singleton)]
 public partial class OscCommandService(ILogger logger, OscQueryHostRegistry hostRegistry, IOscSendService sender) : StartStopServiceBase, IOscCommandService

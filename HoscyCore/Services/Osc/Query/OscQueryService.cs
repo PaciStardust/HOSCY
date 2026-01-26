@@ -6,7 +6,7 @@ using Serilog.Extensions.Logging;
 using Vrc = VRC.OSCQuery;
 using Timer = System.Timers.Timer;
 
-namespace HoscyCore.Services.Osc.Misc;
+namespace HoscyCore.Services.Osc.Query;
 
 [LoadIntoDiContainer(typeof(IOscQueryService), Lifetime.Singleton)]
 public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService notify, IOscListenService listener, OscQueryHostRegistry hostRegistry) : StartStopServiceBase, IOscQueryService

@@ -1,4 +1,4 @@
-namespace HoscyCore.Services.Osc.Misc;
+namespace HoscyCore.Services.Osc.Command;
 
 public record OscCommandInfo()
 {

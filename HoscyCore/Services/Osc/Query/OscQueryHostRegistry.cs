@@ -2,7 +2,7 @@ using HoscyCore.Services.DependencyCore;
 using Serilog;
 using Vrc = VRC.OSCQuery;
 
-namespace HoscyCore.Services.Osc.Misc;
+namespace HoscyCore.Services.Osc.Query;
 
 [LoadIntoDiContainer(typeof(OscQueryHostRegistry))]
 public class OscQueryHostRegistry(ILogger logger)

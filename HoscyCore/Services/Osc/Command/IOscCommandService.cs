@@ -1,6 +1,6 @@
 using HoscyCore.Services.DependencyCore;
 
-namespace HoscyCore.Services.Osc.Misc;
+namespace HoscyCore.Services.Osc.Command;
 
 /// <summary>
 /// Handling of OSC commands
