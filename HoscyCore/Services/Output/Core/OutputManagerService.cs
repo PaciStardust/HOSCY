@@ -64,6 +64,15 @@ public class OutputManagerService(
 
         _logger.Debug("Started up Service with {processorCount} OutputProcessors and {preprocessorCount} OutputPreprocessors", _availableProcessors.Count, _preprocessors.Count);
     }
+    
+    /*
+    TODO: The current system does not work for starting subservices
+
+    Goal: Being able to start and stop services by using config options and then calling a simple method to update what should be running
+
+    Idea: Instead of having just the different output modules, we have a module and a metadata class. Metadata is always loaded and contains name, capabilities, Type and if it should be running
+        The metadata then just points to the implementation to retrieve from the DI container to run and the implementation also points to the metadata
+    */
 
     protected override bool IsStarted()
         => _preprocessors.Count > 0 || _availableProcessors.Count > 0;
