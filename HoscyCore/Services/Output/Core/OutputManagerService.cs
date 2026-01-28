@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.DependencyCore;
 using HoscyCore.Services.Interfacing;
@@ -7,28 +8,36 @@ using Serilog;
 namespace HoscyCore.Services.Output.Core;
 
 [LoadIntoDiContainer(typeof(IOutputManagerService), Lifetime.Singleton)] //todo: [TEST] Write tests for this
-public class OutputManagerService(
-    ILogger logger, 
-    IContainerBulkLoader<IOutputProcessor> bulkLoaderProcessor, 
-    IContainerBulkLoader<IOutputPreprocessor> bulkLoaderPreprocessor, 
+public class OutputManagerService //todo: [REFACTOR] Better error handling?
+(
+    ILogger logger,
     IBackToFrontNotifyService notify, 
-    ITranslatorManagerService translator, 
-    ConfigModel config
-) : StartStopServiceBase, IOutputManagerService
+    ConfigModel config,
+
+    IContainerBulkLoader<IOutputPreprocessor> loadPreprocessors,
+    IContainerBulkLoader<IOutputHandlerStartInfo> loadHandlerStartInfo,
+    IContainerBulkLoader<IOutputHandler> loadOutputHandler,
+
+    ITranslatorManagerService translator
+)
+: StartStopServiceBase, IOutputManagerService
 {
-    #region Injected
+    #region Injected Classes
     private readonly ILogger _logger = logger.ForContext<OutputManagerService>();
-    private readonly IContainerBulkLoader<IOutputProcessor> _bulkLoaderProcessor = bulkLoaderProcessor;
-    private readonly IContainerBulkLoader<IOutputPreprocessor> _bulkLoaderPreprocessor = bulkLoaderPreprocessor;
     private readonly IBackToFrontNotifyService _notify = notify;
-    private readonly ITranslatorManagerService _translator = translator;
     private readonly ConfigModel _config = config;
+
+    private readonly IContainerBulkLoader<IOutputPreprocessor> _loadPreprocessors = loadPreprocessors;
+    private readonly IContainerBulkLoader<IOutputHandlerStartInfo> _loadHandlerStartInfo = loadHandlerStartInfo;
+    private readonly IContainerBulkLoader<IOutputHandler> _loadOutputHandler = loadOutputHandler;
+
+    private readonly ITranslatorManagerService _translator = translator;
     #endregion
 
-    #region Service Vars
-    private readonly List<OutputProcessorInfo> _availableProcessors = [];
-    private readonly List<IOutputProcessor> _activeProcessors = [];
+    #region Operation Variables
     private readonly List<IOutputPreprocessor> _preprocessors = [];
+    private readonly List<IOutputHandlerStartInfo> _handlerInfos = [];
+    private readonly List<IOutputHandler> _activeHandlers = [];
     #endregion
 
     #region Events
@@ -38,65 +47,62 @@ public class OutputManagerService(
     public event EventHandler<bool> OnProcessingIndicatorSet = delegate {};
     #endregion
 
-    #region Start / Stop
-    protected override void StartInternal() //todo: [FEAT] Automatic starting of processors
+    #region State
+    protected override bool IsStarted()
+        => _preprocessors.Count > 0 || _handlerInfos.Count > 0;
+    protected override bool IsProcessing()
+        => IsStarted() || _activeHandlers.Count > 0;
+    #endregion
+
+    #region Start/Stop
+    protected override void StartInternal()
     {
-        _logger.Debug("Starting up Service by loading available OutputProcessors");
+        _logger.Debug("Starting up Service by loading available OutputHandlerInfos");
         if (IsStarted())
         {
             _logger.Debug("Skipped starting Service, still running");
             return;
         }
 
-        _availableProcessors.Clear();
+        _handlerInfos.Clear();
         _preprocessors.Clear();
 
-        _availableProcessors.AddRange(_bulkLoaderProcessor.GetInstances().Select(x => x. GetIdentifier()));
-        if (_availableProcessors.Count == 0)
+        _handlerInfos.AddRange(_loadHandlerStartInfo.GetInstances());
+        if (_handlerInfos.Count == 0)
         {
-            _logger.Warning("No Output Processors could be located, Service will have no functionality and will be NOT be marked as running");
+            _logger.Warning("No OutputHandlersInfos could be located, Service will have no functionality and will be NOT be marked as running");
             return;
         }
 
         _logger.Debug("Loading Preprocessors");
-        var preprocessorsWithInstance = _bulkLoaderPreprocessor.GetInstances();
+        var preprocessorsWithInstance = _loadPreprocessors.GetInstances();
         _preprocessors.AddRange(preprocessorsWithInstance.OrderBy(x => x.GetHandlingStage()));
 
-        _logger.Debug("Started up Service with {processorCount} OutputProcessors and {preprocessorCount} OutputPreprocessors", _availableProcessors.Count, _preprocessors.Count);
+        _logger.Debug("Refreshing Handlers");
+        RefreshHandlers();
+
+        _logger.Debug("Started up Service with {handlerCount} OutputHandlerInfos ({activeCount} active) and {preprocessorCount} OutputPreprocessors",
+            _handlerInfos.Count, _activeHandlers.Count, _preprocessors.Count);
     }
-    
-    /*
-    TODO: The current system does not work for starting subservices
-
-    Goal: Being able to start and stop services by using config options and then calling a simple method to update what should be running
-
-    Idea: Instead of having just the different output modules, we have a module and a metadata class. Metadata is always loaded and contains name, capabilities, Type and if it should be running
-        The metadata then just points to the implementation to retrieve from the DI container to run and the implementation also points to the metadata
-    */
-
-    protected override bool IsStarted()
-        => _preprocessors.Count > 0 || _availableProcessors.Count > 0;
-    protected override bool IsProcessing()
-        => IsStarted() || _activeProcessors.Count > 0;
 
     public override void Stop()
     {
-        var activeProcessorCount = _activeProcessors.Count;
-        _logger.Debug("Stopping service, shutting down {activeProcessors} Processors", activeProcessorCount);
-        foreach (var processor in _activeProcessors)
+        var activeHandlerCount = _activeHandlers.Count;
+        _logger.Debug("Stopping service, shutting down {activeHandlers} Handlers", activeHandlerCount);
+        foreach (var processor in _activeHandlers)
         {
-            ShutdownProcessor(processor.GetIdentifier());
+            ShutdownHandlerSafe(processor);
         }
 
-        var stillActiveProcessors = _activeProcessors.Where(x => x.GetCurrentStatus() != ServiceStatus.Stopped).ToArray();
-        if (stillActiveProcessors.Length > 0)
+        var stillActiveHandlers = _activeHandlers.Where(x => x.GetCurrentStatus() != ServiceStatus.Stopped).ToArray();
+        if (stillActiveHandlers.Length > 0)
         {
-            var notStoppedProcessors = string.Join(", ", stillActiveProcessors.Select(x => x.GetType().FullName));
-            _logger.Error("Following MessageProcessors failed to comply with a shutdown call: {notStoppedProcessors}", notStoppedProcessors);
-            throw new StartStopServiceException($"Following MessageProcessors failed to comply with a shutdown call: {notStoppedProcessors}");
+            var notStoppedHandlers = string.Join(", ", stillActiveHandlers.Select(x => x.GetType().FullName));
+            _logger.Error("Following Handlers failed to comply with a shutdown call: {notStoppedHandlers}", notStoppedHandlers);
+            throw new StartStopServiceException($"Following Handlers failed to comply with a shutdown call: {notStoppedHandlers}");
         }
-        _activeProcessors.Clear();
-        _logger.Debug("Stopped service, shut down {activeProcessors} Processors", activeProcessorCount);
+        _activeHandlers.Clear();
+        _logger.Debug("Stopped service, shut down {activeHandlers} Handlers", activeHandlerCount);
     }
 
     public override void Restart()
@@ -105,142 +111,253 @@ public class OutputManagerService(
     }
     #endregion
 
-    #region Info
-    public IReadOnlyList<OutputProcessorInfo> GetInfos(bool activeOnly)
+    #region Handlers => Info
+    public IReadOnlyList<IOutputHandlerStartInfo> GetHandlerInfos(bool activeOnly)
     {
-        return activeOnly
-            ? _activeProcessors.Where(x => x.GetCurrentStatus() != ServiceStatus.Stopped).Select(x => x.GetIdentifier()).ToList()
-            : _availableProcessors;
-    }
-    #endregion
+        if (!activeOnly)
+            return _handlerInfos;
 
-    #region Processor => Start / Stop
-    public void ActivateProcessor(OutputProcessorInfo info)
-    {
-        _logger.Information("Activating Processor with name \"{processorName}\" and type \"{processorType}\"", info.Name, info.GetType().FullName);
-        var activeMatch = RetrieveActiveProcessorWithInfo(info);
-        if (activeMatch is not null)
+        var returnInfos = new List<IOutputHandlerStartInfo>();
+        foreach(var activeHandler in _activeHandlers)
         {
-            _logger.Debug("Terminating old Processor with name \"{processorName}\" and type \"{processorType}\"", info.Name, info.GetType().FullName);
-            ShutdownProcessor(info);
+            var handlerType = activeHandler.GetType();
+            var infoMatch = _handlerInfos.FirstOrDefault(x => x.HandlerType == handlerType);
+            if (infoMatch is not null)
+            {
+                returnInfos.Add(infoMatch);
+            }
+            else
+            {
+                _logger.Warning("Could not find a matching info for active Handler of type \"{handlerType}\"",
+                    handlerType.FullName);
+            }
         }
-        activeMatch = RetrieveActiveProcessorWithInfo(info);
-        if (activeMatch is null)
-        {
-            _logger.Debug("Terminated old Processor with name \"{processorName}\" and type \"{processorType}\"", info.Name, info.GetType().FullName);
-        }
-        else
-        {
-            _logger.Error("Failed to terminate old Processor with name \"{processorName}\" and type \"{processorType}\"", info.Name, info.GetType().FullName);
-            throw new StartStopServiceException($"Unable to shut down Processor {info.ProcessorType.FullName}");
-        }
-
-        SetFault(GetProcessorExceptions());
-        var newProcessor = RetrieveProcessorInstanceWithInfo(info);
-        newProcessor.OnRuntimeError += HandleOnRuntimeError;
-        newProcessor.OnSubmoduleStopped += HandleOnSubmoduleStopped;
-        newProcessor.Start();
-        _activeProcessors.Add(newProcessor);
-        _logger.Information("Activated Processor with name \"{processorName}\" and type \"{processorType}\"", info.Name, info.GetType().FullName);
+        return returnInfos;
     }
 
-    public ServiceStatus GetProcessorStatus(OutputProcessorInfo info)
+    public ServiceStatus GetProcessorStatus(IOutputHandlerStartInfo handlerInfo)
     {
-        var activeProcessor = RetrieveActiveProcessorWithInfo(info);
-        if (activeProcessor is null) return ServiceStatus.Stopped;
-        var activeStatus = activeProcessor.GetCurrentStatus();
+        var activeHandler = RetrieveActiveHandlerByType(handlerInfo.HandlerType);
+        if (activeHandler is null) return ServiceStatus.Stopped;
+        var activeStatus = activeHandler.GetCurrentStatus();
         if (activeStatus == ServiceStatus.Stopped)
         {
-            _logger.Warning("GetProcessorStatus: Retrieved stopped Processor with name \"{processorName}\" and type \"{processorType}\" from active list",
-                info.Name, info.ProcessorType.FullName);
+            _logger.Warning("GetHandlerStatus: Retrieved stopped Handler with type \"{handlerType}\" from active list",
+                handlerInfo.HandlerType.FullName);
         }
         return activeStatus;
     }
+    #endregion
 
-    public void ShutdownProcessor(OutputProcessorInfo info)
+    #region Handlers => Internal Start / Stop
+    private void ActivateHandlerUnsafe(IOutputHandlerStartInfo handlerInfo) //todo: this should likely be a trycatch
     {
-        _logger.Information("Shutting down Processor with name \"{processorName}\" and type \"{processorType}\"", info.Name, info.GetType().FullName);
-        var activeProcessor = RetrieveActiveProcessorWithInfo(info);
-        if (activeProcessor is null)
+        _logger.Information("Activating Handler with type \"{handlerType}\"", handlerInfo.HandlerType.FullName);
+        var activeMatch = RetrieveActiveHandlerByType(handlerInfo.HandlerType);
+        if (activeMatch is not null)
         {
-            _logger.Information("Processor with name \"{processorName}\" and type \"{processorType}\" is not active or does not exist", info.Name, info.GetType().FullName);
-            return;
+            _logger.Debug("Terminating old Handler with type \"{handlerType}\"", handlerInfo.HandlerType.FullName);
+            ShutdownHandlerUnsafe(activeMatch);
+        }
+        activeMatch = RetrieveActiveHandlerByType(handlerInfo.HandlerType);
+        if (activeMatch is null)
+        {
+            _logger.Debug("Terminated old Handler with type \"{handlerType}\"", handlerInfo.HandlerType.FullName);
+        }
+        else
+        {
+            _logger.Error("Failed to terminate old Handler with type \"{handlerType}\"", handlerInfo.HandlerType.FullName);
+            throw new StartStopServiceException($"Unable to shut down Handler {handlerInfo.HandlerType.FullName}");
         }
 
-        activeProcessor.Clear();
-        activeProcessor.OnSubmoduleStopped -= HandleOnSubmoduleStopped; //This is not needed when manually shutting down
-        activeProcessor.Stop();
-        CleanupAfterProcessorShutdown(activeProcessor);
-        _logger.Information("Shut down Processor with name \"{processorName}\" and type \"{processorType}\"", info.Name, info.GetType().FullName);
+        SetFault(GetHandlerExceptions());
+        var newHandler = RetrieveHandlerInstanceForType(handlerInfo.HandlerType);
+        newHandler.OnRuntimeError += HandleOnRuntimeError;
+        newHandler.OnSubmoduleStopped += HandleOnSubmoduleStopped;
+        newHandler.Start();
+        _activeHandlers.Add(newHandler);
+        _logger.Information("Activated Handler with type \"{handlerType}\"", handlerInfo.HandlerType.FullName);
+    }
+
+    private bool ActivateHandlerSafe(IOutputHandlerStartInfo handlerInfo)
+    {
+        try
+        {
+            ActivateHandlerUnsafe(handlerInfo);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Unable to safely activate handler with type \"{handlerType}\"", handlerInfo.HandlerType.FullName);
+            SetFault(GetHandlerExceptions());
+            return false;
+        }
+    }
+
+    private void ShutdownHandlerUnsafe(IOutputHandler handler)
+    {
+        _logger.Information("Shutting down Handler with type \"{hanlderType}\"", handler.GetType().FullName);
+        handler.Clear();
+        handler.OnSubmoduleStopped -= HandleOnSubmoduleStopped; //This is not needed when manually shutting down
+        handler.Stop();
+        CleanupAfterHandlerShutdown(handler);
+        _logger.Information("Shut down Handler with type \"{handlerType}\"", handler.GetType().FullName);
+    }
+
+    private bool ShutdownHandlerSafe(IOutputHandler handler)
+    {
+        try
+        {
+            ShutdownHandlerSafe(handler);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Unable to safely shutdown handler with type \"{handlerType}\"", handler.GetType().FullName);
+            SetFault(GetHandlerExceptions());
+            return false;
+        }
     }
 
     private void HandleOnSubmoduleStopped(object? sender, EventArgs e)
     {
         if (sender is null) return;
-        _logger.Warning("HandleOnShutdownCompleted called for type \"{senderType}\", this should only happen when a shutdown was called unexpectedly", sender.GetType().FullName);
-        if (sender is not IOutputProcessor processor) return;
-        CleanupAfterProcessorShutdown(processor);
+        _logger.Warning("HandleOnSubmoduleStopped called for type \"{senderType}\", this should only happen when a shutdown was called unexpectedly",
+            sender.GetType().FullName);
+        if (sender is not IOutputHandler handler) return;
+        CleanupAfterHandlerShutdown(handler);
     }
 
-    private void CleanupAfterProcessorShutdown(IOutputProcessor processor)
+    private void CleanupAfterHandlerShutdown(IOutputHandler handler)
     {
-        processor.OnRuntimeError -= HandleOnRuntimeError;
-        processor.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
-        _activeProcessors.Remove(processor); //todo: [TEST] Do active processors get cleaned up correctly?
-        SetFault(GetProcessorExceptions());
+        handler.OnRuntimeError -= HandleOnRuntimeError;
+        handler.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
+        _activeHandlers.Remove(handler); //todo: [TEST] Do active handlers get cleaned up correctly?
+        SetFault(GetHandlerExceptions());
     }
 
-    public void RestartProcessor(OutputProcessorInfo info)
+    private void RestartHandlerUnsafe(IOutputHandler handler)
     {
-        _logger.Information("Restarting Processor with name \"{processorName}\" and type \"{processorType}\"", info.Name, info.GetType().FullName);
-        var activeProcessor = RetrieveActiveProcessorWithInfo(info);
-        if (activeProcessor is null)
-        {
-            _logger.Information("Could not find active Processor with name \"{processorName}\" and type \"{processorType}\", starting instead", info.Name, info.GetType().FullName);
-            ActivateProcessor(info);
-        }
-        else
-        {
-            activeProcessor.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
-            activeProcessor.Restart();
-            activeProcessor.OnSubmoduleStopped += HandleOnSubmoduleStopped;
-        }
-        _logger.Information("Restarted Processor with name \"{processorName}\" and type \"{processorType}\"", info.Name, info.GetType().FullName);
+        _logger.Information("Restarting Handler with type \"{handlerType}\"", handler.GetType().FullName);
+        handler.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
+        handler.Restart();
+        handler.OnSubmoduleStopped += HandleOnSubmoduleStopped;
+        _logger.Information("Restarted Handler with type \"{handlerType}\"", handler.GetType().FullName);
     }
 
+    private bool RestartHandlerSafe(IOutputHandler handler)
+    {
+        try
+        {
+            RestartHandlerUnsafe(handler);
+            return true;
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e, "Failed to restart handler with type \"{handlerType}\"", handler.GetType().FullName);
+            SetFault(GetHandlerExceptions());
+            return false;
+        }
+    }
+    #endregion
+
+    #region Handlers => Public Control
+    public void RefreshHandlers()
+    {
+        var diagnosticSw = Stopwatch.StartNew();
+        _logger.Debug("Refreshing Output Handlers...");
+        List<Type> permittedTypes = [];
+
+        //Disabling and enabling all handlers
+        foreach(var handlerInfo in _handlerInfos)
+        {
+            var match = RetrieveActiveHandlerByType(handlerInfo.HandlerType);
+            if (handlerInfo.ShouldBeEnabled())
+            {
+                if (match is null)
+                {
+                    _logger.Debug("Handler of type \"{handlerType}\" is enabled but not active, starting...",
+                        handlerInfo.HandlerType.GetType());
+                    ActivateHandlerSafe(handlerInfo);
+                    permittedTypes.Add(handlerInfo.HandlerType);
+                }
+            } else
+            {
+                if (match is not null)
+                {
+                    _logger.Debug("Handler of type \"{handlerType}\" is disabled but active, stopping...",
+                        handlerInfo.HandlerType.GetType());
+                    ShutdownHandlerSafe(match);
+                }
+            }
+        }
+
+        //Find stragglers
+        foreach(var handler in _activeHandlers)
+        {
+            var handlerType  = handler.GetType();
+            if (permittedTypes.Contains(handlerType))
+            {
+                permittedTypes.Remove(handlerType);
+                continue;
+            }
+
+            _logger.Warning("Handler of type \"{handlerType}\" is active but not on enabled list, stopping...",
+                handlerType);
+            ShutdownHandlerSafe(handler);
+        }
+        diagnosticSw.Stop();
+        _logger.Debug("Finished refreshing Output Handlers in {timeMs}ms", diagnosticSw.ElapsedMilliseconds);
+    }
+
+    public void RestartHandlers() 
+    {
+        _logger.Debug("Restarting all {handlerCount} active Handlers...", _activeHandlers.Count);
+        foreach(var handler in _activeHandlers)
+        {
+            RestartHandlerSafe(handler);
+        }
+        _logger.Debug("Finished restarting all {handlerCount} active Handlers", _activeHandlers.Count);
+    }
+    #endregion
+
+    #region Handlers => Exception Handling
     private void HandleOnRuntimeError(object? sender, Exception ex)
     {
-        _logger.Error(ex, "Encountered an error in Message Processor \"{senderType}\"", sender?.GetType().FullName);
-        _notify.SendError($"Encountered an error in Message Processor {sender?.GetType().FullName ?? "???"}",exception: ex);
-        var newCollectiveException = GetProcessorExceptions();
+        var handlerType = sender?.GetType();
+        _logger.Error(ex, "Encountered an error in Handler \"{handlerType}\"", handlerType?.FullName);
+        _notify.SendError($"Encountered an error in Handler {handlerType?.FullName ?? "???"}",exception: ex);
+        var newCollectiveException = GetHandlerExceptions();
         if (newCollectiveException is null)
         {
-            _logger.Debug("Clear OutputProcessorListException for Service");
+            _logger.Debug("Clear OutputHandlerListException for Service");
         }
         else
         {
-            _logger.Debug(newCollectiveException, "Set new OutputProcessorListException for Service");
+            _logger.Debug(newCollectiveException, "Set new OutputHandlerListException for Service");
         }
         SetFault(newCollectiveException);
     }
 
-    private OutputProcessorListException? GetProcessorExceptions()
+    private OutputHandlerListException? GetHandlerExceptions()
     {
-        var processorExceptions = new List<Exception>();
-        foreach (var processor in _activeProcessors)
+        var handlerExceptions = new List<Exception>();
+        foreach (var handler in _activeHandlers)
         {
-            var processorException = processor.GetFaultIfExists();
-            if (processorException is not null)
+            var handlerException = handler.GetFaultIfExists();
+            if (handlerException is not null)
             {
-                processorExceptions.Add(processorException);
+                handlerExceptions.Add(handlerException);
             }
         }
-        return new OutputProcessorListException(processorExceptions);
+        return new OutputHandlerListException(handlerExceptions);
     }
+    #endregion
 
-    private IOutputProcessor? RetrieveActiveProcessorWithInfo(OutputProcessorInfo info)
+    #region Handlers => Utils
+    private IOutputHandler? RetrieveActiveHandlerByType(Type handlerType)
     {
-        var activeMatches = _activeProcessors.Where(x => x.GetIdentifier().ProcessorType == info.ProcessorType).ToArray();
+        var activeMatches = _activeHandlers.Where(x => x.GetType() == handlerType).ToArray();
         switch (activeMatches.Length)
         {
             case 0:
@@ -248,46 +365,34 @@ public class OutputManagerService(
             case 1:
                 if (activeMatches[0].GetCurrentStatus() == ServiceStatus.Stopped)
                 {
-                    _logger.Warning("Processor with name \"{processorName}\" and type \"{processorType}\" was retrieved from active list despite being marked as stopped", info.Name, info.GetType().FullName);
+                    _logger.Warning("Handler with type \"{handlerType}\" was retrieved from active list despite being marked as stopped",
+                        activeMatches[0].Name, handlerType.FullName);
                 }
                 return activeMatches[0];
             default:
                 if (activeMatches.Any(x => x.GetCurrentStatus() == ServiceStatus.Stopped))
                 {
-                    _logger.Warning("One or multiple processors retrieved from active list are marked as stopped");
+                    _logger.Warning("One or multiple handlers retrieved from active list are marked as stopped");
                 }
-                _logger.Warning("Found multiple active {procCount} processors for InfoType \"{infoType}\"", activeMatches.Length, info.ProcessorType.FullName);
+                _logger.Warning("Found multiple active {handlerCount} Handlers for type \"{type}\"", 
+                    activeMatches.Length, handlerType.FullName);
                 return activeMatches[0];
         }
     }
 
-    private IOutputProcessor RetrieveProcessorInstanceWithInfo(OutputProcessorInfo info)
+    private IOutputHandler RetrieveHandlerInstanceForType(Type type)
     {
-        var availableMatches = _availableProcessors.Where(x => x.ProcessorType == info.ProcessorType).ToArray();
-
-        switch (availableMatches.Length)
-        {
-            case 0:
-                _logger.Warning("Could not find any available processors for InfoType \"{infoType}\"", info.ProcessorType.FullName);
-                throw new ArgumentException($"Could not find any available processors for InfoType {info.ProcessorType.FullName}");
-            case 1:
-                break;
-            default:
-                _logger.Warning("Found multiple {procCount} processors for InfoType \"{infoType}\"", availableMatches.Length, info.ProcessorType.FullName);
-                break;
-        }
-
-        var searchMatch = _bulkLoaderProcessor.GetInstance(availableMatches[0].ProcessorType);
+        var searchMatch = _loadOutputHandler.GetInstance(type);
         if (searchMatch is null)
         {
-            _logger.Error("Unable to retrieve Processor \"{processorName}\"", info.ProcessorType.FullName);
-            throw new DiResolveException($"Unable to retrieve Processor {info.ProcessorType.FullName}");
+            _logger.Error("Unable to retrieve Handler for type \"{handlerType}\"", type.FullName);
+            throw new DiResolveException($"Unable to retrieve Handler for type {type.FullName}");
         }
         return searchMatch;
     }
     #endregion
 
-    #region Processor => Control
+    #region Handler => Control
     public void SendMessage(string contents, OutputSettingsFlags settings)
     {
         if (string.IsNullOrWhiteSpace(contents)) return;
@@ -299,67 +404,71 @@ public class OutputManagerService(
             contents = processedOutput;
         }
 
-        var compatibleProcessors = _activeProcessors
-            .Where(x => IsProcessorCompatible(x, settings))
+        var compatibleHandlers = _activeHandlers
+            .Where(x => IsHandlerCompatible(x, settings))
             .ToArray();
-        if (compatibleProcessors.Length == 0)
+        if (compatibleHandlers.Length == 0)
         {
             OnMessage.Invoke(this, new(contents, [], null));
-            _logger.Warning("Message with contents \"{message}\" was not processed as no processors fit the criteria", contents);
+            _logger.Warning("Message with contents \"{message}\" was not handled as no handlers fit the criteria", contents);
             return;
         }
 
         if (settings.HasFlag(OutputSettingsFlags.DoTranslate) 
-            && TryTranslateContentsIfNeeded(contents, compatibleProcessors, out var translatedText))
+            && TryTranslateContentsIfNeeded(contents, compatibleHandlers, out var translatedText))
         {
             if (translatedText is null) return;
-            SendMessageTranslatedInternal(contents, translatedText, compatibleProcessors);
+            SendMessageTranslatedInternal(contents, translatedText, compatibleHandlers);
         } 
         else
         {
-            SendMessageInternal(contents, compatibleProcessors);
+            SendMessageInternal(contents, compatibleHandlers);
         }
     }
 
-    private bool IsProcessorCompatible(IOutputProcessor processor, OutputSettingsFlags settings) //todo: [TEST] Does this filter work?
+    private bool IsHandlerCompatible(IOutputHandler handler, OutputSettingsFlags settings) //todo: [TEST] Does this filter work?
     {
-        var id = processor.GetIdentifier();
-        return (settings.HasFlag(OutputSettingsFlags.AllowTextOutput) && id.Flags.HasFlag(OutputProcessorInfoFlags.OutputsAsText))
-            || (settings.HasFlag(OutputSettingsFlags.AllowOtherOutput) && id.Flags.HasFlag(OutputProcessorInfoFlags.OutputsAsOther))
-            || (settings.HasFlag(OutputSettingsFlags.AllowAudioOutput) && id.Flags.HasFlag(OutputProcessorInfoFlags.OutputsAsAudio));
+        var id = handler.OutputTypeFlags;
+        return (settings.HasFlag(OutputSettingsFlags.AllowTextOutput) && id.HasFlag(OutputsAsMediaFlags.OutputsAsText))
+            || (settings.HasFlag(OutputSettingsFlags.AllowOtherOutput) && id.HasFlag(OutputsAsMediaFlags.OutputsAsOther))
+            || (settings.HasFlag(OutputSettingsFlags.AllowAudioOutput) && id.HasFlag(OutputsAsMediaFlags.OutputsAsAudio));
     }
 
-    private void SendMessageInternal(string contents, IOutputProcessor[] processors)
+    private void SendMessageInternal(string contents, IOutputHandler[] handlers)
     {
-        _logger.Verbose("Sending {processorCount} processors a message with contents \"{contentsMessage}\"", processors.Length, contents);
-        var processorNames = processors.Select(x => x.GetIdentifier().Name).ToArray();
-        OnMessage.Invoke(this, new(contents, processorNames, null));
-        foreach (var processor in processors)
+        _logger.Verbose("Sending {handlerCount} handlers a message with contents \"{contentsMessage}\"",
+            handlers.Length, contents);
+        var handlerNames = handlers.Select(x => x.Name).ToArray();
+        OnMessage.Invoke(this, new(contents, handlerNames, null));
+        foreach (var handler in handlers)
         {
-            processor.ProcessMessage(contents);
+            handler.HandleMessage(contents);
         }
-        _logger.Verbose("Sent {processorCount} processors a message with contents \"{contentsMessage}\"", processors.Length, contents);
+        _logger.Verbose("Sent {handlerCount} handlers a message with contents \"{contentsMessage}\"",
+            handlers.Length, contents);
 }
 
-    private void SendMessageTranslatedInternal(string contents, string translation, IOutputProcessor[] processors)
+    private void SendMessageTranslatedInternal(string contents, string translation, IOutputHandler[] handlers)
     {
-        _logger.Verbose("Sending {processorCount} processors a message with contents \"{contentsMessage}\" and translation \"{translation}\"", processors.Length, contents, translation);
-        var processorNames = processors.Select(x => x.GetIdentifier().Name).ToArray();
-        OnMessage.Invoke(this, new(contents, processorNames, translation));
-        foreach (var processor in processors)
+        _logger.Verbose("Sending {handlerCount} handlers a message with contents \"{contentsMessage}\" and translation \"{translation}\"",
+            handlers.Length, contents, translation);
+        var handlerNames = handlers.Select(x => x.Name).ToArray();
+        OnMessage.Invoke(this, new(contents, handlerNames, translation));
+        foreach (var handler in handlers)
         {
-            var newContents = processor.GetTranslationOutputMode() switch
+            var newContents = handler.GetTranslationOutputMode() switch
             {
-                TranslationOutputMode.Translation => translation,
-                TranslationOutputMode.Untranslated => contents,
-                TranslationOutputMode.Both => _config.Translation_AppendOriginal
+                OutputTranslationFormat.Translation => translation,
+                OutputTranslationFormat.Untranslated => contents,
+                OutputTranslationFormat.Both => _config.Translation_AppendOriginal
                     ? $"{translation} / {contents}"
                     : translation,
                 _ => throw new ArgumentException("Unsupported TranslationOutputMode")
             };
-            processor.ProcessMessage(newContents);
+            handler.HandleMessage(newContents);
         }
-        _logger.Verbose("Sent {processorCount} processors a message with contents \"{contentsMessage}\" and translation \"{translation}\"", processors.Length, contents, translation);
+        _logger.Verbose("Sent {handlerCount} handlers a message with contents \"{contentsMessage}\" and translation \"{translation}\"",
+            handlers.Length, contents, translation);
     }
 
     public void SendNotification(string contents, OutputNotificationPriority priority, OutputSettingsFlags settings)
@@ -373,46 +482,50 @@ public class OutputManagerService(
             contents = processedOutput;
         }
 
-        var compatibleProcessors = _activeProcessors
-            .Where(x => IsProcessorCompatible(x, settings))
+        var compatibleHandlers = _activeHandlers
+            .Where(x => IsHandlerCompatible(x, settings))
             .ToArray();
-        if (compatibleProcessors.Length == 0)
+        if (compatibleHandlers.Length == 0)
         {
             OnNotification.Invoke(this, new(contents, [], priority));
-            _logger.Warning("Notification with contents \"{message}\" was not processed as no processors fit the criteria", contents);
+            _logger.Warning("Notification with contents \"{message}\" was not handled as no handlers fit the criteria", contents);
             return;
         }
 
-        _logger.Verbose("Sending {processorCount} processors a notification of priority {priority} with contents \"{contentsNotification}\"", compatibleProcessors.Length, priority.ToString(), contents);
-        var processorNames = compatibleProcessors.Select(x => x.GetIdentifier().Name).ToArray();
-        OnNotification.Invoke(this, new(contents, processorNames, priority));
-        foreach (var processor in compatibleProcessors)
+        _logger.Verbose("Sending {handlerCount} handlers a notification of priority {priority} with contents \"{contentsNotification}\"", 
+            compatibleHandlers.Length, priority.ToString(), contents);
+        var handlerNames = compatibleHandlers.Select(x => x.Name).ToArray();
+        OnNotification.Invoke(this, new(contents, handlerNames, priority));
+        foreach (var handler in compatibleHandlers)
         {
-            processor.ProcessNotification(contents, priority);
+            handler.HandleNotification(contents, priority);
         }
-        _logger.Verbose("Sent {processorCount} processors a notification of priority {priority} with contents \"{contentsNotification}\"", compatibleProcessors.Length, priority.ToString(), contents);
+        _logger.Verbose("Sent {handlerCount} handlers a notification of priority {priority} with contents \"{contentsNotification}\"",
+            compatibleHandlers.Length, priority.ToString(), contents);
     }
 
     public void Clear()
     {
-        _logger.Verbose("Sending {processorCount} processors a clear command", _activeProcessors.Count);
+        _logger.Verbose("Sending {handlerCount} handlers a clear command", _activeHandlers.Count);
         OnClear(this, EventArgs.Empty);
-        foreach (var processor in _activeProcessors)
+        foreach (var handler in _activeHandlers)
         {
-            processor.Clear();
+            handler.Clear();
         }
-        _logger.Verbose("Sent {processorCount} processors a clear command", _activeProcessors.Count);
+        _logger.Verbose("Sent {handlerCount} handlers a clear command", _activeHandlers.Count);
     }
 
     public void SetProcessingIndicator(bool isProcessing)
     {
-        _logger.Verbose("Sending {processorCount} processors command to set processing indicator to {indicatorState}", _activeProcessors.Count, isProcessing);
+        _logger.Verbose("Sending {handlerCount} handlers command to set processing indicator to {indicatorState}",
+            _activeHandlers.Count, isProcessing);
         OnProcessingIndicatorSet(this, isProcessing);
-        foreach (var processor in _activeProcessors)
+        foreach (var handler in _activeHandlers)
         {
-            processor.Clear();
+            handler.SetProcessingIndicator(isProcessing);
         }
-        _logger.Verbose("Sent {processorCount} processors command to set processing indicator to {indicatorState}", _activeProcessors.Count, isProcessing);
+        _logger.Verbose("Sent {handlerCount} handlers command to set processing indicator to {indicatorState}",
+            _activeHandlers.Count, isProcessing);
     }
     #endregion
 
@@ -461,10 +574,10 @@ public class OutputManagerService(
     /// <param name="contents">Text to translate</param>
     /// <param name="translatedText">Translated text if sucessfully translated, null if returning false or an error occured</param>
     /// <returns>Attempted translation?</returns>
-    private bool TryTranslateContentsIfNeeded(string contents, IOutputProcessor[] processors, out string? translatedText)
+    private bool TryTranslateContentsIfNeeded(string contents, IOutputHandler[] handlers, out string? translatedText)
     {
         //todo: [REFACTOR] Should this logic not mostly be in the translation service?
-        if (!processors.Any(x => x.GetTranslationOutputMode() != TranslationOutputMode.Untranslated))
+        if (!handlers.Any(x => x.GetTranslationOutputMode() != OutputTranslationFormat.Untranslated))
         {
             _logger.Warning("Attempted translation of message with contents \"{contents}\", but could not find a suitable output", contents);
             translatedText = null;
@@ -475,7 +588,7 @@ public class OutputManagerService(
         {
             if (_config.Translation_SkipLongerMessages)
             {
-                _logger.Debug("Skipping translation and processing of message with contents \"{contents}\" as skipping of messages longer than {charLimit} characters is enabled",
+                _logger.Debug("Skipping translation and handling of message with contents \"{contents}\" as skipping of messages longer than {charLimit} characters is enabled",
                     contents, _config.Translation_MaxTextLength);
                 translatedText = null;
                 return true;

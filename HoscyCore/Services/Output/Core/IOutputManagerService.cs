@@ -5,17 +5,13 @@ namespace HoscyCore.Services.Output.Core;
 public interface IOutputManagerService : IAutoStartStopService
 {
     #region Info
-    /// <summary>
-    /// Retrieves information about all or only active processors
-    /// </summary>
-    public IReadOnlyList<OutputProcessorInfo> GetInfos(bool activeOnly);
+    public IReadOnlyList<IOutputHandlerStartInfo> GetHandlerInfos(bool activeOnly);
+    public ServiceStatus GetProcessorStatus(IOutputHandlerStartInfo handlerInfo);
     #endregion
 
-    #region Start / Stop
-    public void ActivateProcessor(OutputProcessorInfo info);
-    public void ShutdownProcessor(OutputProcessorInfo info);
-    public void RestartProcessor(OutputProcessorInfo info);
-    public ServiceStatus GetProcessorStatus(OutputProcessorInfo info);
+    #region Control
+    public void RefreshHandlers();
+    public void RestartHandlers();
     #endregion
 
     #region Processor Control

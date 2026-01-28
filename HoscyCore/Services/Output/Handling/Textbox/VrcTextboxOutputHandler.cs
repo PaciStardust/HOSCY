@@ -5,14 +5,26 @@ using HoscyCore.Services.Output.Core;
 using HoscyCore.Utility;
 using Serilog;
 
-namespace HoscyCore.Services.Output.Processing.Textbox;
+namespace HoscyCore.Services.Output.Handling.Textbox;
 
-[LoadIntoDiContainer(typeof(VrcTextboxOutputProcessor), Lifetime.Transient)] //todo: [TEST] Write tests for this
-public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscSendService sender) : OutputProcessorBase 
+[LoadIntoDiContainer(typeof(VrcTextboxOutputHandlerStartInfo))]
+public class VrcTextboxOutputHandlerStartInfo(ConfigModel config) : IOutputHandlerStartInfo
+{
+    private readonly ConfigModel _config = config;
+
+    public Type HandlerType 
+        => typeof(VrcTextboxOutputHandler);
+
+    public bool ShouldBeEnabled()
+        => true; //todo: should be a config
+}
+
+[LoadIntoDiContainer(typeof(VrcTextboxOutputHandler), Lifetime.Transient)] //todo: [TEST] Write tests for this
+public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSendService sender) : OutputHandlerBase 
 {
     //todo: [FIX] Is no event ever called?
     #region Injected Services
-    private readonly ILogger _logger = logger.ForContext<VrcTextboxOutputProcessor>();
+    private readonly ILogger _logger = logger.ForContext<VrcTextboxOutputHandler>();
     private readonly ConfigModel _config = config;
     private readonly IOscSendService _sender = sender;
     #endregion
@@ -38,22 +50,17 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     #endregion
 
     #region Information
-    public override OutputProcessorInfo GetIdentifier()
-        => _info;
+    public override string Name 
+        => "VRC Textbox";
 
-    private readonly OutputProcessorInfo _info = new()
-    {
-        Name = "VRChat Textbox",
-        Description = "Sends Output to the VRChat Textbox via OSC",
-        Flags = OutputProcessorInfoFlags.OutputsAsText,
-        ProcessorType = typeof(VrcTextboxOutputProcessor)
-    };
+    public override OutputsAsMediaFlags OutputTypeFlags 
+        => OutputsAsMediaFlags.OutputsAsText;
 
-    public override TranslationOutputMode GetTranslationOutputMode()
+    public override OutputTranslationFormat GetTranslationOutputMode()
     {
         return _config.VrcTextbox_Output_DoTranslate
-            ? TranslationOutputMode.Both
-            : TranslationOutputMode.Untranslated; 
+            ? OutputTranslationFormat.Both
+            : OutputTranslationFormat.Untranslated; 
     }
     #endregion
 
@@ -202,7 +209,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
     #endregion
 
     #region Input Processing
-    public override void ProcessNotification(string contents, OutputNotificationPriority priority)
+    public override void HandleNotification(string contents, OutputNotificationPriority priority)
     {
         if (string.IsNullOrWhiteSpace(contents))
         {
@@ -229,7 +236,7 @@ public class VrcTextboxOutputProcessor(ILogger logger, ConfigModel config, IOscS
         _currentNotification = (contents, priority);
     }
 
-    public override void ProcessMessage(string contents)  
+    public override void HandleMessage(string contents)  
     {
         if (string.IsNullOrWhiteSpace(contents)) return;
 

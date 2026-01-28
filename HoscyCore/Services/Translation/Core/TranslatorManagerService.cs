@@ -4,7 +4,7 @@ using HoscyCore.Services.Interfacing;
 using HoscyCore.Utility;
 using Serilog;
 
-namespace HoscyCore.Services.Translation.Core;
+namespace HoscyCore.Services.Translation.Core; //todo: [REFACTOR] New system needed
 
 [LoadIntoDiContainer(typeof(ITranslatorManagerService), Lifetime.Singleton)] //todo: [TEST] Write tests for this
 public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger logger, IContainerBulkLoader<ITranslator> bulkLoader) : StartStopServiceBase, ITranslatorManagerService
@@ -31,7 +31,7 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
 
     public string? GetCurrentName()
     {
-        return _currentTranslator?.GetIdentifier();
+        return _currentTranslator?.Metadata;
     }
     #endregion
 
@@ -47,7 +47,7 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
 
         _availableTranslators.Clear();
         var translatorsWithInstance = _bulkLoader.GetInstances();
-        _availableTranslators.AddRange(translatorsWithInstance.Select(x => (x.GetIdentifier(), x.GetType())));
+        _availableTranslators.AddRange(translatorsWithInstance.Select(x => (x.Metadata, x.GetType())));
         if (_availableTranslators.Count == 0)
         {
             _logger.Warning("No Translators could be located, Service will have no functionality and will be NOT be marked as running");

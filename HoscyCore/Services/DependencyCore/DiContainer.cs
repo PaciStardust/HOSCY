@@ -10,7 +10,7 @@ namespace HoscyCore.Services.DependencyCore;
 /// <summary>
 /// Container for resolving dependencies
 /// </summary>
-public class DiContainer
+public class DiContainer //todo: [FIX] Something logs wrong here?
 {
     public ServiceProvider Services { get; init; }
     private readonly ILogger _internalLogger;

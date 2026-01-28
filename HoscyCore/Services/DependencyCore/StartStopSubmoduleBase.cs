@@ -1,16 +1,10 @@
-using System;
-
 namespace HoscyCore.Services.DependencyCore;
 
-public abstract class StartStopSubmoduleBase<Tidentifier> : StartStopServiceBase, IStartStopSubmodule<Tidentifier>
+public abstract class StartStopSubmoduleBase : StartStopServiceBase, IStartStopSubmodule
 {
     #region Events
     public event EventHandler<Exception> OnRuntimeError = delegate { };
     public event EventHandler OnSubmoduleStopped = delegate { };
-    #endregion
-
-    #region Info & Status
-    public abstract Tidentifier GetIdentifier();
     #endregion
 
     #region Fault Handling

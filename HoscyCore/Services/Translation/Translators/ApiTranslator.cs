@@ -15,8 +15,7 @@ public class ApiTranslator(ILogger logger, ConfigModel config, IApiClient client
     private readonly IApiClient _client = client.AddIdentifier(nameof(ApiTranslator));
 
     #region Info
-    public override string GetIdentifier()
-        => "Api Translator";
+    public override string Metadata => "Api Translator";
     #endregion
 
     #region Start/Stop
