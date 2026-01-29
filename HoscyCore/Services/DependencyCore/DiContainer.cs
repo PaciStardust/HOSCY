@@ -8,55 +8,18 @@ using Serilog;
 namespace HoscyCore.Services.DependencyCore;
 
 /// <summary>
-/// Container for resolving dependencies
+/// Container for resolving and providing dependencies, and starting and stopping services
 /// </summary>
-public class DiContainer //todo: [FIX] Something logs wrong here?
+public class DiContainer
 {
     public ServiceProvider Services { get; init; }
-    private readonly ILogger _internalLogger;
+    private readonly ILogger _logger;
 
-    private DiContainer(ServiceProvider provider, ILogger internalLogger)
+    #region Constructor
+    private DiContainer(ServiceProvider provider, ILogger logger)
     {
         Services = provider;
-        _internalLogger = internalLogger;
-    }
-
-    /// <summary>
-    /// Shortcut for Services.GetService
-    /// </summary>
-    public T? GetService<T>()
-    {
-        return Services.GetService<T>();
-    }
-    /// <summary>
-    /// Shortcut for Services.GetRequiredService
-    /// </summary>
-    public T GetRequiredService<T>() where T : notnull
-    {
-        return Services.GetRequiredService<T>();
-    }
-
-    /// <summary>
-    /// Creates a DiContainer using a Logger, ConfigModel, some manual extra additions and all classes with the loader attribute
-    /// </summary>
-    /// <param name="logger">Logger for container</param>
-    /// <param name="config">ConfigModel for container</param>
-    /// <param name="additionalInserts">An action to insert additional dependencies manually</param>
-    /// <returns>DiContainer with all dependencies loaded in</returns>
-    public static DiContainer LoadFromAssembly(ILogger logger, ConfigModel config, Action<ServiceCollection>? additionalInserts = null)
-    {
-        var internalLogger = logger.ForContext<DiContainer>();
-        var sw = Stopwatch.StartNew();
-        internalLogger.Information("Creating DI container...");
-
-        var collection = new ServiceCollection();
-        collection.AddSingleton(logger)
-            .AddSingleton(config);
-
-        AddFromAssembly(collection, internalLogger);
-        additionalInserts?.Invoke(collection);
-
-        return new DiContainer(collection.BuildServiceProvider(), internalLogger);
+        _logger = logger.ForContext<DiContainer>();
     }
 
     /// <summary>
@@ -72,243 +35,346 @@ public class DiContainer //todo: [FIX] Something logs wrong here?
     }
 
     /// <summary>
-    /// Loads services with attribute into IServiceCollection
+    /// Creates a DiContainer using a Logger, ConfigModel, some manual extra additions and all classes with the loader attribute
     /// </summary>
-    private static void AddFromAssembly(IServiceCollection collection, ILogger logger)
+    /// <param name="logger">Logger for container</param>
+    /// <param name="config">ConfigModel for container</param>
+    /// <param name="additionalInserts">An action to insert additional dependencies manually</param>
+    /// <returns>DiContainer with all dependencies loaded in</returns>
+    public static DiContainer CreateWithAssembly(ILogger logger, ConfigModel config, Action<ServiceCollection>? additionalInserts = null)
     {
+        var diLogger = logger.ForContext<DiContainer>();
         var sw = Stopwatch.StartNew();
-        logger.Information("Loading dependencies from Assembly");
-        var addedCount = 0;
-        var allServices = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).Distinct();
+        diLogger.Information("Creating DiContainer with assembly...");
 
-        foreach (var service in allServices) 
-        {
-            if (TryAddTypeToCollection(collection, service, logger))
-            {
-                addedCount++;
-            }
-        }
-        sw.Stop();
-        logger.Debug("Loaded {addedCount} dependencies in {loadTime}ms", addedCount, sw.ElapsedMilliseconds);
+        var collection = new ServiceCollection();
+        collection.AddSingleton(diLogger)
+            .AddSingleton(config);
+
+        FillCollectionWithAssembly(collection, diLogger);
+        additionalInserts?.Invoke(collection);
+
+        return new DiContainer(collection.BuildServiceProvider(), diLogger);
+    }
+    #endregion
+
+    #region Retrieving Services
+    /// <summary>
+    /// Shortcut for Services.GetService
+    /// </summary>
+    public T? GetService<T>()
+    {
+        return Services.GetService<T>();
     }
 
-    private static bool TryAddTypeToCollection(IServiceCollection collection, Type service, ILogger logger)
+    /// <summary>
+    /// Shortcut for Services.GetRequiredService
+    /// </summary>
+    public T GetRequiredService<T>() where T : notnull
     {
-        if (service.IsAbstract || service.IsInterface) return false;
+        return Services.GetRequiredService<T>();
+    }
+    #endregion
 
-        var containerAttribute = service.GetCustomAttribute<LoadIntoDiContainerAttribute>();
-        if (containerAttribute is null)
+    #region Assembly Loading
+    /// <summary>
+    /// Loads all relevant services from the assembly into the collection
+    /// </summary>
+    /// <param name="collection"></param>
+    /// <param name="logger"></param>
+    private static void FillCollectionWithAssembly(IServiceCollection collection, ILogger logger)
+    {
+        var sw = Stopwatch.StartNew();
+        logger.Information("Injecting types from Assembly");
+        
+        var addedCount = 0;
+        var loadedTypes = GetLoadableTypesFromAssembly();
+        foreach (var (typeToLoad, attribute) in loadedTypes) 
         {
-            return false;
+            AddTypeToCollection(typeToLoad, attribute, collection, logger);
+            addedCount++;
         }
-        else if (containerAttribute is PrototypeLoadIntoDiContainer prototypeAttribute)
+        sw.Stop();
+        logger.Debug("Injected {addedCount} types in {loadTime}ms", addedCount, sw.ElapsedMilliseconds);
+    }
+
+    /// <summary>
+    /// Filters out types with the correct attribute from the assembly
+    /// </summary>
+    /// <returns></returns>
+    private static IEnumerable<(Type ImplementationType, LoadIntoDiContainerAttribute Attribute)> GetLoadableTypesFromAssembly()
+    {
+        var compatibleTypes = LaunchUtils.GetCompleteTypesFromAssemblies();
+        List<(Type ImplementationType, LoadIntoDiContainerAttribute Attribute)> loadedTypes = [];
+        foreach (var type in compatibleTypes)
         {
-            prototypeAttribute.NotifyAboutLoadedPrototype(service, logger);
+            var attribute = type.GetCustomAttribute<LoadIntoDiContainerAttribute>();
+            if (attribute != null)
+            {
+                loadedTypes.Add((type, attribute));
+            }
+        }
+        return loadedTypes;
+    }
+
+    /// <summary>
+    /// Adds a type to the collection using the implementation type and information from the attribute
+    /// </summary>
+    private static void AddTypeToCollection(Type implType, LoadIntoDiContainerAttribute attribute, IServiceCollection collection, ILogger logger)
+    {
+        if (attribute is PrototypeLoadIntoDiContainer prototypeAttribute)
+        {
+            prototypeAttribute.NotifyAboutLoadedPrototype(implType, logger);
         }
 
-        logger.Debug("Adding \"{service}\" to DI container with lifetime {lifetime}", service.FullName, containerAttribute.Lifetime.ToString());
-
-        switch (containerAttribute.Lifetime)
+        logger.Debug("Injecting type \"{type}\" as \"{asType}\" to collection with lifetime {lifetime}",
+            implType.FullName, attribute.AsType.FullName, attribute.Lifetime.ToString());
+        switch (attribute.Lifetime)
         {
             case Lifetime.Transient:
-                collection.AddTransient(containerAttribute.AsType, service);
+                collection.AddTransient(attribute.AsType, implType);
                 break;
             case Lifetime.Scoped:
-                collection.AddScoped(containerAttribute.AsType, service);
+                collection.AddScoped(attribute.AsType, implType);
                 break;
             default:
-                collection.AddSingleton(containerAttribute.AsType, service);
+                collection.AddSingleton(attribute.AsType, implType);
                 break;
         }
-        return true;
     }
+    #endregion
 
+    #region Dependency Collection
+    private record DiServiceInfo(Type Type, IService Impl, List<Type> Deps);
+    
     /// <summary>
-    /// Grabs all Services from the container and starts them in an order established using their dependencies
+    /// Collects information from all loaded IServices for establishing a dependency order
     /// </summary>
-    public void StartServices(Action<string>? onProgress)
+    /// <returns></returns>
+    private List<DiServiceInfo> CollectDiServiceInfosFromContainer()
     {
-        var sw = Stopwatch.StartNew();
-        _internalLogger.Information("Locating all IServices for startup...");
-        onProgress?.Invoke("Locating services to start");
-        var servicesToStart = RetrieveServiceInfos();
+        var interfaceService = typeof(IService);
+        var interfaceServiceProvider = typeof(IServiceProvider);
+        var interfaceBulkLoader = typeof(IContainerBulkLoader<>).GetGenericTypeDefinition();
 
-        _internalLogger.Debug("Establishing startup order of {serviceCount} IServices by resolving dependencies... (DI taken {diDuration}ms so far)",
-            servicesToStart.Count, sw.ElapsedMilliseconds);
-        onProgress?.Invoke($"Establishing startup order of {servicesToStart.Count} services");
-        var (servicesResolvedInOrder, servicesInOrder) = EstablishStartOrder(servicesToStart);
+        var loadedServices = LaunchUtils.GetImplementationsInContainerForClass<IService>(Services, _logger);
 
-        _internalLogger.Debug("Order of {toStart} IAutoStartStopServices established, proceeding with startup... (DI taken {diDuration}ms so far)",
-            servicesInOrder.Count, sw.ElapsedMilliseconds);
-        for (var i = 0; i < servicesInOrder.Count; i++)
+        var serviceInfos = new List<DiServiceInfo>();
+        foreach(var loadedService in loadedServices)
         {
-            var currentService = servicesInOrder[i];
-            _internalLogger.Debug("Starting IAutoStartStopServices {currenStart}/{toStart}: {currentService} as {currentServiceBase}",
-            i + 1, servicesInOrder.Count, currentService.GetType().Name, servicesResolvedInOrder[i].FullName);
-            onProgress?.Invoke($"Starting service {i + 1}/{servicesInOrder.Count}:\n{currentService.GetType().Name}");
-            var subSw = Stopwatch.StartNew();
-            currentService.Start();
-            subSw.Stop();
-            _internalLogger.Debug("Started IAutoStartStopServices {currenStart}/{toStart}: {currentService} (Took {startDuration}ms, DI taken {diDuration}ms so far)",
-            i + 1, servicesInOrder.Count, servicesResolvedInOrder[i].FullName, subSw.ElapsedMilliseconds, sw.ElapsedMilliseconds);
+            var serviceType = loadedService.GetType();
+            var deps = GetAllServiceDependenciesForType(serviceType, interfaceService, interfaceServiceProvider, interfaceBulkLoader, loadedServices);
+            
+            _logger.Verbose("Assessed {requiredServiceCount} other required IServices for IService \"{serviceType}\"",
+                deps.Count, serviceType.FullName);
+
+            serviceInfos.Add(new(serviceType, loadedService, deps));
         }
-        sw.Stop();
-        _internalLogger.Debug("Successfully started {toStart} IAutoStartStopServices in {diDuration}ms", servicesInOrder.Count, sw.ElapsedMilliseconds);
-        onProgress?.Invoke($"Started {servicesInOrder.Count} services");
+        return serviceInfos;
     }
 
     /// <summary>
-    /// Grabs all Services from the container and stops them in an order established using their dependencies
+    /// Gets the list of dependencies for an IService
     /// </summary>
-    public void StopServices()
+    private List<Type> GetAllServiceDependenciesForType(Type serviceType, Type interfaceService, Type interfaceServiceProvider, Type interfaceBulkLoader, List<IService> availableServices)
     {
-        var sw = Stopwatch.StartNew();
-        _internalLogger.Information("Locating all IServices for stopping...");
-        var servicesToStop = RetrieveServiceInfos();
+        var constructors = serviceType.GetConstructors(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+        List<Type> dependencies = [];
 
-        _internalLogger.Debug("Establishing reversed startup order of {serviceCount} IServices by resolving dependencies... (DI taken {diDuration}ms so far)",
-            servicesToStop.Count, sw.ElapsedMilliseconds);
-        var (servicesResolvedInOrder, servicesInOrder) = EstablishStartOrder(servicesToStop, true);
-
-        _internalLogger.Debug("Order of {toStop} IAutoStartStopServices established, proceeding with stopping... (DI taken {diDuration}ms so far)",
-            servicesInOrder.Count, sw.ElapsedMilliseconds);
-        for (var i = 0; i < servicesInOrder.Count; i++)
+        if (constructors.Length == 0)
         {
-            var subSw = Stopwatch.StartNew();
-            var currentService = servicesInOrder[i];
-            _internalLogger.Debug("Stopping IAutoStartStopServices {currenStart}/{toStop}: {currentService}",
-            i + 1, servicesInOrder.Count, servicesResolvedInOrder[i].FullName);
-            try
+            _logger.Warning("Failed to locate constructor for IService \"{serviceType}\"", serviceType.FullName);
+            return dependencies;
+        } else if (constructors.Length > 1)
+        {
+            _logger.Warning("Multiple constructors found for IService \"{serviceType}\", using first one", serviceType.FullName);
+        }
+
+        foreach(var parameter in constructors[0].GetParameters())
+        {
+            var parameterType = parameter.ParameterType;
+            
+            // Service providers are not allowed so we can evaluate bulk dependencies
+            if (parameterType.IsAssignableTo(interfaceServiceProvider))
             {
-                currentService.Stop();
-                subSw.Stop();
-                _internalLogger.Debug("Stopped IAutoStartStopServices {currenStart}/{toStop}: {currentService} (Took {startDuration}ms, DI taken {diDuration}ms so far)",
-            i + 1, servicesInOrder.Count, servicesResolvedInOrder[i].FullName, subSw.ElapsedMilliseconds, sw.ElapsedMilliseconds);
-            } catch (Exception ex)
-            {
-                subSw.Stop();
-                _internalLogger.Error(ex, "Failed to stop IAutoStartStopServices {currenStart}/{toStop}: {currentService} (Took {startDuration}ms, DI taken {diDuration}ms so far)",
-                i + 1, servicesInOrder.Count, servicesResolvedInOrder[i].FullName, subSw.ElapsedMilliseconds, sw.ElapsedMilliseconds);
+                _logger.Error("Service \"{service}\" attempts to inject \"{serviceCollection}\", please use \"{bulk}\" instead",
+                serviceType.FullName, interfaceServiceProvider.Name, interfaceBulkLoader.Name);
+                throw new DiResolveException($"Service \"{serviceType.FullName}\" attempts to inject \"{interfaceServiceProvider.Name}\", please use \"{interfaceBulkLoader.Name}\" instead");
             }
-        }
 
-        sw.Stop();
-        _internalLogger.Debug("Successfully stopped {toStart} IAutoStartStopServices in {diDuration}ms", servicesInOrder.Count, sw.ElapsedMilliseconds);
-    }
-
-    /// <summary>
-    /// Retrieves instance and list of otherr Services in constructor if applicable to Type
-    /// </summary>
-    /// <returns>Null if Type is not Service or no Instance is available</returns>
-    private List<(Type Type, IService Implementation, List<Type> Dependencies)> RetrieveServiceInfos()
-    {
-        var serviceImplementations = LaunchUtils.GetImplementationsInContainerForClass<IService>(Services, _internalLogger);
-        var serviceInterface = typeof(IService);
-        var serviceProviderType = typeof(IServiceProvider);
-        var bulkLoaderNoGenericType = typeof(IContainerBulkLoader<>).GetGenericTypeDefinition();
-
-        List<(Type Type, IService Implementation, List<Type> Dependencies)> locatedServices = [];
-
-        foreach (var impl in serviceImplementations)
-        {
-            var type = impl.GetType();
-            var ctors = type.GetConstructors();
-            if (ctors.Length == 0)
+            // Handling for bulk dependencies
+            if (parameterType.IsConstructedGenericType && interfaceBulkLoader.GUID == parameterType.GetGenericTypeDefinition().GUID)
             {
-                _internalLogger.Warning("Failed to locate constructor for IService \"{serviceType}\"", type.FullName);
+                var bulkTypes = availableServices
+                    .Select(x => x.GetType())
+                    .Where(x => x.IsAssignableTo(parameterType.GetGenericArguments()[0]));
+                dependencies.AddRange(bulkTypes);
                 continue;
             }
-            else if (ctors.Length > 0)
+
+            // Regular IService
+            if (parameterType.IsAssignableTo(interfaceService))
             {
-                _internalLogger.Verbose("Located multiple constructors for IService \"{serviceType}\", picking first", type.FullName);
+                dependencies.Add(parameterType);
             }
-
-            List<Type> requiredServiceTypes = [];
-            foreach(var parameter in ctors[0].GetParameters())
-            {
-                var parameterType = parameter.ParameterType;
-
-                if (parameterType.IsAssignableTo(serviceProviderType))
-                {
-                    _internalLogger.Error("Service \"{service}\" attempts to inject \"{serviceCollection}\", please use \"{bulk}\" instead",
-                    type.FullName, serviceProviderType.Name, bulkLoaderNoGenericType.Name);
-                    throw new DiResolveException($"Service \"{type.FullName}\" attempts to inject \"{serviceProviderType.Name}\", please use \"{bulkLoaderNoGenericType.Name}\" instead");
-                }
-
-                if (parameterType.IsConstructedGenericType && bulkLoaderNoGenericType.GUID == parameterType.GetGenericTypeDefinition().GUID)
-                {
-                    var bulkTypes = serviceImplementations
-                        .Select(x => x.GetType())
-                        .Where(x => x.IsAssignableTo(parameterType.GetGenericArguments()[0]));
-                    requiredServiceTypes.AddRange(bulkTypes);
-                    continue;
-                }
-
-                if (parameterType.IsAssignableTo(serviceInterface))
-                {
-                    requiredServiceTypes.Add(parameterType);
-                }
-            }
-            _internalLogger.Verbose("Assessed {requiredServiceCount} other required IServices for IService \"{serviceType}\"",
-                requiredServiceTypes.Count, type.FullName);
-
-            locatedServices.Add((type, impl, requiredServiceTypes));
         }
-        return locatedServices;
+
+        return dependencies;
     }
+    #endregion
+
+    #region Order Calculation
+    private record StartServiceInfo(IAutoStartStopService Service, Type Type, Type AsType);
 
     /// <summary>
-    /// Establishing startup order of IAutoStartStopServices by resolving dependencies
+    /// Establishes the order in which services should be started based on dependencies
     /// </summary>
-    /// <returns>A list of types and instances in correct order</returns>
-    private (List<Type> ResolvedOrdered, List<IAutoStartStopService> ToStartOrdered) EstablishStartOrder(List<(Type Type, IService Implementation, List<Type> Dependencies)> serviceList, bool reversed = false)
+    private List<StartServiceInfo> EstablishServiceLaunchOrder(List<DiServiceInfo> serviceInfos, bool reversed)
     {
-        List<Type> servicesResolvedInOrder = [];
-        List<IAutoStartStopService> servicesInOrder = [];
-        var resolveLoops = 0;
-        while (serviceList.Count > 0)
-        {
-            resolveLoops++;
-            _internalLogger.Verbose("Starting resolve loop {loopCount}, {toResolve} IServices remain", resolveLoops, serviceList.Count);
-            bool changesMade = false;
-            for (var i = serviceList.Count - 1; i > -1; i--)
-            {
-                var (serviceType, serviceImplementation, serviceDependencies) = serviceList[i];
-                var requiredServiceList = serviceDependencies;
-                requiredServiceList.RemoveAll(servicesResolvedInOrder.Contains);
-                if (requiredServiceList.Count == 0)
-                {
-                    serviceList.RemoveAt(i);
-                    changesMade = true;
-                    var resolvesFor = serviceType.GetCustomAttribute<LoadIntoDiContainerAttribute>()?.AsType ?? serviceType;
-                    servicesResolvedInOrder.Add(resolvesFor);
+        List<StartServiceInfo> resolvedServices = [];
+        List<Type> resolvedServiceTypes = [];
 
-                    if (serviceImplementation is IAutoStartStopService autoStartStopService)
-                    {
-                        servicesInOrder.Add(autoStartStopService);
-                        _internalLogger.Verbose("Resolved all dependencies for IAutoStartStopService \"{resolvedService}\", startup order is {startupOrder}, {toResolve} still resolving",
-                        serviceType.FullName, servicesInOrder.Count, serviceList.Count);
-                    } else
-                    {
-                        _internalLogger.Verbose("Resolved all dependencies for IService \"{resolvedService}\", no startup needed as not IAutoStartService, {toResolve} still resolving",
-                        serviceType.FullName, servicesInOrder.Count, serviceList.Count);
-                    }
-                }
-            }
-            if (!changesMade)
-            {
-                var brokenServices = string.Join(", ", serviceList.Select(x => x.Type.FullName));
-                var ex = new DiResolveException($"Failed to resolve dependency chain in remaining StartStopServices ({brokenServices})");
-                _internalLogger.Fatal(ex, "Unable to resolve dependency chain for the following StartStopServices: \"{brokenServices}\"", brokenServices);
-                throw ex;
-            }
+        var resolveLoopCount = 0;
+        while (serviceInfos.Count > 0)
+        {
+            resolveLoopCount++;
+            _logger.Verbose("Starting resolve loop {loopCount}, {toResolve} services remain", resolveLoopCount, serviceInfos.Count);
+            DoLaunchOrderResolveStep(serviceInfos, resolvedServices, resolvedServiceTypes);
         }
 
         if (reversed)
         {
-            servicesResolvedInOrder.Reverse();
-            servicesInOrder.Reverse();
+            resolvedServices.Reverse();
         }
-        return (servicesResolvedInOrder, servicesInOrder);
+        return resolvedServices;
     }
+
+    /// <summary>
+    /// Represents a single loop for resolving the launch order
+    /// </summary>
+    private void DoLaunchOrderResolveStep(List<DiServiceInfo> serviceInfos, List<StartServiceInfo> resolvedServices, List<Type> resolvedServiceTypes)
+    {
+        bool hasResolvedSomething = false;
+
+        // Reversing through service info list in reverse to allow removal of elements while interating
+        for (var i = serviceInfos.Count - 1; i > -1; i--)
+        {
+            var serviceInfo = serviceInfos[i];
+
+            serviceInfo.Deps.RemoveAll(resolvedServiceTypes.Contains);
+            if (serviceInfo.Deps.Count > 0)
+                continue;
+
+            var resolvesFor = serviceInfo.Type.GetCustomAttribute<LoadIntoDiContainerAttribute>()?.AsType
+                ?? serviceInfo.Type;
+            
+            if (serviceInfo.Impl is IAutoStartStopService autoStartService)
+            {
+                var infos = new StartServiceInfo(autoStartService, serviceInfo.Type, resolvesFor);
+                resolvedServices.Add(infos);
+            }
+            resolvedServiceTypes.Add(resolvesFor);
+            serviceInfos.RemoveAt(i);
+
+            hasResolvedSomething = true;
+            _logger.Verbose("Resolved all dependencies for service \"{resolvedService}\", startup order is {startupOrder}, {toResolve} still resolving",
+                serviceInfo.Type.FullName, resolvedServices.Count, serviceInfos.Count);
+        }
+
+        if (!hasResolvedSomething)
+        {
+            var brokenServices = string.Join(", ", serviceInfos.Select(x => x.Type.FullName));
+            var ex = new DiResolveException($"Failed to resolve dependency chain in remaining services ({brokenServices})");
+            _logger.Fatal(ex, "Unable to resolve dependency chain for the following services: \"{brokenServices}\"", brokenServices);
+            throw ex;
+        }
+    }
+    #endregion
+
+    #region Start / Stop
+    /// <summary>
+    /// Grabs all services from the container and starts them in an order established using their dependencies
+    /// </summary>
+    public void StartServices(Action<string>? onProgress)
+    {
+        var diagnosticSw = Stopwatch.StartNew();
+        _logger.Information("Locating all registered services for startup...");
+        onProgress?.Invoke("Locating registered services");
+        var registeredServices = CollectDiServiceInfosFromContainer();
+
+        _logger.Debug("Establishing startup order of {serviceCount} services by resolving dependencies... (DI taken {diDuration}ms so far)",
+            registeredServices.Count, diagnosticSw.ElapsedMilliseconds);
+        onProgress?.Invoke($"Establishing startup order of {registeredServices.Count} services");
+
+        var orderedServicesToStart = EstablishServiceLaunchOrder(registeredServices, false);
+
+        _logger.Debug("Order of {toStart} startable services established, proceeding with startup... (DI taken {diDuration}ms so far)",
+            orderedServicesToStart.Count, diagnosticSw.ElapsedMilliseconds);
+        
+        for (var i = 0; i < orderedServicesToStart.Count; i++)
+        {
+            var currentService = orderedServicesToStart[i];
+
+            _logger.Debug("Starting service {currenStart}/{toStart}: {currentService} as {currentServiceBase}",
+                i + 1, orderedServicesToStart.Count, currentService.Type.FullName, currentService.AsType.FullName);
+            onProgress?.Invoke($"Starting service {i + 1}/{orderedServicesToStart.Count}:\n{currentService.GetType().Name}");
+
+            var subSw = Stopwatch.StartNew();
+            currentService.Service.Start();
+            subSw.Stop();
+
+            _logger.Debug("Started service {currenStart}/{toStart}: {currentService} (Took {startDuration}ms, DI taken {diDuration}ms so far)",
+            i + 1, orderedServicesToStart.Count, currentService.Type.FullName, subSw.ElapsedMilliseconds, diagnosticSw.ElapsedMilliseconds);
+        }
+
+        diagnosticSw.Stop();
+        _logger.Debug("Successfully started {toStart} startable services in {diDuration}ms", 
+            orderedServicesToStart.Count, diagnosticSw.ElapsedMilliseconds);
+        onProgress?.Invoke($"Started {orderedServicesToStart.Count} services");
+    }
+
+    /// <summary>
+    /// Grabs all services from the container and stops them in an order established using their dependencies
+    /// </summary>
+    public void StopServices()
+    {
+        var diagnosticSw = Stopwatch.StartNew();
+        _logger.Information("Locating all registered services for stopping...");
+        var registeredServices = CollectDiServiceInfosFromContainer();
+
+        _logger.Debug("Establishing reversed startup order of {serviceCount} services by resolving dependencies... (DI taken {diDuration}ms so far)",
+            registeredServices.Count, diagnosticSw.ElapsedMilliseconds);
+        var orderedServicesToStop = EstablishServiceLaunchOrder(registeredServices, true);
+
+        _logger.Debug("Order of {toStop} stoppable services established, proceeding with stopping... (DI taken {diDuration}ms so far)",
+            orderedServicesToStop.Count, diagnosticSw.ElapsedMilliseconds);
+
+        for (var i = 0; i < orderedServicesToStop.Count; i++)
+        {
+            var currentService = orderedServicesToStop[i];
+
+            _logger.Debug("Stopping service {currenStart}/{toStop}: {currentService}",
+                i + 1, orderedServicesToStop.Count, currentService.Type.FullName);
+
+            var subSw = Stopwatch.StartNew();
+            try
+            {
+                currentService.Service.Stop();
+                subSw.Stop();
+
+                _logger.Debug("Stopped service {currenStart}/{toStop}: {currentService} (Took {startDuration}ms, DI taken {diDuration}ms so far)",
+                    i + 1, orderedServicesToStop.Count, currentService.Type.FullName, subSw.ElapsedMilliseconds, diagnosticSw.ElapsedMilliseconds);
+            } catch (Exception ex)
+            {
+                subSw.Stop();
+
+                _logger.Error(ex, "Failed to stop service {currenStart}/{toStop}: {currentService} (Took {startDuration}ms, DI taken {diDuration}ms so far)",
+                    i + 1, orderedServicesToStop.Count, currentService.Type.FullName, subSw.ElapsedMilliseconds, diagnosticSw.ElapsedMilliseconds);
+            }
+        }
+
+        diagnosticSw.Stop();
+        _logger.Debug("Successfully stopped {toStart} stoppable services in {diDuration}ms", orderedServicesToStop.Count, diagnosticSw.ElapsedMilliseconds);
+    }
+    #endregion
 }

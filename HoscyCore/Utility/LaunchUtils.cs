@@ -76,6 +76,14 @@ public static class LaunchUtils
         return null;
     }
 
+    public static IEnumerable<Type> GetCompleteTypesFromAssemblies()
+    {
+        return AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(x => x.GetTypes())
+            .Distinct()
+            .Where(x => !(x.IsAbstract || x.IsInterface));
+    }
+
     /// <summary>
     /// Returns all implementations of a class that can be located in the procided container
     /// </summary>
@@ -84,9 +92,9 @@ public static class LaunchUtils
         List<T> instances = [];
         var searchType = typeof(T);
         logger?.Debug("Locating instances of \"{baseType}\"", searchType.FullName);
-        foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
+        foreach (var type in GetCompleteTypesFromAssemblies())
         {
-            if (type.IsInterface || type.IsAbstract || !type.IsAssignableTo(searchType)) continue;
+            if (!type.IsAssignableTo(searchType)) continue;
             var diType = type.GetCustomAttribute<LoadIntoDiContainerAttribute>()?.AsType ?? type;
 
             if (container.GetService(diType) is not T instance)

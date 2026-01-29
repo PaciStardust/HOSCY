@@ -47,7 +47,7 @@ public class HoscyCoreApp(ILogger? initialLogger = null) //todo: [REFACTOR] Redo
         _debug.Start(startParameters, config);
 
         onProgress?.Invoke("Loading DI container");
-        _container = DiContainer.LoadFromAssembly(_currentLogger, config, startParameters.AdditionalContainerInserts);
+        _container = DiContainer.CreateWithAssembly(_currentLogger, config, startParameters.AdditionalContainerInserts);
 
         _container.StartServices(onProgress);
         onProgress?.Invoke("Done!");

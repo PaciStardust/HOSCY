@@ -16,7 +16,7 @@ public class DiContainerTests : TestBaseForService<DiContainerTests>
 
     protected override void OneTimeSetupExtra()
     {
-        _container = DiContainer.LoadFromAssembly(_logger, _config, x =>
+        _container = DiContainer.CreateWithAssembly(_logger, _config, x =>
         {
             x.AddSingleton<DiTestService2>();
         });
