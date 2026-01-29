@@ -16,11 +16,6 @@ public class MockOutputManagerService : IOutputManagerService
     public bool Running { get; private set; } = false;
     public bool ProcessingIndicator { get; private set; } = false;
 
-    public void ActivateProcessor(OutputProcessorInfo info)
-    {
-        return;
-    }
-
     public void Clear()
     {
         Messages.Clear();
@@ -43,25 +38,10 @@ public class MockOutputManagerService : IOutputManagerService
         return Fault;
     }
 
-    public IReadOnlyList<OutputProcessorInfo> GetInfos(bool activeOnly)
-    {
-        return [];
-    }
-
-    public ServiceStatus GetProcessorStatus(OutputProcessorInfo info)
-    {
-        return ServiceStatus.Stopped;
-    }
-
     public void Restart()
     {
         Stop();
         Start();
-    }
-
-    public void RestartProcessor(OutputProcessorInfo info)
-    {
-        return;
     }
 
     public void SendMessage(string contents, OutputSettingsFlags settings)
@@ -82,11 +62,6 @@ public class MockOutputManagerService : IOutputManagerService
         OnProcessingIndicatorSet.Invoke(this, isProcessing);
     }
 
-    public void ShutdownProcessor(OutputProcessorInfo info)
-    {
-        return;
-    }
-
     public void Start()
     {
         Clear();
@@ -95,5 +70,25 @@ public class MockOutputManagerService : IOutputManagerService
     public void Stop()
     {
         Clear();
+    }
+
+    public IReadOnlyList<IOutputHandlerStartInfo> GetHandlerInfos(bool _)
+    {
+        return [];
+    }
+
+    public ServiceStatus GetProcessorStatus(IOutputHandlerStartInfo _)
+    {
+        return ServiceStatus.Processing;
+    }
+
+    public void RefreshHandlers()
+    {
+        return;
+    }
+
+    public void RestartHandlers()
+    {
+        return;
     }
 }
