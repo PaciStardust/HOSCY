@@ -208,7 +208,7 @@ public class OutputManagerService //todo: [REFACTOR] Better error handling?
     {
         try
         {
-            ShutdownHandlerSafe(handler);
+            ShutdownHandlerUnsafe(handler);
             return true;
         }
         catch (Exception ex)
