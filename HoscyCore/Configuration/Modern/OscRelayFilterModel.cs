@@ -42,10 +42,17 @@ public class OscRelayFilterModel : ObservableObject
         set => SetProperty(ref _blacklistMode, value);
     }
 
+    private bool _enabled = true;
+    public bool Enabled
+    {
+        get => _enabled;
+        set => SetProperty(ref _enabled, value);
+    }
+
     private bool _isValid = true;
     public override string ToString()
     {
-        return $"{(_isValid ? "" : "[x]")}{Name} ={(BlacklistMode ? "B" : string.Empty)}> {Ip}:{Port}";
+        return $"{(_enabled ? (_isValid ? "" : "[x]") : "[_]")}{Name} ={(BlacklistMode ? "B" : string.Empty)}> {Ip}:{Port}";
     }
 
     /// <summary>

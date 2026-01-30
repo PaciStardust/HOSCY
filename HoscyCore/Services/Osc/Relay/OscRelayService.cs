@@ -72,6 +72,8 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
 
         foreach (var filterModel in filterModels)
         {
+            if (!filterModel.Enabled) continue;
+
             var readonlyFilter = new OscReadonlyRelayFilter(filterModel);
             _logger.Debug("Checking validity of Relay Filter \"{filterName}\"", readonlyFilter.Name);
 
