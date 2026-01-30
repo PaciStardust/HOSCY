@@ -7,7 +7,7 @@ using Serilog;
 
 namespace HoscyCore.Services.Osc.Relay;
 
-[LoadIntoDiContainer(typeof(IOscRelayService), Lifetime.Singleton)] //todo: [TEST] Write tests for this
+[LoadIntoDiContainer(typeof(IOscRelayService), Lifetime.Singleton)]
 public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService sender, IBackToFrontNotifyService notify) : StartStopServiceBase, IOscRelayService
 {
     private readonly ILogger _logger = logger.ForContext<OscRelayService>();
