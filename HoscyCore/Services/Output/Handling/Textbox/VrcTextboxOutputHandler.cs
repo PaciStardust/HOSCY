@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.DependencyCore;
 using HoscyCore.Services.Osc.SendReceive;
@@ -32,7 +33,7 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
     #region Processor Variables
     //Queue
     private (string Text, OutputNotificationPriority Priority)? _currentNotification = null;
-    private readonly Queue<string> _currentMessages = [];
+    private readonly ConcurrentQueue<string> _currentMessages = [];
 
     //Processing Indicator
     private bool _lastSetProcessingState = false;
@@ -102,7 +103,13 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
                     _logger.Verbose("Notification timeout was shortened due to incoming message");
                 }
 
-                textToSend = _currentMessages.Dequeue();
+                var success = _currentMessages.TryDequeue(out textToSend);
+                if (!success)
+                {
+                    await Task.Delay(TIMEOUT_WAIT_MS);
+                    return;
+                }
+
                 playTextboxSound = _config.VrcTextbox_Sound_OnMessage;
                 _lastSentNotificationPriority = null;
                 _isClearPending = _config.VrcTextbox_Timeout_AutomaticallyClearMessage;
