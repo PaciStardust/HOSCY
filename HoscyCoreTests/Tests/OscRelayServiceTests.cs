@@ -6,7 +6,7 @@ using LucHeart.CoreOSC;
 
 namespace HoscyCoreTests.Tests;
 
-public class OscRelayServiceTests : TestBaseForService<OscRelayServiceTests> //todo: filtertest
+public class OscRelayServiceTests : TestBaseForService<OscRelayServiceTests>
 {
     private readonly ConfigModel _config = new();
     private readonly MockBackToFrontNotifyService _notify = new();
