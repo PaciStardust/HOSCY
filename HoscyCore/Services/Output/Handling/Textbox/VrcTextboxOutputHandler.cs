@@ -17,7 +17,7 @@ public class VrcTextboxOutputHandlerStartInfo(ConfigModel config) : IOutputHandl
         => typeof(VrcTextboxOutputHandler);
 
     public bool ShouldBeEnabled()
-        => true; //todo: should be a config
+        => _config.VrcTextbox_Enabled;
 }
 
 [LoadIntoDiContainer(typeof(VrcTextboxOutputHandler), Lifetime.Transient)] //todo: [TEST] Write tests for this
@@ -59,7 +59,7 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
 
     public override OutputTranslationFormat GetTranslationOutputMode()
     {
-        return _config.VrcTextbox_Output_DoTranslate
+        return _config.VrcTextbox_Output_ShowTranslation
             ? OutputTranslationFormat.Both
             : OutputTranslationFormat.Untranslated; 
     }
@@ -172,6 +172,8 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
     private const int VRC_TEXTBOX_LIMIT = 140;
     private void SendMessage(string message, bool playSound)
     {
+        if (!_config.VrcTextbox_Do_Output) return;
+
         if (message.Length > VRC_TEXTBOX_LIMIT) //Clamp for VRC
             message = message[..VRC_TEXTBOX_LIMIT];
 
@@ -210,14 +212,15 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
     private bool CanSetProcessingIndicator()
     {
         return _lastSentTypingIndicator.AddSeconds(4) > DateTimeOffset.UtcNow
-            && _config.VrcTextbox_Indicator_WhenSpeaking
-            && (_config.ManualInput_SendViaText || _config.VrcTextbox_Indicator_WhenDisabled); //todo: [REFACTOR] UseTextbox check needs a redo
+            && _config.VrcTextbox_Do_Indicator;
     }
     #endregion
 
     #region Input Processing
     public override void HandleNotification(string contents, OutputNotificationPriority priority)
     {
+        if (!_config.VrcTextbox_Do_Output) return;
+
         if (string.IsNullOrWhiteSpace(contents))
         {
             if (_currentNotification.HasValue && _currentNotification.Value.Priority == priority)
@@ -245,6 +248,8 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
 
     public override void HandleMessage(string contents)  
     {
+        if (!_config.VrcTextbox_Do_Output) return;
+
         if (string.IsNullOrWhiteSpace(contents)) return;
 
         foreach (var message in SplitMessageIntoSegments(contents))

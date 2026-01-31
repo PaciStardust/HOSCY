@@ -639,7 +639,7 @@ public class ConfigModel : ObservableObject
     /// <summary>
     /// OSC Address to send to tool for external messages to be sent as text
     /// </summary>
-    public string Osc_Address_Input_TextMessage //todo: [IMPL] To be implemented
+    public string Osc_Address_Input_TextMessage
     {
         get => _osc_Address_Input_TextMessage;
         set => SetProperty(ref _osc_Address_Input_TextMessage, value);
@@ -649,7 +649,7 @@ public class ConfigModel : ObservableObject
     /// <summary>
     /// OSC Address to send to tool for external notifications to be sent as text
     /// </summary>
-    public string Osc_Address_Input_TextNotification //todo: [IMPL] To be implemented
+    public string Osc_Address_Input_TextNotification
     {
         get => _osc_Address_Input_TextNotification;
         set => SetProperty(ref _osc_Address_Input_TextNotification, value);
@@ -659,7 +659,7 @@ public class ConfigModel : ObservableObject
     /// <summary>
     /// OSC Address to send to tool for external text to be sent as audio
     /// </summary>
-    public string Osc_Address_Input_Audio //todo: [IMPL] To be implemented
+    public string Osc_Address_Input_Audio
     {
         get => _osc_Address_Input_Audio;
         set => SetProperty(ref _osc_Address_Input_Audio, value);
@@ -669,7 +669,7 @@ public class ConfigModel : ObservableObject
     /// <summary>
     /// OSC Address to send to tool for external text to be sent as other
     /// </summary>
-    public string Osc_Address_Input_Other //todo: [IMPL] To be implemented
+    public string Osc_Address_Input_Other
     {
         get => _osc_Address_Input_Other;
         set => SetProperty(ref _osc_Address_Input_Other, value);
@@ -1315,14 +1315,24 @@ public class ConfigModel : ObservableObject
 
     #region VRC Textbox
     /// <summary>
+    /// Should the Textbox be enabled
+    /// </summary>
+    public bool VrcTextbox_Enabled
+    {
+        get => _vrcTextbox_Enabled;
+        set => SetProperty(ref _vrcTextbox_Enabled, value);
+    }
+    private bool _vrcTextbox_Enabled = false;
+
+    /// <summary>
     /// Should translated content be sent to the VRC Textbox?
     /// </summary>
-    public bool VrcTextbox_Output_DoTranslate //todo: [REFACTOR] Should this even be a thing?
+    public bool VrcTextbox_Output_ShowTranslation
     {
-        get => _vrcTextbox_Output_DoTranslate;
-        set => SetProperty(ref _vrcTextbox_Output_DoTranslate, value);
+        get => _vrcTextbox_Output_ShowTranslation;
+        set => SetProperty(ref _vrcTextbox_Output_ShowTranslation, value);
     }
-    private bool _vrcTextbox_Output_DoTranslate;
+    private bool _vrcTextbox_Output_ShowTranslation;
 
     /// <summary>
     /// Maximum of characters displayed
@@ -1335,24 +1345,24 @@ public class ConfigModel : ObservableObject
     private int _vrcTextbox_Output_MaxDisplayedCharacters = 130;
 
     /// <summary>
-    /// Display the typing indicator when speaking
+    /// Actuall output text (disable to only have processing indicator)
     /// </summary>
-    public bool VrcTextbox_Indicator_WhenSpeaking //todo: [FIX] Needs overhaul???
+    public bool VrcTextbox_Do_Output
     {
-        get => _vrcTextbox_Indicator_WhenSpeaking;
-        set => SetProperty(ref _vrcTextbox_Indicator_WhenSpeaking, value);
+        get => _vrcTextbox_Do_Output; 
+        set => SetProperty(ref _vrcTextbox_Do_Output, value);
     }
-    private bool _vrcTextbox_Indicator_WhenSpeaking;
+    private bool _vrcTextbox_Do_Output = true;
 
     /// <summary>
-    /// Display the typing indicator when not even outputting
+    /// Show indicator while processing
     /// </summary>
-    public bool VrcTextbox_Indicator_WhenDisabled //todo: [FIX] Needs overhaul???
+    public bool VrcTextbox_Do_Indicator
     {
-        get => _vrcTextbox_Indicator_WhenDisabled;
-        set => SetProperty(ref _vrcTextbox_Indicator_WhenDisabled, value);
+        get => _vrcTextbox_Do_Indicator;
+        set => SetProperty(ref _vrcTextbox_Do_Indicator, value);
     }
-    private bool _vrcTextbox_Indicator_WhenDisabled;
+    private bool _vrcTextbox_Do_Indicator = true;
 
     /// <summary>
     /// Ms of timeout per 20 characters displayed at same time

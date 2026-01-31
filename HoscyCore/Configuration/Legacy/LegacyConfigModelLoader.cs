@@ -195,7 +195,7 @@ public static class LegacyConfigModelLoader
             Translation_SkipLongerMessages = oldConfig.Api.TranslationSkipLongerMessages,
             Translation_MaxTextLength = oldConfig.Api.TranslationMaxTextLength,
             Translation_OfAudioOutput = oldConfig.Api.TranslateTts,
-            VrcTextbox_Output_DoTranslate = oldConfig.Api.TranslateTextbox,
+            VrcTextbox_Output_ShowTranslation = oldConfig.Api.TranslateTextbox,
             ExternalInput_DoTranslate = oldConfig.Api.TranslationAllowExternal,
             Translation_AppendOriginal = oldConfig.Api.AddOriginalAfterTranslate,
 
@@ -309,8 +309,8 @@ public static class LegacyConfigModelLoader
             Preprocessing_ReplacementFullIgnoredCharacters = oldConfig.Speech.ShortcutIgnoredCharacters,
 
             VrcTextbox_Output_MaxDisplayedCharacters = oldConfig.Textbox.MaxLength,
-            VrcTextbox_Indicator_WhenSpeaking = oldConfig.Textbox.UseIndicatorWhenSpeaking,
-            VrcTextbox_Indicator_WhenDisabled = oldConfig.Textbox.UseIndicatorWithoutBox,
+            VrcTextbox_Do_Output = oldConfig.Speech.UseTextbox || oldConfig.Input.UseTextbox,
+            VrcTextbox_Do_Indicator = oldConfig.Textbox.UseIndicatorWithoutBox || oldConfig.Textbox.UseIndicatorWhenSpeaking,
 
             VrcTextbox_Timeout_DynamicPer20CharactersDisplayedMs = oldConfig.Textbox.TimeoutMultiplier,
             VrcTextbox_Timeout_DynamicMinimumMs = oldConfig.Textbox.MinimumTimeout,
