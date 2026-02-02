@@ -5,12 +5,19 @@ namespace HoscyCore.Services.Output.Core;
 
 public interface IOutputPreprocessor : IService
 {
+    /// <summary>
+    /// Should preprocessor even be used?
+    /// </summary>
+    public bool IsEnabled();
+
+    /// <summary>
+    /// Retrieve the handling stage of the preprocessor
+    /// </summary>
     public OutputPreprocessorHandlingStage GetHandlingStage();
 
     /// <summary>
     /// Indicates if text is fully replaced
     /// </summary>
-    /// <returns></returns>
     public bool IsFullReplace();
 
     /// <summary>
@@ -23,6 +30,5 @@ public interface IOutputPreprocessor : IService
     /// </summary>
     /// <param name="input">Input to process</param>
     /// <param name="output">Output of processing if returning true</param>
-    /// <returns>Success</returns>
     public bool TryProcess(string input, [NotNullWhen(true)] out string? output);
 }

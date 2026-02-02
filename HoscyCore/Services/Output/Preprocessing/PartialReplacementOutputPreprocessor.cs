@@ -14,6 +14,9 @@ namespace HoscyCore.Services.Output.Preprocessing;
 public class PartialReplacementOutputPreprocessor(ConfigModel config, ILogger logger) : ReplacementOutputPreprocessorBase<PartialReplacementHandler>(config, logger.ForContext<PartialReplacementOutputPreprocessor>())
 {
     #region Simple Overrides
+    public override bool IsEnabled()
+        => _config.Preprocessing_DoReplacementsPartial;
+
     public override PartialReplacementHandler ConvertToHandler(ReplacementDataModel model)
     {
         return new(model);
@@ -39,8 +42,6 @@ public class PartialReplacementOutputPreprocessor(ConfigModel config, ILogger lo
     public override bool TryProcess(string input, [NotNullWhen(true)] out string? output)
     {
         output = null;
-        if (!_config.Preprocessing_DoReplacementsPartial) //todo: [FEAT] Convert this to an IsEnabled flag
-            return false;
 
         foreach (var handler in _handlers)
         {
@@ -52,6 +53,7 @@ public class PartialReplacementOutputPreprocessor(ConfigModel config, ILogger lo
             output = null;
             return false;
         }
+        
         return true;
     }
     #endregion

@@ -560,6 +560,9 @@ public class OutputManagerService //todo: [REFACTOR] Better error handling?
 
     private bool IsPreprocessorCompatible(IOutputPreprocessor preprocessor, OutputSettingsFlags settings) //todo: [TEST] Does this filter work?
     {
+        if (!preprocessor.IsEnabled())
+            return false;
+
         return preprocessor.IsFullReplace()
             ? settings.HasFlag(OutputSettingsFlags.DoPreprocessFull)
             : settings.HasFlag(OutputSettingsFlags.DoPreprocessPartial);

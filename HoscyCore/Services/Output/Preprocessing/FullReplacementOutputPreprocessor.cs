@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.DependencyCore;
@@ -14,6 +13,9 @@ namespace HoscyCore.Services.Output.Preprocessing;
 public class FullReplacementOutputPreprocessor(ConfigModel config, ILogger logger) : ReplacementOutputPreprocessorBase<FullReplacementHandler>(config, logger.ForContext<FullReplacementOutputPreprocessor>())
 {
     #region Simple Overrides
+    public override bool IsEnabled()
+        => _config.Preprocessing_DoReplacementsFull;
+
     public override FullReplacementHandler ConvertToHandler(ReplacementDataModel model)
     {
         return new(model);   
@@ -38,14 +40,12 @@ public class FullReplacementOutputPreprocessor(ConfigModel config, ILogger logge
     #region Processing
     public override bool TryProcess(string input, [NotNullWhen(true)] out string? output)
     {
-        if (_config.Preprocessing_DoReplacementsFull) {
-            foreach (var handler in _handlers)
-            {
-                if (!handler.Compare(input)) continue;
+        foreach (var handler in _handlers)
+        {
+            if (!handler.Compare(input)) continue;
 
-                output = handler.GetReplacement();
-                return true;
-            }
+            output = handler.GetReplacement();
+            return true;
         }
 
         output = null;

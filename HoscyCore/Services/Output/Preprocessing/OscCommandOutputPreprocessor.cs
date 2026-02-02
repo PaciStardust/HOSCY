@@ -15,6 +15,9 @@ public class OscCommandOutputPreprocessor(IOscCommandService cmd, ILogger logger
     private readonly IOscCommandService _cmd = cmd;
     private readonly ILogger _logger = logger.ForContext<OscCommandOutputPreprocessor>();
 
+    public bool IsEnabled()
+        => true;
+
     public OutputPreprocessorHandlingStage GetHandlingStage()
         => OutputPreprocessorHandlingStage.Final;
 

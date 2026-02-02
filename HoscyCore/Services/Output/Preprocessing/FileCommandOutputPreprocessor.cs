@@ -16,6 +16,9 @@ public partial class FileCommandOutputPreprocessor(ILogger logger) : IOutputPrep
     private const string COMMAND_PREFIX = "[file]";
     private static readonly Regex _commandPrefixRemover = new(@$"{COMMAND_PREFIX} *", RegexOptions.IgnoreCase);
 
+    public bool IsEnabled()
+        => true;
+
     public OutputPreprocessorHandlingStage GetHandlingStage()
         => OutputPreprocessorHandlingStage.ReplaceLate;
 
