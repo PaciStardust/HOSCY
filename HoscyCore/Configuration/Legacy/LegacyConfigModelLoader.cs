@@ -303,7 +303,7 @@ public static class LegacyConfigModelLoader
             Recognition_Fixup_NoiseFilter = new(oldConfig.Speech.NoiseFilter),
             Recognition_Fixup_RemoveEndPeriod = oldConfig.Speech.RemovePeriod,
             Recognition_Fixup_CapitalizeFirstLetter = oldConfig.Speech.CapitalizeFirst,
-            Preprocessing_DoReplacements = oldConfig.Speech.UseReplacements,
+            Preprocessing_DoReplacementsPartial = oldConfig.Speech.UseReplacements,
             Preprocessing_ReplacementsFull = ConvertReplacementDataModel(oldConfig.Speech.Shortcuts),
             Preprocessing_ReplacementsPartial = ConvertReplacementDataModel(oldConfig.Speech.Replacements),
             Preprocessing_ReplacementFullIgnoredCharacters = oldConfig.Speech.ShortcutIgnoredCharacters,

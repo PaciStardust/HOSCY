@@ -39,6 +39,9 @@ public class PartialReplacementOutputPreprocessor(ConfigModel config, ILogger lo
     public override bool TryProcess(string input, [NotNullWhen(true)] out string? output)
     {
         output = null;
+        if (!_config.Preprocessing_DoReplacementsPartial) //todo: [FEAT] Convert this to an IsEnabled flag
+            return false;
+
         foreach (var handler in _handlers)
         {
             output = handler.Replace(output ?? input);

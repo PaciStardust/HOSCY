@@ -739,14 +739,24 @@ public class ConfigModel : ObservableObject
 
     #region Preprocessing
     /// <summary>
-    /// Enables/Disables replacements entirely
+    /// Enables/Disables partial replacements entirely
     /// </summary>
-    public bool Preprocessing_DoReplacements //todo: [IMPL] To be implemented, even useful?
+    public bool Preprocessing_DoReplacementsPartial
     {
-        get => _preprocessing_DoReplacements;
-        set => SetProperty(ref _preprocessing_DoReplacements, value);
+        get => _preprocessing_DoReplacementsPartial;
+        set => SetProperty(ref _preprocessing_DoReplacementsPartial, value);
     }
-    private bool _preprocessing_DoReplacements = true;
+    private bool _preprocessing_DoReplacementsPartial = true;
+
+    /// <summary>
+    /// Enables/Disables full replacements entirely
+    /// </summary>
+    public bool Preprocessing_DoReplacementsFull
+    {
+        get => _preprocessing_DoReplacementsFull;
+        set => SetProperty(ref _preprocessing_DoReplacementsFull, value);
+    }
+    private bool _preprocessing_DoReplacementsFull = true;
 
     /// <summary>
     /// List of full replacements to use

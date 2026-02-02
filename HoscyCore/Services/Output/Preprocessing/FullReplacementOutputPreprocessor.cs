@@ -38,12 +38,14 @@ public class FullReplacementOutputPreprocessor(ConfigModel config, ILogger logge
     #region Processing
     public override bool TryProcess(string input, [NotNullWhen(true)] out string? output)
     {
-        foreach (var handler in _handlers)
-        {
-            if (!handler.Compare(input)) continue;
+        if (_config.Preprocessing_DoReplacementsFull) {
+            foreach (var handler in _handlers)
+            {
+                if (!handler.Compare(input)) continue;
 
-            output = handler.GetReplacement();
-            return true;
+                output = handler.GetReplacement();
+                return true;
+            }
         }
 
         output = null;
