@@ -10,7 +10,7 @@ namespace HoscyWhisperServer
         private static Dictionary<string, object> _config = new();
         private static CaptureThread? _cptThread;
 
-        static void Main(string[] args) //todo: [REFACTOR] Rewrite in C++?
+        static void Main(string[] args) //todo: [REFACTOR++] Rewrite in C++?
         {
             SendMessage(MessageType.Info, "Attempting to load whisper model");
             var cfg = string.Join(' ', args).Replace("'", "\"");

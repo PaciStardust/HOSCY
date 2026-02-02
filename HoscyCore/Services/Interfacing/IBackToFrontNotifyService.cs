@@ -5,12 +5,9 @@ namespace HoscyCore.Services.Interfacing;
 /// <summary>
 /// Service to send Information from the backend services to the frontend to display
 /// </summary>
-public interface IBackToFrontNotifyService : IService //todo: [REFACTOR] Should these be unified?
+public interface IBackToFrontNotifyService : IService
 {
-    public event EventHandler<BackToFrontNotifyEventArgs> OnInfo;
-    public event EventHandler<BackToFrontNotifyEventArgs> OnWarning;
-    public event EventHandler<BackToFrontNotifyEventArgs> OnError;
-    public event EventHandler<BackToFrontNotifyEventArgs> OnFatal;
+    public event EventHandler<BackToFrontNotifyEventArgs> OnNotificationSent;
 
     public void SendInfo(string title, string content = "", Exception? exception = null);
     public void SendWarning(string title, string content = "", Exception? exception = null);

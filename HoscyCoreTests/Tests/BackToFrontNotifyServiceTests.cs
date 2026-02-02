@@ -19,43 +19,37 @@ public class BackToFrontNotifyServiceTests : TestBase<BackToFrontNotifyServiceTe
         const string MSG_WARNING = "Warning Text";
         const string MSG_FATAL = "Fatal Text";
 
-        var target_info = (string.Empty, string.Empty);
-        var target_error = (string.Empty, string.Empty);
-        var target_warning = (string.Empty, string.Empty);
-        var target_fatal = (string.Empty, string.Empty);
+        List<BackToFrontNotifyEventArgs> notifyArgs = [];
 
-        Exception? target_ex_info = null;
-        Exception? target_ex_error = null;
-        Exception? target_ex_warning = null;
-        Exception? target_ex_fatal = null;
-
-        notify.OnInfo += (sender, args) => { target_info = (args.Title, args.Content); target_ex_info = args.Exception; };
-        notify.OnError += (sender, args) => { target_error = (args.Title, args.Content); target_ex_error = args.Exception; };
-        notify.OnWarning += (sender, args) => { target_warning = (args.Title, args.Content); target_ex_warning = args.Exception; };
-        notify.OnFatal += (sender, args) => { target_fatal = (args.Title, args.Content); target_ex_fatal = args.Exception; };
+        notify.OnNotificationSent += (sender, args) => { notifyArgs.Add(args); };
 
         notify.SendInfo(TTL_INFO);
         notify.SendWarning(TTL_WARNING, MSG_WARNING);
         notify.SendError(TTL_ERROR, MSG_ERROR, new Exception(TTL_ERROR));
         notify.SendFatal(TTL_FATAL, MSG_FATAL, new Exception(TTL_FATAL));
 
+        Assert.That(notifyArgs, Has.Count.EqualTo(4));
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(target_info.Item1, Is.EqualTo(TTL_INFO), "Info Title");
-            Assert.That(target_info.Item2, Is.Empty, "Info Message");
-            Assert.That(target_ex_info, Is.Null, "Info Ex");
+            Assert.That(notifyArgs[0].Title, Is.EqualTo(TTL_INFO), "Info Title");
+            Assert.That(notifyArgs[0].Content, Is.Empty, "Info Message");
+            Assert.That(notifyArgs[0].Exception, Is.Null, "Info Ex");
+            Assert.That(notifyArgs[0].Level, Is.EqualTo(BackToFrontNotifyLevel.Info), "Info Level");
 
-            Assert.That(target_warning.Item1, Is.EqualTo(TTL_WARNING), "Warning Title");
-            Assert.That(target_warning.Item2, Is.EqualTo(MSG_WARNING), "Warning Message");
-            Assert.That(target_ex_warning, Is.Null, "Warning Ex");
+            Assert.That(notifyArgs[1].Title, Is.EqualTo(TTL_WARNING), "Warning Title");
+            Assert.That(notifyArgs[1].Content, Is.EqualTo(MSG_WARNING), "Warning Message");
+            Assert.That(notifyArgs[1].Exception, Is.Null, "Warning Ex");
+            Assert.That(notifyArgs[1].Level, Is.EqualTo(BackToFrontNotifyLevel.Info), "Warn Level");
 
-            Assert.That(target_error.Item1, Is.EqualTo(TTL_ERROR), "Error Title");
-            Assert.That(target_error.Item2, Is.EqualTo(MSG_ERROR), "Error Message");
-            Assert.That(target_ex_error?.Message, Is.EqualTo(TTL_ERROR), "Error Ex");
+            Assert.That(notifyArgs[2].Title, Is.EqualTo(TTL_ERROR), "Error Title");
+            Assert.That(notifyArgs[2].Content, Is.EqualTo(MSG_ERROR), "Error Message");
+            Assert.That(notifyArgs[2].Exception?.Message, Is.EqualTo(TTL_ERROR), "Error Ex");
+            Assert.That(notifyArgs[2].Level, Is.EqualTo(BackToFrontNotifyLevel.Info), "Error Level");
 
-            Assert.That(target_fatal.Item1, Is.EqualTo(TTL_FATAL), "Fatal Title");
-            Assert.That(target_fatal.Item2, Is.EqualTo(MSG_FATAL), "Fatal Message");
-            Assert.That(target_ex_fatal?.Message, Is.EqualTo(TTL_FATAL), "Fatal Ex");
+            Assert.That(notifyArgs[3].Title, Is.EqualTo(TTL_FATAL), "Fatal Title");
+            Assert.That(notifyArgs[3].Content, Is.EqualTo(MSG_FATAL), "Fatal Message");
+            Assert.That(notifyArgs[3].Exception?.Message, Is.EqualTo(TTL_FATAL), "Fatal Ex");
+            Assert.That(notifyArgs[3].Level, Is.EqualTo(BackToFrontNotifyLevel.Info), "Fatal Level");
         };
     }
 }

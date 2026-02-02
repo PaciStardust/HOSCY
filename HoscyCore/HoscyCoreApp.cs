@@ -5,7 +5,7 @@ using Serilog;
 
 namespace HoscyCore;
 
-public class HoscyCoreApp(ILogger? initialLogger = null) //todo: [REFACTOR] Redo debug later?
+public class HoscyCoreApp(ILogger? initialLogger = null) //todo: [REFACTOR++] Maybe redo debug later?
 {
     private ILogger _currentLogger = initialLogger?.ForContext<HoscyCoreApp>() ?? LogUtils.CreateTemporaryLogger<HoscyCoreApp>();
     private DiContainer? _container = null;
