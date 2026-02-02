@@ -39,17 +39,17 @@ public class BackToFrontNotifyServiceTests : TestBase<BackToFrontNotifyServiceTe
             Assert.That(notifyArgs[1].Title, Is.EqualTo(TTL_WARNING), "Warning Title");
             Assert.That(notifyArgs[1].Content, Is.EqualTo(MSG_WARNING), "Warning Message");
             Assert.That(notifyArgs[1].Exception, Is.Null, "Warning Ex");
-            Assert.That(notifyArgs[1].Level, Is.EqualTo(BackToFrontNotifyLevel.Info), "Warn Level");
+            Assert.That(notifyArgs[1].Level, Is.EqualTo(BackToFrontNotifyLevel.Warning), "Warn Level");
 
             Assert.That(notifyArgs[2].Title, Is.EqualTo(TTL_ERROR), "Error Title");
             Assert.That(notifyArgs[2].Content, Is.EqualTo(MSG_ERROR), "Error Message");
             Assert.That(notifyArgs[2].Exception?.Message, Is.EqualTo(TTL_ERROR), "Error Ex");
-            Assert.That(notifyArgs[2].Level, Is.EqualTo(BackToFrontNotifyLevel.Info), "Error Level");
+            Assert.That(notifyArgs[2].Level, Is.EqualTo(BackToFrontNotifyLevel.Error), "Error Level");
 
             Assert.That(notifyArgs[3].Title, Is.EqualTo(TTL_FATAL), "Fatal Title");
             Assert.That(notifyArgs[3].Content, Is.EqualTo(MSG_FATAL), "Fatal Message");
             Assert.That(notifyArgs[3].Exception?.Message, Is.EqualTo(TTL_FATAL), "Fatal Ex");
-            Assert.That(notifyArgs[3].Level, Is.EqualTo(BackToFrontNotifyLevel.Info), "Fatal Level");
+            Assert.That(notifyArgs[3].Level, Is.EqualTo(BackToFrontNotifyLevel.Fatal), "Fatal Level");
         };
     }
 }
