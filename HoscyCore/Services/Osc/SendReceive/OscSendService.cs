@@ -11,7 +11,7 @@ namespace HoscyCore.Services.Osc.SendReceive;
 /// Default Sender for OSC
 /// </summary>
 [LoadIntoDiContainer(typeof(IOscSendService), Lifetime.Singleton)] //todo: [TEST] Write tests for this
-public class OscSendService(ILogger logger, ConfigModel config, IBackToFrontNotifyService notify) : IOscSendService
+public class OscSendService(ILogger logger, ConfigModel config, IBackToFrontNotifyService notify) : IOscSendService, IDisposable
 {
     private readonly Dictionary<string, OscSender> _senders = [];
     private readonly ILogger _logger = logger.ForContext<OscSendService>();
@@ -123,6 +123,15 @@ public class OscSendService(ILogger logger, ConfigModel config, IBackToFrontNoti
             return null;
         }
         return new(ipAddress, port);
+    }
+
+    public void Dispose()
+    {
+        foreach(var key in _senders.Keys)
+        {
+            _senders[key].Dispose();
+        }
+        _senders.Clear();
     }
     #endregion
 }
