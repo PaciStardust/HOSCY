@@ -370,7 +370,7 @@ public class ConfigModel : ObservableObject
     /// <summary>
     /// Text presets for manual input
     /// </summary>
-    public Dictionary<string, string> ManualInput_TextPresets //todo: [IMPL] To be implemented
+    public Dictionary<string, string> ManualInput_TextPresets
     {
         get => _manualInput_TextPresets;
         set => SetProperty(ref _manualInput_TextPresets, value);

@@ -6,10 +6,11 @@ using HoscyCore.Services.Misc;
 namespace HoscyCli.Commands.Modules;
 
 [PrototypeLoadIntoDiContainer(typeof(InputCommandModule))]
-public class InputCommandModule(IInputService input, ReflectPropEditCommandModule reflectCm) : AttributeCommandModule //todo: [FEAT] presets
+public class InputCommandModule(IInputService input, ReflectPropEditCommandModule reflectCm, ConfigModel config) : AttributeCommandModule
 {
     private readonly IInputService _input = input;
     private readonly ReflectPropEditCommandModule _reflectCm = reflectCm;
+    private readonly ConfigModel _config = config;
 
     #region External
     [SubCommandModule(["e-t-send"], "Send an external text message")]
@@ -111,6 +112,35 @@ public class InputCommandModule(IInputService input, ReflectPropEditCommandModul
     public CommandResult CmdMaSendViaText()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.ManualInput_SendViaText));
+    }
+
+    [SubCommandModule(["m-p-edit", "m-p-list"], "Edit manual presets")]
+    public CommandResult CmdMaPresetEdit()
+    {
+        return _reflectCm.SetProperty(nameof(ConfigModel.ManualInput_TextPresets));
+    }
+
+    [SubCommandModule(["m-p-send"], "Send a manual preset")] 
+    public CommandResult CmdMaPresetSend(string? preset)
+    {
+        var presets = _config.ManualInput_TextPresets;
+        if (presets.Count == 0)
+        {
+            Console.WriteLine("No presets were found");
+            return CommandResult.Success;
+        }
+
+        if (string.IsNullOrWhiteSpace(preset))
+        {
+            Console.WriteLine($"All presets: {string.Join("\n", presets.Select(x => $" - {x.Key} : {x.Value}"))}");
+            return CommandResult.NotFound;
+        }
+        
+        var match = presets.TryGetValue(preset, out var val);
+        if (OnFalse(match, "Unable to locate preset with specified name"))
+            return CommandResult.NotFound;
+
+        return CmdMaSend(val);
     }
     #endregion
 }
