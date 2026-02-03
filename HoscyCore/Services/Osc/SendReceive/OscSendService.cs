@@ -74,7 +74,7 @@ public class OscSendService(ILogger logger, ConfigModel config, IBackToFrontNoti
         return SendAsync(sender, ipForLog, portForLog, address, args).GetAwaiter().GetResult();
     }
 
-    private async Task<bool> SendAsync(OscSender sender, string ipForLog, ushort portForLog, string address, params object?[] args) //todo: [FEAT] event subscribe for errors?
+    private async Task<bool> SendAsync(OscSender sender, string ipForLog, ushort portForLog, string address, params object?[] args)
     {
         var packet = new OscMessage(address, args);
         try
@@ -90,6 +90,7 @@ public class OscSendService(ILogger logger, ConfigModel config, IBackToFrontNoti
         {
             _logger.Warning(ex, "Failed to send packet to {targetIp}->{targetPort}->\"{address}\" with parameters {params}",
             ipForLog, portForLog, address, args);
+            _notify.SendWarning("OSC Send Failed", $"Failed to send packet to {ipForLog}->{portForLog}->\"{address}\" with parameters {args}", ex);
             return false;
         }
     }
