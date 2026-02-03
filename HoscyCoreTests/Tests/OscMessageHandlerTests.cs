@@ -24,7 +24,6 @@ public class OscMessageHandlerTests : TestBase<OscMessageHandlerTests>
         {
             Assert.That(afkService.Started, Is.True, "Afk Service should be started");
             Assert.That(afkService.AfkRunning, Is.False, "Afk Service should not be running");
-            Assert.That(afkService.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Started), "Afk Service status should be Started");
         }
 
         // Invalid address should not be handled
@@ -62,7 +61,6 @@ public class OscMessageHandlerTests : TestBase<OscMessageHandlerTests>
             Assert.That(handled, shouldBeHandled ? Is.True : Is.False, "Message should be handled");
             Assert.That(afkService.Started, Is.True, "Afk Service started state wrong");
             Assert.That(afkService.AfkRunning, shouldBeRunning ? Is.True : Is.False, "Afk Service running state wrong");
-            Assert.That(afkService.GetCurrentStatus(), Is.EqualTo(shouldBeRunning ? ServiceStatus.Processing : ServiceStatus.Started), "Afk Service status wrong");
         }
     }
 

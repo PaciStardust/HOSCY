@@ -3,7 +3,7 @@ using HoscyCore.Services.Output.Core;
 
 namespace HoscyCoreTests.Mocks;
 
-public class MockOutputManagerService : IOutputManagerService
+public class MockOutputManagerService : MockStartStopServiceBase, IOutputManagerService
 {
     public event EventHandler<OutputMessageEventArgs> OnMessage = delegate { };
     public event EventHandler<OutputNotificationEventArgs> OnNotification = delegate { };
@@ -21,27 +21,6 @@ public class MockOutputManagerService : IOutputManagerService
         Messages.Clear();
         Notifications.Clear();
         OnClear.Invoke(this, EventArgs.Empty);
-    }
-
-    public ServiceStatus GetCurrentStatus()
-    {
-        return Running ? (
-            GetFaultIfExists() is null
-            ? ServiceStatus.Processing
-            : ServiceStatus.Faulted
-        )
-        : ServiceStatus.Stopped;
-    }
-
-    public Exception? GetFaultIfExists()
-    {
-        return Fault;
-    }
-
-    public void Restart()
-    {
-        Stop();
-        Start();
     }
 
     public void SendMessage(string contents, OutputSettingsFlags settings)
@@ -62,14 +41,16 @@ public class MockOutputManagerService : IOutputManagerService
         OnProcessingIndicatorSet.Invoke(this, isProcessing);
     }
 
-    public void Start()
+    public override void Start()
     {
+        base.Start();
         Clear();
     }
 
-    public void Stop()
+    public override void Stop()
     {
         Clear();
+        base.Stop();
     }
 
     public IReadOnlyList<IOutputHandlerStartInfo> GetHandlerInfos(bool _)
