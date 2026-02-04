@@ -207,7 +207,8 @@ public class DiContainer
             {
                 var bulkTypes = availableServices
                     .Select(x => x.GetType())
-                    .Where(x => x.IsAssignableTo(parameterType.GetGenericArguments()[0]));
+                    .Where(x => x.IsAssignableTo(parameterType.GetGenericArguments()[0]) 
+                        && x.IsAssignableTo(interfaceService));
                 dependencies.AddRange(bulkTypes);
                 continue;
             }
@@ -317,7 +318,7 @@ public class DiContainer
 
             _logger.Debug("Starting service {currenStart}/{toStart}: {currentService} as {currentServiceBase}",
                 i + 1, orderedServicesToStart.Count, currentService.Type.FullName, currentService.AsType.FullName);
-            onProgress?.Invoke($"Starting service {i + 1}/{orderedServicesToStart.Count}:\n{currentService.GetType().Name}");
+            onProgress?.Invoke($"Starting service {i + 1}/{orderedServicesToStart.Count}:\n{currentService.Type.Name}");
 
             var subSw = Stopwatch.StartNew();
             currentService.Service.Start();

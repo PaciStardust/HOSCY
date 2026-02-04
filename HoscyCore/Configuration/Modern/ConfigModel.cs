@@ -738,8 +738,6 @@ public class ConfigModel : ObservableObject
     #endregion
 
     #region Preprocessing
-    //todo: [IMPL] Add this to CLI
-
     /// <summary>
     /// Enables/Disables partial replacements entirely
     /// </summary>
