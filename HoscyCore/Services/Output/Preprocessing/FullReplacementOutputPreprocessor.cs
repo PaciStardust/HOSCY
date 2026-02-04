@@ -40,6 +40,7 @@ public class FullReplacementOutputPreprocessor(ConfigModel config, ILogger logge
     #region Processing
     public override bool TryProcess(string input, [NotNullWhen(true)] out string? output)
     {
+        input = string.Concat(input.Where(x => !_config.Preprocessing_ReplacementFullIgnoredCharacters.Contains(x)));
         foreach (var handler in _handlers)
         {
             if (!handler.Compare(input)) continue;

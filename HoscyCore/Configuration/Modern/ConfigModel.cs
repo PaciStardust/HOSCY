@@ -738,6 +738,8 @@ public class ConfigModel : ObservableObject
     #endregion
 
     #region Preprocessing
+    //todo: [IMPL] Add this to CLI
+
     /// <summary>
     /// Enables/Disables partial replacements entirely
     /// </summary>
@@ -781,7 +783,7 @@ public class ConfigModel : ObservableObject
     /// <summary>
     /// Characters that get ignored for full replacements
     /// </summary>
-    public string Preprocessing_ReplacementFullIgnoredCharacters //todo: [IMPL] To be implemented
+    public string Preprocessing_ReplacementFullIgnoredCharacters
     {
         get => _preprocessing_ReplacementFullIgnoredCharacters;
         set => SetProperty(ref _preprocessing_ReplacementFullIgnoredCharacters, value);
