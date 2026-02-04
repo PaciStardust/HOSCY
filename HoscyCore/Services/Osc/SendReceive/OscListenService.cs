@@ -13,7 +13,7 @@ namespace HoscyCore.Services.Osc.SendReceive;
 /// <summary>
 /// Default Listener for OSC
 /// </summary>
-[LoadIntoDiContainer(typeof(IOscListenService), Lifetime.Singleton)] //todo: [TEST] Write tests for this
+[LoadIntoDiContainer(typeof(IOscListenService), Lifetime.Singleton)]
 public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNotifyService notify, IOscMessageHandlingService messageHandler, IOscRelayService relay)
     : StartStopServiceBase, IOscListenService
 {

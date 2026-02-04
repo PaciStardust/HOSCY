@@ -507,7 +507,7 @@ public class ConfigModel : ObservableObject
     /// <summary>
     /// Should incoming OSC still be relayed if handled by HOSCY (ex: counters & afk)
     /// </summary>
-    public bool Osc_Relay_IgnoreIfHandled //todo: test this
+    public bool Osc_Relay_IgnoreIfHandled //todo: [IMPL] To be implemented
     {
         get => _osc_Relay_IgnoreIfHandled;
         set => SetProperty(ref _osc_Relay_IgnoreIfHandled, value);
