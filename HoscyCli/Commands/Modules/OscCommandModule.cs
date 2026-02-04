@@ -30,12 +30,18 @@ public class OscCommandModule(IOscRelayService oscRelay, IOscListenService oscLi
         return CommandResult.Success;
     }
 
-    [SubCommandModule(["filters"], "Edit relay filters")]
+    [SubCommandModule(["relay-filters"], "Edit relay filters")]
     public CommandResult CmdEditRelayFilters()
     {
         var res = _reflectCm.SetProperty(nameof(ConfigModel.Osc_Relay_Filters));
         _oscRelay.Restart();
         return res;
+    }
+
+    [SubCommandModule(["relay-ignore-if-handled"], "Edit relay ignore if handled")]
+    public CommandResult CmdEditRelayIgnoreIfHandled()
+    {
+        return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Relay_IgnoreIfHandled));
     }
 
     [SubCommandModule(["ip-out"], "Edit the outbound ip")]
