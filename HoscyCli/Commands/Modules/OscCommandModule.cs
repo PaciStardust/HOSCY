@@ -8,12 +8,17 @@ using HoscyCore.Services.Osc.SendReceive;
 namespace HoscyCli.Commands.Modules;
 
 [PrototypeLoadIntoDiContainer(typeof(OscCommandModule))]
-public class OscCommandModule(IOscRelayService oscRelay, IOscListenService oscListen, IOscQueryService oscQuery, ReflectPropEditCommandModule reflectCm) : AttributeCommandModule
+public class OscCommandModule(IOscRelayService oscRelay, IOscListenService oscListen, IOscQueryService oscQuery, ReflectPropEditCommandModule reflectCm)
+    : AttributeCommandModule, ICoreCommandModule
 {
     private readonly IOscRelayService _oscRelay = oscRelay;
     private readonly IOscListenService _oscListen = oscListen;
     private readonly IOscQueryService _oscQuery = oscQuery;
     private readonly ReflectPropEditCommandModule _reflectCm = reflectCm;
+
+    public string ModuleName => "OSC";
+    public string ModuleDescription => "Configure OSC";
+    public string[] ModuleCommands => ["osc"];
 
     [SubCommandModule(["status"], "Display overall OSC status")]
     public CommandResult CmdDisplayStatus()

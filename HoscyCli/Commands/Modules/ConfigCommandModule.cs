@@ -7,12 +7,16 @@ using Serilog;
 namespace HoscyCli.Commands.Modules;
 
 [PrototypeLoadIntoDiContainer(typeof(ConfigCommandModule), Lifetime.Singleton)]
-public class ConfigCommandModule(ReflectPropEditCommandModule reflectionCm, ConfigModel config, ILogger logger) : AttributeCommandModule
+public class ConfigCommandModule(ReflectPropEditCommandModule reflectionCm, ConfigModel config, ILogger logger) : AttributeCommandModule, ICoreCommandModule
 {
     private readonly ReflectPropEditCommandModule _reflectionCm = reflectionCm;
     private readonly string[] _allProps = ReflectPropEditCommandModule.GetAllConfigValues();
     private readonly ConfigModel _config = config;
     private readonly ILogger _logger = logger.ForContext<ConfigCommandModule>();
+
+    public string ModuleName => "Config";
+    public string ModuleDescription => "Configure the entire config file";
+    public string[] ModuleCommands => ["config", "cfg"];
 
     [SubCommandModule(["list", "l", "all", "a"], "Get all editable properties (additional text filters)")]
     public CommandResult GetAll(string? filter)

@@ -5,9 +5,13 @@ using HoscyCore.Services.DependencyCore;
 namespace HoscyCli.Commands.Modules;
 
 [PrototypeLoadIntoDiContainer(typeof(PreprocessingCommandModule))]
-public class PreprocessingCommandModule(ReflectPropEditCommandModule reflectCm) : AttributeCommandModule
+public class PreprocessingCommandModule(ReflectPropEditCommandModule reflectCm) : AttributeCommandModule, ICoreCommandModule
 {
     private readonly ReflectPropEditCommandModule _reflectCm = reflectCm;
+
+    public string ModuleName => "Preprocessing";
+    public string ModuleDescription => "Configure preprocessing";
+    public string[] ModuleCommands => ["preprocessing"];
 
     [SubCommandModule(["do-replace-partial"], "Do partial replacements")]
     public CommandResult CmdDoReplacePartial()

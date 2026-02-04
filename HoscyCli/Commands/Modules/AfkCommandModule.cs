@@ -7,11 +7,15 @@ using Serilog;
 namespace HoscyCli.Commands.Modules;
 
 [PrototypeLoadIntoDiContainer(typeof(AfkCommandModule))]
-public class AfkCommandModule(IAfkService afkService, ILogger logger, ReflectPropEditCommandModule reflectCm) : AttributeCommandModule
+public class AfkCommandModule(IAfkService afkService, ILogger logger, ReflectPropEditCommandModule reflectCm) : AttributeCommandModule, ICoreCommandModule
 {
     private readonly IAfkService _afkService = afkService;
     private readonly ILogger _logger = logger.ForContext<AfkCommandModule>();
     private readonly ReflectPropEditCommandModule _reflectCm = reflectCm;
+
+    public string ModuleName => "Afk";
+    public string ModuleDescription => "Configure AFK detection and status";
+    public string[] ModuleCommands => ["afk"];
 
     [SubCommandModule(["status"], "Get service status")]
     public CommandResult CmdStatus()

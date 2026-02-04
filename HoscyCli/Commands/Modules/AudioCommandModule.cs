@@ -5,9 +5,13 @@ using HoscyCore.Services.DependencyCore;
 namespace HoscyCli.Commands.Modules;
 
 [PrototypeLoadIntoDiContainer(typeof(AudioCommandModule))]
-public class AudioCommandModule(IAudioService audio) : AttributeCommandModule
+public class AudioCommandModule(IAudioService audio) : AttributeCommandModule, ICoreCommandModule
 {
     private readonly IAudioService _audio = audio;
+
+    public string ModuleName => "Audio";
+    public string ModuleDescription => "Configure audio devices";
+    public string[] ModuleCommands => ["audio"];
 
     [SubCommandModule(["devices"], "List all devices")]
     public CommandResult CmdDevices()

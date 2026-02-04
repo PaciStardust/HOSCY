@@ -5,9 +5,13 @@ using HoscyCore.Services.DependencyCore;
 namespace HoscyCli.Commands.Modules;
 
 [PrototypeLoadIntoDiContainer(typeof(CounterCommandModule))]
-public class CounterCommandModule(ReflectPropEditCommandModule _reflectCm) : AttributeCommandModule
+public class CounterCommandModule(ReflectPropEditCommandModule _reflectCm) : AttributeCommandModule, ICoreCommandModule
 {
     private readonly ReflectPropEditCommandModule _reflectCm = _reflectCm;
+
+    public string ModuleName => "Counters";
+    public string ModuleDescription => "Configure counters";
+    public string[] ModuleCommands => ["counters"];
 
     [SubCommandModule(["show"], "Show counter notifications")]
     public CommandResult CmdShow()

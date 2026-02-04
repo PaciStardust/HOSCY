@@ -39,7 +39,10 @@ public abstract class AttributeCommandModule : ICommandModule
 
             _commandInfo.Add((attribute, x => (CommandResult)method.Invoke(this, [x])!));
         }
+
+        AddExtrasSubcommands(_commandInfo);
     }
+    protected virtual void AddExtrasSubcommands(List<(SubCommandModuleAttribute Attribute, Func<string?, CommandResult> Func)> list) { }
 
     public CommandResult ExecutePrependArgs(string command, string prependArgs)
     {

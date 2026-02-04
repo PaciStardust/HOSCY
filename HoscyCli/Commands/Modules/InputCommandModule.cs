@@ -6,11 +6,15 @@ using HoscyCore.Services.Misc;
 namespace HoscyCli.Commands.Modules;
 
 [PrototypeLoadIntoDiContainer(typeof(InputCommandModule))]
-public class InputCommandModule(IInputService input, ReflectPropEditCommandModule reflectCm, ConfigModel config) : AttributeCommandModule
+public class InputCommandModule(IInputService input, ReflectPropEditCommandModule reflectCm, ConfigModel config) : AttributeCommandModule, ICoreCommandModule
 {
     private readonly IInputService _input = input;
     private readonly ReflectPropEditCommandModule _reflectCm = reflectCm;
     private readonly ConfigModel _config = config;
+
+    public string ModuleName => "Input";
+    public string ModuleDescription => "Configure and send manual/external input";
+    public string[] ModuleCommands => ["input"];
 
     #region External
     [SubCommandModule(["e-t-send"], "Send an external text message")]

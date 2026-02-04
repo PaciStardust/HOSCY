@@ -7,9 +7,15 @@ using Serilog;
 namespace HoscyCli.Commands.Modules;
 
 [PrototypeLoadIntoDiContainer(typeof(ServiceManagerCommandModule))]
-public class ServiceManagerCommandModule : AttributeCommandModule {
+public class ServiceManagerCommandModule : AttributeCommandModule, ICoreCommandModule
+{
     private readonly IService[] _services;
     private readonly ILogger _logger;
+
+    public string ModuleName => "Services";
+    public string ModuleDescription => "Retrieve service infos";
+    public string[] ModuleCommands => ["services", "srv"];
+
     public ServiceManagerCommandModule(IServiceProvider services, ILogger logger)
     {
         _logger = logger.ForContext<ServiceManagerCommandModule>();
