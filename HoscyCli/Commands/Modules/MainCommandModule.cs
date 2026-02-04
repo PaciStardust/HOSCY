@@ -3,7 +3,7 @@ using HoscyCore.Services.DependencyCore;
 
 namespace HoscyCli.Commands.Modules;
 
-[LoadIntoDiContainer(typeof(MainCommandModule), Lifetime.Singleton)]
+[LoadIntoDiContainer(typeof(MainCommandModule), Lifetime.Singleton)] //todo: [REFACTOR] Fix this loading, ensure all is configurable
 public class MainCommandModule(
     ConfigCommandModule configCm,
     ServiceManagerCommandModule serviceCm,
@@ -11,7 +11,8 @@ public class MainCommandModule(
     AfkCommandModule afkCm,
     CounterCommandModule counterCm,
     AudioCommandModule audioCm,
-    InputCommandModule exInputCm
+    InputCommandModule exInputCm,
+    PreprocessingCommandModule preprocessCm
 ) : AttributeCommandModule
 {
     private readonly ConfigCommandModule _configCm = configCm;
@@ -21,6 +22,7 @@ public class MainCommandModule(
     private readonly CounterCommandModule _counterCm = counterCm;
     private readonly AudioCommandModule _audioCm = audioCm;
     private readonly InputCommandModule _exInputCm = exInputCm;
+    private readonly PreprocessingCommandModule _preprocessCm = preprocessCm;
 
     [SubCommandModule(["config"], "Edit the config file")]
     public CommandResult CmdConfig(string? args)
@@ -69,6 +71,13 @@ public class MainCommandModule(
     {
         if (OnEmpty(args, GetParameterError("input"))) return CommandResult.MissingParameter;
         return _exInputCm.Execute(args);
+    }
+
+    [SubCommandModule(["preprocessing"], "Manage preprocessing")]
+    public CommandResult CmdPreprocessing(string? args)
+    {
+        if (OnEmpty(args, GetParameterError("preprocessing"))) return CommandResult.MissingParameter;
+        return _preprocessCm.Execute(args);
     }
 
     private string GetParameterError(string commandName) 
