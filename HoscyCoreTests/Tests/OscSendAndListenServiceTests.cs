@@ -165,7 +165,7 @@ public class OscSendAndListenServiceTests : TestBaseForService<OscSendAndListenS
         object[] parameters = [ true, false, 1, -1, 89978787, string.Empty, "this is a \n test", 0, 1.1f, -0.0001f, 1727849849.3f ];
         var result = _send.SendToDefaultSync("/this/is/a/parameter_test", parameters);
 
-        Thread.Sleep(5);
+        Thread.Sleep(10);
 
         using (Assert.EnterMultipleScope())
         {
@@ -211,7 +211,7 @@ public class OscSendAndListenServiceTests : TestBaseForService<OscSendAndListenS
         _handler.DoesHandle = false;
 
         var result = _send.SendToDefaultSync("/test", true);
-        Thread.Sleep(5);
+        Thread.Sleep(10);
 
         using (Assert.EnterMultipleScope())
         {
@@ -232,7 +232,7 @@ public class OscSendAndListenServiceTests : TestBaseForService<OscSendAndListenS
         _handler.DoesHandle = true;
 
         result = _send.SendToDefaultSync("/test2", true);
-        Thread.Sleep(5);
+        Thread.Sleep(10);
 
         using (Assert.EnterMultipleScope())
         {
@@ -252,7 +252,7 @@ public class OscSendAndListenServiceTests : TestBaseForService<OscSendAndListenS
         _config.Osc_Relay_IgnoreIfHandled = false;
 
         result = _send.SendToDefaultSync("/test3", true);
-        Thread.Sleep(5);
+        Thread.Sleep(10);
 
         using (Assert.EnterMultipleScope())
         {
@@ -273,7 +273,7 @@ public class OscSendAndListenServiceTests : TestBaseForService<OscSendAndListenS
         _handler.DoesHandle = false;
 
         result = _send.SendToDefaultSync("/test4", true);
-        Thread.Sleep(5);
+        Thread.Sleep(10);
 
         using (Assert.EnterMultipleScope())
         {
