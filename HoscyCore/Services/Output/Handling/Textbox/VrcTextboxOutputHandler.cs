@@ -23,7 +23,6 @@ public class VrcTextboxOutputHandlerStartInfo(ConfigModel config) : IOutputHandl
 [LoadIntoDiContainer(typeof(VrcTextboxOutputHandler), Lifetime.Transient)] //todo: [TEST] Write tests for this
 public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSendService sender) : OutputHandlerBase 
 {
-    //todo: [FIX] Is no event ever called?
     #region Injected Services
     private readonly ILogger _logger = logger.ForContext<VrcTextboxOutputHandler>();
     private readonly ConfigModel _config = config;
@@ -40,7 +39,7 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
     private DateTimeOffset _lastSentTypingIndicator = DateTimeOffset.MinValue;
 
     //Send Loop
-    private const int TIMEOUT_MINIMUM_MS = 1250;
+    public const int TIMEOUT_MINIMUM_MS = 1250;
     private const int TIMEOUT_WAIT_MS = 50;
     private CancellationTokenSource? _cts = null;
     private Task? _workerTask = null;
@@ -206,7 +205,7 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
         _lastSentTypingIndicator = isProcessing ? DateTimeOffset.UtcNow : DateTimeOffset.MinValue;
         _lastSetProcessingState = isProcessing;
 
-        _sender.SendToDefaultSyncFireAndForget("/chatbox/typing", isProcessing ? 1 : 0);
+        _sender.SendToDefaultSyncFireAndForget(_config.Osc_Address_Game_Typing, isProcessing ? 1 : 0);
     }
 
     private bool CanSetProcessingIndicator()

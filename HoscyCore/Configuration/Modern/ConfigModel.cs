@@ -637,6 +637,16 @@ public class ConfigModel : ObservableObject
     private string _osc_Address_Game_Textbox = "/chatbox/input";
 
     /// <summary>
+    /// OSC Address the game listens to for typing indicator
+    /// </summary>
+    public string Osc_Address_Game_Typing
+    {
+        get => _osc_Address_Game_Typing;
+        set => SetProperty(ref _osc_Address_Game_Typing, value);
+    }
+    private string _osc_Address_Game_Typing = "/chatbox/typing";
+
+    /// <summary>
     /// OSC Address to send to tool for external messages to be sent as text
     /// </summary>
     public string Osc_Address_Input_TextMessage
