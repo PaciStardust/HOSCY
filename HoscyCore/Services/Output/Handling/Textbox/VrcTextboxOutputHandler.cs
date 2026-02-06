@@ -40,7 +40,7 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
 
     //Send Loop
     public const int TIMEOUT_MINIMUM_MS = 1250;
-    private const int TIMEOUT_WAIT_MS = 50;
+    public const int TIMEOUT_WAIT_MS = 50;
     private CancellationTokenSource? _cts = null;
     private Task? _workerTask = null;
     private bool _isClearPending = false;
@@ -168,7 +168,7 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
         await Task.Delay(TIMEOUT_WAIT_MS);
     }
 
-    private const int VRC_TEXTBOX_LIMIT = 140;
+    public const int VRC_TEXTBOX_LIMIT = 140;
     private void SendMessage(string message, bool playSound)
     {
         if (!_config.VrcTextbox_Do_Output) return;
@@ -176,7 +176,7 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
         if (message.Length > VRC_TEXTBOX_LIMIT) //Clamp for VRC
             message = message[..VRC_TEXTBOX_LIMIT];
 
-        _sender.SendToDefaultSyncFireAndForget(_config.Osc_Address_Game_Textbox, message, playSound);
+        _sender.SendToDefaultSyncFireAndForget(_config.Osc_Address_Game_Textbox, message, true, playSound);
     }
 
     private double GetMessageTimeout(string message)
@@ -200,18 +200,22 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
     public override void SetProcessingIndicator(bool isProcessing)
     {
         if (!isProcessing && !_lastSetProcessingState) return;
-        if (!CanSetProcessingIndicator()) return;
+        if (isProcessing && !CanSetProcessingIndicator()) return;
 
-        _lastSentTypingIndicator = isProcessing ? DateTimeOffset.UtcNow : DateTimeOffset.MinValue;
+        if (isProcessing)
+        {
+            _lastSentTypingIndicator = isProcessing ? DateTimeOffset.UtcNow : DateTimeOffset.MinValue;
+        }
         _lastSetProcessingState = isProcessing;
 
         _sender.SendToDefaultSyncFireAndForget(_config.Osc_Address_Game_Typing, isProcessing ? 1 : 0);
     }
 
+    public const int INDICATOR_COOLDOWN_S = 3;
     private bool CanSetProcessingIndicator()
     {
-        return _lastSentTypingIndicator.AddSeconds(4) > DateTimeOffset.UtcNow
-            && _config.VrcTextbox_Do_Indicator;
+        return _config.VrcTextbox_Do_Indicator &&
+            _lastSentTypingIndicator.AddSeconds(INDICATOR_COOLDOWN_S) < DateTimeOffset.UtcNow;
     }
     #endregion
 
@@ -344,6 +348,7 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
         ClearNotification();
         _isClearPending = true;
         _intendedTimeoutUntil = DateTimeOffset.MinValue; //Min timeout never gets cleared because of VRC rate limits
+        SetProcessingIndicator(false);
     }
 
     private void ClearNotification()
