@@ -56,7 +56,7 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
     public override OutputsAsMediaFlags OutputTypeFlags 
         => OutputsAsMediaFlags.OutputsAsText;
 
-    public override OutputTranslationFormat GetTranslationOutputMode()
+    public override OutputTranslationFormat GetTranslationOutputMode() //todo: [FEAT] Toggle for only translation?
     {
         return _config.VrcTextbox_Output_ShowTranslation
             ? OutputTranslationFormat.Both
@@ -154,7 +154,6 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
         {
             SendMessage(textToSend, playTextboxSound);
             var msgTimeout = GetMessageTimeout(textToSend);
-            _intendedTimeoutUntil = DateTimeOffset.UtcNow.AddMilliseconds(msgTimeout);
 
             if (_lastSentNotificationPriority is not null)
                 _logger.Debug("Sent notification with timeout {threadSleep}-{msgTimeout}: {textToSend}", TIMEOUT_MINIMUM_MS, msgTimeout, textToSend);
@@ -238,10 +237,10 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
             return;
         }
 
-        var indLen = _config.VrcTextbox_NotificationIndicatorLength();
-        if (contents.Length > _config.VrcTextbox_Output_MaxDisplayedCharacters - indLen)
+        var maxContentLength = _config.VrcTextbox_Output_MaxDisplayedCharacters - _config.VrcTextbox_NotificationIndicatorLength();
+        if (contents.Length > maxContentLength)
         {
-            contents = contents[..(_config.VrcTextbox_Output_MaxDisplayedCharacters - 1)] + "-";
+            contents = contents[..(maxContentLength - 1)] + "-";
         }
         contents = $"{_config.VrcTextbox_Notification_IndicatorTextStart}{contents}{_config.VrcTextbox_Notification_IndicatorTextEnd}";
 
@@ -276,9 +275,9 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
         var currentWordStart = -1;
         var currentSegmentPotentialEnd = -1;
         var maxLength = _config.VrcTextbox_Output_MaxDisplayedCharacters;
-        for (var charIndex = 0; charIndex < message.Length; charIndex++)
+        for (var charIndex = 0; charIndex <= message.Length; charIndex++)
         {
-            var isWordSeparator = message[charIndex] == ' ' || message[charIndex] == '\r' || message[charIndex] == '\n' || message[charIndex] == '\t';
+            var isWordSeparator = charIndex == message.Length || message[charIndex] == ' ' || message[charIndex] == '\r' || message[charIndex] == '\n' || message[charIndex] == '\t';
             if (currentWordStart == -1) // We were not in a word
             {
                 if (!isWordSeparator) //We are now in a word
@@ -333,7 +332,7 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
                 aboveLimits = true;
             }
 
-            var text = $"{(i > 0 ? SPLIT_HAS_PREVIOUS_INDICATOR : string.Empty)}{message.Substring(segments[i].Index, length)}{(aboveLimits ? SPLIT_LONG_WORD_CUTOFF : string.Empty)}{(i + 2 < segments.Count ? SPLIT_HAS_AFTER_INDICATOR : string.Empty)}";
+            var text = $"{(i > 0 ? SPLIT_HAS_PREVIOUS_INDICATOR : string.Empty)}{message.Substring(segments[i].Index, length)}{(aboveLimits ? SPLIT_LONG_WORD_CUTOFF : string.Empty)}{(segments.Count > 1 && i + 1 < segments.Count ? SPLIT_HAS_AFTER_INDICATOR : string.Empty)}";
             messageSegments.Add(text);
         }
         return messageSegments;
