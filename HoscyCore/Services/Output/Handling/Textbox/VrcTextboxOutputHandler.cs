@@ -20,7 +20,7 @@ public class VrcTextboxOutputHandlerStartInfo(ConfigModel config) : IOutputHandl
         => _config.VrcTextbox_Enabled;
 }
 
-[LoadIntoDiContainer(typeof(VrcTextboxOutputHandler), Lifetime.Transient)] //todo: [TEST] Write tests for this
+[LoadIntoDiContainer(typeof(VrcTextboxOutputHandler), Lifetime.Transient)]
 public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSendService sender) : OutputHandlerBase 
 {
     #region Injected Services
