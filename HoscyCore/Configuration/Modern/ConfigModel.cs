@@ -1355,6 +1355,16 @@ public class ConfigModel : ObservableObject
     private bool _vrcTextbox_Output_ShowTranslation;
 
     /// <summary>
+    /// Should original be added after translation?
+    /// </summary>
+    public bool VrcTextbox_Output_AddOriginalToTranslation
+    {
+        get => _vrcTextbox_Output_AddOriginalToTranslation;
+        set => SetProperty(ref _vrcTextbox_Output_AddOriginalToTranslation, value);
+    }
+    private bool _vrcTextbox_Output_AddOriginalToTranslation = true;
+
+    /// <summary>
     /// Maximum of characters displayed
     /// </summary>
     public int VrcTextbox_Output_MaxDisplayedCharacters

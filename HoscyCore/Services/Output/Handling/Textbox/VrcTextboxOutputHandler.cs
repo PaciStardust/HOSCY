@@ -8,7 +8,7 @@ using Serilog;
 
 namespace HoscyCore.Services.Output.Handling.Textbox;
 
-[LoadIntoDiContainer(typeof(VrcTextboxOutputHandlerStartInfo))]
+[LoadIntoDiContainer(typeof(VrcTextboxOutputHandlerStartInfo))] //todo: configure in CLI
 public class VrcTextboxOutputHandlerStartInfo(ConfigModel config) : IOutputHandlerStartInfo
 {
     private readonly ConfigModel _config = config;
@@ -56,10 +56,12 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
     public override OutputsAsMediaFlags OutputTypeFlags 
         => OutputsAsMediaFlags.OutputsAsText;
 
-    public override OutputTranslationFormat GetTranslationOutputMode() //todo: [FEAT] Toggle for only translation?
+    public override OutputTranslationFormat GetTranslationOutputMode()
     {
         return _config.VrcTextbox_Output_ShowTranslation
-            ? OutputTranslationFormat.Both
+            ? _config.VrcTextbox_Output_AddOriginalToTranslation
+                ? OutputTranslationFormat.Both
+                : OutputTranslationFormat.Translation
             : OutputTranslationFormat.Untranslated; 
     }
     #endregion
