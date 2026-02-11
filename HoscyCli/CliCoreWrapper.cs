@@ -1,6 +1,7 @@
 using HoscyCli.Commands.Core;
 using HoscyCli.Commands.Modules;
 using HoscyCore;
+using HoscyCore.Services.Interfacing;
 using HoscyCore.Utility;
 using Serilog;
 
@@ -34,6 +35,9 @@ public class CliCoreWrapper
         var commandModule = _coreApp.GetContainer().GetRequiredService<MainCommandModule>();
         var verb = " ";
 
+        var notify = _coreApp.GetContainer().GetRequiredService<IBackToFrontNotifyService>();
+        notify.OnNotificationSent += HandleNotification;
+
         while(true)
         {
             Console.Write($"\nEnter a command to execute ('help' for help, 'exit' to exit)\n {verb} > ");
@@ -64,7 +68,15 @@ public class CliCoreWrapper
                 _ => "_"
             };
         }
+
+        notify.OnNotificationSent -= HandleNotification;
+
         _logger?.Information("Stopping CLI loop...");
+    }
+
+    private void HandleNotification(object? sender, BackToFrontNotifyEventArgs e)
+    {
+        Console.WriteLine($"Notification ({(sender is null ? string.Empty : $"{sender.GetType().Name} ")}{e.Level}): {e.Title} - {e.Content}");
     }
 
     public void Stop()

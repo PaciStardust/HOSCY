@@ -8,7 +8,7 @@ namespace HoscyCore.Services.Interfacing;
 /// </summary>
 /// <param name="logger"></param>
 [LoadIntoDiContainer(typeof(IBackToFrontNotifyService), Lifetime.Singleton)]
-public class BackToFrontNotifyService(ILogger logger) : IBackToFrontNotifyService //todo: [FEAT] Make use of this
+public class BackToFrontNotifyService(ILogger logger) : IBackToFrontNotifyService
 {
     private readonly ILogger _logger = logger.ForContext<BackToFrontNotifyService>();
 
