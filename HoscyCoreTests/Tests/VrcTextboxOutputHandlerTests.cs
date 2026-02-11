@@ -439,10 +439,8 @@ public class VrcTextboxOutputHandlerTests : TestBaseForService<VrcTextboxOutputH
 
         _config.VrcTextbox_Notification_UsePrioritySystem = true;
 
-        Assert.That(_config.VrcTextbox_NotificationIndicatorLength(), Is.EqualTo(6));
-
         // Message total length = 11/20 => fits
-        var message = "12345";
+        var message = "12345678901";
         _handler.HandleNotification(message, OutputNotificationPriority.Medium);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(1));
@@ -456,7 +454,7 @@ public class VrcTextboxOutputHandlerTests : TestBaseForService<VrcTextboxOutputH
         Thread.Sleep(VrcTextboxOutputHandler.TIMEOUT_MINIMUM_MS);
 
         // Message total length = 20/20 => fits
-        message = "12345678901234";
+        message = "12345678901234567890";
         _handler.HandleNotification(message, OutputNotificationPriority.Medium);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(2));
@@ -470,14 +468,15 @@ public class VrcTextboxOutputHandlerTests : TestBaseForService<VrcTextboxOutputH
         Thread.Sleep(VrcTextboxOutputHandler.TIMEOUT_MINIMUM_MS);
 
         // Message total length = 24/20 => crops
-        message = "123456789012345678";
+        message = "123456789012345678901234";
         _handler.HandleNotification(message, OutputNotificationPriority.Medium);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(3));
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_send.ReceivedMessages[2].Args[0], Does.Not.Contain(message));
-            Assert.That(_send.ReceivedMessages[2].Args[0], Does.Contain(message[..13]));
+            Assert.That(_send.ReceivedMessages[2].Args[0], Does.Contain(message[..19]));
+            Assert.That(_send.ReceivedMessages[2].Args[0], Does.Not.Contain(message[..20]));
             Assert.That(_send.ReceivedMessages[2].Args[0], Does.StartWith(_config.VrcTextbox_Notification_IndicatorTextStart));
             Assert.That(_send.ReceivedMessages[2].Args[0], Does.EndWith(_config.VrcTextbox_Notification_IndicatorTextEnd));
         }
@@ -486,9 +485,8 @@ public class VrcTextboxOutputHandlerTests : TestBaseForService<VrcTextboxOutputH
         _config.VrcTextbox_Notification_IndicatorTextStart = ".";
         _config.VrcTextbox_Notification_IndicatorTextEnd = ".";
 
-        Assert.That(_config.VrcTextbox_NotificationIndicatorLength(), Is.EqualTo(2));
-
         // Message total length = 20/20 => fits
+        message = "12345678901234567890";
         _handler.HandleNotification(message, OutputNotificationPriority.Medium);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(4));
@@ -503,7 +501,7 @@ public class VrcTextboxOutputHandlerTests : TestBaseForService<VrcTextboxOutputH
 
         _config.VrcTextbox_Output_MaxDisplayedCharacters = 40;
 
-        // Message total length = 38/40 => fits
+        // Message total length = 40/40 => fits
         message += message;
         _handler.HandleNotification(message, OutputNotificationPriority.Medium);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);

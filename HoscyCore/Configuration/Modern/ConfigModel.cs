@@ -1460,11 +1460,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     public string VrcTextbox_Notification_IndicatorTextStart
     {
         get => _vrcTextbox_Notification_IndicatorTextStart;
-        set
-        {
-            SetProperty(ref _vrcTextbox_Notification_IndicatorTextStart, value.Length < 4 ? value : value[..3]);
-            _vrcTextbox_Notification_IndicatorTextLength = VrcTextbox_CalcNotificationIndicatorLength();
-        }
+        set => SetProperty(ref _vrcTextbox_Notification_IndicatorTextStart, value.Length < 4 ? value : value[..3]);
     }
     /// <summary>
     /// Text to the right of a notification
@@ -1472,18 +1468,10 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     public string VrcTextbox_Notification_IndicatorTextEnd
     {
         get => _vrcTextbox_Notification_IndicatorTextEnd;
-        set
-        {
-            SetProperty(ref _vrcTextbox_Notification_IndicatorTextEnd, value.Length < 4 ? value : value[..3]);
-            _vrcTextbox_Notification_IndicatorTextLength = VrcTextbox_CalcNotificationIndicatorLength();
-        }
+        set => SetProperty(ref _vrcTextbox_Notification_IndicatorTextEnd, value.Length < 4 ? value : value[..3]);
     }
     private string _vrcTextbox_Notification_IndicatorTextStart = "〈";
     private string _vrcTextbox_Notification_IndicatorTextEnd = "〉";
-    private int _vrcTextbox_Notification_IndicatorTextLength = 2;
-    private int VrcTextbox_CalcNotificationIndicatorLength()
-    => _vrcTextbox_Notification_IndicatorTextEnd.Length + _vrcTextbox_Notification_IndicatorTextStart.Length;
-    public int VrcTextbox_NotificationIndicatorLength() => _vrcTextbox_Notification_IndicatorTextLength;
 
     /// <summary>
     /// Use notification priority system

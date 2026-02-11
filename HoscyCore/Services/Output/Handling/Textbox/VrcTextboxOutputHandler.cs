@@ -239,11 +239,9 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
             return;
         }
 
-        //Todo: The markers should not be included in char limit
-        var maxContentLength = _config.VrcTextbox_Output_MaxDisplayedCharacters - _config.VrcTextbox_NotificationIndicatorLength();
-        if (contents.Length > maxContentLength)
+        if (contents.Length > _config.VrcTextbox_Output_MaxDisplayedCharacters)
         {
-            contents = contents[..(maxContentLength - 1)] + "-";
+            contents = contents[..(_config.VrcTextbox_Output_MaxDisplayedCharacters - 1)] + "-";
         }
         contents = $"{_config.VrcTextbox_Notification_IndicatorTextStart}{contents}{_config.VrcTextbox_Notification_IndicatorTextEnd}";
 
