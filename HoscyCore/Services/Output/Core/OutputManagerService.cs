@@ -158,16 +158,17 @@ public class OutputManagerService //todo: [REFACTOR] Better error handling?
         {
             _logger.Debug("Terminating old Handler with type \"{handlerType}\"", handlerInfo.HandlerType.FullName);
             ShutdownHandlerUnsafe(activeMatch);
-        }
-        activeMatch = RetrieveActiveHandlerByType(handlerInfo.HandlerType);
-        if (activeMatch is null)
-        {
-            _logger.Debug("Terminated old Handler with type \"{handlerType}\"", handlerInfo.HandlerType.FullName);
-        }
-        else
-        {
-            _logger.Error("Failed to terminate old Handler with type \"{handlerType}\"", handlerInfo.HandlerType.FullName);
-            throw new StartStopServiceException($"Unable to shut down Handler {handlerInfo.HandlerType.FullName}");
+
+            activeMatch = RetrieveActiveHandlerByType(handlerInfo.HandlerType);
+            if (activeMatch is null)
+            {
+                _logger.Debug("Terminated old Handler with type \"{handlerType}\"", handlerInfo.HandlerType.FullName);
+            }
+            else
+            {
+                _logger.Error("Failed to terminate old Handler with type \"{handlerType}\"", handlerInfo.HandlerType.FullName);
+                throw new StartStopServiceException($"Unable to shut down Handler {handlerInfo.HandlerType.FullName}");
+            }
         }
 
         SetFault(GetHandlerExceptions());
@@ -277,24 +278,25 @@ public class OutputManagerService //todo: [REFACTOR] Better error handling?
                 if (match is null)
                 {
                     _logger.Debug("Handler of type \"{handlerType}\" is enabled but not active, starting...",
-                        handlerInfo.HandlerType.GetType());
+                        handlerInfo.HandlerType);
                     ActivateHandlerSafe(handlerInfo);
-                    permittedTypes.Add(handlerInfo.HandlerType);
                 }
+                permittedTypes.Add(handlerInfo.HandlerType);
             } else
             {
                 if (match is not null)
                 {
                     _logger.Debug("Handler of type \"{handlerType}\" is disabled but active, stopping...",
-                        handlerInfo.HandlerType.GetType());
+                        handlerInfo.HandlerType);
                     ShutdownHandlerSafe(match);
                 }
             }
         }
 
         //Find stragglers
-        foreach(var handler in _activeHandlers)
+        for (var i = _activeHandlers.Count - 1; i >= 0; i--) // Has to be a for loop to avoid enumeration issues
         {
+            var handler = _activeHandlers[i];
             var handlerType  = handler.GetType();
             if (permittedTypes.Contains(handlerType))
             {
@@ -306,6 +308,7 @@ public class OutputManagerService //todo: [REFACTOR] Better error handling?
                 handlerType);
             ShutdownHandlerSafe(handler);
         }
+
         diagnosticSw.Stop();
         _logger.Debug("Finished refreshing Output Handlers in {timeMs}ms", diagnosticSw.ElapsedMilliseconds);
     }
