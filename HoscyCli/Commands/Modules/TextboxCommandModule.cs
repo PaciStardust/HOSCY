@@ -7,9 +7,9 @@ using HoscyCore.Services.Output.Handling.Textbox;
 namespace HoscyCli.Commands.Modules;
 
 [PrototypeLoadIntoDiContainer(typeof(TextboxCommandModule))]
-public class TextboxCommandModule(OutputManagerService output, VrcTextboxOutputHandlerStartInfo info, ReflectPropEditCommandModule reflectCm) : AttributeCommandModule, ICoreCommandModule
+public class TextboxCommandModule(IOutputManagerService output, VrcTextboxOutputHandlerStartInfo info, ReflectPropEditCommandModule reflectCm) : AttributeCommandModule, ICoreCommandModule
 {
-    private readonly OutputManagerService _output = output;
+    private readonly IOutputManagerService _output = output;
     private readonly VrcTextboxOutputHandlerStartInfo _info = info;
     private readonly ReflectPropEditCommandModule _reflectCm = reflectCm;
 
