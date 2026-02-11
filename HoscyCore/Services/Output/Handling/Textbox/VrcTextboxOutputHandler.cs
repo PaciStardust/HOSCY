@@ -8,7 +8,7 @@ using Serilog;
 
 namespace HoscyCore.Services.Output.Handling.Textbox;
 
-[LoadIntoDiContainer(typeof(VrcTextboxOutputHandlerStartInfo))] //todo: configure in CLI
+[LoadIntoDiContainer(typeof(VrcTextboxOutputHandlerStartInfo))]
 public class VrcTextboxOutputHandlerStartInfo(ConfigModel config) : IOutputHandlerStartInfo
 {
     private readonly ConfigModel _config = config;
@@ -239,6 +239,7 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
             return;
         }
 
+        //Todo: The markers should not be included in char limit
         var maxContentLength = _config.VrcTextbox_Output_MaxDisplayedCharacters - _config.VrcTextbox_NotificationIndicatorLength();
         if (contents.Length > maxContentLength)
         {

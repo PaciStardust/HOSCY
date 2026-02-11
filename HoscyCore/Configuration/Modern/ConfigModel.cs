@@ -6,7 +6,7 @@ using Whisper;
 
 namespace HoscyCore.Configuration.Modern;
 
-public class ConfigModel : ObservableObject
+public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is usable from the CLI
 {
     public int ConfigVersion { get; set; } = 0;
 

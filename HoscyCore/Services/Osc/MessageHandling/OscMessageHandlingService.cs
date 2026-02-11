@@ -29,8 +29,6 @@ public class OscMessageHandlingService(ILogger logger, IContainerBulkLoader<IOsc
         return false;
     }
 
-    //todo: [FEAT] Modules for all handling
-
     #region StartStop
     protected override bool IsStarted()
         => _handlers is not null;
