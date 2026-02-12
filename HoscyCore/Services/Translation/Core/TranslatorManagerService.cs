@@ -1,18 +1,25 @@
-using System.Diagnostics.CodeAnalysis;
+using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.DependencyCore;
 using HoscyCore.Services.Interfacing;
-using HoscyCore.Utility;
 using Serilog;
 
 namespace HoscyCore.Services.Translation.Core; //todo: [REFACTOR] New system needed
 
 [LoadIntoDiContainer(typeof(ITranslatorManagerService), Lifetime.Singleton)] //todo: [TEST] Write tests for this
-public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger logger, IContainerBulkLoader<ITranslator> bulkLoader) : StartStopServiceBase, ITranslatorManagerService
+public class TranslatorManagerService
+(
+    IBackToFrontNotifyService notify,
+    ILogger logger,
+    IContainerBulkLoader<ITranslator>bulkLoader,
+    ConfigModel config
+) 
+: StartStopServiceBase, ITranslatorManagerService
 {
     #region Injected
     private readonly IBackToFrontNotifyService _notify = notify;
     private readonly ILogger _logger = logger.ForContext<TranslatorManagerService>();
     private readonly IContainerBulkLoader<ITranslator> _bulkLoader = bulkLoader;
+    private readonly ConfigModel _config = config;
     #endregion
 
     #region Service Vars
@@ -184,16 +191,76 @@ public class TranslatorManagerService(IBackToFrontNotifyService notify, ILogger 
     #endregion
 
     #region Translator => Functionality
-    public bool TryTranslate(string input, [NotNullWhen(true)] out string? output)
+    private readonly char[] _filterChars = ['\n', '\t', '\r', ' '];
+    public TranslationResult TryTranslate(string input, out string? output)
     {
         if (_currentTranslator is null)
         {
-            _logger.Warning("Skipped translation request for input \"{input}\", no translator running", input);
+            LogTranslatorNotAvailable(input);
             output = null;
-            return false;
+            return TranslationResult.Failed;
         }
 
-        return _currentTranslator.TryTranslate(input, out output);
+        if (input.Length > _config.Translation_MaxTextLength)
+        {
+            if (_config.Translation_SkipLongerMessages)
+            {
+                _logger.Debug("Skipping translation and handling of message with contents \"{contents}\" as skipping of messages longer than {charLimit} characters is enabled",
+                    input, _config.Translation_MaxTextLength);
+                output = null;
+                return _config.Translation_SendUntranslatedIfFailed 
+                    ? TranslationResult.UseOriginal
+                    : TranslationResult.Failed;
+            }
+
+            var spaceLocated = false;
+            for (var i = _config.Translation_MaxTextLength; i > -1; i--)
+            {
+                if (_filterChars.Contains(input[i]))
+                {
+                    spaceLocated = true;
+                }
+                else
+                {
+                    if (!spaceLocated) continue;
+                    input = i > 0
+                        ? input[..i]
+                        : input[.._config.Translation_MaxTextLength]; //todo: [TEST] Does this crop correctly and do return values work?
+                    break;
+                }
+            }
+        }
+
+        var result = _currentTranslator.TryTranslate(input, out var translatedOutput);
+        switch (result)
+        {
+            case TranslationResult.Succeeded:
+                output = translatedOutput;
+                return result;
+            case TranslationResult.Failed:
+                output = null;
+                return _config.Translation_SendUntranslatedIfFailed
+                    ? TranslationResult.UseOriginal
+                    : TranslationResult.Failed;
+            case TranslationResult.UseOriginal:
+                output = null;
+                return result;
+            default:
+                _logger.Warning("Unexpected translation result {result} when translating \"{input}\"",
+                    result, input);
+                output = null;
+                return TranslationResult.Failed;
+        }
+    }
+
+    private void LogTranslatorNotAvailable(string inputForLog)
+    {
+        _logger.Warning("Skipped translation request for input \"{input}\", no translator running", inputForLog);
+    }
+
+    private void LogFailedTranslation(string inputForLog)
+    {
+        _logger.Warning("Translation of message with contents \"{input}\" failed", inputForLog);
     }
     #endregion
 }

@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using HoscyCore.Services.DependencyCore;
 
 namespace HoscyCore.Services.Translation.Core;
@@ -18,6 +17,6 @@ public interface ITranslatorManagerService : IAutoStartStopService
     #endregion
 
     #region Functionality
-    public bool TryTranslate(string input, [NotNullWhen(true)] out string? output);
+    public TranslationResult TryTranslate(string input, out string? output);
     #endregion
 }

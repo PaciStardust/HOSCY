@@ -60,14 +60,14 @@ public class ApiTranslator(ILogger logger, ConfigModel config, IApiClient client
     #endregion
 
     #region Functionality
-    public override bool TryTranslate(string input, [NotNullWhen(true)] out string? output)
+    public override TranslationResult TryTranslate(string input, out string? output)
     {
         input = input.Replace("\"", string.Empty);
 
         if (string.IsNullOrWhiteSpace(input))
         {
             output = null;
-            return false;
+            return TranslationResult.Failed;
         }
 
         _logger.Verbose("Requesting translation of text \"{input}\"", input);
@@ -78,18 +78,18 @@ public class ApiTranslator(ILogger logger, ConfigModel config, IApiClient client
             {
                 _logger.Warning("Failed translation of text \"{input}\", no output received", input);
                 output = null;
-                return false;
+                return TranslationResult.Failed;
             }
 
             _logger.Verbose("Translated text \"{input}\" to \"{output}\"", input, result);
             output = result;
-            return true;
+            return TranslationResult.Succeeded;
         } catch (Exception ex)
         {
             _logger.Error(ex, "Failed translation of text \"{input}\"", input);
             SetFault(ex);
             output = null;
-            return false;
+            return TranslationResult.Failed;
         }
     }
     #endregion

@@ -8,7 +8,7 @@ using Serilog;
 namespace HoscyCore.Services.Output.Core;
 
 [LoadIntoDiContainer(typeof(IOutputManagerService), Lifetime.Singleton)] //todo: [TEST] Write tests for this
-public class OutputManagerService //todo: [REFACTOR] Better error handling?
+public class OutputManagerService
 (
     ILogger logger,
     IBackToFrontNotifyService notify, 
@@ -150,7 +150,7 @@ public class OutputManagerService //todo: [REFACTOR] Better error handling?
     #endregion
 
     #region Handlers => Internal Start / Stop
-    private void ActivateHandlerUnsafe(IOutputHandlerStartInfo handlerInfo) //todo: this should likely be a trycatch
+    private void ActivateHandlerUnsafe(IOutputHandlerStartInfo handlerInfo)
     {
         _logger.Information("Activating Handler with type \"{handlerType}\"", handlerInfo.HandlerType.FullName);
         var activeMatch = RetrieveActiveHandlerByType(handlerInfo.HandlerType);
@@ -233,7 +233,7 @@ public class OutputManagerService //todo: [REFACTOR] Better error handling?
     {
         handler.OnRuntimeError -= HandleOnRuntimeError;
         handler.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
-        _activeHandlers.Remove(handler); //todo: [TEST] Do active handlers get cleaned up correctly?
+        _activeHandlers.Remove(handler);
         SetFault(GetHandlerExceptions());
     }
 
@@ -573,7 +573,6 @@ public class OutputManagerService //todo: [REFACTOR] Better error handling?
     #endregion
 
     #region Translation
-    private readonly char[] _filterChars = ['\n', '\t', '\r', ' '];
     /// <summary>
     /// Tries to translate if needed
     /// </summary>
@@ -582,7 +581,6 @@ public class OutputManagerService //todo: [REFACTOR] Better error handling?
     /// <returns>Attempted translation?</returns>
     private bool TryTranslateContentsIfNeeded(string contents, IOutputHandler[] handlers, out string? translatedText)
     {
-        //todo: [REFACTOR] Should this logic not mostly be in the translation service?
         if (!handlers.Any(x => x.GetTranslationOutputMode() != OutputTranslationFormat.Untranslated))
         {
             _logger.Warning("Attempted translation of message with contents \"{contents}\", but could not find a suitable output", contents);
@@ -590,40 +588,20 @@ public class OutputManagerService //todo: [REFACTOR] Better error handling?
             return !_config.Translation_SendUntranslatedIfUnavailable;
         }
 
-        if (contents.Length > _config.Translation_MaxTextLength)
+        var result = _translator.TryTranslate(contents, out var translation);
+        switch (result)
         {
-            if (_config.Translation_SkipLongerMessages)
-            {
-                _logger.Debug("Skipping translation and handling of message with contents \"{contents}\" as skipping of messages longer than {charLimit} characters is enabled",
-                    contents, _config.Translation_MaxTextLength);
+            case TranslationResult.Succeeded:
+                translatedText = translation;
+                return true;
+            case TranslationResult.UseOriginal:
+                translatedText = null;
+                return false;
+            default:
+            case TranslationResult.Failed:
                 translatedText = null;
                 return true;
-            }
-
-            var spaceLocated = false;
-            for (var i = _config.Translation_MaxTextLength; i > -1; i--)
-            {
-                if (_filterChars.Contains(contents[i]))
-                {
-                    spaceLocated = true;
-                }
-                else
-                {
-                    if (!spaceLocated) continue;
-                    contents = i > 0
-                        ? contents[..i]
-                        : contents[.._config.Translation_MaxTextLength]; //todo: [TEST] Does this crop correctly and do return values work?
-                    break;
-                }
-            }
         }
-
-        if (!_translator.TryTranslate(contents, out translatedText))
-        {
-            _logger.Warning("Translation of message with contents \"{contents}\" failed", contents);
-            return !_config.Translation_SendUntranslatedIfFailed;
-        }
-        return true;
     }
     #endregion
 }
