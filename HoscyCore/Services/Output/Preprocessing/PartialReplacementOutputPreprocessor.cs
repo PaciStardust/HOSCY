@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.DependencyCore;
@@ -21,9 +20,6 @@ public class PartialReplacementOutputPreprocessor(ConfigModel config, ILogger lo
     {
         return new(model);
     }
-
-    public override string GetReloadPropertyName()
-        => nameof(_config.Preprocessing_ReplacementsPartial);
 
     public override List<ReplacementDataModel> GetReplacementModels()
         => _config.Preprocessing_ReplacementsPartial;

@@ -21,9 +21,6 @@ public class FullReplacementOutputPreprocessor(ConfigModel config, ILogger logge
         return new(model);   
     }
 
-    public override string GetReloadPropertyName()
-        => nameof(_config.Preprocessing_ReplacementsFull);
-
     public override List<ReplacementDataModel> GetReplacementModels()
         => _config.Preprocessing_ReplacementsFull;
 

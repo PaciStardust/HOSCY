@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Output.Core;
@@ -21,7 +20,6 @@ public abstract class ReplacementOutputPreprocessorBase<T> : IOutputPreprocessor
 
     #region Abstract
     public abstract T ConvertToHandler(ReplacementDataModel model);
-    public abstract string GetReloadPropertyName();
     public abstract List<ReplacementDataModel> GetReplacementModels();
     public abstract OutputPreprocessorHandlingStage GetHandlingStage();
     public abstract bool IsEnabled();
