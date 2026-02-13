@@ -24,7 +24,7 @@ public partial class OscCommandService(ILogger logger, OscQueryHostRegistry host
     private const int OSC_COMMAND_MAX_UNINTERRUPTED_WAIT = 50;
 
     #region Funtionality
-    public string GetCommandIdentifier()
+    public string CommandIdentifier
         => OSC_COMMAND_IDENTIFIER;
 
     public bool DetectCommand(string commandString)

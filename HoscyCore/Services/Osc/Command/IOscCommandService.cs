@@ -28,7 +28,7 @@ public interface IOscCommandService : IAutoStartStopService
     /// <summary>
     /// Gets the text needed to identify a command
     /// </summary>
-    public string GetCommandIdentifier();
+    public string CommandIdentifier { get; }
 }
 
 public enum OscCommandState

@@ -14,7 +14,7 @@ public partial class FileCommandOutputPreprocessor(ILogger logger) : IOutputPrep
 {
     private readonly ILogger _logger = logger.ForContext<FileCommandOutputPreprocessor>();
     private const string COMMAND_PREFIX = "[file]";
-    private static readonly Regex _commandPrefixRemover = new(@$"{COMMAND_PREFIX} *", RegexOptions.IgnoreCase);
+    private static readonly Regex _commandPrefixRemover = new(@"\[FILE\] *", RegexOptions.IgnoreCase);
 
     public bool IsEnabled()
         => true;
@@ -48,8 +48,8 @@ public partial class FileCommandOutputPreprocessor(ILogger logger) : IOutputPrep
         catch (Exception ex)
         {
             _logger.Error(ex, "Unable to load file from path \"{filePath}\"", filePath);
-            output = null;
-            return false;
+            output = "[File Read Error]";
+            return true;
         }
     }
 }
