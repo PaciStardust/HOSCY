@@ -18,6 +18,12 @@ public abstract class ReplacementOutputPreprocessorBase<T> : IOutputPreprocessor
         ReloadReplacements();
     }
 
+    #region Load Info
+    public int LastLoadCorrect { get; private set; } = 0;
+    public int LastLoadBroken { get; private set; } = 0;
+    public int LastLoadDisabled { get; private set; } = 0;
+    #endregion
+
     #region Abstract
     public abstract T ConvertToHandler(ReplacementDataModel model);
     public abstract List<ReplacementDataModel> GetReplacementModels();
@@ -32,6 +38,10 @@ public abstract class ReplacementOutputPreprocessorBase<T> : IOutputPreprocessor
     public void ReloadReplacements()
     {
         _handlers.Clear();
+
+        LastLoadCorrect = 0;
+        LastLoadBroken = 0;
+        LastLoadDisabled = 0;
 
         var models = GetReplacementModels();
         _logger.Debug("Reloading {replacementModelCount} handlers", models.Count);
@@ -60,6 +70,10 @@ public abstract class ReplacementOutputPreprocessorBase<T> : IOutputPreprocessor
                 countBroken++;
             }
         }
+
+        LastLoadCorrect = converted.Count;
+        LastLoadBroken = countBroken;
+        LastLoadDisabled = countDisabled;
 
         _logger.Debug("Reloaded {replacementModelCountLoaded}/{replacementModelCount} handlers, {disabledCount} disabled, {brokenCount} broken", converted.Count, models.Count, countDisabled, countBroken);
         _handlers.AddRange(converted);

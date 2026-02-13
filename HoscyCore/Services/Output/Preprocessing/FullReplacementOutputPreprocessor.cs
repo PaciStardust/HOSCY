@@ -9,7 +9,7 @@ namespace HoscyCore.Services.Output.Preprocessing;
 /// <summary>
 /// Handles replacing text fully
 /// </summary>
-[LoadIntoDiContainer(typeof(FullReplacementOutputPreprocessor), Lifetime.Transient)] //todo: [TEST] Write tests for this
+[LoadIntoDiContainer(typeof(FullReplacementOutputPreprocessor), Lifetime.Transient)]
 public class FullReplacementOutputPreprocessor(ConfigModel config, ILogger logger) : ReplacementOutputPreprocessorBase<FullReplacementHandler>(config, logger.ForContext<FullReplacementOutputPreprocessor>())
 {
     #region Simple Overrides

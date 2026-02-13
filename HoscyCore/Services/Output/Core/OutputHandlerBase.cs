@@ -2,7 +2,7 @@ using HoscyCore.Services.DependencyCore;
 
 namespace HoscyCore.Services.Output.Core;
 
-public abstract class OutputHandlerBase : StartStopSubmoduleBase, IOutputHandler //todo: [FEAT] flag for notification and message support?
+public abstract class OutputHandlerBase : StartStopSubmoduleBase, IOutputHandler
 {
     #region Info
     public abstract string Name { get; }
