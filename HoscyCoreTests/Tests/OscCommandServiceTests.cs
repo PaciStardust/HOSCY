@@ -38,7 +38,7 @@ public class OscCommandServiceTests : TestBaseForService<OscCommandServiceTests>
         result = _commandService.DetectCommand("[Test]");
         Assert.That(result, Is.False);
 
-        result = _commandService.DetectCommand(_commandService.GetCommandIdentifier());
+        result = _commandService.DetectCommand(_commandService.CommandIdentifier);
         Assert.That(result, Is.True);
     }
 
