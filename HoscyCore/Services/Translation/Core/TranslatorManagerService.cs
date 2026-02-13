@@ -194,11 +194,13 @@ public class TranslatorManagerService
     private readonly char[] _filterChars = ['\n', '\t', '\r', ' '];
     public TranslationResult TryTranslate(string input, out string? output)
     {
-        if (_currentTranslator is null)
+        if (_currentTranslator is null || _currentTranslator.GetCurrentStatus() == ServiceStatus.Stopped)
         {
             LogTranslatorNotAvailable(input);
             output = null;
-            return TranslationResult.Failed;
+            return _config.Translation_SendUntranslatedIfFailed 
+                ? TranslationResult.UseOriginal
+                : TranslationResult.Failed;
         }
 
         if (input.Length > _config.Translation_MaxTextLength)

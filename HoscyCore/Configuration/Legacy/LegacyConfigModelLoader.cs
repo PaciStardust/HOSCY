@@ -197,7 +197,7 @@ public static class LegacyConfigModelLoader
             Translation_OfAudioOutput = oldConfig.Api.TranslateTts,
             VrcTextbox_Output_ShowTranslation = oldConfig.Api.TranslateTextbox,
             ExternalInput_DoTranslate = oldConfig.Api.TranslationAllowExternal,
-            Translation_AppendOriginal = oldConfig.Api.AddOriginalAfterTranslate,
+            VrcTextbox_Output_AddOriginalToTranslation = oldConfig.Api.AddOriginalAfterTranslate,
 
             AzureServices_Region = oldConfig.Api.AzureRegion,
             AzureServices_ApiKey = oldConfig.Api.AzureKey,

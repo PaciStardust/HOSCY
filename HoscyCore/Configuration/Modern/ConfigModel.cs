@@ -1203,16 +1203,6 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private bool _translation_OfOtherOutput = true;
 
     /// <summary>
-    /// Should original text be appended to translation
-    /// </summary>
-    public bool Translation_AppendOriginal
-    {
-        get => _translation_AppendOriginal;
-        set => SetProperty(ref _translation_AppendOriginal, value);
-    }
-    private bool _translation_AppendOriginal;
-
-    /// <summary>
     /// Send untranslated text if nothing can output translation
     /// </summary>
     public bool Translation_SendUntranslatedIfUnavailable

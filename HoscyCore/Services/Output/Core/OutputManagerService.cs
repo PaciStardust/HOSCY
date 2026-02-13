@@ -7,7 +7,7 @@ using Serilog;
 
 namespace HoscyCore.Services.Output.Core;
 
-[LoadIntoDiContainer(typeof(IOutputManagerService), Lifetime.Singleton)] //todo: [TEST] Write tests for this
+[LoadIntoDiContainer(typeof(IOutputManagerService), Lifetime.Singleton)]
 public class OutputManagerService
 (
     ILogger logger,
@@ -51,7 +51,9 @@ public class OutputManagerService
     protected override bool IsStarted()
         => _preprocessors.Count > 0 || _handlerInfos.Count > 0;
     protected override bool IsProcessing()
-        => IsStarted() || _activeHandlers.Count > 0;
+        => IsStarted() && _activeHandlers.Count > 0;
+
+    private readonly List<Exception> _refreshExceptions = [];
     #endregion
 
     #region Start/Stop
@@ -89,9 +91,10 @@ public class OutputManagerService
     {
         var activeHandlerCount = _activeHandlers.Count;
         _logger.Debug("Stopping service, shutting down {activeHandlers} Handlers", activeHandlerCount);
-        foreach (var processor in _activeHandlers)
+        for (var i = _activeHandlers.Count - 1; i >= 0; i--)
         {
-            ShutdownHandlerSafe(processor);
+            var handler = _activeHandlers[i];
+            ShutdownHandlerSafe(handler);
         }
 
         var stillActiveHandlers = _activeHandlers.Where(x => x.GetCurrentStatus() != ServiceStatus.Stopped).ToArray();
@@ -102,6 +105,8 @@ public class OutputManagerService
             throw new StartStopServiceException($"Following Handlers failed to comply with a shutdown call: {notStoppedHandlers}");
         }
         _activeHandlers.Clear();
+        _handlerInfos.Clear();
+        _preprocessors.Clear();
         _logger.Debug("Stopped service, shut down {activeHandlers} Handlers", activeHandlerCount);
     }
 
@@ -190,6 +195,7 @@ public class OutputManagerService
         catch (Exception ex)
         {
             _logger.Error(ex, "Unable to safely activate handler with type \"{handlerType}\"", handlerInfo.HandlerType.FullName);
+            _refreshExceptions.Add(ex);
             SetFault(GetHandlerExceptions());
             return false;
         }
@@ -215,6 +221,7 @@ public class OutputManagerService
         catch (Exception ex)
         {
             _logger.Error(ex, "Unable to safely shutdown handler with type \"{handlerType}\"", handler.GetType().FullName);
+            _refreshExceptions.Add(ex);
             SetFault(GetHandlerExceptions());
             return false;
         }
@@ -256,6 +263,7 @@ public class OutputManagerService
         catch (Exception e)
         {
             _logger.Error(e, "Failed to restart handler with type \"{handlerType}\"", handler.GetType().FullName);
+            _refreshExceptions.Add(e);
             SetFault(GetHandlerExceptions());
             return false;
         }
@@ -265,6 +273,8 @@ public class OutputManagerService
     #region Handlers => Public Control
     public void RefreshHandlers()
     {
+        _refreshExceptions.Clear();
+
         var diagnosticSw = Stopwatch.StartNew();
         _logger.Debug("Refreshing Output Handlers...");
         List<Type> permittedTypes = [];
@@ -311,16 +321,22 @@ public class OutputManagerService
 
         diagnosticSw.Stop();
         _logger.Debug("Finished refreshing Output Handlers in {timeMs}ms", diagnosticSw.ElapsedMilliseconds);
+
+        SetFault(GetHandlerExceptions());
     }
 
     public void RestartHandlers() 
     {
+        _refreshExceptions.Clear();
+
         _logger.Debug("Restarting all {handlerCount} active Handlers...", _activeHandlers.Count);
         foreach(var handler in _activeHandlers)
         {
             RestartHandlerSafe(handler);
         }
         _logger.Debug("Finished restarting all {handlerCount} active Handlers", _activeHandlers.Count);
+
+        SetFault(GetHandlerExceptions());
     }
     #endregion
 
@@ -353,7 +369,11 @@ public class OutputManagerService
                 handlerExceptions.Add(handlerException);
             }
         }
-        return new OutputHandlerListException(handlerExceptions);
+        handlerExceptions.AddRange(_refreshExceptions);
+
+        return handlerExceptions.Count > 0 
+            ? new OutputHandlerListException(handlerExceptions) 
+            : null;
     }
     #endregion
 
@@ -429,7 +449,7 @@ public class OutputManagerService
         }
     }
 
-    private bool IsHandlerCompatible(IOutputHandler handler, OutputSettingsFlags settings) //todo: [TEST] Does this filter work?
+    private bool IsHandlerCompatible(IOutputHandler handler, OutputSettingsFlags settings)
     {
         var id = handler.OutputTypeFlags;
         return (settings.HasFlag(OutputSettingsFlags.AllowTextOutput) && id.HasFlag(OutputsAsMediaFlags.OutputsAsText))
@@ -449,7 +469,7 @@ public class OutputManagerService
         }
         _logger.Verbose("Sent {handlerCount} handlers a message with contents \"{contentsMessage}\"",
             handlers.Length, contents);
-}
+    }
 
     private void SendMessageTranslatedInternal(string contents, string translation, IOutputHandler[] handlers)
     {
@@ -463,9 +483,7 @@ public class OutputManagerService
             {
                 OutputTranslationFormat.Translation => translation,
                 OutputTranslationFormat.Untranslated => contents,
-                OutputTranslationFormat.Both => _config.Translation_AppendOriginal
-                    ? $"{translation} / {contents}"
-                    : translation,
+                OutputTranslationFormat.Both => $"{translation} / {contents}",
                 _ => throw new ArgumentException("Unsupported TranslationOutputMode")
             };
             handler.HandleMessage(newContents);
@@ -561,7 +579,7 @@ public class OutputManagerService
         return output is not null;
     }
 
-    private bool IsPreprocessorCompatible(IOutputPreprocessor preprocessor, OutputSettingsFlags settings) //todo: [TEST] Does this filter work?
+    private bool IsPreprocessorCompatible(IOutputPreprocessor preprocessor, OutputSettingsFlags settings)
     {
         if (!preprocessor.IsEnabled())
             return false;
@@ -583,7 +601,7 @@ public class OutputManagerService
     {
         if (!handlers.Any(x => x.GetTranslationOutputMode() != OutputTranslationFormat.Untranslated))
         {
-            _logger.Warning("Attempted translation of message with contents \"{contents}\", but could not find a suitable output", contents);
+            _logger.Warning("Attempted translation of message with contents \"{contents}\", but could not find a suitable output or translator", contents);
             translatedText = null;
             return !_config.Translation_SendUntranslatedIfUnavailable;
         }
