@@ -4,14 +4,14 @@ using HoscyCore.Services.Network;
 using HoscyCore.Services.Translation.Core;
 using Serilog;
 
-namespace HoscyCore.Services.Translation.Translators;
+namespace HoscyCore.Services.Translation.Providers;
 
-[PrototypeLoadIntoDiContainer(typeof(ApiTranslator), Lifetime.Transient)] //todo: [TEST] Write tests for this
-public class ApiTranslator(ILogger logger, ConfigModel config, IApiClient client) : TranslatorBase
+[PrototypeLoadIntoDiContainer(typeof(ApiTranslationProvider), Lifetime.Transient)] //todo: [TEST] Write tests for this
+public class ApiTranslationProvider(ILogger logger, ConfigModel config, IApiClient client) : TranslationProviderBase
 {
-    private readonly ILogger _logger = logger.ForContext<ApiTranslator>();
+    private readonly ILogger _logger = logger.ForContext<ApiTranslationProvider>();
     private readonly ConfigModel _config = config;
-    private readonly IApiClient _client = client.AddIdentifier(nameof(ApiTranslator));
+    private readonly IApiClient _client = client.AddIdentifier(nameof(ApiTranslationProvider));
 
     #region Info
     public override string Metadata => "Api Translator";

@@ -10,7 +10,7 @@ public class TranslatorManagerService
 (
     IBackToFrontNotifyService notify,
     ILogger logger,
-    IContainerBulkLoader<ITranslator>bulkLoader,
+    IContainerBulkLoader<ITranslationProvider>bulkLoader,
     ConfigModel config
 ) 
 : StartStopServiceBase, ITranslatorManagerService
@@ -18,13 +18,13 @@ public class TranslatorManagerService
     #region Injected
     private readonly IBackToFrontNotifyService _notify = notify;
     private readonly ILogger _logger = logger.ForContext<TranslatorManagerService>();
-    private readonly IContainerBulkLoader<ITranslator> _bulkLoader = bulkLoader;
+    private readonly IContainerBulkLoader<ITranslationProvider> _bulkLoader = bulkLoader;
     private readonly ConfigModel _config = config;
     #endregion
 
     #region Service Vars
     private readonly List<(string Name, Type Type)> _availableTranslators = [];
-    private ITranslator? _currentTranslator = null;
+    private ITranslationProvider? _currentTranslator = null;
     #endregion
 
     #region Info
