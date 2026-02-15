@@ -4,9 +4,45 @@ using HoscyCoreTests.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
-namespace HoscyCoreTests.Tests;
+#pragma warning disable IDE0130 // Namespace does not match folder structure
+namespace HoscyCoreTests.Tests.HoscyCoreAppTests;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
-public class HoscyCoreAppTests : TestBaseForService<HoscyCoreAppTests>
+public class HoscyCoreAppStartupTests : TestBase<HoscyCoreAppStartupTests>
+{
+    private ConfigModel _config = null!;
+
+    protected override void SetupExtra()
+    {
+        Thread.Sleep(1000);
+        _config = new();
+    }
+
+    [Test]
+    public void StartStopTest()
+    {
+        var coreApp = new HoscyCoreApp(_logger);
+        var config = HoscyCoreAppTestUtil.CreateSimpleStartupParameters(_config);
+
+        coreApp.Start(config);
+        coreApp.Stop();
+    }
+
+    [Test]
+    public void CreateNewLogStartStopTest()
+    {
+        var coreApp = new HoscyCoreApp(_logger);
+        var config = HoscyCoreAppTestUtil.CreateSimpleStartupParameters(_config);
+        config.PreloadedConfig = null;
+        config.CreateNewConfigIfMissing = true;
+        config.CreateLoggerFromConfiguration = true;
+
+        coreApp.Start(config);
+        coreApp.Stop();
+    }
+}
+
+public class HoscyCoreAppFunctionTests : TestBase<HoscyCoreAppFunctionTests>
 {
     private HoscyCoreApp _coreApp = null!;
     private readonly ConfigModel _config = new()
@@ -17,17 +53,7 @@ public class HoscyCoreAppTests : TestBaseForService<HoscyCoreAppTests>
     protected override void OneTimeSetupExtra()
     {
         var coreApp = new HoscyCoreApp(_logger);
-        var config = new HoscyCoreAppStartParameters()
-        {
-            AdditionalContainerInserts = x =>
-            {
-                x.AddSingleton<DiTestService2>();
-            },
-            CreateLoggerFromConfiguration = false,
-            DisableConsoleLog = true,
-            PreloadedConfig = _config,
-            ShouldOpenConsoleIfRequested = false
-        };
+        var config = HoscyCoreAppTestUtil.CreateSimpleStartupParameters(_config);
         coreApp.Start(config);
         _coreApp = coreApp;
     }
@@ -55,5 +81,23 @@ public class HoscyCoreAppTests : TestBaseForService<HoscyCoreAppTests>
     protected override void OneTimeTearDownExtra()
     {
         _coreApp.Stop();
+    }
+}
+
+internal static class HoscyCoreAppTestUtil {
+    internal static HoscyCoreAppStartParameters CreateSimpleStartupParameters(ConfigModel configModel)
+    {
+        var config = new HoscyCoreAppStartParameters()
+        {
+            AdditionalContainerInserts = x =>
+            {
+                x.AddSingleton<DiTestService2>();
+            },
+            CreateLoggerFromConfiguration = false,
+            DisableConsoleLog = true,
+            PreloadedConfig = configModel,
+            ShouldOpenConsoleIfRequested = false
+        };
+        return config;
     }
 }
