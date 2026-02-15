@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using HoscyCore.Services.DependencyCore;
 using Serilog;
 
 namespace HoscyCoreTests.Utils;
@@ -52,4 +53,28 @@ public abstract class TestBase<T>
         _logger.Information("OneTimeTearDown Done - {TestFixture} - {time}ms", TestContext.CurrentContext.Test.ClassName, teardownTimer.ElapsedMilliseconds);
     }
     protected virtual void OneTimeTearDownExtra() {}
+
+    protected static void AssertServiceStarted(IStartStopService startStopService)
+    {
+        var status = startStopService.GetCurrentStatus();
+        Assert.That(status, Is.EqualTo(ServiceStatus.Started), "Service status not started");
+    }
+
+    protected static void AssertServiceProcessing(IStartStopService startStopService)
+    {
+        var status = startStopService.GetCurrentStatus();
+        Assert.That(status, Is.EqualTo(ServiceStatus.Processing), "Service status not processing");
+    }
+
+    protected static void AssertServiceStopped(IStartStopService startStopService)
+    {
+        var status = startStopService.GetCurrentStatus();
+        Assert.That(status, Is.EqualTo(ServiceStatus.Stopped), "Service status not stopped");
+    }
+
+    protected static void AssertServiceFaulted(IStartStopService startStopService)
+    {
+        var status = startStopService.GetCurrentStatus();
+        Assert.That(status, Is.EqualTo(ServiceStatus.Faulted), "Service status not faulted");
+    }
 }
