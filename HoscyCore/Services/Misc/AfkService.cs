@@ -47,10 +47,13 @@ public class AfkService(ConfigModel config, IOutputManagerService output, ILogge
     public void StopAfk()
     {
         _logger.Information("Stopping AFK timer");
-        _output.SendNotification(_config.Afk_StopText, _afkNotificationPriority, _outputFlags);
-        _afkTimer?.Stop();
-        _afkTimer?.Dispose();
-        _afkTimer = null;
+        if (_afkTimer is not null)
+        {
+            _output.SendNotification(_config.Afk_StopText, _afkNotificationPriority, _outputFlags);
+            _afkTimer?.Stop();
+            _afkTimer?.Dispose();
+            _afkTimer = null;
+        }
         _logger.Debug("Stopped AFK timer");
     }
 
