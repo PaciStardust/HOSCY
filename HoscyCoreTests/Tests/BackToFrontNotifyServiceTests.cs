@@ -1,9 +1,11 @@
 using HoscyCore.Services.Interfacing;
 using HoscyCoreTests.Utils;
 
-namespace HoscyCoreTests.Tests;
+#pragma warning disable IDE0130 // Namespace does not match folder structure
+namespace HoscyCoreTests.Tests.BackToFrontNotifyServiceTests;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
-public class BackToFrontNotifyServiceTests : TestBase<BackToFrontNotifyServiceTests>
+public class BackToFrontNotifyServiceFunctionTests : TestBase<BackToFrontNotifyServiceFunctionTests>
 {
     [Test]
     public void NotifyTest()

@@ -2,9 +2,11 @@ using HoscyCore.Configuration.Legacy;
 using HoscyCore.Configuration.Modern;
 using HoscyCoreTests.Utils;
 
-namespace HoscyCoreTests.Tests;
+#pragma warning disable IDE0130 // Namespace does not match folder structure
+namespace HoscyCoreTests.Tests.ConfigTests;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
-public class ConfigTests : TestBase<ConfigTests>
+public class ConfigFunctionTests : TestBase<ConfigFunctionTests>
 {
     [Test]
     public void SaveAndLoad()
