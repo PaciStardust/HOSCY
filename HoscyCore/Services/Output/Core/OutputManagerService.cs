@@ -154,7 +154,7 @@ public class OutputManagerService
     }
     #endregion
 
-    #region Handlers => Internal Start / Stop
+    #region Handlers => Internal Start / Stop Unsafe
     private void ActivateHandlerUnsafe(IOutputHandlerStartInfo handlerInfo)
     {
         _logger.Information("Activating Handler with type \"{handlerType}\"", handlerInfo.HandlerType.FullName);
@@ -176,29 +176,13 @@ public class OutputManagerService
             }
         }
 
-        SetFault(GetHandlerExceptions());
+        UpdateFault();
         var newHandler = RetrieveHandlerInstanceForType(handlerInfo.HandlerType);
         newHandler.OnRuntimeError += HandleOnRuntimeError;
         newHandler.OnSubmoduleStopped += HandleOnSubmoduleStopped;
         newHandler.Start();
         _activeHandlers.Add(newHandler);
         _logger.Information("Activated Handler with type \"{handlerType}\"", handlerInfo.HandlerType.FullName);
-    }
-
-    private bool ActivateHandlerSafe(IOutputHandlerStartInfo handlerInfo)
-    {
-        try
-        {
-            ActivateHandlerUnsafe(handlerInfo);
-            return true;
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, "Unable to safely activate handler with type \"{handlerType}\"", handlerInfo.HandlerType.FullName);
-            _refreshExceptions.Add(ex);
-            SetFault(GetHandlerExceptions());
-            return false;
-        }
     }
 
     private void ShutdownHandlerUnsafe(IOutputHandler handler)
@@ -211,6 +195,45 @@ public class OutputManagerService
         _logger.Information("Shut down Handler with type \"{handlerType}\"", handler.GetType().FullName);
     }
 
+    private void RestartHandlerUnsafe(IOutputHandler handler)
+    {
+        _logger.Information("Restarting Handler with type \"{handlerType}\"", handler.GetType().FullName);
+        handler.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
+        handler.Restart();
+        handler.OnSubmoduleStopped += HandleOnSubmoduleStopped;
+        _logger.Information("Restarted Handler with type \"{handlerType}\"", handler.GetType().FullName);
+    }
+    #endregion
+
+    #region Handlers => Internal Start / Stop Safe
+    private bool ActivateHandlerSafe(IOutputHandlerStartInfo handlerInfo)
+    {
+        try
+        {
+            ActivateHandlerUnsafe(handlerInfo);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            AddRefreshException(ex, "Unable to safely activate handler with type \"{handlerType}\"", handlerInfo.HandlerType.FullName);
+            return false;
+        }
+    }
+
+    private bool RestartHandlerSafe(IOutputHandler handler)
+    {
+        try
+        {
+            RestartHandlerUnsafe(handler);
+            return true;
+        }
+        catch (Exception e)
+        {
+            AddRefreshException(e, "Failed to restart handler with type \"{handlerType}\"", handler.GetType().FullName);
+            return false;
+        }
+    }
+
     private bool ShutdownHandlerSafe(IOutputHandler handler)
     {
         try
@@ -220,9 +243,7 @@ public class OutputManagerService
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Unable to safely shutdown handler with type \"{handlerType}\"", handler.GetType().FullName);
-            _refreshExceptions.Add(ex);
-            SetFault(GetHandlerExceptions());
+            AddRefreshException(ex, "Unable to safely shutdown handler with type \"{handlerType}\"", handler.GetType().FullName);
             return false;
         }
     }
@@ -241,32 +262,7 @@ public class OutputManagerService
         handler.OnRuntimeError -= HandleOnRuntimeError;
         handler.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
         _activeHandlers.Remove(handler);
-        SetFault(GetHandlerExceptions());
-    }
-
-    private void RestartHandlerUnsafe(IOutputHandler handler)
-    {
-        _logger.Information("Restarting Handler with type \"{handlerType}\"", handler.GetType().FullName);
-        handler.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
-        handler.Restart();
-        handler.OnSubmoduleStopped += HandleOnSubmoduleStopped;
-        _logger.Information("Restarted Handler with type \"{handlerType}\"", handler.GetType().FullName);
-    }
-
-    private bool RestartHandlerSafe(IOutputHandler handler)
-    {
-        try
-        {
-            RestartHandlerUnsafe(handler);
-            return true;
-        }
-        catch (Exception e)
-        {
-            _logger.Error(e, "Failed to restart handler with type \"{handlerType}\"", handler.GetType().FullName);
-            _refreshExceptions.Add(e);
-            SetFault(GetHandlerExceptions());
-            return false;
-        }
+        UpdateFault();
     }
     #endregion
 
@@ -322,7 +318,7 @@ public class OutputManagerService
         diagnosticSw.Stop();
         _logger.Debug("Finished refreshing Output Handlers in {timeMs}ms", diagnosticSw.ElapsedMilliseconds);
 
-        SetFault(GetHandlerExceptions());
+        UpdateFault();
     }
 
     public void RestartHandlers() 
@@ -336,7 +332,7 @@ public class OutputManagerService
         }
         _logger.Debug("Finished restarting all {handlerCount} active Handlers", _activeHandlers.Count);
 
-        SetFault(GetHandlerExceptions());
+        UpdateFault();
     }
     #endregion
 
@@ -346,34 +342,7 @@ public class OutputManagerService
         var handlerType = sender?.GetType();
         _logger.Error(ex, "Encountered an error in Handler \"{handlerType}\"", handlerType?.FullName);
         _notify.SendError($"Encountered an error in Handler {handlerType?.FullName ?? "???"}",exception: ex);
-        var newCollectiveException = GetHandlerExceptions();
-        if (newCollectiveException is null)
-        {
-            _logger.Debug("Clear OutputHandlerListException for Service");
-        }
-        else
-        {
-            _logger.Debug(newCollectiveException, "Set new OutputHandlerListException for Service");
-        }
-        SetFault(newCollectiveException);
-    }
-
-    private OutputHandlerListException? GetHandlerExceptions()
-    {
-        var handlerExceptions = new List<Exception>();
-        foreach (var handler in _activeHandlers)
-        {
-            var handlerException = handler.GetFaultIfExists();
-            if (handlerException is not null)
-            {
-                handlerExceptions.Add(handlerException);
-            }
-        }
-        handlerExceptions.AddRange(_refreshExceptions);
-
-        return handlerExceptions.Count > 0 
-            ? new OutputHandlerListException(handlerExceptions) 
-            : null;
+        UpdateFault();
     }
     #endregion
 
@@ -620,6 +589,38 @@ public class OutputManagerService
                 translatedText = null;
                 return true;
         }
+    }
+    #endregion
+
+    #region Errors
+    private void AddRefreshException(Exception ex, string message, params object?[]? args)
+    {
+        _logger.Error(ex, message, args);
+        _refreshExceptions.Add(ex);
+        UpdateFault();
+    }
+
+    private void UpdateFault()
+    {
+        SetFault(CollectExceptions());
+    }
+
+    private OutputHandlerListException? CollectExceptions()
+    {
+        var handlerExceptions = new List<Exception>();
+        foreach (var handler in _activeHandlers)
+        {
+            var handlerException = handler.GetFaultIfExists();
+            if (handlerException is not null)
+            {
+                handlerExceptions.Add(handlerException);
+            }
+        }
+        handlerExceptions.AddRange(_refreshExceptions);
+
+        return handlerExceptions.Count > 0 
+            ? new OutputHandlerListException(handlerExceptions) 
+            : null;
     }
     #endregion
 }

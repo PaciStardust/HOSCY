@@ -455,7 +455,7 @@ public class OutputManagerServiceTests : TestBaseForService<OutputManagerService
     }
 
     [Test]
-    public void HandleErrorTest() //todo: [REFACTOR] This is kind of badly designed
+    public void HandleErrorTest()
     {
         Assert.That(_output.GetHandlerInfos(true), Is.Empty);
 
