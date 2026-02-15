@@ -4,9 +4,9 @@ using HoscyCore.Services.Misc;
 using HoscyCoreTests.Mocks;
 using HoscyCoreTests.Utils;
 
-namespace HoscyCoreTests.Tests;
+namespace HoscyCoreTests.Tests.AfkServiceTests;
 
-public class AfkServiceTests : TestBaseForService<AfkServiceTests>
+public class AfkServiceFunctionTests : TestBase<AfkServiceFunctionTests>
 {
     private AfkService _afk = null!;
     private readonly ConfigModel _config = new();
@@ -42,7 +42,7 @@ public class AfkServiceTests : TestBaseForService<AfkServiceTests>
     }
 
     [Test]
-    public void TestShowOff()
+    public void ShowOffTest()
     {
         _config.Afk_ShowDuration = false;
 
@@ -52,7 +52,7 @@ public class AfkServiceTests : TestBaseForService<AfkServiceTests>
     }
 
     [Test]
-    public void TestShowOn()
+    public void ShowOnTest()
     {
         Assert.That(_afk.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Started), "Not started");
         _afk.StartAfk();
@@ -152,9 +152,37 @@ public class AfkServiceTests : TestBaseForService<AfkServiceTests>
         });
     }
 
+    [Test]
+    public void StartWhileRunningTest()
+    {
+        Assert.That(_afk.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Started), "Not started");
+        _afk.StartAfk();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(_afk.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Processing), "Not processing");
+            Assert.That(_output.Notifications, Has.Count.EqualTo(1), "Not correct notification count");
+        });
+        Assert.That(_output.Notifications[0].Message, Is.EqualTo(START), "Wrong afk start message");
+
+        _afk.StartAfk();
+        Assert.Multiple(() =>
+        {
+            Assert.That(_afk.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Processing), "Not processing");
+            Assert.That(_output.Notifications, Has.Count.EqualTo(1), "Not correct notification count");
+        });
+
+        _afk.StopAfk();
+        Assert.Multiple(() =>
+        {
+            Assert.That(_afk.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Started), "Not started");
+            Assert.That(_output.Notifications, Has.Count.EqualTo(2), "Not correct notification count");
+        });
+        Assert.That(_output.Notifications[1].Message, Is.EqualTo(RETURN), "Wrong afk stop message");
+    }
+
     protected override void OneTimeTearDownExtra()
     {
         _afk.Stop();
-        AssertServiceStopped(_afk);
     }
 }
