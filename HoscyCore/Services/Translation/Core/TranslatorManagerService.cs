@@ -204,7 +204,7 @@ public class TranslatorManagerService //todo: [TEST] Write tests for this
         } catch (Exception ex)
         {
             SetFaultLogAndNotify(ex, _logger, _notify,
-                "Failed to restart current provider"); //todo: [REFACTOR] where else is this missing?
+                "Failed to restart current provider");
             return false;
         }
         return true;
@@ -230,9 +230,7 @@ public class TranslatorManagerService //todo: [TEST] Write tests for this
 
     private void HandleOnRuntimeError(object? sender, Exception ex)
     {
-        _logger.Error(ex, "Encountered an error in Provider \"{senderType}\"", sender?.GetType().FullName);
-        _notify.SendError($"Encountered an error in Provider {sender?.GetType().FullName ?? "???"}",exception: ex);
-        SetFault(ex);
+        SetFaultLogAndNotify(ex, _logger, _notify, $"Encountered an error in Provider {sender?.GetType().FullName ?? "???"}");
     }
     #endregion
 
