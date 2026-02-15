@@ -4,9 +4,9 @@ using HoscyCore.Services.Network;
 using HoscyCoreTests.Mocks;
 using HoscyCoreTests.Utils;
 
-namespace HoscyCoreTests.Tests;
+namespace HoscyCoreTests.Tests.ApiClientTests;
 
-public class ApiClientTests : TestBaseForService<ApiClientTests>
+public class ApiClientFunctionTests : TestBase<ApiClientFunctionTests>
 {
     private readonly MockWebClient _webClient = new();
     private ApiClient _apiClient = null!;

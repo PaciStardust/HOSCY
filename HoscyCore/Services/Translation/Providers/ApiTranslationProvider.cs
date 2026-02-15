@@ -14,7 +14,7 @@ public class ApiTranslationProviderStartInfo : ITranslationProviderStartInfo
     public Type ProviderType => typeof(ApiTranslationProvider);
 }
 
-[PrototypeLoadIntoDiContainer(typeof(ApiTranslationProvider), Lifetime.Transient)] //todo: [TEST] Write tests for this
+[PrototypeLoadIntoDiContainer(typeof(ApiTranslationProvider), Lifetime.Transient)]
 public class ApiTranslationProvider(ILogger logger, ConfigModel config, IApiClient client) : TranslationProviderBase
 {
     private readonly ILogger _logger = logger.ForContext<ApiTranslationProvider>();
