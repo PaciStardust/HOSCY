@@ -4,7 +4,9 @@ using HoscyCore.Services.Network;
 using HoscyCoreTests.Mocks;
 using HoscyCoreTests.Utils;
 
+#pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace HoscyCoreTests.Tests.ApiClientTests;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
 public class ApiClientFunctionTests : TestBase<ApiClientFunctionTests>
 {
