@@ -24,7 +24,7 @@ public class AudioService(ILogger logger) : StartStopServiceBase, IAudioService
     public override void Stop()
     {
         LogStopBegin(GetType(), _logger);
-        if (_audioEngine?.IsDisposed ?? false)
+        if (_audioEngine is not null && !_audioEngine.IsDisposed)
         {
             _audioEngine.Dispose();
         }
