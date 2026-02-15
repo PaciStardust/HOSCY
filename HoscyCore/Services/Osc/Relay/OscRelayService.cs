@@ -36,7 +36,7 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
     public override void Restart()
     {
         LogRestartBegin(GetType(), _logger);
-        SetFault(null);
+        ClearFault();
         ReloadValidRelayFilters(_config.Osc_Relay_Filters.ToList());
         LogRestartComplete(GetType(), _logger);
     }
@@ -105,7 +105,7 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
             SetFaultLogAndNotify(argEx, _logger, _notify, filterString);
         } else
         {
-            SetFault(null);
+            ClearFault();
         }
     }
 

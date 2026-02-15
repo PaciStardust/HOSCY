@@ -87,7 +87,8 @@ public class ApiTranslationProvider(ILogger logger, ConfigModel config, IApiClie
             _logger.Verbose("Translated text \"{input}\" to \"{output}\"", input, result);
             output = result;
             return TranslationResult.Succeeded;
-        } catch (Exception ex)
+        } 
+        catch (Exception ex)
         {
             _logger.Error(ex, "Failed translation of text \"{input}\"", input);
             SetFault(ex);

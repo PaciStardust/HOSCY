@@ -225,7 +225,7 @@ public class TranslatorManagerService //todo: [TEST] Write tests for this
             _currentProvider.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
             _currentProvider = null;
         }
-        SetFault(null);
+        ClearFault();
     }
 
     private void HandleOnRuntimeError(object? sender, Exception ex)
