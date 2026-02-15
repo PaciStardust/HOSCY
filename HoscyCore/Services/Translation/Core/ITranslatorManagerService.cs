@@ -4,19 +4,12 @@ namespace HoscyCore.Services.Translation.Core;
 
 public interface ITranslatorManagerService : IAutoStartStopService
 {
-    #region Info
-    public IReadOnlyList<(string ProperName, string TypeName)> GetAvailableNames();
-    public string? GetCurrentName();
-    #endregion
+    public IReadOnlyList<ITranslationProviderStartInfo> GetProviderInfos();
+    public ITranslationProviderStartInfo? GetCurrentProviderInfo();
+    public ServiceStatus GetCurrentProviderStatus();
 
-    #region Start / Stop
-    public void StartTranslator(string? name = null, string? typeName = null);
-    public void StopCurrentTranslator();
-    public void RestartCurrentTranslator();
-    public ServiceStatus GetCurrentTranslatorStatus();
-    #endregion
+    public void RefreshProvider();
+    public bool RestartCurrentProvider();
 
-    #region Functionality
     public TranslationResult TryTranslate(string input, out string? output);
-    #endregion
 }

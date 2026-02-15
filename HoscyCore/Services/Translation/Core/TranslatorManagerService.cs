@@ -3,72 +3,87 @@ using HoscyCore.Services.DependencyCore;
 using HoscyCore.Services.Interfacing;
 using Serilog;
 
-namespace HoscyCore.Services.Translation.Core; //todo: [REFACTOR] New system needed
+namespace HoscyCore.Services.Translation.Core;
 
-[LoadIntoDiContainer(typeof(ITranslatorManagerService), Lifetime.Singleton)] //todo: [TEST] Write tests for this
-public class TranslatorManagerService
+[PrototypeLoadIntoDiContainer(typeof(TranslatorManagerService))]
+public class TranslatorManagerService //todo: [TEST] Write tests for this
 (
     IBackToFrontNotifyService notify,
     ILogger logger,
-    IContainerBulkLoader<ITranslationProvider>bulkLoader,
-    ConfigModel config
-) 
+    ConfigModel config,
+    IContainerBulkLoader<ITranslationProviderStartInfo> infoLoader,
+    IContainerBulkLoader<ITranslationProvider> providerLoader
+)
 : StartStopServiceBase, ITranslatorManagerService
 {
     #region Injected
     private readonly IBackToFrontNotifyService _notify = notify;
     private readonly ILogger _logger = logger.ForContext<TranslatorManagerService>();
-    private readonly IContainerBulkLoader<ITranslationProvider> _bulkLoader = bulkLoader;
     private readonly ConfigModel _config = config;
+    private readonly IContainerBulkLoader<ITranslationProviderStartInfo> _infoLoader = infoLoader;
+    private readonly IContainerBulkLoader<ITranslationProvider> _providerLoader = providerLoader;
     #endregion
 
     #region Service Vars
-    private readonly List<(string Name, Type Type)> _availableTranslators = [];
-    private ITranslationProvider? _currentTranslator = null;
+    private ITranslationProvider? _currentProvider;
+    private readonly List<ITranslationProviderStartInfo> _providerInfos = [];
     #endregion
 
     #region Info
-    /// <summary>
-    /// Returns the name and type name of translators
-    /// </summary>
-    public IReadOnlyList<(string ProperName, string TypeName)> GetAvailableNames()
+    public IReadOnlyList<ITranslationProviderStartInfo> GetProviderInfos()
     {
-        return _availableTranslators.Select(x => (x.Name, x.Type.Name)).ToList();
+        return _providerInfos;
     }
 
-    public string? GetCurrentName()
+    public ITranslationProviderStartInfo? GetCurrentProviderInfo()
     {
-        return _currentTranslator?.Metadata;
+        if (_currentProvider is null)
+            return null;
+        
+        var searchType = _currentProvider.GetType();
+        var returnType = SearchInfos(x => x.ProviderType == searchType, $"Type={searchType.Name}");
+
+        if (returnType is null)
+        {
+            _notify.SendError("Error retrieving active provider", $"Unable to locate current provider ({searchType.Name}) in info list");
+            _logger.Error("Unable to locate current provider ({provider}) in info list", searchType.FullName);
+        }
+        return returnType;
+    }
+
+    public ServiceStatus GetCurrentProviderStatus()
+    {
+        return _currentProvider?.GetCurrentStatus() ?? ServiceStatus.Stopped;
     }
     #endregion
 
     #region Start / Stop
     protected override void StartInternal()
     {
-        _logger.Debug("Starting up Service by loading available Translators");
+        _logger.Debug("Starting up Service - Loading available TranslationProviderStartInfos and perform provider refresh");
         if (IsStarted())
         {
             _logger.Debug("Skipped starting Service, still running");
             return;
         }
 
-        _availableTranslators.Clear();
-        var translatorsWithInstance = _bulkLoader.GetInstances();
-        _availableTranslators.AddRange(translatorsWithInstance.Select(x => (x.Metadata, x.GetType())));
-        if (_availableTranslators.Count == 0)
+        _providerInfos.Clear();
+        _providerInfos.AddRange(_infoLoader.GetInstances());
+        if (_providerInfos.Count == 0)
         {
-            _logger.Warning("No Translators could be located, Service will have no functionality and will be NOT be marked as running");
+            _logger.Warning("No TranslationProviderStartupInfos could be located, Service will have no functionality and will be NOT be marked as running");
             return;
         }
 
-        _logger.Debug("Started up Service with {translatorCount} Translators", _availableTranslators.Count);
+        RefreshProvider();
+        _logger.Debug("Started up Service with {providerCount} TranslationProviderStartInfos and provider refresh", _providerInfos.Count);
     }
 
     public override void Stop()
     {
-        _logger.Debug("Stopping service, shutting down Translator");
-        StopCurrentTranslator();
-        _logger.Debug("Stopped service, shut down Translator");
+        _logger.Debug("Stopping service, shutting down Provider");
+        StopCurrentProvider();
+        _logger.Debug(messageTemplate: "Stopped service, shut down Provider");
     }
 
     public override void Restart()
@@ -77,126 +92,157 @@ public class TranslatorManagerService
     }
 
     protected override bool IsStarted()
-        => _availableTranslators.Count > 0;
+        => _providerInfos.Count > 0;
     protected override bool IsProcessing()
-        => IsStarted() && _currentTranslator is not null;
+        => IsStarted() && _currentProvider is not null;
     #endregion
 
-    #region Translator => Start / Stop
-    public void StartTranslator(string? name = null, string? typeName = null)
+    #region Provider => Start / Stop
+    public void RefreshProvider()
     {
-        _logger.Information("Attemtping to start translator with name \"{name}\" and typeName \"{typeName}\"", name, typeName);
-        if (_currentTranslator is not null)
+        _logger.Information("Performing provider refresh");
+
+        var infoMatch = string.IsNullOrWhiteSpace(_config.Translation_CurrentProvider)
+            ? null 
+            : SearchInfos(x => x.Name.Equals(_config.Translation_CurrentProvider, StringComparison.OrdinalIgnoreCase),
+                $"Name={_config.Translation_CurrentProvider}");
+
+        if (_currentProvider is not null)
         {
-            _logger.Information("Skipped starting Translator, still running as \"{translatorType}\"", _currentTranslator.GetType().FullName);
-            return;
+            var currentType = _currentProvider.GetType();
+            if (infoMatch is not null && infoMatch.ProviderType == currentType)
+            {
+                _logger.Information("Performed provider refresh, no changes needed");
+                return;
+            }
+
+            _logger.Debug("Current provider {currentProvider} does not match selected type {selectedType}, stopping",
+                currentType.Name, infoMatch?.ProviderType.Name ?? "[EMPTY]");
         }
 
-        if (name is null && typeName is null)
+        if (infoMatch is not null)
         {
-            _logger.Error("Either name or typeName must be provided");
-            throw new ArgumentException("Either name or typeName must be provided");
+            _logger.Debug("Starting new provider with name {providerName} and type {providerType}",
+                infoMatch.Name, infoMatch.ProviderType.Name);
+            StartProvider(infoMatch);
         }
 
-        IEnumerable<(string Name, Type Type)> filteredTranslatorsEnumerable = _availableTranslators;
-        if (name is not null)
-            filteredTranslatorsEnumerable = filteredTranslatorsEnumerable.Where(x => x.Name == name);
-        if (typeName is not null)
-            filteredTranslatorsEnumerable = filteredTranslatorsEnumerable.Where(x => x.Type.Name == typeName);
-
-        var filteredTranslators = filteredTranslatorsEnumerable.ToArray();
-        if (filteredTranslators.Length == 0)
-        {
-            _logger.Error("No translator found with the given name \"{name}\" or typeName \"{typeName}\"", name, typeName);
-            throw new ArgumentException($"No translator found with the given name {name} or typeName {typeName}");
-        }
-
-        if (filteredTranslators.Length > 1)
-        {
-            var translatorOptions = string.Join(", ", filteredTranslators.Select(x => $"{x.Name} ({x.Type.Name})"));
-            _logger.Warning("Multiple translators found with the given name \"{name}\" or typeName \"{typeName}\": {translatorOptions} => picking first");
-        }
-
-        var translatorType = filteredTranslators[0].Type;
-        var translator = _bulkLoader.GetInstance(translatorType);
-        if (translator is null)
-        {
-            _logger.Error("Failed to get translator instance name \"{translatorName}\" and type \"{translatorType}\"", name, translatorType.Name);
-            throw new DiResolveException($"Failed to get translator instance name {name} and type {translatorType.Name}");
-        }
-        translator.OnRuntimeError += HandleOnRuntimeError;
-        translator.OnSubmoduleStopped += HandleOnSubmoduleStopped;
-        translator.Start();
-        _currentTranslator = translator;
-        _logger.Information("Started translator with name \"{translatorName}\" and type \"{translatorType}\"", name, translatorType.Name);
+        _logger.Information("Performed provider refresh");
     }
 
-    public void StopCurrentTranslator()
+    private bool StartProvider(ITranslationProviderStartInfo startInfo)
     {
-        _logger.Information("Stopping current translator");
-        if (_currentTranslator is null)
+        try
         {
-            _logger.Information("Skipping stopping of current translator, no translator running");
-            return;
+            _logger.Information("Attemtping to start provider with name \"{name}\" and typeName \"{typeName}\"", startInfo.Name, startInfo.ProviderType.Name);
+            if (_currentProvider is not null)
+            {
+                _logger.Information("Skipped starting Provider, still running as \"{providerType}\"", _currentProvider.GetType().FullName);
+                return true;
+            }
+
+            var providerMatch = _providerLoader.GetInstance(startInfo.ProviderType);
+            if (providerMatch is null)
+            {
+                _logger.Error("Failed to get provider instance name \"{providerName}\" and type \"{providerType}\"", startInfo.Name, startInfo.ProviderType.Name);
+                throw new DiResolveException($"Failed to get provider instance name {startInfo.Name} and type {startInfo.ProviderType.Name}");
+            }
+
+            providerMatch.OnRuntimeError += HandleOnRuntimeError;
+            providerMatch.OnSubmoduleStopped += HandleOnSubmoduleStopped;
+            providerMatch.Start();
+            _currentProvider = providerMatch;
+            _logger.Information("Started provider with name \"{providerName}\" and type \"{providerType}\"", startInfo.Name, startInfo.ProviderType.Name);
         }
-        _currentTranslator.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
-        _currentTranslator.Stop();
-        CleanupAfterTranslatorShutdown();
-        _logger.Information("Stopped current translator");
+        catch (Exception ex)
+        {
+            SetFaultLogAndNotify(ex, _logger, _notify,
+                $"Started provider with name \"{startInfo.Name}\" and type \"{startInfo.ProviderType.Name}\"");
+            return false;
+        }
+        return true;
+    }
+
+    private bool StopCurrentProvider()
+    {
+        try
+        {
+            _logger.Information("Stopping current provider");
+            if (_currentProvider is null)
+            {
+                _logger.Information("Skipping stopping of current provider, no provider running");
+                return true;
+            }
+            _currentProvider.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
+            _currentProvider.Stop();
+            CleanupAfterProviderShutdown();
+            _logger.Information("Stopped current provider");
+        }
+        catch (Exception ex)
+        {
+            SetFaultLogAndNotify(ex, _logger, _notify,
+                "Failed to stop current provider");
+            return false;
+        }
+        return true;
+    }
+
+    public bool RestartCurrentProvider()
+    {
+        try
+        {
+            _logger.Information("Restarting current provider");
+            if (_currentProvider is null)
+            {
+                _logger.Information("Skipping restart of current provider, no provider running");
+                return true;
+            }
+            _currentProvider.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
+            _currentProvider.Restart();
+            _currentProvider.OnSubmoduleStopped += HandleOnSubmoduleStopped;
+            _logger.Information("Restarted current provider");
+        } catch (Exception ex)
+        {
+            SetFaultLogAndNotify(ex, _logger, _notify,
+                "Failed to restart current provider"); //todo: [REFACTOR] where else is this missing?
+            return false;
+        }
+        return true;
     }
 
     private void HandleOnSubmoduleStopped(object? sender, EventArgs e)
     {
         if (sender is null) return;
-        _logger.Warning("HandleOnShutdownCompleted called for type \"{senderType}\", this should only happen when a shutdown was called unexpectedly", sender.GetType().FullName);
-        CleanupAfterTranslatorShutdown();
+        _logger.Warning("HandleOnShutdownCompleted called for provider of type \"{senderType}\", this should only happen when a shutdown was called unexpectedly", sender.GetType().FullName);
+        CleanupAfterProviderShutdown();
     }
 
-    private void CleanupAfterTranslatorShutdown()
+    private void CleanupAfterProviderShutdown()
     {
-        if (_currentTranslator is not null)
+        if (_currentProvider is not null)
         {
-            _currentTranslator.OnRuntimeError -= HandleOnRuntimeError;
-            _currentTranslator.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
-            _currentTranslator = null;
+            _currentProvider.OnRuntimeError -= HandleOnRuntimeError;
+            _currentProvider.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
+            _currentProvider = null;
         }
         SetFault(null);
     }
 
     private void HandleOnRuntimeError(object? sender, Exception ex)
     {
-        _logger.Error(ex, "Encountered an error in Translator \"{senderType}\"", sender?.GetType().FullName);
-        _notify.SendError($"Encountered an error in Translator {sender?.GetType().FullName ?? "???"}",exception: ex);
+        _logger.Error(ex, "Encountered an error in Provider \"{senderType}\"", sender?.GetType().FullName);
+        _notify.SendError($"Encountered an error in Provider {sender?.GetType().FullName ?? "???"}",exception: ex);
         SetFault(ex);
-    }
-
-    public void RestartCurrentTranslator()
-    {
-        _logger.Information("Restarting current translator");
-        if (_currentTranslator is null)
-        {
-            _logger.Information("Skipping restart of current translator, no translator running");
-            return;
-        }
-        _currentTranslator.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
-        _currentTranslator.Restart();
-        _currentTranslator.OnSubmoduleStopped += HandleOnSubmoduleStopped;
-        _logger.Information("Restarted current translator");
-    }
-
-    public ServiceStatus GetCurrentTranslatorStatus()
-    {
-        return _currentTranslator?.GetCurrentStatus() ?? ServiceStatus.Stopped;
     }
     #endregion
 
-    #region Translator => Functionality
+    #region Provider => Functionality
     private readonly char[] _filterChars = ['\n', '\t', '\r', ' '];
     public TranslationResult TryTranslate(string input, out string? output)
     {
-        if (_currentTranslator is null || _currentTranslator.GetCurrentStatus() == ServiceStatus.Stopped)
+        if (_currentProvider is null || _currentProvider.GetCurrentStatus() == ServiceStatus.Stopped)
         {
-            LogTranslatorNotAvailable(input);
+            LogProviderNotAvailable(input);
             output = null;
             return _config.Translation_SendUntranslatedIfFailed 
                 ? TranslationResult.UseOriginal
@@ -233,7 +279,7 @@ public class TranslatorManagerService
             }
         }
 
-        var result = _currentTranslator.TryTranslate(input, out var translatedOutput);
+        var result = _currentProvider.TryTranslate(input, out var translatedOutput);
         switch (result)
         {
             case TranslationResult.Succeeded:
@@ -241,6 +287,7 @@ public class TranslatorManagerService
                 return result;
             case TranslationResult.Failed:
                 output = null;
+                LogFailedTranslation(input);
                 return _config.Translation_SendUntranslatedIfFailed
                     ? TranslationResult.UseOriginal
                     : TranslationResult.Failed;
@@ -255,14 +302,35 @@ public class TranslatorManagerService
         }
     }
 
-    private void LogTranslatorNotAvailable(string inputForLog)
+    private void LogProviderNotAvailable(string inputForLog)
     {
-        _logger.Warning("Skipped translation request for input \"{input}\", no translator running", inputForLog);
+        _logger.Warning("Skipped translation request for input \"{input}\", no provider running", inputForLog);
     }
 
     private void LogFailedTranslation(string inputForLog)
     {
         _logger.Warning("Translation of message with contents \"{input}\" failed", inputForLog);
+    }
+    #endregion
+
+    #region Utils
+    private ITranslationProviderStartInfo? SearchInfos(Predicate<ITranslationProviderStartInfo> search, string searchInfoForLog)
+    {
+        var infoSearch = _providerInfos.Where(search.Invoke).ToArray();
+
+        if (infoSearch.Length == 0)
+        {
+            _logger.Error("No info found with search info {searchInfo}", searchInfoForLog);
+            return null;
+        }
+
+        if (infoSearch.Length > 1)
+        {
+            var translatorOptions = string.Join(", ", infoSearch.Select(x => $"{x.Name} ({x.ProviderType.Name})"));
+            _logger.Warning("Multiple infos found with search info {searchInfo}: {translatorOptions} => picking first", searchInfoForLog);
+        }
+
+        return infoSearch[0];
     }
     #endregion
 }

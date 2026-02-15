@@ -128,7 +128,7 @@ public class OutputManagerServiceTests : TestBaseForService<OutputManagerService
         Assert.That(_output.GetHandlerInfos(true), Is.Empty);
 
         _translator.ReceivedInput.Clear();
-        _translator.CurrentTranslatorStatus = ServiceStatus.Processing;
+        _translator.CurrentProviderStatus = ServiceStatus.Processing;
         _notify.Notifications.Clear();
 
         _preprocessorEarlyFull.ReceivedInput.Clear();
@@ -952,7 +952,7 @@ public class OutputManagerServiceTests : TestBaseForService<OutputManagerService
         _config.Translation_SendUntranslatedIfUnavailable = false;
         _translator.TranslateOutput = "Output";
         _translator.TranslateResult = TranslationResult.Succeeded;
-        _translator.CurrentTranslatorStatus = ServiceStatus.Stopped;
+        _translator.CurrentProviderStatus = ServiceStatus.Stopped;
 
         _infoB.Enabled = true;
         _infoC.Enabled = true;
