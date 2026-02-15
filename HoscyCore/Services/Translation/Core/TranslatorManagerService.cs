@@ -5,7 +5,7 @@ using Serilog;
 
 namespace HoscyCore.Services.Translation.Core;
 
-[PrototypeLoadIntoDiContainer(typeof(TranslatorManagerService))]
+[PrototypeLoadIntoDiContainer(typeof(ITranslatorManagerService))]
 public class TranslatorManagerService //todo: [TEST] Write tests for this
 (
     IBackToFrontNotifyService notify,
