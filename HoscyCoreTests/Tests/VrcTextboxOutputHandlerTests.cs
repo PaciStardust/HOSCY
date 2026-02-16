@@ -4,9 +4,32 @@ using HoscyCore.Services.Output.Handling.Textbox;
 using HoscyCoreTests.Mocks;
 using HoscyCoreTests.Utils;
 
-namespace HoscyCoreTests.Tests;
+#pragma warning disable IDE0130 // Namespace does not match folder structure
+namespace HoscyCoreTests.Tests.VrcTextboxOutputHandlerTests;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
-public class VrcTextboxOutputHandlerTests : TestBaseForService<VrcTextboxOutputHandlerTests>
+public class VrcTextboxOutputHandlerStartupTests : TestBase<VrcTextboxOutputHandlerStartupTests>
+{
+    private ConfigModel _config = null!;
+    private MockOscSendService _send = null!;
+
+    private VrcTextboxOutputHandler _handler = null!;
+
+    protected override void SetupExtra()
+    {
+        _config = new();
+        _send = new(_config);
+        _handler = new(_logger, _config, _send);
+    }
+
+    [TestCase(false, false), TestCase(true, false), TestCase(false, true)]
+    public void StartStopRestartTest(bool restartNotStart, bool doAgain)
+    {
+        SimpleStartStopRestartTest(_handler, false, restartNotStart, doAgain);
+    }
+}
+
+public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHandlerFunctionTests>
 {
     private VrcTextboxOutputHandler _handler = null!;
     private MockOscSendService _send = null!;
@@ -21,7 +44,6 @@ public class VrcTextboxOutputHandlerTests : TestBaseForService<VrcTextboxOutputH
         _handler = new(_logger, _config, _send);
 
         _handler.Start();
-        AssertServiceProcessing(_handler);
     }
 
     protected override void SetupExtra()
@@ -604,7 +626,6 @@ public class VrcTextboxOutputHandlerTests : TestBaseForService<VrcTextboxOutputH
     protected override void OneTimeTearDownExtra()
     {
         _handler.Stop();
-        AssertServiceStopped(_handler);
     }
 
     private void ClearAndWait()
