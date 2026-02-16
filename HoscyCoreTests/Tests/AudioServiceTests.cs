@@ -14,34 +14,10 @@ public class AudioServiceStartupTests : TestBase<AudioServiceStartupTests>
         _audio = new(_logger);
     }
 
-    [Test]
-    public void StartStopRestartTest()
+    [TestCase(false, false), TestCase(true, false), TestCase(false, true)]
+    public void StartStopRestartTest(bool restartNotStart, bool doAgain)
     {
-        AssertServiceStopped(_audio);
-
-        _audio.Start();
-        AssertServiceProcessing(_audio);
-
-        _audio.Restart();
-        AssertServiceProcessing(_audio);
-
-        _audio.Stop();
-        AssertServiceStopped(_audio);
-    }
-
-    [Test]
-    public void StartDoubleTest()
-    {
-        AssertServiceStopped(_audio);
-
-        _audio.Start();
-        AssertServiceProcessing(_audio);
-
-        _audio.Start();
-        AssertServiceProcessing(_audio);
-
-        _audio.Stop();
-        AssertServiceStopped(_audio);
+        SimpleStartStopRestartTest(_audio, false, restartNotStart, doAgain);
     }
 }
 
@@ -53,7 +29,6 @@ public class AudioServiceFunctionTests : TestBase<AudioServiceFunctionTests>
     {
         _audioService = new(_logger);
         _audioService.Start();
-        AssertServiceProcessing(_audioService);
     }
 
     [Test]
@@ -73,6 +48,5 @@ public class AudioServiceFunctionTests : TestBase<AudioServiceFunctionTests>
     protected override void OneTimeTearDownExtra()
     {
         _audioService.Stop();
-        AssertServiceStopped(_audioService);
     }
 }
