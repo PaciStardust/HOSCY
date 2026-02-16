@@ -77,4 +77,38 @@ public abstract class TestBase<T>
         var status = startStopService.GetCurrentStatus();
         Assert.That(status, Is.EqualTo(ServiceStatus.Faulted), "Service status not faulted");
     }
+
+    protected static void SimpleStartStopRestartTest(IStartStopService service, bool startedNotProcessing, bool restartNotStart, bool doAgain)
+    {
+        static void AssertServiceRunning(IStartStopService service, bool startedNotProcessing)
+        {
+            if (startedNotProcessing)
+                AssertServiceStarted(service);
+            else 
+                AssertServiceProcessing(service);
+        }
+
+        AssertServiceStopped(service);
+        
+        service.Start();
+        AssertServiceRunning(service, startedNotProcessing);
+
+        if (restartNotStart)
+            service.Restart();
+        else 
+            service.Start();
+        AssertServiceRunning(service, startedNotProcessing);
+
+        service.Stop();
+        AssertServiceStopped(service);
+
+        if (!doAgain) return;
+
+        service.Start();
+        AssertServiceRunning(service, startedNotProcessing);
+
+        service.Stop();
+        AssertServiceStopped(service);
+
+    }
 }
