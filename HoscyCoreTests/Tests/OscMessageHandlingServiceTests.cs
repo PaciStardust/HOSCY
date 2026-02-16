@@ -1,12 +1,56 @@
-using HoscyCore.Services.DependencyCore;
 using HoscyCore.Services.Osc.MessageHandling;
 using HoscyCoreTests.Mocks;
 using HoscyCoreTests.Utils;
 using LucHeart.CoreOSC;
 
-namespace HoscyCoreTests.Tests;
+#pragma warning disable IDE0130 // Namespace does not match folder structure
+namespace HoscyCoreTests.Tests.OscMessageHandlingServiceTests;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
-public class OscMessageHandlingServiceTests : TestBaseForService<OscMessageHandlingServiceTests>
+public class OscMessageHandlingServiceStartupTests : TestBase<OscMessageHandlingServiceStartupTests>
+{
+    private OscMessageHandlingService _handlingService = null!;
+    private MockContainerBulkLoader<IOscMessageHandler> _bulkLoader = null!;
+    private MockOscMessageHandlerA _mockHandlerA = null!;
+
+    protected override void SetupExtra()
+    {
+        _mockHandlerA = new();
+        _bulkLoader = new(() => [_mockHandlerA]);
+
+        _handlingService = new(_logger, _bulkLoader);
+    }
+
+    [Test]
+    public void StartStopTest()
+    {
+        AssertServiceStopped(_handlingService);
+        
+        _handlingService.Start();
+        AssertServiceProcessing(_handlingService);
+
+        _handlingService.Stop();
+        AssertServiceStopped(_handlingService);
+
+        _bulkLoader = new(() => []);
+        _handlingService = new(_logger, _bulkLoader);
+        AssertServiceStopped(_handlingService);
+
+        _handlingService.Start();
+        AssertServiceStarted(_handlingService);
+
+        _handlingService.Stop();
+        AssertServiceStopped(_handlingService);
+    }
+
+    [TestCase(false, false), TestCase(true, false), TestCase(false, true)]
+    public void StartStopRestartTest(bool restartNotStart, bool doAgain)
+    {
+        SimpleStartStopRestartTest(_handlingService, false, restartNotStart, doAgain);
+    }
+}
+
+public class OscMessageHandlingServiceFunctionTests : TestBase<OscMessageHandlingServiceFunctionTests>
 {
     private OscMessageHandlingService _handlingService = null!;
     private MockContainerBulkLoader<IOscMessageHandler> _bulkLoader = null!;
@@ -22,7 +66,6 @@ public class OscMessageHandlingServiceTests : TestBaseForService<OscMessageHandl
 
         _handlingService = new(_logger, _bulkLoader);
         _handlingService.Start();
-        AssertServiceProcessing(_handlingService);
     }
 
     [Test]
@@ -88,6 +131,5 @@ public class OscMessageHandlingServiceTests : TestBaseForService<OscMessageHandl
     protected override void OneTimeTearDownExtra()
     {
         _handlingService.Stop();
-        AssertServiceStopped(_handlingService);
     }
 }
