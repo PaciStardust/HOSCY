@@ -1,11 +1,36 @@
 using HoscyCore.Services.Osc.Query;
 using HoscyCoreTests.Mocks;
 using HoscyCoreTests.Utils;
-using NUnit.Framework.Interfaces;
 
-namespace HoscyCoreTests.Tests;
+#pragma warning disable IDE0130 // Namespace does not match folder structure
+namespace HoscyCoreTests.Tests.OscQueryServiceTests;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
-public class OscQueryServiceTests : TestBaseForService<OscQueryServiceTests>
+public class OscQueryServiceStartupTests : TestBase<OscQueryServiceStartupTests>
+{
+    private MockBackToFrontNotifyService _notify = null!;
+    private MockOscListenService _listen = null!;
+    private OscQueryHostRegistry _registry = null!;
+
+    private OscQueryService _query = null!;
+
+    protected override void SetupExtra()
+    {
+        _notify = new();
+        _listen = new();
+        _registry = new(_logger);
+
+        _query = new(_logger, _notify, _listen, _registry);
+    }
+
+    [TestCase(false, false), TestCase(true, false), TestCase(false, true)]
+    public void StartStopRestartTest(bool restartNotStart, bool doAgain)
+    {
+        SimpleStartStopRestartTest(_query, false, restartNotStart, doAgain);
+    }
+}
+
+public class OscQueryServiceFunctionTests : TestBase<OscQueryServiceFunctionTests>
 {
     private OscQueryService _query = null!;
     private readonly MockBackToFrontNotifyService _notify = new();
@@ -19,7 +44,6 @@ public class OscQueryServiceTests : TestBaseForService<OscQueryServiceTests>
 
         _query = new(_logger, _notify, _listen, _registry);
         _query.Start();
-        AssertServiceProcessing(_query);
     }
 
     [Test]
@@ -40,6 +64,5 @@ public class OscQueryServiceTests : TestBaseForService<OscQueryServiceTests>
     protected override void OneTimeTearDownExtra()
     {
         _query.Stop();
-        AssertServiceStopped(_query);
     }
 }
