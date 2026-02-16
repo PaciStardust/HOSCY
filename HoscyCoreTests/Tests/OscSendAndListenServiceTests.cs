@@ -4,9 +4,37 @@ using HoscyCore.Utility;
 using HoscyCoreTests.Mocks;
 using HoscyCoreTests.Utils;
 
-namespace HoscyCoreTests.Tests;
+#pragma warning disable IDE0130 // Namespace does not match folder structure
+namespace HoscyCoreTests.Tests.OscSendAndListenServiceTests;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
-public class OscSendAndListenServiceTests : TestBaseForService<OscSendAndListenServiceTests>
+public class OscSendAndListenServiceStartupTests : TestBase<OscSendAndListenServiceStartupTests>
+{
+    private ConfigModel _config = null!;
+    private MockBackToFrontNotifyService _notify = null!;
+    private MockOscMessageHandlingService _handler = null!;
+    private MockOscRelayService _relay = null!;
+
+    private OscListenService _listen = null!;
+
+    protected override void SetupExtra()
+    {
+        _config = new();
+        _notify = new();
+        _handler = new();
+        _relay = new();
+
+        _listen = new(_config, _logger, _notify, _handler, _relay);
+    }
+
+    [TestCase(false, false), TestCase(true, false), TestCase(false, true)]
+    public void StartStopRestartTest(bool restartNotStart, bool doAgain)
+    {
+        SimpleStartStopRestartTest(_listen, false, restartNotStart, doAgain);
+    }
+}
+
+public class OscSendAndListenServiceFunctionTests : TestBase<OscSendAndListenServiceFunctionTests>
 {
     private readonly ConfigModel _config = new();
     private readonly MockBackToFrontNotifyService _notify = new();
@@ -22,7 +50,6 @@ public class OscSendAndListenServiceTests : TestBaseForService<OscSendAndListenS
         _listen = new(_config, _logger, _notify, _handler, _relay);
 
         _listen.Start();
-        AssertServiceProcessing(_listen);
     }
 
     protected override void SetupExtra()
@@ -295,6 +322,5 @@ public class OscSendAndListenServiceTests : TestBaseForService<OscSendAndListenS
     protected override void OneTimeTearDownExtra()
     {
         _listen.Stop();
-        AssertServiceStopped(_listen);
     }
 }
