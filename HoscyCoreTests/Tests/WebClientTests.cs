@@ -1,9 +1,27 @@
 using HoscyCore.Services.Network;
 using HoscyCoreTests.Utils;
 
-namespace HoscyCoreTests.Tests;
+#pragma warning disable IDE0130 // Namespace does not match folder structure
+namespace HoscyCoreTests.Tests.WebClientTests;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
-public class WebClientTests : TestBaseForService<WebClientTests>
+public class WebClientStartupTests : TestBase<WebClientStartupTests>
+{
+    private WebClient _client = null!;
+
+    protected override void SetupExtra()
+    {
+        _client = new(_logger);
+    }
+
+    [TestCase(false, false), TestCase(true, false), TestCase(false, true)]
+    public void StartStopRestartTest(bool restartNotStart, bool doAgain)
+    {
+        SimpleStartStopRestartTest(_client, false, restartNotStart, doAgain);
+    }
+}
+
+public class WebClientFunctionTests : TestBase<WebClientFunctionTests>
 {
     private WebClient _client = null!;
 
