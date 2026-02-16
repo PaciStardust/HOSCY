@@ -5,9 +5,35 @@ using HoscyCore.Services.Osc.Query;
 using HoscyCoreTests.Mocks;
 using HoscyCoreTests.Utils;
 
-namespace HoscyCoreTests.Tests;
+#pragma warning disable IDE0130 // Namespace does not match folder structure
+namespace HoscyCoreTests.Tests.OscCommandServiceTests;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
-public class OscCommandServiceTests : TestBaseForService<OscCommandServiceTests>
+public class OscCommandServiceStartupTests : TestBase<OscCommandServiceStartupTests>
+{
+    private ConfigModel _config = null!;
+    private MockOscSendService _sender = null!;
+    private OscQueryHostRegistry _registry = null!;
+
+    private OscCommandService _commandService = null!;
+
+    protected override void SetupExtra()
+    {
+        _config = new();
+        _sender = new(_config);
+        _registry = new(_logger);
+
+        _commandService = new(_logger, _registry, _sender);
+    }
+
+    [TestCase(false, false), TestCase(true, false), TestCase(false, true)]
+    public void StartStopRestartTest(bool restartNotStart, bool doAgain)
+    {
+        SimpleStartStopRestartTest(_commandService, false, restartNotStart,  doAgain);
+    }
+}
+
+public class OscCommandServiceFunctionTests : TestBase<OscCommandServiceFunctionTests>
 {
     private OscCommandService _commandService = null!;
     private OscQueryHostRegistry _registry = null!;
@@ -21,7 +47,6 @@ public class OscCommandServiceTests : TestBaseForService<OscCommandServiceTests>
         _commandService = new(_logger, _registry, _sender);
 
         _commandService.Start();
-        AssertServiceProcessing(_commandService);
     }
 
     protected override void SetupExtra()
@@ -356,6 +381,5 @@ public class OscCommandServiceTests : TestBaseForService<OscCommandServiceTests>
     protected override void OneTimeTearDownExtra()
     {
         _commandService.Stop();
-        AssertServiceStopped(_commandService);
     }
 }
