@@ -1,11 +1,12 @@
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Output.Preprocessing;
 using HoscyCoreTests.Utils;
-using Microsoft.Extensions.Primitives;
 
-namespace HoscyCoreTests.Tests;
+#pragma warning disable IDE0130 // Namespace does not match folder structure
+namespace HoscyCoreTests.Tests.ReplacementOutputPreprocessorTests;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
-public class ReplacementOutputPreprocessorTests : TestBaseForService<ReplacementOutputPreprocessorTests>
+public class ReplacementOutputPreprocessorFunctionTests : TestBase<ReplacementOutputPreprocessorFunctionTests>
 {
     private readonly ConfigModel _config = new();
 

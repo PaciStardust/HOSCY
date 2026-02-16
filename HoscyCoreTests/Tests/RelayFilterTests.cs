@@ -2,9 +2,11 @@ using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Osc.Relay;
 using HoscyCoreTests.Utils;
 
-namespace HoscyCoreTests.Tests;
+#pragma warning disable IDE0130 // Namespace does not match folder structure
+namespace HoscyCoreTests.Tests.RelayFilterTests;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
-public class RelayFilterTests : TestBase<RelayFilterTests>
+public class RelayFilterFunctionTests : TestBase<RelayFilterFunctionTests>
 {
     [TestCase(true)]
     [TestCase(false)]

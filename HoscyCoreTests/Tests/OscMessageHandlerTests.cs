@@ -1,14 +1,15 @@
 using HoscyCore.Configuration.Modern;
-using HoscyCore.Services.DependencyCore;
 using HoscyCore.Services.Osc.MessageHandling.Handlers;
 using HoscyCore.Services.Output.Core;
 using HoscyCoreTests.Mocks;
 using HoscyCoreTests.Utils;
 using LucHeart.CoreOSC;
 
-namespace HoscyCoreTests.Tests;
+#pragma warning disable IDE0130 // Namespace does not match folder structure
+namespace HoscyCoreTests.Tests.OscMessageHandlerTests;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
-public class OscMessageHandlerTests : TestBase<OscMessageHandlerTests>
+public class OscMessageHandlerFunctionTests : TestBase<OscMessageHandlerFunctionTests>
 {
     private readonly ConfigModel _config = new();
 
