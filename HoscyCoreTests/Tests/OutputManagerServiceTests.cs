@@ -1,38 +1,37 @@
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.DependencyCore;
+using HoscyCore.Services.Interfacing;
 using HoscyCore.Services.Output.Core;
 using HoscyCore.Services.Translation.Core;
 using HoscyCoreTests.Mocks;
 using HoscyCoreTests.Utils;
 
-namespace HoscyCoreTests.Tests;
+#pragma warning disable IDE0130 // Namespace does not match folder structure
+namespace HoscyCoreTests.Tests.OutputManagerServiceTests;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
-public class OutputManagerServiceTests : TestBaseForService<OutputManagerServiceTests>
+public abstract class OutputManagerServiceTestBase<T> : TestBase<T>
 {
-    private readonly MockBackToFrontNotifyService _notify = new();
-    private readonly MockTranslatorManager _translator = new();
-    private readonly ConfigModel _config = new();
+    protected MockContainerBulkLoader<IOutputPreprocessor> _loadPreprocessors = null!;
+    protected MockOutputPreprocessor _preprocessorEarlyFull = null!;
+    protected MockOutputPreprocessor _preprocessorLatePartial = null!;
 
-    private MockContainerBulkLoader<IOutputPreprocessor> _loadPreprocessors = null!;
-    private MockOutputPreprocessor _preprocessorEarlyFull = null!;
-    private MockOutputPreprocessor _preprocessorLatePartial = null!;
+    protected MockContainerBulkLoader<IOutputHandlerStartInfo> _loadHandlerInfos = null!;
+    protected MockOutputHandlerStartInfo _infoA = null!;
+    protected MockOutputHandlerStartInfo _infoB = null!;
+    protected MockOutputHandlerStartInfo _infoC = null!;
+    protected MockOutputHandlerStartInfo _infoD = null!;
+    protected MockOutputHandlerStartInfo _infoE = null!;
 
-    private MockContainerBulkLoader<IOutputHandlerStartInfo> _loadHandlerInfos = null!;
-    private MockOutputHandlerStartInfo _infoA = null!;
-    private MockOutputHandlerStartInfo _infoB = null!;
-    private MockOutputHandlerStartInfo _infoC = null!;
-    private MockOutputHandlerStartInfo _infoD = null!;
-    private MockOutputHandlerStartInfo _infoE = null!;
+    protected MockContainerBulkLoader<IOutputHandler> _loadHandlers = null!;
+    protected MockOutputHandlerA _handlerA = null!;
+    protected MockOutputHandlerB _handlerB = null!;
+    protected MockOutputHandlerC _handlerC = null!;
+    protected MockOutputHandlerD _handlerD = null!;
 
-    private MockContainerBulkLoader<IOutputHandler> _loadHandlers = null!;
-    private MockOutputHandlerA _handlerA = null!;
-    private MockOutputHandlerB _handlerB = null!;
-    private MockOutputHandlerC _handlerC = null!;
-    private MockOutputHandlerD _handlerD = null!;
+    protected OutputManagerService _output = null!;
 
-    private OutputManagerService _output = null!;
-
-    protected override void OneTimeSetupExtra()
+    protected void SetSharedClasses(IBackToFrontNotifyService notify, ConfigModel config, ITranslatorManagerService translator)
     {
         _preprocessorEarlyFull = new()
         {
@@ -97,15 +96,76 @@ public class OutputManagerServiceTests : TestBaseForService<OutputManagerService
         };
         _loadHandlerInfos = new(() => [ _infoA, _infoB, _infoC, _infoD, _infoE ]);
 
-        _output = new(_logger, _notify, _config, _loadPreprocessors, _loadHandlerInfos, _loadHandlers, _translator);
-        _output.Start();
+        _output = new(_logger, notify, config, _loadPreprocessors, _loadHandlerInfos, _loadHandlers, translator);
+    }
+}
 
+public class OutputManagerServiceStartupTests : OutputManagerServiceTestBase<OutputManagerServiceStartupTests>
+{
+    private MockBackToFrontNotifyService _notify = null!;
+    private MockTranslatorManager _translator = null!;
+    private ConfigModel _config = null!;
+
+    protected override void SetupExtra()
+    {
+        _notify = new();
+        _translator = new();
+        _config = new();
+        SetSharedClasses(_notify, _config, _translator);
+    }
+
+    [TestCase(false, false), TestCase(true, false), TestCase(false, true)]
+    public void StartStopRestartTest(bool restartNotStart, bool doAgain)
+    {
+        AssertServiceStopped(_output);
+
+        _output.Start();
         using (Assert.EnterMultipleScope())
         {
             AssertServiceProcessing(_output);
             Assert.That(_output.GetHandlerInfos(false), Has.Count.EqualTo(5));
             Assert.That(_output.GetHandlerInfos(true), Has.Count.EqualTo(1));
         }
+
+        if (restartNotStart)
+            _output.Restart();
+        else
+            _output.Start();
+        using (Assert.EnterMultipleScope())
+        {
+            AssertServiceProcessing(_output);
+            Assert.That(_output.GetHandlerInfos(false), Has.Count.EqualTo(5));
+            Assert.That(_output.GetHandlerInfos(true), Has.Count.EqualTo(1));
+        }
+
+        _output.Stop();
+        AssertServiceStopped(_output);
+
+        if (!doAgain) return;
+
+        _output.Start();
+        using (Assert.EnterMultipleScope())
+        {
+            AssertServiceProcessing(_output);
+            Assert.That(_output.GetHandlerInfos(false), Has.Count.EqualTo(5));
+            Assert.That(_output.GetHandlerInfos(true), Has.Count.EqualTo(1));
+        }
+
+        _output.Stop();
+        AssertServiceStopped(_output);
+    }
+}
+
+public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<OutputManagerServiceFunctionTests>
+{
+    private readonly MockBackToFrontNotifyService _notify = new();
+    private readonly MockTranslatorManager _translator = new();
+    private readonly ConfigModel _config = new();
+
+    protected override void OneTimeSetupExtra()
+    {
+        SetSharedClasses(_notify, _config, _translator);
+        _output.Start();
     }
 
     protected override void SetupExtra()
@@ -1160,6 +1220,5 @@ public class OutputManagerServiceTests : TestBaseForService<OutputManagerService
     protected override void OneTimeTearDownExtra()
     {
         _output.Stop();
-        AssertServiceStopped(_output);
     }
 }
