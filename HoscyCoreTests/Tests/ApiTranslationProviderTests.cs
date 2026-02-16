@@ -43,8 +43,8 @@ public class ApiTranslationProviderStartupTests : TestBase<ApiTranslationProvide
         Assert.That(_provider.Start, Throws.Exception);
     }
 
-    [Test]
-    public void StartStopRestartTest()
+    [TestCase(false, false), TestCase(true, false), TestCase(false, true)]
+    public void StartStopRestartTest(bool restartNotStart, bool doAgain)
     {
         _config.Translation_Api_Preset = "Test";
         var preset = new ApiPresetModel() { Name = "Test" };
@@ -58,18 +58,38 @@ public class ApiTranslationProviderStartupTests : TestBase<ApiTranslationProvide
             Assert.That(_client.LoadedModel, Is.EqualTo(preset));
         }
 
-        _provider.Restart();
+        if (restartNotStart)
+            _provider.Restart();
+        else 
+            _provider.Start();
         using (Assert.EnterMultipleScope()) {
             AssertServiceProcessing(_provider);
             Assert.That(_client.LoadedModel, Is.EqualTo(preset));
         }
 
         _provider.Stop();
-        AssertServiceStopped(_provider);
+        using (Assert.EnterMultipleScope()) {
+            AssertServiceStopped(_provider);
+            Assert.That(_client.LoadedModel, Is.Null);
+        }
+
+        if (!doAgain) return;
+
+        _provider.Start();
+        using (Assert.EnterMultipleScope()) {
+            AssertServiceProcessing(_provider);
+            Assert.That(_client.LoadedModel, Is.EqualTo(preset));
+        }
+
+        _provider.Stop();
+        using (Assert.EnterMultipleScope()) {
+            AssertServiceStopped(_provider);
+            Assert.That(_client.LoadedModel, Is.Null);
+        }
     }
 }
 
-public class ApiTranslationProviderFunctionTests : TestBaseForService<ApiTranslationProviderFunctionTests>
+public class ApiTranslationProviderFunctionTests : TestBase<ApiTranslationProviderFunctionTests>
 {
     private readonly ConfigModel _config = new();
     private readonly MockApiClient _client = new();
@@ -85,7 +105,6 @@ public class ApiTranslationProviderFunctionTests : TestBaseForService<ApiTransla
         _provider = new(_logger, _config, _client);
 
         _provider.Start();
-        AssertServiceProcessing(_provider);
     }
 
     protected override void SetupExtra()
@@ -163,6 +182,5 @@ public class ApiTranslationProviderFunctionTests : TestBaseForService<ApiTransla
     protected override void OneTimeTearDownExtra()
     {
         _provider.Stop();
-        AssertServiceStopped(_provider);
     }
 }
