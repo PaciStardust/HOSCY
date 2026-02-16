@@ -15,7 +15,7 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
     private readonly IOscSendService _sender = sender;
     private readonly IBackToFrontNotifyService _notify = notify;
 
-    private List<OscReadonlyRelayFilter>? _filters = [];
+    private List<OscReadonlyRelayFilter>? _filters = null;
 
     #region Start / Stop 
     protected override void StartInternal()
@@ -68,6 +68,7 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
         if (filterModels.Count == 0)
         {
             _logger.Verbose("No relay filters found");
+            _filters = [];
             return;
         }
 
