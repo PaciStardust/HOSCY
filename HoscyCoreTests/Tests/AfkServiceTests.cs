@@ -46,6 +46,24 @@ public class AfkServiceStartupTests : TestBase<AfkServiceStartupTests>
     }
 
     [Test]
+    public void DoubleStartTest()
+    {
+        _afk.Start();
+        AssertServiceStarted(_afk);
+
+        _afk.Stop();
+
+        _afk.Start();
+        AssertServiceStarted(_afk);
+
+        _afk.Stop();
+
+        Assert.That(_output.Notifications, Is.Empty);
+        Thread.Sleep(6000);
+        Assert.That(_output.Notifications, Is.Empty);
+    }
+
+    [Test]
     public void StartStopRestartWithAfkTest()
     {
         _afk.Start();
@@ -93,7 +111,6 @@ public class AfkServiceFunctionTests : TestBase<AfkServiceFunctionTests>
         var afk = new AfkService(_config, _output, _logger);
         afk.Start();
         _afk = afk;
-        AssertServiceStarted(_afk);
     }
 
     const string START = "AFKNOW";
