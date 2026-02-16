@@ -4,9 +4,56 @@ using HoscyCoreTests.Mocks;
 using HoscyCoreTests.Utils;
 using LucHeart.CoreOSC;
 
-namespace HoscyCoreTests.Tests;
+#pragma warning disable IDE0130 // Namespace does not match folder structure
+namespace HoscyCoreTests.Tests.OscRelayServiceTests;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
-public class OscRelayServiceTests : TestBaseForService<OscRelayServiceTests>
+public class OscRelayServiceStartupTests : TestBase<OscRelayServiceStartupTests>
+{
+    private ConfigModel _config = null!;
+    private MockBackToFrontNotifyService _notify = null!;
+    private MockOscSendService _sender = null!;
+
+    private OscRelayService _relay = null!;
+
+    protected override void SetupExtra()
+    {
+        _config = new();
+        _notify = new();
+        _sender = new(_config);
+
+        _relay = new(_logger, _config, _sender, _notify);
+    }
+
+    [TestCase(true), TestCase(false)]
+    public void StartStopRestartTest(bool restartNotStart)
+    {
+        AssertServiceStopped(_relay);
+        
+        _relay.Start();
+        AssertServiceStarted(_relay);
+
+        _config.Osc_Relay_Filters.Add(new()
+        {
+            Enabled = true,
+            Ip = "127.0.0.1",
+            Port = 42069,
+            Filters = ["A"]
+        });
+
+        if (restartNotStart)
+            _relay.Restart();
+        else
+            _relay.Start();
+            
+        AssertServiceProcessing(_relay);
+
+        _relay.Stop();
+        AssertServiceStopped(_relay);
+    }
+}
+
+public class OscRelayServiceFunctionTests : TestBase<OscRelayServiceFunctionTests>
 {
     private readonly ConfigModel _config = new();
     private readonly MockBackToFrontNotifyService _notify = new();
@@ -19,7 +66,6 @@ public class OscRelayServiceTests : TestBaseForService<OscRelayServiceTests>
         _relay = new(_logger, _config, _sender, _notify);
 
         _relay.Start();
-        AssertServiceStarted(_relay);
     }
 
     protected override void SetupExtra()
@@ -149,6 +195,5 @@ public class OscRelayServiceTests : TestBaseForService<OscRelayServiceTests>
     protected override void OneTimeTearDownExtra()
     {
         _relay.Stop();
-        AssertServiceStopped(_relay);
     }
 }
