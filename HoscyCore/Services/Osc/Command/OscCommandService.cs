@@ -9,13 +9,13 @@ using Serilog;
 namespace HoscyCore.Services.Osc.Command;
 
 [LoadIntoDiContainer(typeof(IOscCommandService), Lifetime.Singleton)]
-public partial class OscCommandService(ILogger logger, OscQueryHostRegistry hostRegistry, IOscSendService sender) : StartStopServiceBase, IOscCommandService
+public class OscCommandService(ILogger logger, OscQueryHostRegistry hostRegistry, IOscSendService sender) : StartStopServiceBase, IOscCommandService
 {
     private readonly ILogger _logger = logger.ForContext<OscCommandService>();
     private readonly OscQueryHostRegistry _hostRegistry = hostRegistry;
     private readonly IOscSendService _sender = sender;
     private readonly List<Task> _runningTasks = [];
-    private readonly CancellationTokenSource _cts = new();
+    private CancellationTokenSource? _cts = null;
 
     private static readonly Regex _oscCommandIdentifier = new(@"\[ *(?<address>(?:\/[^\ #\*,\/?\[\]\{\}]+)+)(?<values>(?: +\[(?:[fF]\]-?[0-9]+(?:\.[0-9]+)?|[iI]\]\-?[0-9]+|[sS]\]""[^""]*""|[bB]\](?:[tT](?:rue)?|[fF](?:alse)?|[0-1])))+)(?: +(?<ip>(?:(?:25[0-5]|(?:2[0-4]|1\d|[1-9]|)\d)\.?\b){4})?:(?<port>[0-9]{1,5})?)?(?: +""(?<target>[^""]*)"")?(?: +[wW](?<wait>[0-9]+))? *\]",RegexOptions.CultureInvariant);
     private static readonly Regex _oscParameterExtractor = new(@" +\[(?<type>[iIfFbBsS])\](?:""(?<value>[^""]*)""|(?<value>[a-zA-Z]+|[0-9\.\-]*))", RegexOptions.CultureInvariant);
@@ -39,7 +39,7 @@ public partial class OscCommandService(ILogger logger, OscQueryHostRegistry host
 
     public OscCommandState HandleCommand(string commandString)
     {
-        if (_cts.IsCancellationRequested) return OscCommandState.Shutdown;
+        if (_cts is null || _cts.IsCancellationRequested) return OscCommandState.Shutdown;
 
         _logger.Debug("Attempting to parse command string \"{commandString}\"", commandString);
         var commandMatches = _oscCommandIdentifier.Matches(commandString);
@@ -77,7 +77,7 @@ public partial class OscCommandService(ILogger logger, OscQueryHostRegistry host
 
     public OscCommandState DetectAndHandleCommand(string commandString)
     {
-        if (_cts.IsCancellationRequested) return OscCommandState.Shutdown;
+        if (_cts is null || _cts.IsCancellationRequested) return OscCommandState.Shutdown;
 
         if (!DetectCommand(commandString)) return OscCommandState.NotCommand;
 
@@ -217,7 +217,7 @@ public partial class OscCommandService(ILogger logger, OscQueryHostRegistry host
 
         for (int i = 0; i < cmdCount; i++)
         {
-            if (_cts.IsCancellationRequested)
+            if (_cts is null || _cts.IsCancellationRequested)
             {
                 _logger.Verbose("{taskId}: Cancelled early during step {step}", taskId, i + 1);
                 return Task.CompletedTask;
@@ -273,24 +273,32 @@ public partial class OscCommandService(ILogger logger, OscQueryHostRegistry host
     #region Start / Stop
     protected override void StartInternal()
     {
-        _logger.Debug("Service \"started\", StartStop is only implemented for a clean shutdown");
+        if (_cts is null)
+        {
+            _cts = new();
+            _logger.Debug("Service started");    
+        } 
+        else
+        {
+            _logger.Debug("Service not started, it is already running");    
+        }
         return;
     }
 
     protected override bool IsStarted()
-        => !_cts.IsCancellationRequested;
+        => _cts is not null && !_cts.IsCancellationRequested;
     protected override bool IsProcessing()
         => IsStarted();
 
     public override void Restart()
     {
-        _logger.Debug("Service \"restarted\", StartStop is only implemented for a clean shutdown");
+        RestartSimple(GetType(), _logger);
     }
 
     public override void Stop()
     {
         _logger.Debug("Service stopping, ensuring all tasks ended");
-        _cts.Cancel();
+        _cts?.Cancel();
 
         var remain = PerformTaskCleanup();
         if (remain > 0)
@@ -305,7 +313,8 @@ public partial class OscCommandService(ILogger logger, OscQueryHostRegistry host
             }
         }
 
-        _cts.Dispose();
+        _cts?.Dispose();
+        _cts = null;
         _logger.Debug("Service is stopped");
     }
     #endregion
