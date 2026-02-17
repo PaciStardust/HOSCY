@@ -8,7 +8,7 @@ using Serilog;
 namespace HoscyCore.Services.Output.Core;
 
 [LoadIntoDiContainer(typeof(IOutputManagerService), Lifetime.Singleton)]
-public class OutputManagerService
+public class OutputManagerService //todo: [REFACTOR++] This should maybe be its own thread in the future if it causes delay
 (
     ILogger logger,
     IBackToFrontNotifyService notify, 
