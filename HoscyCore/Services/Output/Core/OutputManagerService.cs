@@ -126,7 +126,7 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
         foreach(var activeHandler in _activeHandlers)
         {
             var handlerType = activeHandler.GetType();
-            var infoMatch = _handlerInfos.FirstOrDefault(x => x.HandlerType == handlerType);
+            var infoMatch = _handlerInfos.FirstOrDefault(x => x.ModuleType == handlerType);
             if (infoMatch is not null)
             {
                 returnInfos.Add(infoMatch);
@@ -142,13 +142,13 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
 
     public ServiceStatus GetProcessorStatus(IOutputHandlerStartInfo handlerInfo)
     {
-        var activeHandler = RetrieveActiveHandlerByType(handlerInfo.HandlerType);
+        var activeHandler = RetrieveActiveHandlerByType(handlerInfo.ModuleType);
         if (activeHandler is null) return ServiceStatus.Stopped;
         var activeStatus = activeHandler.GetCurrentStatus();
         if (activeStatus == ServiceStatus.Stopped)
         {
             _logger.Warning("GetHandlerStatus: Retrieved stopped Handler with type \"{handlerType}\" from active list",
-                handlerInfo.HandlerType.FullName);
+                handlerInfo.ModuleType.FullName);
         }
         return activeStatus;
     }
@@ -157,31 +157,31 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
     #region Handlers => Internal Start / Stop Unsafe
     private void ActivateHandlerUnsafe(IOutputHandlerStartInfo handlerInfo)
     {
-        _logger.Information("Activating Handler with type \"{handlerType}\"", handlerInfo.HandlerType.FullName);
-        var activeMatch = RetrieveActiveHandlerByType(handlerInfo.HandlerType);
+        _logger.Information("Activating Handler with type \"{handlerType}\"", handlerInfo.ModuleType.FullName);
+        var activeMatch = RetrieveActiveHandlerByType(handlerInfo.ModuleType);
         if (activeMatch is not null)
         {
-            _logger.Debug("Terminating old Handler with type \"{handlerType}\"", handlerInfo.HandlerType.FullName);
+            _logger.Debug("Terminating old Handler with type \"{handlerType}\"", handlerInfo.ModuleType.FullName);
             ShutdownHandlerUnsafe(activeMatch);
 
-            activeMatch = RetrieveActiveHandlerByType(handlerInfo.HandlerType);
+            activeMatch = RetrieveActiveHandlerByType(handlerInfo.ModuleType);
             if (activeMatch is null)
             {
-                _logger.Debug("Terminated old Handler with type \"{handlerType}\"", handlerInfo.HandlerType.FullName);
+                _logger.Debug("Terminated old Handler with type \"{handlerType}\"", handlerInfo.ModuleType.FullName);
             }
             else
             {
-                _logger.Error("Failed to terminate old Handler with type \"{handlerType}\"", handlerInfo.HandlerType.FullName);
-                throw new StartStopServiceException($"Unable to shut down Handler {handlerInfo.HandlerType.FullName}");
+                _logger.Error("Failed to terminate old Handler with type \"{handlerType}\"", handlerInfo.ModuleType.FullName);
+                throw new StartStopServiceException($"Unable to shut down Handler {handlerInfo.ModuleType.FullName}");
             }
         }
 
-        var newHandler = RetrieveHandlerInstanceForType(handlerInfo.HandlerType);
+        var newHandler = RetrieveHandlerInstanceForType(handlerInfo.ModuleType);
         newHandler.OnRuntimeError += HandleOnRuntimeError;
         newHandler.OnModuleStopped += HandleOnModuleStopped;
         newHandler.Start();
         _activeHandlers.Add(newHandler);
-        _logger.Information("Activated Handler with type \"{handlerType}\"", handlerInfo.HandlerType.FullName);
+        _logger.Information("Activated Handler with type \"{handlerType}\"", handlerInfo.ModuleType.FullName);
     }
 
     private void ShutdownHandlerUnsafe(IOutputHandler handler)
@@ -214,7 +214,7 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
         }
         catch (Exception ex)
         {
-            AddRefreshException(ex, "Unable to safely activate handler with type \"{handlerType}\"", handlerInfo.HandlerType.FullName);
+            AddRefreshException(ex, "Unable to safely activate handler with type \"{handlerType}\"", handlerInfo.ModuleType.FullName);
             return false;
         }
     }
@@ -276,22 +276,22 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
         //Disabling and enabling all handlers
         foreach(var handlerInfo in _handlerInfos)
         {
-            var match = RetrieveActiveHandlerByType(handlerInfo.HandlerType);
+            var match = RetrieveActiveHandlerByType(handlerInfo.ModuleType);
             if (handlerInfo.ShouldBeEnabled())
             {
                 if (match is null)
                 {
                     _logger.Debug("Handler of type \"{handlerType}\" is enabled but not active, starting...",
-                        handlerInfo.HandlerType);
+                        handlerInfo.ModuleType);
                     ActivateHandlerSafe(handlerInfo);
                 }
-                permittedTypes.Add(handlerInfo.HandlerType);
+                permittedTypes.Add(handlerInfo.ModuleType);
             } else
             {
                 if (match is not null)
                 {
                     _logger.Debug("Handler of type \"{handlerType}\" is disabled but active, stopping...",
-                        handlerInfo.HandlerType);
+                        handlerInfo.ModuleType);
                     ShutdownHandlerSafe(match);
                 }
             }

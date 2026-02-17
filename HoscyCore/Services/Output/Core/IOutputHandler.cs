@@ -2,6 +2,8 @@ using HoscyCore.Services.DependencyCore;
 
 namespace HoscyCore.Services.Output.Core;
 
+public interface IOutputHandlerStartInfo : IMultiModuleStartInfo;
+
 public interface IOutputHandler : IStartStopModule
 {
     #region Info
