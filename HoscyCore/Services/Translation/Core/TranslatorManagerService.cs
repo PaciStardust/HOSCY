@@ -27,6 +27,7 @@ public class TranslatorManagerService //todo: [TEST] Write tests for this
     #region Service Vars
     private ITranslationProvider? _currentProvider;
     private readonly List<ITranslationProviderStartInfo> _providerInfos = [];
+    private readonly List<Exception> _refreshExceptions = [];
     #endregion
 
     #region Info
@@ -68,6 +69,7 @@ public class TranslatorManagerService //todo: [TEST] Write tests for this
         }
 
         _providerInfos.Clear();
+
         _providerInfos.AddRange(_infoLoader.GetInstances());
         if (_providerInfos.Count == 0)
         {
@@ -102,6 +104,7 @@ public class TranslatorManagerService //todo: [TEST] Write tests for this
     public void RefreshProvider()
     {
         _logger.Information("Performing provider refresh");
+        _refreshExceptions.Clear();
 
         var infoMatch = string.IsNullOrWhiteSpace(_config.Translation_CurrentProvider)
             ? null 
@@ -129,6 +132,7 @@ public class TranslatorManagerService //todo: [TEST] Write tests for this
             StartProvider(infoMatch);
         }
 
+        NotifyIfRefreshExceptions();
         _logger.Information("Performed provider refresh");
     }
 
@@ -158,8 +162,8 @@ public class TranslatorManagerService //todo: [TEST] Write tests for this
         }
         catch (Exception ex)
         {
-            SetFaultLogAndNotify(ex, _logger, _notify,
-                $"Started provider with name \"{startInfo.Name}\" and type \"{startInfo.ProviderType.Name}\"");
+            AddRefreshException(ex, "Failed to start provider with name \"{name}\" and type \"{typeName}\"",
+                startInfo.Name, startInfo.ProviderType.Name);
             return false;
         }
         return true;
@@ -182,8 +186,7 @@ public class TranslatorManagerService //todo: [TEST] Write tests for this
         }
         catch (Exception ex)
         {
-            SetFaultLogAndNotify(ex, _logger, _notify,
-                "Failed to stop current provider");
+            AddRefreshException(ex, "Failed to stop current provider");
             return false;
         }
         return true;
@@ -191,9 +194,10 @@ public class TranslatorManagerService //todo: [TEST] Write tests for this
 
     public bool RestartCurrentProvider()
     {
+        _logger.Information("Restarting current provider");
+        _refreshExceptions.Clear();
         try
         {
-            _logger.Information("Restarting current provider");
             if (_currentProvider is null)
             {
                 _logger.Information("Skipping restart of current provider, no provider running");
@@ -205,8 +209,8 @@ public class TranslatorManagerService //todo: [TEST] Write tests for this
             _logger.Information("Restarted current provider");
         } catch (Exception ex)
         {
-            SetFaultLogAndNotify(ex, _logger, _notify,
-                "Failed to restart current provider");
+            AddRefreshException(ex,"Failed to restart current provider");
+            NotifyIfRefreshExceptions();
             return false;
         }
         return true;
@@ -227,12 +231,13 @@ public class TranslatorManagerService //todo: [TEST] Write tests for this
             _currentProvider.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
             _currentProvider = null;
         }
-        ClearFault();
     }
 
     private void HandleOnRuntimeError(object? sender, Exception ex)
     {
-        SetFaultLogAndNotify(ex, _logger, _notify, $"Encountered an error in Provider {sender?.GetType().FullName ?? "???"}");
+        var providerType = sender?.GetType();
+        _logger.Error(ex, "Encountered an error in Provider \"{providerType}\"", providerType?.FullName);
+        _notify.SendError("Provider error", $"Encountered an error in Provider {providerType?.FullName ?? "???"}",exception: ex);
     }
     #endregion
 
@@ -331,6 +336,46 @@ public class TranslatorManagerService //todo: [TEST] Write tests for this
         }
 
         return infoSearch[0];
+    }
+    #endregion
+
+    #region Errors
+    public override Exception? GetFaultIfExists()
+    {
+        var exList = new List<Exception>();
+
+        var baseException = base.GetFaultIfExists();
+        if (baseException is not null)
+        {
+            exList.Add(baseException);
+        }
+        var providerError = _currentProvider?.GetFaultIfExists();
+        if (providerError is not null)
+        {
+            exList.Add(providerError);
+        }
+        exList.AddRange(_refreshExceptions);
+
+        return exList.Count == 0
+            ? null
+            : exList.Count > 1
+                ? new CombinedException(exList)
+                : exList[0];
+    }
+
+    private void AddRefreshException(Exception ex, string message, params object?[]? args)
+    {
+        _logger.Error(ex, message, args);
+        _refreshExceptions.Add(ex);
+    }
+
+    public void NotifyIfRefreshExceptions()
+    {
+        if (_refreshExceptions.Count == 0) return;
+        
+        var ex = new CombinedException(_refreshExceptions);
+        _logger.Warning(ex, "Following exceptions popped up during refresh");
+        _notify.SendError("Errors ocurred during refresh", "The following errors occured while refreshing handlers", ex);
     }
     #endregion
 }
