@@ -19,7 +19,7 @@ public abstract class StartStopServiceBase : IStartStopService
 
     public abstract void Stop();
     public abstract void Restart();
-    public Exception? GetFaultIfExists()
+    public virtual Exception? GetFaultIfExists()
         => _internalException;
 
     protected virtual void SetFault(Exception? ex)
