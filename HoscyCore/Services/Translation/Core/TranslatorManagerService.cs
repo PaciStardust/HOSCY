@@ -6,7 +6,7 @@ using Serilog;
 namespace HoscyCore.Services.Translation.Core;
 
 [PrototypeLoadIntoDiContainer(typeof(ITranslatorManagerService))]
-public class TranslatorManagerService //todo: [TEST] Write tests for this
+public class TranslatorManagerService
 (
     IBackToFrontNotifyService notify,
     ILogger logger,
@@ -272,22 +272,19 @@ public class TranslatorManagerService //todo: [TEST] Write tests for this
                     : TranslationResult.Failed;
             }
 
-            var spaceLocated = false;
-            for (var i = _config.Translation_MaxTextLength; i > -1; i--)
+            var spaceIndex = -1;
+            for (var i = _config.Translation_MaxTextLength - 1; i > -1; i--)
             {
                 if (_filterChars.Contains(input[i]))
                 {
-                    spaceLocated = true;
-                }
-                else
-                {
-                    if (!spaceLocated) continue;
-                    input = i > 0
-                        ? input[..i]
-                        : input[.._config.Translation_MaxTextLength]; //todo: [TEST] Does this crop correctly and do return values work?
+                    spaceIndex = i;
                     break;
                 }
             }
+            input = (spaceIndex > -1
+                ? input[..spaceIndex]
+                : input[.._config.Translation_MaxTextLength])
+                .TrimEnd();
         }
 
         var result = _currentProvider.TryTranslate(input, out var translatedOutput);
