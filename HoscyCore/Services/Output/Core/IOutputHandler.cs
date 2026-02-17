@@ -2,7 +2,7 @@ using HoscyCore.Services.DependencyCore;
 
 namespace HoscyCore.Services.Output.Core;
 
-public interface IOutputHandler : IStartStopSubmodule
+public interface IOutputHandler : IStartStopModule
 {
     #region Info
     public string Name { get; }

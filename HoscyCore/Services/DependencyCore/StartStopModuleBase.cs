@@ -1,10 +1,10 @@
 namespace HoscyCore.Services.DependencyCore;
 
-public abstract class StartStopSubmoduleBase : StartStopServiceBase, IStartStopSubmodule
+public abstract class StartStopModuleBase : StartStopServiceBase, IStartStopModule
 {
     #region Events
     public event EventHandler<Exception> OnRuntimeError = delegate { };
-    public event EventHandler OnSubmoduleStopped = delegate { };
+    public event EventHandler OnModuleStopped = delegate { };
     #endregion
 
     #region Fault Handling
@@ -22,7 +22,7 @@ public abstract class StartStopSubmoduleBase : StartStopServiceBase, IStartStopS
     public override void Stop()
     {
         StopInternal();
-        OnSubmoduleStopped.Invoke(this, EventArgs.Empty);
+        OnModuleStopped.Invoke(this, EventArgs.Empty);
     }
 
     protected abstract void StopInternal();

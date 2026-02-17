@@ -2,7 +2,7 @@ using HoscyCore.Services.DependencyCore;
 
 namespace HoscyCore.Services.Output.Core;
 
-public abstract class OutputHandlerBase : StartStopSubmoduleBase, IOutputHandler
+public abstract class OutputHandlerBase : StartStopModuleBase, IOutputHandler
 {
     #region Info
     public abstract string Name { get; }

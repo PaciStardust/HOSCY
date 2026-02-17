@@ -178,7 +178,7 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
 
         var newHandler = RetrieveHandlerInstanceForType(handlerInfo.HandlerType);
         newHandler.OnRuntimeError += HandleOnRuntimeError;
-        newHandler.OnSubmoduleStopped += HandleOnSubmoduleStopped;
+        newHandler.OnModuleStopped += HandleOnModuleStopped;
         newHandler.Start();
         _activeHandlers.Add(newHandler);
         _logger.Information("Activated Handler with type \"{handlerType}\"", handlerInfo.HandlerType.FullName);
@@ -188,7 +188,7 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
     {
         _logger.Information("Shutting down Handler with type \"{hanlderType}\"", handler.GetType().FullName);
         handler.Clear();
-        handler.OnSubmoduleStopped -= HandleOnSubmoduleStopped; //This is not needed when manually shutting down
+        handler.OnModuleStopped -= HandleOnModuleStopped; //This is not needed when manually shutting down
         handler.Stop();
         CleanupAfterHandlerShutdown(handler);
         _logger.Information("Shut down Handler with type \"{handlerType}\"", handler.GetType().FullName);
@@ -197,9 +197,9 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
     private void RestartHandlerUnsafe(IOutputHandler handler)
     {
         _logger.Information("Restarting Handler with type \"{handlerType}\"", handler.GetType().FullName);
-        handler.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
+        handler.OnModuleStopped -= HandleOnModuleStopped;
         handler.Restart();
-        handler.OnSubmoduleStopped += HandleOnSubmoduleStopped;
+        handler.OnModuleStopped += HandleOnModuleStopped;
         _logger.Information("Restarted Handler with type \"{handlerType}\"", handler.GetType().FullName);
     }
     #endregion
@@ -247,10 +247,10 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
         }
     }
 
-    private void HandleOnSubmoduleStopped(object? sender, EventArgs e)
+    private void HandleOnModuleStopped(object? sender, EventArgs e)
     {
         if (sender is null) return;
-        _logger.Warning("HandleOnSubmoduleStopped called for type \"{senderType}\", this should only happen when a shutdown was called unexpectedly",
+        _logger.Warning("HandleOnModuleStopped called for type \"{senderType}\", this should only happen when a shutdown was called unexpectedly",
             sender.GetType().FullName);
         if (sender is not IOutputHandler handler) return;
         CleanupAfterHandlerShutdown(handler);
@@ -259,7 +259,7 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
     private void CleanupAfterHandlerShutdown(IOutputHandler handler)
     {
         handler.OnRuntimeError -= HandleOnRuntimeError;
-        handler.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
+        handler.OnModuleStopped -= HandleOnModuleStopped;
         _activeHandlers.Remove(handler);
     }
     #endregion

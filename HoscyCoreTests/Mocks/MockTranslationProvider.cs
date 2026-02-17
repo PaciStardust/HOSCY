@@ -2,7 +2,7 @@ using HoscyCore.Services.Translation.Core;
 
 namespace HoscyCoreTests.Mocks;
 
-public abstract class MockTranslationProvider : MockStartStopSubmoduleBase, ITranslationProvider
+public abstract class MockTranslationProvider : MockStartStopModuleBase, ITranslationProvider
 {
     public TranslationResult ReturnedResult { get; set; } = TranslationResult.Succeeded;
     public string? ReturnedOutput { get; set; } = null;

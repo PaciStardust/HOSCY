@@ -342,7 +342,7 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
         var stoppedA = false;
 
         void onAStopped(object? _, EventArgs __) { stoppedA = true; }
-        _providerA.OnSubmoduleStopped += onAStopped;
+        _providerA.OnModuleStopped += onAStopped;
 
         _translator.RestartCurrentProvider();
         using (Assert.EnterMultipleScope())
@@ -351,7 +351,7 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
             Assert.That(stoppedA, Is.True);
         }
 
-        _providerA.OnSubmoduleStopped -= onAStopped;
+        _providerA.OnModuleStopped -= onAStopped;
     }
 
     [Test]
@@ -361,9 +361,9 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
         var stoppedB = false;
 
         void onAStopped(object? _, EventArgs __) { stoppedA = true; }
-        _providerA.OnSubmoduleStopped += onAStopped;
+        _providerA.OnModuleStopped += onAStopped;
         void onBStopped(object? _, EventArgs __) { stoppedB = true; }
-        _providerB.OnSubmoduleStopped += onBStopped;
+        _providerB.OnModuleStopped += onBStopped;
 
         using (Assert.EnterMultipleScope())
         {
@@ -443,8 +443,8 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
             Assert.That(stoppedB, Is.False);
         }
 
-        _providerA.OnSubmoduleStopped -= onAStopped;
-        _providerB.OnSubmoduleStopped -= onBStopped;
+        _providerA.OnModuleStopped -= onAStopped;
+        _providerB.OnModuleStopped -= onBStopped;
     }
 
     [Test] 

@@ -161,7 +161,7 @@ public class TranslatorManagerService
             }
 
             providerMatch.OnRuntimeError += HandleOnRuntimeError;
-            providerMatch.OnSubmoduleStopped += HandleOnSubmoduleStopped;
+            providerMatch.OnModuleStopped += HandleOnModuleStopped;
             providerMatch.Start();
             _currentProvider = providerMatch;
             _logger.Information("Started provider with name \"{providerName}\" and type \"{providerType}\"", startInfo.Name, startInfo.ProviderType.Name);
@@ -185,7 +185,7 @@ public class TranslatorManagerService
                 _logger.Information("Skipping stopping of current provider, no provider running");
                 return true;
             }
-            _currentProvider.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
+            _currentProvider.OnModuleStopped -= HandleOnModuleStopped;
             _currentProvider.Stop();
             CleanupAfterProviderShutdown();
             _logger.Information("Stopped current provider");
@@ -209,9 +209,9 @@ public class TranslatorManagerService
                 _logger.Information("Skipping restart of current provider, no provider running");
                 return true;
             }
-            _currentProvider.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
+            _currentProvider.OnModuleStopped -= HandleOnModuleStopped;
             _currentProvider.Restart();
-            _currentProvider.OnSubmoduleStopped += HandleOnSubmoduleStopped;
+            _currentProvider.OnModuleStopped += HandleOnModuleStopped;
             _logger.Information("Restarted current provider");
         } catch (Exception ex)
         {
@@ -222,7 +222,7 @@ public class TranslatorManagerService
         return true;
     }
 
-    private void HandleOnSubmoduleStopped(object? sender, EventArgs e)
+    private void HandleOnModuleStopped(object? sender, EventArgs e)
     {
         if (sender is null) return;
         _logger.Warning("HandleOnShutdownCompleted called for provider of type \"{senderType}\", this should only happen when a shutdown was called unexpectedly", sender.GetType().FullName);
@@ -234,7 +234,7 @@ public class TranslatorManagerService
         if (_currentProvider is not null)
         {
             _currentProvider.OnRuntimeError -= HandleOnRuntimeError;
-            _currentProvider.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
+            _currentProvider.OnModuleStopped -= HandleOnModuleStopped;
             _currentProvider = null;
         }
     }

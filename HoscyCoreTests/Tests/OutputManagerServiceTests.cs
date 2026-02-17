@@ -422,9 +422,9 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         var stoppedB = false;
 
         void onAStopped(object? _, EventArgs __) { stoppedA = true; }
-        _handlerA.OnSubmoduleStopped += onAStopped;
+        _handlerA.OnModuleStopped += onAStopped;
         void onBStopped(object? _, EventArgs __) { stoppedB = true; }
-        _handlerB.OnSubmoduleStopped += onBStopped;
+        _handlerB.OnModuleStopped += onBStopped;
 
         _output.RestartHandlers();
         using (Assert.EnterMultipleScope())
@@ -434,8 +434,8 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
             Assert.That(stoppedB, Is.True);
         }
 
-        _handlerA.OnSubmoduleStopped -= onAStopped;
-        _handlerB.OnSubmoduleStopped -= onBStopped;
+        _handlerA.OnModuleStopped -= onAStopped;
+        _handlerB.OnModuleStopped -= onBStopped;
     }
 
     [Test]
@@ -445,9 +445,9 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         var stoppedB = false;
 
         void onAStopped(object? _, EventArgs __) { stoppedA = true; }
-        _handlerA.OnSubmoduleStopped += onAStopped;
+        _handlerA.OnModuleStopped += onAStopped;
         void onBStopped(object? _, EventArgs __) { stoppedB = true; }
-        _handlerB.OnSubmoduleStopped += onBStopped;
+        _handlerB.OnModuleStopped += onBStopped;
 
         using (Assert.EnterMultipleScope())
         {
@@ -595,8 +595,8 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
             Assert.That(stoppedB, Is.True);
         }
 
-        _handlerA.OnSubmoduleStopped -= onAStopped;
-        _handlerB.OnSubmoduleStopped -= onBStopped;
+        _handlerA.OnModuleStopped -= onAStopped;
+        _handlerB.OnModuleStopped -= onBStopped;
     }
 
     [Test] 

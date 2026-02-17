@@ -1,6 +1,6 @@
 namespace HoscyCore.Services.DependencyCore;
 
-public interface IStartStopSubmodule : IStartStopService
+public interface IStartStopModule : IStartStopService
 {
     /// <summary>
     /// Event that triggers when the process encounteres an Exception outside of starting and stopping
@@ -9,5 +9,5 @@ public interface IStartStopSubmodule : IStartStopService
     /// <summary>
     /// Event gets called when the processor is stopped
     /// </summary>
-    public event EventHandler OnSubmoduleStopped;
+    public event EventHandler OnModuleStopped;
 }

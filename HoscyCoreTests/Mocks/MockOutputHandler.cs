@@ -2,7 +2,7 @@ using HoscyCore.Services.Output.Core;
 
 namespace HoscyCoreTests.Mocks;
 
-public abstract class MockOutputHandler : MockStartStopSubmoduleBase, IOutputHandler
+public abstract class MockOutputHandler : MockStartStopModuleBase, IOutputHandler
 {
     public required string Name { get; set; }
     public required OutputsAsMediaFlags OutputTypeFlags { get; set; }
