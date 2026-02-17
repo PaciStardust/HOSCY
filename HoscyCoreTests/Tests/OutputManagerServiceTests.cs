@@ -520,13 +520,12 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         _infoE.Enabled = true;
         _output.RefreshHandlers();
 
-        var ex = _output.GetFaultIfExists() as OutputHandlerListException;
+        var ex = _output.GetFaultIfExists();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(ex, Is.Not.Null);
             Assert.That(_output.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
         }
-        Assert.That(ex!.HandlerExceptions, Has.Count.EqualTo(1));
 
         _infoE.Enabled = false;
         _output.RefreshHandlers();
@@ -581,13 +580,13 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
             Assert.That(faultHandler, Is.Not.Null);
         }
 
-        var faultOutputConverted = faultOutput as OutputHandlerListException;
+        var faultOutputConverted = faultOutput;
         using (Assert.EnterMultipleScope())
         {
             Assert.That(faultOutputConverted, Is.Not.Null);
             Assert.That(faultHandler, Is.EqualTo(testEx));
         }
-        Assert.That(faultOutputConverted!.HandlerExceptions[0], Is.EqualTo(testEx));
+        Assert.That(faultOutputConverted, Is.EqualTo(testEx));
 
         _handlerA.InduceError(null);
         _output.RefreshHandlers();

@@ -339,7 +339,7 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
     {
         var handlerType = sender?.GetType();
         _logger.Error(ex, "Encountered an error in Handler \"{handlerType}\"", handlerType?.FullName);
-        _notify.SendError($"Encountered an error in Handler {handlerType?.FullName ?? "???"}",exception: ex);
+        _notify.SendError("Handler error", $"Encountered an error in Handler {handlerType?.FullName ?? "???"}", exception: ex);
     }
     #endregion
 
@@ -604,7 +604,9 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
 
         return exList.Count == 0
             ? null
-            : new CombinedException(exList);
+            : exList.Count > 1
+                ? new CombinedException(exList)
+                : exList[0];
     }
 
     private void AddRefreshException(Exception ex, string message, params object?[]? args)
