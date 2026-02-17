@@ -200,6 +200,83 @@ public class OutputManagerServiceStartupTests : OutputManagerServiceTestBase<Out
             Assert.That(_handlerB.Started, Is.False);
         }
     }
+
+    [Test]
+    public void ThrowOnHandlerStart()
+    {
+        var ex = new Exception();
+        _handlerA.ExceptionToThrow = ex;
+
+        _output.Start();
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_output.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
+            Assert.That(_output.GetFaultIfExists(), Is.EqualTo(ex));
+            Assert.That(_handlerA.Started, Is.False);
+            Assert.That(_output.GetHandlerInfos(true), Is.Empty);
+        }
+
+        _output.RefreshHandlers();
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_output.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Faulted));
+            Assert.That(_output.GetFaultIfExists(), Is.Null);
+            Assert.That(_handlerA.Started, Is.True);
+            Assert.That(_output.GetHandlerInfos(true), Has.Count.EqualTo(1));
+        }
+    }
+
+    [Test]
+    public void ThrowOnHandlerStop()
+    {
+        _output.Start();
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_output.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Faulted));
+            Assert.That(_output.GetFaultIfExists(), Is.Null);
+            Assert.That(_handlerA.Started, Is.True);
+            Assert.That(_output.GetHandlerInfos(true), Has.Count.EqualTo(1));
+        }
+
+        var ex = new Exception();
+        _handlerA.ExceptionToThrow = ex;
+
+        _infoA.Enabled = false;
+
+        _output.RefreshHandlers();
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_output.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
+            Assert.That(_output.GetFaultIfExists(), Is.EqualTo(ex));
+            Assert.That(_handlerA.Started, Is.False);
+            Assert.That(_output.GetHandlerInfos(true), Is.Empty);
+        }
+    }
+
+    [Test]
+    public void ThrowOnHandlerRestart()
+    {
+        _output.Start();
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_output.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Faulted));
+            Assert.That(_output.GetFaultIfExists(), Is.Null);
+            Assert.That(_handlerA.Started, Is.True);
+            Assert.That(_output.GetHandlerInfos(true), Has.Count.EqualTo(1));
+        }
+
+        var ex = new Exception();
+        _handlerA.ExceptionToThrow = ex;
+
+        _output.RestartHandlers();
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_output.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
+            Assert.That(_output.GetFaultIfExists(), Is.EqualTo(ex));
+            Assert.That(_handlerA.Started, Is.True);
+            Assert.That(_output.GetHandlerInfos(true), Has.Count.EqualTo(1));
+        }
+    }
 }
 
 public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<OutputManagerServiceFunctionTests>
