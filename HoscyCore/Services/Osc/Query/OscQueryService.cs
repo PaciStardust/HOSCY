@@ -1,15 +1,17 @@
-using HoscyCore.Services.DependencyCore;
+using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Interfacing;
 using HoscyCore.Services.Osc.SendReceive;
 using Microsoft.Extensions.Logging;
 using Serilog.Extensions.Logging;
 using Vrc = VRC.OSCQuery;
 using Timer = System.Timers.Timer;
+using HoscyCore.Services.Core;
 
 namespace HoscyCore.Services.Osc.Query;
 
 [LoadIntoDiContainer(typeof(IOscQueryService), Lifetime.Singleton)]
-public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService notify, IOscListenService listener, OscQueryHostRegistry hostRegistry) : StartStopServiceBase, IOscQueryService
+public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService notify, IOscListenService listener, OscQueryHostRegistry hostRegistry)
+    : StartStopServiceBase, IOscQueryService
 {
     private readonly Serilog.ILogger _logger = logger.ForContext<OscQueryService>();
     private readonly IBackToFrontNotifyService _notify = notify;

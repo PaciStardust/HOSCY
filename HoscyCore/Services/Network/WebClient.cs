@@ -1,5 +1,6 @@
 using System.Diagnostics;
-using HoscyCore.Services.DependencyCore;
+using HoscyCore.Services.Core;
+using HoscyCore.Services.Dependency;
 using Serilog;
 
 namespace HoscyCore.Services.Network;

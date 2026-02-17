@@ -1,4 +1,4 @@
-namespace HoscyCore.Services.DependencyCore;
+namespace HoscyCore.Services.Core;
 
 /// <summary>
 /// Represents a service that can be started and stopped

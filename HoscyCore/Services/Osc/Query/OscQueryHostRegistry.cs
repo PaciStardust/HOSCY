@@ -1,4 +1,4 @@
-using HoscyCore.Services.DependencyCore;
+using HoscyCore.Services.Dependency;
 using Serilog;
 using Vrc = VRC.OSCQuery;
 

@@ -1,4 +1,5 @@
-using HoscyCore.Services.DependencyCore;
+using HoscyCore.Services.Core;
+using HoscyCore.Services.Dependency;
 using LucHeart.CoreOSC;
 using Serilog;
 

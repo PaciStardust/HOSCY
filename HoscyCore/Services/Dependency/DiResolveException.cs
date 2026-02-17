@@ -1,4 +1,4 @@
-namespace HoscyCore.Services.DependencyCore;
+namespace HoscyCore.Services.Dependency;
 
 /// <summary>
 /// Represents an exception when resolving dependencies

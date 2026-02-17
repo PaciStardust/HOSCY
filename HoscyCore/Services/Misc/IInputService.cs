@@ -1,4 +1,4 @@
-using HoscyCore.Services.DependencyCore;
+using HoscyCore.Services.Core;
 using HoscyCore.Services.Output.Core;
 
 namespace HoscyCore.Services.Misc;

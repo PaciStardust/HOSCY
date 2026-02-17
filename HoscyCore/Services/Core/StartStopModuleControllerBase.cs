@@ -1,7 +1,9 @@
+using HoscyCore.Services.Core;
+using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Interfacing;
 using Serilog;
 
-namespace HoscyCore.Services.DependencyCore;
+namespace HoscyCore.Services.Core;
 
 public abstract class StartStopModuleControllerBase<TModuleStartInfo, TModule>
 (

@@ -1,5 +1,5 @@
 using HoscyCore.Configuration.Modern;
-using HoscyCore.Services.DependencyCore;
+using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Network;
 using HoscyCore.Services.Translation.Core;
 using Serilog;

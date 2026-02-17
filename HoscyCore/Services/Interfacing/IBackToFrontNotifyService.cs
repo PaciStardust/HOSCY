@@ -1,4 +1,4 @@
-using HoscyCore.Services.DependencyCore;
+using HoscyCore.Services.Core;
 
 namespace HoscyCore.Services.Interfacing;
 

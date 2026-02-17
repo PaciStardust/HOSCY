@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
-using HoscyCore.Services.DependencyCore;
+using HoscyCore.Services.Core;
+using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Osc.Query;
 using HoscyCore.Services.Osc.SendReceive;
 using HoscyCore.Utility;

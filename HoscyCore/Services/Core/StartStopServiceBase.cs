@@ -1,7 +1,7 @@
 using HoscyCore.Services.Interfacing;
 using Serilog;
 
-namespace HoscyCore.Services.DependencyCore;
+namespace HoscyCore.Services.Core;
 
 /// <summary>
 /// Helper class for ease of use for the StartStopServices

@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 using HoscyCore.Configuration.Modern;
-using HoscyCore.Services.DependencyCore;
+using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Osc.SendReceive;
 using HoscyCore.Services.Output.Core;
 using HoscyCore.Utility;

@@ -1,6 +1,6 @@
 using HoscyCli.Commands.Core;
 using HoscyCore.Services.Audio;
-using HoscyCore.Services.DependencyCore;
+using HoscyCore.Services.Dependency;
 
 namespace HoscyCli.Commands.Modules;
 

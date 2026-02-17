@@ -1,4 +1,5 @@
-using HoscyCore.Services.DependencyCore;
+using HoscyCore.Services.Core;
+using HoscyCore.Services.Dependency;
 using Serilog;
 using SoundFlow.Abstracts;
 using SoundFlow.Backends.MiniAudio;

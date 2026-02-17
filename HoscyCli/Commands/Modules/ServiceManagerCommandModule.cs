@@ -1,6 +1,7 @@
 using System.Reflection;
 using HoscyCli.Commands.Core;
-using HoscyCore.Services.DependencyCore;
+using HoscyCore.Services.Core;
+using HoscyCore.Services.Dependency;
 using HoscyCore.Utility;
 using Serilog;
 

@@ -1,5 +1,6 @@
 using HoscyCore.Configuration.Modern;
-using HoscyCore.Services.DependencyCore;
+using HoscyCore.Services.Core;
+using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Interfacing;
 using HoscyCore.Services.Osc.SendReceive;
 using LucHeart.CoreOSC;
@@ -8,7 +9,8 @@ using Serilog;
 namespace HoscyCore.Services.Osc.Relay;
 
 [LoadIntoDiContainer(typeof(IOscRelayService), Lifetime.Singleton)]
-public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService sender, IBackToFrontNotifyService notify) : StartStopServiceBase, IOscRelayService
+public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService sender, IBackToFrontNotifyService notify)
+    : StartStopServiceBase, IOscRelayService
 {
     private readonly ILogger _logger = logger.ForContext<OscRelayService>();
     private readonly ConfigModel _config = config;

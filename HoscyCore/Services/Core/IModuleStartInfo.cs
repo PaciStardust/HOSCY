@@ -1,4 +1,4 @@
-namespace HoscyCore.Services.DependencyCore;
+namespace HoscyCore.Services.Core;
 
 public interface IModuleStartInfo : IService
 {

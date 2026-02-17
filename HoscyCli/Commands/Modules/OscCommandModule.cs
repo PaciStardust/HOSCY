@@ -1,6 +1,6 @@
 using HoscyCli.Commands.Core;
 using HoscyCore.Configuration.Modern;
-using HoscyCore.Services.DependencyCore;
+using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Osc.Query;
 using HoscyCore.Services.Osc.Relay;
 using HoscyCore.Services.Osc.SendReceive;

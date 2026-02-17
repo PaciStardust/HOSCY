@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Reflection;
 using HoscyCli.Commands.Core;
 using HoscyCore.Configuration.Modern;
-using HoscyCore.Services.DependencyCore;
+using HoscyCore.Services.Dependency;
 using Serilog.Events;
 
 namespace HoscyCli.Commands.Modules;

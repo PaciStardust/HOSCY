@@ -1,4 +1,4 @@
-using HoscyCore.Services.DependencyCore;
+using HoscyCore.Services.Core;
 using LucHeart.CoreOSC;
 
 namespace HoscyCore.Services.Osc.Relay;

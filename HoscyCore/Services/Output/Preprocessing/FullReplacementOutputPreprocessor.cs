@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using HoscyCore.Configuration.Modern;
-using HoscyCore.Services.DependencyCore;
+using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Output.Core;
 using Serilog;
 

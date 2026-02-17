@@ -1,11 +1,12 @@
 using System.Diagnostics;
 using System.Reflection;
 using HoscyCore.Configuration.Modern;
+using HoscyCore.Services.Core;
 using HoscyCore.Utility;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
-namespace HoscyCore.Services.DependencyCore;
+namespace HoscyCore.Services.Dependency;
 
 /// <summary>
 /// Container for resolving and providing dependencies, and starting and stopping services

@@ -1,4 +1,4 @@
-namespace HoscyCore.Services.DependencyCore;
+namespace HoscyCore.Services.Core;
 
 public abstract class StartStopModuleBase : StartStopServiceBase, IStartStopModule
 {

@@ -1,6 +1,6 @@
 using Serilog;
 
-namespace HoscyCore.Services.DependencyCore;
+namespace HoscyCore.Services.Dependency;
 
 public class PrototypeLoadIntoDiContainer(Type asType, Lifetime lifetime = Lifetime.Singleton) : LoadIntoDiContainerAttribute(asType, lifetime)
 {

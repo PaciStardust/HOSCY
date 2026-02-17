@@ -1,6 +1,6 @@
 using HoscyCli.Commands.Core;
 using HoscyCore.Configuration.Modern;
-using HoscyCore.Services.DependencyCore;
+using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Output.Core;
 using HoscyCore.Services.Output.Handling.Textbox;
 

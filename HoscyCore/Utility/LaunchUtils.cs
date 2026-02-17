@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Reflection;
 using HoscyCore.Configuration.Legacy;
 using HoscyCore.Configuration.Modern;
-using HoscyCore.Services.DependencyCore;
+using HoscyCore.Services.Dependency;
 using Serilog;
 using Timer = System.Timers.Timer;
 

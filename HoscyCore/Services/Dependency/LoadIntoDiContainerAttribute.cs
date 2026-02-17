@@ -1,4 +1,4 @@
-namespace HoscyCore.Services.DependencyCore;
+namespace HoscyCore.Services.Dependency;
 
 /// <summary>
 /// Flag for enabling automatic loading of services, lifetime attributes do not affect hosted services

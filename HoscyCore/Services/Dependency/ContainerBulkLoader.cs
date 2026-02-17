@@ -1,6 +1,8 @@
-using HoscyCore.Services.DependencyCore;
+using HoscyCore.Services.Core;
 using HoscyCore.Utility;
 using Serilog;
+
+namespace HoscyCore.Services.Dependency;
 
 [LoadIntoDiContainer(typeof(IContainerBulkLoader<>))]
 public class ContainerBulkLoader<T>(IServiceProvider serviceProvider, ILogger logger) : IContainerBulkLoader<T> where T : class
