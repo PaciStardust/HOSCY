@@ -3,7 +3,9 @@ using HoscyCore.Services.DependencyCore;
 namespace HoscyCoreTests.Mocks;
 
 public abstract class MockStartStopSubmoduleBase : MockStartStopServiceBase, IStartStopSubmodule
-{
+{    
+    public Exception? ExceptionToThrow { get; set; } = null;
+
     public event EventHandler<Exception> OnRuntimeError = delegate { };
     public event EventHandler OnSubmoduleStopped = delegate { };
 
@@ -17,10 +19,21 @@ public abstract class MockStartStopSubmoduleBase : MockStartStopServiceBase, ISt
         return ServiceStatus.Stopped;
     }
 
+    public override void Start()
+    {
+        ThrowIfNeeded();
+        base.Start();
+    }
     public override void Stop()
     {
         base.Stop();
+        ThrowIfNeeded();
         OnSubmoduleStopped.Invoke(this, EventArgs.Empty);
+    }
+    public override void Restart()
+    {
+        ThrowIfNeeded();
+        base.Restart();
     }
 
     protected Exception? _fault = null;
@@ -35,6 +48,15 @@ public abstract class MockStartStopSubmoduleBase : MockStartStopServiceBase, ISt
         {
             OnRuntimeError.Invoke(this, ex);
         }
+    }
+
+    private void ThrowIfNeeded()
+    {
+        if (ExceptionToThrow is null) return;
+
+        var ex = ExceptionToThrow;
+        ExceptionToThrow = null;
+        throw ex;
     }
 
     public virtual void ResetStats()
