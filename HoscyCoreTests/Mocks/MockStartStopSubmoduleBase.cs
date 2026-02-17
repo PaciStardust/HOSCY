@@ -53,14 +53,12 @@ public abstract class MockStartStopSubmoduleBase : MockStartStopServiceBase, ISt
     private void ThrowIfNeeded()
     {
         if (ExceptionToThrow is null) return;
-
-        var ex = ExceptionToThrow;
-        ExceptionToThrow = null;
-        throw ex;
+        throw ExceptionToThrow;
     }
 
     public virtual void ResetStats()
     {
+        ExceptionToThrow = null;
         _fault = null;
         OverrideRunningStatus = null;
     }

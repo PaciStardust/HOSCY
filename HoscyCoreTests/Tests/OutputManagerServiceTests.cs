@@ -216,6 +216,8 @@ public class OutputManagerServiceStartupTests : OutputManagerServiceTestBase<Out
             Assert.That(_output.GetHandlerInfos(true), Is.Empty);
         }
 
+        _handlerA.ExceptionToThrow = null;
+
         _output.RefreshHandlers();
         using (Assert.EnterMultipleScope())
         {
@@ -244,12 +246,20 @@ public class OutputManagerServiceStartupTests : OutputManagerServiceTestBase<Out
         _infoA.Enabled = false;
 
         _output.RefreshHandlers();
+        var fault = _output.GetFaultIfExists() as CombinedException;
+
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_output.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
-            Assert.That(_output.GetFaultIfExists(), Is.EqualTo(ex));
+            Assert.That(fault, Is.Not.Null);
             Assert.That(_handlerA.Started, Is.False);
             Assert.That(_output.GetHandlerInfos(true), Is.Empty);
+        }
+        Assert.That(fault!.Exceptions, Has.Count.EqualTo(2));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(fault.Exceptions[0], Is.EqualTo(ex));
+            Assert.That(fault.Exceptions[1], Is.EqualTo(ex));
         }
     }
 
