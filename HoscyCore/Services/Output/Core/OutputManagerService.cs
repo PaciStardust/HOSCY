@@ -176,7 +176,6 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
             }
         }
 
-        UpdateFault();
         var newHandler = RetrieveHandlerInstanceForType(handlerInfo.HandlerType);
         newHandler.OnRuntimeError += HandleOnRuntimeError;
         newHandler.OnSubmoduleStopped += HandleOnSubmoduleStopped;
@@ -262,7 +261,6 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
         handler.OnRuntimeError -= HandleOnRuntimeError;
         handler.OnSubmoduleStopped -= HandleOnSubmoduleStopped;
         _activeHandlers.Remove(handler);
-        UpdateFault();
     }
     #endregion
 
@@ -318,7 +316,7 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
         diagnosticSw.Stop();
         _logger.Debug("Finished refreshing Output Handlers in {timeMs}ms", diagnosticSw.ElapsedMilliseconds);
 
-        UpdateFault();
+        NotifyIfRefreshExceptions();
     }
 
     public void RestartHandlers() 
@@ -332,7 +330,7 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
         }
         _logger.Debug("Finished restarting all {handlerCount} active Handlers", _activeHandlers.Count);
 
-        UpdateFault();
+        NotifyIfRefreshExceptions();
     }
     #endregion
 
@@ -342,7 +340,6 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
         var handlerType = sender?.GetType();
         _logger.Error(ex, "Encountered an error in Handler \"{handlerType}\"", handlerType?.FullName);
         _notify.SendError($"Encountered an error in Handler {handlerType?.FullName ?? "???"}",exception: ex);
-        UpdateFault();
     }
     #endregion
 
@@ -593,34 +590,48 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
     #endregion
 
     #region Errors
+    public override Exception? GetFaultIfExists()
+    {
+        var exList = new List<Exception>();
+
+        var baseException = base.GetFaultIfExists();
+        if (baseException is not null)
+        {
+            exList.Add(baseException);
+        }
+        exList.AddRange(_refreshExceptions);
+        exList.AddRange(GetHandlerExceptions());
+
+        return exList.Count == 0
+            ? null
+            : new CombinedException(exList);
+    }
+
     private void AddRefreshException(Exception ex, string message, params object?[]? args)
     {
         _logger.Error(ex, message, args);
         _refreshExceptions.Add(ex);
-        UpdateFault();
     }
 
-    private void UpdateFault()
+    public void NotifyIfRefreshExceptions()
     {
-        SetFault(CollectExceptions());
+        if (_refreshExceptions.Count == 0) return;
+        
+        var ex = new CombinedException(_refreshExceptions);
+        _logger.Warning(ex, "Following exceptions popped up during refresh");
+        _notify.SendError("Errors ocurred during refresh", "The following errors occured while refreshing handlers", ex);
     }
 
-    private OutputHandlerListException? CollectExceptions()
+    public List<Exception> GetHandlerExceptions()
     {
-        var handlerExceptions = new List<Exception>();
+        var exList = new List<Exception>();
         foreach (var handler in _activeHandlers)
         {
-            var handlerException = handler.GetFaultIfExists();
-            if (handlerException is not null)
-            {
-                handlerExceptions.Add(handlerException);
-            }
+            var ex = handler.GetFaultIfExists();
+            if (ex is not null)
+                exList.Add(ex);
         }
-        handlerExceptions.AddRange(_refreshExceptions);
-
-        return handlerExceptions.Count > 0 
-            ? new OutputHandlerListException(handlerExceptions) 
-            : null;
+        return exList;
     }
     #endregion
 }
