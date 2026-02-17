@@ -1153,14 +1153,14 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
 
     #region Translation - General
     /// <summary>
-    /// Current provider selected for translation
+    /// Current module selected for translation
     /// </summary>
-    public string Translation_CurrentProvider //todo: [FEAT] Implement in CLI
+    public string Translation_CurrentModule //todo: [FEAT] Implement in CLI
     {
-        get => _translation_CurrentProvider;
-        set => SetProperty(ref _translation_CurrentProvider, value);
+        get => _translation_CurrentModule;
+        set => SetProperty(ref _translation_CurrentModule, value);
     }
-    private string _translation_CurrentProvider = string.Empty;
+    private string _translation_CurrentModule = string.Empty;
 
     /// <summary>
     /// Skip longer messages for API Translation, will be cropped otherwise

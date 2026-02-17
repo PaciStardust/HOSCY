@@ -13,7 +13,7 @@ public class ApiTranslationProviderStartupTests : TestBase<ApiTranslationProvide
     private ConfigModel _config = null!;
     private MockApiClient _client = null!;
 
-    private ApiTranslationProvider _provider = null!;
+    private ApiTranslationModule _provider = null!;
 
     protected override void SetupExtra()
     {
@@ -94,7 +94,7 @@ public class ApiTranslationProviderFunctionTests : TestBase<ApiTranslationProvid
     private readonly ConfigModel _config = new();
     private readonly MockApiClient _client = new();
 
-    private ApiTranslationProvider _provider = null!;
+    private ApiTranslationModule _provider = null!;
 
     protected override void OneTimeSetupExtra()
     {

@@ -6,20 +6,20 @@ using Serilog;
 
 namespace HoscyCore.Services.Translation.Providers;
 
-[LoadIntoDiContainer(typeof(ApiTranslationProviderStartInfo))]
-public class ApiTranslationProviderStartInfo : ITranslationProviderStartInfo
+[LoadIntoDiContainer(typeof(ApiTranslationModuleStartInfo))]
+public class ApiTranslationModuleStartInfo : ITranslationModuleStartInfo
 {
     public string Name => "Api Translator";
     public string Description => "Translation using any provided API Info";
-    public Type ProviderType => typeof(ApiTranslationProvider);
+    public Type ModuleType => typeof(ApiTranslationModule);
 }
 
-[PrototypeLoadIntoDiContainer(typeof(ApiTranslationProvider), Lifetime.Transient)]
-public class ApiTranslationProvider(ILogger logger, ConfigModel config, IApiClient client) : TranslationProviderBase
+[PrototypeLoadIntoDiContainer(typeof(ApiTranslationModule), Lifetime.Transient)]
+public class ApiTranslationModule(ILogger logger, ConfigModel config, IApiClient client) : TranslationModuleBase
 {
-    private readonly ILogger _logger = logger.ForContext<ApiTranslationProvider>();
+    private readonly ILogger _logger = logger.ForContext<ApiTranslationModule>();
     private readonly ConfigModel _config = config;
-    private readonly IApiClient _client = client.AddIdentifier(nameof(ApiTranslationProvider));
+    private readonly IApiClient _client = client.AddIdentifier(nameof(ApiTranslationModule));
 
     #region Start/Stop
     protected override void StartInternal()

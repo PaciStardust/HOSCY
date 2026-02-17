@@ -12,15 +12,15 @@ public abstract class TranslatorManagerServiceTestBase<T> : TestBase<T>
 {
     protected MockBackToFrontNotifyService _notify = null!;
     protected ConfigModel _config = null!;
-    protected MockContainerBulkLoader<ITranslationProviderStartInfo> _infoLoader = null!;
-    protected MockContainerBulkLoader<ITranslationProvider> _providerLoader = null!;
+    protected MockContainerBulkLoader<ITranslationModuleStartInfo> _infoLoader = null!;
+    protected MockContainerBulkLoader<ITranslationModule> _moduleLoader = null!;
 
-    protected MockTranslationProviderA _providerA = null!;
-    protected MockTranslationProviderB _providerB = null!;
+    protected MockTranslationModuleA _moduleA = null!;
+    protected MockTranslationModuleB _moduleB = null!;
 
-    protected MockTranslationProviderStartInfo _infoA = null!;
-    protected MockTranslationProviderStartInfo _infoB = null!;
-    protected MockTranslationProviderStartInfo _infoC = null!;
+    protected MockTranslationModuleStartInfo _infoA = null!;
+    protected MockTranslationModuleStartInfo _infoB = null!;
+    protected MockTranslationModuleStartInfo _infoC = null!;
 
     protected TranslatorManagerService _translator = null!;
 
@@ -29,42 +29,42 @@ public abstract class TranslatorManagerServiceTestBase<T> : TestBase<T>
         _notify = new();
         _config = new();
 
-        _providerA = new();
-        _providerB = new();
+        _moduleA = new();
+        _moduleB = new();
 
         _infoA = new()
         {
             Name = "MockA",
             Description = "MockA",
-            ProviderType = typeof(MockTranslationProviderA)
+            ModuleType = typeof(MockTranslationModuleA)
         };
         _infoB = new()
         {
             Name = "MockB",
             Description = "MockB",
-            ProviderType = typeof(MockTranslationProviderB)
+            ModuleType = typeof(MockTranslationModuleB)
         };
         _infoC = new()
         {
             Name = "MockC",
             Description = "MockC",
-            ProviderType = typeof(MockTranslationProviderStartInfo)
+            ModuleType = typeof(MockTranslationModuleStartInfo)
         };
 
         _infoLoader = new(() => [ _infoA, _infoB, _infoC ]);
-        _providerLoader = new(() => [ _providerA, _providerB ]);
+        _moduleLoader = new(() => [ _moduleA, _moduleB ]);
 
-        _translator = new(_notify, _logger, _config, _infoLoader, _providerLoader);
+        _translator = new(_config, _notify, _logger, _infoLoader, _moduleLoader);
     }
 
-    protected void SetProvider(string name)
+    protected void SetModule(string name)
     {
-        _config.Translation_CurrentProvider = name;
+        _config.Translation_CurrentModule = name;
     }
-    protected void SetAndRefreshProvider(string name)
+    protected void SetAndRefreshModuleSelection(string name)
     {
-        SetProvider(name);
-        _translator.RefreshProvider();
+        SetModule(name);
+        _translator.RefreshModuleSelection();
     }
 }
 
@@ -78,36 +78,36 @@ public class TranslatorManagerServiceStartupTests : TranslatorManagerServiceTest
     [TestCase(false, false), TestCase(true, false), TestCase(false, true)]
     public void StartStopRestartTest(bool restartNotStart, bool doAgain)
     {
-        SetProvider("MockD");
+        SetModule("MockD");
 
         using (Assert.EnterMultipleScope())
         {
             AssertServiceStopped(_translator);
-            Assert.That(_translator.GetProviderInfos(), Is.Empty);
-            Assert.That(_translator.GetCurrentProviderInfo(), Is.Null);
-            Assert.That(_providerA.Started, Is.False);
-            Assert.That(_providerB.Started, Is.False);
+            Assert.That(_translator.GetModuleInfos(), Is.Empty);
+            Assert.That(_translator.GetCurrentModuleInfo(), Is.Null);
+            Assert.That(_moduleA.Started, Is.False);
+            Assert.That(_moduleB.Started, Is.False);
         }
 
         _translator.Start();
         using (Assert.EnterMultipleScope())
         {
             AssertServiceStarted(_translator);
-            Assert.That(_translator.GetProviderInfos(), Has.Count.EqualTo(3));
-            Assert.That(_translator.GetCurrentProviderInfo(), Is.Null);
-            Assert.That(_providerA.Started, Is.False);
-            Assert.That(_providerB.Started, Is.False);
+            Assert.That(_translator.GetModuleInfos(), Has.Count.EqualTo(3));
+            Assert.That(_translator.GetCurrentModuleInfo(), Is.Null);
+            Assert.That(_moduleA.Started, Is.False);
+            Assert.That(_moduleB.Started, Is.False);
         }
 
-        SetAndRefreshProvider("MockA");
+        SetAndRefreshModuleSelection("MockA");
 
         using (Assert.EnterMultipleScope())
         {
             AssertServiceProcessing(_translator);
-            Assert.That(_translator.GetProviderInfos(), Has.Count.EqualTo(3));
-            Assert.That(_translator.GetCurrentProviderInfo(), Is.EqualTo(_infoA));
-            Assert.That(_providerA.Started, Is.True);
-            Assert.That(_providerB.Started, Is.False);
+            Assert.That(_translator.GetModuleInfos(), Has.Count.EqualTo(3));
+            Assert.That(_translator.GetCurrentModuleInfo(), Is.EqualTo(_infoA));
+            Assert.That(_moduleA.Started, Is.True);
+            Assert.That(_moduleB.Started, Is.False);
         }
 
         if (restartNotStart)
@@ -117,20 +117,20 @@ public class TranslatorManagerServiceStartupTests : TranslatorManagerServiceTest
         using (Assert.EnterMultipleScope())
         {
             AssertServiceProcessing(_translator);
-            Assert.That(_translator.GetProviderInfos(), Has.Count.EqualTo(3));
-            Assert.That(_translator.GetCurrentProviderInfo(), Is.EqualTo(_infoA));
-            Assert.That(_providerA.Started, Is.True);
-            Assert.That(_providerB.Started, Is.False);
+            Assert.That(_translator.GetModuleInfos(), Has.Count.EqualTo(3));
+            Assert.That(_translator.GetCurrentModuleInfo(), Is.EqualTo(_infoA));
+            Assert.That(_moduleA.Started, Is.True);
+            Assert.That(_moduleB.Started, Is.False);
         }
         
         _translator.Stop();
         using (Assert.EnterMultipleScope())
         {
             AssertServiceStopped(_translator);
-            Assert.That(_translator.GetProviderInfos(), Is.Empty);
-            Assert.That(_translator.GetCurrentProviderInfo(), Is.Null);
-            Assert.That(_providerA.Started, Is.False);
-            Assert.That(_providerB.Started, Is.False);
+            Assert.That(_translator.GetModuleInfos(), Is.Empty);
+            Assert.That(_translator.GetCurrentModuleInfo(), Is.Null);
+            Assert.That(_moduleA.Started, Is.False);
+            Assert.That(_moduleB.Started, Is.False);
         }
 
         if (!doAgain) return;
@@ -139,103 +139,103 @@ public class TranslatorManagerServiceStartupTests : TranslatorManagerServiceTest
         using (Assert.EnterMultipleScope())
         {
             AssertServiceProcessing(_translator);
-            Assert.That(_translator.GetProviderInfos(), Has.Count.EqualTo(3));
-            Assert.That(_translator.GetCurrentProviderInfo(), Is.EqualTo(_infoA));
-            Assert.That(_providerA.Started, Is.True);
-            Assert.That(_providerB.Started, Is.False);
+            Assert.That(_translator.GetModuleInfos(), Has.Count.EqualTo(3));
+            Assert.That(_translator.GetCurrentModuleInfo(), Is.EqualTo(_infoA));
+            Assert.That(_moduleA.Started, Is.True);
+            Assert.That(_moduleB.Started, Is.False);
         }
         
         _translator.Stop();
         using (Assert.EnterMultipleScope())
         {
             AssertServiceStopped(_translator);
-            Assert.That(_translator.GetProviderInfos(), Is.Empty);
-            Assert.That(_translator.GetCurrentProviderInfo(), Is.Null);
-            Assert.That(_providerA.Started, Is.False);
-            Assert.That(_providerB.Started, Is.False);
+            Assert.That(_translator.GetModuleInfos(), Is.Empty);
+            Assert.That(_translator.GetCurrentModuleInfo(), Is.Null);
+            Assert.That(_moduleA.Started, Is.False);
+            Assert.That(_moduleB.Started, Is.False);
         }
     }
 
     [Test]
-    public void ThrowOnProviderStart()
+    public void ThrowOnModuleStart()
     {
         var ex = new Exception();
-        _providerA.ExceptionToThrow = ex;
-        SetProvider(_infoA.Name);
+        _moduleA.ExceptionToThrow = ex;
+        SetModule(_infoA.Name);
 
         _translator.Start();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_translator.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
             Assert.That(_translator.GetFaultIfExists(), Is.EqualTo(ex));
-            Assert.That(_providerA.Started, Is.False);
-            Assert.That(_translator.GetCurrentProviderInfo(), Is.Null);
+            Assert.That(_moduleA.Started, Is.False);
+            Assert.That(_translator.GetCurrentModuleInfo(), Is.Null);
         }
 
-        _providerA.ExceptionToThrow = null;
+        _moduleA.ExceptionToThrow = null;
 
-        _translator.RefreshProvider();
+        _translator.RefreshModuleSelection();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_translator.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Faulted));
             Assert.That(_translator.GetFaultIfExists(), Is.Null);
-            Assert.That(_providerA.Started, Is.True);
-            Assert.That(_translator.GetCurrentProviderInfo(), Is.EqualTo(_infoA));
+            Assert.That(_moduleA.Started, Is.True);
+            Assert.That(_translator.GetCurrentModuleInfo(), Is.EqualTo(_infoA));
         }
     }
 
     [Test]
-    public void ThrowOnProviderStop()
+    public void ThrowOnModuleStop()
     {
-        SetProvider(_infoA.Name);
+        SetModule(_infoA.Name);
 
         _translator.Start();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_translator.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Faulted));
             Assert.That(_translator.GetFaultIfExists(), Is.Null);
-            Assert.That(_providerA.Started, Is.True);
-            Assert.That(_translator.GetCurrentProviderInfo(), Is.EqualTo(_infoA));
+            Assert.That(_moduleA.Started, Is.True);
+            Assert.That(_translator.GetCurrentModuleInfo(), Is.EqualTo(_infoA));
         }
 
         var ex = new Exception();
-        _providerA.ExceptionToThrow = ex;
+        _moduleA.ExceptionToThrow = ex;
 
-        SetAndRefreshProvider(string.Empty);
+        SetAndRefreshModuleSelection(string.Empty);
 
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_translator.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
             Assert.That(_translator.GetFaultIfExists(), Is.EqualTo(ex));
-            Assert.That(_providerA.Started, Is.False);
-            Assert.That(_translator.GetCurrentProviderInfo(), Is.Null);
+            Assert.That(_moduleA.Started, Is.False);
+            Assert.That(_translator.GetCurrentModuleInfo(), Is.Null);
         }
     }
 
     [Test]
-    public void ThrowOnProviderRestart()
+    public void ThrowOnModuleRestart()
     {
-        SetProvider(_infoA.Name);
+        SetModule(_infoA.Name);
 
         _translator.Start();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_translator.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Faulted));
             Assert.That(_translator.GetFaultIfExists(), Is.Null);
-            Assert.That(_providerA.Started, Is.True);
-            Assert.That(_translator.GetCurrentProviderInfo(), Is.EqualTo(_infoA));
+            Assert.That(_moduleA.Started, Is.True);
+            Assert.That(_translator.GetCurrentModuleInfo(), Is.EqualTo(_infoA));
         }
 
         var ex = new Exception();
-        _providerA.ExceptionToThrow = ex;
+        _moduleA.ExceptionToThrow = ex;
 
-        _translator.RestartCurrentProvider();
+        _translator.RestartCurrentModule();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_translator.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
             Assert.That(_translator.GetFaultIfExists(), Is.EqualTo(ex));
-            Assert.That(_providerA.Started, Is.True);
-            Assert.That(_translator.GetCurrentProviderInfo(), Is.EqualTo(_infoA));
+            Assert.That(_moduleA.Started, Is.True);
+            Assert.That(_translator.GetCurrentModuleInfo(), Is.EqualTo(_infoA));
         }
     }
 }
@@ -250,7 +250,7 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
 
     protected override void SetupExtra()
     {
-        SetAndRefreshProvider(string.Empty);
+        SetAndRefreshModuleSelection(string.Empty);
 
         _config.Translation_SendUntranslatedIfFailed = false;
         _config.Translation_SkipLongerMessages = false;
@@ -258,100 +258,100 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
 
         _notify.Notifications.Clear();
 
-        _providerA.ResetStats();
-        _providerB.ResetStats();
+        _moduleA.ResetStats();
+        _moduleB.ResetStats();
     }
 
     [Test]
-    public void ProviderStartInfoLoadedTest()
+    public void ModuleStartInfoLoadedTest()
     {
-        SetProvider(_infoA.Name);
+        SetModule(_infoA.Name);
 
-        Assert.That(_translator.GetCurrentProviderInfo(), Is.Null);
-        _translator.RefreshProvider();
+        Assert.That(_translator.GetCurrentModuleInfo(), Is.Null);
+        _translator.RefreshModuleSelection();
 
-        var allProviders = _translator.GetProviderInfos();
+        var allModules = _translator.GetModuleInfos();
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(allProviders, Has.Count.EqualTo(3));
-            Assert.That(_translator.GetCurrentProviderInfo(), Is.EqualTo(_infoA));
-            Assert.That(_providerA.Started, Is.True);
-            Assert.That(_providerB.Started, Is.False);
+            Assert.That(allModules, Has.Count.EqualTo(3));
+            Assert.That(_translator.GetCurrentModuleInfo(), Is.EqualTo(_infoA));
+            Assert.That(_moduleA.Started, Is.True);
+            Assert.That(_moduleB.Started, Is.False);
         }
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(allProviders, Does.Contain(_infoA));
-            Assert.That(allProviders, Does.Contain(_infoB));
-            Assert.That(allProviders, Does.Contain(_infoC));
+            Assert.That(allModules, Does.Contain(_infoA));
+            Assert.That(allModules, Does.Contain(_infoB));
+            Assert.That(allModules, Does.Contain(_infoC));
         }
     }
 
     [Test]
     public void GetStatusTest()
     {
-        Assert.That(_translator.GetCurrentProviderInfo(), Is.Null);
+        Assert.That(_translator.GetCurrentModuleInfo(), Is.Null);
         AssertServiceStarted(_translator);
 
-        SetAndRefreshProvider(_infoA.Name);
+        SetAndRefreshModuleSelection(_infoA.Name);
 
-        Assert.That(_translator.GetCurrentProviderInfo(), Is.EqualTo(_infoA));
+        Assert.That(_translator.GetCurrentModuleInfo(), Is.EqualTo(_infoA));
         AssertServiceProcessing(_translator);
 
-        SetAndRefreshProvider(string.Empty);
+        SetAndRefreshModuleSelection(string.Empty);
 
-        Assert.That(_translator.GetCurrentProviderInfo(), Is.Null);
+        Assert.That(_translator.GetCurrentModuleInfo(), Is.Null);
         AssertServiceStarted(_translator);
     }
 
     [Test]
-    public void GetProviderStatusTest()
+    public void GetModuleStatusTest()
     {
-        var status = _translator.GetCurrentProviderStatus();
+        var status = _translator.GetCurrentModuleStatus();
         Assert.That(status, Is.EqualTo(ServiceStatus.Stopped));
         
-        SetAndRefreshProvider(_infoA.Name);
+        SetAndRefreshModuleSelection(_infoA.Name);
 
-        _providerA.OverrideRunningStatus = ServiceStatus.Started;
-        status = _translator.GetCurrentProviderStatus();
+        _moduleA.OverrideRunningStatus = ServiceStatus.Started;
+        status = _translator.GetCurrentModuleStatus();
         Assert.That(status, Is.EqualTo(ServiceStatus.Started));
 
-        _providerA.OverrideRunningStatus = ServiceStatus.Processing;
-        status = _translator.GetCurrentProviderStatus();
+        _moduleA.OverrideRunningStatus = ServiceStatus.Processing;
+        status = _translator.GetCurrentModuleStatus();
         Assert.That(status, Is.EqualTo(ServiceStatus.Processing));
 
-        _providerA.OverrideRunningStatus = ServiceStatus.Faulted;
-        status = _translator.GetCurrentProviderStatus();
+        _moduleA.OverrideRunningStatus = ServiceStatus.Faulted;
+        status = _translator.GetCurrentModuleStatus();
         Assert.That(status, Is.EqualTo(ServiceStatus.Faulted));
 
-        SetAndRefreshProvider(string.Empty);
+        SetAndRefreshModuleSelection(string.Empty);
 
-        status = _translator.GetCurrentProviderStatus();
+        status = _translator.GetCurrentModuleStatus();
         Assert.That(status, Is.EqualTo(ServiceStatus.Stopped));
     }
 
     [Test]
     public void RestartTest()
     {
-        Assert.That(_translator.GetCurrentProviderInfo(), Is.Null);
+        Assert.That(_translator.GetCurrentModuleInfo(), Is.Null);
         
-        SetAndRefreshProvider(_infoA.Name);
-        Assert.That(_translator.GetCurrentProviderInfo(), Is.EqualTo(_infoA));
+        SetAndRefreshModuleSelection(_infoA.Name);
+        Assert.That(_translator.GetCurrentModuleInfo(), Is.EqualTo(_infoA));
 
         var stoppedA = false;
 
         void onAStopped(object? _, EventArgs __) { stoppedA = true; }
-        _providerA.OnModuleStopped += onAStopped;
+        _moduleA.OnModuleStopped += onAStopped;
 
-        _translator.RestartCurrentProvider();
+        _translator.RestartCurrentModule();
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(_translator.GetCurrentProviderInfo(), Is.EqualTo(_infoA));
+            Assert.That(_translator.GetCurrentModuleInfo(), Is.EqualTo(_infoA));
             Assert.That(stoppedA, Is.True);
         }
 
-        _providerA.OnModuleStopped -= onAStopped;
+        _moduleA.OnModuleStopped -= onAStopped;
     }
 
     [Test]
@@ -361,98 +361,98 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
         var stoppedB = false;
 
         void onAStopped(object? _, EventArgs __) { stoppedA = true; }
-        _providerA.OnModuleStopped += onAStopped;
+        _moduleA.OnModuleStopped += onAStopped;
         void onBStopped(object? _, EventArgs __) { stoppedB = true; }
-        _providerB.OnModuleStopped += onBStopped;
+        _moduleB.OnModuleStopped += onBStopped;
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(_translator.GetCurrentProviderInfo(), Is.Null);
-            Assert.That(_translator.GetCurrentProviderStatus(), Is.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_translator.GetCurrentModuleInfo(), Is.Null);
+            Assert.That(_translator.GetCurrentModuleStatus(), Is.EqualTo(ServiceStatus.Stopped));
 
-            Assert.That(_providerA.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Stopped));
-            Assert.That(_providerA.Started, Is.False);
+            Assert.That(_moduleA.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_moduleA.Started, Is.False);
             Assert.That(stoppedA, Is.False);
 
-            Assert.That(_providerB.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Stopped));
-            Assert.That(_providerB.Started, Is.False);
+            Assert.That(_moduleB.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_moduleB.Started, Is.False);
             Assert.That(stoppedB, Is.False);
         }
 
-        SetProvider(_infoA.Name);
+        SetModule(_infoA.Name);
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(_translator.GetCurrentProviderInfo(), Is.Null);
-            Assert.That(_translator.GetCurrentProviderStatus(), Is.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_translator.GetCurrentModuleInfo(), Is.Null);
+            Assert.That(_translator.GetCurrentModuleStatus(), Is.EqualTo(ServiceStatus.Stopped));
 
-            Assert.That(_providerA.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Stopped));
-            Assert.That(_providerA.Started, Is.False);
+            Assert.That(_moduleA.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_moduleA.Started, Is.False);
             Assert.That(stoppedA, Is.False);
 
-            Assert.That(_providerB.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Stopped));
-            Assert.That(_providerB.Started, Is.False);
+            Assert.That(_moduleB.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_moduleB.Started, Is.False);
             Assert.That(stoppedB, Is.False);
         }
 
-        _translator.RefreshProvider();
+        _translator.RefreshModuleSelection();
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(_translator.GetCurrentProviderInfo(), Is.EqualTo(_infoA));
-            Assert.That(_translator.GetCurrentProviderStatus(), Is.Not.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_translator.GetCurrentModuleInfo(), Is.EqualTo(_infoA));
+            Assert.That(_translator.GetCurrentModuleStatus(), Is.Not.EqualTo(ServiceStatus.Stopped));
 
-            Assert.That(_providerA.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Stopped));
-            Assert.That(_providerA.Started, Is.True);
+            Assert.That(_moduleA.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_moduleA.Started, Is.True);
             Assert.That(stoppedA, Is.False);
 
-            Assert.That(_providerB.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Stopped));
-            Assert.That(_providerB.Started, Is.False);
+            Assert.That(_moduleB.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_moduleB.Started, Is.False);
             Assert.That(stoppedB, Is.False);
         }
 
-        SetProvider(string.Empty);
+        SetModule(string.Empty);
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(_translator.GetCurrentProviderInfo(), Is.EqualTo(_infoA));
-            Assert.That(_translator.GetCurrentProviderStatus(), Is.Not.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_translator.GetCurrentModuleInfo(), Is.EqualTo(_infoA));
+            Assert.That(_translator.GetCurrentModuleStatus(), Is.Not.EqualTo(ServiceStatus.Stopped));
 
-            Assert.That(_providerA.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Stopped));
-            Assert.That(_providerA.Started, Is.True);
+            Assert.That(_moduleA.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_moduleA.Started, Is.True);
             Assert.That(stoppedA, Is.False);
 
-            Assert.That(_providerB.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Stopped));
-            Assert.That(_providerB.Started, Is.False);
+            Assert.That(_moduleB.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_moduleB.Started, Is.False);
             Assert.That(stoppedB, Is.False);
         }
 
-        _translator.RefreshProvider();
+        _translator.RefreshModuleSelection();
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(_translator.GetCurrentProviderInfo(), Is.Null);
-            Assert.That(_translator.GetCurrentProviderStatus(), Is.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_translator.GetCurrentModuleInfo(), Is.Null);
+            Assert.That(_translator.GetCurrentModuleStatus(), Is.EqualTo(ServiceStatus.Stopped));
 
-            Assert.That(_providerA.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Stopped));
-            Assert.That(_providerA.Started, Is.False);
+            Assert.That(_moduleA.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_moduleA.Started, Is.False);
             Assert.That(stoppedA, Is.True);
 
-            Assert.That(_providerB.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Stopped));
-            Assert.That(_providerB.Started, Is.False);
+            Assert.That(_moduleB.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_moduleB.Started, Is.False);
             Assert.That(stoppedB, Is.False);
         }
 
-        _providerA.OnModuleStopped -= onAStopped;
-        _providerB.OnModuleStopped -= onBStopped;
+        _moduleA.OnModuleStopped -= onAStopped;
+        _moduleB.OnModuleStopped -= onBStopped;
     }
 
     [Test] 
     public void RefreshBrokenTest()
     {
-        Assert.That(_translator.GetCurrentProviderInfo(), Is.Null);
+        Assert.That(_translator.GetCurrentModuleInfo(), Is.Null);
 
-        SetAndRefreshProvider(_infoC.Name);
+        SetAndRefreshModuleSelection(_infoC.Name);
 
         var ex = _translator.GetFaultIfExists();
         using (Assert.EnterMultipleScope())
@@ -461,7 +461,7 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
             Assert.That(_translator.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
         }
 
-        SetAndRefreshProvider(string.Empty);
+        SetAndRefreshModuleSelection(string.Empty);
 
         var ex2 = _translator.GetFaultIfExists();
         using (Assert.EnterMultipleScope())
@@ -474,35 +474,35 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
     [Test]
     public void ManualShutdownHandledTest()
     {
-        Assert.That(_translator.GetCurrentProviderInfo(), Is.Null);
+        Assert.That(_translator.GetCurrentModuleInfo(), Is.Null);
         
-        SetAndRefreshProvider(_infoA.Name);
+        SetAndRefreshModuleSelection(_infoA.Name);
 
-        Assert.That(_translator.GetCurrentProviderInfo(), Is.EqualTo(_infoA));
+        Assert.That(_translator.GetCurrentModuleInfo(), Is.EqualTo(_infoA));
 
-        _providerA.Stop();
+        _moduleA.Stop();
 
-        Assert.That(_translator.GetCurrentProviderInfo(), Is.Null);
+        Assert.That(_translator.GetCurrentModuleInfo(), Is.Null);
 
-        _translator.RefreshProvider();
+        _translator.RefreshModuleSelection();
 
-        Assert.That(_translator.GetCurrentProviderInfo(), Is.EqualTo(_infoA));
+        Assert.That(_translator.GetCurrentModuleInfo(), Is.EqualTo(_infoA));
     }
 
     [Test]
     public void HandleErrorTest()
     {
-        Assert.That(_translator.GetCurrentProviderInfo(), Is.Null);
+        Assert.That(_translator.GetCurrentModuleInfo(), Is.Null);
 
-        SetAndRefreshProvider(_infoA.Name);
+        SetAndRefreshModuleSelection(_infoA.Name);
 
-        Assert.That(_translator.GetCurrentProviderInfo(), Is.EqualTo(_infoA));
+        Assert.That(_translator.GetCurrentModuleInfo(), Is.EqualTo(_infoA));
 
         var testEx = new Exception("test");
-        _providerA.InduceError(testEx);
+        _moduleA.InduceError(testEx);
 
         var faultOutput = _translator.GetFaultIfExists();
-        var faultHandler = _providerA.GetFaultIfExists();
+        var faultHandler = _moduleA.GetFaultIfExists();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_translator.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
@@ -512,11 +512,11 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
             Assert.That(faultOutput, Is.EqualTo(faultHandler));
         }
 
-        _providerA.InduceError(null);
-        _translator.RefreshProvider();
+        _moduleA.InduceError(null);
+        _translator.RefreshModuleSelection();
 
         faultOutput = _translator.GetFaultIfExists();
-        faultHandler = _providerA.GetFaultIfExists();
+        faultHandler = _moduleA.GetFaultIfExists();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_translator.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Faulted));
@@ -531,40 +531,40 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
     {
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(_translator.GetCurrentProviderInfo(), Is.Null);
+            Assert.That(_translator.GetCurrentModuleInfo(), Is.Null);
             
-            Assert.That(_providerA.Started, Is.False);
-            Assert.That(_providerB.Started, Is.False);
+            Assert.That(_moduleA.Started, Is.False);
+            Assert.That(_moduleB.Started, Is.False);
         }
 
-        SetAndRefreshProvider(_infoA.Name);
+        SetAndRefreshModuleSelection(_infoA.Name);
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(_translator.GetCurrentProviderInfo(), Is.EqualTo(_infoA));
+            Assert.That(_translator.GetCurrentModuleInfo(), Is.EqualTo(_infoA));
             
-            Assert.That(_providerA.Started, Is.True);
-            Assert.That(_providerB.Started, Is.False);
+            Assert.That(_moduleA.Started, Is.True);
+            Assert.That(_moduleB.Started, Is.False);
         }
 
-        SetAndRefreshProvider(_infoB.Name);
+        SetAndRefreshModuleSelection(_infoB.Name);
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(_translator.GetCurrentProviderInfo(), Is.EqualTo(_infoB));
+            Assert.That(_translator.GetCurrentModuleInfo(), Is.EqualTo(_infoB));
             
-            Assert.That(_providerA.Started, Is.False);
-            Assert.That(_providerB.Started, Is.True);
+            Assert.That(_moduleA.Started, Is.False);
+            Assert.That(_moduleB.Started, Is.True);
         }
 
-        SetAndRefreshProvider(string.Empty);
+        SetAndRefreshModuleSelection(string.Empty);
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(_translator.GetCurrentProviderInfo(), Is.Null);
+            Assert.That(_translator.GetCurrentModuleInfo(), Is.Null);
             
-            Assert.That(_providerA.Started, Is.False);
-            Assert.That(_providerB.Started, Is.False);
+            Assert.That(_moduleA.Started, Is.False);
+            Assert.That(_moduleB.Started, Is.False);
         }
     }
 
@@ -573,34 +573,34 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
     {
         _config.Translation_SendUntranslatedIfFailed = untranslatedIfFailed;
 
-        Assert.That(_translator.GetCurrentProviderInfo(), Is.Null);
+        Assert.That(_translator.GetCurrentModuleInfo(), Is.Null);
         
         var result = _translator.TryTranslate("Test", out var output);
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(_providerA.ReceivedInput, Is.Empty);
+            Assert.That(_moduleA.ReceivedInput, Is.Empty);
             Assert.That(result, Is.EqualTo(untranslatedIfFailed ? TranslationResult.UseOriginal : TranslationResult.Failed));
             Assert.That(output, Is.Null);
         }
 
-        SetAndRefreshProvider(_infoA.Name);
-        _providerA.OverrideRunningStatus = ServiceStatus.Stopped;
+        SetAndRefreshModuleSelection(_infoA.Name);
+        _moduleA.OverrideRunningStatus = ServiceStatus.Stopped;
 
         result = _translator.TryTranslate("Test", out output);
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(_providerA.ReceivedInput, Is.Empty);
+            Assert.That(_moduleA.ReceivedInput, Is.Empty);
             Assert.That(result, Is.EqualTo(untranslatedIfFailed ? TranslationResult.UseOriginal : TranslationResult.Failed));
             Assert.That(output, Is.Null);
         }
 
-        _providerA.OverrideRunningStatus = null;
-        _providerA.ReturnedOutput = "Waa";
+        _moduleA.OverrideRunningStatus = null;
+        _moduleA.ReturnedOutput = "Waa";
 
         result = _translator.TryTranslate("Test", out output);
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(_providerA.ReceivedInput, Has.Count.EqualTo(1));
+            Assert.That(_moduleA.ReceivedInput, Has.Count.EqualTo(1));
             Assert.That(result, Is.EqualTo(TranslationResult.Succeeded));
             Assert.That(output, Is.Not.Null);
         }
@@ -613,20 +613,20 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
     public void TranslationTest(TranslationResult overrideResult, bool untranslatedIfFailed)
     {
         _config.Translation_SendUntranslatedIfFailed = untranslatedIfFailed;
-        _providerA.ReturnedOutput = "Echo";
-        _providerA.ReturnedResult = overrideResult;
+        _moduleA.ReturnedOutput = "Echo";
+        _moduleA.ReturnedResult = overrideResult;
 
-        SetAndRefreshProvider(_infoA.Name);
+        SetAndRefreshModuleSelection(_infoA.Name);
         
         var result = _translator.TryTranslate("Test", out var output);
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(_providerA.ReceivedInput, Has.Count.EqualTo(1));
-            Assert.That(_providerB.ReceivedInput, Is.Empty);
+            Assert.That(_moduleA.ReceivedInput, Has.Count.EqualTo(1));
+            Assert.That(_moduleB.ReceivedInput, Is.Empty);
             Assert.That(result, Is.EqualTo(untranslatedIfFailed ? TranslationResult.UseOriginal : overrideResult));
             Assert.That(output, overrideResult == TranslationResult.Succeeded ? Is.EqualTo("Echo") : Is.Null);
         }
-        Assert.That(_providerA.ReceivedInput[0], Is.EqualTo("Test"));
+        Assert.That(_moduleA.ReceivedInput[0], Is.EqualTo("Test"));
     }
 
     [TestCase(false), TestCase(true)]
@@ -636,14 +636,14 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
         _config.Translation_SkipLongerMessages = true;
         _config.Translation_SendUntranslatedIfFailed = untranslatedIfFailed;
 
-        _providerA.ReturnedOutput = "Echo";
+        _moduleA.ReturnedOutput = "Echo";
 
-        SetAndRefreshProvider(_infoA.Name);
+        SetAndRefreshModuleSelection(_infoA.Name);
 
         var result = _translator.TryTranslate("0123456789", out var output);
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(_providerA.ReceivedInput, Has.Count.EqualTo(1));
+            Assert.That(_moduleA.ReceivedInput, Has.Count.EqualTo(1));
             Assert.That(result, Is.EqualTo(TranslationResult.Succeeded));
             Assert.That(output, Is.Not.Null);
         }
@@ -651,7 +651,7 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
         result = _translator.TryTranslate("012345678901", out output);
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(_providerA.ReceivedInput, Has.Count.EqualTo(1));
+            Assert.That(_moduleA.ReceivedInput, Has.Count.EqualTo(1));
             Assert.That(result, Is.EqualTo(untranslatedIfFailed ? TranslationResult.UseOriginal : TranslationResult.Failed));
             Assert.That(output, Is.Null);
         }
@@ -665,18 +665,18 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
         _config.Translation_MaxTextLength = 10;
         _config.Translation_SkipLongerMessages = false;
 
-        _providerA.ReturnedOutput = "Echo";
+        _moduleA.ReturnedOutput = "Echo";
 
-        SetAndRefreshProvider(_infoA.Name);
+        SetAndRefreshModuleSelection(_infoA.Name);
 
         var result = _translator.TryTranslate(input, out var output);
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(_providerA.ReceivedInput, Has.Count.EqualTo(1));
+            Assert.That(_moduleA.ReceivedInput, Has.Count.EqualTo(1));
             Assert.That(result, Is.EqualTo(TranslationResult.Succeeded));
             Assert.That(output, Is.EqualTo("Echo"));
         }
-        Assert.That(_providerA.ReceivedInput[0], Is.EqualTo(expectedOutput));
+        Assert.That(_moduleA.ReceivedInput[0], Is.EqualTo(expectedOutput));
     }
 
     protected override void OneTimeTearDownExtra()

@@ -13,12 +13,12 @@ public class MockTranslatorManager : MockStartStopServiceBase, ITranslatorManage
         return CurrentProviderStatus;
     }
 
-    public ITranslationProviderStartInfo? GetCurrentProviderInfo()
+    public ITranslationModuleStartInfo? GetCurrentProviderInfo()
     {
         return null;
     }
 
-    public IReadOnlyList<ITranslationProviderStartInfo> GetProviderInfos()
+    public IReadOnlyList<ITranslationModuleStartInfo> GetProviderInfos()
     {
         return [];
     }
