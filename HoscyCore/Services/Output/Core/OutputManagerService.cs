@@ -310,7 +310,13 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
 
             _logger.Warning("Handler of type \"{handlerType}\" is active but not on enabled list, stopping...",
                 handlerType);
-            ShutdownHandlerSafe(handler);
+            var res = ShutdownHandlerSafe(handler);
+            if (!res)
+            {
+                _logger.Warning("Handler of type \"{handlerType}\" failed shutting down, removing from list forcefully - This should not be ignored!",
+                    handlerType);
+                CleanupAfterHandlerShutdown(handler);
+            }
         }
 
         diagnosticSw.Stop();

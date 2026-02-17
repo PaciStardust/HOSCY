@@ -122,7 +122,13 @@ public class TranslatorManagerService //todo: [TEST] Write tests for this
 
             _logger.Debug("Current provider {currentProvider} does not match selected type {selectedType}, stopping",
                 currentType.Name, infoMatch?.ProviderType.Name ?? "[EMPTY]");
-            StopCurrentProvider();
+            var res = StopCurrentProvider();
+            if (!res)
+            {
+                _logger.Warning("Provider of type \"{providerType}\" failed shutting down, removing from list forcefully - This should not be ignored!",
+                    currentType.Name);
+                CleanupAfterProviderShutdown();
+            }
         }
 
         if (infoMatch is not null)
