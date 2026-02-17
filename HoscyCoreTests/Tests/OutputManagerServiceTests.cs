@@ -1,6 +1,5 @@
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.DependencyCore;
-using HoscyCore.Services.Interfacing;
 using HoscyCore.Services.Output.Core;
 using HoscyCore.Services.Translation.Core;
 using HoscyCoreTests.Mocks;
@@ -12,6 +11,10 @@ namespace HoscyCoreTests.Tests.OutputManagerServiceTests;
 
 public abstract class OutputManagerServiceTestBase<T> : TestBase<T>
 {
+    protected MockBackToFrontNotifyService _notify = null!;
+    protected MockTranslatorManager _translator = null!;
+    protected ConfigModel _config = null!;
+
     protected MockContainerBulkLoader<IOutputPreprocessor> _loadPreprocessors = null!;
     protected MockOutputPreprocessor _preprocessorEarlyFull = null!;
     protected MockOutputPreprocessor _preprocessorLatePartial = null!;
@@ -31,8 +34,12 @@ public abstract class OutputManagerServiceTestBase<T> : TestBase<T>
 
     protected OutputManagerService _output = null!;
 
-    protected void SetSharedClasses(IBackToFrontNotifyService notify, ConfigModel config, ITranslatorManagerService translator)
+    protected void SetSharedClasses()
     {
+        _config = new();
+        _translator = new();
+        _notify = new();
+
         _preprocessorEarlyFull = new()
         {
             HandlingStage = OutputPreprocessorHandlingStage.Initial,
@@ -96,35 +103,52 @@ public abstract class OutputManagerServiceTestBase<T> : TestBase<T>
         };
         _loadHandlerInfos = new(() => [ _infoA, _infoB, _infoC, _infoD, _infoE ]);
 
-        _output = new(_logger, notify, config, _loadPreprocessors, _loadHandlerInfos, _loadHandlers, translator);
+        _output = new(_logger, _notify, _config, _loadPreprocessors, _loadHandlerInfos, _loadHandlers, _translator);
     }
 }
 
 public class OutputManagerServiceStartupTests : OutputManagerServiceTestBase<OutputManagerServiceStartupTests>
 {
-    private MockBackToFrontNotifyService _notify = null!;
-    private MockTranslatorManager _translator = null!;
-    private ConfigModel _config = null!;
-
     protected override void SetupExtra()
     {
-        _notify = new();
-        _translator = new();
-        _config = new();
-        SetSharedClasses(_notify, _config, _translator);
+        SetSharedClasses();
     }
 
     [TestCase(false, false), TestCase(true, false), TestCase(false, true)]
     public void StartStopRestartTest(bool restartNotStart, bool doAgain)
     {
-        AssertServiceStopped(_output);
+        _infoA.Enabled = false;
+
+        using (Assert.EnterMultipleScope())
+        {
+            AssertServiceStopped(_output);
+            Assert.That(_output.GetHandlerInfos(false), Is.Empty);
+            Assert.That(_output.GetHandlerInfos(true), Is.Empty);
+            Assert.That(_handlerA.Started, Is.False);
+            Assert.That(_handlerB.Started, Is.False);
+        }
 
         _output.Start();
         using (Assert.EnterMultipleScope())
         {
+            AssertServiceStarted(_output);
+            Assert.That(_output.GetHandlerInfos(false), Has.Count.EqualTo(5));
+            Assert.That(_output.GetHandlerInfos(true), Is.Empty);
+            Assert.That(_handlerA.Started, Is.False);
+            Assert.That(_handlerB.Started, Is.False);
+        }
+
+        _infoA.Enabled = true;
+        _output.RefreshHandlers();
+        using (Assert.EnterMultipleScope())
+        {
             AssertServiceProcessing(_output);
             Assert.That(_output.GetHandlerInfos(false), Has.Count.EqualTo(5));
-            Assert.That(_output.GetHandlerInfos(true), Has.Count.EqualTo(1));
+            var activeHandlers = _output.GetHandlerInfos(true);
+            Assert.That(activeHandlers, Has.Count.EqualTo(1));
+            Assert.That(activeHandlers, Does.Contain(_infoA));
+            Assert.That(_handlerA.Started, Is.True);
+            Assert.That(_handlerB.Started, Is.False);
         }
 
         if (restartNotStart)
@@ -135,11 +159,22 @@ public class OutputManagerServiceStartupTests : OutputManagerServiceTestBase<Out
         {
             AssertServiceProcessing(_output);
             Assert.That(_output.GetHandlerInfos(false), Has.Count.EqualTo(5));
-            Assert.That(_output.GetHandlerInfos(true), Has.Count.EqualTo(1));
+            var activeHandlers = _output.GetHandlerInfos(true);
+            Assert.That(activeHandlers, Has.Count.EqualTo(1));
+            Assert.That(activeHandlers, Does.Contain(_infoA));
+            Assert.That(_handlerA.Started, Is.True);
+            Assert.That(_handlerB.Started, Is.False);
         }
 
         _output.Stop();
-        AssertServiceStopped(_output);
+        using (Assert.EnterMultipleScope())
+        {
+            AssertServiceStopped(_output);
+            Assert.That(_output.GetHandlerInfos(false), Is.Empty);
+            Assert.That(_output.GetHandlerInfos(true), Is.Empty);
+            Assert.That(_handlerA.Started, Is.False);
+            Assert.That(_handlerB.Started, Is.False);
+        }
 
         if (!doAgain) return;
 
@@ -148,23 +183,30 @@ public class OutputManagerServiceStartupTests : OutputManagerServiceTestBase<Out
         {
             AssertServiceProcessing(_output);
             Assert.That(_output.GetHandlerInfos(false), Has.Count.EqualTo(5));
-            Assert.That(_output.GetHandlerInfos(true), Has.Count.EqualTo(1));
+            var activeHandlers = _output.GetHandlerInfos(true);
+            Assert.That(activeHandlers, Has.Count.EqualTo(1));
+            Assert.That(activeHandlers, Does.Contain(_infoA));
+            Assert.That(_handlerA.Started, Is.True);
+            Assert.That(_handlerB.Started, Is.False);
         }
 
         _output.Stop();
-        AssertServiceStopped(_output);
+        using (Assert.EnterMultipleScope())
+        {
+            AssertServiceStopped(_output);
+            Assert.That(_output.GetHandlerInfos(false), Is.Empty);
+            Assert.That(_output.GetHandlerInfos(true), Is.Empty);
+            Assert.That(_handlerA.Started, Is.False);
+            Assert.That(_handlerB.Started, Is.False);
+        }
     }
 }
 
 public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<OutputManagerServiceFunctionTests>
 {
-    private readonly MockBackToFrontNotifyService _notify = new();
-    private readonly MockTranslatorManager _translator = new();
-    private readonly ConfigModel _config = new();
-
     protected override void OneTimeSetupExtra()
     {
-        SetSharedClasses(_notify, _config, _translator);
+        SetSharedClasses();
         _output.Start();
     }
 
@@ -216,6 +258,8 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
             Assert.That(allHandlers, Has.Count.EqualTo(5));
             Assert.That(preRefreshHandlers, Is.Empty);
             Assert.That(activeHandlers, Has.Count.EqualTo(1));
+            Assert.That(_handlerA.Started, Is.True);
+            Assert.That(_handlerB.Started, Is.False);
         }
 
         using (Assert.EnterMultipleScope())
