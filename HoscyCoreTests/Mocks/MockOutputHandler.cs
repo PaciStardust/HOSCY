@@ -1,15 +1,11 @@
-using HoscyCore.Services.DependencyCore;
 using HoscyCore.Services.Output.Core;
 
 namespace HoscyCoreTests.Mocks;
 
-public abstract class MockOutputHandler : MockStartStopServiceBase, IOutputHandler
+public abstract class MockOutputHandler : MockStartStopSubmoduleBase, IOutputHandler
 {
     public required string Name { get; set; }
     public required OutputsAsMediaFlags OutputTypeFlags { get; set; }
-
-    public event EventHandler<Exception> OnRuntimeError = delegate {};
-    public event EventHandler OnSubmoduleStopped = delegate {};
 
     public int ClearCount { get; private set; } = 0; 
     public void Clear()
@@ -39,43 +35,13 @@ public abstract class MockOutputHandler : MockStartStopServiceBase, IOutputHandl
         ReceivedIndicatorStates.Add(isProcessing);
     }
 
-    public void ResetStats()
+    public override void ResetStats()
     {
-        _fault = null;
+        base.ResetStats();
         ClearCount = 0;
         ReceivedMessages.Clear();
         ReceivedNotifications.Clear();
         ReceivedIndicatorStates.Clear();
-    }
-
-    public ServiceStatus? OverrideRunningStatus { get; set; } = null;
-    public override ServiceStatus GetCurrentStatus()
-    {
-        if (Started)
-        {
-            return OverrideRunningStatus ?? ServiceStatus.Processing;
-        }
-        return ServiceStatus.Stopped;
-    }
-
-    public override void Stop()
-    {
-        base.Stop();
-        OnSubmoduleStopped.Invoke(this, EventArgs.Empty);
-    }
-
-    private Exception? _fault = null;
-    public override Exception? GetFaultIfExists()
-    {
-        return _fault;
-    }
-    public void InduceError(Exception? ex)
-    {
-        _fault = ex;
-        if (ex is not null)
-        {
-            OnRuntimeError.Invoke(this, ex);
-        }
     }
 }
 
