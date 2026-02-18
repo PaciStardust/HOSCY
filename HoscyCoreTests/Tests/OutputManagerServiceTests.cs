@@ -1,5 +1,5 @@
 using HoscyCore.Configuration.Modern;
-using HoscyCore.Services.Dependency;
+using HoscyCore.Services.Core;
 using HoscyCore.Services.Output.Core;
 using HoscyCore.Services.Translation.Core;
 using HoscyCoreTests.Mocks;
@@ -82,24 +82,24 @@ public abstract class OutputManagerServiceTestBase<T> : TestBase<T>
 
         _infoA = new()
         {
-            HandlerType = typeof(MockOutputHandlerA),
+            ModuleType = typeof(MockOutputHandlerA),
             Enabled = true,
         };
         _infoB = new()
         {
-            HandlerType = typeof(MockOutputHandlerB),
+            ModuleType = typeof(MockOutputHandlerB),
         };
         _infoC = new()
         {
-            HandlerType = typeof(MockOutputHandlerC),
+            ModuleType = typeof(MockOutputHandlerC),
         };
         _infoD = new()
         {
-            HandlerType = typeof(MockOutputHandlerD),
+            ModuleType = typeof(MockOutputHandlerD),
         };
         _infoE = new()
         {
-            HandlerType = typeof(MockOutputHandlerStartInfo),
+            ModuleType = typeof(MockOutputHandlerStartInfo),
         };
         _loadHandlerInfos = new(() => [ _infoA, _infoB, _infoC, _infoD, _infoE ]);
 
@@ -317,7 +317,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         Assert.That(_output.GetHandlerInfos(true), Is.Empty);
 
         _translator.ReceivedInput.Clear();
-        _translator.CurrentProviderStatus = ServiceStatus.Processing;
+        _translator.CurrentModuleStatus = ServiceStatus.Processing;
         _notify.Notifications.Clear();
 
         _preprocessorEarlyFull.ReceivedInput.Clear();
@@ -1142,7 +1142,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         _config.Translation_SendUntranslatedIfUnavailable = false;
         _translator.TranslateOutput = "Output";
         _translator.TranslateResult = TranslationResult.Succeeded;
-        _translator.CurrentProviderStatus = ServiceStatus.Stopped;
+        _translator.CurrentModuleStatus = ServiceStatus.Stopped;
 
         _infoB.Enabled = true;
         _infoC.Enabled = true;

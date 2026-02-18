@@ -4,7 +4,7 @@ namespace HoscyCoreTests.Mocks;
 
 public class MockOutputHandlerStartInfo : IOutputHandlerStartInfo
 {
-    public required Type HandlerType { get; set; }
+    public required Type ModuleType { get; set; }
     
     public bool Enabled { get; set; } = false;
 

@@ -1,5 +1,5 @@
 using HoscyCore.Configuration.Modern;
-using HoscyCore.Services.Dependency;
+using HoscyCore.Services.Core;
 using HoscyCore.Services.Translation.Core;
 using HoscyCoreTests.Mocks;
 using HoscyCoreTests.Utils;

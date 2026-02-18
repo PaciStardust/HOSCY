@@ -232,7 +232,7 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
         var info = new VrcTextboxOutputHandlerStartInfo(_config);
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(info.HandlerType, Is.EqualTo(typeof(VrcTextboxOutputHandler)));
+            Assert.That(info.ModuleType, Is.EqualTo(typeof(VrcTextboxOutputHandler)));
             Assert.That(info.ShouldBeEnabled(), Is.True);
         }
 
