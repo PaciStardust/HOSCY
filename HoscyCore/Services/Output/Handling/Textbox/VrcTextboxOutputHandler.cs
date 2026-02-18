@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using HoscyCore.Configuration.Modern;
+using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Osc.SendReceive;
 using HoscyCore.Services.Output.Core;
@@ -13,7 +14,7 @@ public class VrcTextboxOutputHandlerStartInfo(ConfigModel config) : IOutputHandl
 {
     private readonly ConfigModel _config = config;
 
-    public Type HandlerType 
+    public Type ModuleType 
         => typeof(VrcTextboxOutputHandler);
 
     public bool ShouldBeEnabled()

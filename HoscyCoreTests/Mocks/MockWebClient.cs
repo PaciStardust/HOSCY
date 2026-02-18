@@ -1,4 +1,3 @@
-using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Network;
 
 namespace HoscyCoreTests.Mocks;

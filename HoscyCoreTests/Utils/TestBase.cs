@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using HoscyCore.Services.Dependency;
+using HoscyCore.Services.Core;
 using Serilog;
 
 namespace HoscyCoreTests.Utils;

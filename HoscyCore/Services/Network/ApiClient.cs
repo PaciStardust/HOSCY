@@ -1,5 +1,6 @@
 using System.Text;
 using HoscyCore.Configuration.Modern;
+using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Utility;
 using Serilog;
