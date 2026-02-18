@@ -1,6 +1,7 @@
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Core;
 using HoscyCore.Services.Interfacing;
+using HoscyCore.Services.Output.Core;
 using Serilog;
 
 namespace HoscyCore.Services.Recognition.Core;
@@ -11,7 +12,8 @@ public class RecognitionManagerService
     ILogger logger,
     IContainerBulkLoader<IRecognitionModuleStartInfo> infoLoader,
     IContainerBulkLoader<IRecognitionModule> moduleLoader,
-    ConfigModel config
+    ConfigModel config,
+    OutputManagerService output
 ) 
     : StartStopModuleControllerBase<IRecognitionModuleStartInfo, IRecognitionModule>
         (notify, logger, infoLoader, moduleLoader),
@@ -19,6 +21,7 @@ public class RecognitionManagerService
 {
     #region Injected
     private readonly ConfigModel _config = config;
+    private readonly OutputManagerService _output = output;
     #endregion
 
     #region Module => Start / Stop
@@ -26,7 +29,17 @@ public class RecognitionManagerService
     {
         module.OnSpeechActivity += HandleOnSpeechActivity;
         module.OnSpeechRecognized += HandleOnSpeechRecognized;
-        InvokeModuleStatusChanged(false, true);
+
+        bool listening = false;
+        if (_config.Recognition_Mute_StartUnmuted)
+        {
+            listening = SetListeningInternal(module, true);
+            if (!listening)
+            {
+                _logger.Warning("Failed to correctly set listening status on startup");
+            }
+        }
+        InvokeModuleStatusChanged(listening, true);   
     }
 
     protected override void OnModulePreStop(IRecognitionModule module)
@@ -55,33 +68,38 @@ public class RecognitionManagerService
 
     public bool SetListening(bool state)
     {
-        _logger.Debug("Setting listening indicator to {state}", state);
+        return SetListeningInternal(_currentModule, state);
+    }
+    public bool SetListeningInternal(IRecognitionModule? module, bool state)
+    {
+        _logger.Debug("Setting listening to {state}", state);
 
         bool newState;
-        if (_currentModule is null)
+        if (module is null)
         {
-            _logger.Warning("Unable to set listening indicator, no module is loaded");
+            _logger.Warning("Unable to set listening, provided module is null");
             newState = false;
         }
         else
         {
-            newState = _currentModule.SetListening(state);
+            newState = module.SetListening(state);
         }
 
-        _logger.Debug("Listening indicator was requested to be set to {state} and is now {actualState}", state, newState);
+        _logger.Debug("Listening was requested to be set to {state} and is now {actualState}", state, newState);
         return newState;
     }
     #endregion
 
     #region Functionality
-    private void HandleOnSpeechRecognized(string obj)
+    private void HandleOnSpeechRecognized(string rawOutput)
     {
         throw new NotImplementedException();
     }
 
-    private void HandleOnSpeechActivity(bool obj)
+    private void HandleOnSpeechActivity(bool state)
     {
-        throw new NotImplementedException();
+        _logger.Verbose("Forwarding speech activity state {state} to output", state);
+        _output.SetProcessingIndicator(state);
     }
     #endregion
 }
