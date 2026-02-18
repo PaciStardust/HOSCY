@@ -14,11 +14,11 @@ public class TextboxCommandModule(IOutputManagerService output, VrcTextboxOutput
     private readonly ReflectPropEditCommandModule _reflectCm = reflectCm;
 
     public string ModuleName 
-        => "Textbox";
+        => "Output: Textbox";
     public string ModuleDescription 
         => "Configure the Vrc Textbox output module";
     public string[] ModuleCommands 
-        => ["textbox"];
+        => ["out-textbox"];
 
     [SubCommandModule(["status"], "Get output module status")]
     public CommandResult CmdStatus()
