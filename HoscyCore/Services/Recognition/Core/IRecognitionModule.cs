@@ -6,8 +6,8 @@ public interface IRecognitionModuleStartInfo : ISoloModuleStartInfo;
 
 public interface IRecognitionModule : IStartStopModule
 {
-    public Action<string> OnSpeechRecognized();
-    public Action<bool> OnSpeechActivity();
+    public event Action<string> OnSpeechRecognized;
+    public event Action<bool> OnSpeechActivity;
 
     public bool IsListening { get; }
     public bool SetListening(bool state);
