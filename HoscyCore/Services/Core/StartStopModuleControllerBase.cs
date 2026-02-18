@@ -182,7 +182,9 @@ public abstract class StartStopModuleControllerBase<TModuleStartInfo, TModule>
 
             moduleMatch.OnRuntimeError += HandleOnRuntimeError;
             moduleMatch.OnModuleStopped += HandleOnModuleStopped;
+            OnModulePreStart(moduleMatch);
             moduleMatch.Start();
+            OnModulePostStart(moduleMatch);
             _currentModule = moduleMatch;
             _logger.Information("Started module with name \"{moduleName}\" and type \"{moduleType}\"", startInfo.Name, startInfo.ModuleType.Name);
         }
@@ -205,8 +207,11 @@ public abstract class StartStopModuleControllerBase<TModuleStartInfo, TModule>
                 _logger.Information("Skipping stopping of current module, no module running");
                 return true;
             }
+
             _currentModule.OnModuleStopped -= HandleOnModuleStopped;
+            OnModulePreStop(_currentModule);
             _currentModule.Stop();
+
             CleanupAfterModuleShutdown();
             _logger.Information("Stopped current module");
         }
@@ -257,6 +262,7 @@ public abstract class StartStopModuleControllerBase<TModuleStartInfo, TModule>
         {
             _currentModule.OnRuntimeError -= HandleOnRuntimeError;
             _currentModule.OnModuleStopped -= HandleOnModuleStopped;
+            OnModulePostStop(_currentModule);
             _currentModule = null;
         }
     }
@@ -311,5 +317,10 @@ public abstract class StartStopModuleControllerBase<TModuleStartInfo, TModule>
 
     #region Abstracts
     protected abstract string GetSelectedModuleName();
+
+    protected virtual void OnModulePreStart(TModule module) { }
+    protected virtual void OnModulePostStart(TModule module) { }
+    protected virtual void OnModulePreStop(TModule module) { }
+    protected virtual void OnModulePostStop(TModule module) { }
     #endregion
 }
