@@ -1,7 +1,7 @@
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Network;
 
-namespace HoscyCoreTests.Mocks;
+namespace HoscyCoreTests.Mocks.Impl;
 
 public class MockApiClient : IApiClient
 {

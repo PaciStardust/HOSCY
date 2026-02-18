@@ -1,7 +1,8 @@
 using HoscyCore.Services.Core;
 using HoscyCore.Services.Output.Core;
+using HoscyCoreTests.Mocks.Base;
 
-namespace HoscyCoreTests.Mocks;
+namespace HoscyCoreTests.Mocks.Impl;
 
 public class MockOutputManagerService : MockStartStopServiceBase, IOutputManagerService
 {

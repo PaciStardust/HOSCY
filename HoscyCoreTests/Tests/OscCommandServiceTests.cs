@@ -2,7 +2,7 @@ using System.Text;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Osc.Command;
 using HoscyCore.Services.Osc.Query;
-using HoscyCoreTests.Mocks;
+using HoscyCoreTests.Mocks.Impl;
 using HoscyCoreTests.Utils;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure

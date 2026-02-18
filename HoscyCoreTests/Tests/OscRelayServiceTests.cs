@@ -1,6 +1,6 @@
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Osc.Relay;
-using HoscyCoreTests.Mocks;
+using HoscyCoreTests.Mocks.Impl;
 using HoscyCoreTests.Utils;
 using LucHeart.CoreOSC;
 

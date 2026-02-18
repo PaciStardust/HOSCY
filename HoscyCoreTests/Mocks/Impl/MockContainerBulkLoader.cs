@@ -1,7 +1,6 @@
 using HoscyCore.Services.Core;
-using HoscyCore.Services.Dependency;
 
-namespace HoscyCoreTests.Mocks;
+namespace HoscyCoreTests.Mocks.Impl;
 
 public class MockContainerBulkLoader<T>(Func<IEnumerable<T>> instanceGenerator) : IContainerBulkLoader<T> where T : class, IService
 {

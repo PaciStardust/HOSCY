@@ -1,6 +1,7 @@
 using HoscyCore.Services.Osc.Command;
+using HoscyCoreTests.Mocks.Base;
 
-namespace HoscyCoreTests.Mocks;
+namespace HoscyCoreTests.Mocks.Impl;
 
 public class MockOscCommandService : MockStartStopServiceBase, IOscCommandService
 {

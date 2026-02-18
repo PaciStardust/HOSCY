@@ -1,6 +1,6 @@
 using HoscyCore.Services.Core;
 
-namespace HoscyCoreTests.Mocks;
+namespace HoscyCoreTests.Mocks.Base;
 
 public abstract class MockStartStopModuleBase : MockStartStopServiceBase, IStartStopModule
 {    

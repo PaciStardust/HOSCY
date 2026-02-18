@@ -1,6 +1,7 @@
 using HoscyCore.Services.Output.Core;
+using HoscyCoreTests.Mocks.Base;
 
-namespace HoscyCoreTests.Mocks;
+namespace HoscyCoreTests.Mocks.Impl;
 
 public abstract class MockOutputHandler : MockStartStopModuleBase, IOutputHandler
 {

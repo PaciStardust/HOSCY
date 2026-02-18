@@ -1,6 +1,9 @@
 using HoscyCore.Services.Translation.Core;
+using HoscyCoreTests.Mocks.Base;
 
-namespace HoscyCoreTests.Mocks;
+namespace HoscyCoreTests.Mocks.Impl;
+
+public class MockTranslationModuleStartInfo : MockSoloModuleStartInfoBase, ITranslationModuleStartInfo;
 
 public abstract class MockTranslationModule : MockStartStopModuleBase, ITranslationModule
 {

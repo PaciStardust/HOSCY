@@ -1,5 +1,6 @@
 using HoscyCore.Services.Osc.MessageHandling;
 using HoscyCoreTests.Mocks;
+using HoscyCoreTests.Mocks.Impl;
 using HoscyCoreTests.Utils;
 using LucHeart.CoreOSC;
 

@@ -1,6 +1,6 @@
 using HoscyCore.Services.Output.Core;
 
-namespace HoscyCoreTests.Mocks;
+namespace HoscyCoreTests.Mocks.Impl;
 
 public class MockOutputHandlerStartInfo : IOutputHandlerStartInfo
 {

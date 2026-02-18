@@ -1,6 +1,7 @@
 using HoscyCore.Services.Misc;
+using HoscyCoreTests.Mocks.Base;
 
-namespace HoscyCoreTests.Mocks;
+namespace HoscyCoreTests.Mocks.Impl;
 
 public class MockAfkService : MockStartStopServiceBase, IAfkService
 {

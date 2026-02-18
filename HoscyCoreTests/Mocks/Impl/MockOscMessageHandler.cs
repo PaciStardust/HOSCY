@@ -1,7 +1,7 @@
 using HoscyCore.Services.Osc.MessageHandling;
 using LucHeart.CoreOSC;
 
-namespace HoscyCoreTests.Mocks;
+namespace HoscyCoreTests.Mocks.Impl;
 
 public abstract class MockOscMessageHandler : IOscMessageHandler
 {

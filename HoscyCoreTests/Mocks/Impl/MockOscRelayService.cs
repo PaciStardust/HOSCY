@@ -1,7 +1,8 @@
 using HoscyCore.Services.Osc.Relay;
+using HoscyCoreTests.Mocks.Base;
 using LucHeart.CoreOSC;
 
-namespace HoscyCoreTests.Mocks;
+namespace HoscyCoreTests.Mocks.Impl;
 
 public class MockOscRelayService : MockStartStopServiceBase, IOscRelayService
 {

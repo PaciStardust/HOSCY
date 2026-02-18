@@ -1,9 +1,8 @@
 using HoscyCore.Services.Core;
-using HoscyCore.Services.Dependency;
 
-namespace HoscyCoreTests.Mocks;
+namespace HoscyCoreTests.Mocks.Base;
 
-public abstract class MockStartStopServiceBase : IStartStopService //todo: [REFACTOR++] Should this be done differently?
+public abstract class MockStartStopServiceBase : IStartStopService
 {
     public bool Started { get; protected set; } = false;
 

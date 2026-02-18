@@ -1,7 +1,7 @@
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Output.Core;
 using HoscyCore.Services.Output.Handling.Textbox;
-using HoscyCoreTests.Mocks;
+using HoscyCoreTests.Mocks.Impl;
 using HoscyCoreTests.Utils;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure

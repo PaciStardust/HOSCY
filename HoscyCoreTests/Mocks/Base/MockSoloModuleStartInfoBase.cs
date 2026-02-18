@@ -1,8 +1,8 @@
-using HoscyCore.Services.Translation.Core;
+using HoscyCore.Services.Core;
 
-namespace HoscyCoreTests.Mocks;
+namespace HoscyCoreTests.Mocks.Base;
 
-public class MockTranslationModuleStartInfo : ITranslationModuleStartInfo
+public abstract class MockSoloModuleStartInfoBase : ISoloModuleStartInfo
 {
     public required string Name { get; init; }
 

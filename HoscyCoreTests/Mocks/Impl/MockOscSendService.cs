@@ -1,7 +1,7 @@
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Osc.SendReceive;
 
-namespace HoscyCoreTests.Mocks;
+namespace HoscyCoreTests.Mocks.Impl;
 
 public class MockOscSendService(ConfigModel config) : IOscSendService
 {

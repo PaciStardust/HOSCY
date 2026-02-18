@@ -1,6 +1,6 @@
 using HoscyCore.Services.Interfacing;
 
-namespace HoscyCoreTests.Mocks;
+namespace HoscyCoreTests.Mocks.Impl;
 
 public class MockBackToFrontNotifyService : IBackToFrontNotifyService
 {
