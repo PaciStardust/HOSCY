@@ -8,4 +8,6 @@ public interface IRecognitionManagerService : IStartStopModuleController<IRecogn
 
     public bool IsListening { get; }
     public bool SetListening(bool state);
+
+    public void UpdateSettings();
 }

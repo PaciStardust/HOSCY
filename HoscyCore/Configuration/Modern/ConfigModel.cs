@@ -803,32 +803,62 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Allow sending recognition result over text
     /// </summary>
-    public bool Recognition_Send_OverText //todo: [IMPL] To be implemented
+    public bool Recognition_Send_ViaText //todo: [IMPL] To be implemented
     {
-        get => _recognition_Send_OverText;
-        set => SetProperty(ref _recognition_Send_OverText, value);
+        get => _recognition_Send_ViaText;
+        set => SetProperty(ref _recognition_Send_ViaText, value);
     }
-    private bool _recognition_Send_OverText = true;
+    private bool _recognition_Send_ViaText = true;
 
     /// <summary>
     /// Allow sending recognition result over audio
     /// </summary>
-    public bool Recognition_Send_OverAudio //todo: [IMPL] To be implemented
+    public bool Recognition_Send_ViaAudio //todo: [IMPL] To be implemented
     {
-        get => _recognition_Send_OverAudio;
-        set => SetProperty(ref _recognition_Send_OverAudio, value);
+        get => _recognition_Send_ViaAudio;
+        set => SetProperty(ref _recognition_Send_ViaAudio, value);
     }
-    private bool _recognition_Send_OverAudio = false;
+    private bool _recognition_Send_ViaAudio = false;
 
     /// <summary>
     /// Allow sending recognition result over other
     /// </summary>
-    public bool Recognition_Send_OverOther //todo: [IMPL] To be implemented
+    public bool Recognition_Send_ViaOther //todo: [IMPL] To be implemented
     {
-        get => _recognition_Send_OverOther;
-        set => SetProperty(ref _recognition_Send_OverOther, value);
+        get => _recognition_Send_ViaOther;
+        set => SetProperty(ref _recognition_Send_ViaOther, value);
     }
-    private bool _recognition_Send_OverOther = false;
+    private bool _recognition_Send_ViaOther = false;
+
+    /// <summary>
+    /// Allow translation of recognition result
+    /// </summary>
+    public bool Recognition_Send_DoTranslate //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Send_DoTranslate;
+        set => SetProperty(ref _recognition_Send_DoTranslate, value);
+    }
+    private bool _recognition_Send_DoTranslate = false;
+
+    /// <summary>
+    /// Allow partial preprocessing of recognition result
+    /// </summary>
+    public bool Recognition_Send_DoPreprocessPartial //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Send_DoPreprocessPartial;
+        set => SetProperty(ref _recognition_Send_DoPreprocessPartial, value);
+    }
+    private bool _recognition_Send_DoPreprocessPartial = true;
+
+    /// <summary>
+    /// Allow full preprocessing of recognition result
+    /// </summary>
+    public bool Recognition_Send_DoPreprocessFull //todo: [IMPL] To be implemented
+    {
+        get => _recognition_Send_DoPreprocessFull;
+        set => SetProperty(ref _recognition_Send_DoPreprocessFull, value);
+    }
+    private bool _recognition_Send_DoPreprocessFull = true;
 
     /// <summary>
     /// Should recognition be unmuted when started

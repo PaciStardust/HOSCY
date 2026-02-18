@@ -261,8 +261,8 @@ public static class LegacyConfigModelLoader
             Afk_StopText = oldConfig.Osc.AfkEndText,
             Afk_StatusText = oldConfig.Osc.AfkStatusText,
 
-            Recognition_Send_OverText = oldConfig.Speech.UseTextbox,
-            Recognition_Send_OverAudio = oldConfig.Speech.UseTts,
+            Recognition_Send_ViaText = oldConfig.Speech.UseTextbox,
+            Recognition_Send_ViaAudio = oldConfig.Speech.UseTts,
 
             Recognition_Mute_StartUnmuted = oldConfig.Speech.StartUnmuted,
             Recognition_Mute_PlaySound = oldConfig.Speech.PlayMuteSound,
