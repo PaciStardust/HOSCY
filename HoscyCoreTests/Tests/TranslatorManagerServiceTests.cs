@@ -59,7 +59,7 @@ public abstract class TranslatorManagerServiceTestBase<T> : TestBase<T>
 
     protected void SetModule(string name)
     {
-        _config.Translation_CurrentModule = name;
+        _config.Translation_SelectedModuleName = name;
     }
     protected void SetAndRefreshModuleSelection(string name)
     {

@@ -26,7 +26,7 @@ public class TranslationManagerService
 
     #region Module => Functionality
     protected override string GetSelectedModuleName()
-        => _config.Translation_CurrentModule;
+        => _config.Translation_SelectedModuleName;
 
     private readonly char[] _filterChars = ['\n', '\t', '\r', ' '];
 

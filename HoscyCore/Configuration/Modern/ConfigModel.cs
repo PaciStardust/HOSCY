@@ -1155,12 +1155,12 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Current module selected for translation
     /// </summary>
-    public string Translation_CurrentModule //todo: [FEAT] Implement in CLI
+    public string Translation_SelectedModuleName //todo: [FEAT] Implement in CLI
     {
-        get => _translation_CurrentModule;
-        set => SetProperty(ref _translation_CurrentModule, value);
+        get => _translation_SelectedModuleName;
+        set => SetProperty(ref _translation_SelectedModuleName, value);
     }
-    private string _translation_CurrentModule = string.Empty;
+    private string _translation_SelectedModuleName = string.Empty;
 
     /// <summary>
     /// Skip longer messages for API Translation, will be cropped otherwise
