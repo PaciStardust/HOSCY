@@ -18,17 +18,17 @@ Hoscy-Avalonia is an attempt of mine to completely rewrite HOSCY from the ground
   - ✅ Recreation of original Hoscy components
   - ❌ Recreation of UI
 - ❌ **Features**
-  - 🆗 OSC
-    - 🆗 Sending
-    - 🆗 Receiving
-    - 🆗 Routing
-    - 🆗 OscQuery
+  - ✅ OSC
+    - ✅ Sending
+    - ✅ Receiving
+    - ✅ Routing
+    - ✅ OscQuery
   - ❌ Hotkeys
   - ❌ Media
     - ❌ Control
     - ❌ Display
-  - ❌ Translation
-  - ❌ Textbox Control
+  - ✅ Translation
+  - ✅ Textbox Control
   - ❌ STT
     - ❌ Voice Commands
     - ❌ API Recognition
