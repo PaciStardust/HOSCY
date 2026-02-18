@@ -22,7 +22,7 @@ public abstract class TranslatorManagerServiceTestBase<T> : TestBase<T>
     protected MockTranslationModuleStartInfo _infoB = null!;
     protected MockTranslationModuleStartInfo _infoC = null!;
 
-    protected TranslatorManagerService _translator = null!;
+    protected TranslationManagerService _translator = null!;
 
     protected void SetupSharedClasses()
     {

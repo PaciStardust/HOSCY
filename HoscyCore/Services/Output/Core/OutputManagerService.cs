@@ -19,7 +19,7 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
     IContainerBulkLoader<IOutputHandlerStartInfo> loadHandlerStartInfo,
     IContainerBulkLoader<IOutputHandler> loadOutputHandler,
 
-    ITranslatorManagerService translator
+    ITranslationManagerService translator
 )
 : StartStopServiceBase, IOutputManagerService
 {
@@ -32,7 +32,7 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
     private readonly IContainerBulkLoader<IOutputHandlerStartInfo> _loadHandlerStartInfo = loadHandlerStartInfo;
     private readonly IContainerBulkLoader<IOutputHandler> _loadOutputHandler = loadOutputHandler;
 
-    private readonly ITranslatorManagerService _translator = translator;
+    private readonly ITranslationManagerService _translator = translator;
     #endregion
 
     #region Operation Variables

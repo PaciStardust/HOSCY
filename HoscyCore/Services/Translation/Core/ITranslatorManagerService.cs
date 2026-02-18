@@ -1,6 +1,6 @@
 namespace HoscyCore.Services.Translation.Core;
 
-public interface ITranslatorManagerService
+public interface ITranslationManagerService
 {
     public TranslationResult TryTranslate(string input, out string? output);
 }

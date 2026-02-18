@@ -6,8 +6,8 @@ using Serilog;
 
 namespace HoscyCore.Services.Translation.Core;
 
-[PrototypeLoadIntoDiContainer(typeof(ITranslatorManagerService))]
-public class TranslatorManagerService
+[PrototypeLoadIntoDiContainer(typeof(ITranslationManagerService))]
+public class TranslationManagerService
 (
     ConfigModel config,
     IBackToFrontNotifyService notify,
@@ -17,7 +17,7 @@ public class TranslatorManagerService
 )
     : StartStopModuleControllerBase<ITranslationModuleStartInfo, ITranslationModule>
         (notify, logger, infoLoader, moduleLoader),
-    ITranslatorManagerService
+    ITranslationManagerService
 {
 
     #region Injected

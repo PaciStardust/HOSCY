@@ -12,7 +12,7 @@ namespace HoscyCoreTests.Tests.OutputManagerServiceTests;
 public abstract class OutputManagerServiceTestBase<T> : TestBase<T>
 {
     protected MockBackToFrontNotifyService _notify = null!;
-    protected MockTranslatorManager _translator = null!;
+    protected MockTranslationManager _translator = null!;
     protected ConfigModel _config = null!;
 
     protected MockContainerBulkLoader<IOutputPreprocessor> _loadPreprocessors = null!;
