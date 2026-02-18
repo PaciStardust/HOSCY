@@ -622,7 +622,7 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
         _refreshExceptions.Add(ex);
     }
 
-    public void NotifyIfRefreshExceptions()
+    private void NotifyIfRefreshExceptions()
     {
         if (_refreshExceptions.Count == 0) return;
         
@@ -631,7 +631,7 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
         _notify.SendError("Errors ocurred during refresh", "The following errors occured while refreshing handlers", ex);
     }
 
-    public List<Exception> GetHandlerExceptions()
+    private List<Exception> GetHandlerExceptions()
     {
         var exList = new List<Exception>();
         foreach (var handler in _activeHandlers)
