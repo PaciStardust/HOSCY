@@ -136,9 +136,13 @@ public abstract class SoloModuleManagerBaseV2<TModuleStartInfo, TModule, TLog>
             return;
         }
 
-        var infoMatch = string.IsNullOrWhiteSpace(selectedModuleName)
-            ? null 
-            : SearchInfos(x => x.Name.Equals(selectedModuleName, StringComparison.OrdinalIgnoreCase),
+        if (string.IsNullOrWhiteSpace(selectedModuleName))
+        {
+            _logger.Information("No module is set, not starting");
+            return;
+        }
+
+        var infoMatch = SearchInfos(x => x.Name.Equals(selectedModuleName, StringComparison.OrdinalIgnoreCase),
                 $"Name={selectedModuleName}");
 
         if (infoMatch is null)
