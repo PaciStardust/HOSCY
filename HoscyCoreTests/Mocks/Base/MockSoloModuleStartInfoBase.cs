@@ -4,9 +4,9 @@ namespace HoscyCoreTests.Mocks.Base;
 
 public abstract class MockSoloModuleStartInfoBase : ISoloModuleStartInfo
 {
-    public required string Name { get; init; }
+    public string Name { get; set; } = "Mock";
 
-    public required string Description { get; init; }
+    public string Description { get; set; } = "Mock";
 
-    public required Type ModuleType { get; init; }
+    public Type ModuleType { get; set; } = typeof(MockSoloModuleStartInfoBase);
 }
