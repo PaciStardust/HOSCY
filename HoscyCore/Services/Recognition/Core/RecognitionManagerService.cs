@@ -161,5 +161,10 @@ public class RecognitionManagerService
         _logger.Verbose("Forwarding speech activity state {state} to output", state);
         _output.SetProcessingIndicator(state);
     }
+
+    protected override bool ShouldEnableOnStart()
+    {
+        return true; //todo: [IMPL] Add test and config option
+    }
     #endregion
 }

@@ -2,7 +2,7 @@ using HoscyCore.Services.Core;
 
 namespace HoscyCore.Services.Recognition.Core;
 
-public interface IRecognitionManagerService : ISoloModuleManager<IRecognitionModuleStartInfo, IRecognitionModule>
+public interface IRecognitionManagerService : ISoloModuleManager<IRecognitionModuleStartInfo>
 {
     public event EventHandler<RecognitionStatusChangedEventArgs> OnModuleStatusChanged;
 

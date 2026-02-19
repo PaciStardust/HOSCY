@@ -1,10 +1,9 @@
-using HoscyCore.Services.Core;
 using HoscyCore.Services.Translation.Core;
 using HoscyCoreTests.Mocks.Base;
 
 namespace HoscyCoreTests.Mocks.Impl;
 
-public class MockTranslationManager : MockSoloModuleManagerBase<ITranslationModuleStartInfo> ,ITranslationManagerService
+public class MockTranslationManager : MockSoloModuleManagerBase<ITranslationModuleStartInfo>, ITranslationManagerService
 {
     public List<string> ReceivedInput { get; private init; } = [];
 

@@ -11,7 +11,7 @@ public abstract class SoloModuleManagerBase<TModuleStartInfo, TModule>
     IContainerBulkLoader<TModuleStartInfo> infoLoader,
     IContainerBulkLoader<TModule> moduleLoader
 )
-: StartStopServiceBase, ISoloModuleManager<TModuleStartInfo, TModule>
+: StartStopServiceBase, ISoloModuleManager<TModuleStartInfo>
     where TModuleStartInfo : class, ISoloModuleStartInfo
     where TModule : class, IStartStopModule
 {
@@ -27,6 +27,16 @@ public abstract class SoloModuleManagerBase<TModuleStartInfo, TModule>
     protected TModule? _currentModule;
     private readonly List<TModuleStartInfo> _moduleInfos = [];
     private readonly List<Exception> _refreshExceptions = [];
+    #endregion
+
+    #region Enabling
+    private bool _canLoadModels = false;
+    public void SetModelLoading(bool state)
+    {
+        var newState = IsStarted() && state;
+        _logger.Debug("Setting model loading to {newState}", newState);
+        _canLoadModels = newState;
+    }
     #endregion
 
     #region Info
@@ -95,6 +105,7 @@ public abstract class SoloModuleManagerBase<TModuleStartInfo, TModule>
             return;
         }
 
+        SetModelLoading(ShouldEnableOnStart());
         RefreshModuleSelection();
         _logger.Debug("Started up Service with {moduleCount} ModuleStartInfos and module refresh", _moduleInfos.Count);
     }
@@ -104,6 +115,7 @@ public abstract class SoloModuleManagerBase<TModuleStartInfo, TModule>
         _logger.Debug("Stopping service, shutting down Module");
         StopCurrentModule();
         _moduleInfos.Clear();
+        SetModelLoading(false);
         _logger.Debug(messageTemplate: "Stopped service, shut down Module");
     }
 
@@ -150,7 +162,7 @@ public abstract class SoloModuleManagerBase<TModuleStartInfo, TModule>
             }
         }
 
-        if (infoMatch is not null)
+        if (_canLoadModels && infoMatch is not null)
         {
             _logger.Debug("Starting new module with name {moduleName} and type {moduleType}",
                 infoMatch.Name, infoMatch.ModuleType.Name);
@@ -316,6 +328,7 @@ public abstract class SoloModuleManagerBase<TModuleStartInfo, TModule>
 
     #region Abstracts
     protected abstract string GetSelectedModuleName();
+    protected abstract bool ShouldEnableOnStart(); //todo: [REFACTOR] Honestly this should likely just become manual start stop
 
     protected virtual void OnModulePreStart(TModule module) { }
     protected virtual void OnModulePostStart(TModule module) { }

@@ -100,5 +100,10 @@ public class TranslationManagerService
     {
         _logger.Warning("Translation of message with contents \"{input}\" failed", inputForLog);
     }
+
+    protected override bool ShouldEnableOnStart()
+    {
+        return true;
+    }
     #endregion
 }
