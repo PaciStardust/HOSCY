@@ -93,7 +93,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// ID of microphone
     /// </summary>
-    public string Audio_CurrentMicrophoneId //todo: [IMPL] To be implemented
+    public string Audio_CurrentMicrophoneId
     {
         get => _audio_CurrentMicrophoneId;
         set => SetProperty(ref _audio_CurrentMicrophoneId, value);
@@ -101,19 +101,19 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private string _audio_CurrentMicrophoneId = string.Empty;
 
     /// <summary>
-    /// ID of speaker for processed audio
+    /// ID of speaker for output audio
     /// </summary>
-    public string Audio_CurrentSpeakerProcessedId //todo: [IMPL] To be implemented
+    public string Audio_CurrentSpeakerOutputId
     {
-        get => _audio_CurrentSpeakerProcessedId;
-        set => SetProperty(ref _audio_CurrentSpeakerProcessedId, value);
+        get => _audio_CurrentSpeakerOutputId;
+        set => SetProperty(ref _audio_CurrentSpeakerOutputId, value);
     }
-    private string _audio_CurrentSpeakerProcessedId = string.Empty;
+    private string _audio_CurrentSpeakerOutputId = string.Empty;
 
     /// <summary>
     /// ID of speaker for system audio
     /// </summary>
-    public string Audio_CurrentSpeakerSystemId //todo: [IMPL] To be implemented, needed?
+    public string Audio_CurrentSpeakerSystemId
     {
         get => _audio_CurrentSpeakerSystemId;
         set => SetProperty(ref _audio_CurrentSpeakerSystemId, value);
