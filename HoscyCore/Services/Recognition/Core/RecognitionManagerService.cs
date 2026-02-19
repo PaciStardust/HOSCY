@@ -17,7 +17,7 @@ public class RecognitionManagerService
     ConfigModel config,
     OutputManagerService output
 ) 
-    : SoloModuleManagerBase<IRecognitionModuleStartInfo, IRecognitionModule>
+    : SoloModuleManagerBaseV2<IRecognitionModuleStartInfo, IRecognitionModule, RecognitionManagerService>
         (notify, logger, infoLoader, moduleLoader),
     IRecognitionManagerService
 {
@@ -161,10 +161,12 @@ public class RecognitionManagerService
         _logger.Verbose("Forwarding speech activity state {state} to output", state);
         _output.SetProcessingIndicator(state);
     }
+    #endregion
 
-    protected override bool ShouldEnableOnStart()
+    #region Overrides
+    protected override bool ShouldStartModelOnStartup()
     {
-        return true; //todo: [IMPL] Add test and config option
+        return _config.Recognition_AutoStart;
     }
     #endregion
 }
