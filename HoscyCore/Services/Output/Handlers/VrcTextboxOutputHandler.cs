@@ -7,7 +7,7 @@ using HoscyCore.Services.Output.Core;
 using HoscyCore.Utility;
 using Serilog;
 
-namespace HoscyCore.Services.Output.Handling.Textbox;
+namespace HoscyCore.Services.Output.Handlers;
 
 [LoadIntoDiContainer(typeof(VrcTextboxOutputHandlerStartInfo))]
 public class VrcTextboxOutputHandlerStartInfo(ConfigModel config) : IOutputHandlerStartInfo

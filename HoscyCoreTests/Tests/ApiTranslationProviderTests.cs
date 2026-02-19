@@ -1,6 +1,6 @@
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Translation.Core;
-using HoscyCore.Services.Translation.Providers;
+using HoscyCore.Services.Translation.Modules;
 using HoscyCoreTests.Mocks.Impl;
 using HoscyCoreTests.Utils;
 

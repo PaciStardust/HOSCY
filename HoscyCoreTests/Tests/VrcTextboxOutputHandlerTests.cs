@@ -1,6 +1,6 @@
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Output.Core;
-using HoscyCore.Services.Output.Handling.Textbox;
+using HoscyCore.Services.Output.Handlers;
 using HoscyCoreTests.Mocks.Impl;
 using HoscyCoreTests.Utils;
 

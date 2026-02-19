@@ -5,7 +5,7 @@ using HoscyCore.Services.Network;
 using HoscyCore.Services.Translation.Core;
 using Serilog;
 
-namespace HoscyCore.Services.Translation.Providers;
+namespace HoscyCore.Services.Translation.Modules;
 
 [LoadIntoDiContainer(typeof(ApiTranslationModuleStartInfo))]
 public class ApiTranslationModuleStartInfo : ITranslationModuleStartInfo
