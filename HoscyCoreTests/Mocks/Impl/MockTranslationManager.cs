@@ -4,35 +4,9 @@ using HoscyCoreTests.Mocks.Base;
 
 namespace HoscyCoreTests.Mocks.Impl;
 
-public class MockTranslationManager : MockStartStopServiceBase, ITranslationManagerService
+public class MockTranslationManager : MockSoloModuleManagerBase<ITranslationModuleStartInfo> ,ITranslationManagerService
 {
     public List<string> ReceivedInput { get; private init; } = [];
-
-    public ServiceStatus CurrentModuleStatus { get; set; } = ServiceStatus.Processing;
-    public ServiceStatus GetCurrentModuleStatus()
-    {
-        return CurrentModuleStatus;
-    }
-
-    public ITranslationModuleStartInfo? GetCurrentModuleInfo()
-    {
-        return null;
-    }
-
-    public IReadOnlyList<ITranslationModuleStartInfo> GetModuleInfos()
-    {
-        return [];
-    }
-
-    public void RefreshModuleSelection()
-    {
-        return;
-    }
-    
-    public bool RestartCurrentModule()
-    {
-        return true;
-    }
 
     public string? TranslateOutput { get; set; } = null;
     public TranslationResult TranslateResult { get; set; } = TranslationResult.Succeeded;

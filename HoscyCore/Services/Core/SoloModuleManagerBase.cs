@@ -1,18 +1,17 @@
-using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Interfacing;
 using Serilog;
 
 namespace HoscyCore.Services.Core;
 
-public abstract class StartStopModuleControllerBase<TModuleStartInfo, TModule>
+public abstract class SoloModuleManagerBase<TModuleStartInfo, TModule>
 (
     IBackToFrontNotifyService notify,
     ILogger logger,
     IContainerBulkLoader<TModuleStartInfo> infoLoader,
     IContainerBulkLoader<TModule> moduleLoader
 )
-: StartStopServiceBase, IStartStopModuleController<TModuleStartInfo, TModule>
+: StartStopServiceBase, ISoloModuleManager<TModuleStartInfo, TModule>
     where TModuleStartInfo : class, ISoloModuleStartInfo
     where TModule : class, IStartStopModule
 {

@@ -8,7 +8,7 @@ using HoscyCoreTests.Utils;
 namespace HoscyCoreTests.Tests.TranslatorManagerServiceTests;
 #pragma warning restore IDE0130 // Namespace does not match folder structure
 
-public abstract class TranslatorManagerServiceTestBase<T> : StartStopModuleControllerTestBase
+public abstract class TranslatorManagerServiceTestBase<T> : SoloModuleManagerTestBase
 <
     T,
     ITranslationModuleStartInfo,
@@ -42,7 +42,7 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
     protected override void OneTimeSetupExtra()
     {
         SetupSharedClasses();
-        _controller.Start();
+        _manager.Start();
     }
 
     protected override void SetupExtra()
@@ -64,9 +64,9 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
     {
         _config.Translation_SendUntranslatedIfFailed = untranslatedIfFailed;
 
-        Assert.That(_controller.GetCurrentModuleInfo(), Is.Null);
+        Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
         
-        var result = _controller.TryTranslate("Test", out var output);
+        var result = _manager.TryTranslate("Test", out var output);
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_moduleA.ReceivedInput, Is.Empty);
@@ -77,7 +77,7 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
         SetAndRefreshModuleSelection(_infoA.Name);
         _moduleA.OverrideRunningStatus = ServiceStatus.Stopped;
 
-        result = _controller.TryTranslate("Test", out output);
+        result = _manager.TryTranslate("Test", out output);
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_moduleA.ReceivedInput, Is.Empty);
@@ -88,7 +88,7 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
         _moduleA.OverrideRunningStatus = null;
         _moduleA.ReturnedOutput = "Waa";
 
-        result = _controller.TryTranslate("Test", out output);
+        result = _manager.TryTranslate("Test", out output);
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_moduleA.ReceivedInput, Has.Count.EqualTo(1));
@@ -109,7 +109,7 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
 
         SetAndRefreshModuleSelection(_infoA.Name);
         
-        var result = _controller.TryTranslate("Test", out var output);
+        var result = _manager.TryTranslate("Test", out var output);
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_moduleA.ReceivedInput, Has.Count.EqualTo(1));
@@ -131,7 +131,7 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
 
         SetAndRefreshModuleSelection(_infoA.Name);
 
-        var result = _controller.TryTranslate("0123456789", out var output);
+        var result = _manager.TryTranslate("0123456789", out var output);
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_moduleA.ReceivedInput, Has.Count.EqualTo(1));
@@ -139,7 +139,7 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
             Assert.That(output, Is.Not.Null);
         }
 
-        result = _controller.TryTranslate("012345678901", out output);
+        result = _manager.TryTranslate("012345678901", out output);
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_moduleA.ReceivedInput, Has.Count.EqualTo(1));
@@ -160,7 +160,7 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
 
         SetAndRefreshModuleSelection(_infoA.Name);
 
-        var result = _controller.TryTranslate(input, out var output);
+        var result = _manager.TryTranslate(input, out var output);
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_moduleA.ReceivedInput, Has.Count.EqualTo(1));
@@ -172,6 +172,6 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
 
     protected override void OneTimeTearDownExtra()
     {
-        _controller.Stop();
+        _manager.Stop();
     }
 }

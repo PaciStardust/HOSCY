@@ -1,6 +1,8 @@
 namespace HoscyCore.Services.Core;
 
-public interface IStartStopModuleController<TModuleStartInfo, TModule> : IStartStopService
+public interface ISoloModuleManager<TModuleStartInfo, TModule> : IStartStopService
+    where TModuleStartInfo : ISoloModuleStartInfo
+    where TModule : IStartStopModule
 {
     public IReadOnlyList<TModuleStartInfo> GetModuleInfos();
     public TModuleStartInfo? GetCurrentModuleInfo();

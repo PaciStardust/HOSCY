@@ -4,14 +4,14 @@ using HoscyCoreTests.Mocks.Impl;
 
 namespace HoscyCoreTests.Utils;
 
-public abstract class StartStopModuleControllerTestBase<TLog, TModuleStartInfoBase, TModuleStartInfoImpl, TModuleBase, TModuleSubA, TModuleSubB, TController> 
+public abstract class SoloModuleManagerTestBase<TLog, TModuleStartInfoBase, TModuleStartInfoImpl, TModuleBase, TModuleSubA, TModuleSubB, TManager> 
     : TestBase<TLog>
     where TModuleStartInfoBase : class, ISoloModuleStartInfo
     where TModuleStartInfoImpl : MockSoloModuleStartInfoBase, TModuleStartInfoBase, new()
     where TModuleBase : class, IStartStopModule
     where TModuleSubA : class, TModuleBase, new()
     where TModuleSubB : class, TModuleBase, new()
-    where TController : class, IStartStopModuleController<TModuleStartInfoBase, TModuleBase>
+    where TManager : class, ISoloModuleManager<TModuleStartInfoBase, TModuleBase>
 {
     protected MockBackToFrontNotifyService _notify = null!;
     protected MockContainerBulkLoader<TModuleStartInfoBase> _infoLoader = null!;
@@ -24,8 +24,8 @@ public abstract class StartStopModuleControllerTestBase<TLog, TModuleStartInfoBa
     protected TModuleStartInfoImpl _infoB = null!;
     protected TModuleStartInfoImpl _infoC = null!;
 
-    protected TController _controller = null!;
-    protected abstract TController CreateController();
+    protected TManager _manager = null!;
+    protected abstract TManager CreateController();
 
     protected void SetupSharedClasses()
     {
@@ -57,7 +57,7 @@ public abstract class StartStopModuleControllerTestBase<TLog, TModuleStartInfoBa
         _moduleLoader = new(() => [ _moduleA, _moduleB ]);
 
         SetupSharedClassesExtra();
-        _controller = CreateController();
+        _manager = CreateController();
     }
     protected abstract void SetupSharedClassesExtra();
     protected abstract void SetModule(string name);
@@ -65,6 +65,6 @@ public abstract class StartStopModuleControllerTestBase<TLog, TModuleStartInfoBa
     protected void SetAndRefreshModuleSelection(string name)
     {
         SetModule(name);
-        _controller.RefreshModuleSelection();
+        _manager.RefreshModuleSelection();
     }
 }

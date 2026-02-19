@@ -17,7 +17,7 @@ public class RecognitionManagerService
     ConfigModel config,
     OutputManagerService output
 ) 
-    : StartStopModuleControllerBase<IRecognitionModuleStartInfo, IRecognitionModule>
+    : SoloModuleManagerBase<IRecognitionModuleStartInfo, IRecognitionModule>
         (notify, logger, infoLoader, moduleLoader),
     IRecognitionManagerService
 {
