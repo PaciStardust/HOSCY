@@ -2,7 +2,7 @@ using HoscyCore.Services.Core;
 
 namespace HoscyCoreTests.Mocks.Base;
 
-public abstract class MockSoloModuleManagerBase<TModuleStartInfo> : MockStartStopServiceBase, ISoloModuleManager<TModuleStartInfo>
+public abstract class MockSoloModuleManagerBase<TModuleStartInfo> : MockStartStopServiceBase, ISoloModuleManagerV2<TModuleStartInfo>
     where TModuleStartInfo : class, ISoloModuleStartInfo
 {
     public ServiceStatus CurrentModuleStatus { get; set; } = ServiceStatus.Processing;
@@ -21,18 +21,18 @@ public abstract class MockSoloModuleManagerBase<TModuleStartInfo> : MockStartSto
         return [];
     }
 
-    public void RefreshModuleSelection()
-    {
-        return;
-    }
-    
-    public bool RestartCurrentModule()
+    public bool StartModule()
     {
         return true;
     }
 
-    public void SetModelLoading(bool _)
+    public bool RestartModule()
     {
-        return;
+        return true;
+    }
+
+    public bool StopModule()
+    {
+        return true;
     }
 }

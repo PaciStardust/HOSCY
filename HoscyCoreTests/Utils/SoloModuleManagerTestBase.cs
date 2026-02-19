@@ -11,7 +11,7 @@ public abstract class SoloModuleManagerTestBase<TLog, TModuleStartInfoBase, TMod
     where TModuleBase : class, IStartStopModule
     where TModuleSubA : class, TModuleBase, new()
     where TModuleSubB : class, TModuleBase, new()
-    where TManager : class, ISoloModuleManager<TModuleStartInfoBase>
+    where TManager : class, ISoloModuleManagerV2<TModuleStartInfoBase>
 {
     protected MockBackToFrontNotifyService _notify = null!;
     protected MockContainerBulkLoader<TModuleStartInfoBase> _infoLoader = null!;
@@ -65,6 +65,12 @@ public abstract class SoloModuleManagerTestBase<TLog, TModuleStartInfoBase, TMod
     protected void SetAndRefreshModuleSelection(string name)
     {
         SetModule(name);
-        _manager.RefreshModuleSelection();
+        RefreshModuleSelection();
+    }
+
+    protected void RefreshModuleSelection()
+    {
+        _manager.StopModule();
+        _manager.StartModule();
     }
 }
