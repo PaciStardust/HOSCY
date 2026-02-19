@@ -15,7 +15,7 @@ public class TranslationManagerService
     IContainerBulkLoader<ITranslationModuleStartInfo> infoLoader,
     IContainerBulkLoader<ITranslationModule> moduleLoader
 )
-    : SoloModuleManagerBase<ITranslationModuleStartInfo, ITranslationModule>
+    : SoloModuleManagerBaseV2<ITranslationModuleStartInfo, ITranslationModule, TranslationManagerService>
         (notify, logger, infoLoader, moduleLoader),
     ITranslationManagerService
 {
@@ -100,10 +100,12 @@ public class TranslationManagerService
     {
         _logger.Warning("Translation of message with contents \"{input}\" failed", inputForLog);
     }
+    #endregion
 
-    protected override bool ShouldEnableOnStart()
+    #region Overrides
+    protected override bool ShouldStartModelOnStartup()
     {
-        return true;
+        return _config.Translation_AutoStart;
     }
     #endregion
 }

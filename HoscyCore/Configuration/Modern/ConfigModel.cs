@@ -1193,6 +1193,16 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private string _translation_SelectedModuleName = string.Empty;
 
     /// <summary>
+    /// Autostart for Translation
+    /// </summary>
+    public bool Translation_AutoStart //todo: [FEAT] Implement in CLI
+    {
+        get => _translation_AutoStart;
+        set => SetProperty(ref _translation_AutoStart, value);
+    }
+    private bool _translation_AutoStart = false;
+
+    /// <summary>
     /// Skip longer messages for API Translation, will be cropped otherwise
     /// </summary>
     public bool Translation_SkipLongerMessages
