@@ -2,7 +2,7 @@ using HoscyCore.Services.Core;
 
 namespace HoscyCoreTests.Mocks.Base;
 
-public abstract class MockSoloModuleManagerBase<TModuleStartInfo> : MockStartStopServiceBase, ISoloModuleManagerV2<TModuleStartInfo>
+public abstract class MockSoloModuleManagerBase<TModuleStartInfo> : MockStartStopServiceBase, ISoloModuleManager<TModuleStartInfo>
     where TModuleStartInfo : class, ISoloModuleStartInfo
 {
     public ServiceStatus CurrentModuleStatus { get; set; } = ServiceStatus.Processing;

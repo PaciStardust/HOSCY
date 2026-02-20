@@ -11,7 +11,7 @@ public abstract class SoloModuleManagerTestBase<TLog, TModuleStartInfoBase, TMod
     where TModuleBase : class, IStartStopModule
     where TModuleSubA : class, TModuleBase, new()
     where TModuleSubB : class, TModuleBase, new()
-    where TManager : class, ISoloModuleManagerV2<TModuleStartInfoBase>
+    where TManager : class, ISoloModuleManager<TModuleStartInfoBase>
 {
     protected MockBackToFrontNotifyService _notify = null!;
     protected MockContainerBulkLoader<TModuleStartInfoBase> _infoLoader = null!;

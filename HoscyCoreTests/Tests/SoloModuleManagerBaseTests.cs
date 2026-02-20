@@ -16,12 +16,12 @@ public abstract class SoloModuleManagerBaseTestBase<T> : SoloModuleManagerTestBa
     ITranslationModule, 
     MockTranslationModuleA, 
     MockTranslationModuleB, 
-    SoloModuleManagerBaseV2<ITranslationModuleStartInfo, ITranslationModule, TranslationManagerService>
+    SoloModuleManagerBase<ITranslationModuleStartInfo, ITranslationModule, TranslationManagerService>
 >
 {
     protected ConfigModel _config = null!;
 
-    protected override SoloModuleManagerBaseV2<ITranslationModuleStartInfo, ITranslationModule, TranslationManagerService> CreateController()
+    protected override SoloModuleManagerBase<ITranslationModuleStartInfo, ITranslationModule, TranslationManagerService> CreateController()
     {
         // We are using the translator as it does not really matter
         return new TranslationManagerService(_config, _notify, _logger, _infoLoader, _moduleLoader);

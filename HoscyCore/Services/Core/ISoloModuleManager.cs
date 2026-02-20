@@ -7,8 +7,7 @@ public interface ISoloModuleManager<TModuleStartInfo> : IStartStopService
     public TModuleStartInfo? GetCurrentModuleInfo();
     public ServiceStatus GetCurrentModuleStatus();
 
-    public void SetModelLoading(bool state);
-
-    public void RefreshModuleSelection();
-    public bool RestartCurrentModule();
+    public bool StartModule();
+    public bool RestartModule();
+    public bool StopModule();
 }
