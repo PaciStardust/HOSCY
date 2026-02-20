@@ -47,7 +47,8 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
 
     protected override void SetupExtra()
     {
-        SetAndRefreshModuleSelection(string.Empty);
+        SetModule(string.Empty);
+        _manager.StopModule();
 
         _config.Translation_SendUntranslatedIfFailed = false;
         _config.Translation_SkipLongerMessages = false;
@@ -74,7 +75,8 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
             Assert.That(output, Is.Null);
         }
 
-        SetAndRefreshModuleSelection(_infoA.Name);
+        SetModule(_infoA.Name);
+        _manager.StartModule();
         _moduleA.OverrideRunningStatus = ServiceStatus.Stopped;
 
         result = _manager.TryTranslate("Test", out output);
@@ -107,7 +109,8 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
         _moduleA.ReturnedOutput = "Echo";
         _moduleA.ReturnedResult = overrideResult;
 
-        SetAndRefreshModuleSelection(_infoA.Name);
+        SetModule(_infoA.Name);
+        _manager.StartModule();
         
         var result = _manager.TryTranslate("Test", out var output);
         using (Assert.EnterMultipleScope())
@@ -129,7 +132,8 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
 
         _moduleA.ReturnedOutput = "Echo";
 
-        SetAndRefreshModuleSelection(_infoA.Name);
+        SetModule(_infoA.Name);
+        _manager.StartModule();
 
         var result = _manager.TryTranslate("0123456789", out var output);
         using (Assert.EnterMultipleScope())
@@ -158,7 +162,8 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
 
         _moduleA.ReturnedOutput = "Echo";
 
-        SetAndRefreshModuleSelection(_infoA.Name);
+        SetModule(_infoA.Name);
+        _manager.StartModule();
 
         var result = _manager.TryTranslate(input, out var output);
         using (Assert.EnterMultipleScope())

@@ -70,7 +70,8 @@ public class StartStopModuleControllerBaseStartupTests : SoloModuleManagerBaseTe
             Assert.That(_moduleB.Started, Is.False);
         }
 
-        SetAndRefreshModuleSelection("MockA");
+        SetModule("MockA");
+        _manager.StartModule();
 
         using (Assert.EnterMultipleScope())
         {
@@ -144,8 +145,8 @@ public class StartStopModuleControllerBaseStartupTests : SoloModuleManagerBaseTe
         }
 
         _moduleA.ExceptionToThrow = null;
+        _manager.StartModule();
 
-        RefreshModuleSelection();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_manager.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Faulted));
@@ -221,7 +222,8 @@ public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseT
 
     protected override void SetupExtra()
     {
-        SetAndRefreshModuleSelection(string.Empty);
+        _manager.StopModule();
+        SetModule(string.Empty);
 
         _notify.Notifications.Clear();
 
@@ -235,7 +237,7 @@ public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseT
         SetModule(_infoA.Name);
 
         Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
-        RefreshModuleSelection();
+        _manager.StartModule();
 
         var allModules = _manager.GetModuleInfos();
 
@@ -261,14 +263,21 @@ public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseT
         Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
         AssertServiceStarted(_manager);
 
-        SetAndRefreshModuleSelection(_infoA.Name);
+        SetModule(_infoA.Name);
+        _manager.StartModule();
 
         Assert.That(_manager.GetCurrentModuleInfo(), Is.EqualTo(_infoA));
         AssertServiceProcessing(_manager);
 
-        SetAndRefreshModuleSelection(string.Empty);
+        _manager.StopModule();
 
         Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
+
+        SetModule(string.Empty);
+        _manager.StartModule();
+
+        Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
+
         AssertServiceStarted(_manager);
     }
 
@@ -278,7 +287,8 @@ public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseT
         var status = _manager.GetCurrentModuleStatus();
         Assert.That(status, Is.EqualTo(ServiceStatus.Stopped));
         
-        SetAndRefreshModuleSelection(_infoA.Name);
+        SetModule(_infoA.Name);
+        _manager.StartModule();
 
         _moduleA.OverrideRunningStatus = ServiceStatus.Started;
         status = _manager.GetCurrentModuleStatus();
@@ -292,7 +302,7 @@ public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseT
         status = _manager.GetCurrentModuleStatus();
         Assert.That(status, Is.EqualTo(ServiceStatus.Faulted));
 
-        SetAndRefreshModuleSelection(string.Empty);
+        _manager.StopModule();
 
         status = _manager.GetCurrentModuleStatus();
         Assert.That(status, Is.EqualTo(ServiceStatus.Stopped));
@@ -303,7 +313,8 @@ public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseT
     {
         Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
         
-        SetAndRefreshModuleSelection(_infoA.Name);
+        SetModule(_infoA.Name);
+        _manager.StartModule();
         Assert.That(_manager.GetCurrentModuleInfo(), Is.EqualTo(_infoA));
 
         var stoppedA = false;
@@ -362,7 +373,7 @@ public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseT
             Assert.That(stoppedB, Is.False);
         }
 
-        RefreshModuleSelection();
+        _manager.StartModule();
 
         using (Assert.EnterMultipleScope())
         {
@@ -394,7 +405,24 @@ public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseT
             Assert.That(stoppedB, Is.False);
         }
 
-        RefreshModuleSelection();
+        _manager.StartModule();
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_manager.GetCurrentModuleInfo(), Is.EqualTo(_infoA));
+            Assert.That(_manager.GetCurrentModuleStatus(), Is.Not.EqualTo(ServiceStatus.Stopped));
+
+            Assert.That(_moduleA.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_moduleA.Started, Is.True);
+            Assert.That(stoppedA, Is.False);
+
+            Assert.That(_moduleB.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_moduleB.Started, Is.False);
+            Assert.That(stoppedB, Is.False);
+        }
+
+        _manager.StopModule();
+        _manager.StartModule();
 
         using (Assert.EnterMultipleScope())
         {
@@ -419,7 +447,8 @@ public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseT
     {
         Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
 
-        SetAndRefreshModuleSelection(_infoC.Name);
+        SetModule(_infoC.Name);
+        _manager.StartModule();
 
         var ex = _manager.GetFaultIfExists();
         using (Assert.EnterMultipleScope())
@@ -428,7 +457,7 @@ public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseT
             Assert.That(_manager.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
         }
 
-        SetAndRefreshModuleSelection(string.Empty);
+        _manager.StopModule();
 
         var ex2 = _manager.GetFaultIfExists();
         using (Assert.EnterMultipleScope())
@@ -443,7 +472,8 @@ public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseT
     {
         Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
         
-        SetAndRefreshModuleSelection(_infoA.Name);
+        SetModule(_infoA.Name);
+        _manager.StartModule();
 
         Assert.That(_manager.GetCurrentModuleInfo(), Is.EqualTo(_infoA));
 
@@ -451,7 +481,7 @@ public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseT
 
         Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
 
-        RefreshModuleSelection();
+        _manager.StartModule();
 
         Assert.That(_manager.GetCurrentModuleInfo(), Is.EqualTo(_infoA));
     }
@@ -461,7 +491,8 @@ public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseT
     {
         Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
 
-        SetAndRefreshModuleSelection(_infoA.Name);
+        SetModule(_infoA.Name);
+        _manager.StartModule();
 
         Assert.That(_manager.GetCurrentModuleInfo(), Is.EqualTo(_infoA));
 
@@ -480,7 +511,8 @@ public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseT
         }
 
         _moduleA.InduceError(null);
-        RefreshModuleSelection();
+        _manager.StopModule();
+        _manager.StartModule();
 
         faultOutput = _manager.GetFaultIfExists();
         faultHandler = _moduleA.GetFaultIfExists();
@@ -493,7 +525,7 @@ public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseT
         }
     }
 
-    [Test]
+    [TestCase]
     public void ModuleSwitchTest()
     {
         using (Assert.EnterMultipleScope())
@@ -504,7 +536,8 @@ public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseT
             Assert.That(_moduleB.Started, Is.False);
         }
 
-        SetAndRefreshModuleSelection(_infoA.Name);
+        SetModule(_infoA.Name);
+        _manager.StartModule();
 
         using (Assert.EnterMultipleScope())
         {
@@ -514,7 +547,19 @@ public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseT
             Assert.That(_moduleB.Started, Is.False);
         }
 
-        SetAndRefreshModuleSelection(_infoB.Name);
+        SetModule(_infoB.Name);
+        _manager.StartModule();
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_manager.GetCurrentModuleInfo(), Is.EqualTo(_infoA));
+            
+            Assert.That(_moduleA.Started, Is.True);
+            Assert.That(_moduleB.Started, Is.False);
+        }
+
+        _manager.StopModule();
+        _manager.StartModule();
 
         using (Assert.EnterMultipleScope())
         {
@@ -524,7 +569,18 @@ public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseT
             Assert.That(_moduleB.Started, Is.True);
         }
 
-        SetAndRefreshModuleSelection(string.Empty);
+        SetModule(string.Empty);
+        _manager.StopModule();
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
+            
+            Assert.That(_moduleA.Started, Is.False);
+            Assert.That(_moduleB.Started, Is.False);
+        }
+
+        _manager.StartModule();
 
         using (Assert.EnterMultipleScope())
         {
