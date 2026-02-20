@@ -184,10 +184,18 @@ public abstract class SoloModuleManagerBaseV2<TModuleStartInfo, TModule, TLog>
         }
 
         _currentModule.OnModuleStopped -= HandleOnModuleStopped;
-        OnModulePreStop(_currentModule);
-        _currentModule.Stop();
 
+        try
+        {
+            OnModulePreStop(_currentModule);
+            _currentModule.Stop();
+        } catch
+        {
+            CleanupAfterModuleShutdown();
+            throw;
+        }
         CleanupAfterModuleShutdown();
+
         _logger.Information("Stopped current module");
     }
 
@@ -240,8 +248,8 @@ public abstract class SoloModuleManagerBaseV2<TModuleStartInfo, TModule, TLog>
         {
             _currentModule.OnRuntimeError -= HandleOnRuntimeError;
             _currentModule.OnModuleStopped -= HandleOnModuleStopped;
-            OnModulePostStop(_currentModule);
             _currentModule = null;
+            OnModulePostStop();
         }
     }
 
@@ -295,6 +303,6 @@ public abstract class SoloModuleManagerBaseV2<TModuleStartInfo, TModule, TLog>
     protected virtual void OnModulePreStart(TModule module) { }
     protected virtual void OnModulePostStart(TModule module) { }
     protected virtual void OnModulePreStop(TModule module) { }
-    protected virtual void OnModulePostStop(TModule module) { }
+    protected virtual void OnModulePostStop() { }
     #endregion
 }
