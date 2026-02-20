@@ -494,7 +494,7 @@ public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseT
     }
 
     [Test]
-    public void ReceiverSwitchTest()
+    public void ModuleSwitchTest()
     {
         using (Assert.EnterMultipleScope())
         {
@@ -532,6 +532,51 @@ public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseT
             
             Assert.That(_moduleA.Started, Is.False);
             Assert.That(_moduleB.Started, Is.False);
+        }
+    }
+
+    [Test]
+    public void DoubleActionsTest()
+    {
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
+            Assert.That(_moduleA.Started, Is.False);
+            Assert.That(_manager.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Started));
+        }
+
+        SetModule(_infoA.Name);
+        for (var i = 0; i < 2; i++)
+        {
+            _manager.StartModule();
+
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(_manager.GetCurrentModuleInfo(), Is.EqualTo(_infoA));
+                Assert.That(_moduleA.Started, Is.True);
+                Assert.That(_manager.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Processing));
+            }
+        }
+
+        for (var i = 0; i < 2; i++)
+        {
+            _manager.StopModule();
+
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
+                Assert.That(_moduleA.Started, Is.False);
+                Assert.That(_manager.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Started));
+            }
+        }
+
+        _manager.RestartModule();
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
+            Assert.That(_moduleA.Started, Is.False);
+            Assert.That(_manager.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Started));
         }
     }
 

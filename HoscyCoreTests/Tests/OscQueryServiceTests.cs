@@ -50,7 +50,7 @@ public class OscQueryServiceFunctionTests : TestBase<OscQueryServiceFunctionTest
     public void QueryTest()
     {
         //We only wait and hope self descovery works and that the registry has a "self" assigned
-        Thread.Sleep(5000);
+        Thread.Sleep(10000);
         
         var self = _registry.GetServiceAddressByName("self");
         var hoscy = _registry.GetServiceAddressByName("hoscy");
