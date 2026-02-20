@@ -79,7 +79,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// List of all API Presets that are used in various locations
     /// </summary>
-    public List<ApiPresetModel> Api_Presets
+    public List<ApiPresetModel> Api_Presets //todo: [IMPL] Add to CLI
     {
         get => _api_Presets;
         set => SetProperty(ref _api_Presets, value);
@@ -199,7 +199,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Open a Windows Debug Window on startup?
     /// </summary>
-    public bool Debug_LogViaCmdOnWindows
+    public bool Debug_LogViaCmdOnWindows //todo: [IMPL] Add to CLI
     {
         get => _debug_LogViaCmdOnWindows;
         set => SetProperty(ref _debug_LogViaCmdOnWindows, value);
@@ -209,7 +209,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Log to terminal when launched in one?
     /// </summary>
-    public bool Debug_LogViaTerminal
+    public bool Debug_LogViaTerminal //todo: [IMPL] Add to CLI
     {
         get => _debug_LogViaTerminal;
         set => SetProperty(ref _debug_LogViaTerminal, value);
@@ -219,7 +219,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Log to a separate terminal by following the log file
     /// </summary>
-    public bool Debug_LogViaFileFollow
+    public bool Debug_LogViaFileFollow //todo: [IMPL] Add to CLI
     {
         get => _debug_LogViaFileFollow;
         set => SetProperty(ref _debug_LogViaFileFollow, value);
@@ -229,7 +229,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Process to use for following the log file
     /// </summary>
-    public string Debug_LogFileFollowProcess
+    public string Debug_LogFileFollowProcess //todo: [IMPL] Add to CLI
     {
         get => _debug_LogFileFollowProcess;
         set => SetProperty(ref _debug_LogFileFollowProcess, value);
@@ -239,7 +239,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Command to use for following the log file
     /// </summary>
-    public string Debug_LogFileFollowCommand
+    public string Debug_LogFileFollowCommand //todo: [IMPL] Add to CLI
     {
         get => _debug_LogFileFollowCommand;
         set => SetProperty(ref _debug_LogFileFollowCommand, value);
@@ -249,7 +249,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Minimum log severity to display
     /// </summary>
-    public LogEventLevel Debug_LogMinimumSeverity
+    public LogEventLevel Debug_LogMinimumSeverity //todo: [IMPL] Add to CLI
     {
         get => _debug_LogMinimumSeverity;
         set
@@ -266,7 +266,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Log filters to apply
     /// </summary>
-    public List<FilterModel> Debug_LogFilters
+    public List<FilterModel> Debug_LogFilters //todo: [IMPL] Add to CLI
     {
         get => _debug_LogFilters;
         set => SetProperty(ref _debug_LogFilters, value);
@@ -278,7 +278,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Can external input trigger commands?
     /// </summary>
-    public bool ExternalInput_DoPreprocessFull
+    public bool ExternalInput_DoPreprocessFull 
     {
         get => _externalInput_DoPreprocessFull;
         set => SetProperty(ref _externalInput_DoPreprocessFull, value);
@@ -619,7 +619,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// OSC Address the game sends out when afk
     /// </summary>
-    public string Osc_Address_Game_Afk
+    public string Osc_Address_Game_Afk //todo: [IMPL] Add to CLI
     {
         get => _osc_Address_Game_Afk;
         set => SetProperty(ref _osc_Address_Game_Afk, value);
@@ -629,7 +629,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// OSC Address the game listens to for textbox usage
     /// </summary>
-    public string Osc_Address_Game_Textbox
+    public string Osc_Address_Game_Textbox //todo: [IMPL] Add to CLI
     {
         get => _osc_Address_Game_Textbox;
         set => SetProperty(ref _osc_Address_Game_Textbox, value);
@@ -639,7 +639,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// OSC Address the game listens to for typing indicator
     /// </summary>
-    public string Osc_Address_Game_Typing
+    public string Osc_Address_Game_Typing //todo: [IMPL] Add to CLI
     {
         get => _osc_Address_Game_Typing;
         set => SetProperty(ref _osc_Address_Game_Typing, value);
@@ -649,7 +649,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// OSC Address to send to tool for external messages to be sent as text
     /// </summary>
-    public string Osc_Address_Input_TextMessage
+    public string Osc_Address_Input_TextMessage //todo: [IMPL] Add to CLI
     {
         get => _osc_Address_Input_TextMessage;
         set => SetProperty(ref _osc_Address_Input_TextMessage, value);
@@ -659,7 +659,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// OSC Address to send to tool for external notifications to be sent as text
     /// </summary>
-    public string Osc_Address_Input_TextNotification
+    public string Osc_Address_Input_TextNotification //todo: [IMPL] Add to CLI
     {
         get => _osc_Address_Input_TextNotification;
         set => SetProperty(ref _osc_Address_Input_TextNotification, value);
@@ -669,7 +669,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// OSC Address to send to tool for external text to be sent as audio
     /// </summary>
-    public string Osc_Address_Input_Audio
+    public string Osc_Address_Input_Audio //todo: [IMPL] Add to CLI
     {
         get => _osc_Address_Input_Audio;
         set => SetProperty(ref _osc_Address_Input_Audio, value);
@@ -679,7 +679,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// OSC Address to send to tool for external text to be sent as other
     /// </summary>
-    public string Osc_Address_Input_Other
+    public string Osc_Address_Input_Other //todo: [IMPL] Add to CLI
     {
         get => _osc_Address_Input_Other;
         set => SetProperty(ref _osc_Address_Input_Other, value);
@@ -1215,7 +1215,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Skip longer messages for API Translation, will be cropped otherwise
     /// </summary>
-    public bool Translation_SkipLongerMessages
+    public bool Translation_SkipLongerMessages //todo: [IMPL] Add to CLI
     {
         get => _translation_SkipLongerMessages;
         set => SetProperty(ref _translation_SkipLongerMessages, value);
@@ -1225,7 +1225,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Max Text Length for Translation 
     /// </summary>
-    public int Translation_MaxTextLength
+    public int Translation_MaxTextLength //todo: [IMPL] Add to CLI
     {
         get => _translation_MaxTextLength;
         set => SetProperty(ref _translation_MaxTextLength, value.MinMax(1, short.MaxValue));
@@ -1265,7 +1265,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Send untranslated text if nothing can output translation
     /// </summary>
-    public bool Translation_SendUntranslatedIfUnavailable
+    public bool Translation_SendUntranslatedIfUnavailable //todo: [IMPL] Add to CLI
     {
         get => _translation_SendUntranslatedIfUnavailable;
         set => SetProperty(ref _translation_SendUntranslatedIfUnavailable, value);
@@ -1275,7 +1275,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Send untranslated if translation fails
     /// </summary>
-    public bool Translation_SendUntranslatedIfFailed
+    public bool Translation_SendUntranslatedIfFailed //todo: [IMPL] Add to CLI
     {
         get => _translation_SendUntranslatedIfFailed;
         set => SetProperty(ref _translation_SendUntranslatedIfFailed, value);
@@ -1287,7 +1287,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// API Preset for API Translation 
     /// </summary>
-    public string Translation_Api_Preset
+    public string Translation_Api_Preset //todo: [IMPL] Add to CLI
     {
         get => _translation_Api_Preset;
         set => SetProperty(ref _translation_Api_Preset, value);
