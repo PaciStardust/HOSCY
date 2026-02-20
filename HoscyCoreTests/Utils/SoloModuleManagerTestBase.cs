@@ -61,10 +61,4 @@ public abstract class SoloModuleManagerTestBase<TLog, TModuleStartInfoBase, TMod
     }
     protected abstract void SetupSharedClassesExtra();
     protected abstract void SetModule(string name);
-
-    protected void SetAndRefreshModuleSelection(string name)
-    {
-        SetModule(name);
-        _manager.RefreshModuleSelection();
-    }
 }

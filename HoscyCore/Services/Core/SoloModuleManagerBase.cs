@@ -4,7 +4,7 @@ using Serilog;
 
 namespace HoscyCore.Services.Core;
 
-public abstract class SoloModuleManagerBase<TModuleStartInfo, TModule>
+public abstract class SoloModuleManagerBase<TModuleStartInfo, TModule, TLog>
 (
     IBackToFrontNotifyService notify,
     ILogger logger,
@@ -15,10 +15,9 @@ public abstract class SoloModuleManagerBase<TModuleStartInfo, TModule>
     where TModuleStartInfo : class, ISoloModuleStartInfo
     where TModule : class, IStartStopModule
 {
-
     #region Injected
     protected readonly IBackToFrontNotifyService _notify = notify;
-    protected readonly ILogger _logger = logger;
+    protected readonly ILogger _logger = logger.ForContext<TLog>();
     private readonly IContainerBulkLoader<TModuleStartInfo> _infoLoader = infoLoader;
     private readonly IContainerBulkLoader<TModule> _moduleLoader = moduleLoader;
     #endregion
@@ -26,17 +25,7 @@ public abstract class SoloModuleManagerBase<TModuleStartInfo, TModule>
     #region Service Variables
     protected TModule? _currentModule;
     private readonly List<TModuleStartInfo> _moduleInfos = [];
-    private readonly List<Exception> _refreshExceptions = [];
-    #endregion
-
-    #region Enabling
-    private bool _canLoadModels = false;
-    public void SetModelLoading(bool state)
-    {
-        var newState = IsStarted() && state;
-        _logger.Debug("Setting model loading to {newState}", newState);
-        _canLoadModels = newState;
-    }
+    private Exception? _moduleChangeException = null;
     #endregion
 
     #region Info
@@ -105,17 +94,19 @@ public abstract class SoloModuleManagerBase<TModuleStartInfo, TModule>
             return;
         }
 
-        SetModelLoading(ShouldEnableOnStart());
-        RefreshModuleSelection();
+        if (ShouldStartModelOnStartup())
+        {
+            _logger.Debug("Starting up model on startup");
+            StartModule();
+        }
         _logger.Debug("Started up Service with {moduleCount} ModuleStartInfos and module refresh", _moduleInfos.Count);
     }
 
     public override void Stop()
     {
         _logger.Debug("Stopping service, shutting down Module");
-        StopCurrentModule();
+        StopModule();
         _moduleInfos.Clear();
-        SetModelLoading(false);
         _logger.Debug(messageTemplate: "Stopped service, shut down Module");
     }
 
@@ -131,133 +122,117 @@ public abstract class SoloModuleManagerBase<TModuleStartInfo, TModule>
     #endregion
 
     #region Module => Start / Stop
-    public void RefreshModuleSelection()
+    public bool StartModule()
     {
-        _logger.Information("Performing module selection refresh");
-        _refreshExceptions.Clear();
-
+        return CallModuleStateChangeSafe(StartModuleInternal, "start");
+    }
+    private void StartModuleInternal()
+    {
         var selectedModuleName = GetSelectedModuleName();
-        var infoMatch = string.IsNullOrWhiteSpace(selectedModuleName)
-            ? null 
-            : SearchInfos(x => x.Name.Equals(selectedModuleName, StringComparison.OrdinalIgnoreCase),
-                $"Name={selectedModuleName}");
-
+        _logger.Information("Attemtping to start module with name \"{name}\"", selectedModuleName);
         if (_currentModule is not null)
         {
-            var currentType = _currentModule.GetType();
-            if (infoMatch is not null && infoMatch.ModuleType == currentType)
-            {
-                _logger.Information("Performed module selection refresh, no changes needed");
-                return;
-            }
-
-            _logger.Debug("Current module {currentModule} does not match selected type {selectedType}, stopping",
-                currentType.Name, infoMatch?.ModuleType.Name ?? "[EMPTY]");
-            var res = StopCurrentModule();
-            if (!res)
-            {
-                _logger.Warning("Module of type \"{moduleType}\" failed shutting down, removing from list forcefully - This should not be ignored!",
-                    currentType.Name);
-                CleanupAfterModuleShutdown();
-            }
+            _logger.Information("Skipped starting Module, still running as \"{moduleType}\"", _currentModule.GetType().FullName);
+            return;
         }
 
-        if (_canLoadModels && infoMatch is not null)
+        if (string.IsNullOrWhiteSpace(selectedModuleName))
         {
-            _logger.Debug("Starting new module with name {moduleName} and type {moduleType}",
+            _logger.Information("No module is set, not starting");
+            return;
+        }
+
+        var infoMatch = SearchInfos(x => x.Name.Equals(selectedModuleName, StringComparison.OrdinalIgnoreCase),
+                $"Name={selectedModuleName}");
+
+        if (infoMatch is null)
+        {
+            _logger.Error("Failed to get module info with name \"{infoName}\"", selectedModuleName);
+            throw new ArgumentException($"Failed to get module info with name \"{selectedModuleName}\"");
+        }
+
+        _logger.Debug("Attempting to locate module instance with \"{moduleName}\" and type \"{moduleType}\"",
+            infoMatch.Name, infoMatch.ModuleType.Name);
+        var moduleMatch = _moduleLoader.GetInstance(infoMatch.ModuleType);
+        if (moduleMatch is null)
+        {
+            _logger.Error("Failed to get module instance name \"{moduleName}\" and type \"{moduleType}\"",
                 infoMatch.Name, infoMatch.ModuleType.Name);
-            StartModule(infoMatch);
+            throw new DiResolveException($"Failed to get module instance name {infoMatch.Name} and type {infoMatch.ModuleType.Name}");
         }
 
-        NotifyIfRefreshExceptions();
-        _logger.Information("Performed module selection refresh");
+        moduleMatch.OnRuntimeError += HandleOnRuntimeError;
+        moduleMatch.OnModuleStopped += HandleOnModuleStopped;
+        OnModulePreStart(moduleMatch);
+        moduleMatch.Start();
+        OnModulePostStart(moduleMatch);
+        _currentModule = moduleMatch;
+        _logger.Information("Started module with name \"{moduleName}\" and type \"{moduleType}\"", infoMatch.Name, infoMatch.ModuleType.Name);
     }
 
-    private bool StartModule(TModuleStartInfo startInfo)
+    public bool StopModule()
     {
-        try
-        {
-            _logger.Information("Attemtping to start module with name \"{name}\" and typeName \"{typeName}\"", startInfo.Name, startInfo.ModuleType.Name);
-            if (_currentModule is not null)
-            {
-                _logger.Information("Skipped starting Module, still running as \"{moduleType}\"", _currentModule.GetType().FullName);
-                return true;
-            }
-
-            var moduleMatch = _moduleLoader.GetInstance(startInfo.ModuleType);
-            if (moduleMatch is null)
-            {
-                _logger.Error("Failed to get module instance name \"{moduleName}\" and type \"{moduleType}\"", startInfo.Name, startInfo.ModuleType.Name);
-                throw new DiResolveException($"Failed to get module instance name {startInfo.Name} and type {startInfo.ModuleType.Name}");
-            }
-
-            moduleMatch.OnRuntimeError += HandleOnRuntimeError;
-            moduleMatch.OnModuleStopped += HandleOnModuleStopped;
-            OnModulePreStart(moduleMatch);
-            moduleMatch.Start();
-            OnModulePostStart(moduleMatch);
-            _currentModule = moduleMatch;
-            _logger.Information("Started module with name \"{moduleName}\" and type \"{moduleType}\"", startInfo.Name, startInfo.ModuleType.Name);
-        }
-        catch (Exception ex)
-        {
-            AddRefreshException(ex, "Failed to start module with name \"{name}\" and type \"{typeName}\"",
-                startInfo.Name, startInfo.ModuleType.Name);
-            return false;
-        }
-        return true;
+        return CallModuleStateChangeSafe(StopModuleInternal, "stop");
     }
-
-    private bool StopCurrentModule()
+    private void StopModuleInternal()
     {
+        _logger.Information("Stopping current module");
+        if (_currentModule is null)
+        {
+            _logger.Information("Skipping stopping of module, no module running");
+            return;
+        }
+
+        _currentModule.OnModuleStopped -= HandleOnModuleStopped;
+
         try
         {
-            _logger.Information("Stopping current module");
-            if (_currentModule is null)
-            {
-                _logger.Information("Skipping stopping of current module, no module running");
-                return true;
-            }
-
-            _currentModule.OnModuleStopped -= HandleOnModuleStopped;
             OnModulePreStop(_currentModule);
             _currentModule.Stop();
-
+        } catch
+        {
             CleanupAfterModuleShutdown();
-            _logger.Information("Stopped current module");
+            throw;
+        }
+        CleanupAfterModuleShutdown();
+
+        _logger.Information("Stopped current module");
+    }
+
+    public bool RestartModule()
+    {
+        return CallModuleStateChangeSafe(RestartModuleInternal, "restart");
+    }
+    private void RestartModuleInternal()
+    {
+        _logger.Information("Restarting current module");
+        
+        if (_currentModule is null)
+        {
+            _logger.Information("Skipping restart of current module, no module running");
+            return;
+        }
+
+        _currentModule.OnModuleStopped -= HandleOnModuleStopped;
+        _currentModule.Restart();
+        _currentModule.OnModuleStopped += HandleOnModuleStopped;
+
+        _logger.Information("Restarted current module");
+    }
+
+    public bool CallModuleStateChangeSafe(Action stateChangeAction, string verb)
+    {
+        _moduleChangeException = null;
+        try
+        {
+            stateChangeAction();
+            return true;
         }
         catch (Exception ex)
         {
-            AddRefreshException(ex, "Failed to stop current module");
+            SetAndNotifyModelChangeException(ex, $"Model {verb} failed", $"An exception occured while attempting to {verb} model");
             return false;
         }
-        return true;
-    }
-
-    public bool RestartCurrentModule()
-    {
-        _logger.Information("Restarting current module");
-        _refreshExceptions.Clear();
-        try
-        {
-            if (_currentModule is null)
-            {
-                _logger.Information("Skipping restart of current module, no module running");
-                return true;
-            }
-
-            _currentModule.OnModuleStopped -= HandleOnModuleStopped;
-            _currentModule.Restart();
-            _currentModule.OnModuleStopped += HandleOnModuleStopped;
-
-            _logger.Information("Restarted current module");
-        } catch (Exception ex)
-        {
-            AddRefreshException(ex,"Failed to restart current module");
-            NotifyIfRefreshExceptions();
-            return false;
-        }
-        return true;
     }
 
     private void HandleOnModuleStopped(object? sender, EventArgs e)
@@ -273,8 +248,8 @@ public abstract class SoloModuleManagerBase<TModuleStartInfo, TModule>
         {
             _currentModule.OnRuntimeError -= HandleOnRuntimeError;
             _currentModule.OnModuleStopped -= HandleOnModuleStopped;
-            OnModulePostStop(_currentModule);
             _currentModule = null;
+            OnModulePostStop();
         }
     }
 
@@ -301,7 +276,10 @@ public abstract class SoloModuleManagerBase<TModuleStartInfo, TModule>
         {
             exList.Add(moduleError);
         }
-        exList.AddRange(_refreshExceptions);
+        if (_moduleChangeException is not null)
+        {
+            exList.Add(_moduleChangeException);
+        }
 
         return exList.Count == 0
             ? null
@@ -310,29 +288,21 @@ public abstract class SoloModuleManagerBase<TModuleStartInfo, TModule>
                 : exList[0];
     }
 
-    private void AddRefreshException(Exception ex, string message, params object?[]? args)
+    private void SetAndNotifyModelChangeException(Exception ex, string title, string message, params object?[]? args)
     {
         _logger.Error(ex, message, args);
-        _refreshExceptions.Add(ex);
-    }
-
-    private void NotifyIfRefreshExceptions()
-    {
-        if (_refreshExceptions.Count == 0) return;
-        
-        var ex = new CombinedException(_refreshExceptions);
-        _logger.Warning(ex, "Following exceptions popped up during refresh");
-        _notify.SendError("Errors ocurred during refresh", "The following errors occured while refreshing handlers", ex);
+        _moduleChangeException = ex;
+        _notify.SendError(title, message, ex);
     }
     #endregion
 
-    #region Abstracts
+    #region Abstract
     protected abstract string GetSelectedModuleName();
-    protected abstract bool ShouldEnableOnStart(); //todo: [REFACTOR] Honestly this should likely just become manual start stop
+    protected abstract bool ShouldStartModelOnStartup();
 
     protected virtual void OnModulePreStart(TModule module) { }
     protected virtual void OnModulePostStart(TModule module) { }
     protected virtual void OnModulePreStop(TModule module) { }
-    protected virtual void OnModulePostStop(TModule module) { }
+    protected virtual void OnModulePostStop() { }
     #endregion
 }

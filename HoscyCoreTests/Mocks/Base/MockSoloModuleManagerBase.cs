@@ -21,18 +21,18 @@ public abstract class MockSoloModuleManagerBase<TModuleStartInfo> : MockStartSto
         return [];
     }
 
-    public void RefreshModuleSelection()
-    {
-        return;
-    }
-    
-    public bool RestartCurrentModule()
+    public bool StartModule()
     {
         return true;
     }
 
-    public void SetModelLoading(bool _)
+    public bool RestartModule()
     {
-        return;
+        return true;
+    }
+
+    public bool StopModule()
+    {
+        return true;
     }
 }
