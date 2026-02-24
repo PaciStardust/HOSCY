@@ -230,7 +230,7 @@ public abstract class SoloModuleManagerBase<TModuleStartInfo, TModule, TLog>
         }
         catch (Exception ex)
         {
-            SetAndNotifyModelChangeException(ex, $"Model {verb} failed", $"An exception occured while attempting to {verb} model");
+            SetAndNotifyModelChangeException(ex, $"Model {verb} failed", $"Following exception occured while attempting to {verb} model: {ex.Message}");
             return false;
         }
     }
