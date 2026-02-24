@@ -239,7 +239,7 @@ public static class LegacyConfigModelLoader
             Osc_Address_Game_Afk = oldConfig.Osc.AddressGameAfk,
             Osc_Address_Game_Textbox = oldConfig.Osc.AddressGameTextbox,
             Osc_Address_Input_TextMessage = oldConfig.Osc.AddressAddTextbox,
-            Osc_Address_Input_Audio = oldConfig.Osc.AddressAddTts,
+            Osc_Address_Input_AudioMessage = oldConfig.Osc.AddressAddTts,
             Osc_Address_Input_TextNotification = oldConfig.Osc.AddressAddNotification,
 
             Osc_Address_Media_Pause = oldConfig.Osc.AddressMediaPause,

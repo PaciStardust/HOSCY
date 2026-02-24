@@ -4,7 +4,7 @@ using HoscyCore.Services.Dependency;
 
 namespace HoscyCli.Commands.Modules;
 
-[PrototypeLoadIntoDiContainer(typeof(CounterCommandModule))]
+[PrototypeLoadIntoDiContainer(typeof(DebugCommandModule))]
 public class DebugCommandModule(ReflectPropEditCommandModule _reflectCm) : AttributeCommandModule, ICoreCommandModule
 {
     private readonly ReflectPropEditCommandModule _reflectCm = _reflectCm;

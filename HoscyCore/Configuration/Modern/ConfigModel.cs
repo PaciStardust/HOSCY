@@ -619,7 +619,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// OSC Address the game sends out when afk
     /// </summary>
-    public string Osc_Address_Game_Afk //todo: [IMPL] Add to CLI
+    public string Osc_Address_Game_Afk
     {
         get => _osc_Address_Game_Afk;
         set => SetProperty(ref _osc_Address_Game_Afk, value);
@@ -629,7 +629,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// OSC Address the game listens to for textbox usage
     /// </summary>
-    public string Osc_Address_Game_Textbox //todo: [IMPL] Add to CLI
+    public string Osc_Address_Game_Textbox
     {
         get => _osc_Address_Game_Textbox;
         set => SetProperty(ref _osc_Address_Game_Textbox, value);
@@ -639,7 +639,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// OSC Address the game listens to for typing indicator
     /// </summary>
-    public string Osc_Address_Game_Typing //todo: [IMPL] Add to CLI
+    public string Osc_Address_Game_Typing
     {
         get => _osc_Address_Game_Typing;
         set => SetProperty(ref _osc_Address_Game_Typing, value);
@@ -649,7 +649,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// OSC Address to send to tool for external messages to be sent as text
     /// </summary>
-    public string Osc_Address_Input_TextMessage //todo: [IMPL] Add to CLI
+    public string Osc_Address_Input_TextMessage
     {
         get => _osc_Address_Input_TextMessage;
         set => SetProperty(ref _osc_Address_Input_TextMessage, value);
@@ -659,7 +659,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// OSC Address to send to tool for external notifications to be sent as text
     /// </summary>
-    public string Osc_Address_Input_TextNotification //todo: [IMPL] Add to CLI
+    public string Osc_Address_Input_TextNotification
     {
         get => _osc_Address_Input_TextNotification;
         set => SetProperty(ref _osc_Address_Input_TextNotification, value);
@@ -669,22 +669,22 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// OSC Address to send to tool for external text to be sent as audio
     /// </summary>
-    public string Osc_Address_Input_Audio //todo: [IMPL] Add to CLI
+    public string Osc_Address_Input_AudioMessage
     {
-        get => _osc_Address_Input_Audio;
-        set => SetProperty(ref _osc_Address_Input_Audio, value);
+        get => _osc_Address_Input_AudioMessage;
+        set => SetProperty(ref _osc_Address_Input_AudioMessage, value);
     }
-    private string _osc_Address_Input_Audio = "/hoscy/tts";
+    private string _osc_Address_Input_AudioMessage = "/hoscy/tts";
 
     /// <summary>
     /// OSC Address to send to tool for external text to be sent as other
     /// </summary>
-    public string Osc_Address_Input_Other //todo: [IMPL] Add to CLI
+    public string Osc_Address_Input_OtherMessage
     {
-        get => _osc_Address_Input_Other;
-        set => SetProperty(ref _osc_Address_Input_Other, value);
+        get => _osc_Address_Input_OtherMessage;
+        set => SetProperty(ref _osc_Address_Input_OtherMessage, value);
     }
-    private string _osc_Address_Input_Other = "/hoscy/other";
+    private string _osc_Address_Input_OtherMessage = "/hoscy/other";
 
     /// <summary>
     /// OSC Address to send to tool to pause media

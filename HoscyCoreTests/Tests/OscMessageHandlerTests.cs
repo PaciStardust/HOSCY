@@ -365,10 +365,10 @@ public class OscMessageHandlerFunctionTests : TestBase<OscMessageHandlerFunction
         var result = handler.HandleMessage(message);
         Assert.That(result, Is.False, "Handler should not have handled the message");
 
-        AssertExternalInput(handler, _config.Osc_Address_Input_Audio, "AudioTest",
+        AssertExternalInput(handler, _config.Osc_Address_Input_AudioMessage, "AudioTest",
         () => input.AudioMessages, (x) => input.AudioMessages[x]);
 
-        AssertExternalInput(handler, _config.Osc_Address_Input_Other, "OtherTest",
+        AssertExternalInput(handler, _config.Osc_Address_Input_OtherMessage, "OtherTest",
         () => input.OtherMessages, (x) => input.OtherMessages[x]);
 
         AssertExternalInput(handler, _config.Osc_Address_Input_TextMessage, "TextMessageTest",

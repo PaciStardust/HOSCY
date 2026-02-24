@@ -27,13 +27,13 @@ public class ExternalInputMessageHandler(ConfigModel config, IInputService input
             return true;
         }
 
-        if (message.Address.Equals(_config.Osc_Address_Input_Audio, StringComparison.OrdinalIgnoreCase))
+        if (message.Address.Equals(_config.Osc_Address_Input_AudioMessage, StringComparison.OrdinalIgnoreCase))
         {
             SendMessage(message, SendMode.AudioMessage);
             return true;
         }
 
-        if (message.Address.Equals(_config.Osc_Address_Input_Other, StringComparison.OrdinalIgnoreCase))
+        if (message.Address.Equals(_config.Osc_Address_Input_OtherMessage, StringComparison.OrdinalIgnoreCase))
         {
             SendMessage(message, SendMode.OtherMessage);
             return true;
