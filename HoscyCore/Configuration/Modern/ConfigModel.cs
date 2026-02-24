@@ -199,7 +199,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Open a Windows Debug Window on startup?
     /// </summary>
-    public bool Debug_LogViaCmdOnWindows //todo: [IMPL] Add to CLI
+    public bool Debug_LogViaCmdOnWindows
     {
         get => _debug_LogViaCmdOnWindows;
         set => SetProperty(ref _debug_LogViaCmdOnWindows, value);
@@ -209,7 +209,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Log to terminal when launched in one?
     /// </summary>
-    public bool Debug_LogViaTerminal //todo: [IMPL] Add to CLI
+    public bool Debug_LogViaTerminal
     {
         get => _debug_LogViaTerminal;
         set => SetProperty(ref _debug_LogViaTerminal, value);
@@ -219,7 +219,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Log to a separate terminal by following the log file
     /// </summary>
-    public bool Debug_LogViaFileFollow //todo: [IMPL] Add to CLI
+    public bool Debug_LogViaFileFollow
     {
         get => _debug_LogViaFileFollow;
         set => SetProperty(ref _debug_LogViaFileFollow, value);
@@ -229,7 +229,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Process to use for following the log file
     /// </summary>
-    public string Debug_LogFileFollowProcess //todo: [IMPL] Add to CLI
+    public string Debug_LogFileFollowProcess
     {
         get => _debug_LogFileFollowProcess;
         set => SetProperty(ref _debug_LogFileFollowProcess, value);
@@ -239,7 +239,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Command to use for following the log file
     /// </summary>
-    public string Debug_LogFileFollowCommand //todo: [IMPL] Add to CLI
+    public string Debug_LogFileFollowCommand
     {
         get => _debug_LogFileFollowCommand;
         set => SetProperty(ref _debug_LogFileFollowCommand, value);
@@ -249,7 +249,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Minimum log severity to display
     /// </summary>
-    public LogEventLevel Debug_LogMinimumSeverity //todo: [IMPL] Add to CLI
+    public LogEventLevel Debug_LogMinimumSeverity
     {
         get => _debug_LogMinimumSeverity;
         set
@@ -266,7 +266,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Log filters to apply
     /// </summary>
-    public List<FilterModel> Debug_LogFilters //todo: [IMPL] Add to CLI
+    public List<FilterModel> Debug_LogFilters
     {
         get => _debug_LogFilters;
         set => SetProperty(ref _debug_LogFilters, value);
