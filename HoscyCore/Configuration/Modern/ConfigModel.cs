@@ -1287,7 +1287,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// API Preset for API Translation 
     /// </summary>
-    public string Translation_Api_Preset //todo: [IMPL] Add to CLI
+    public string Translation_Api_Preset
     {
         get => _translation_Api_Preset;
         set => SetProperty(ref _translation_Api_Preset, value);
