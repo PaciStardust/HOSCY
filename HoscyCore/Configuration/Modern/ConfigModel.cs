@@ -1195,7 +1195,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Current module selected for translation
     /// </summary>
-    public string Translation_SelectedModuleName //todo: [FEAT] Implement in CLI
+    public string Translation_SelectedModuleName
     {
         get => _translation_SelectedModuleName;
         set => SetProperty(ref _translation_SelectedModuleName, value);
@@ -1205,7 +1205,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Autostart for Translation
     /// </summary>
-    public bool Translation_AutoStart //todo: [FEAT] Implement in CLI
+    public bool Translation_AutoStart
     {
         get => _translation_AutoStart;
         set => SetProperty(ref _translation_AutoStart, value);
@@ -1215,7 +1215,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Skip longer messages for API Translation, will be cropped otherwise
     /// </summary>
-    public bool Translation_SkipLongerMessages //todo: [IMPL] Add to CLI
+    public bool Translation_SkipLongerMessages
     {
         get => _translation_SkipLongerMessages;
         set => SetProperty(ref _translation_SkipLongerMessages, value);
@@ -1225,7 +1225,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Max Text Length for Translation 
     /// </summary>
-    public int Translation_MaxTextLength //todo: [IMPL] Add to CLI
+    public int Translation_MaxTextLength
     {
         get => _translation_MaxTextLength;
         set => SetProperty(ref _translation_MaxTextLength, value.MinMax(1, short.MaxValue));
@@ -1265,7 +1265,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Send untranslated text if nothing can output translation
     /// </summary>
-    public bool Translation_SendUntranslatedIfUnavailable //todo: [IMPL] Add to CLI
+    public bool Translation_SendUntranslatedIfUnavailable
     {
         get => _translation_SendUntranslatedIfUnavailable;
         set => SetProperty(ref _translation_SendUntranslatedIfUnavailable, value);
@@ -1275,7 +1275,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Send untranslated if translation fails
     /// </summary>
-    public bool Translation_SendUntranslatedIfFailed //todo: [IMPL] Add to CLI
+    public bool Translation_SendUntranslatedIfFailed
     {
         get => _translation_SendUntranslatedIfFailed;
         set => SetProperty(ref _translation_SendUntranslatedIfFailed, value);
