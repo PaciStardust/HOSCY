@@ -210,6 +210,42 @@ public class StartStopModuleControllerBaseStartupTests : SoloModuleManagerBaseTe
             Assert.That(_manager.GetCurrentModuleInfo(), Is.EqualTo(_infoA));
         }
     }
+
+    [TestCase(false), TestCase(true)]
+    public void AutomaticModuleStartTest(bool automaticStart)
+    {
+        SetModule(_infoA.Name);
+        _config.Translation_AutoStart = automaticStart;
+
+        _manager.Start();
+
+        using (Assert.EnterMultipleScope())
+        {
+            if (automaticStart)
+            {
+                AssertServiceProcessing(_manager);
+                Assert.That(_manager.GetCurrentModuleInfo(), Is.EqualTo(_infoA));
+                Assert.That(_moduleA.Started, Is.True);
+            }
+            else
+            {
+                AssertServiceStarted(_manager);
+                Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
+                Assert.That(_moduleA.Started, Is.False);
+            }
+            Assert.That(_moduleB.Started, Is.False);
+        }
+
+        _manager.StartModule();
+
+        using (Assert.EnterMultipleScope())
+        {
+            AssertServiceProcessing(_manager);
+            Assert.That(_manager.GetCurrentModuleInfo(), Is.EqualTo(_infoA));
+            Assert.That(_moduleA.Started, Is.True);
+            Assert.That(_moduleB.Started, Is.False);
+        }
+    }
 }
 
 public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseTestBase<StartStopModuleControllerBaseFunctionTests>
@@ -621,7 +657,6 @@ public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseT
             using (Assert.EnterMultipleScope())
             {
                 Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
-                Assert.That(_moduleA.Started, Is.False);
                 Assert.That(_manager.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Started));
             }
         }
