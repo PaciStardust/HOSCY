@@ -68,11 +68,35 @@ public class TranslationCommandModule
         return _reflectCm.SetProperty(nameof(ConfigModel.Translation_SendUntranslatedIfFailed));
     }
     #endregion
+
+    #region Start / Stop
+    [SubCommandModule(["status"], "Get the translator status")]
+    public CommandResult CmdStatus()
+    {
+        var text = $"Manager: {_translation.GetCurrentStatus()}\nModule ({_translation.GetCurrentModuleInfo()?.Name ?? "None"}): {_translation.GetCurrentModuleStatus()}";
+        Console.WriteLine(text);
+        return CommandResult.Success;
+    }
+
+    [SubCommandModule(["start"], "Start translator module")]
+    public CommandResult CmdStart()
+    {
+        var res = _translation.StartModule();
+        return res ? CommandResult.Success : CommandResult.Error;
+    }
+
+    [SubCommandModule(["stop"], "Stop translator module")]
+    public CommandResult CmdStop()
+    {
+        var res = _translation.StopModule();
+        return res ? CommandResult.Success : CommandResult.Error;
+    }
+
+    [SubCommandModule(["restart"], "Restart translator module")]
+    public CommandResult CmdRestart()
+    {
+        var res = _translation.RestartModule();
+        return res ? CommandResult.Success : CommandResult.Error;
+    }
+    #endregion
 }
-
-/*
-TODO:
-
-status, start stop,
-config options
-*/
