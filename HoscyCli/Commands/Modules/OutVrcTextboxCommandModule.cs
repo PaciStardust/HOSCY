@@ -2,7 +2,7 @@ using HoscyCli.Commands.Core;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Output.Core;
-using HoscyCore.Services.Output.Handling.Textbox;
+using HoscyCore.Services.Output.Handlers;
 
 namespace HoscyCli.Commands.Modules;
 
