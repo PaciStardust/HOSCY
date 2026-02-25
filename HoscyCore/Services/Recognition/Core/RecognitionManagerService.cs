@@ -17,7 +17,7 @@ public class RecognitionManagerService
     IContainerBulkLoader<IRecognitionModuleStartInfo> infoLoader,
     IContainerBulkLoader<IRecognitionModule> moduleLoader,
     ConfigModel config,
-    OutputManagerService output
+    IOutputManagerService output
 ) 
     : SoloModuleManagerBase<IRecognitionModuleStartInfo, IRecognitionModule, RecognitionManagerService>
         (notify, logger, infoLoader, moduleLoader),
@@ -25,7 +25,7 @@ public class RecognitionManagerService
 {
     #region Injected
     private readonly ConfigModel _config = config;
-    private readonly OutputManagerService _output = output;
+    private readonly IOutputManagerService _output = output;
     #endregion
 
     #region Module => Start / Stop
