@@ -13,6 +13,9 @@ public class ApiTranslationModuleStartInfo : ITranslationModuleStartInfo
     public string Name => "Api Translator";
     public string Description => "Translation using any provided API Info";
     public Type ModuleType => typeof(ApiTranslationModule);
+
+    public TranslationModuleConfigFlags ConfigFlags
+        => TranslationModuleConfigFlags.Api;
 }
 
 [PrototypeLoadIntoDiContainer(typeof(ApiTranslationModule), Lifetime.Transient)]

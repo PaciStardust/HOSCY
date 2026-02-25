@@ -10,6 +10,9 @@ public class TestTranslationModuleStartInfo : ITranslationModuleStartInfo
     public string Name => "Test Translator";
     public string Description => "Translator for test purposes, only outputs random garbage";
     public Type ModuleType => typeof(TestTranslationModule);
+
+    public TranslationModuleConfigFlags ConfigFlags 
+        => TranslationModuleConfigFlags.None;
 }
 
 [PrototypeLoadIntoDiContainer(typeof(TestTranslationModule), Lifetime.Transient)]

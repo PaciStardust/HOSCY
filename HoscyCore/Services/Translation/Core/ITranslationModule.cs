@@ -2,7 +2,17 @@ using HoscyCore.Services.Core;
 
 namespace HoscyCore.Services.Translation.Core;
 
-public interface ITranslationModuleStartInfo : ISoloModuleStartInfo;
+public interface ITranslationModuleStartInfo : ISoloModuleStartInfo
+{
+    public TranslationModuleConfigFlags ConfigFlags { get; }
+}
+
+[Flags]
+public enum TranslationModuleConfigFlags
+{
+    None = 0b0,
+    Api = 0b1
+}
 
 public interface ITranslationModule : IStartStopModule
 {

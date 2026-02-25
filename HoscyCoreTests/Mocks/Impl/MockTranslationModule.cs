@@ -3,7 +3,12 @@ using HoscyCoreTests.Mocks.Base;
 
 namespace HoscyCoreTests.Mocks.Impl;
 
-public class MockTranslationModuleStartInfo : MockSoloModuleStartInfoBase, ITranslationModuleStartInfo;
+public class MockTranslationModuleStartInfo : MockSoloModuleStartInfoBase, ITranslationModuleStartInfo
+{
+    public TranslationModuleConfigFlags ConfigFlags
+        => TranslationModuleConfigFlags.None;
+}
+
 
 public abstract class MockTranslationModule : MockStartStopModuleBase, ITranslationModule
 {
