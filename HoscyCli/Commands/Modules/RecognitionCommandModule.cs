@@ -39,20 +39,20 @@ public class RecognitionCommandModule
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Send_ViaOther));
     }
 
-    [SubCommandModule(["send-translate"], "Should recognition be translated")]
-    public CommandResult CmdSendTranslate()
+    [SubCommandModule(["translate"], "Should recognition be translated")]
+    public CommandResult CmdDoTranslate()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Send_DoTranslate));
     }
 
-    [SubCommandModule(["send-pre-partial"], "Should partial preprocessing be done")]
-    public CommandResult CmdSendPrePartial()
+    [SubCommandModule(["preprocess-partial"], "Should partial preprocessing be done")]
+    public CommandResult CmdPreprocessPartial()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Send_DoPreprocessPartial));
     }
 
-    [SubCommandModule(["send-pre-full"], "Should full preprocessing be done")]
-    public CommandResult CmdSendPreFull()
+    [SubCommandModule(["preprocess-full"], "Should full preprocessing be done")]
+    public CommandResult CmdPreprocessFull()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Send_DoPreprocessFull));
     }
