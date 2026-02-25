@@ -63,6 +63,17 @@ public class RecognitionCommandModule
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Mute_StartUnmuted));
     }
 
+    [SubCommandModule(["modules"], "Lists recognition modules")] 
+    public CommandResult CmdModules()
+    {
+        var modules = _recognition.GetModuleInfos();
+        var moduleText = modules.Count > 0
+            ? string.Join("\n", modules.Select(x => $" - {x.Name} > {x.Description}"))
+            : "[NONE]";
+        Console.WriteLine($"All available recognition modules:\n{moduleText}");
+        return CommandResult.Success;
+    }
+
     [SubCommandModule(["selected"], "Module to use for recognition")]
     public CommandResult CmdSelected()
     {
