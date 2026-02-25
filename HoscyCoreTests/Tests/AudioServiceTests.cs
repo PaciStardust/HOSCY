@@ -1,3 +1,4 @@
+using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Audio;
 using HoscyCoreTests.Utils;
 
@@ -7,11 +8,13 @@ namespace HoscyCoreTests.Tests.AudioServiceTests;
 
 public class AudioServiceStartupTests : TestBase<AudioServiceStartupTests>
 {
+    private ConfigModel _config = null!;
     private AudioService _audio = null!;
 
     protected override void SetupExtra()
     {
-        _audio = new(_logger);
+        _config = new();
+        _audio = new(_logger, _config);
     }
 
     [TestCase(false, false), TestCase(true, false), TestCase(false, true)]
@@ -23,11 +26,12 @@ public class AudioServiceStartupTests : TestBase<AudioServiceStartupTests>
 
 public class AudioServiceFunctionTests : TestBase<AudioServiceFunctionTests>
 {
+    private readonly ConfigModel _config = new();
     private AudioService _audioService = null!;
 
     protected override void OneTimeSetupExtra()
     {
-        _audioService = new(_logger);
+        _audioService = new(_logger, _config);
         _audioService.Start();
     }
 
