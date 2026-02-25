@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Core;
+using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Interfacing;
 using HoscyCore.Services.Output.Core;
 using HoscyCore.Utility;
@@ -8,6 +9,7 @@ using Serilog;
 
 namespace HoscyCore.Services.Recognition.Core;
 
+[PrototypeLoadIntoDiContainer(typeof(IRecognitionManagerService), Lifetime.Singleton)]
 public class RecognitionManagerService
 (
     IBackToFrontNotifyService notify,
