@@ -2,7 +2,7 @@ using Serilog;
 
 namespace HoscyCore.Services.Dependency;
 
-public class PrototypeLoadIntoDiContainer(Type asType, Lifetime lifetime = Lifetime.Singleton) : LoadIntoDiContainerAttribute(asType, lifetime)
+public class PrototypeLoadIntoDiContainer(Type asType, Lifetime lifetime = Lifetime.Singleton, SupportedPlatformFlags platforms = SupportedPlatformFlags.All) : LoadIntoDiContainerAttribute(asType, lifetime, platforms)
 {
     public void NotifyAboutLoadedPrototype(Type impl, ILogger logger)
     {

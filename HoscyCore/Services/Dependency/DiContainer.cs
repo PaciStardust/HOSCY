@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Core;
 using HoscyCore.Utility;
@@ -110,7 +111,7 @@ public class DiContainer
         foreach (var type in compatibleTypes)
         {
             var attribute = type.GetCustomAttribute<LoadIntoDiContainerAttribute>();
-            if (attribute != null)
+            if (attribute != null && IsPlatformCompatible(attribute.SupportedPlatforms))
             {
                 loadedTypes.Add((type, attribute));
             }
@@ -142,6 +143,17 @@ public class DiContainer
                 collection.AddSingleton(attribute.AsType, implType);
                 break;
         }
+    }
+
+    /// <summary>
+    /// Returns if the current platform is supported by a service
+    /// </summary>
+    private static bool IsPlatformCompatible(SupportedPlatformFlags flags)
+    {
+        return flags == SupportedPlatformFlags.All
+            || (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && flags.HasFlag(SupportedPlatformFlags.Linux))
+            || (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && flags.HasFlag(SupportedPlatformFlags.Windows))
+            || (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && flags.HasFlag(SupportedPlatformFlags.OSX));
     }
     #endregion
 
