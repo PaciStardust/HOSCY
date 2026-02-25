@@ -5,7 +5,7 @@ using HoscyCore.Services.Misc;
 
 namespace HoscyCli.Commands.Modules;
 
-[PrototypeLoadIntoDiContainer(typeof(InputCommandModule))] //todo: [REFACTOR] Naming scheme here is a bit odd
+[PrototypeLoadIntoDiContainer(typeof(InputCommandModule))]
 public class InputCommandModule(IInputService input, ReflectPropEditCommandModule reflectCm, ConfigModel config) : AttributeCommandModule, ICoreCommandModule
 {
     private readonly IInputService _input = input;
@@ -17,8 +17,8 @@ public class InputCommandModule(IInputService input, ReflectPropEditCommandModul
     public string[] ModuleCommands => ["input"];
 
     #region External
-    [SubCommandModule(["e-t-send"], "Send an external text message")]
-    public CommandResult CmdExTextSend(string? args)
+    [SubCommandModule(["e-send-t"], "Send an external text message")]
+    public CommandResult CmdExSendText(string? args)
     {
         if (OnEmpty(args, "Must provide contents to send")) return CommandResult.MissingParameter;
         _input.SendExternalTextMessage(args);
@@ -26,8 +26,8 @@ public class InputCommandModule(IInputService input, ReflectPropEditCommandModul
         return CommandResult.Success;   
     }
 
-    [SubCommandModule(["e-a-send"], "Send an external audio message")]
-    public CommandResult CmdExAudioSend(string? args)
+    [SubCommandModule(["e-send-a"], "Send an external audio message")]
+    public CommandResult CmdExSendAudio(string? args)
     {
         if (OnEmpty(args, "Must provide contents to send")) return CommandResult.MissingParameter;
         _input.SendExternalAudioMessage(args);
@@ -35,8 +35,8 @@ public class InputCommandModule(IInputService input, ReflectPropEditCommandModul
         return CommandResult.Success;   
     }
 
-    [SubCommandModule(["e-o-send"], "Send an external other message")]
-    public CommandResult CmdExOtherSend(string? args)
+    [SubCommandModule(["e-send-o"], "Send an external other message")]
+    public CommandResult CmdExSendOther(string? args)
     {
         if (OnEmpty(args, "Must provide contents to send")) return CommandResult.MissingParameter;
         _input.SendExternalOtherMessage(args);
@@ -44,8 +44,8 @@ public class InputCommandModule(IInputService input, ReflectPropEditCommandModul
         return CommandResult.Success;   
     }
 
-    [SubCommandModule(["e-t-notify"], "Send an external notification")]
-    public CommandResult CmdExTextNotify(string? args)
+    [SubCommandModule(["e-sent-notify-t"], "Send an external notification")]
+    public CommandResult CmdExSendNotifyText(string? args)
     {
         if (OnEmpty(args: args, message: "Must provide contents to send")) return CommandResult.MissingParameter;
         _input.SendExternalTextNotification(args);
