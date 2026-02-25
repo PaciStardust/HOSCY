@@ -5,7 +5,7 @@ using HoscyCore.Services.Misc;
 
 namespace HoscyCli.Commands.Modules;
 
-[PrototypeLoadIntoDiContainer(typeof(InputCommandModule))]
+[PrototypeLoadIntoDiContainer(typeof(InputCommandModule))] //todo: [REFACTOR] Naming scheme here is a bit odd
 public class InputCommandModule(IInputService input, ReflectPropEditCommandModule reflectCm, ConfigModel config) : AttributeCommandModule, ICoreCommandModule
 {
     private readonly IInputService _input = input;

@@ -803,7 +803,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Allow sending recognition result over text
     /// </summary>
-    public bool Recognition_Send_ViaText //todo: [IMPL] To be implemented
+    public bool Recognition_Send_ViaText
     {
         get => _recognition_Send_ViaText;
         set => SetProperty(ref _recognition_Send_ViaText, value);
@@ -813,7 +813,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Allow sending recognition result over audio
     /// </summary>
-    public bool Recognition_Send_ViaAudio //todo: [IMPL] To be implemented
+    public bool Recognition_Send_ViaAudio
     {
         get => _recognition_Send_ViaAudio;
         set => SetProperty(ref _recognition_Send_ViaAudio, value);
@@ -823,7 +823,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Allow sending recognition result over other
     /// </summary>
-    public bool Recognition_Send_ViaOther //todo: [IMPL] To be implemented
+    public bool Recognition_Send_ViaOther
     {
         get => _recognition_Send_ViaOther;
         set => SetProperty(ref _recognition_Send_ViaOther, value);
@@ -833,7 +833,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Allow translation of recognition result
     /// </summary>
-    public bool Recognition_Send_DoTranslate //todo: [IMPL] To be implemented
+    public bool Recognition_Send_DoTranslate
     {
         get => _recognition_Send_DoTranslate;
         set => SetProperty(ref _recognition_Send_DoTranslate, value);
@@ -843,7 +843,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Allow partial preprocessing of recognition result
     /// </summary>
-    public bool Recognition_Send_DoPreprocessPartial //todo: [IMPL] To be implemented
+    public bool Recognition_Send_DoPreprocessPartial
     {
         get => _recognition_Send_DoPreprocessPartial;
         set => SetProperty(ref _recognition_Send_DoPreprocessPartial, value);
@@ -853,7 +853,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Allow full preprocessing of recognition result
     /// </summary>
-    public bool Recognition_Send_DoPreprocessFull //todo: [IMPL] To be implemented
+    public bool Recognition_Send_DoPreprocessFull
     {
         get => _recognition_Send_DoPreprocessFull;
         set => SetProperty(ref _recognition_Send_DoPreprocessFull, value);
@@ -863,7 +863,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Should recognition be unmuted when started
     /// </summary>
-    public bool Recognition_Mute_StartUnmuted //todo: [IMPL] To be implemented
+    public bool Recognition_Mute_StartUnmuted
     {
         get => _recognition_Mute_StartUnmuted;
         set => SetProperty(ref _recognition_Mute_StartUnmuted, value);
@@ -893,7 +893,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Module to use for recognition
     /// </summary>
-    public string Recognition_SelectedModuleName //todo: [IMPL] To be implemented
+    public string Recognition_SelectedModuleName
     {
         get => _recognition_SelectedModuleName;
         set => SetProperty(ref _recognition_SelectedModuleName, value);
@@ -903,7 +903,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Should recognition start automatically
     /// </summary>
-    public bool Recognition_AutoStart //todo: [IMPL] To be implemented
+    public bool Recognition_AutoStart
     {
         get => _recognition_AutoStart;
         set => SetProperty(ref _recognition_AutoStart, value);
@@ -913,7 +913,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Noise filtered out by recognizers
     /// </summary>
-    public HashSet<string> Recognition_Fixup_NoiseFilter //todo: [IMPL] To be implemented
+    public HashSet<string> Recognition_Fixup_NoiseFilter
     {
         get => _recognition_Fixup_NoiseFilter;
         set => SetProperty(ref _recognition_Fixup_NoiseFilter, value);
@@ -923,7 +923,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Remove the period at the end of a message
     /// </summary>
-    public bool Recognition_Fixup_RemoveEndPeriod //todo: [IMPL] To be implemented
+    public bool Recognition_Fixup_RemoveEndPeriod
     {
         get => _recognition_Fixup_RemoveEndPeriod;
         set => SetProperty(ref _recognition_Fixup_RemoveEndPeriod, value);
@@ -933,7 +933,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Capitalizes the first character of the message
     /// </summary>
-    public bool Recognition_Fixup_CapitalizeFirstLetter //todo: [IMPL] To be implemented
+    public bool Recognition_Fixup_CapitalizeFirstLetter
     {
         get => _recognition_Fixup_CapitalizeFirstLetter;
         set => SetProperty(ref _recognition_Fixup_CapitalizeFirstLetter, value);

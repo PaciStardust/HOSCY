@@ -70,7 +70,7 @@ public class TranslationCommandModule
     #endregion
 
     #region Start / Stop
-    [SubCommandModule(["status"], "Get the translator status")]
+    [SubCommandModule(["status"], "Get the translation status")]
     public CommandResult CmdStatus()
     {
         var text = $"Manager: {_translation.GetCurrentStatus()}\nModule ({_translation.GetCurrentModuleInfo()?.Name ?? "None"}): {_translation.GetCurrentModuleStatus()}";
@@ -78,21 +78,21 @@ public class TranslationCommandModule
         return CommandResult.Success;
     }
 
-    [SubCommandModule(["start"], "Start translator module")]
+    [SubCommandModule(["start"], "Start translation module")]
     public CommandResult CmdStart()
     {
         var res = _translation.StartModule();
         return res ? CommandResult.Success : CommandResult.Error;
     }
 
-    [SubCommandModule(["stop"], "Stop translator module")]
+    [SubCommandModule(["stop"], "Stop translation module")]
     public CommandResult CmdStop()
     {
         var res = _translation.StopModule();
         return res ? CommandResult.Success : CommandResult.Error;
     }
 
-    [SubCommandModule(["restart"], "Restart translator module")]
+    [SubCommandModule(["restart"], "Restart translation module")]
     public CommandResult CmdRestart()
     {
         var res = _translation.RestartModule();
