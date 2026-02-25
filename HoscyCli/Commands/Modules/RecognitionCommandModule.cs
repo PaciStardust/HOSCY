@@ -1,9 +1,11 @@
 using HoscyCli.Commands.Core;
 using HoscyCore.Configuration.Modern;
+using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Recognition.Core;
 
 namespace HoscyCli.Commands.Modules;
 
+[PrototypeLoadIntoDiContainer(typeof(RecognitionCommandModule))]
 public class RecognitionCommandModule
 (
     ReflectPropEditCommandModule reflectCm,
