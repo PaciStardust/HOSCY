@@ -14,6 +14,9 @@ public class TestRecognitionModuleStartInfo : IRecognitionModuleStartInfo
     public string Name => "Test Recognizer";
     public string Description => "For testing only";
     public Type ModuleType => typeof(TestRecognitionModule);
+
+    public RecognitionModuleConfigFlags ConfigFlags 
+        => RecognitionModuleConfigFlags.Microphone;
 }
 
 [PrototypeLoadIntoDiContainer(typeof(TestRecognitionModule), Lifetime.Transient)]
