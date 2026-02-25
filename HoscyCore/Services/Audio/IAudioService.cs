@@ -1,9 +1,13 @@
 using HoscyCore.Services.Core;
+using SoundFlow.Abstracts.Devices;
+using SoundFlow.Structs;
 
 namespace HoscyCore.Services.Audio;
 
 public interface IAudioService : IAutoStartStopService
 {
-    public SoundFlow.Structs.DeviceInfo[]? GetCaptureDevices();
-    public SoundFlow.Structs.DeviceInfo[]? GetPlaybackDevices();
+    public DeviceInfo[]? GetCaptureDevices();
+    public AudioCaptureDevice CreateCaptureDevice();
+    
+    public DeviceInfo[]? GetPlaybackDevices();
 }
