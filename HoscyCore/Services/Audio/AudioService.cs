@@ -5,6 +5,7 @@ using Serilog;
 using SoundFlow.Abstracts;
 using SoundFlow.Abstracts.Devices;
 using SoundFlow.Backends.MiniAudio;
+using SoundFlow.Enums;
 using SoundFlow.Structs;
 
 namespace HoscyCore.Services.Audio;
@@ -68,8 +69,8 @@ public class AudioService(ILogger logger, ConfigModel config) : StartStopService
         var format = new AudioFormat
         {
             SampleRate = 16000,
-            Channels = 1
-            //todo: format needed?
+            Channels = 1,
+            Format = SampleFormat.S16
         };
 
         _logger.Debug("Creating capture device for device {devName}", devInfo);

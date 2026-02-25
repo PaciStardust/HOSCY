@@ -88,7 +88,10 @@ public class TestRecognitionModule(ILogger logger, IAudioService audio) : StartS
             sum += sample;
         }
         var avg = sum / samples.Length;
-        _logger.Verbose("Processed: Count={count} Sum={sum} Avg={avg}", samples.Length, sum, avg);
+        _logger.Verbose("Processed: Count={count} Sum={sum} Avg={avg}",
+            samples.Length.ToString().PadRight(16),
+            sum.ToString().PadRight(16),
+            avg.ToString().PadRight(16));
     }
     #endregion
 }
