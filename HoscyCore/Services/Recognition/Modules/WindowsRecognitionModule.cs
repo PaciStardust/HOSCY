@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Speech.Recognition;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Core;
@@ -9,6 +10,7 @@ using Serilog;
 
 namespace HoscyCore.Services.Recognition.Modules;
 
+[SupportedOSPlatform("windows")]
 [PrototypeLoadIntoDiContainer(typeof(WindowsRecognitionModuleStartInfo), Lifetime.Singleton, SupportedPlatformFlags.Windows)]
 public class WindowsRecognitionModuleStartInfo : ITranslationModuleStartInfo
 {
@@ -28,6 +30,7 @@ public class WindowsRecognitionModuleStartInfo : ITranslationModuleStartInfo
         => TranslationModuleConfigFlags.Windows;
 }
 
+[SupportedOSPlatform("windows")]
 [PrototypeLoadIntoDiContainer(typeof(WindowsRecognitionModule), Lifetime.Transient, SupportedPlatformFlags.Windows)]
 public class WindowsRecognitionModule: StartStopModuleBase, IRecognitionModule
 {
