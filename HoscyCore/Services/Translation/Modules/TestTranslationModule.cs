@@ -16,7 +16,7 @@ public class TestTranslationModuleStartInfo : ITranslationModuleStartInfo
 }
 
 [PrototypeLoadIntoDiContainer(typeof(TestTranslationModule), Lifetime.Transient)]
-public class TestTranslationModule : StartStopModuleBase, ITranslationModule
+public class TestTranslationModule : TranslationModuleBase
 {
     private const string CHARACTER_LIST = "abcdefghijklmnopqrstuvwxyz      ";
 
@@ -28,7 +28,7 @@ public class TestTranslationModule : StartStopModuleBase, ITranslationModule
         return;
     }
 
-    public TranslationResult TryTranslate(string input, out string? output)
+    public override TranslationResult TryTranslate(string input, out string? output)
     {
         var characters = _random.Next(100);
         var words = new char[characters];
