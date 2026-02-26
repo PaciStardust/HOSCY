@@ -82,13 +82,13 @@ public class AfkService(ConfigModel config, IOutputManagerService output, ILogge
     protected override bool IsProcessing()
         => _afkTimer is not null;
 
-    protected override void StartInternal()
+    protected override void StartForService()
     {
         _logger.Debug("AfkService start/stop only exists for shutdown cleanup!");
     }
     protected override bool UseAlreadyStartedProtection => false;
 
-    protected override void StopInternal()
+    protected override void StopForService()
     {
         StopAfk();
     }

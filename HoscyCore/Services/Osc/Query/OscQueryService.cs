@@ -21,7 +21,7 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
     private Timer? _serviceRefreshTimer = null;
 
     #region Start/Stop
-    protected override void StartInternal()
+    protected override void StartForService()
     {
         var udpPort = _listener.GetPort();
         if (!udpPort.HasValue)
@@ -61,7 +61,7 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
     }
     protected override bool UseAlreadyStartedProtection => true;
 
-    protected override void StopInternal()
+    protected override void StopForService()
     {
         _logger.Debug("Stopping refresh timer");
         _serviceRefreshTimer?.Stop();

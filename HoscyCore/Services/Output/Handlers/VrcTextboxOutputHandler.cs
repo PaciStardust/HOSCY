@@ -360,14 +360,14 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
     #endregion
 
     #region Start / Stop
-    protected override void StartInternal()
+    protected override void StartForService()
     {
         _cts = new CancellationTokenSource();
         _workerTask = Task.Run(ProcessingLoop);
     }
     protected override bool UseAlreadyStartedProtection => true;
 
-    protected override void StopInternalInternal()
+    protected override void StopForModule()
     {
         _logger.Debug("Stopping processing loop...");
         _cts?.Cancel();

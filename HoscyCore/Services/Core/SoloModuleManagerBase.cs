@@ -75,7 +75,7 @@ public abstract class SoloModuleManagerBase<TModuleStartInfo, TModule>
     #endregion
 
     #region Start / Stop
-    protected override void StartInternal()
+    protected override void StartForService()
     {
         _logger.Debug("Loading available ModuleStartInfos and perform module refresh");
         _moduleInfos.Clear();
@@ -96,7 +96,7 @@ public abstract class SoloModuleManagerBase<TModuleStartInfo, TModule>
     }
     protected override bool UseAlreadyStartedProtection => true;
 
-    protected override void StopInternal() 
+    protected override void StopForService() 
     {
         StopModule();
         _moduleInfos.Clear();

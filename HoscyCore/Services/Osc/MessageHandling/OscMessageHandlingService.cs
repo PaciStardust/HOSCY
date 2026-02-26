@@ -36,14 +36,14 @@ public class OscMessageHandlingService(ILogger logger, IContainerBulkLoader<IOsc
     protected override bool IsProcessing()
         => IsStarted() && _handlers!.Length > 0;
 
-    protected override void StartInternal()
+    protected override void StartForService()
     {
         _logger.Verbose("Loading Message Handlers");
         _handlers = _bulkLoader.GetInstances().ToArray();
     }
     protected override bool UseAlreadyStartedProtection => false;
     
-    protected override void StopInternal()
+    protected override void StopForService()
     {
         _handlers = null;
     }

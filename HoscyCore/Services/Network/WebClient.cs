@@ -12,7 +12,7 @@ public class WebClient(ILogger logger)
     private HttpClient? _client = null;
 
     #region Start / Stop
-    protected override void StartInternal()
+    protected override void StartForService()
     {
         _logger.Debug("Starting internal HttpClient");
         var client = new HttpClient(new SocketsHttpHandler()
@@ -27,7 +27,7 @@ public class WebClient(ILogger logger)
     }
     protected override bool UseAlreadyStartedProtection => true;
 
-    protected override void StopInternal()
+    protected override void StopForService()
     {
         _client?.Dispose();
         _client = null;

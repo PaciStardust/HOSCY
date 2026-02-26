@@ -59,7 +59,7 @@ public class WindowsRecognitionModule: StartStopModuleBase, IRecognitionModule
     #endregion
 
     #region Start / Stop
-    protected override void StartInternal()
+    protected override void StartForService()
     {
         //todo: [FEAT] Logging?
         var engine = CreateEngine();
@@ -71,7 +71,7 @@ public class WindowsRecognitionModule: StartStopModuleBase, IRecognitionModule
     }
     protected override bool UseAlreadyStartedProtection => true;
 
-    protected override void StopInternalInternal()
+    protected override void StopForModule()
     {
         //todo: [REFACTOR] Should listening be stopped here?
         _engine?.SpeechRecognized -= HandleSpeechRecognized;

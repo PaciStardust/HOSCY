@@ -21,13 +21,13 @@ public abstract class StartStopModuleBase(ILogger logger) : StartStopServiceBase
     #endregion
 
     #region Start / Stop
-    protected sealed override void StopInternal()
+    protected sealed override void StopForService()
     {
-        StopInternalInternal();
+        StopForModule();
         OnModuleStopped.Invoke(this, EventArgs.Empty);
     }
 
     // Yes this is horribly named, I am aware
-    protected abstract void StopInternalInternal();
+    protected abstract void StopForModule();
     #endregion
 }

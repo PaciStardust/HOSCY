@@ -39,7 +39,7 @@ public class TestRecognitionModule(ILogger logger, IAudioService audio)
 
     #region Start / Stop
 
-    protected override void StartInternal()
+    protected override void StartForService()
     {
         _mic = _audio.CreateCaptureDevice();
         _mic.OnAudioProcessed += OnAudioProcessed;
@@ -47,7 +47,7 @@ public class TestRecognitionModule(ILogger logger, IAudioService audio)
     }
     protected override bool UseAlreadyStartedProtection => true;
 
-    protected override void StopInternalInternal()
+    protected override void StopForModule()
     {
         _mic?.Stop();
         _mic?.OnAudioProcessed -= OnAudioProcessed;

@@ -26,7 +26,7 @@ public class ApiTranslationModule(ILogger logger, ConfigModel config, IApiClient
     private readonly IApiClient _client = client.AddIdentifier(nameof(ApiTranslationModule));
 
     #region Start/Stop
-    protected override void StartInternal()
+    protected override void StartForService()
     {
         _logger.Debug("Starting Translator with preset \"{preset}\"", _config.Translation_Api_Preset);
         var matchingModel = _config.Api_Presets.FirstOrDefault(x => x.Name == _config.Translation_Api_Preset);
@@ -46,7 +46,7 @@ public class ApiTranslationModule(ILogger logger, ConfigModel config, IApiClient
     }
     protected override bool UseAlreadyStartedProtection => true;
 
-    protected override void StopInternalInternal()
+    protected override void StopForModule()
     {
         if (_client.IsPresetLoaded())
         {

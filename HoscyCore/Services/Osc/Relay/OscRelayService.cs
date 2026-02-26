@@ -19,13 +19,13 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
     private List<OscReadonlyRelayFilter>? _filters = null;
 
     #region Start / Stop 
-    protected override void StartInternal()
+    protected override void StartForService()
     {
         ReloadValidRelayFilters(_config.Osc_Relay_Filters.ToList());
     }
     protected override bool UseAlreadyStartedProtection => false;
 
-    protected override void StopInternal()
+    protected override void StopForService()
     {
         ReloadValidRelayFilters([]);
         _filters = null;

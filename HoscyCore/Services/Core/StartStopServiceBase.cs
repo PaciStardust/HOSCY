@@ -40,13 +40,13 @@ public abstract class StartStopServiceBase(ILogger logger) : IStartStopService
 
         ClearFault();
         var sw = Stopwatch.StartNew();
-        StartInternal();
+        StartForService();
         sw.Stop();
 
         _logger.Debug("Service started in {elapsed}ms", sw.ElapsedMilliseconds);
     }
     protected abstract bool UseAlreadyStartedProtection { get; }
-    protected abstract void StartInternal();
+    protected abstract void StartForService();
     #endregion
 
     #region Stopping
@@ -55,12 +55,12 @@ public abstract class StartStopServiceBase(ILogger logger) : IStartStopService
         _logger.Debug("Service stopping");
 
         var sw = Stopwatch.StartNew();
-        StopInternal();
+        StopForService();
         sw.Stop();
 
         _logger.Debug("Service stopped in {elapsed}ms", sw.ElapsedMilliseconds);
     }
-    protected abstract void StopInternal();
+    protected abstract void StopForService();
     #endregion
 
     #region Restart

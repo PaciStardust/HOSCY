@@ -272,7 +272,7 @@ public class OscCommandService(ILogger logger, OscQueryHostRegistry hostRegistry
     #endregion
 
     #region Start / Stop
-    protected override void StartInternal()
+    protected override void StartForService()
     {
         if (_cts is null)
         {
@@ -292,7 +292,7 @@ public class OscCommandService(ILogger logger, OscQueryHostRegistry hostRegistry
     protected override bool IsProcessing()
         => IsStarted();
 
-    protected override void StopInternal()
+    protected override void StopForService()
     {
         _logger.Verbose("Ensuring all tasks ended");
         _cts?.Cancel();

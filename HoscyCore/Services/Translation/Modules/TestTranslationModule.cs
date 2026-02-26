@@ -48,13 +48,13 @@ public class TestTranslationModule(ILogger logger)
         return _running;
     }
 
-    protected override void StartInternal()
+    protected override void StartForService()
     {
         _running = true;
     }
     protected override bool UseAlreadyStartedProtection => false;
 
-    protected override void StopInternalInternal()
+    protected override void StopForModule()
     {
         _running = false;
     }

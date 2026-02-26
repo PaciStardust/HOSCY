@@ -57,7 +57,7 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
     #endregion
 
     #region Start/Stop
-    protected override void StartInternal()
+    protected override void StartForService()
     {
         _logger.Debug("Loading available OutputHandlerInfos");
 
@@ -82,7 +82,7 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
     }
     protected override bool UseAlreadyStartedProtection => true;
 
-    protected override void StopInternal()
+    protected override void StopForService()
     {
         var activeHandlerCount = _activeHandlers.Count;
         _logger.Debug("Shutting down {activeHandlers} Handlers", activeHandlerCount);

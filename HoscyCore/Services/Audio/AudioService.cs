@@ -25,14 +25,14 @@ public class AudioService(ILogger logger, ConfigModel config)
     protected override bool IsProcessing()
         => IsStarted();
 
-    protected override void StartInternal()
+    protected override void StartForService()
     {
         _logger.Debug("Starting audio engine");
         _audioEngine = new MiniAudioEngine();
     }
     protected override bool UseAlreadyStartedProtection => true;
 
-    protected override void StopInternal()
+    protected override void StopForService()
     {
         if (_audioEngine is not null && !_audioEngine.IsDisposed)
         {

@@ -38,7 +38,7 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
         return IsStarted() ? _config.Osc_Routing_ListenPort : null;
     }
 
-    protected override void StartInternal()
+    protected override void StartForService()
     {
         _logger.Debug("Starting up listener on localhost:{port}", _config.Osc_Routing_ListenPort);
         _listener = new(new(IPAddress.Loopback, _config.Osc_Routing_ListenPort))
@@ -51,7 +51,7 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
     }
     protected override bool UseAlreadyStartedProtection => true;
 
-    protected override void StopInternal()
+    protected override void StopForService()
     {
         _logger.Debug("Stopping listen loop...");
         _cts?.Cancel();
