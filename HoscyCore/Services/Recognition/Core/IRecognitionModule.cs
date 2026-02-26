@@ -20,5 +20,11 @@ public interface IRecognitionModule : IStartStopModule
     public event Action<bool> OnSpeechActivity;
 
     public bool IsListening { get; }
+    
+    /// <summary>
+    /// Sets the listening status of the module
+    /// </summary>
+    /// <param name="state">Target state</param>
+    /// <returns>Result state</returns>
     public bool SetListening(bool state);
 }
