@@ -11,7 +11,8 @@ public interface ITranslationModuleStartInfo : ISoloModuleStartInfo
 public enum TranslationModuleConfigFlags
 {
     None = 0b0,
-    Api = 0b1
+    Api = 0b1,
+    Windows = 0b10
 }
 
 public interface ITranslationModule : IStartStopModule
