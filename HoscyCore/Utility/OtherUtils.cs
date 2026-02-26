@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Text.RegularExpressions;
 using Serilog;
 
@@ -40,5 +42,15 @@ public static class OtherUtils
 
         var result = regex.Match(json)?.Groups["value"].Value ?? null;
         return string.IsNullOrWhiteSpace(result) ? null : Regex.Unescape(result);
+    }
+
+    public static void ThrowOnInvalidPlatform(OSPlatform[] platforms)
+    {
+        var isCompatible = platforms.Any(RuntimeInformation.IsOSPlatform);
+        if (!isCompatible)
+        {
+            var platformString = string.Join(", ", platforms.Select(x => x.ToString()));
+            throw new PlatformNotSupportedException($"Feature not supported on this platform, only available on: {platformString}");
+        }
     }
 }
