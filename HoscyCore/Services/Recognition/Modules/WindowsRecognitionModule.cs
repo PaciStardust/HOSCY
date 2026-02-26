@@ -58,7 +58,7 @@ public class WindowsRecognitionModule: StartStopModuleBase, IRecognitionModule
     #region Start / Stop
     protected override void StartInternal()
     {
-        //todo: started check and logging?
+        //todo: [FEAT] Logging?
         var engine = CreateEngine();
         engine.LoadGrammar(new DictationGrammar());
         engine.SpeechDetected += HandleSpeechDetected;

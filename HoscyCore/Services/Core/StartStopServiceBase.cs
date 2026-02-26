@@ -28,7 +28,7 @@ public abstract class StartStopServiceBase(ILogger logger) : IStartStopService
     #endregion
 
     #region Startup
-    public void Start() //todo: [REFACTOR] Apply the refactor pattern to module managers and also to test classes?
+    public void Start()
     {
         _logger.Debug("Service starting");
 
