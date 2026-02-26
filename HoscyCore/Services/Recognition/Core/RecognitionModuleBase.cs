@@ -8,11 +8,16 @@ public abstract class RecognitionModuleBase(ILogger logger)
 {
     #region Events
     public event Action<string> OnSpeechRecognized = delegate { };
+    protected void InvokeSpeechRecognized(string recognizedText)
+        => OnSpeechRecognized.Invoke(recognizedText);
+
     public event Action<bool> OnSpeechActivity = delegate { };
+    protected void InvokeSpeechActivity(bool state)
+        => OnSpeechActivity.Invoke(state);
     #endregion
 
     #region Listening
-    public abstract bool IsListening { get; }
+    public abstract bool IsListening { get; protected set; }
 
     public bool SetListening(bool state)
     {
