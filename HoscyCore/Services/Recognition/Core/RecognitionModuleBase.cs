@@ -17,7 +17,7 @@ public abstract class RecognitionModuleBase(ILogger logger)
     #endregion
 
     #region Listening
-    public abstract bool IsListening { get; protected set; }
+    public abstract bool IsListening { get; }
 
     public bool SetListening(bool state)
     {
@@ -35,11 +35,11 @@ public abstract class RecognitionModuleBase(ILogger logger)
             return state;
         }
 
-        var res = SetListeningForModule(state);
+        var res = SetListeningForRecognitionModule(state);
         _logger.Debug("Set listening status to {newState} (requested={requestedState})", res, state);
         return state;
     }
-    protected abstract bool SetListeningForModule(bool state);
+    protected abstract bool SetListeningForRecognitionModule(bool state);
     protected abstract bool UseOnlySetListeningWhenStartedProtection { get; }
     #endregion
 
