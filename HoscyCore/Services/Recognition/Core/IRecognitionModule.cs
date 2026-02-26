@@ -11,7 +11,8 @@ public interface IRecognitionModuleStartInfo : ISoloModuleStartInfo
 public enum RecognitionModuleConfigFlags
 {
     None = 0b0,
-    Microphone = 0b1
+    Microphone = 0b1,
+    Windows = 0b10
 }
 
 public interface IRecognitionModule : IStartStopModule

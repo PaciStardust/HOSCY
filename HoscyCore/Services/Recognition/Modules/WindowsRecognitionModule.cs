@@ -4,7 +4,6 @@ using System.Speech.Recognition;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Recognition.Core;
-using HoscyCore.Services.Translation.Core;
 using HoscyCore.Utility;
 using Serilog;
 
@@ -12,7 +11,7 @@ namespace HoscyCore.Services.Recognition.Modules;
 
 [SupportedOSPlatform("windows")]
 [PrototypeLoadIntoDiContainer(typeof(WindowsRecognitionModuleStartInfo), Lifetime.Singleton, SupportedPlatformFlags.Windows)]
-public class WindowsRecognitionModuleStartInfo : ITranslationModuleStartInfo
+public class WindowsRecognitionModuleStartInfo : IRecognitionModuleStartInfo
 {
     public WindowsRecognitionModuleStartInfo()
     {
@@ -23,8 +22,8 @@ public class WindowsRecognitionModuleStartInfo : ITranslationModuleStartInfo
     public string Description => "Recognizer using Windows Recognition, low quality, please avoid";
     public Type ModuleType => typeof(WindowsRecognitionModule);
 
-    public TranslationModuleConfigFlags ConfigFlags 
-        => TranslationModuleConfigFlags.Windows;
+    public RecognitionModuleConfigFlags ConfigFlags 
+        => RecognitionModuleConfigFlags.Windows;
 }
 
 [SupportedOSPlatform("windows")]
@@ -43,14 +42,9 @@ public class WindowsRecognitionModule : RecognitionModuleBase
     private SpeechRecognitionEngine? _engine = null!;
     #endregion
 
-    #region Rec Vars
-    #endregion
-
     #region Start / Stop
     protected override void StartForService()
     {
-        _logger.Debug("Starting recognition engine");
-
         var engine = CreateEngine();
         engine.LoadGrammar(new DictationGrammar());
         engine.SpeechDetected += HandleSpeechDetected;
