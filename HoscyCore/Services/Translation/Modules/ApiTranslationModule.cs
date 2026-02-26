@@ -19,16 +19,16 @@ public class ApiTranslationModuleStartInfo : ITranslationModuleStartInfo
 }
 
 [PrototypeLoadIntoDiContainer(typeof(ApiTranslationModule), Lifetime.Transient)]
-public class ApiTranslationModule(ILogger logger, ConfigModel config, IApiClient client) : TranslationModuleBase
+public class ApiTranslationModule(ILogger logger, ConfigModel config, IApiClient client)
+    : TranslationModuleBase(logger.ForContext<ApiTranslationModule>())
 {
-    private readonly ILogger _logger = logger.ForContext<ApiTranslationModule>();
     private readonly ConfigModel _config = config;
     private readonly IApiClient _client = client.AddIdentifier(nameof(ApiTranslationModule));
 
     #region Start/Stop
     protected override void StartInternal()
     {
-        _logger.Debug("Starting Translator with preset \"{preset}\"", _config.Translation_Api_Preset);
+        _logger.Verbose("Starting Translator with preset \"{preset}\"", _config.Translation_Api_Preset);
         var matchingModel = _config.Api_Presets.FirstOrDefault(x => x.Name == _config.Translation_Api_Preset);
         if (matchingModel is null)
         {
@@ -42,22 +42,17 @@ public class ApiTranslationModule(ILogger logger, ConfigModel config, IApiClient
             _logger.Error("Could not find load \"{preset}\"", matchingModel.Name);
             throw new StartStopServiceException($"Could not load preset {matchingModel.Name}, check logs for more information");
         }
-        _logger.Debug("Started Translator with preset \"{preset}\"", matchingModel.Name);
+        _logger.Verbose("Started Translator with preset \"{preset}\"", matchingModel.Name);
     }
+    protected override bool UseAlreadyStartedProtection => true;
 
-    protected override void StopInternal()
+    protected override void StopInternalInternal()
     {
-        _logger.Debug("Stopping Translator");
+        _logger.Verbose("Stopping Translator if needed");
         if (_client.IsPresetLoaded())
         {
             _client.ClearPreset();
         }
-        _logger.Debug("Stopped Translator");
-    }
-
-    public override void Restart()
-    {
-        RestartSimple(GetType(), _logger);
     }
 
     protected override bool IsStarted()

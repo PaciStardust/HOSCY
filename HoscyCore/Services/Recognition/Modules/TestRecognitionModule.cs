@@ -20,10 +20,10 @@ public class TestRecognitionModuleStartInfo : IRecognitionModuleStartInfo
 }
 
 [PrototypeLoadIntoDiContainer(typeof(TestRecognitionModule), Lifetime.Transient)]
-public class TestRecognitionModule(ILogger logger, IAudioService audio) : StartStopModuleBase, IRecognitionModule //todo: [FEAT] calling of events, translator version
+public class TestRecognitionModule(ILogger logger, IAudioService audio)
+    : StartStopModuleBase(logger.ForContext<TestRecognitionModule>()), IRecognitionModule //todo: [FEAT] calling of events, translator version
 {
     #region Vars
-    private readonly ILogger _logger = logger.ForContext<TestRecognitionModule>();
     private readonly IAudioService _audio = audio;
 
     private AudioCaptureDevice? _mic = null;
@@ -41,26 +41,18 @@ public class TestRecognitionModule(ILogger logger, IAudioService audio) : StartS
 
     protected override void StartInternal()
     {
-        _logger.Information("Starting test recognizer");
         _mic = _audio.CreateCaptureDevice();
         _mic.OnAudioProcessed += OnAudioProcessed;
         _mic.Start();
-        _logger.Information("Started test recognizer");
     }
+    protected override bool UseAlreadyStartedProtection => true;
 
-    protected override void StopInternal()
+    protected override void StopInternalInternal()
     {
-        _logger.Information("Stopping test recognizer");
         _mic?.Stop();
         _mic?.OnAudioProcessed -= OnAudioProcessed;
         _mic?.Dispose();
         _mic = null;
-        _logger.Information("Stopped test recognizer");
-    }
-
-    public override void Restart()
-    {
-        RestartSimple(GetType(), _logger);
     }
 
     protected override bool IsStarted()

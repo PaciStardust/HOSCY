@@ -21,10 +21,9 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
 
     ITranslationManagerService translator
 )
-: StartStopServiceBase, IOutputManagerService
+: StartStopServiceBase(logger.ForContext<OutputManagerService>()), IOutputManagerService
 {
     #region Injected Classes
-    private readonly ILogger _logger = logger.ForContext<OutputManagerService>();
     private readonly IBackToFrontNotifyService _notify = notify;
     private readonly ConfigModel _config = config;
 
@@ -60,12 +59,7 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
     #region Start/Stop
     protected override void StartInternal()
     {
-        _logger.Debug("Starting up Service by loading available OutputHandlerInfos");
-        if (IsStarted())
-        {
-            _logger.Debug("Skipped starting Service, still running");
-            return;
-        }
+        _logger.Debug("Loading available OutputHandlerInfos");
 
         _handlerInfos.Clear();
         _preprocessors.Clear();
@@ -84,14 +78,15 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
         _logger.Debug("Refreshing Handlers");
         RefreshHandlers();
 
-        _logger.Debug("Started up Service with {handlerCount} OutputHandlerInfos ({activeCount} active) and {preprocessorCount} OutputPreprocessors",
+        _logger.Debug("Loaded {handlerCount} OutputHandlerInfos ({activeCount} active) and {preprocessorCount} OutputPreprocessors",
             _handlerInfos.Count, _activeHandlers.Count, _preprocessors.Count);
     }
+    protected override bool UseAlreadyStartedProtection => true;
 
-    public override void Stop()
+    protected override void StopInternal()
     {
         var activeHandlerCount = _activeHandlers.Count;
-        _logger.Debug("Stopping service, shutting down {activeHandlers} Handlers", activeHandlerCount);
+        _logger.Debug("Shutting down {activeHandlers} Handlers", activeHandlerCount);
         for (var i = _activeHandlers.Count - 1; i >= 0; i--)
         {
             var handler = _activeHandlers[i];
@@ -108,12 +103,7 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
         _activeHandlers.Clear();
         _handlerInfos.Clear();
         _preprocessors.Clear();
-        _logger.Debug("Stopped service, shut down {activeHandlers} Handlers", activeHandlerCount);
-    }
-
-    public override void Restart()
-    {
-        RestartSimple(GetType(), _logger);
+        _logger.Debug("Shut down {activeHandlers} Handlers", activeHandlerCount);
     }
     #endregion
 

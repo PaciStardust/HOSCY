@@ -10,9 +10,8 @@ namespace HoscyCore.Services.Osc.Relay;
 
 [LoadIntoDiContainer(typeof(IOscRelayService), Lifetime.Singleton)]
 public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService sender, IBackToFrontNotifyService notify)
-    : StartStopServiceBase, IOscRelayService
+    : StartStopServiceBase(logger.ForContext<OscRelayService>()), IOscRelayService
 {
-    private readonly ILogger _logger = logger.ForContext<OscRelayService>();
     private readonly ConfigModel _config = config;
     private readonly IOscSendService _sender = sender;
     private readonly IBackToFrontNotifyService _notify = notify;
@@ -22,25 +21,21 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
     #region Start / Stop 
     protected override void StartInternal()
     {
-        LogStartBegin(GetType(), _logger);
+        _logger.Verbose("Reloading relay filters");
         ReloadValidRelayFilters(_config.Osc_Relay_Filters.ToList());
-        LogStartComplete(GetType(), _logger);
     }
+    protected override bool UseAlreadyStartedProtection => false;
 
-    public override void Stop()
+    protected override void StopInternal()
     {
-        LogStopBegin(GetType(), _logger);
         ReloadValidRelayFilters([]);
         _filters = null;
-        LogStopComplete(GetType(), _logger);
     }
 
-    public override void Restart()
+    protected override void RestartInternal()
     {
-        LogRestartBegin(GetType(), _logger);
         ClearFault();
         ReloadValidRelayFilters(_config.Osc_Relay_Filters.ToList());
-        LogRestartComplete(GetType(), _logger);
     }
 
     protected override bool IsStarted()

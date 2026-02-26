@@ -21,7 +21,7 @@ public abstract class StartStopModuleBase(ILogger logger) : StartStopServiceBase
     #endregion
 
     #region Start / Stop
-    protected override void StopInternal()
+    protected sealed override void StopInternal()
     {
         StopInternalInternal();
         OnModuleStopped.Invoke(this, EventArgs.Empty);

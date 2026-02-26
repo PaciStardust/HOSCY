@@ -30,11 +30,12 @@ public abstract class StartStopServiceBase(ILogger logger) : IStartStopService
     #region Startup
     public void Start() //todo: [REFACTOR] Apply the refactor pattern to module managers and also to test classes?
     {
-;        _logger.Debug("Service starting");
+        _logger.Debug("Service starting");
 
-        if (UseStartProtection && IsStarted())
+        if (UseAlreadyStartedProtection && IsStarted())
         {
             _logger.Debug("Service start cancelled, already started");
+            return;
         }
 
         ClearFault();
@@ -44,7 +45,7 @@ public abstract class StartStopServiceBase(ILogger logger) : IStartStopService
 
         _logger.Debug("Service started in {elapsed}ms", sw.ElapsedMilliseconds);
     }
-    protected abstract bool UseStartProtection { get; init; }
+    protected abstract bool UseAlreadyStartedProtection { get; }
     protected abstract void StartInternal();
     #endregion
 

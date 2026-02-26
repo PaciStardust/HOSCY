@@ -11,12 +11,11 @@ using SoundFlow.Structs;
 namespace HoscyCore.Services.Audio;
 
 [PrototypeLoadIntoDiContainer(typeof(IAudioService), Lifetime.Singleton)]
-public class AudioService(ILogger logger, ConfigModel config) : StartStopServiceBase, IAudioService
+public class AudioService(ILogger logger, ConfigModel config)
+    : StartStopServiceBase(logger.ForContext<AudioService>()), IAudioService
 {
     #region Vars
     private AudioEngine? _audioEngine;
-
-    private readonly ILogger _logger = logger.ForContext<AudioService>();
     private readonly ConfigModel _config = config;
     #endregion
 
@@ -26,33 +25,20 @@ public class AudioService(ILogger logger, ConfigModel config) : StartStopService
     protected override bool IsProcessing()
         => IsStarted();
 
-    public override void Restart()
+    protected override void StopInternal()
     {
-        RestartSimple(GetType(), _logger);
-    }
-
-    public override void Stop()
-    {
-        LogStopBegin(GetType(), _logger);
         if (_audioEngine is not null && !_audioEngine.IsDisposed)
         {
             _audioEngine.Dispose();
         }
         _audioEngine = null;
-        LogStopComplete(GetType(), _logger);
     }
 
     protected override void StartInternal()
     {
-        LogStartBegin(GetType(), _logger);
-        if (IsStarted())
-        {
-            LogStartAlreadyStarted(GetType(), _logger);
-            return;
-        }
         _audioEngine = new MiniAudioEngine();
-        LogStartComplete(GetType(), _logger);
     }
+    protected override bool UseAlreadyStartedProtection => true;
     #endregion
 
     #region Capture

@@ -29,21 +29,20 @@ public class WindowsRecognitionModuleStartInfo : ITranslationModuleStartInfo
 }
 
 [PrototypeLoadIntoDiContainer(typeof(WindowsRecognitionModule), Lifetime.Transient, SupportedPlatformFlags.Windows)]
-public class WindowsRecognitionModule : StartStopModuleBase, IRecognitionModule
+public class WindowsRecognitionModule: StartStopModuleBase, IRecognitionModule
 {
     #region Vars
     public WindowsRecognitionModule(ILogger logger, ConfigModel config)
+        : base(logger.ForContext<WindowsRecognitionModule>())
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             throw new PlatformNotSupportedException("Module is only supported on Windows");
         }
 
-        _logger = logger.ForContext<WindowsRecognitionModule>();
         _config = config;
     }
 
-    private readonly ILogger _logger;
     private readonly ConfigModel _config;
 
     private SpeechRecognitionEngine? _engine = null!;
@@ -59,7 +58,7 @@ public class WindowsRecognitionModule : StartStopModuleBase, IRecognitionModule
     #region Start / Stop
     protected override void StartInternal()
     {
-        //todo: started check?
+        //todo: started check and logging?
         var engine = CreateEngine();
         engine.LoadGrammar(new DictationGrammar());
         engine.SpeechDetected += HandleSpeechDetected;
@@ -67,18 +66,14 @@ public class WindowsRecognitionModule : StartStopModuleBase, IRecognitionModule
         engine.SetInputToDefaultAudioDevice(); //todo: [FEAT] Can switch to another mic?
         _engine = engine;
     }
+    protected override bool UseAlreadyStartedProtection => true;
 
-    protected override void StopInternal()
+    protected override void StopInternalInternal()
     {
         //todo: [REFACTOR] Should listening be stopped here?
         _engine?.SpeechRecognized -= HandleSpeechRecognized;
         _engine?.SpeechDetected -= HandleSpeechDetected;
         _engine?.Dispose();
-    }
-
-    public override void Restart()
-    {
-        RestartSimple(GetType(), _logger);
     }
 
     protected override bool IsStarted()

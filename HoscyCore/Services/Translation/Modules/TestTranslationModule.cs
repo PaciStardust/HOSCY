@@ -1,6 +1,6 @@
-using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Translation.Core;
+using Serilog;
 
 namespace HoscyCore.Services.Translation.Modules;
 
@@ -16,17 +16,13 @@ public class TestTranslationModuleStartInfo : ITranslationModuleStartInfo
 }
 
 [PrototypeLoadIntoDiContainer(typeof(TestTranslationModule), Lifetime.Transient)]
-public class TestTranslationModule : TranslationModuleBase
+public class TestTranslationModule(ILogger logger)
+    : TranslationModuleBase(logger.ForContext<TestTranslationModule>())
 {
     private const string CHARACTER_LIST = "abcdefghijklmnopqrstuvwxyz      ";
 
     private readonly Random _random = new();
     private bool _running = false;
-
-    public override void Restart()
-    {
-        return;
-    }
 
     public override TranslationResult TryTranslate(string input, out string? output)
     {
@@ -56,8 +52,9 @@ public class TestTranslationModule : TranslationModuleBase
     {
         _running = true;
     }
+    protected override bool UseAlreadyStartedProtection => false;
 
-    protected override void StopInternal()
+    protected override void StopInternalInternal()
     {
         _running = false;
     }

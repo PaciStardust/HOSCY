@@ -22,10 +22,10 @@ public class VrcTextboxOutputHandlerStartInfo(ConfigModel config) : IOutputHandl
 }
 
 [LoadIntoDiContainer(typeof(VrcTextboxOutputHandler), Lifetime.Transient)]
-public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSendService sender) : OutputHandlerBase 
+public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSendService sender)
+    : OutputHandlerBase(logger.ForContext<VrcTextboxOutputHandler>())
 {
     #region Injected Services
-    private readonly ILogger _logger = logger.ForContext<VrcTextboxOutputHandler>();
     private readonly ConfigModel _config = config;
     private readonly IOscSendService _sender = sender;
     #endregion
@@ -362,41 +362,30 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
     #region Start / Stop
     protected override void StartInternal()
     {
-        LogStartBegin(GetType(), _logger);
-        if (IsStarted())
-        {
-            LogStartAlreadyStarted(GetType(), _logger);
-            return;
-        }
         _cts = new CancellationTokenSource();
         _workerTask = Task.Run(ProcessingLoop);
-        LogStartComplete(GetType(), _logger);
     }
+    protected override bool UseAlreadyStartedProtection => true;
 
-    protected override void StopInternal()
+    protected override void StopInternalInternal()
     {
-        LogStopBegin(GetType(), _logger);
+        _logger.Debug("Stopping processing loop...");
         _cts?.Cancel();
         var ex = LaunchUtils.SafelyWaitForTaskWithTimeoutAndLogException(_workerTask, TIMEOUT_WAIT_MS * 2, new StartStopServiceException("Message handling loop failed to stop within time limit"));
         if (ex is not null)
         {
             _logger.Error(ex, "Caught exception while stopping loop");
         }
+
         _logger.Debug("Cleanup of internals...");
         _cts?.Dispose();
         _cts = null;
         _workerTask = null;
-        LogStopComplete(GetType(), _logger);
     }
 
     protected override bool IsStarted()
         => _cts is not null || _workerTask is not null;
     protected override bool IsProcessing()
         => IsStarted();
-
-    public override void Restart()
-    {
-        RestartSimple(GetType(), _logger);
-    }
     #endregion
 }

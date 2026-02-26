@@ -9,9 +9,9 @@ namespace HoscyCore.Services.Osc.MessageHandling;
 /// Service to handle osc messages
 /// </summary>
 [LoadIntoDiContainer(typeof(IOscMessageHandlingService), Lifetime.Singleton)]
-public class OscMessageHandlingService(ILogger logger, IContainerBulkLoader<IOscMessageHandler> bulkLoader) : StartStopServiceBase, IOscMessageHandlingService
+public class OscMessageHandlingService(ILogger logger, IContainerBulkLoader<IOscMessageHandler> bulkLoader)
+    : StartStopServiceBase(logger.ForContext<OscMessageHandlingService>()), IOscMessageHandlingService
 {
-    private readonly ILogger _logger = logger.ForContext<OscMessageHandlingService>();
     private IOscMessageHandler[]? _handlers = null;
     private readonly IContainerBulkLoader<IOscMessageHandler> _bulkLoader = bulkLoader;
 
@@ -36,22 +36,16 @@ public class OscMessageHandlingService(ILogger logger, IContainerBulkLoader<IOsc
     protected override bool IsProcessing()
         => IsStarted() && _handlers!.Length > 0;
 
-    public override void Stop()
+    protected override void StopInternal()
     {
-        _logger.Debug("Clearing module list");
         _handlers = null;
-        _logger.Debug("Cleared module list");
-    }
-
-    public override void Restart()
-    {
-        RestartSimple(GetType(), _logger);
     }
 
     protected override void StartInternal()
     {
-        _logger.Debug("Loading Message Handlers");
+        _logger.Verbose("Loading Message Handlers");
         _handlers = _bulkLoader.GetInstances().ToArray();
     }
+    protected override bool UseAlreadyStartedProtection => false;
     #endregion
 }

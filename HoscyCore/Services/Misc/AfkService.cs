@@ -8,11 +8,11 @@ using Serilog;
 namespace HoscyCore.Services.Misc;
 
 [PrototypeLoadIntoDiContainer(typeof(IAfkService))]
-public class AfkService(ConfigModel config, IOutputManagerService output, ILogger logger) : StartStopServiceBase, IAfkService
+public class AfkService(ConfigModel config, IOutputManagerService output, ILogger logger)
+    : StartStopServiceBase(logger.ForContext<AfkService>()), IAfkService
 {
     private readonly ConfigModel _config = config;
     private readonly IOutputManagerService _output = output;
-    private readonly ILogger _logger = logger.ForContext<AfkService>();
 
     private System.Timers.Timer? _afkTimer;
     private DateTimeOffset _afkStarted = DateTimeOffset.UtcNow;
@@ -82,19 +82,16 @@ public class AfkService(ConfigModel config, IOutputManagerService output, ILogge
     protected override bool IsProcessing()
         => _afkTimer is not null;
 
-    public override void Restart()
-        => RestartSimple(GetType(), _logger);
-
     protected override void StartInternal()
     {
         _logger.Verbose("AfkService start/stop only exists for shutdown cleanup!");
     }
+    protected override bool UseAlreadyStartedProtection => false;
 
-    public override void Stop()
+    protected override void StopInternal()
     {
-        _logger.Debug("Stopping AfkService, stopping timer if needed");
+        _logger.Verbose("Stopping timer if needed");
         StopAfk();
-        _logger.Debug("Stopped AfkService");
     }
     #endregion
 }

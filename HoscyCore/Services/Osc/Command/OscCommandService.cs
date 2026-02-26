@@ -10,9 +10,9 @@ using Serilog;
 namespace HoscyCore.Services.Osc.Command;
 
 [LoadIntoDiContainer(typeof(IOscCommandService), Lifetime.Singleton)]
-public class OscCommandService(ILogger logger, OscQueryHostRegistry hostRegistry, IOscSendService sender) : StartStopServiceBase, IOscCommandService
+public class OscCommandService(ILogger logger, OscQueryHostRegistry hostRegistry, IOscSendService sender)
+    : StartStopServiceBase(logger.ForContext<OscCommandService>()), IOscCommandService
 {
-    private readonly ILogger _logger = logger.ForContext<OscCommandService>();
     private readonly OscQueryHostRegistry _hostRegistry = hostRegistry;
     private readonly IOscSendService _sender = sender;
     private readonly List<Task> _runningTasks = [];
@@ -285,20 +285,16 @@ public class OscCommandService(ILogger logger, OscQueryHostRegistry hostRegistry
         }
         return;
     }
+    protected override bool UseAlreadyStartedProtection => false;
 
     protected override bool IsStarted()
         => _cts is not null && !_cts.IsCancellationRequested;
     protected override bool IsProcessing()
         => IsStarted();
 
-    public override void Restart()
+    protected override void StopInternal()
     {
-        RestartSimple(GetType(), _logger);
-    }
-
-    public override void Stop()
-    {
-        _logger.Debug("Service stopping, ensuring all tasks ended");
+        _logger.Verbose("Ensuring all tasks ended");
         _cts?.Cancel();
 
         var remain = PerformTaskCleanup();
@@ -316,7 +312,6 @@ public class OscCommandService(ILogger logger, OscQueryHostRegistry hostRegistry
 
         _cts?.Dispose();
         _cts = null;
-        _logger.Debug("Service is stopped");
     }
     #endregion
 }
