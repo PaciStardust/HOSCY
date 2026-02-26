@@ -21,7 +21,6 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
     #region Start / Stop 
     protected override void StartInternal()
     {
-        _logger.Verbose("Reloading relay filters");
         ReloadValidRelayFilters(_config.Osc_Relay_Filters.ToList());
     }
     protected override bool UseAlreadyStartedProtection => false;

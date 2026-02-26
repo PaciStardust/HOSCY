@@ -75,7 +75,6 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
         var preprocessorsWithInstance = _loadPreprocessors.GetInstances();
         _preprocessors.AddRange(preprocessorsWithInstance.OrderBy(x => x.GetHandlingStage()));
 
-        _logger.Debug("Refreshing Handlers");
         RefreshHandlers();
 
         _logger.Debug("Loaded {handlerCount} OutputHandlerInfos ({activeCount} active) and {preprocessorCount} OutputPreprocessors",
@@ -100,9 +99,11 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
             _logger.Error("Following Handlers failed to comply with a shutdown call: {notStoppedHandlers}", notStoppedHandlers);
             throw new StartStopServiceException($"Following Handlers failed to comply with a shutdown call: {notStoppedHandlers}");
         }
+
         _activeHandlers.Clear();
         _handlerInfos.Clear();
         _preprocessors.Clear();
+        
         _logger.Debug("Shut down {activeHandlers} Handlers", activeHandlerCount);
     }
     #endregion

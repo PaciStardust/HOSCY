@@ -21,7 +21,7 @@ public class TestRecognitionModuleStartInfo : IRecognitionModuleStartInfo
 
 [PrototypeLoadIntoDiContainer(typeof(TestRecognitionModule), Lifetime.Transient)]
 public class TestRecognitionModule(ILogger logger, IAudioService audio)
-    : StartStopModuleBase(logger.ForContext<TestRecognitionModule>()), IRecognitionModule //todo: [FEAT] calling of events, translator version
+    : StartStopModuleBase(logger.ForContext<TestRecognitionModule>()), IRecognitionModule
 {
     #region Vars
     private readonly IAudioService _audio = audio;

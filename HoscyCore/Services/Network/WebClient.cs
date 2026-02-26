@@ -14,6 +14,7 @@ public class WebClient(ILogger logger)
     #region Start / Stop
     protected override void StartInternal()
     {
+        _logger.Debug("Starting internal HttpClient");
         var client = new HttpClient(new SocketsHttpHandler()
         {
             PooledConnectionLifetime = TimeSpan.FromMinutes(1),

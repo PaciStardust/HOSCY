@@ -28,7 +28,7 @@ public class ApiTranslationModule(ILogger logger, ConfigModel config, IApiClient
     #region Start/Stop
     protected override void StartInternal()
     {
-        _logger.Verbose("Starting Translator with preset \"{preset}\"", _config.Translation_Api_Preset);
+        _logger.Debug("Starting Translator with preset \"{preset}\"", _config.Translation_Api_Preset);
         var matchingModel = _config.Api_Presets.FirstOrDefault(x => x.Name == _config.Translation_Api_Preset);
         if (matchingModel is null)
         {
@@ -42,15 +42,15 @@ public class ApiTranslationModule(ILogger logger, ConfigModel config, IApiClient
             _logger.Error("Could not find load \"{preset}\"", matchingModel.Name);
             throw new StartStopServiceException($"Could not load preset {matchingModel.Name}, check logs for more information");
         }
-        _logger.Verbose("Started Translator with preset \"{preset}\"", matchingModel.Name);
+        _logger.Debug("Started Translator with preset \"{preset}\"", matchingModel.Name);
     }
     protected override bool UseAlreadyStartedProtection => true;
 
     protected override void StopInternalInternal()
     {
-        _logger.Verbose("Stopping Translator if needed");
         if (_client.IsPresetLoaded())
         {
+            _logger.Debug("Stopping Translator if needed");
             _client.ClearPreset();
         }
     }

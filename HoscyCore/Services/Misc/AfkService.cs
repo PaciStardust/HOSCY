@@ -84,13 +84,12 @@ public class AfkService(ConfigModel config, IOutputManagerService output, ILogge
 
     protected override void StartInternal()
     {
-        _logger.Verbose("AfkService start/stop only exists for shutdown cleanup!");
+        _logger.Debug("AfkService start/stop only exists for shutdown cleanup!");
     }
     protected override bool UseAlreadyStartedProtection => false;
 
     protected override void StopInternal()
     {
-        _logger.Verbose("Stopping timer if needed");
         StopAfk();
     }
     #endregion

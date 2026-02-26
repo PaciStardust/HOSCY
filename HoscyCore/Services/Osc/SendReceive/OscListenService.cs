@@ -53,7 +53,7 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
 
     protected override void StopInternal()
     {
-        _logger.Verbose("Stopping listen loop...");
+        _logger.Debug("Stopping listen loop...");
         _cts?.Cancel();
         var ex = LaunchUtils.SafelyWaitForTaskWithTimeoutAndLogException(_workerTask, 1000, new StartStopServiceException("Unable to stop listen loop"));
         if (ex is not null)
@@ -61,7 +61,7 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
             _logger.Error(ex, "Caught exception while stopping listen loop");
         }
         
-        _logger.Verbose("Cleanup of internals...");
+        _logger.Debug("Cleanup of internals...");
         _cts?.Dispose();
         _cts = null;
         _workerTask = null;

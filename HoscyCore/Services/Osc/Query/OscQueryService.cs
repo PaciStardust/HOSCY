@@ -63,9 +63,12 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
 
     protected override void StopInternal()
     {
+        _logger.Debug("Stopping refresh timer");
         _serviceRefreshTimer?.Stop();
         _serviceRefreshTimer?.Dispose();
         _serviceRefreshTimer = null;
+
+        _logger.Debug("Stopping OSCQuery");
         _oscQuery?.Dispose();
         _oscQuery = null;
         _hostRegistry.Clear();

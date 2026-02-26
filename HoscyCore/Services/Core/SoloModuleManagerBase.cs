@@ -98,7 +98,6 @@ public abstract class SoloModuleManagerBase<TModuleStartInfo, TModule>
 
     protected override void StopInternal() 
     {
-        _logger.Debug("Shutting down Module"); //todo: [LOG] Change logging prios on start/stop
         StopModule();
         _moduleInfos.Clear();
     }
