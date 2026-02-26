@@ -2,10 +2,10 @@ using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Speech.Recognition;
 using HoscyCore.Configuration.Modern;
-using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Recognition.Core;
 using HoscyCore.Services.Translation.Core;
+using HoscyCore.Utility;
 using Serilog;
 
 namespace HoscyCore.Services.Recognition.Modules;
@@ -16,10 +16,7 @@ public class WindowsRecognitionModuleStartInfo : ITranslationModuleStartInfo
 {
     public WindowsRecognitionModuleStartInfo()
     {
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            throw new PlatformNotSupportedException("Module is only supported on Windows");
-        }
+        OtherUtils.ThrowOnInvalidPlatform([OSPlatform.Windows]);
     }
 
     public string Name => "Windows Recognizer";
@@ -32,36 +29,28 @@ public class WindowsRecognitionModuleStartInfo : ITranslationModuleStartInfo
 
 [SupportedOSPlatform("windows")]
 [PrototypeLoadIntoDiContainer(typeof(WindowsRecognitionModule), Lifetime.Transient, SupportedPlatformFlags.Windows)]
-public class WindowsRecognitionModule: StartStopModuleBase, IRecognitionModule
+public class WindowsRecognitionModule : RecognitionModuleBase
 {
     #region Vars
     public WindowsRecognitionModule(ILogger logger, ConfigModel config)
         : base(logger.ForContext<WindowsRecognitionModule>())
     {
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            throw new PlatformNotSupportedException("Module is only supported on Windows");
-        }
-
+        OtherUtils.ThrowOnInvalidPlatform([OSPlatform.Windows]);
         _config = config;
     }
 
     private readonly ConfigModel _config;
-
     private SpeechRecognitionEngine? _engine = null!;
     #endregion
 
     #region Rec Vars
-    public bool IsListening { get; private set; } = false;
-
-    public event Action<string> OnSpeechRecognized = delegate { };
-    public event Action<bool> OnSpeechActivity = delegate { };
     #endregion
 
     #region Start / Stop
     protected override void StartForService()
     {
-        //todo: [FEAT] Logging?
+        _logger.Debug("Starting recognition engine");
+
         var engine = CreateEngine();
         engine.LoadGrammar(new DictationGrammar());
         engine.SpeechDetected += HandleSpeechDetected;
@@ -71,9 +60,8 @@ public class WindowsRecognitionModule: StartStopModuleBase, IRecognitionModule
     }
     protected override bool UseAlreadyStartedProtection => true;
 
-    protected override void StopForModule()
+    protected override void StopForRecognitionModule()
     {
-        //todo: [REFACTOR] Should listening be stopped here?
         _engine?.SpeechRecognized -= HandleSpeechRecognized;
         _engine?.SpeechDetected -= HandleSpeechDetected;
         _engine?.Dispose();
@@ -88,26 +76,27 @@ public class WindowsRecognitionModule: StartStopModuleBase, IRecognitionModule
     {
         return IsStarted() && IsListening; 
     }
+    #endregion
 
-    public bool SetListening(bool state)
+    #region Listening
+    public override bool IsListening => _isListening;
+    private bool _isListening = false;
+
+    protected override bool SetListeningForRecognitionModule(bool state)
     {
-        if (_engine is null) return false;
-        if (state == IsListening) return state;
-
-        _logger.Debug("Changing listening state to {requestedState}", state);
         try
         {
             if (state)
             {
                 _logger.Verbose("Starting RecognizeAsync");
-                _engine.RecognizeAsync(RecognizeMode.Multiple);
+                _engine!.RecognizeAsync(RecognizeMode.Multiple);
             }
             else
             {
                 _logger.Verbose("Stopping RecognizeAsync");
-                _engine.RecognizeAsyncStop();
+                _engine!.RecognizeAsyncStop();
             }
-            IsListening = state;
+            _isListening = state;
             _logger.Debug("Changed listening state to {requestedState}", state);
         }
         catch (Exception ex)
@@ -118,6 +107,7 @@ public class WindowsRecognitionModule: StartStopModuleBase, IRecognitionModule
 
         return IsListening;
     }
+    protected override bool UseOnlySetListeningWhenStartedProtection => true;
     #endregion
 
     #region Functionality
@@ -131,7 +121,7 @@ public class WindowsRecognitionModule: StartStopModuleBase, IRecognitionModule
         catch (Exception ex)
         {
             _logger.Warning(ex, "Unable to instantiate engine with provided model id {modelId}, trying without", 
-                _config.Recognition_Windows_ModelId); //todo: [FEAT] Actually use notify to send non-errors
+                _config.Recognition_Windows_ModelId);
             return new();
         }
     }
@@ -139,14 +129,14 @@ public class WindowsRecognitionModule: StartStopModuleBase, IRecognitionModule
     private void HandleSpeechDetected(object? sender, SpeechDetectedEventArgs e)
     {
         _logger.Verbose("Received speech activity");
-        OnSpeechActivity.Invoke(true);
+        InvokeSpeechActivity(true);
     }
 
     private void HandleSpeechRecognized(object? sender, SpeechRecognizedEventArgs e)
     {
         _logger.Verbose("Received speech recognized: \"{text}\"", e.Result.Text);
-        OnSpeechActivity.Invoke(false);
-        OnSpeechRecognized.Invoke(e.Result.Text);
+        InvokeSpeechActivity(false);
+        InvokeSpeechRecognized(e.Result.Text);
     }
     #endregion
 }

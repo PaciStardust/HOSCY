@@ -1,5 +1,4 @@
 using HoscyCore.Services.Audio;
-using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Recognition.Core;
 using Serilog;
@@ -21,20 +20,17 @@ public class TestRecognitionModuleStartInfo : IRecognitionModuleStartInfo
 
 [PrototypeLoadIntoDiContainer(typeof(TestRecognitionModule), Lifetime.Transient)]
 public class TestRecognitionModule(ILogger logger, IAudioService audio)
-    : StartStopModuleBase(logger.ForContext<TestRecognitionModule>()), IRecognitionModule
+    : RecognitionModuleBase(logger.ForContext<TestRecognitionModule>())
 {
     #region Vars
     private readonly IAudioService _audio = audio;
 
     private AudioCaptureDevice? _mic = null;
-    private bool _muted = true;
     #endregion
 
     #region Infos / Events
-    public bool IsListening => !_muted;
-
-    public event Action<string> OnSpeechRecognized = delegate { };
-    public event Action<bool> OnSpeechActivity = delegate { };
+    public override bool IsListening => !_muted;
+    private bool _muted = true;
     #endregion
 
     #region Start / Stop
@@ -47,7 +43,7 @@ public class TestRecognitionModule(ILogger logger, IAudioService audio)
     }
     protected override bool UseAlreadyStartedProtection => true;
 
-    protected override void StopForModule()
+    protected override void StopForRecognitionModule()
     {
         _mic?.Stop();
         _mic?.OnAudioProcessed -= OnAudioProcessed;
@@ -67,11 +63,12 @@ public class TestRecognitionModule(ILogger logger, IAudioService audio)
     #endregion
 
     #region Control
-    public bool SetListening(bool state)
+    protected override bool SetListeningForRecognitionModule(bool state)
     {
         _muted = !state;
         return state;
     }
+    protected override bool UseOnlySetListeningWhenStartedProtection => true;
     #endregion
 
     #region Handling
