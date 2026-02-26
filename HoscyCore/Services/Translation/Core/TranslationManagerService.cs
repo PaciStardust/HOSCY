@@ -15,8 +15,8 @@ public class TranslationManagerService
     IContainerBulkLoader<ITranslationModuleStartInfo> infoLoader,
     IContainerBulkLoader<ITranslationModule> moduleLoader
 )
-    : SoloModuleManagerBase<ITranslationModuleStartInfo, ITranslationModule, TranslationManagerService>
-        (notify, logger, infoLoader, moduleLoader),
+    : SoloModuleManagerBase<ITranslationModuleStartInfo, ITranslationModule>
+        (notify, logger.ForContext<TranslationManagerService>(), infoLoader, moduleLoader),
     ITranslationManagerService
 {
 

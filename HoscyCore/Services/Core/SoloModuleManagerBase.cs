@@ -4,20 +4,19 @@ using Serilog;
 
 namespace HoscyCore.Services.Core;
 
-public abstract class SoloModuleManagerBase<TModuleStartInfo, TModule, TLog>
+public abstract class SoloModuleManagerBase<TModuleStartInfo, TModule>
 (
     IBackToFrontNotifyService notify,
     ILogger logger,
     IContainerBulkLoader<TModuleStartInfo> infoLoader,
     IContainerBulkLoader<TModule> moduleLoader
 )
-: StartStopServiceBase, ISoloModuleManager<TModuleStartInfo>
+: StartStopServiceBase(logger), ISoloModuleManager<TModuleStartInfo>
     where TModuleStartInfo : class, ISoloModuleStartInfo
     where TModule : class, IStartStopModule
 {
     #region Injected
     protected readonly IBackToFrontNotifyService _notify = notify;
-    protected readonly ILogger _logger = logger.ForContext<TLog>();
     private readonly IContainerBulkLoader<TModuleStartInfo> _infoLoader = infoLoader;
     private readonly IContainerBulkLoader<TModule> _moduleLoader = moduleLoader;
     #endregion
@@ -78,13 +77,7 @@ public abstract class SoloModuleManagerBase<TModuleStartInfo, TModule, TLog>
     #region Start / Stop
     protected override void StartInternal()
     {
-        _logger.Debug("Starting up Service - Loading available ModuleStartInfos and perform module refresh");
-        if (IsStarted())
-        {
-            _logger.Debug("Skipped starting Service, still running");
-            return;
-        }
-
+        _logger.Debug("Loading available ModuleStartInfos and perform module refresh");
         _moduleInfos.Clear();
         _moduleInfos.AddRange(_infoLoader.GetInstances());
 
@@ -101,18 +94,12 @@ public abstract class SoloModuleManagerBase<TModuleStartInfo, TModule, TLog>
         }
         _logger.Debug("Started up Service with {moduleCount} ModuleStartInfos and module refresh", _moduleInfos.Count);
     }
+    protected override bool UseAlreadyStartedProtection => true;
 
-    public override void Stop()
+    protected override void StopInternal() 
     {
-        _logger.Debug("Stopping service, shutting down Module");
         StopModule();
         _moduleInfos.Clear();
-        _logger.Debug(messageTemplate: "Stopped service, shut down Module");
-    }
-
-    public override void Restart()
-    {
-        RestartSimple(GetType(), _logger);
     }
 
     protected override bool IsStarted()

@@ -19,9 +19,9 @@ public class ApiTranslationModuleStartInfo : ITranslationModuleStartInfo
 }
 
 [PrototypeLoadIntoDiContainer(typeof(ApiTranslationModule), Lifetime.Transient)]
-public class ApiTranslationModule(ILogger logger, ConfigModel config, IApiClient client) : TranslationModuleBase
+public class ApiTranslationModule(ILogger logger, ConfigModel config, IApiClient client)
+    : TranslationModuleBase(logger.ForContext<ApiTranslationModule>())
 {
-    private readonly ILogger _logger = logger.ForContext<ApiTranslationModule>();
     private readonly ConfigModel _config = config;
     private readonly IApiClient _client = client.AddIdentifier(nameof(ApiTranslationModule));
 
@@ -44,20 +44,15 @@ public class ApiTranslationModule(ILogger logger, ConfigModel config, IApiClient
         }
         _logger.Debug("Started Translator with preset \"{preset}\"", matchingModel.Name);
     }
+    protected override bool UseAlreadyStartedProtection => true;
 
-    protected override void StopInternal()
+    protected override void StopInternalInternal()
     {
-        _logger.Debug("Stopping Translator");
         if (_client.IsPresetLoaded())
         {
+            _logger.Debug("Stopping Translator if needed");
             _client.ClearPreset();
         }
-        _logger.Debug("Stopped Translator");
-    }
-
-    public override void Restart()
-    {
-        RestartSimple(GetType(), _logger);
     }
 
     protected override bool IsStarted()

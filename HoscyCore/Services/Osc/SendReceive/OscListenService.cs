@@ -16,10 +16,9 @@ namespace HoscyCore.Services.Osc.SendReceive;
 /// </summary>
 [LoadIntoDiContainer(typeof(IOscListenService), Lifetime.Singleton)]
 public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNotifyService notify, IOscMessageHandlingService messageHandler, IOscRelayService relay)
-    : StartStopServiceBase, IOscListenService
+    : StartStopServiceBase(logger.ForContext<OscListenService>()), IOscListenService
 {
     private readonly ConfigModel _config = config;
-    private readonly ILogger _logger = logger.ForContext<OscListenService>();
     private readonly IBackToFrontNotifyService _notify = notify;
     private readonly IOscMessageHandlingService _messageHandler = messageHandler;
     private readonly IOscRelayService _relay = relay;
@@ -42,22 +41,17 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
     protected override void StartInternal()
     {
         _logger.Debug("Starting up listener on localhost:{port}", _config.Osc_Routing_ListenPort);
-        if (IsStarted())
-        {
-            _logger.Debug("Skipped starting listener, still running");
-            return;
-        }
         _listener = new(new(IPAddress.Loopback, _config.Osc_Routing_ListenPort))
         {
             EnableTransparentBundleToMessageConversion = true
         };
         _cts = new CancellationTokenSource();
-        _logger.Debug("Starting listen loop");
-        _workerTask = Task.Run(ListenLoop);
-        _logger.Debug("Listener and listen loop has been started");
-    }
 
-    public override void Stop()
+        _workerTask = Task.Run(ListenLoop);
+    }
+    protected override bool UseAlreadyStartedProtection => true;
+
+    protected override void StopInternal()
     {
         _logger.Debug("Stopping listen loop...");
         _cts?.Cancel();
@@ -66,18 +60,13 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
         {
             _logger.Error(ex, "Caught exception while stopping listen loop");
         }
+        
         _logger.Debug("Cleanup of internals...");
         _cts?.Dispose();
         _cts = null;
         _workerTask = null;
         _listener?.Dispose();
         _listener = null;
-        _logger.Debug("Listen loop stopped");
-    }
-
-    public override void Restart()
-    {
-        RestartSimple(GetType(), _logger);
     }
     #endregion
 

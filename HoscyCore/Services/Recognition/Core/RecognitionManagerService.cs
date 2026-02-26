@@ -19,8 +19,8 @@ public class RecognitionManagerService
     ConfigModel config,
     IOutputManagerService output
 ) 
-    : SoloModuleManagerBase<IRecognitionModuleStartInfo, IRecognitionModule, RecognitionManagerService>
-        (notify, logger, infoLoader, moduleLoader),
+    : SoloModuleManagerBase<IRecognitionModuleStartInfo, IRecognitionModule>
+        (notify, logger.ForContext<RecognitionManagerService>(), infoLoader, moduleLoader),
     IRecognitionManagerService
 {
     #region Injected

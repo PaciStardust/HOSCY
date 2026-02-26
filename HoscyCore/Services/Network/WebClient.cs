@@ -6,21 +6,15 @@ using Serilog;
 namespace HoscyCore.Services.Network;
 
 [LoadIntoDiContainer(typeof(IWebClient), Lifetime.Singleton)]
-public class WebClient(ILogger logger) : StartStopServiceBase, IWebClient
+public class WebClient(ILogger logger)
+    : StartStopServiceBase(logger.ForContext<WebClient>()), IWebClient
 {
-    private readonly ILogger _logger = logger.ForContext<WebClient>();
     private HttpClient? _client = null;
 
     #region Start / Stop
     protected override void StartInternal()
     {
-        LogStartBegin(GetType(), _logger);
-        if (IsStarted())
-        {
-            LogStartAlreadyStarted(GetType(), _logger);
-            return;
-        }
-
+        _logger.Debug("Starting internal HttpClient");
         var client = new HttpClient(new SocketsHttpHandler()
         {
             PooledConnectionLifetime = TimeSpan.FromMinutes(1),
@@ -30,26 +24,19 @@ public class WebClient(ILogger logger) : StartStopServiceBase, IWebClient
         //Below is required for Github Access
         client.DefaultRequestHeaders.UserAgent.Add(new("User-Agent", "request"));
         _client = client;
-        LogStartComplete(GetType(), _logger);
     }
+    protected override bool UseAlreadyStartedProtection => true;
 
-    public override void Stop()
+    protected override void StopInternal()
     {
-        LogStopBegin(GetType(), _logger);
         _client?.Dispose();
         _client = null;
-        LogStopComplete(GetType(), _logger);
     }
 
     protected override bool IsStarted()
         => _client is not null;
     protected override bool IsProcessing()
         => IsStarted();
-    
-    public override void Restart()
-    {
-        RestartSimple(GetType(), _logger);
-    }
     #endregion
 
     #region Functionality

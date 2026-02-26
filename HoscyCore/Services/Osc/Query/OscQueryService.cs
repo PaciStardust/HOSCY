@@ -11,9 +11,8 @@ namespace HoscyCore.Services.Osc.Query;
 
 [LoadIntoDiContainer(typeof(IOscQueryService), Lifetime.Singleton)]
 public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService notify, IOscListenService listener, OscQueryHostRegistry hostRegistry)
-    : StartStopServiceBase, IOscQueryService
+    : StartStopServiceBase(logger.ForContext<OscQueryService>()), IOscQueryService
 {
-    private readonly Serilog.ILogger _logger = logger.ForContext<OscQueryService>();
     private readonly IBackToFrontNotifyService _notify = notify;
     private readonly IOscListenService _listener = listener;
     private readonly OscQueryHostRegistry _hostRegistry = hostRegistry;
@@ -24,13 +23,6 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
     #region Start/Stop
     protected override void StartInternal()
     {
-        LogStartBegin(GetType(), _logger);
-        if (IsStarted())
-        {
-            LogStartAlreadyStarted(GetType(), _logger);
-            return;
-        }
-
         var udpPort = _listener.GetPort();
         if (!udpPort.HasValue)
         {
@@ -66,30 +58,26 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
         var timer = CreateRefreshTimer(_oscQuery, _hostRegistry, 5000);
         timer.Start();
         _serviceRefreshTimer = timer;
-        LogStartComplete(GetType(), _logger);
     }
+    protected override bool UseAlreadyStartedProtection => true;
 
-    public override void Stop()
+    protected override void StopInternal()
     {
-        LogStopBegin(GetType(), _logger);
+        _logger.Debug("Stopping refresh timer");
         _serviceRefreshTimer?.Stop();
         _serviceRefreshTimer?.Dispose();
         _serviceRefreshTimer = null;
+
+        _logger.Debug("Stopping OSCQuery");
         _oscQuery?.Dispose();
         _oscQuery = null;
         _hostRegistry.Clear();
-        LogStopComplete(GetType(), _logger);
     }
 
     protected override bool IsStarted()
         => _oscQuery is not null || _serviceRefreshTimer is not null;
     protected override bool IsProcessing()
         => IsStarted();
-
-    public override void Restart()
-    {
-        RestartSimple(GetType(), _logger);
-    }
     #endregion
 
     #region Functionality

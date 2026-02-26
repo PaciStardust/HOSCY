@@ -1,6 +1,8 @@
+using Serilog;
+
 namespace HoscyCore.Services.Core;
 
-public abstract class StartStopModuleBase : StartStopServiceBase, IStartStopModule
+public abstract class StartStopModuleBase(ILogger logger) : StartStopServiceBase(logger), IStartStopModule
 {
     #region Events
     public event EventHandler<Exception> OnRuntimeError = delegate { };
@@ -19,12 +21,13 @@ public abstract class StartStopModuleBase : StartStopServiceBase, IStartStopModu
     #endregion
 
     #region Start / Stop
-    public override void Stop()
+    protected sealed override void StopInternal()
     {
-        StopInternal();
+        StopInternalInternal();
         OnModuleStopped.Invoke(this, EventArgs.Empty);
     }
 
-    protected abstract void StopInternal();
+    // Yes this is horribly named, I am aware
+    protected abstract void StopInternalInternal();
     #endregion
 }
