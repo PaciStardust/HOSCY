@@ -4,6 +4,7 @@ using System.Speech.Recognition;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Recognition.Core;
+using HoscyCore.Services.Recognition.Extra;
 using HoscyCore.Utility;
 using Serilog;
 
@@ -31,14 +32,17 @@ public class WindowsRecognitionModuleStartInfo : IRecognitionModuleStartInfo
 public class WindowsRecognitionModule : RecognitionModuleBase
 {
     #region Vars
-    public WindowsRecognitionModule(ILogger logger, ConfigModel config)
+    public WindowsRecognitionModule(ILogger logger, ConfigModel config, IRecognitionModelProviderService modelProvider)
         : base(logger.ForContext<WindowsRecognitionModule>())
     {
         OtherUtils.ThrowOnInvalidPlatform([OSPlatform.Windows]);
+
         _config = config;
+        _modelProvider = modelProvider;
     }
 
     private readonly ConfigModel _config;
+    private readonly IRecognitionModelProviderService _modelProvider;
     private SpeechRecognitionEngine? _engine = null!;
     #endregion
 
@@ -108,16 +112,22 @@ public class WindowsRecognitionModule : RecognitionModuleBase
     private SpeechRecognitionEngine CreateEngine()
     {
         _logger.Debug("Creating new windows speech recognition engine");
-        try
+
+        var recognizerInfo = _modelProvider.GetWindowsRecognizers()
+            .Where(x => x.Id == _config.Recognition_Windows_ModelId)
+            .ToArray();
+
+        if (recognizerInfo.Length == 0)
         {
-            return new(_config.Recognition_Windows_ModelId);
-        }
-        catch (Exception ex)
-        {
-            _logger.Warning(ex, "Unable to instantiate engine with provided model id {modelId}, trying without", 
+            _logger.Warning("Unable to instantiate engine with provided model id {modelId}, trying without", 
                 _config.Recognition_Windows_ModelId);
             return new();
+        } else if (recognizerInfo.Length > 1)
+        {
+            _logger.Warning("Multiple matching infos found for model id {modelId}, picking first", _config.Recognition_Windows_ModelId);
         }
+
+        return new(recognizerInfo[0]);
     }
 
     private void HandleSpeechDetected(object? sender, SpeechDetectedEventArgs e)
