@@ -31,7 +31,7 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
     protected override bool IsStarted()
         => _workerTask is not null || _cts is not null || _listener is not null;
     protected override bool IsProcessing()
-        => IsStarted();
+        => _workerTask is not null && _cts is not null && _listener is not null;
 
     public int? GetPort()
     {

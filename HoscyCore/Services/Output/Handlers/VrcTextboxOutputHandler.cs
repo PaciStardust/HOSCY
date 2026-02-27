@@ -386,6 +386,6 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
     protected override bool IsStarted()
         => _cts is not null || _workerTask is not null;
     protected override bool IsProcessing()
-        => IsStarted();
+        => _cts is not null && _workerTask is not null;
     #endregion
 }

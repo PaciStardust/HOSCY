@@ -77,7 +77,7 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
     protected override bool IsStarted()
         => _oscQuery is not null || _serviceRefreshTimer is not null;
     protected override bool IsProcessing()
-        => IsStarted();
+        => _oscQuery is not null && _serviceRefreshTimer is not null;
     #endregion
 
     #region Functionality
