@@ -1183,7 +1183,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Model Id for Windows Recognition
     /// </summary>
-    public string Recognition_Windows_ModelId //todo: [IMPL] To be implemented?
+    public string Recognition_Windows_ModelId
     {
         get => _recognition_Windows_ModelId;
         set => SetProperty(ref _recognition_Windows_ModelId, value);

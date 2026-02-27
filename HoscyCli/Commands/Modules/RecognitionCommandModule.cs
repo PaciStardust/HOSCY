@@ -74,8 +74,8 @@ public class RecognitionCommandModule
         return CommandResult.Success;
     }
 
-    [SubCommandModule(["selected"], "Module to use for recognition")]
-    public CommandResult CmdSelected()
+    [SubCommandModule(["selected-module"], "Module to use for recognition")]
+    public CommandResult CmdSelectedModule()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_SelectedModuleName));
     }

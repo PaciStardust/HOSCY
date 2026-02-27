@@ -32,7 +32,7 @@ public class TranslationCommandModule
         return CommandResult.Success;
     }
 
-    [SubCommandModule(["selected-module", "module"], "Set module to use")]
+    [SubCommandModule(["selected-module"], "Set module to use")]
     public CommandResult CmdSelectedModule()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Translation_SelectedModuleName));
