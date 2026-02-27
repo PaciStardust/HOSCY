@@ -7,11 +7,14 @@ namespace HoscyCore.Services.Recognition.Extra;
 [PrototypeLoadIntoDiContainer(typeof(IRecognitionModelProviderService))]
 public class RecognitionModelProviderService : IRecognitionModelProviderService
 {
-    public IReadOnlyList<RecognizerInfo> GetWindowsRecognizers()
+    IReadOnlyList<(string Name, string Desc, string Id)> IRecognitionModelProviderService.GetWindowsRecognizers()
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             return [];
 
-        return SpeechRecognitionEngine.InstalledRecognizers();
+#pragma warning disable CA1416 // Validate platform compatibility
+        return SpeechRecognitionEngine.InstalledRecognizers()
+                .Select(x => (x.Name, x.Description, x.Id)).ToList();
+#pragma warning restore CA1416 // Validate platform compatibility
     }
 }

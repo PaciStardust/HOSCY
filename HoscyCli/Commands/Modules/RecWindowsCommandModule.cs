@@ -25,7 +25,7 @@ public class RecWindowsCommandModule
     {
         var models = _modelProvider.GetWindowsRecognizers();
         var modelText = models.Count > 0
-            ? string.Join("\n", models.Select(x => $" - {x.Name} > {x.Description}"))
+            ? string.Join("\n", models.Select(x => $" - {x.Name} > {x.Desc} > {x.Id}"))
             : "[NONE]";
         Console.WriteLine($"All available windows recognizer models:\n{modelText}");
         return CommandResult.Success;

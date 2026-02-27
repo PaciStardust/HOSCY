@@ -4,5 +4,5 @@ namespace HoscyCore.Services.Recognition.Extra;
 
 public interface IRecognitionModelProviderService
 {
-    public IReadOnlyList<RecognizerInfo> GetWindowsRecognizers();
+    public IReadOnlyList<(string Name, string Desc, string Id)> GetWindowsRecognizers();
 }
