@@ -29,20 +29,15 @@ public class WindowsRecognitionModuleStartInfo : IRecognitionModuleStartInfo
 
 [SupportedOSPlatform("windows")]
 [PrototypeLoadIntoDiContainer(typeof(WindowsRecognitionModule), Lifetime.Transient, SupportedPlatformFlags.Windows)]
-public class WindowsRecognitionModule : RecognitionModuleBase
+public class WindowsRecognitionModule : WindowsRecognitionModuleBase
 {
     #region Vars
     public WindowsRecognitionModule(ILogger logger, ConfigModel config, IRecognitionModelProviderService modelProvider)
-        : base(logger.ForContext<WindowsRecognitionModule>())
+        : base(logger.ForContext<WindowsRecognitionModule>(), config, modelProvider)
     {
         OtherUtils.ThrowOnInvalidPlatform([OSPlatform.Windows]);
-
-        _config = config;
-        _modelProvider = modelProvider;
     }
 
-    private readonly ConfigModel _config;
-    private readonly IRecognitionModelProviderService _modelProvider;
     private SpeechRecognitionEngine? _engine = null!;
     #endregion
 
@@ -53,16 +48,19 @@ public class WindowsRecognitionModule : RecognitionModuleBase
         engine.LoadGrammar(new DictationGrammar());
         engine.SpeechDetected += HandleSpeechDetected;
         engine.SpeechRecognized += HandleSpeechRecognized;
-        engine.SetInputToDefaultAudioDevice(); //todo: [FEAT] Can switch to another mic?
+        engine.SetInputToDefaultAudioDevice();
         _engine = engine;
     }
     protected override bool UseAlreadyStartedProtection => true;
 
     protected override void StopForRecognitionModule()
     {
-        _engine?.SpeechRecognized -= HandleSpeechRecognized;
-        _engine?.SpeechDetected -= HandleSpeechDetected;
-        _engine?.Dispose();
+        if (_engine is not null)
+        {
+            _engine.SpeechRecognized -= HandleSpeechRecognized;
+            _engine.SpeechDetected -= HandleSpeechDetected;
+            _engine.Dispose();
+        }
     }
 
     protected override bool IsStarted()
@@ -106,41 +104,5 @@ public class WindowsRecognitionModule : RecognitionModuleBase
         return IsListening;
     }
     protected override bool UseOnlySetListeningWhenStartedProtection => true;
-    #endregion
-
-    #region Functionality
-    private SpeechRecognitionEngine CreateEngine()
-    {
-        _logger.Debug("Creating new windows speech recognition engine");
-
-        var recognizerInfo = _modelProvider.GetWindowsRecognizers()
-            .Where(x => x.Id == _config.Recognition_Windows_ModelId)
-            .ToArray();
-
-        if (recognizerInfo.Length == 0)
-        {
-            _logger.Warning("Unable to instantiate engine with provided model id {modelId}, trying without", 
-                _config.Recognition_Windows_ModelId);
-            return new();
-        } else if (recognizerInfo.Length > 1)
-        {
-            _logger.Warning("Multiple matching infos found for model id {modelId}, picking first", _config.Recognition_Windows_ModelId);
-        }
-
-        return new(recognizerInfo[0]);
-    }
-
-    private void HandleSpeechDetected(object? sender, SpeechDetectedEventArgs e)
-    {
-        _logger.Verbose("Received speech activity");
-        InvokeSpeechActivity(true);
-    }
-
-    private void HandleSpeechRecognized(object? sender, SpeechRecognizedEventArgs e)
-    {
-        _logger.Verbose("Received speech recognized: \"{text}\"", e.Result.Text);
-        InvokeSpeechActivity(false);
-        InvokeSpeechRecognized(e.Result.Text);
-    }
     #endregion
 }

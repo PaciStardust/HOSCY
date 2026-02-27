@@ -55,6 +55,7 @@ public class AudioCaptureDeviceProxy(AudioCaptureDevice wrappedDevice, ILogger l
     public void Dispose()
     {
         Stop();
-        _wrappedDevice.Dispose();
+        if (!_wrappedDevice.IsDisposed)
+            _wrappedDevice.Dispose();
     }
 }
