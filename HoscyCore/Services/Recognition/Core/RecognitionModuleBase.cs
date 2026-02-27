@@ -19,7 +19,7 @@ public abstract class RecognitionModuleBase(ILogger logger)
     #region Listening
     public abstract bool IsListening { get; }
 
-    public bool SetListening(bool state)
+    public bool SetListening(bool state) //todo: [FEAT] Automatic disable for this?
     {
         _logger.Debug("Setting listening status to {state}", state);
 

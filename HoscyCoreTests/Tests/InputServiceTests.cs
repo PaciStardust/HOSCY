@@ -1,6 +1,6 @@
 using System.Text;
 using HoscyCore.Configuration.Modern;
-using HoscyCore.Services.Misc;
+using HoscyCore.Services.Input;
 using HoscyCore.Services.Output.Core;
 using HoscyCoreTests.Mocks.Impl;
 using HoscyCoreTests.Utils;

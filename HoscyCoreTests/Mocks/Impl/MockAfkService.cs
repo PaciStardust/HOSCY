@@ -1,4 +1,4 @@
-using HoscyCore.Services.Misc;
+using HoscyCore.Services.Afk;
 using HoscyCoreTests.Mocks.Base;
 
 namespace HoscyCoreTests.Mocks.Impl;

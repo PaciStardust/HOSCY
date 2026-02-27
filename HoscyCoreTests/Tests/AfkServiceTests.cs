@@ -1,6 +1,6 @@
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Core;
-using HoscyCore.Services.Misc;
+using HoscyCore.Services.Afk;
 using HoscyCoreTests.Mocks.Impl;
 using HoscyCoreTests.Utils;
 

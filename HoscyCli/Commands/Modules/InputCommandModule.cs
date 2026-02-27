@@ -1,7 +1,7 @@
 using HoscyCli.Commands.Core;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
-using HoscyCore.Services.Misc;
+using HoscyCore.Services.Input;
 
 namespace HoscyCli.Commands.Modules;
 

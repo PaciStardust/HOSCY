@@ -1,4 +1,4 @@
-using HoscyCore.Services.Misc;
+using HoscyCore.Services.Input;
 using HoscyCore.Services.Output.Core;
 
 namespace HoscyCoreTests.Mocks.Impl;

@@ -1,6 +1,6 @@
 using HoscyCore.Services.Core;
 
-namespace HoscyCore.Services.Misc;
+namespace HoscyCore.Services.Afk;
 
 public interface IAfkService : IAutoStartStopService
 {

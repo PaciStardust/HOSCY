@@ -1,7 +1,7 @@
 using HoscyCore.Services.Core;
 using HoscyCore.Services.Output.Core;
 
-namespace HoscyCore.Services.Misc;
+namespace HoscyCore.Services.Input;
 
 public interface IInputService : IService
 {

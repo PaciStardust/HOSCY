@@ -5,7 +5,7 @@ using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Output.Core;
 using Serilog;
 
-namespace HoscyCore.Services.Misc;
+namespace HoscyCore.Services.Afk;
 
 [PrototypeLoadIntoDiContainer(typeof(IAfkService))]
 public class AfkService(ConfigModel config, IOutputManagerService output, ILogger logger)
