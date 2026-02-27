@@ -21,7 +21,7 @@ public class WindowsV2RecognitionModuleStartInfo : IRecognitionModuleStartInfo
         OtherUtils.ThrowOnInvalidPlatform([OSPlatform.Windows]);
     }
 
-    public string Name => "Windows Recognizer V2"; //todo: fix name
+    public string Name => "Windows Recognizer V2";
     public string Description => "Recognizer using Windows Recognition, low quality, please avoid";
     public Type ModuleType => typeof(WindowsV2RecognitionModule);
 

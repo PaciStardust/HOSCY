@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Timers;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
@@ -77,6 +78,8 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
 
         RefreshHandlers();
 
+        _indicatorResetTimer ??= CreateIndicatorResetTimer();
+
         _logger.Debug("Loaded {handlerCount} OutputHandlerInfos ({activeCount} active) and {preprocessorCount} OutputPreprocessors",
             _handlerInfos.Count, _activeHandlers.Count, _preprocessors.Count);
     }
@@ -84,6 +87,8 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
 
     protected override void StopForService()
     {
+        StopIndicatorResetTimer();
+
         var activeHandlerCount = _activeHandlers.Count;
         _logger.Debug("Shutting down {activeHandlers} Handlers", activeHandlerCount);
         for (var i = _activeHandlers.Count - 1; i >= 0; i--)
@@ -413,7 +418,7 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
         }
     }
 
-    private bool IsHandlerCompatible(IOutputHandler handler, OutputSettingsFlags settings)
+    private static bool IsHandlerCompatible(IOutputHandler handler, OutputSettingsFlags settings)
     {
         var id = handler.OutputTypeFlags;
         return (settings.HasFlag(OutputSettingsFlags.AllowTextOutput) && id.HasFlag(OutputsAsMediaFlags.OutputsAsText))
@@ -499,9 +504,19 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
         }
         _logger.Verbose("Sent {handlerCount} handlers a clear command", _activeHandlers.Count);
     }
+    #endregion
 
+    #region Processing Indicator
+    private System.Timers.Timer? _indicatorResetTimer = null;
     public void SetProcessingIndicator(bool isProcessing)
     {
+        if (_indicatorResetTimer is not null)
+        {
+            _indicatorResetTimer.Stop();
+            if (isProcessing)
+                _indicatorResetTimer.Start();
+        }
+        
         _logger.Verbose("Sending {handlerCount} handlers command to set processing indicator to {indicatorState}",
             _activeHandlers.Count, isProcessing);
         OnProcessingIndicatorSet(this, isProcessing);
@@ -512,7 +527,38 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
         _logger.Verbose("Sent {handlerCount} handlers command to set processing indicator to {indicatorState}",
             _activeHandlers.Count, isProcessing);
     }
+
+    private System.Timers.Timer CreateIndicatorResetTimer()
+    {
+        _logger.Debug("Creating indicator reset timer");
+
+        System.Timers.Timer timer = new()
+        {
+            AutoReset = false,
+            Interval = 5000
+        };
+        timer.Elapsed += OnIndicatorResetTimerElapsed;
+        return timer;
+    }
+
+    private void StopIndicatorResetTimer()
+    {
+        _logger.Debug("Stopping IndicatorResetTimer");
+        if (_indicatorResetTimer is not null)
+        {
+            _indicatorResetTimer.Stop();
+            _indicatorResetTimer.Elapsed -= OnIndicatorResetTimerElapsed;
+            _indicatorResetTimer.Dispose();
+        }
+    }
+
+    private void OnIndicatorResetTimerElapsed(object? sender, ElapsedEventArgs e)
+    {
+        _logger.Verbose("Indicator automatically reset");
+        SetProcessingIndicator(false);
+    }
     #endregion
+
 
     #region Preprocessors
     /// <summary>
@@ -543,7 +589,7 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
         return output is not null;
     }
 
-    private bool IsPreprocessorCompatible(IOutputPreprocessor preprocessor, OutputSettingsFlags settings)
+    private static bool IsPreprocessorCompatible(IOutputPreprocessor preprocessor, OutputSettingsFlags settings)
     {
         if (!preprocessor.IsEnabled())
             return false;
