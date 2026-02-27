@@ -1,3 +1,5 @@
+using System.Buffers;
+using System.Runtime.InteropServices;
 using Serilog;
 using SoundFlow.Abstracts.Devices;
 using SoundFlow.Enums;
@@ -43,13 +45,40 @@ public class AudioCaptureDeviceProxy(AudioCaptureDevice wrappedDevice, ILogger l
         return IsListening;
     }
 
-    public event Action<Span<float>, Capability> OnAudioProcessed = delegate { };
+    public event Action<Span<byte>, Capability> OnAudioProcessed = delegate { };
+    private byte[]? _emptyBytes = null;
     private void HandleAudioProcessed(Span<float> samples, Capability capability)
     {
         if (!IsStarted) return;
+
+        var byteLen = samples.Length * 2;
+                
+        if (!IsListening) {
+            if (_emptyBytes is null || _emptyBytes.Length < byteLen)
+            {
+                _emptyBytes = new byte[byteLen];
+            }
+            OnAudioProcessed.Invoke(_emptyBytes.AsSpan(0, byteLen), capability);
+            return;
+        }
+
+        byte[] rentedBytes = ArrayPool<byte>.Shared.Rent(byteLen);
+        try
+        {
+            var shortView = MemoryMarshal.Cast<byte, short>(rentedBytes.AsSpan());
         
-        if (IsListening) 
-        OnAudioProcessed.Invoke(IsListening ? samples : [], capability);
+            for (var i = 0; i < samples.Length; i++)
+            {
+                float clamped = Math.Max(-1.0f, Math.Min(1.0f, samples[i]));
+                shortView[i] = (short)(clamped * 32767f);
+            }
+
+            OnAudioProcessed.Invoke(rentedBytes.AsSpan(0, byteLen), capability);
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(rentedBytes);
+        }
     }
 
     public void Dispose()

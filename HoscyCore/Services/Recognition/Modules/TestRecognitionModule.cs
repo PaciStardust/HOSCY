@@ -70,7 +70,7 @@ public class TestRecognitionModule(ILogger logger, IAudioService audio)
     #endregion
 
     #region Handling
-    private void OnAudioProcessed(Span<float> samples, Capability _)
+    private void OnAudioProcessed(Span<byte> samples, Capability _)
     {
         var sum = 0f;
         foreach(var sample in samples)
