@@ -1,3 +1,4 @@
+using System.Runtime.Versioning;
 using System.Speech.Recognition;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Recognition.Core;
@@ -6,6 +7,7 @@ using Serilog;
 
 namespace HoscyCore.Services.Recognition.Modules;
 
+[SupportedOSPlatform("windows")]
 public abstract class WindowsRecognitionModuleBase(ILogger logger, ConfigModel config, IRecognitionModelProviderService modelProvider) 
     : RecognitionModuleBase(logger)
 {
@@ -33,7 +35,7 @@ public abstract class WindowsRecognitionModuleBase(ILogger logger, ConfigModel c
             _logger.Warning("Multiple matching infos found for model id {modelId}, picking first", _config.Recognition_Windows_ModelId);
         }
 
-        return new(recognizerInfo[0]);
+        return new(recognizerInfo[0].Id);
     }
 
     protected void HandleSpeechDetected(object? sender, SpeechDetectedEventArgs e)
