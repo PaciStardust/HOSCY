@@ -57,6 +57,7 @@ public class WindowsRecognitionModule : WindowsRecognitionModuleBase
     {
         if (_engine is not null)
         {
+            _engine.RecognizeAsyncCancel();
             _engine.SpeechRecognized -= HandleSpeechRecognized;
             _engine.SpeechDetected -= HandleSpeechDetected;
             _engine.Dispose();
@@ -98,7 +99,7 @@ public class WindowsRecognitionModule : WindowsRecognitionModuleBase
         catch (Exception ex)
         {
             _logger.Error(ex, "Failed changing listening state to {requestedState}", state);
-            SetFault(ex); //todo: [REFACTOR] Should set fault not also provide a message maybe?
+            SetFault(ex); //todo: [REFACTOR] Should set fault not also provide a message maybe, also warnings?
         }
 
         return IsListening;
