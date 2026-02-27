@@ -2,7 +2,6 @@ using HoscyCore.Services.Audio;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Recognition.Core;
 using Serilog;
-using SoundFlow.Abstracts.Devices;
 using SoundFlow.Enums;
 
 namespace HoscyCore.Services.Recognition.Modules;
@@ -25,12 +24,11 @@ public class TestRecognitionModule(ILogger logger, IAudioService audio)
     #region Vars
     private readonly IAudioService _audio = audio;
 
-    private AudioCaptureDevice? _mic = null;
+    private AudioCaptureDeviceProxy? _mic = null;
     #endregion
 
     #region Infos / Events
-    public override bool IsListening => !_muted;
-    private bool _muted = true;
+    public override bool IsListening => _mic?.IsListening ?? false;
     #endregion
 
     #region Start / Stop
@@ -53,7 +51,7 @@ public class TestRecognitionModule(ILogger logger, IAudioService audio)
 
     protected override bool IsStarted()
     {
-        return _mic is not null && _mic.IsRunning;
+        return _mic is not null && _mic.IsStarted;
     }
 
     protected override bool IsProcessing()
@@ -65,8 +63,8 @@ public class TestRecognitionModule(ILogger logger, IAudioService audio)
     #region Control
     protected override bool SetListeningForRecognitionModule(bool state)
     {
-        _muted = !state;
-        return state;
+        _mic?.SetListening(state);
+        return IsListening;
     }
     protected override bool UseOnlySetListeningWhenStartedProtection => true;
     #endregion
@@ -79,7 +77,7 @@ public class TestRecognitionModule(ILogger logger, IAudioService audio)
         {
             sum += sample;
         }
-        var avg = sum / samples.Length;
+        var avg = sum / Math.Min(samples.Length, 1);
         _logger.Verbose("Processed: Count={count} Sum={sum} Avg={avg}",
             samples.Length.ToString().PadRight(16),
             sum.ToString().PadRight(16),

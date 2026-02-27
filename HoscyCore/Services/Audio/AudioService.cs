@@ -3,7 +3,6 @@ using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using Serilog;
 using SoundFlow.Abstracts;
-using SoundFlow.Abstracts.Devices;
 using SoundFlow.Backends.MiniAudio;
 using SoundFlow.Enums;
 using SoundFlow.Structs;
@@ -49,7 +48,7 @@ public class AudioService(ILogger logger, ConfigModel config)
         return _audioEngine?.CaptureDevices;
     }
 
-    public AudioCaptureDevice CreateCaptureDevice() //todo: [TEST] create test for this
+    public AudioCaptureDeviceProxy CreateCaptureDevice() //todo: [TEST] create test for this
     {
         var devInfo = FindDeviceWithChecks(GetCaptureDevices(), _config.Audio_CurrentMicrophoneId, "capture");
 
@@ -61,7 +60,7 @@ public class AudioService(ILogger logger, ConfigModel config)
         };
 
         _logger.Debug("Creating capture device for device {devName}", devInfo);
-        return _audioEngine!.InitializeCaptureDevice(devInfo, format);
+        return new(_audioEngine!.InitializeCaptureDevice(devInfo, format), _logger);
     }
     #endregion
 
