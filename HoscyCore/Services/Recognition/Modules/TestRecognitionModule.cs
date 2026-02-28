@@ -35,7 +35,7 @@ public class TestRecognitionModule(ILogger logger, IAudioService audio)
 
     protected override void StartForService()
     {
-        _mic = _audio.CreateCaptureDevice();
+        _mic = _audio.CreateCaptureDeviceProxy();
         _mic.OnAudioProcessed += OnAudioProcessed;
         _mic.Start();
     }

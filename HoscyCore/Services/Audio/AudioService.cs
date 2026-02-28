@@ -3,6 +3,7 @@ using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using Serilog;
 using SoundFlow.Abstracts;
+using SoundFlow.Abstracts.Devices;
 using SoundFlow.Backends.MiniAudio;
 using SoundFlow.Enums;
 using SoundFlow.Structs;
@@ -10,7 +11,7 @@ using SoundFlow.Structs;
 namespace HoscyCore.Services.Audio;
 
 [PrototypeLoadIntoDiContainer(typeof(IAudioService), Lifetime.Singleton)]
-public class AudioService(ILogger logger, ConfigModel config)
+public class AudioService(ILogger logger, ConfigModel config) //todo: [FIX] Dev ID changes between restarts
     : StartStopServiceBase(logger.ForContext<AudioService>()), IAudioService
 {
     #region Vars
@@ -48,7 +49,7 @@ public class AudioService(ILogger logger, ConfigModel config)
         return _audioEngine?.CaptureDevices;
     }
 
-    public AudioCaptureDeviceProxy CreateCaptureDevice() //todo: [TEST] create test for this
+    public AudioCaptureDevice CreateCaptureDevice() //todo: [TEST] create test for this
     {
         var devInfo = FindDeviceWithChecks(GetCaptureDevices(), _config.Audio_CurrentMicrophoneId, "capture");
 
@@ -60,7 +61,12 @@ public class AudioService(ILogger logger, ConfigModel config)
         };
 
         _logger.Debug("Creating capture device for device {devName}", devInfo);
-        return new(_audioEngine!.InitializeCaptureDevice(devInfo, format), _logger);
+        return _audioEngine!.InitializeCaptureDevice(devInfo, format);
+    }
+
+    public AudioCaptureDeviceProxy CreateCaptureDeviceProxy()
+    {
+        return new(CreateCaptureDevice(), _logger);
     }
     #endregion
 

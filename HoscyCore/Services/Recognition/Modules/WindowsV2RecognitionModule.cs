@@ -60,7 +60,7 @@ public class WindowsV2RecognitionModule : WindowsRecognitionModuleBase
     {
         _stream = new(16000);
 
-        var mic = _audio.CreateCaptureDevice();
+        var mic = _audio.CreateCaptureDeviceProxy();
         mic.OnAudioProcessed += HandleAudioProcessed;
         mic.Start();
         _mic = mic;
