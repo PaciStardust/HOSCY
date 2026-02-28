@@ -519,7 +519,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// OSC Address to (un)mute recognition when received
     /// </summary>
-    public string Osc_Address_Tool_ToggleMute //todo: [IMPL] To be implemented
+    public string Osc_Address_Tool_ToggleMute
     {
         get => _osc_Address_Tool_ToggleMute;
         set => SetProperty(ref _osc_Address_Tool_ToggleMute, value);
@@ -589,7 +589,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// OSC Address to toggle recognition auto mute
     /// </summary>
-    public string Osc_Address_Tool_ToggleRecognitionAutoMute //todo: [IMPL] To be implemented
+    public string Osc_Address_Tool_ToggleRecognitionAutoMute
     {
         get => _osc_Address_Tool_ToggleRecognitionAutoMute;
         set => SetProperty(ref _osc_Address_Tool_ToggleRecognitionAutoMute, value);
@@ -609,7 +609,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// OSC Address the game sends out when muted
     /// </summary>
-    public string Osc_Address_Game_Mute //todo: [IMPL] To be implemented
+    public string Osc_Address_Game_Mute
     {
         get => _osc_Address_Game_Mute;
         set => SetProperty(ref _osc_Address_Game_Mute, value);

@@ -10,7 +10,7 @@ using Serilog;
 namespace HoscyCore.Services.Recognition.Core;
 
 [PrototypeLoadIntoDiContainer(typeof(IRecognitionManagerService), Lifetime.Singleton)]
-public class RecognitionManagerService
+public class RecognitionManagerService //todo: [TEST] create test for this
 (
     IBackToFrontNotifyService notify,
     ILogger logger,
@@ -81,9 +81,9 @@ public class RecognitionManagerService
         _logger.Debug("Setting listening to {state}", state);
 
         bool newState;
-        if (module is null)
+        if (module is null || module.GetCurrentStatus() == ServiceStatus.Stopped)
         {
-            _logger.Warning("Unable to set listening, provided module is null");
+            _logger.Warning("Unable to set listening, provided module is null or stopped");
             newState = false;
         }
         else
