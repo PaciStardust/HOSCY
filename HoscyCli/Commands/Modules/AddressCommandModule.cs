@@ -31,6 +31,12 @@ public class AddressCommandModule(ReflectPropEditCommandModule _reflectCm) : Att
         return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Game_Typing));
     }
 
+    [SubCommandModule(["game-mute", "mute"], "Set games mute address")] 
+    public CommandResult CmdGameMute()
+    {
+        return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Game_Mute));
+    }
+
     [SubCommandModule(["in-message-text", "message-text"], "Set HOSCY text message input address")] 
     public CommandResult CmdInMessageText()
     {
@@ -53,5 +59,17 @@ public class AddressCommandModule(ReflectPropEditCommandModule _reflectCm) : Att
     public CommandResult CmdInNotification()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Input_TextNotification));
+    }
+
+    [SubCommandModule(["rec-toggle-mute", "toggle-mute"], "Set HOSCY recognition mute toggle address")] 
+    public CommandResult CmdRecToggleMute()
+    {
+        return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Tool_ToggleMute));
+    }
+
+    [SubCommandModule(["rec-toggle-auto-mute", "toggle-auto-mute"], "Set HOSCY recognition automatic mute toggle address")] 
+    public CommandResult CmdRecToggleAutoMute()
+    {
+        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Mute_OnGameMute));
     }
 }
