@@ -358,7 +358,7 @@ public class OscMessageHandlerFunctionTests : TestBase<OscMessageHandlerFunction
     {
         var config = new ConfigModel();
         var input = new MockInputService();
-        var handler = new ExternalInputMessageHandler(config, input, _logger);
+        var handler = new ExternalInputOscMessageHandler(config, input, _logger);
 
         //Send inapplicable message
         var message = new OscMessage("/test", false);
@@ -378,7 +378,7 @@ public class OscMessageHandlerFunctionTests : TestBase<OscMessageHandlerFunction
         () => input.TextNotification, (x) => input.TextNotification[x].Item1);
     }
 
-    private void AssertExternalInput<T>(ExternalInputMessageHandler handler, string address, string testText, Func<List<T>> getList, Func<int, string> getListString)
+    private void AssertExternalInput<T>(ExternalInputOscMessageHandler handler, string address, string testText, Func<List<T>> getList, Func<int, string> getListString)
     {
         //Wrong parameter
         var message = new OscMessage(address, false);

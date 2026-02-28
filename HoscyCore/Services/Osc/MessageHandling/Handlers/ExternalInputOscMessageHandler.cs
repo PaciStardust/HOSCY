@@ -6,8 +6,8 @@ using Serilog;
 
 namespace HoscyCore.Services.Osc.MessageHandling.Handlers;
 
-[PrototypeLoadIntoDiContainer(typeof(ExternalInputMessageHandler), Lifetime.Transient)]
-public class ExternalInputMessageHandler(ConfigModel config, IInputService input, ILogger logger) : IOscMessageHandler
+[PrototypeLoadIntoDiContainer(typeof(ExternalInputOscMessageHandler), Lifetime.Transient)]
+public class ExternalInputOscMessageHandler(ConfigModel config, IInputService input, ILogger logger) : IOscMessageHandler
 {
     private readonly ConfigModel _config = config;
     private readonly IInputService _input = input;
