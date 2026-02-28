@@ -93,32 +93,32 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// ID of microphone
     /// </summary>
-    public string Audio_CurrentMicrophoneId
+    public string Audio_CurrentMicrophoneName
     {
-        get => _audio_CurrentMicrophoneId;
-        set => SetProperty(ref _audio_CurrentMicrophoneId, value);
+        get => _audio_CurrentMicrophoneName;
+        set => SetProperty(ref _audio_CurrentMicrophoneName, value);
     }
-    private string _audio_CurrentMicrophoneId = string.Empty;
+    private string _audio_CurrentMicrophoneName = string.Empty;
 
     /// <summary>
     /// ID of speaker for output audio
     /// </summary>
-    public string Audio_CurrentSpeakerOutputId
+    public string Audio_CurrentSpeakerOutputName
     {
-        get => _audio_CurrentSpeakerOutputId;
-        set => SetProperty(ref _audio_CurrentSpeakerOutputId, value);
+        get => _audio_CurrentSpeakerOutputName;
+        set => SetProperty(ref _audio_CurrentSpeakerOutputName, value);
     }
-    private string _audio_CurrentSpeakerOutputId = string.Empty;
+    private string _audio_CurrentSpeakerOutputName = string.Empty;
 
     /// <summary>
     /// ID of speaker for system audio
     /// </summary>
-    public string Audio_CurrentSpeakerSystemId
+    public string Audio_CurrentSpeakerSystemName
     {
-        get => _audio_CurrentSpeakerSystemId;
-        set => SetProperty(ref _audio_CurrentSpeakerSystemId, value);
+        get => _audio_CurrentSpeakerSystemName;
+        set => SetProperty(ref _audio_CurrentSpeakerSystemName, value);
     }
-    private string _audio_CurrentSpeakerSystemId = string.Empty;
+    private string _audio_CurrentSpeakerSystemName = string.Empty;
     #endregion
 
     #region Azure

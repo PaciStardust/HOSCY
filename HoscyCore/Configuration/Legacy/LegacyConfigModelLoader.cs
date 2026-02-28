@@ -268,8 +268,8 @@ public static class LegacyConfigModelLoader
             Recognition_Mute_PlaySound = oldConfig.Speech.PlayMuteSound,
             Recognition_Mute_OnGameMute = oldConfig.Speech.MuteOnVrcMute,
 
-            Audio_CurrentMicrophoneId = oldConfig.Speech.MicId,
-            Audio_CurrentSpeakerOutputId = oldConfig.Speech.SpeakerId,
+            Audio_CurrentMicrophoneName = oldConfig.Speech.MicId,
+            Audio_CurrentSpeakerOutputName = oldConfig.Speech.SpeakerId,
 
             Recognition_SelectedModuleName = oldConfig.Speech.ModelName,
 

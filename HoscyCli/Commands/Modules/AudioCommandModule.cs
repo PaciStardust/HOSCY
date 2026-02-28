@@ -25,12 +25,12 @@ public class AudioCommandModule(IAudioService audio, ReflectPropEditCommandModul
             ? "[NOT LOADED]"
             : mics.Length == 0
                 ? "[NONE]"
-                : string.Join("\n", mics.Select(x => $" - {x.Id} | {x.Name}"));
+                : string.Join("\n", mics.Select(x => $" - {x.Name}"));
         var speakerString = speakers is null
             ? "[NOT LOADED]"
             : speakers.Length == 0
                 ? "[NONE]"
-                : string.Join("\n", speakers.Select(x => $" - {x.Id} | {x.Name}"));
+                : string.Join("\n", speakers.Select(x => $" - {x.Name}"));
 
         Console.WriteLine($"Microphones:\n{micString}\n\nSpeakers:\n{speakerString}");
         return CommandResult.Success;
@@ -39,18 +39,18 @@ public class AudioCommandModule(IAudioService audio, ReflectPropEditCommandModul
     [SubCommandModule(["microphone-id"], "Set the microphone to use")]
     public CommandResult CmdMicrophone()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Audio_CurrentMicrophoneId));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Audio_CurrentMicrophoneName));
     }
 
     [SubCommandModule(["system-speaker-id"], "Set the speaker to use for system audio")]
     public CommandResult CmdSystemSpeaker()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Audio_CurrentSpeakerSystemId));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Audio_CurrentSpeakerSystemName));
     }
 
     [SubCommandModule(["system-output-id"], "Set the speaker to use for output audio")]
     public CommandResult CmdOutputSpeaker()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Audio_CurrentSpeakerOutputId));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Audio_CurrentSpeakerOutputName));
     }
 }

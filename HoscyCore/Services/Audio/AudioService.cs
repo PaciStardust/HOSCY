@@ -11,7 +11,7 @@ using SoundFlow.Structs;
 namespace HoscyCore.Services.Audio;
 
 [PrototypeLoadIntoDiContainer(typeof(IAudioService), Lifetime.Singleton)]
-public class AudioService(ILogger logger, ConfigModel config) //todo: [FIX] Dev ID changes between restarts
+public class AudioService(ILogger logger, ConfigModel config)
     : StartStopServiceBase(logger.ForContext<AudioService>()), IAudioService
 {
     #region Vars
@@ -51,7 +51,7 @@ public class AudioService(ILogger logger, ConfigModel config) //todo: [FIX] Dev 
 
     public AudioCaptureDevice CreateCaptureDevice() //todo: [TEST] create test for this
     {
-        var devInfo = FindDeviceWithChecks(GetCaptureDevices(), _config.Audio_CurrentMicrophoneId, "capture");
+        var devInfo = FindDeviceWithChecks(GetCaptureDevices(), _config.Audio_CurrentMicrophoneName, "capture");
 
         var format = new AudioFormat
         {
@@ -86,7 +86,7 @@ public class AudioService(ILogger logger, ConfigModel config) //todo: [FIX] Dev 
             throw new ArgumentNullException($"Unable to {deviceTypeForLog} capture device, audio engine is not available");
         }
         
-        var devInfo = FindDevice(devices, _config.Audio_CurrentMicrophoneId);
+        var devInfo = FindDevice(devices, configId);
         if (devInfo is null)
         {
             _logger.Warning("Unable to retrieve {deviceTypeForLog} device, none found", deviceTypeForLog);
@@ -104,7 +104,7 @@ public class AudioService(ILogger logger, ConfigModel config) //todo: [FIX] Dev 
             return null;
         }
 
-        var configMatches = devices.Where(x => x.Id.ToString() == _config.Audio_CurrentMicrophoneId).ToArray();
+        var configMatches = devices.Where(x => x.Name.ToString() == configId).ToArray();
         
         if (configMatches.Length == 0)
         {
