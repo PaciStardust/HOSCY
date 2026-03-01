@@ -12,7 +12,7 @@ namespace HoscyCore.Services.Recognition.Modules;
 
 [SupportedOSPlatform("windows")]
 [PrototypeLoadIntoDiContainer(typeof(WindowsRecognitionModuleStartInfo), Lifetime.Singleton, SupportedPlatformFlags.Windows)]
-public class WindowsRecognitionModuleStartInfo : IRecognitionModuleStartInfo
+public class WindowsRecognitionModuleStartInfo : IRecognitionModuleStartInfo //todo: [REFACTOR] Remove all the unneeded null checks
 {
     public WindowsRecognitionModuleStartInfo()
     {
