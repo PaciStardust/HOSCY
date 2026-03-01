@@ -74,9 +74,9 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
 
         _stream = new();
         _mic = _audio.CreateCaptureDevice();
-        _recorder = new Recorder(_mic, _stream, EncodingFormat.Wav)
+        _recorder = new Recorder(_mic, _stream)
         {
-            ProcessCallback = (x, y) => OnRecorderProcessed(x, y)
+            ProcessCallback = OnRecorderProcessed
         };
         _mic.Start();
     }

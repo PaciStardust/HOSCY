@@ -45,7 +45,7 @@ public class AudioService(ILogger logger, ConfigModel config)
     #region Capture
     public DeviceInfo[]? GetCaptureDevices()
     {
-        _audioEngine?.UpdateDevicesInfo();
+        _audioEngine?.UpdateAudioDevicesInfo();
         return _audioEngine?.CaptureDevices;
     }
 
@@ -73,7 +73,7 @@ public class AudioService(ILogger logger, ConfigModel config)
     #region Playback
     public DeviceInfo[]? GetPlaybackDevices()
     {
-        _audioEngine?.UpdateDevicesInfo();
+        _audioEngine?.UpdateAudioDevicesInfo();
         return _audioEngine?.PlaybackDevices;
     }
     #endregion
