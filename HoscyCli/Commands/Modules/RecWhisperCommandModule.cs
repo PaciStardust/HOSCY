@@ -68,11 +68,12 @@ public class RecWhisperCommandModule
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_Cfg_NoiseFilter));
     }
 
-    [SubCommandModule(["cfg-language"], "Set recognized language")]
-    public CommandResult CmdCfgLanguage()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_Cfg_Language));
-    }
+    //todo: fix
+    // [SubCommandModule(["cfg-language"], "Set recognized language")]
+    // public CommandResult CmdCfgLanguage()
+    // {
+    //     return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_Cfg_Language));
+    // }
 
     [SubCommandModule(["cfg-thread-count"], "Number of threads to be used by process (0 = All, -N = All - N)")]
     public CommandResult CmdCfgThreadCount()
@@ -107,12 +108,14 @@ public class RecWhisperCommandModule
     [SubCommandModule(["list-graphics-adapters"], "Lists all graphics adapters (GPUs)")]
     public CommandResult CmdListGraphicAdapters()
     {
-        var gpus = _modelProvider.GetGraphicsAdapters();
-        var gpuText = gpus.Count > 0
-            ? string.Join("\n", gpus.Select(x => $" - {x}"))
-            : "[NONE]";
-        Console.WriteLine($"All available graphics adapters (GPUs):\n{gpuText}");
-        return CommandResult.Success;
+        // var gpus = _modelProvider.GetGraphicsAdapters();
+        // var gpuText = gpus.Count > 0
+        //     ? string.Join("\n", gpus.Select(x => $" - {x}"))
+        //     : "[NONE]";
+        // Console.WriteLine($"All available graphics adapters (GPUs):\n{gpuText}");
+        // return CommandResult.Success;
+
+        return CommandResult.Error; //todo: redo this all
     }
 
     [SubCommandModule(["cfg-graphics-adapter"], "Graphics adapter (GPU) to use")]

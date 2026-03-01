@@ -2,7 +2,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using HoscyCore.Utility;
 using Serilog.Core;
 using Serilog.Events;
-using Whisper;
 
 namespace HoscyCore.Configuration.Modern;
 
@@ -1108,15 +1107,17 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private Dictionary<string, string> _recognition_Whisper_Cfg_NoiseFilter = [];
 
+    //todo: fix
     /// <summary>
     /// Speaking language
     /// </summary>
-    public eLanguage Recognition_Whisper_Cfg_Language //todo: [REFACTOR] Should really not be an actual type, autodetect?
-    {
-        get => _recognition_Whisper_Cfg_Language;
-        set => SetProperty(ref _recognition_Whisper_Cfg_Language, value);
-    }
-    private eLanguage _recognition_Whisper_Cfg_Language = eLanguage.English;
+    // public eLanguage Recognition_Whisper_Cfg_Language //todo: [REFACTOR] Should really not be an actual type, autodetect?
+    // {
+    //     get => _recognition_Whisper_Cfg_Language;
+    //     set => SetProperty(ref _recognition_Whisper_Cfg_Language, value);
+    // }
+    // private eLanguage _recognition_Whisper_Cfg_Language = eLanguage.English;
+
 
     /// <summary>
     /// Amount of threads used by whisper. 0 = All, -n = All but n threads

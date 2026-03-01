@@ -1,8 +1,6 @@
 using System.Runtime.InteropServices;
 using System.Speech.Recognition;
-using Hardware.Info;
 using HoscyCore.Services.Dependency;
-using Whisper;
 
 namespace HoscyCore.Services.Recognition.Extra;
 
@@ -18,12 +16,5 @@ public class RecognitionModelProviderService : IRecognitionModelProviderService
         return SpeechRecognitionEngine.InstalledRecognizers()
                 .Select(x => (x.Name, x.Description, x.Id)).ToList();
 #pragma warning restore CA1416 // Validate platform compatibility
-    }
-
-    public IReadOnlyList<string> GetGraphicsAdapters()
-    {
-        var hwInfo = new HardwareInfo();
-        hwInfo.RefreshVideoControllerList();
-        return hwInfo.VideoControllerList.Select(x => x.Name).ToList();
     }
 }

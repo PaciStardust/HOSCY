@@ -289,7 +289,8 @@ public static class LegacyConfigModelLoader
             Recognition_Whisper_Fix_RemoveRandomBrackets = oldConfig.Speech.WhisperBracketFix,
             Recognition_Whisper_Cfg_IncreaseThreadPriority = oldConfig.Speech.WhisperHighPerformance,
             Recognition_Whisper_Dbg_LogFilteredNoises = oldConfig.Speech.WhisperLogFilteredNoises,
-            Recognition_Whisper_Cfg_Language = oldConfig.Speech.WhisperLanguage,
+            //todo: fix
+            // Recognition_Whisper_Cfg_Language = oldConfig.Speech.WhisperLanguage,
             Recognition_Whisper_Cfg_NoiseFilter = ConvertDictionary(oldConfig.Speech.WhisperNoiseFilter),
             Recognition_Whisper_Cfg_ThreadsUsed = oldConfig.Speech.WhisperThreads,
             Recognition_Whisper_Cfg_MaxContext = oldConfig.Speech.WhisperMaxContext,
