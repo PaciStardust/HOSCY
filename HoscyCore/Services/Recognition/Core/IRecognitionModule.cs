@@ -13,7 +13,8 @@ public enum RecognitionModuleConfigFlags
     None = 0b0,
     Microphone = 0b1,
     Windows = 0b10,
-    AnyApi = 0b100
+    AnyApi = 0b100,
+    Whisper = 0b1000
 }
 
 public interface IRecognitionModule : IStartStopModule

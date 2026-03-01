@@ -1121,7 +1121,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Amount of threads used by whisper. 0 = All, -n = All but n threads
     /// </summary>
-    public int Recognition_Whisper_ThreadUsed //todo: [IMPL] To be implemented
+    public int Recognition_Whisper_ThreadsUsed //todo: [IMPL] To be implemented
     {
         get => _recognition_Whisper_ThreadsUsed;
         set => SetProperty(ref _recognition_Whisper_ThreadsUsed, value.MinMax(short.MinValue, short.MaxValue));

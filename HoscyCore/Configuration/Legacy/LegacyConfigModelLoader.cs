@@ -291,7 +291,7 @@ public static class LegacyConfigModelLoader
             Recognition_Whisper_LogFilteredNoises = oldConfig.Speech.WhisperLogFilteredNoises,
             Recognition_Whisper_Language = oldConfig.Speech.WhisperLanguage,
             Recognition_Whisper_NoiseFilter = ConvertDictionary(oldConfig.Speech.WhisperNoiseFilter),
-            Recognition_Whisper_ThreadUsed = oldConfig.Speech.WhisperThreads,
+            Recognition_Whisper_ThreadsUsed = oldConfig.Speech.WhisperThreads,
             Recognition_Whisper_MaxContext = oldConfig.Speech.WhisperMaxContext,
             Recognition_Whisper_MaxSegmentLength = oldConfig.Speech.WhisperMaxSegLen,
             Recognition_Whisper_MaxSentenceDurationSeconds = oldConfig.Speech.WhisperRecMaxDuration,
