@@ -105,7 +105,12 @@ public class RecognitionCommandModule
     [SubCommandModule(["status"], "Get the recognition status")]
     public CommandResult CmdStatus()
     {
-        var text = $"Manager: {_recognition.GetCurrentStatus()}\nModule ({_recognition.GetCurrentModuleInfo()?.Name ?? "None"}): {_recognition.GetCurrentModuleStatus()}";
+        string[] textSplit = [
+            $"Manager: {_recognition.GetCurrentStatus()}",
+            $"Module ({_recognition.GetCurrentModuleInfo()?.Name ?? "None"}): {_recognition.GetCurrentModuleStatus()}",
+            $"Listening: {_recognition.IsListening}"
+        ];
+        var text = string.Join("\n", textSplit);
         Console.WriteLine(text);
         return CommandResult.Success;
     }
@@ -129,6 +134,15 @@ public class RecognitionCommandModule
     {
         var res = _recognition.RestartModule();
         return res ? CommandResult.Success : CommandResult.Error;
+    }
+
+    [SubCommandModule(["toogle-mute", "mute", "unmute"], "Toggle listening status of recognizer")]
+    public CommandResult CmdToggleMute()
+    {
+        var mode = !_recognition.IsListening;
+        var result = _recognition.SetListening(mode);
+        Console.WriteLine($"Listening set to {result} (requested={mode})");
+        return mode == result ? CommandResult.Success : CommandResult.Error;
     }
     #endregion
 }

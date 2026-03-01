@@ -98,7 +98,7 @@ public class WhisperRecognitionModule
 
     protected override void StopForRecognitionModule()
     {
-        if (_config.Recognition_Whisper_LogFilteredNoises && _filteredActions.Count > 0)
+        if (_config.Recognition_Whisper_Dbg_LogFilteredNoises && _filteredActions.Count > 0)
             LogFilteredActions();
 
         if (_whisperProcess != null)
@@ -150,22 +150,22 @@ public class WhisperRecognitionModule
 
     private string GenerateProcessArguments()
     {
-        _config.Recognition_Whisper_Models.TryGetValue(_config.Recognition_Whisper_CurrentModel, out var path);
+        _config.Recognition_Whisper_Models.TryGetValue(_config.Recognition_Whisper_SelectedModel, out var path);
 
         var dict = new Dictionary<string, object>()
         {
             { "ModelPath", path ?? string.Empty },
             { "GraphicsAdapter", GetGraphicsAdapter() ?? string.Empty },
-            { "WhisperThreads", _config.Recognition_Whisper_ThreadsUsed },
-            { "WhisperSingleSegment", _config.Recognition_Whisper_UseSingleSegmentMode },
+            { "WhisperThreads", _config.Recognition_Whisper_Cfg_ThreadsUsed },
+            { "WhisperSingleSegment", _config.Recognition_Whisper_Cfg_UseSingleSegmentMode },
             { "MicId", _config.Audio_CurrentMicrophoneName }, //todo: this might need fixing
-            { "WhisperToEnglish", _config.Recognition_Whisper_TranslateToEnglish },
-            { "WhisperMaxContext", _config.Recognition_Whisper_MaxContext },
-            { "WhisperMaxSegLen", _config.Recognition_Whisper_MaxSegmentLength },
-            { "WhisperLanguage", _config.Recognition_Whisper_Language },
-            { "WhisperRecMaxDuration", _config.Recognition_Whisper_MaxSentenceDurationSeconds },
-            { "WhisperRecPauseDuration", _config.Recognition_Whisper_DetectPauseDurationSeconds },
-            { "WhisperHighPerformance", _config.Recognition_Whisper_IncreaseThreadPriority },
+            { "WhisperToEnglish", _config.Recognition_Whisper_Cfg_TranslateToEnglish },
+            { "WhisperMaxContext", _config.Recognition_Whisper_Cfg_MaxContext },
+            { "WhisperMaxSegLen", _config.Recognition_Whisper_Cfg_MaxSegmentLength },
+            { "WhisperLanguage", _config.Recognition_Whisper_Cfg_Language },
+            { "WhisperRecMaxDuration", _config.Recognition_Whisper_Cfg_MaxSentenceDurationSeconds },
+            { "WhisperRecPauseDuration", _config.Recognition_Whisper_Cfg_DetectPauseDurationSeconds },
+            { "WhisperHighPerformance", _config.Recognition_Whisper_Cfg_IncreaseThreadPriority },
             { "ParentPid", Environment.ProcessId }
         };
 
@@ -351,7 +351,7 @@ public class WhisperRecognitionModule
             sb.Remove(match.Index, match.Length);
 
             bool valid = false;
-            foreach (var filter in _config.Recognition_Whisper_NoiseFilter.Values)
+            foreach (var filter in _config.Recognition_Whisper_Cfg_NoiseFilter.Values)
             {
                 if (groupText.StartsWith(filter))
                 {
@@ -364,7 +364,7 @@ public class WhisperRecognitionModule
             {
                 sb.Insert(match.Index, $"{match.Groups[1].Value}|{groupText}|");
             }
-            else if (_config.Recognition_Whisper_LogFilteredNoises && groupText != "BLANK_AUDIO")
+            else if (_config.Recognition_Whisper_Dbg_LogFilteredNoises && groupText != "BLANK_AUDIO")
             {
                 //Adding it to the filtered list
                 if (_filteredActions.TryGetValue(groupText, out var key))
@@ -380,7 +380,7 @@ public class WhisperRecognitionModule
 
     private string CleanText(string text)
     {
-        text = _config.Recognition_Whisper_RemoveRandomBrackets
+        text = _config.Recognition_Whisper_Fix_RemoveRandomBrackets
             ? text.TrimStart(' ', '-', '(', '[', '*').TrimEnd()
             : text.TrimStart(' ', '-').TrimEnd();
 
@@ -399,8 +399,8 @@ public class WhisperRecognitionModule
     #region Utils
     private string? GetGraphicsAdapter()
     {
-        if (!string.IsNullOrWhiteSpace(_config.Recognition_Whisper_GraphicsAdapter))
-            return _config.Recognition_Whisper_GraphicsAdapter;
+        if (!string.IsNullOrWhiteSpace(_config.Recognition_Whisper_Cfg_GraphicsAdapter))
+            return _config.Recognition_Whisper_Cfg_GraphicsAdapter;
 
         var graphicAdapters = _modelProvider.GetGraphicsAdapters();
         if (graphicAdapters.Count != 0)

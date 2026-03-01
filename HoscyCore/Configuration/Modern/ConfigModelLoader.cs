@@ -182,8 +182,8 @@ public static class ConfigModelLoader
                 ];
             }},
             {5, () => {
-                if (config.Recognition_Whisper_NoiseFilter.Count > 0) return;
-                config.Recognition_Whisper_NoiseFilter = new() {
+                if (config.Recognition_Whisper_Cfg_NoiseFilter.Count > 0) return;
+                config.Recognition_Whisper_Cfg_NoiseFilter = new() {
                     { "Laughing", "laugh" },
                     { "Popping", "pop" },
                     { "Whistling", "whistl" },
