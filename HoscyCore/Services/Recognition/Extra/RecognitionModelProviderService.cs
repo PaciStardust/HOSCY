@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using System.Speech.Recognition;
+using Hardware.Info;
 using HoscyCore.Services.Dependency;
 using Whisper;
 
@@ -21,6 +22,8 @@ public class RecognitionModelProviderService : IRecognitionModelProviderService
 
     public IReadOnlyList<string> GetGraphicsAdapters()
     {
-        return Library.listGraphicAdapters();
+        var hwInfo = new HardwareInfo();
+        hwInfo.RefreshVideoControllerList();
+        return hwInfo.VideoControllerList.Select(x => x.Name).ToList();
     }
 }

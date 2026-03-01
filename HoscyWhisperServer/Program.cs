@@ -70,7 +70,7 @@ namespace HoscyWhisperServer
             }
             catch (Exception ex)
             {
-                SendMessage(MessageType.Error, "Failed to start whisper recognizer: " + ex.Message);
+                SendMessage(MessageType.Error, $"Failed to start whisper recognizer: {ex.Message}\n{ex.StackTrace}\n\n{ex.InnerException?.Message}\n{ex.InnerException?.StackTrace}");
                 return;
             }
 

@@ -49,7 +49,7 @@ public class WhisperRecognitionModule
         => _whisperProcess is not null || _timeStarted is not null;
 
     protected override bool IsProcessing()
-        => _whisperProcess is not null && _timeStarted is not null
+        => _whisperProcess is not null && _timeStarted is not null && _whisperProcess.Id != int.MinValue
             && !_whisperProcess.HasExited && _timeStarted > DateTimeOffset.MinValue;
 
     protected override void StartForService()
@@ -134,9 +134,15 @@ public class WhisperRecognitionModule
     #region Process Control
     private Process CreateProcess()
     {
+        var path = Path.Combine(PathUtils.PathExecutableFolder, "HoscyWhisperServer.exe");
+        if (!File.Exists(path))
+        {
+            path = Path.Combine(PathUtils.PathExecutableFolder, "HoscyWhisperServer");
+        }
+
         return new()
         {
-            StartInfo = new ProcessStartInfo(Path.Combine(PathUtils.PathExecutableFolder, "HoscyWhisperServer.exe"))
+            StartInfo = new ProcessStartInfo(path)
             {
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
@@ -172,11 +178,17 @@ public class WhisperRecognitionModule
         return JsonConvert.SerializeObject(dict, Formatting.None).Replace("\"", "'");
     }
 
-    private static void CleanupProcess(Process? process)
+    private void CleanupProcess(Process? process)
     {
         if (process is null) return;
-        if (!process.HasExited)
+        try
+        {
             process.Kill();
+        }
+        catch (Exception ex)
+        {
+            _logger.Warning(ex, "Process could not be stopped, this might also be the case when no process is available");
+        }
         process.Dispose();
     }
 
