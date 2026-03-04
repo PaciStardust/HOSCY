@@ -65,14 +65,7 @@ public class AudioCaptureDeviceProxy(AudioCaptureDevice wrappedDevice, ILogger l
         byte[] rentedBytes = ArrayPool<byte>.Shared.Rent(byteLen);
         try
         {
-            var shortView = MemoryMarshal.Cast<byte, short>(rentedBytes.AsSpan());
-        
-            for (var i = 0; i < samples.Length; i++)
-            {
-                float clamped = Math.Max(-1.0f, Math.Min(1.0f, samples[i]));
-                shortView[i] = (short)(clamped * 32767f);
-            }
-
+            AudioUtils.ConvertLinearFloatsToPcmBytes(samples, rentedBytes.AsSpan());
             OnAudioProcessed.Invoke(rentedBytes.AsSpan(0, byteLen), capability);
         }
         finally

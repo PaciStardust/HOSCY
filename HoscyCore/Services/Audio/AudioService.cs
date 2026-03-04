@@ -86,7 +86,7 @@ public class AudioService(ILogger logger, ConfigModel config)
             throw new ArgumentNullException($"Unable to {deviceTypeForLog} capture device, audio engine is not available");
         }
         
-        var devInfo = FindDevice(devices, configId);
+        var devInfo = AudioUtils.FindDevice(devices, configId, logger);
         if (devInfo is null)
         {
             _logger.Warning("Unable to retrieve {deviceTypeForLog} device, none found", deviceTypeForLog);
@@ -94,46 +94,6 @@ public class AudioService(ILogger logger, ConfigModel config)
         }
 
         return devInfo.Value;
-    }
-
-    private DeviceInfo? FindDevice(DeviceInfo[]? devices, string configId)
-    {
-        if (devices is null || devices.Length == 0)
-        {
-            _logger.Warning("No audio devices provided for search, returning null");
-            return null;
-        }
-
-        var configMatches = devices.Where(x => x.Name.ToString() == configId).ToArray();
-        
-        if (configMatches.Length == 0)
-        {
-            _logger.Warning("No audio device found for configuired id {configId}, picking default instead", configId);
-        } 
-        else 
-        {
-            if (configMatches.Length > 1)
-            {
-                _logger.Warning("More than one audio device found for id {configId}, picking first", configId);
-            }
-            return configMatches[0];
-        }
-
-        var defaultMatches = devices.Where(x => x.IsDefault).ToArray();
-
-        if (defaultMatches.Length == 0)
-        {
-            _logger.Warning("No default audio device found, picking first instead");
-            return devices[0];
-        } 
-        else 
-        {
-            if (defaultMatches.Length > 1)
-            {
-                _logger.Warning("More than one default audo device found, picking first");
-            }
-            return defaultMatches[0];
-        }
     }
     #endregion
 }
