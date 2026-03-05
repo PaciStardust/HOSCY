@@ -1,11 +1,8 @@
-﻿using System.Collections.Concurrent;
-using System.Globalization;
-using EchoSharp.Abstractions.SpeechTranscription;
-using EchoSharp.SpeechTranscription;
-using EchoSharp.WebRtc.WebRtcVadSharp;
-using EchoSharp.Whisper.net;
-using Serilog.Core;
-using Serilog.Events;
+﻿using System.Buffers.Binary;
+using System.Diagnostics;
+using HoscyCore.Services.Audio;
+using Serilog;
+using SoundFlow.Abstracts;
 using SoundFlow.Backends.MiniAudio;
 using SoundFlow.Enums;
 using SoundFlow.Structs;
@@ -16,103 +13,173 @@ namespace HoscyWhisperV2Process;
 
 public class Program
 {
-    private static ConcurrentQueue<float[]> _toProcess = [];
-
     public static async Task Main(string[] args)
     {
-        using var engine = new MiniAudioEngine();
-        engine.UpdateAudioDevicesInfo();
+        const int MIN_LEN_SEG = 250 / 10;
+        const int SILENCE_LEN_SEG = 500 / 10;
+        const int REC_INTERVAL_SEG = 500 / 10;
 
-        var info = engine.CaptureDevices.FirstOrDefault(x => x.IsDefault);
-        using var capture = engine.InitializeCaptureDevice(info, new AudioFormat() { Channels=1, Format=SampleFormat.S16, Layout=ChannelLayout.Mono, SampleRate=16000});
+        var logger = new LoggerConfiguration()
+            .MinimumLevel.Verbose()
+            .CreateLogger();
 
-        var audio = new HoscyAvailableAudioSource(capture);
+        using var audioEngine = CreateAudioEngine(logger);
+        using var capture = CreateCaptureDevice(audioEngine, string.Empty, logger); //todo: config
 
-        var vad = new WebRtcVadSharpDetectorFactory(new WebRtcVadSharpOptions()
+        var bytesPerSecond = 16_000 * 2;
+        var bytesPer10ms = bytesPerSecond / 100;
+
+        using var vad = CreateVad(logger);
+
+        var path = Console.ReadLine()!;
+        using var processor = CreateProcessor(path, logger);
+
+        using var ms = new MemoryStream();
+        var segmmentsRecorded = 0;
+        var segmentsSilent = 0;
+
+        capture.Start();
+        capture.SetListening(true);
+        var sw = Stopwatch.StartNew();
+        capture.OnAudioProcessed += (audioData, _) =>
         {
-            OperatingMode = OperatingMode.VeryAggressive
-        });
+            var segments =  audioData.Length / bytesPer10ms;
+            var bools = new bool[segments];
 
-        var path = Console.ReadLine();
-        var rec = new WhisperSpeechTranscriptorFactory(WhisperFactory.FromPath(path!));
-
-        var trans = new EchoSharpRealtimeTranscriptorFactory(rec, vad, echoSharpOptions: new EchoSharpRealtimeOptions()
-        {
-            ConcatenateSegmentsToPrompt = false // Flag to concatenate segments to prompt when new segment is recognized (for the whole session)
-        }).Create(new RealtimeSpeechTranscriptorOptions()
-        {
-            AutodetectLanguageOnce = false, // Flag to detect the language only once or for each segment
-            IncludeSpeechRecogizingEvents = false, // Flag to include speech recognizing events (RealtimeSegmentRecognizing)
-            RetrieveTokenDetails = true, // Flag to retrieve token details
-            LanguageAutoDetect = false, // Flag to auto-detect the language
-            Language = new CultureInfo("en-US"), // Language to use for transcription
-        });
-
-        var microphoneTask = Task.Run(() =>
-        {
-            audio.StartRecording();
-            Console.WriteLine("Speak to recognize, press any key to stop...");
-            Console.ReadKey();
-            audio.StopRecording();
-        });
-
-        async Task ShowTranscriptAsync()
-        {
-            await foreach (var transcription in trans.TranscribeAsync(audio))
+            for (var i = 0; i < segments; i++)
             {
-                var eventType = transcription.GetType().Name;
-                Console.WriteLine(eventType);
+                var slice = audioData.Slice(i * bytesPer10ms, bytesPer10ms);
+                var hasAudio = vad.HasSpeech(slice.ToArray());
+                bools[i] = hasAudio;
 
-                var textToWrite = transcription switch
+                segmentsSilent = hasAudio 
+                    ? 0
+                    : segmentsSilent + 1;
+
+                if (segmmentsRecorded < MIN_LEN_SEG)
                 {
-                    RealtimeSegmentRecognized segmentRecognized => $"{segmentRecognized.Segment.StartTime}-{segmentRecognized.Segment.StartTime + segmentRecognized.Segment.Duration}:{segmentRecognized.Segment.Text}",
-                    RealtimeSegmentRecognizing segmentRecognizing => $"{segmentRecognizing.Segment.StartTime}-{segmentRecognizing.Segment.StartTime + segmentRecognizing.Segment.Duration}:{segmentRecognizing.Segment.Text}",
-                    RealtimeSessionStarted sessionStarted => $"SessionId: {sessionStarted.SessionId}",
-                    RealtimeSessionStopped sessionStopped => $"SessionId: {sessionStopped.SessionId}",
-                    _ => string.Empty
-                };
+                    if (hasAudio || (segmmentsRecorded > 4 && segmentsSilent > 6))
+                    {
+                        segmmentsRecorded++;
+                        ms.Write(slice);
+                    }
+                    else
+                    {
+                        segmmentsRecorded = 0;
+                        ms.SetLength(0);
+                        ms.Write(_baseHeader);
+                    }
+                }
+                else
+                {
+                    if (segmentsSilent >= SILENCE_LEN_SEG)
+                    {
+                        Task.Run(() => {
+                            var buffer = ms.GetBuffer();
+                            WriteRestOfHeader(buffer.AsSpan());
+                            using var msIn = new MemoryStream(buffer);
+                            msIn.Seek(0, SeekOrigin.Begin);
+                            processor.Process(msIn);
+                        });
+                        segmmentsRecorded = 0;
+                        ms.SetLength(0);
+                        ms.Write(_baseHeader); //todo: CLEAR NOT WORKING
+                    }
+                    ms.Write(slice);
 
-                Console.WriteLine(textToWrite);
+                    //todo: incremental sending
+                }
+                //todo: too long handling
             }
+            // Console.WriteLine($"{sw.ElapsedMilliseconds} => {string.Join(string.Empty, bools.Select(x => x ? "1" : "0"))}");
         };
 
-        var showTranscriptTask = ShowTranscriptAsync();
-        var firstReady = await Task.WhenAny(microphoneTask, showTranscriptTask);
-
-        // We await the task that finish first in case we have some exception to throw
-        await firstReady;
-
-        await Task.WhenAll(microphoneTask, showTranscriptTask);
+        Console.ReadLine();
     }
 
-    private static void OnAudioProcessed(Span<float> samples, Capability capability)
+    private static AudioEngine CreateAudioEngine(ILogger logger)
     {
-        _toProcess.Enqueue(samples.ToArray());
+        logger.Debug("Starting audio engine");
+        var engine = new MiniAudioEngine();
+        engine.UpdateAudioDevicesInfo();
+        return engine;
     }
 
-    private static bool _stopped = false;
-    private static async Task HandleAudioLoop(WhisperProcessor processor)
+    private static AudioCaptureDeviceProxy CreateCaptureDevice(AudioEngine engine, string devName, ILogger logger)
     {
-        while (!_stopped)
+        logger.Debug("Creating audio device");
+
+        var devInfo = AudioUtils.FindDevice(engine.CaptureDevices, devName, logger) 
+            ?? throw new ArgumentException("Failed to locate a suitable microphone");
+
+        var format = new AudioFormat()
         {
-            if (_toProcess.IsEmpty || !_toProcess.TryDequeue(out var floats))
-            {
-                Thread.Sleep(10);
-                continue;
-            }
+            Channels = 1,
+            Format = SampleFormat.S16,
+            Layout = ChannelLayout.Mono,
+            SampleRate = 16_000
+        };
 
-            await foreach (var segment in processor.ProcessAsync(floats))
-            {
-                Console.WriteLine(segment.Text);
-            }
-        }
+        var rawDevice = engine.InitializeCaptureDevice(devInfo, format);
+        return new(rawDevice, logger);
     }
-}
 
-public class LogSink : ILogEventSink
-{
-    public void Emit(LogEvent logEvent)
+    private static WebRtcVad CreateVad(ILogger logger)
     {
-        Console.WriteLine($"{logEvent.Level} | {logEvent.MessageTemplate}");
+        logger.Debug("Creating VAD");
+        return new WebRtcVad()
+        {
+            OperatingMode = OperatingMode.Aggressive, //todo: config
+            SampleRate = SampleRate.Is16kHz,
+            FrameLength = FrameLength.Is10ms
+        };
+    } 
+
+    private static readonly OnSegmentEventHandler _handler = (e) =>
+    {
+        Console.WriteLine(e.Text);
+    };
+
+    private static WhisperProcessor CreateProcessor(string path, ILogger logger) //todo: config
+    {
+        logger.Debug("Creating processor");
+        var whisperFactory = WhisperFactory.FromPath(path);
+        return whisperFactory.CreateBuilder()
+            .WithLanguage("en")
+            .WithPrintResults()
+            .WithPrintSpecialTokens()
+            .WithPrintTimestamps()
+            .WithSegmentEventHandler(_handler)
+            //.WithNoContext()
+            .Build();
+    }
+
+    private static readonly byte[] _baseHeader = CreateBaseWavHeader();
+    private static byte[] CreateBaseWavHeader()
+    {
+        byte[] header = [
+            (byte)'R', (byte)'I', (byte)'F', (byte)'F',
+            0, 0, 0, 0, // File size tbd
+            (byte)'W', (byte)'A', (byte)'V', (byte)'E',
+            (byte)'f', (byte)'m', (byte)'t', (byte)' ',
+            16, 0, 0, 0, // Format data len
+            1, 0, 1, 0, // PCM / Channel
+            0, 0, 0, 0, // Sample rate tdb
+            0, 0, 0, 0, // Byte rate tbd
+            2, 0, 16, 0, // Block size, Bits per sample
+            (byte)'d', (byte)'a', (byte)'t', (byte)'a',
+            0, 0, 0, 0 // Data size tbd
+        ];
+
+        BinaryPrimitives.WriteUInt32LittleEndian(header.AsSpan(24), 16_000); // Sample Rate
+        BinaryPrimitives.WriteUInt32LittleEndian(header.AsSpan(28), 32_000); // Byte Rate
+
+        return header;
+    }
+
+    private static void WriteRestOfHeader(Span<byte> dataWithHeader)
+    {
+        BinaryPrimitives.WriteUInt32LittleEndian(dataWithHeader.Slice(4, 4), (uint)dataWithHeader.Length - 8);
+        BinaryPrimitives.WriteUInt32LittleEndian(dataWithHeader.Slice(40, 4), (uint)dataWithHeader.Length - 44);
     }
 }
