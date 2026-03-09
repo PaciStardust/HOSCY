@@ -1,4 +1,6 @@
-﻿using System.Buffers.Binary;
+﻿// #define DBG_AUDIO
+
+using System.Buffers.Binary;
 using System.Diagnostics;
 using HoscyCore.Services.Audio;
 using Serilog;
@@ -12,13 +14,9 @@ using Whisper.net;
 namespace HoscyWhisperV2Process;
 
 public class Program
-{
+{   
     public static async Task Main(string[] args)
     {
-        const int MIN_LEN_SEG = 250 / 10;
-        const int SILENCE_LEN_SEG = 500 / 10;
-        const int REC_INTERVAL_SEG = 500 / 10;
-
         var logger = new LoggerConfiguration()
             .MinimumLevel.Verbose()
             .CreateLogger();
@@ -30,13 +28,13 @@ public class Program
         var bytesPer10ms = bytesPerSecond / 100;
 
         using var vad = CreateVad(logger);
+        var audioProcessor = new AudioProcessor(vad, new());
 
         var path = Console.ReadLine()!;
         using var processor = CreateProcessor(path, logger);
 
         using var ms = new MemoryStream();
-        var segmmentsRecorded = 0;
-        var segmentsSilent = 0;
+        ResetStream(ms);
 
         capture.Start();
         capture.SetListening(true);
@@ -49,52 +47,84 @@ public class Program
             for (var i = 0; i < segments; i++)
             {
                 var slice = audioData.Slice(i * bytesPer10ms, bytesPer10ms);
-                var hasAudio = vad.HasSpeech(slice.ToArray());
-                bools[i] = hasAudio;
+                var result = audioProcessor.Process10msFrame(slice);
 
-                segmentsSilent = hasAudio 
-                    ? 0
-                    : segmentsSilent + 1;
-
-                if (segmmentsRecorded < MIN_LEN_SEG)
+                if (result == FrameProcessingResult.Empty)
                 {
-                    if (hasAudio || (segmmentsRecorded > 4 && segmentsSilent > 6))
-                    {
-                        segmmentsRecorded++;
-                        ms.Write(slice);
-                    }
-                    else
-                    {
-                        segmmentsRecorded = 0;
-                        ms.SetLength(0);
-                        ms.Write(_baseHeader);
-                    }
+                    #if DBG_AUDIO
+                        Console.Write(" ");
+                    #endif
+                    continue;
                 }
-                else
-                {
-                    if (segmentsSilent >= SILENCE_LEN_SEG)
-                    {
-                        Task.Run(() => {
-                            var buffer = ms.GetBuffer();
-                            WriteRestOfHeader(buffer.AsSpan());
-                            using var msIn = new MemoryStream(buffer);
-                            msIn.Seek(0, SeekOrigin.Begin);
-                            processor.Process(msIn);
-                        });
-                        segmmentsRecorded = 0;
-                        ms.SetLength(0);
-                        ms.Write(_baseHeader); //todo: CLEAR NOT WORKING
-                    }
-                    ms.Write(slice);
 
-                    //todo: incremental sending
+                ms.Write(slice);
+
+                switch (result)
+                {
+                    case FrameProcessingResult.ContinueAndProcess:
+                        #if DBG_AUDIO 
+                            Console.Write("!");
+                        #endif
+                        HandleRecognition(ms, processor);
+                        continue;
+
+                    case FrameProcessingResult.Continue:
+                        #if DBG_AUDIO 
+                            Console.Write(".");
+                        #endif
+                        continue;
+
+                    case FrameProcessingResult.CancelAndProcess:
+                        #if DBG_AUDIO 
+                            Console.Write("&");
+                        #endif
+                        HandleRecognition(ms, processor);
+                        goto case FrameProcessingResult.Cancel;
+
+                    default:
+                    case FrameProcessingResult.Cancel:
+                        #if DBG_AUDIO 
+                            Console.Write("_");
+                        #endif
+                        ResetStream(ms);
+                        continue;
                 }
-                //todo: too long handling
             }
-            // Console.WriteLine($"{sw.ElapsedMilliseconds} => {string.Join(string.Empty, bools.Select(x => x ? "1" : "0"))}");
         };
 
         Console.ReadLine();
+    }
+
+    private static void HandleRecognition(MemoryStream ms, WhisperProcessor processor)
+    {
+        #if !DBG_AUDIO
+
+        var pos = ms.Position;
+        ms.Position = 0;
+        var newBuffer = new MemoryStream();
+        ms.CopyTo(newBuffer, (int)pos);
+
+        WriteRestOfHeader(newBuffer.GetBuffer().AsSpan(), pos);
+        Task.Run(() => {
+            try
+            {
+                newBuffer.Position = 0;
+                processor.Process(newBuffer);
+            } 
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{ex.Message}: {ex.StackTrace}");
+            }
+            newBuffer.Dispose();
+        });
+        ms.Position = pos;
+        #endif
+    }
+
+    private static void ResetStream(MemoryStream ms)
+    {
+        ms.SetLength(0);
+        ms.Write(_baseHeader);
     }
 
     private static AudioEngine CreateAudioEngine(ILogger logger)
@@ -146,6 +176,7 @@ public class Program
         var whisperFactory = WhisperFactory.FromPath(path);
         return whisperFactory.CreateBuilder()
             .WithLanguage("en")
+            //.WithLanguageDetection()
             .WithPrintResults()
             .WithPrintSpecialTokens()
             .WithPrintTimestamps()
@@ -177,9 +208,9 @@ public class Program
         return header;
     }
 
-    private static void WriteRestOfHeader(Span<byte> dataWithHeader)
+    private static void WriteRestOfHeader(Span<byte> dataWithHeader, long len)
     {
-        BinaryPrimitives.WriteUInt32LittleEndian(dataWithHeader.Slice(4, 4), (uint)dataWithHeader.Length - 8);
-        BinaryPrimitives.WriteUInt32LittleEndian(dataWithHeader.Slice(40, 4), (uint)dataWithHeader.Length - 44);
+        BinaryPrimitives.WriteUInt32LittleEndian(dataWithHeader.Slice(4, 4), (uint)len - 8);
+        BinaryPrimitives.WriteUInt32LittleEndian(dataWithHeader.Slice(40, 4), (uint)len - 44);
     }
 }
