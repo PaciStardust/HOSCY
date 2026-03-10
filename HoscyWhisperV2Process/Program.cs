@@ -1,7 +1,5 @@
 ﻿// #define DBG_AUDIO
 
-using System.Buffers.Binary;
-using System.Diagnostics;
 using HoscyCore.Services.Audio;
 using Serilog;
 using SoundFlow.Abstracts;
@@ -17,8 +15,20 @@ public class Program
 {   
     public static async Task Main(string[] args)
     {
+        /*
+        Desired flow of operations:
+        1. [ ] Reading of configuration variables from args
+        2. [ ] Setting up IPC and phoning home
+        3. [ ] Initialization of all required systems
+        4. [ ] Starting of main flow using CT
+        5. [ ] Listening to mute and stop events
+        6. [ ] Shutdown on CT
+        */
+
+
         var logger = new LoggerConfiguration()
             .MinimumLevel.Verbose()
+            .WriteTo.Console()
             .CreateLogger();
 
         using var audioEngine = CreateAudioEngine(logger);
@@ -33,98 +43,17 @@ public class Program
         var path = Console.ReadLine()!;
         using var processor = CreateProcessor(path, logger);
 
-        using var ms = new MemoryStream();
-        ResetStream(ms);
+        var recCore = new WhisperRecognitionCore(processor, audioProcessor, capture, logger);
 
-        capture.Start();
+        using var cts = new CancellationTokenSource();
+        var task = Task.Run(async () => await recCore.RecognizeAsync(cts.Token));
+
+        await recCore.AwaitStartedAsync(cts.Token); //todo: fix?
         capture.SetListening(true);
-        var sw = Stopwatch.StartNew();
-        capture.OnAudioProcessed += (audioData, _) =>
-        {
-            var segments =  audioData.Length / bytesPer10ms;
-            var bools = new bool[segments];
-
-            for (var i = 0; i < segments; i++)
-            {
-                var slice = audioData.Slice(i * bytesPer10ms, bytesPer10ms);
-                var result = audioProcessor.Process10msFrame(slice);
-
-                if (result == FrameProcessingResult.Empty)
-                {
-                    #if DBG_AUDIO
-                        Console.Write(" ");
-                    #endif
-                    continue;
-                }
-
-                ms.Write(slice);
-
-                switch (result)
-                {
-                    case FrameProcessingResult.ContinueAndProcess:
-                        #if DBG_AUDIO 
-                            Console.Write("!");
-                        #endif
-                        HandleRecognition(ms, processor);
-                        continue;
-
-                    case FrameProcessingResult.Continue:
-                        #if DBG_AUDIO 
-                            Console.Write(".");
-                        #endif
-                        continue;
-
-                    case FrameProcessingResult.CancelAndProcess:
-                        #if DBG_AUDIO 
-                            Console.Write("&");
-                        #endif
-                        HandleRecognition(ms, processor);
-                        goto case FrameProcessingResult.Cancel;
-
-                    default:
-                    case FrameProcessingResult.Cancel:
-                        #if DBG_AUDIO 
-                            Console.Write("_");
-                        #endif
-                        ResetStream(ms);
-                        continue;
-                }
-            }
-        };
-
         Console.ReadLine();
-    }
-
-    private static void HandleRecognition(MemoryStream ms, WhisperProcessor processor)
-    {
-        #if !DBG_AUDIO
-
-        var pos = ms.Position;
-        ms.Position = 0;
-        var newBuffer = new MemoryStream();
-        ms.CopyTo(newBuffer, (int)pos);
-
-        WriteRestOfHeader(newBuffer.GetBuffer().AsSpan(), pos);
-        Task.Run(() => {
-            try
-            {
-                newBuffer.Position = 0;
-                processor.Process(newBuffer);
-            } 
-            catch (Exception ex)
-            {
-                Console.WriteLine($"{ex.Message}: {ex.StackTrace}");
-            }
-            newBuffer.Dispose();
-        });
-        ms.Position = pos;
-        #endif
-    }
-
-    private static void ResetStream(MemoryStream ms)
-    {
-        ms.SetLength(0);
-        ms.Write(_baseHeader);
+        capture.SetListening(false);
+        cts.Cancel();
+        await task;
     }
 
     private static AudioEngine CreateAudioEngine(ILogger logger)
@@ -165,11 +94,6 @@ public class Program
         };
     } 
 
-    private static readonly OnSegmentEventHandler _handler = (e) =>
-    {
-        Console.WriteLine(e.Text);
-    };
-
     private static WhisperProcessor CreateProcessor(string path, ILogger logger) //todo: config
     {
         logger.Debug("Creating processor");
@@ -180,37 +104,8 @@ public class Program
             .WithPrintResults()
             .WithPrintSpecialTokens()
             .WithPrintTimestamps()
-            .WithSegmentEventHandler(_handler)
+            //.WithSegmentEventHandler(_handler)
             //.WithNoContext()
             .Build();
-    }
-
-    private static readonly byte[] _baseHeader = CreateBaseWavHeader();
-    private static byte[] CreateBaseWavHeader()
-    {
-        byte[] header = [
-            (byte)'R', (byte)'I', (byte)'F', (byte)'F',
-            0, 0, 0, 0, // File size tbd
-            (byte)'W', (byte)'A', (byte)'V', (byte)'E',
-            (byte)'f', (byte)'m', (byte)'t', (byte)' ',
-            16, 0, 0, 0, // Format data len
-            1, 0, 1, 0, // PCM / Channel
-            0, 0, 0, 0, // Sample rate tdb
-            0, 0, 0, 0, // Byte rate tbd
-            2, 0, 16, 0, // Block size, Bits per sample
-            (byte)'d', (byte)'a', (byte)'t', (byte)'a',
-            0, 0, 0, 0 // Data size tbd
-        ];
-
-        BinaryPrimitives.WriteUInt32LittleEndian(header.AsSpan(24), 16_000); // Sample Rate
-        BinaryPrimitives.WriteUInt32LittleEndian(header.AsSpan(28), 32_000); // Byte Rate
-
-        return header;
-    }
-
-    private static void WriteRestOfHeader(Span<byte> dataWithHeader, long len)
-    {
-        BinaryPrimitives.WriteUInt32LittleEndian(dataWithHeader.Slice(4, 4), (uint)len - 8);
-        BinaryPrimitives.WriteUInt32LittleEndian(dataWithHeader.Slice(40, 4), (uint)len - 44);
     }
 }
