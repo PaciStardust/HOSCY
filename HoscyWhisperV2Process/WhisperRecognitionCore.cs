@@ -9,48 +9,47 @@ using Whisper.net;
 namespace HoscyWhisperV2Process;
 
 public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProcessor audioProcessor, AudioCaptureDeviceProxy audioCapture, ILogger logger) //todo: config
+    : IDisposable
 {
+    #region Inject
     private readonly WhisperProcessor _whisperProcessor = whisperProcessor;
     private readonly AudioProcessor _audioProcessor = audioProcessor;
     private readonly AudioCaptureDeviceProxy _audioCapture = audioCapture;
-    private readonly ILogger _logger = logger;
+    private readonly ILogger _logger = logger;    
+    #endregion
 
-    private bool _isRunning = false;
-    public async Task RecognizeAsync(CancellationToken ct)
+    #region Main Task
+    public bool IsRunning { get; private set; } = false;
+    public async Task RecognizeAsync(CancellationToken ct, Action<uint, SegmentData> callback)
     {
-        _isRunning = false;
+        IsRunning = false;
         _logger.Debug("Starting recognition");
 
-        Task recTask = Task.Run(() => RunRecognitionAsync(ct));
+        Task recTask = Task.Run(() => RunRecognitionAsync(ct, callback));
 
         _audioCapture.OnAudioProcessed += ProcessAudioFrames;
         _audioCapture.Start();
 
-        _isRunning = true;
+        IsRunning = true;
         await recTask;
 
-        //todo: exception handling
+        if (recTask.Exception is not null)
+        {
+            _logger.Error(recTask.Exception, "Recognition stopping with Exception");
+        }
 
         _audioCapture.Stop();
         _audioCapture.OnAudioProcessed -= ProcessAudioFrames;
 
-        _isRunning = false;
+        IsRunning = false;
         _logger.Debug("Stopped recognition");
     }
+    #endregion
 
-    public async Task AwaitStartedAsync(CancellationToken ct)
-    {
-        while(!_isRunning)
-        {
-            if (ct.IsCancellationRequested) return;
-            await Task.Delay(5);
-        }
-        return;
-    }
-
+    #region Audio Processing
     private const int BYTES_PER_SECOND = 16_000 * 2;
     private const int BYTES_PER_10_MS = BYTES_PER_SECOND / 100;
-    private void ProcessAudioFrames(Span<byte> audioFrames, Capability _) //todo: does this need a lock
+    private void ProcessAudioFrames(Span<byte> audioFrames, Capability _)
     {
         var frameCount = audioFrames.Length / BYTES_PER_10_MS;
 
@@ -61,8 +60,8 @@ public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProc
         }
     }
 
-    private readonly MemoryStream _audioStream = new(); //todo: dispose
-    private uint _currentSegmentId = 0;
+    private readonly MemoryStream _audioStream = new();
+    private uint _activelyRecordingSegmentId = 0;
     private void ProcessSingleAudioFrame(Span<byte> audioFrame)
     {
         var result = _audioProcessor.Process10msFrame(audioFrame);
@@ -82,8 +81,9 @@ public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProc
             case FrameProcessingResult.ContinueAndProcess:
                 #if DBG_AUDIO 
                     Console.Write("!");
+                #else
+                    SetNewRecognitionData();
                 #endif
-                SetNewRecognitionData();
                 return;
 
             case FrameProcessingResult.Continue:
@@ -95,8 +95,9 @@ public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProc
             case FrameProcessingResult.CancelAndProcess:
                 #if DBG_AUDIO 
                     Console.Write("&");
+                #else
+                    SetNewRecognitionData();
                 #endif
-                SetNewRecognitionData();
                 goto case FrameProcessingResult.Cancel;
 
             default:
@@ -105,31 +106,31 @@ public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProc
                     Console.Write("_");
                 #endif
                 _audioStream.SetLength(0);
-                _currentSegmentId++; //todo: better logging everywhere?
+                _activelyRecordingSegmentId++; //todo: better logging everywhere?
                 return;
         }
     }
 
     private void SetNewRecognitionData()
     {
-        if (_nextUpProcessing.HasValue)
+        if (_processingQueueItem.HasValue)
         {
-            var nextUpId = _nextUpProcessing.Value.Id;
-            if (nextUpId < _currentSegmentId)
+            var processingQueueItemId = _processingQueueItem.Value.Id;
+            if (_activelyRecordingSegmentId < processingQueueItemId)
             {
-                _logger.Error("Queue not empty, new entry has ID {newId}, which is SOMEHOW lower than current ID {currentId} => No override",
-                    _currentSegmentId, nextUpId);
+                _logger.Error("Queue not empty, new entry has ID {newId}, which is SOMEHOW lower than queue ID {queueId} => No override",
+                    _activelyRecordingSegmentId, processingQueueItemId);
                 return;
             } 
-            else if (nextUpId == _currentSegmentId)
+            else if (_activelyRecordingSegmentId == processingQueueItemId)
             {
-                _logger.Debug("Queue not empty, new entry has ID {newId}, which is the same as current ID {currentId} => Overriding data as it is fresher",
-                    _currentSegmentId, nextUpId);
+                _logger.Debug("Queue not empty, new entry has ID {newId}, which is the same as queue ID {queueId} => Overriding data as it is fresher",
+                    _activelyRecordingSegmentId, processingQueueItemId);
             }
             else
             {
-                _logger.Warning("Queue not empty, new entry has ID {newId}, which is higher than current ID {currentId} => Processing likely unable to keep up and model should maybe be swapped with a smaller one",
-                    _currentSegmentId, nextUpId);
+                _logger.Warning("Queue not empty, new entry has ID {newId}, which is higher than queue ID {queueId} => Processing likely unable to keep up and model should maybe be swapped with a smaller one",
+                    _activelyRecordingSegmentId, processingQueueItemId);
                 //todo: killing this after a few succeeding occurances
             }
         }
@@ -143,8 +144,7 @@ public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProc
             Buffer.BlockCopy(_baseHeader, 0, recognitionData, 0, _baseHeader.Length);
             WriteRestOfHeader(recognitionData.AsSpan());
 
-
-            _nextUpProcessing = (_currentSegmentId, recognitionData);
+            _processingQueueItem = (_activelyRecordingSegmentId, recognitionData);
             _currentCts.Cancel();
         } catch (Exception ex)
         {
@@ -152,7 +152,9 @@ public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProc
             return;
         }
     }
+    #endregion
 
+    #region WAV Utils
     private static readonly byte[] _baseHeader = CreateBaseWavHeader();
     private static byte[] CreateBaseWavHeader()
     {
@@ -181,46 +183,73 @@ public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProc
         BinaryPrimitives.WriteUInt32LittleEndian(dataWithHeader.Slice(4, 4), (uint)dataWithHeader.Length - 8);
         BinaryPrimitives.WriteUInt32LittleEndian(dataWithHeader.Slice(40, 4), (uint)dataWithHeader.Length - 44);
     }
+    #endregion
 
-    private (uint Id, byte[] Data)? _nextUpProcessing = null;
-    private readonly CancellationTokenSource _currentCts = new(); //todo: dispose
-    private async Task RunRecognitionAsync(CancellationToken ct)
+    #region Actual Recognition
+    private (uint Id, byte[] Data)? _processingQueueItem = null;
+    private CancellationTokenSource _currentCts = new();
+    private async Task RunRecognitionAsync(CancellationToken ct, Action<uint, SegmentData> callback)
     {
         while(!ct.IsCancellationRequested)
         {
-            await RunRecognitionAsyncTick(ct);
+            await RunRecognitionAsyncTick(ct, callback);
         }        
     }
 
-    private async Task RunRecognitionAsyncTick(CancellationToken ct)
+    private async Task RunRecognitionAsyncTick(CancellationToken ct, Action<uint, SegmentData> callback)
     {
-        if (!_nextUpProcessing.HasValue)
+        if (!_processingQueueItem.HasValue)
         {
             await Task.Delay(20);
             return;
         }
 
-        var currentBytes = _nextUpProcessing.Value.Data.ToArray();
-        var currentId = _nextUpProcessing.Value.Id;
-        _nextUpProcessing = null;
-        _currentCts.TryReset();
+        var currentBytes = _processingQueueItem.Value.Data.ToArray();
+        var currentId = _processingQueueItem.Value.Id;
+        _processingQueueItem = null;
+        if (!_currentCts.TryReset())
+        {
+            _currentCts.Dispose();
+            _currentCts = new();
+        }
 
         using var ms = new MemoryStream(currentBytes);
         ms.Position = 0;
 
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, _currentCts.Token);
-
-        await foreach (var segment in _whisperProcessor.ProcessAsync(ms, linkedCts.Token))
+        try
         {
-            Console.WriteLine(segment.Text); //todo: handle
+            await foreach (var segment in _whisperProcessor.ProcessAsync(ms, linkedCts.Token))
+            {
+                callback(currentId, segment);
+            }
+        }
+        catch (TaskCanceledException ex)
+        {
+            //todo:
+        }
+        catch (Exception ex)
+        {
+            //todo:redo
+            Console.WriteLine($"{currentId}!  {ex.GetType().Name}: {ex.Message}");
+            //_logger.Error(ex, "Recognition encountered an error");
         }
         
         //todo: detect cancel?
 
-        if (_nextUpProcessing is not null)
+        if (_processingQueueItem is not null)
         {
             //todo: handle logging of cancel or instant upcoming
         }
     }
+    #endregion
+
+    #region Cleanup
+    public void Dispose()
+    {
+        _audioStream.Dispose();
+        _currentCts.Dispose();
+    }
+    #endregion
 }
 

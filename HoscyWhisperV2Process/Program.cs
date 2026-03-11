@@ -1,12 +1,4 @@
-﻿// #define DBG_AUDIO
-
-using HoscyCore.Services.Audio;
-using Serilog;
-using SoundFlow.Abstracts;
-using SoundFlow.Backends.MiniAudio;
-using SoundFlow.Enums;
-using SoundFlow.Structs;
-using WebRtcVadSharp;
+﻿using HoscyCore.Services.Recognition.Extra;
 using Whisper.net;
 
 namespace HoscyWhisperV2Process;
@@ -25,87 +17,52 @@ public class Program
         6. [ ] Shutdown on CT
         */
 
+        var config = new WhisperIpcConfig()
+        {
+            Whisper_ModelPath = Console.ReadLine()!
+        };
 
-        var logger = new LoggerConfiguration()
-            .MinimumLevel.Verbose()
-            .WriteTo.Console()
-            .CreateLogger();
+        var factory = new RecognitionComponentFactory(config);
+        var logger = factory.CreateLogger();
+        using var audioEngine = factory.CreateAudioEngine(logger);
+        using var capture = factory.CreateCaptureDevice(audioEngine, logger);
+        using var vad = factory.CreateVad(logger);
+        var audioProcessor = factory.CreateAudioProcessor(vad);
+        using var whisperProcessor = factory.CreateWhisperProcessor(logger);
 
-        using var audioEngine = CreateAudioEngine(logger);
-        using var capture = CreateCaptureDevice(audioEngine, string.Empty, logger); //todo: config
-
-        var bytesPerSecond = 16_000 * 2;
-        var bytesPer10ms = bytesPerSecond / 100;
-
-        using var vad = CreateVad(logger);
-        var audioProcessor = new AudioProcessor(vad, new());
-
-        var path = Console.ReadLine()!;
-        using var processor = CreateProcessor(path, logger);
-
-        var recCore = new WhisperRecognitionCore(processor, audioProcessor, capture, logger);
+        using var recCore = new WhisperRecognitionCore(whisperProcessor, audioProcessor, capture, logger);
 
         using var cts = new CancellationTokenSource();
-        var task = Task.Run(async () => await recCore.RecognizeAsync(cts.Token));
+        var task = Task.Run(async () => await recCore.RecognizeAsync(cts.Token, HandleRecognitionOutput));
 
-        await recCore.AwaitStartedAsync(cts.Token); //todo: fix?
-        capture.SetListening(true);
-        Console.ReadLine();
-        capture.SetListening(false);
+        var wait = 250 / 5;
+        while(!recCore.IsRunning && !cts.IsCancellationRequested && !task.IsCompleted && wait-- > 0)
+        {
+            await Task.Delay(5);
+        }
+
+        if (recCore.IsRunning && !cts.IsCancellationRequested && !task.IsCompleted)
+        {
+            capture.SetListening(true);
+            Console.ReadLine();
+            capture.SetListening(false);
+        }
+        else
+        {
+            logger.Error("Recognition task is unexpectedly not running");
+        }
+
         cts.Cancel();
         await task;
-    }
 
-    private static AudioEngine CreateAudioEngine(ILogger logger)
-    {
-        logger.Debug("Starting audio engine");
-        var engine = new MiniAudioEngine();
-        engine.UpdateAudioDevicesInfo();
-        return engine;
-    }
-
-    private static AudioCaptureDeviceProxy CreateCaptureDevice(AudioEngine engine, string devName, ILogger logger)
-    {
-        logger.Debug("Creating audio device");
-
-        var devInfo = AudioUtils.FindDevice(engine.CaptureDevices, devName, logger) 
-            ?? throw new ArgumentException("Failed to locate a suitable microphone");
-
-        var format = new AudioFormat()
+        if (task.Exception is not null)
         {
-            Channels = 1,
-            Format = SampleFormat.S16,
-            Layout = ChannelLayout.Mono,
-            SampleRate = 16_000
-        };
-
-        var rawDevice = engine.InitializeCaptureDevice(devInfo, format);
-        return new(rawDevice, logger);
+            logger.Error(task.Exception, "Listening task encountered an error");
+        }
     }
 
-    private static WebRtcVad CreateVad(ILogger logger)
+    private static void HandleRecognitionOutput(uint id, SegmentData data)
     {
-        logger.Debug("Creating VAD");
-        return new WebRtcVad()
-        {
-            OperatingMode = OperatingMode.Aggressive, //todo: config
-            SampleRate = SampleRate.Is16kHz,
-            FrameLength = FrameLength.Is10ms
-        };
-    } 
-
-    private static WhisperProcessor CreateProcessor(string path, ILogger logger) //todo: config
-    {
-        logger.Debug("Creating processor");
-        var whisperFactory = WhisperFactory.FromPath(path);
-        return whisperFactory.CreateBuilder()
-            .WithLanguage("en")
-            //.WithLanguageDetection()
-            .WithPrintResults()
-            .WithPrintSpecialTokens()
-            .WithPrintTimestamps()
-            //.WithSegmentEventHandler(_handler)
-            //.WithNoContext()
-            .Build();
+        Console.WriteLine($"{id}: {data.Text}");
     }
 }
