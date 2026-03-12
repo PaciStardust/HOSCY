@@ -11,8 +11,8 @@ public class Program
         Desired flow of operations:
         1. [ ] Reading of configuration variables from args
         2. [ ] Setting up IPC and phoning home
-        3. [ ] Initialization of all required systems
-        4. [ ] Starting of main flow using CT
+        3. [x] Initialization of all required systems
+        4. [x] Starting of main flow using CT
         5. [ ] Listening to mute and stop events
         6. [ ] Shutdown on CT
         */
@@ -61,8 +61,12 @@ public class Program
         }
     }
 
-    private static void HandleRecognitionOutput(uint id, SegmentData data)
+    private static void HandleRecognitionOutput(RecognitionCallbackArgs args)
     {
-        Console.WriteLine($"{id}: {data.Text}");
+        var paddedId = args.Id.ToString().PadLeft(4, '0');
+        var paddedSubId = args.SubId.ToString().PadLeft(4, '0');
+        var paddedSegId = args.SegId.ToString().PadLeft(2, '0');
+
+        Console.WriteLine($"{paddedId}-{paddedSubId}: {paddedSegId}: {args.Data.Text} | {args.Data.NoSpeechProbability}");
     }
 }

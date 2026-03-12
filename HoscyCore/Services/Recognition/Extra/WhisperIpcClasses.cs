@@ -6,7 +6,7 @@ public record WhisperIpcConfig
     public WhisperIpcVadOperatingMode VadOperatingMode { get; init; } = WhisperIpcVadOperatingMode.Aggressive;
 
     public const uint MS_IN_FRAME = 10;
-    public uint Input_MinimumConsecutiveAudioFrames { get; init => Math.Max(value, 100 / MS_IN_FRAME); } = 200 / MS_IN_FRAME;
+    public uint Input_MinimumConsecutiveAudioFrames { get; init => Math.Max(value, 100 / MS_IN_FRAME); } = 250 / MS_IN_FRAME;
     public uint Input_GraceFramesForIrregularitiesMiddle { get; init => Math.Max(value, 250 / MS_IN_FRAME); } = 500 / MS_IN_FRAME;
     public uint Input_GraceFramesForIrregularitiesBoundary { get; init => Math.Max(value, 20 / MS_IN_FRAME); } = 50 / MS_IN_FRAME;
     public uint Input_RecognitionFrameInterval { get; init => Math.Max(value, 250 / MS_IN_FRAME); } = 500 / MS_IN_FRAME;

@@ -1,10 +1,9 @@
 using HoscyCore.Services.Recognition.Extra;
-using Serilog;
 using WebRtcVadSharp;
 
 namespace HoscyWhisperV2Process;
 
-public class AudioProcessor(WebRtcVad vad, WhisperIpcConfig config) //todo: logging
+public class AudioProcessor(WebRtcVad vad, WhisperIpcConfig config)
 {
     private readonly WebRtcVad _vad = vad;
     private readonly WhisperIpcConfig _config = config;
