@@ -114,8 +114,7 @@ public class LegacyConfigSpeechModel
     public bool WhisperBracketFix { get; set; } = true;
     public bool WhisperHighPerformance { get; set; }
     public bool WhisperLogFilteredNoises { get; set; }
-    //todo: fix
-    // public eLanguage WhisperLanguage { get; set; } = eLanguage.English;
+    public int WhisperLanguage { get; set; } = 0;
     public Dictionary<string, string> WhisperNoiseFilter { get; set; } = [];
     public int WhisperThreads { get; set; } = -4;
     public int WhisperMaxContext { get; set; } = 0;

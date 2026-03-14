@@ -1,5 +1,5 @@
 ﻿using HoscyCore.Services.Recognition.Extra;
-using Whisper.net;
+using Newtonsoft.Json;
 
 namespace HoscyWhisperV2Process;
 
@@ -7,20 +7,39 @@ public class Program
 {   
     public static async Task Main(string[] args)
     {
+        WhisperIpcConfig config;
+        if (args.Length == 0)
+        {
+            config = new WhisperIpcConfig()
+            {
+                Whisper_ModelPath = Console.ReadLine()!
+            };
+        }
+        else
+        {
+            try
+            {
+                var bytes = Convert.FromBase64String(args[0]);
+                var decoded = System.Text.Encoding.UTF8.GetString(bytes);
+                config = JsonConvert.DeserializeObject<WhisperIpcConfig>(decoded)!;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"{ex.GetType().Name}: {ex.Message}");
+                return;
+            }
+        }
+
         /*
         Desired flow of operations:
-        1. [ ] Reading of configuration variables from args
+        1. [x] Reading of configuration variables from args
         2. [ ] Setting up IPC and phoning home
         3. [x] Initialization of all required systems
         4. [x] Starting of main flow using CT
         5. [ ] Listening to mute and stop events
         6. [ ] Shutdown on CT
+        7. [ ] Keepalive via Global Mutex
         */
-
-        var config = new WhisperIpcConfig()
-        {
-            Whisper_ModelPath = Console.ReadLine()!
-        };
 
         var factory = new RecognitionComponentFactory(config);
         var logger = factory.CreateLogger();

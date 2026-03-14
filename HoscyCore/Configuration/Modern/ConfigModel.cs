@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using HoscyCore.Services.Recognition.Extra;
 using HoscyCore.Utility;
 using Serilog.Core;
 using Serilog.Events;
@@ -1048,6 +1049,36 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private string _recognition_Whisper_SelectedModel = string.Empty;
 
     /// <summary>
+    /// Fixes random brackets in the output "('( ( (')"
+    /// </summary>
+    public bool Recognition_Whisper_Fix_RemoveRandomBrackets //todo: impl
+    {
+        get => _recognition_Whisper_Fix_RemoveRandomBrackets;
+        set => SetProperty(ref _recognition_Whisper_Fix_RemoveRandomBrackets, value);
+    }
+    private bool _recognition_Whisper_Fix_RemoveRandomBrackets = true;
+
+    /// <summary>
+    /// Write noises that have been filtered out to the logs
+    /// </summary>
+    public bool Recognition_Whisper_Dbg_LogFilteredNoises //todo: impl
+    {
+        get => _recognition_Whisper_Dbg_LogFilteredNoises;
+        set => SetProperty(ref _recognition_Whisper_Dbg_LogFilteredNoises, value);
+    }
+    private bool _recognition_Whisper_Dbg_LogFilteredNoises = false;
+
+    /// <summary>
+    /// List of allowed whisper noises
+    /// </summary>
+    public Dictionary<string, string> Recognition_Whisper_Cfg_NoiseFilter //todo: impl
+    {
+        get => _recognition_Whisper_Cfg_NoiseFilter;
+        set => SetProperty(ref _recognition_Whisper_Cfg_NoiseFilter, value);
+    }
+    private Dictionary<string, string> _recognition_Whisper_Cfg_NoiseFilter = [];
+
+    /// <summary>
     /// Enable single segment mode for higher accuracy but reduced functionality
     /// </summary>
     public bool Recognition_Whisper_Cfg_UseSingleSegmentMode
@@ -1068,116 +1099,234 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private bool _recognition_Whisper_Cfg_TranslateToEnglish = false;
 
     /// <summary>
-    /// Fixes random brackets in the output "('( ( (')"
+    /// Translate to English if the detected language is not English
     /// </summary>
-    public bool Recognition_Whisper_Fix_RemoveRandomBrackets
+    public bool Recognition_Whisper_Cfg_UseGpu //todo: impl
     {
-        get => _recognition_Whisper_Fix_RemoveRandomBrackets;
-        set => SetProperty(ref _recognition_Whisper_Fix_RemoveRandomBrackets, value);
+        get => _recognition_Whisper_Cfg_UseGpu;
+        set => SetProperty(ref _recognition_Whisper_Cfg_UseGpu, value);
     }
-    private bool _recognition_Whisper_Fix_RemoveRandomBrackets = true;
+    private bool _recognition_Whisper_Cfg_UseGpu = true;
 
     /// <summary>
-    /// (Not recommended) Increase the priority of the whisper process
+    /// Should language automatically be detected?
     /// </summary>
-    public bool Recognition_Whisper_Cfg_IncreaseThreadPriority
+    public bool Recognition_Whisper_Cfg_DetectLanguage //todo: impl
     {
-        get => _recognition_Whisper_Cfg_IncreaseThreadPriority;
-        set => SetProperty(ref _recognition_Whisper_Cfg_IncreaseThreadPriority, value);
+        get => _recognition_Whisper_Cfg_DetectLanguage;
+        set => SetProperty(ref _recognition_Whisper_Cfg_DetectLanguage, value);
     }
-    private bool _recognition_Whisper_Cfg_IncreaseThreadPriority = false;
+    private bool _recognition_Whisper_Cfg_DetectLanguage = false;
 
     /// <summary>
-    /// Write noises that have been filtered out to the logs
+    /// Shortcode for language
     /// </summary>
-    public bool Recognition_Whisper_Dbg_LogFilteredNoises
+    public string Recognition_Whisper_Cfg_Language //todo: impl
     {
-        get => _recognition_Whisper_Dbg_LogFilteredNoises;
-        set => SetProperty(ref _recognition_Whisper_Dbg_LogFilteredNoises, value);
+        get => _recognition_Whisper_Cfg_Language;
+        set => SetProperty(ref _recognition_Whisper_Cfg_Language, value);
     }
-    private bool _recognition_Whisper_Dbg_LogFilteredNoises = false;
+    private string _recognition_Whisper_Cfg_Language = string.Empty;
 
     /// <summary>
-    /// List of allowed whisper noises
+    /// Cutoff time for a sentence in MS
     /// </summary>
-    public Dictionary<string, string> Recognition_Whisper_Cfg_NoiseFilter
+    public int Recognition_Whisper_Cfg_MaxSentenceDurationMs //todo: impl
     {
-        get => _recognition_Whisper_Cfg_NoiseFilter;
-        set => SetProperty(ref _recognition_Whisper_Cfg_NoiseFilter, value);
+        get => _recognition_Whisper_Cfg_MaxSentenceDurationMs;
+        set => SetProperty(ref _recognition_Whisper_Cfg_MaxSentenceDurationMs, value.MinMax(4_000, int.MaxValue));
     }
-    private Dictionary<string, string> _recognition_Whisper_Cfg_NoiseFilter = [];
-
-    //todo: fix
-    /// <summary>
-    /// Speaking language
-    /// </summary>
-    // public eLanguage Recognition_Whisper_Cfg_Language //todo: [REFACTOR] Should really not be an actual type, autodetect?
-    // {
-    //     get => _recognition_Whisper_Cfg_Language;
-    //     set => SetProperty(ref _recognition_Whisper_Cfg_Language, value);
-    // }
-    // private eLanguage _recognition_Whisper_Cfg_Language = eLanguage.English;
-
+    private int _recognition_Whisper_Cfg_MaxSentenceDurationMs = 16_000;
 
     /// <summary>
-    /// Amount of threads used by whisper. 0 = All, -n = All but n threads
+    /// Minimum time for a sentence in MS
     /// </summary>
-    public int Recognition_Whisper_Cfg_ThreadsUsed
+    public int Recognition_Whisper_Cfg_MinSentenceDurationMs //todo: impl
     {
-        get => _recognition_Whisper_Cfg_ThreadsUsed;
-        set => SetProperty(ref _recognition_Whisper_Cfg_ThreadsUsed, value.MinMax(short.MinValue, short.MaxValue));
+        get => _recognition_Whisper_Cfg_MinSentenceDurationMs;
+        set => SetProperty(ref _recognition_Whisper_Cfg_MinSentenceDurationMs, value.MinMax(100, 2_000));
     }
-    private int _recognition_Whisper_Cfg_ThreadsUsed = -4;
+    private int _recognition_Whisper_Cfg_MinSentenceDurationMs = 250;
 
     /// <summary>
-    /// Maxiumum amount of context tokens
+    /// Duration to recognize a pause in MS
     /// </summary>
-    public int Recognition_Whisper_Cfg_MaxContext
+    public int Recognition_Whisper_Cfg_DetectPauseDurationMs //todo: impl
     {
-        get => _recognition_Whisper_Cfg_MaxContext;
-        set => SetProperty(ref _recognition_Whisper_Cfg_MaxContext, value.MinMax(-1, short.MaxValue));
+        get => _recognition_Whisper_Cfg_DetectPauseDurationMs;
+        set => SetProperty(ref _recognition_Whisper_Cfg_DetectPauseDurationMs, value.MinMax(250, 2_000));
     }
-    private int _recognition_Whisper_Cfg_MaxContext = 0;
+    private int _recognition_Whisper_Cfg_DetectPauseDurationMs = 500;
 
     /// <summary>
-    /// Maximum segment length
+    /// Duration to recognize a silence in outer segments in MS
     /// </summary>
-    public int Recognition_Whisper_Cfg_MaxSegmentLength
+    public int Recognition_Whisper_Cfg_DetectOuterSilenceDurationMs //todo: impl
     {
-        get => _recognition_Whisper_Cfg_MaxSegmentLength;
-        set => SetProperty(ref _recognition_Whisper_Cfg_MaxSegmentLength, value.MinMax(0, short.MaxValue));
+        get => _recognition_Whisper_Cfg_DetectOuterSilenceDurationMs;
+        set => SetProperty(ref _recognition_Whisper_Cfg_DetectOuterSilenceDurationMs, value.MinMax(100, 1000));
     }
-    private int _recognition_Whisper_Cfg_MaxSegmentLength = 0;
+    private int _recognition_Whisper_Cfg_DetectOuterSilenceDurationMs = 250;
 
     /// <summary>
-    /// Cutoff time for a sentence in seconds
+    /// How often in MS should recognition be updated in between? Lower means more processing
     /// </summary>
-    public float Recognition_Whisper_Cfg_MaxSentenceDurationSeconds
+    public int Recognition_Whisper_Cfg_RecognitionUpdateIntervalMs //todo: impl
     {
-        get => _recognition_Whisper_Cfg_MaxSentenceDurationSeconds;
-        set => SetProperty(ref _recognition_Whisper_Cfg_MaxSentenceDurationSeconds, value.MinMax(2, short.MaxValue));
+        get => _recognition_Whisper_Cfg_RecognitionUpdateIntervalMs;
+        set => SetProperty(ref _recognition_Whisper_Cfg_RecognitionUpdateIntervalMs, value.MinMax(250, 4_000));
     }
-    private float _recognition_Whisper_Cfg_MaxSentenceDurationSeconds = 16;
+    private int _recognition_Whisper_Cfg_RecognitionUpdateIntervalMs = 500;
 
     /// <summary>
-    /// Duration to recognize a pause in seconds
+    /// Operating mode for voice activity detection
     /// </summary>
-    public float Recognition_Whisper_Cfg_DetectPauseDurationSeconds
+    public WhisperIpcVadOperatingMode Recognition_Whisper_Cfg_VadOperatingMode //todo: impl
     {
-        get => _recognition_Whisper_Cfg_DetectPauseDurationSeconds;
-        set => SetProperty(ref _recognition_Whisper_Cfg_DetectPauseDurationSeconds, value.MinMax(0.05f, short.MaxValue));
+        get => _recognition_Whisper_Cfg_VadOperatingMode;
+        set => SetProperty(ref _recognition_Whisper_Cfg_VadOperatingMode, value);
     }
-    private float _recognition_Whisper_Cfg_DetectPauseDurationSeconds = 0.5f;
+    private WhisperIpcVadOperatingMode _recognition_Whisper_Cfg_VadOperatingMode = WhisperIpcVadOperatingMode.Aggressive;
+
+    /// <summary>
+    /// Beam size for beam search sampling strategy
+    /// </summary>
+    public int Recognition_Whisper_CfgAdv_BeamSize //todo: impl
+    {
+        get => _recognition_Whisper_CfgAdv_BeamSize;
+        set => SetProperty(ref _recognition_Whisper_CfgAdv_BeamSize, value.MinMax(0, 10));
+    }
+    private int _recognition_Whisper_CfgAdv_BeamSize = 0;
+
+    /// <summary>
+    /// Best of for greedy sampling strategy
+    /// </summary>
+    public int Recognition_Whisper_CfgAdv_GreedyBestOf //todo: impl
+    {
+        get => _recognition_Whisper_CfgAdv_GreedyBestOf;
+        set => SetProperty(ref _recognition_Whisper_CfgAdv_GreedyBestOf, value.MinMax(0, 10));
+    }
+    private int _recognition_Whisper_CfgAdv_GreedyBestOf = 0;
 
     /// <summary>
     /// GPU to use
     /// </summary>
-    public string Recognition_Whisper_Cfg_GraphicsAdapter
+    public int Recognition_Whisper_CfgAdv_GraphicsAdapterId //todo: impl
     {
-        get => _recognition_Whisper_GraphicsAdapter;
-        set => SetProperty(ref _recognition_Whisper_GraphicsAdapter, value);
+        get => _recognition_Whisper_CfgAdv_GraphicsAdapterId;
+        set => SetProperty(ref _recognition_Whisper_CfgAdv_GraphicsAdapterId, value.MinMax(0, int.MaxValue));
     }
-    private string _recognition_Whisper_GraphicsAdapter = string.Empty;
+    private int _recognition_Whisper_CfgAdv_GraphicsAdapterId = 0;
+
+    /// <summary>
+    /// MaxInitialT for Whisper
+    /// </summary>
+    public float Recognition_Whisper_CfgAdv_MaxInitialT //todo: impl
+    {
+        get => _recognition_Whisper_CfgAdv_MaxInitialT;
+        set => SetProperty(ref _recognition_Whisper_CfgAdv_MaxInitialT, value.MinMax(-1, 1));
+    }
+    private float _recognition_Whisper_CfgAdv_MaxInitialT = -1;
+
+    /// <summary>
+    /// No speech threshold for Whisper
+    /// </summary>
+    public float Recognition_Whisper_CfgAdv_NoSpeechThreshold //todo: impl
+    {
+        get => _recognition_Whisper_CfgAdv_NoSpeechThreshold;
+        set => SetProperty(ref _recognition_Whisper_CfgAdv_NoSpeechThreshold, value.MinMax(-1, 1));
+    }
+    private float _recognition_Whisper_CfgAdv_NoSpeechThreshold = -1;
+
+    /// <summary>
+    /// Temperature for Whisper
+    /// </summary>
+    public float Recognition_Whisper_CfgAdv_Temperature //todo: impl
+    {
+        get => _recognition_Whisper_CfgAdv_Temperature;
+        set => SetProperty(ref _recognition_Whisper_CfgAdv_Temperature, value.MinMax(-1, 1));
+    }
+    private float _recognition_Whisper_CfgAdv_Temperature = -1;
+
+    /// <summary>
+    /// TemperatureInc for Whisper
+    /// </summary>
+    public float Recognition_Whisper_CfgAdv_TemperatureInc //todo: impl
+    {
+        get => _recognition_Whisper_CfgAdv_TemperatureInc;
+        set => SetProperty(ref _recognition_Whisper_CfgAdv_TemperatureInc, value.MinMax(-1, 1));
+    }
+    private float _recognition_Whisper_CfgAdv_TemperatureInc = -1;
+
+    /// <summary>
+    /// Maximum segment length
+    /// </summary>
+    public int Recognition_Whisper_CfgAdv_MaxSegmentLength
+    {
+        get => _recognition_Whisper_CfgAdv_MaxSegmentLength;
+        set => SetProperty(ref _recognition_Whisper_CfgAdv_MaxSegmentLength, value.MinMax(0, int.MaxValue));
+    }
+    private int _recognition_Whisper_CfgAdv_MaxSegmentLength = 0;
+
+    /// <summary>
+    /// Maxiumum amount of tokens per segment
+    /// </summary>
+    public int Recognition_Whisper_CfgAdv_MaxTokensPerSegment //todo: impl
+    {
+        get => _recognition_Whisper_CfgAdv_MaxTokensPerSegment;
+        set => SetProperty(ref _recognition_Whisper_CfgAdv_MaxTokensPerSegment, value.MinMax(0, int.MaxValue));
+    }
+    private int _recognition_Whisper_CfgAdv_MaxTokensPerSegment = 0;
+
+    /// <summary>
+    /// Initial prompt
+    /// </summary>
+    public string Recognition_Whisper_CfgAdv_Prompt //todo: impl
+    {
+        get => _recognition_Whisper_CfgAdv_Prompt;
+        set => SetProperty(ref _recognition_Whisper_CfgAdv_Prompt, value);
+    }
+    private string _recognition_Whisper_CfgAdv_Prompt = string.Empty;
+
+    /// <summary>
+    /// Should thread count be set
+    /// </summary>
+    public bool Recognition_Whisper_CfgAdv_SetThreads //todo: impl
+    {
+        get => _recognition_Whisper_CfgAdv_SetThreads;
+        set => SetProperty(ref _recognition_Whisper_CfgAdv_SetThreads, value);
+    }
+    private bool _recognition_Whisper_CfgAdv_SetThreads = false;
+
+    /// <summary>
+    /// Use beam search sampling strategy
+    /// </summary>
+    public bool Recognition_Whisper_CfgAdv_UseBeamSearchSampling //todo: impl
+    {
+        get => _recognition_Whisper_CfgAdv_UseBeamSearchSampling;
+        set => SetProperty(ref _recognition_Whisper_CfgAdv_UseBeamSearchSampling, value);
+    }
+    private bool _recognition_Whisper_CfgAdv_UseBeamSearchSampling = false;
+
+    /// <summary>
+    /// Use greedy sampling strategy
+    /// </summary>
+    public bool Recognition_Whisper_CfgAdv_UseGreedySampling //todo: impl
+    {
+        get => _recognition_Whisper_CfgAdv_UseGreedySampling;
+        set => SetProperty(ref _recognition_Whisper_CfgAdv_UseGreedySampling, value);
+    }
+    private bool _recognition_Whisper_CfgAdv_UseGreedySampling = false;
+
+    /// <summary>
+    /// Amount of threads used by whisper. 0 = All, -n = All but n threads
+    /// </summary>
+    public int Recognition_Whisper_CfgAdv_ThreadsUsed
+    {
+        get => _recognition_Whisper_CfgAdv_ThreadsUsed;
+        set => SetProperty(ref _recognition_Whisper_CfgAdv_ThreadsUsed, value.MinMax(int.MinValue, int.MaxValue));
+    }
+    private int _recognition_Whisper_CfgAdv_ThreadsUsed = -4;
     #endregion
 
     #region Recognition - Windows
