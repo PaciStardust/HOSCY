@@ -1,4 +1,5 @@
 using HoscyCore.Utility;
+using Serilog.Events;
 
 namespace HoscyCore.Services.Recognition.Extra;
 
@@ -46,4 +47,38 @@ public enum WhisperIpcVadOperatingMode
     LowBitrate,
     Aggressive,
     VeryAggressive
+}
+
+public record WhisperIpcLog
+{
+    public const char IDENTIFIER = 'L';
+    public required LogEventLevel LogLevel { get; init; }
+    public required string Message { get; init; }
+    public string? Trace { get; init; }
+}
+
+public record WhisperIpcRecognition
+{
+    public const char IDENTIFIER = 'R';
+    public required string Text { get; init; }
+    public required uint Id { get; init; }
+    public bool IsFinal { get; init; }
+}
+
+public record WhisperIpcKeepalive
+{
+    public const char IDENTIFIER = 'K';
+    public required DateTimeOffset SentUtc { get; init; }
+}
+
+public record WhisperIpcMute
+{
+    public const char IDENTIFIER = 'M';
+    public required bool State { get; init; }
+}
+
+public record WhisperIpcStatus
+{
+    public const char IDENTIFIER = 'S';
+    public required bool State { get; init; }
 }

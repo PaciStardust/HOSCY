@@ -1,5 +1,6 @@
 ﻿using HoscyCore.Services.Recognition.Extra;
 using Newtonsoft.Json;
+using Serilog.Events;
 
 namespace HoscyWhisperV2Process;
 
@@ -7,9 +8,12 @@ public class Program
 {   
     public static async Task Main(string[] args)
     {
+        ConsoleDataWriter writer;
         WhisperIpcConfig config;
         if (args.Length == 0)
         {
+            writer = new(true);
+            writer.SendLog(LogEventLevel.Information, "Starting process without args, likely running independent");
             config = new WhisperIpcConfig()
             {
                 Whisper_ModelPath = Console.ReadLine()!
@@ -17,6 +21,8 @@ public class Program
         }
         else
         {
+            writer = new(true);
+            writer.SendLog(LogEventLevel.Information, "Starting process args, starting...");
             try
             {
                 var bytes = Convert.FromBase64String(args[0]);
@@ -25,7 +31,7 @@ public class Program
             }
             catch(Exception ex)
             {
-                Console.WriteLine($"{ex.GetType().Name}: {ex.Message}");
+                writer.SendLog(LogEventLevel.Error, $"{ex.GetType().Name}: {ex.Message}");
                 return;
             }
         }
@@ -42,7 +48,7 @@ public class Program
         */
 
         var factory = new RecognitionComponentFactory(config);
-        var logger = factory.CreateLogger();
+        var logger = factory.CreateLogger(writer);
         using var audioEngine = factory.CreateAudioEngine(logger);
         using var capture = factory.CreateCaptureDevice(audioEngine, logger);
         using var vad = factory.CreateVad(logger);

@@ -14,11 +14,11 @@ public class RecognitionComponentFactory(WhisperIpcConfig config)
 {
     private readonly WhisperIpcConfig _config = config;
 
-    public ILogger CreateLogger()
+    public ILogger CreateLogger(ConsoleDataWriter writer)
     {
         return new LoggerConfiguration()
             .MinimumLevel.Verbose()
-            .WriteTo.Console()
+            .WriteTo.Sink(new ConsoleDataWriterLogSink(writer))
             .CreateLogger();
     }
 
