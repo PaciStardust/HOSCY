@@ -31,6 +31,51 @@ public class ConsoleDataWriter(bool asJson)
         Console.WriteLine($"x {message}");
     }
 
+    public void SendRecognized(WhisperIpcRecognition rec)
+    {
+        if (_asJson)
+        {
+            SendAsJson(WhisperIpcRecognition.IDENTIFIER, rec);
+        }
+        else
+        {
+            var paddedId = rec.Id.ToString().PadLeft(4, '0');
+            var paddedSubId = rec.SubId.ToString().PadLeft(4, '0');
+            SendReadable($"{paddedId}-{paddedSubId} ({(rec.IsFinal ? "F" : string.Empty)}): {rec.Id}");
+        }
+    }
+
+    public void SendStatus(bool status)
+    {
+        if (_asJson)
+        {
+            SendAsJson(WhisperIpcStatus.IDENTIFIER, new WhisperIpcStatus() { State = status });
+        }
+        else
+        {
+            SendReadable($"Status is now: {status}");
+        }
+    }
+
+    private uint _keepAliveTick = 0;
+    public void SendKeepalive()
+    {
+        if (!_asJson) return;
+        SendAsJson(WhisperIpcKeepalive.IDENTIFIER, new WhisperIpcKeepalive() { Index = _keepAliveTick++ });
+    }
+
+    public void SendMute(bool state)
+    {
+        if (_asJson)
+        {
+            SendAsJson(WhisperIpcMute.IDENTIFIER, new WhisperIpcMute() { State = state });
+        }
+        else
+        {
+            SendReadable($"Mute: {state}");
+        }
+    }
+
     private static void SendAsJson<T>(char id, T data)
     {
         try

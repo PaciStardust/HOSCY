@@ -1,8 +1,8 @@
 using System.Diagnostics;
-using System.IO.Pipes;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
+using HoscyCore.Services.Interfacing;
 using HoscyCore.Services.Recognition.Core;
 using HoscyCore.Services.Recognition.Extra;
 using HoscyCore.Utility;
@@ -29,15 +29,13 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config)
     private readonly ConfigModel _config = config;
 
     private Process? _whisperProcess = null;
-    private AnonymousPipeServerStream? _pipeRecieve = null;
-    private AnonymousPipeServerStream? _pipeSend = null;
+    private IpcSendPipe? _ipcPipe = null;
 
     private bool _started = false; //todo: remove later
-
+    private bool _startedSignalReceived = false;
     protected override void StartForService()
     {
-        _pipeRecieve = new(PipeDirection.In, HandleInheritability.Inheritable);
-        _pipeSend = new(PipeDirection.Out, HandleInheritability.Inheritable);
+        _ipcPipe = new(_logger);
 
         var procPath = Path.Combine(PathUtils.PathExecutableFolder, "HoscyWhisperV2Process"); //todo: .exe needed on win?
         var process = new Process()
@@ -48,7 +46,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config)
                 RedirectStandardError = true,
                 RedirectStandardOutput = true,
                 ErrorDialog = false,
-                Arguments = CreateWhisperConfigArg(_pipeRecieve.GetClientHandleAsString(), _pipeSend.GetClientHandleAsString())
+                Arguments = CreateWhisperConfigArg(_ipcPipe.GetPipeClientHandle())
             },
             EnableRaisingEvents = true,
         };
@@ -65,39 +63,46 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config)
         if (_whisperProcess is null || _whisperProcess.HasExited)
         {
             _logger.Error("Unable to start whisper process");
+            PerformCleanup();
             throw new StartStopServiceException($"Unable to start whisper process");
         }
 
-        /*
-        TODO
+        var loops = 10;
+        while (loops-- > 0)
+        {
+            Thread.Sleep(50);
+            if (_startedSignalReceived) break;
+        }
+        if (!_startedSignalReceived)
+        {
+            _logger.Error("Did not receive startup signal from process");
+            PerformCleanup();
+            throw new StartStopServiceException($"Did not receive startup signal from process");
+        }
 
-        Step 1: Starting the process
-        - keepalive timer + Mutex claim
-        - On process do mutex checks
-        - Proper shutdown again
-        - (Listen to COUT anyways pre-ipc)
+        try
+        {
+            _ipcPipe.Start();
+        } 
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "IPC pipe did not start correctly");
+            PerformCleanup();
+            throw ex;
+        }
 
-        Step 2: Init IPC
+        //todo: init keepalive
 
-        Step 3: Actual IPC impl
-        */
-
-
-
-        // var ipcConfig = new WhisperIpcConfig() //todo: validate
-        // {
-        //     CaptureDeviceName = _config.Audio_CurrentMicrophoneName,
-        //     Input_GraceFramesForIrregularitiesBoundary = ;
-        // };
-
-        // using var pipeReceive = new AnonymousPipeServerStream(PipeDirection.In, HandleInheritability.Inheritable);
-        // using var pipeSend = new AnonymousPipeServerStream(PipeDirection.Out, HandleInheritability.Inheritable);
-
-
-        _started = true;
+        _started = true; //todo: remove
     }
 
     protected override void StopForRecognitionModule()
+    {
+        PerformCleanup();
+        return; //todo: impl
+    }
+
+    private void PerformCleanup() //todo: apply this to other classes?
     {
         if (_whisperProcess is not null)
         {
@@ -120,22 +125,11 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config)
             _whisperProcess = null;
         }
 
-        if (_pipeSend is not null)
-        {
-            _pipeSend.DisposeLocalCopyOfClientHandle();
-            _pipeSend.Dispose();
-            _pipeSend = null;
-        }
-
-        if (_pipeRecieve is not null)
-        {
-            _pipeRecieve.DisposeLocalCopyOfClientHandle();
-            _pipeRecieve.Dispose();
-            _pipeRecieve = null;
-        }
+        _ipcPipe?.Dispose();
+        _ipcPipe = null;
 
         _started = false;
-        return; //todo: impl
+        _startedSignalReceived = false;
     }
 
     public override bool IsListening => true; //todo: impl
@@ -160,7 +154,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config)
     }
 
     #region Startup
-    private string CreateWhisperConfigArg(string pipeHandleRec, string pipeHandleSend)
+    private string CreateWhisperConfigArg(string pipeHandleSend)
     {
         if (string.IsNullOrWhiteSpace(_config.Recognition_Whisper_SelectedModel) 
             || !_config.Recognition_Whisper_Models.TryGetValue(_config.Recognition_Whisper_SelectedModel, out var modelPath))
@@ -178,7 +172,6 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config)
             Input_RecognitionFrameInterval = (uint)(_config.Recognition_Whisper_Cfg_RecognitionUpdateIntervalMs / WhisperIpcConfig.MS_IN_FRAME),
 
             ParentProcessId = Process.GetCurrentProcess().Id,
-            ParentReceivingPipe = pipeHandleRec,
             ParentSendingPipe = pipeHandleSend,
 
             CaptureDeviceName = _config.Audio_CurrentMicrophoneName,
@@ -213,7 +206,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config)
     }
     #endregion
 
-    #region Output Handling
+    #region IPC Receive
     private void HandleConsoleOutput(object _, DataReceivedEventArgs args)
     {
         if (args.Data is null || args.Data.Length < 4) return;
@@ -222,10 +215,26 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config)
         switch (id)
         {
             case WhisperIpcLog.IDENTIFIER:
-                var res = ConvertCoutStringToType<WhisperIpcLog>(args.Data);
-                if (res is null) return;
-                var text = res.Trace is null ? res.Message : $"{res.Message}\n{res.Trace}";
-                _logger.Write(res.LogLevel, text);
+                var resLog = ConvertCoutStringToType<WhisperIpcLog>(args.Data);
+                if (resLog is null) return;
+                var text = resLog.Trace is null ? resLog.Message : $"{resLog.Message}\n{resLog.Trace}";
+                _logger.Write(resLog.LogLevel, text);
+                return;
+
+            case WhisperIpcRecognition.IDENTIFIER:
+                var resRec = ConvertCoutStringToType<WhisperIpcRecognition>(args.Data);
+                if (resRec is null) return;
+                _logger.Debug($"{resRec.Id}-{resRec.SubId} {resRec.IsFinal}: {resRec.Text}");
+                //todo: handling and processing!
+                return;
+                
+            case WhisperIpcStatus.IDENTIFIER:
+                var resSta = ConvertCoutStringToType<WhisperIpcStatus>(args.Data);
+                if (resSta is null) return;
+                if (resSta.State)
+                    _startedSignalReceived = true;
+                else
+                    Stop();
                 return;
 
             default: 

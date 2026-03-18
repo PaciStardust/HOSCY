@@ -1,4 +1,5 @@
-﻿using HoscyCore.Services.Recognition.Extra;
+﻿using System.IO.Pipes;
+using HoscyCore.Services.Recognition.Extra;
 using Newtonsoft.Json;
 using Serilog.Events;
 
@@ -6,49 +7,24 @@ namespace HoscyWhisperV2Process;
 
 public class Program
 {   
+    private static ConsoleDataWriter _writer = null!;
+    private static WhisperIpcConfig _config = null!;
+    private static Thread? _pipeThread = null;
+
     public static async Task Main(string[] args)
     {
-        ConsoleDataWriter writer;
-        WhisperIpcConfig config;
-        if (args.Length == 0)
+        if (!InitConfigAndWriter(args)) return;
+
+        if (!string.IsNullOrWhiteSpace(_config.ParentSendingPipe))
         {
-            writer = new(true);
-            writer.SendLog(LogEventLevel.Information, "Starting process without args, likely running independent");
-            config = new WhisperIpcConfig()
-            {
-                Whisper_ModelPath = Console.ReadLine()!
-            };
-        }
-        else
-        {
-            writer = new(true);
-            writer.SendLog(LogEventLevel.Information, "Starting process args, starting...");
-            try
-            {
-                var bytes = Convert.FromBase64String(args[0]);
-                var decoded = System.Text.Encoding.UTF8.GetString(bytes);
-                config = JsonConvert.DeserializeObject<WhisperIpcConfig>(decoded)!;
-            }
-            catch(Exception ex)
-            {
-                writer.SendLog(LogEventLevel.Error, $"{ex.GetType().Name}: {ex.Message}");
-                return;
-            }
+
+            //todo: create pipe here for handling and keepalive
         }
 
-        /*
-        Desired flow of operations:
-        1. [x] Reading of configuration variables from args
-        2. [ ] Setting up IPC and phoning home
-        3. [x] Initialization of all required systems
-        4. [x] Starting of main flow using CT
-        5. [ ] Listening to mute and stop events
-        6. [ ] Shutdown on CT
-        7. [ ] Keepalive via Global Mutex
-        */
+        _writer.SendStatus(true);
 
-        var factory = new RecognitionComponentFactory(config);
-        var logger = factory.CreateLogger(writer);
+        var factory = new RecognitionComponentFactory(_config);
+        var logger = factory.CreateLogger(_writer);
         using var audioEngine = factory.CreateAudioEngine(logger);
         using var capture = factory.CreateCaptureDevice(audioEngine, logger);
         using var vad = factory.CreateVad(logger);
@@ -68,30 +44,61 @@ public class Program
 
         if (recCore.IsRunning && !cts.IsCancellationRequested && !task.IsCompleted)
         {
-            capture.SetListening(true);
-            Console.ReadLine();
-            capture.SetListening(false);
+            if (args.Length == 0)
+            {
+                capture.SetListening(true);
+                Console.ReadLine();
+                capture.SetListening(false);
+                cts.Cancel();
+            }
+
+            await task;
         }
         else
         {
             logger.Error("Recognition task is unexpectedly not running");
         }
 
-        cts.Cancel();
-        await task;
-
         if (task.Exception is not null)
         {
             logger.Error(task.Exception, "Listening task encountered an error");
         }
+
+        _writer.SendStatus(false);
     }
 
-    private static void HandleRecognitionOutput(RecognitionCallbackArgs args)
+    private static bool InitConfigAndWriter(string[] args)
     {
-        var paddedId = args.Id.ToString().PadLeft(4, '0');
-        var paddedSubId = args.SubId.ToString().PadLeft(4, '0');
-        var paddedSegId = args.SegId.ToString().PadLeft(2, '0');
+        if (args.Length == 0)
+        {
+            _writer = new(true);
+            _writer.SendLog(LogEventLevel.Information, "Starting process without args, likely running independent");
+            _config = new WhisperIpcConfig()
+            {
+                Whisper_ModelPath = Console.ReadLine()!
+            };
+        }
+        else
+        {
+            _writer = new(true);
+            _writer.SendLog(LogEventLevel.Information, "Starting process args, starting...");
+            try
+            {
+                var bytes = Convert.FromBase64String(args[0]);
+                var decoded = System.Text.Encoding.UTF8.GetString(bytes);
+                _config = JsonConvert.DeserializeObject<WhisperIpcConfig>(decoded)!;
+            }
+            catch(Exception ex)
+            {
+                _writer.SendLog(LogEventLevel.Error, $"{ex.GetType().Name}: {ex.Message}");
+                return false;
+            }
+        }
+        return true;
+    }
 
-        Console.WriteLine($"{paddedId}-{paddedSubId}: {paddedSegId}: {args.Data.Text} | {args.Data.NoSpeechProbability}");
+    private static void HandleRecognitionOutput(WhisperIpcRecognition args)
+    {
+        _writer.SendRecognized(args);
     }
 }

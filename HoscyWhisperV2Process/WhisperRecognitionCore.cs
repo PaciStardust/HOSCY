@@ -2,6 +2,7 @@
 
 using System.Buffers.Binary;
 using HoscyCore.Services.Audio;
+using HoscyCore.Services.Recognition.Extra;
 using Serilog;
 using SoundFlow.Enums;
 using Whisper.net;
@@ -20,7 +21,7 @@ public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProc
 
     #region Main Task
     public bool IsRunning { get; private set; } = false;
-    public async Task RecognizeAsync(CancellationToken ct, Action<RecognitionCallbackArgs> callback)
+    public async Task RecognizeAsync(CancellationToken ct, Action<WhisperIpcRecognition> callback)
     {
         IsRunning = false;
         _logger.Information("Starting recognition");
@@ -83,7 +84,7 @@ public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProc
                 #if DBG_AUDIO 
                     Console.Write("!");
                 #else
-                    SetNewRecognitionData();
+                    SetNewRecognitionData(false);
                 #endif
                 return;
 
@@ -97,7 +98,7 @@ public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProc
                 #if DBG_AUDIO 
                     Console.Write("&");
                 #else
-                    SetNewRecognitionData();
+                    SetNewRecognitionData(true);
                 #endif
                 goto case FrameProcessingResult.Cancel;
 
@@ -113,15 +114,15 @@ public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProc
         }
     }
 
-    private void SetNewRecognitionData()
+    private void SetNewRecognitionData(bool isFinal)
     {
         _activelyRecordingSegmentSubId++;
         _logger.Verbose("Setting new recognition data (ID {id}-{subId})",
             _activelyRecordingSegmentId, _activelyRecordingSegmentSubId);
 
-        if (_processingQueueItem.HasValue)
+        if (_processingQueueItem is not null)
         {
-            var processingQueueItemId = _processingQueueItem.Value.Id;
+            var processingQueueItemId = _processingQueueItem.Id;
             if (_activelyRecordingSegmentId < processingQueueItemId)
             {
                 _logger.Error("Queue not empty, new entry has ID {newId}, which is SOMEHOW lower than queue ID {queueId} => No override",
@@ -149,7 +150,13 @@ public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProc
             Buffer.BlockCopy(_baseHeader, 0, recognitionData, 0, _baseHeader.Length);
             WriteRestOfHeader(recognitionData.AsSpan());
 
-            _processingQueueItem = (_activelyRecordingSegmentId, _activelyRecordingSegmentSubId, recognitionData);
+            _processingQueueItem = new()
+            { 
+                Id = _activelyRecordingSegmentId,
+                SubId = _activelyRecordingSegmentSubId,
+                IsFinal = isFinal,
+                AudioData = recognitionData
+            };
             _currentCts.Cancel();
             _logger.Verbose("Set new recognition data with ID {id}-{subId} and length {len}",
                 _activelyRecordingSegmentId, _activelyRecordingSegmentSubId, recognitionData.Length);
@@ -194,9 +201,9 @@ public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProc
     #endregion
 
     #region Actual Recognition
-    private (uint Id, uint SubId, byte[] Data)? _processingQueueItem = null;
+    private volatile RecognitionQueueItem? _processingQueueItem = null;
     private CancellationTokenSource _currentCts = new();
-    private async Task RunRecognitionAsync(CancellationToken ct, Action<RecognitionCallbackArgs> callback)
+    private async Task RunRecognitionAsync(CancellationToken ct, Action<WhisperIpcRecognition> callback)
     {
         _logger.Debug("Entering recognition data handling loop");
         while(!ct.IsCancellationRequested)
@@ -206,19 +213,18 @@ public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProc
         _logger.Debug("Leaving recognition data handling loop");
     }
 
-    private async Task RunRecognitionAsyncTick(CancellationToken ct, Action<RecognitionCallbackArgs> callback)
+    private WhisperIpcRecognition? _lastRecognitionResult;
+    private async Task RunRecognitionAsyncTick(CancellationToken ct, Action<WhisperIpcRecognition> callback)
     {
-        if (!_processingQueueItem.HasValue)
+        if (_processingQueueItem is null)
         {
             await Task.Delay(20);
             return;
         }
 
-        var currentBytes = _processingQueueItem.Value.Data.ToArray();
-        var currentId = _processingQueueItem.Value.Id;
-        var currentSubId = _processingQueueItem.Value.SubId;
+        var current = _processingQueueItem;
         _logger.Verbose("Now handling recognition data with ID {id}-{subId} and length {len}",
-            currentId, currentSubId, currentBytes.Length);
+            current.Id, current.SubId, current.AudioData.Length);
 
         _processingQueueItem = null;
         if (!_currentCts.TryReset())
@@ -227,84 +233,101 @@ public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProc
             _currentCts = new();
         }
 
-        using var ms = new MemoryStream(currentBytes);
+        using var ms = new MemoryStream(current.AudioData);
         ms.Position = 0;
 
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, _currentCts.Token);
         try
         {
             _logger.Verbose("Sending data with ID {id}-{subId} to recognition",
-                currentId,currentSubId);
+                current.Id, current.SubId);
 
-            uint seg = 1;
             var strings = new List<string>();
-    
             await foreach (var segment in _whisperProcessor.ProcessAsync(ms, linkedCts.Token))
             {
-                callback(new()
-                {
-                    Id = currentId, SubId = currentSubId, SegId = seg++, Data = segment
-                });
                 strings.Add(segment.Text);
             }
 
-            if (strings.Count > 0)
+            if (strings.Count == 0)
             {
-                var fullResult = string.Join(" ", strings);
-                _logger.Debug("Recognition ID {id}-{subId} result: {result}",
-                    currentId, currentSubId, fullResult);
+                _logger.Debug("Recognition ID {id}-{subId} yielded no result", current.Id, current.SubId);
+                return;
+            }
 
-                callback(new()
-                {
-                    Id = currentId, SubId = currentSubId, SegId = 0,
-                    Data = new(fullResult, TimeSpan.MinValue, TimeSpan.MaxValue, 1, 1, 1, 0, string.Empty, [])
-                });
-            }
-            else
+            var fullResult = string.Join(" ", strings);
+            _logger.Debug("Recognition ID {id}-{subId} result: {result}",
+                current.Id, current.SubId, fullResult);
+
+            var args = new WhisperIpcRecognition()
             {
-                _logger.Debug("Recognition ID {id}-{subId} yielded no result", currentId, currentSubId);
-            }
+                Id = current.Id,
+                SubId = current.SubId,
+                Text = fullResult,
+                IsFinal = current.IsFinal
+            };
+            _lastRecognitionResult = args;
+
+            callback(args);
+            return;
         }
         catch (TaskCanceledException)
         {
-            if (_processingQueueItem.HasValue)
+            if (_processingQueueItem is not null)
             {
-                var newId = _processingQueueItem.Value.Id;
-                if (newId == currentId)
+                var newId = _processingQueueItem.Id;
+                if (newId == current.Id)
                 {
-                    _logger.Debug("Cancelled current process for ID {id}-{subId}, new data with same ID", newId, currentSubId);
+                    _logger.Debug("Cancelled current process for ID {id}-{subId}, new data with same ID", newId, current.SubId);
                 }
-                else if (newId > currentId)
+                else if (newId > current.Id)
                 {
                     _logger.Warning("Cancelled current process for ID {id}-{subId}, new data with higher ID {newId} - This might be a sign of not being able to keep up, consider picking a weaker model",
-                        currentId, currentSubId, newId);
+                        current.Id, current.SubId, newId);
                 }
                 else
                 {
                     _logger.Warning("Cancelled current process for ID {id}-{subId}, new data with lower ID {newId} - This should never happen",
-                        currentId, currentSubId, newId);
+                        current.Id, current.SubId, newId);
                 }
             }
             else
             {
                 if (ct.IsCancellationRequested)
                     _logger.Debug("Main CT was cancelled, stopping recognition (ID {id}-{subId})", 
-                        currentId, currentSubId);
+                        current.Id, current.SubId);
                 else 
                     _logger.Warning("CT triggered but no new data found? (ID {id}-{subId})", 
-                        currentId, currentSubId);
+                        current.Id, current.SubId);
             }
         }
         catch (WhisperProcessingException ex)
         {
             _logger.Warning("Whisper Error (ID {id}-{subId}): {message}",
-                currentId, currentSubId, ex.Message);
+                current.Id, current.SubId, ex.Message);
         }
         catch (Exception ex)
         {
             _logger.Error(ex, "Recognition encountered an exception of type {exType} (ID {id}-{subId})",
-                ex.GetType().Name, currentSubId, currentId);
+                ex.GetType().Name, current.SubId, current.Id);
         }        
+
+        // Only reachable on exceptions
+        if (current.IsFinal 
+            && _lastRecognitionResult is not null 
+            && _lastRecognitionResult.Id == current.Id 
+            && _lastRecognitionResult.SubId < current.SubId)
+        {
+            var args = new WhisperIpcRecognition()
+            {
+                Id = current.Id,
+                SubId = current.SubId,
+                IsFinal = true,
+                Text = _lastRecognitionResult.Text
+            };
+            _logger.Debug("Final send was cancelled and last sent was of same ID, resending as final (ID {id}-{subId}): {message}",
+                args.Id, args.SubId, args.Text);
+            callback(args);
+        }
     }
     #endregion
 
@@ -316,4 +339,3 @@ public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProc
     }
     #endregion
 }
-

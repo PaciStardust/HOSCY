@@ -7,7 +7,6 @@ public record WhisperIpcConfig
 {
     public int ParentProcessId { get; init; } = 0;
     public string ParentSendingPipe { get; init; } = string.Empty;
-    public string ParentReceivingPipe { get; init; } = string.Empty;
 
     public string CaptureDeviceName { get; init; } = string.Empty;
     public WhisperIpcVadOperatingMode VadOperatingMode { get; init; } = WhisperIpcVadOperatingMode.Aggressive;
@@ -62,13 +61,14 @@ public record WhisperIpcRecognition
     public const char IDENTIFIER = 'R';
     public required string Text { get; init; }
     public required uint Id { get; init; }
+    public required uint SubId { get; init; }
     public bool IsFinal { get; init; }
 }
 
 public record WhisperIpcKeepalive
 {
     public const char IDENTIFIER = 'K';
-    public required DateTimeOffset SentUtc { get; init; }
+    public required uint Index { get; init; }
 }
 
 public record WhisperIpcMute
