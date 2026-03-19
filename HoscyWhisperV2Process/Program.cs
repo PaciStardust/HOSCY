@@ -1,4 +1,4 @@
-﻿using System.IO.Pipes;
+﻿using HoscyCore.Services.Interfacing;
 using HoscyCore.Services.Recognition.Extra;
 using Newtonsoft.Json;
 using Serilog.Events;
@@ -9,22 +9,24 @@ public class Program
 {   
     private static ConsoleDataWriter _writer = null!;
     private static WhisperIpcConfig _config = null!;
-    private static Thread? _pipeThread = null;
+    private static IpcReceivePipe? _pipe;
 
     public static async Task Main(string[] args)
     {
         if (!InitConfigAndWriter(args)) return;
 
+        var factory = new RecognitionComponentFactory(_config);
+        var logger = factory.CreateLogger(_writer);
+
         if (!string.IsNullOrWhiteSpace(_config.ParentSendingPipe))
         {
-
+            _pipe = new IpcReceivePipe(logger, _config.ParentSendingPipe);
+            _pipe.Start();
             //todo: create pipe here for handling and keepalive
         }
 
         _writer.SendStatus(true);
 
-        var factory = new RecognitionComponentFactory(_config);
-        var logger = factory.CreateLogger(_writer);
         using var audioEngine = factory.CreateAudioEngine(logger);
         using var capture = factory.CreateCaptureDevice(audioEngine, logger);
         using var vad = factory.CreateVad(logger);

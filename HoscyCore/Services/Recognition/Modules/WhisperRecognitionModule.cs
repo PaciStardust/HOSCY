@@ -30,7 +30,6 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config)
 
     private Process? _whisperProcess = null;
     private IpcSendPipe? _ipcPipe = null;
-
     private bool _started = false; //todo: remove later
     private bool _startedSignalReceived = false;
     protected override void StartForService()
@@ -218,7 +217,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config)
                 var resLog = ConvertCoutStringToType<WhisperIpcLog>(args.Data);
                 if (resLog is null) return;
                 var text = resLog.Trace is null ? resLog.Message : $"{resLog.Message}\n{resLog.Trace}";
-                _logger.Write(resLog.LogLevel, text);
+                _logger.Write(resLog.LogLevel, $"Process: {text}");
                 return;
 
             case WhisperIpcRecognition.IDENTIFIER:
@@ -232,9 +231,15 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config)
                 var resSta = ConvertCoutStringToType<WhisperIpcStatus>(args.Data);
                 if (resSta is null) return;
                 if (resSta.State)
+                {
+                    _logger.Debug("Received start signal from process");
                     _startedSignalReceived = true;
+                }
                 else
+                {
+                    _logger.Debug("Received stop signal from process");
                     Stop();
+                }
                 return;
 
             default: 

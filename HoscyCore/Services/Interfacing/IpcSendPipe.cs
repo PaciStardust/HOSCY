@@ -1,11 +1,12 @@
 using System.Collections.Concurrent;
 using System.IO.Pipes;
+using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using Serilog;
 
 namespace HoscyCore.Services.Interfacing;
 
-public class IpcSendPipe(ILogger logger) : IpcPipeBase<AnonymousPipeServerStream>(logger)
+public class IpcSendPipe(ILogger logger) : IpcPipeBase<AnonymousPipeServerStream>(logger.ForContext<IpcSendPipe>())
 {
     protected override AnonymousPipeServerStream CreatePipe()
         => new(PipeDirection.Out, HandleInheritability.Inheritable);
@@ -64,7 +65,10 @@ public class IpcSendPipe(ILogger logger) : IpcPipeBase<AnonymousPipeServerStream
             {
                 _logger.Verbose("Sending \"{queueItem}\" via IPC", messageToSend);
                 sw.WriteLine(messageToSend);
-                _ipcPipe.WaitForPipeDrain();
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    _ipcPipe.WaitForPipeDrain();
+                }
             }
             catch (Exception ex)
             {

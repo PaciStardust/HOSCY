@@ -3,7 +3,7 @@ using Serilog;
 
 namespace HoscyCore.Services.Interfacing;
 
-public class IpcReceivePipe(ILogger logger, string handle) : IpcPipeBase<AnonymousPipeClientStream>(logger)
+public class IpcReceivePipe(ILogger logger, string handle) : IpcPipeBase<AnonymousPipeClientStream>(logger.ForContext<IpcReceivePipe>())
 {
     private readonly string _handle = handle;
     public event Action<string> OnDataReceived = delegate { };
