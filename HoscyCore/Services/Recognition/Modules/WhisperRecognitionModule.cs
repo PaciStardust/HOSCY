@@ -2,7 +2,7 @@ using System.Diagnostics;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
-using HoscyCore.Services.Interfacing;
+using HoscyCore.Ipc;
 using HoscyCore.Services.Recognition.Core;
 using HoscyCore.Services.Recognition.Extra;
 using HoscyCore.Utility;

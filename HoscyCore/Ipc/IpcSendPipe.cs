@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using Serilog;
 
-namespace HoscyCore.Services.Interfacing;
+namespace HoscyCore.Ipc;
 
 public class IpcSendPipe(ILogger logger) : IpcPipeBase<AnonymousPipeServerStream>(logger.ForContext<IpcSendPipe>())
 {

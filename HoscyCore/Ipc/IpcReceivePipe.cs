@@ -1,7 +1,7 @@
 using System.IO.Pipes;
 using Serilog;
 
-namespace HoscyCore.Services.Interfacing;
+namespace HoscyCore.Ipc;
 
 public class IpcReceivePipe(ILogger logger, string handle) : IpcPipeBase<AnonymousPipeClientStream>(logger.ForContext<IpcReceivePipe>())
 {

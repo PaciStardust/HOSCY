@@ -1,8 +1,7 @@
 using System.IO.Pipes;
-using HoscyCore.Services.Core;
 using Serilog;
 
-namespace HoscyCore.Services.Interfacing;
+namespace HoscyCore.Ipc;
 
 public abstract class IpcPipeBase<T> : IDisposable where T : PipeStream
 {
@@ -35,7 +34,7 @@ public abstract class IpcPipeBase<T> : IDisposable where T : PipeStream
             _shouldThreadRun = false;
             _ipcThread.Join();
             _logger.Error("IPC thread failed to start");
-            throw new StartStopServiceException($"IPC thread failed to start");
+            throw new IpcException($"IPC thread failed to start");
         }
     }
 

@@ -1,4 +1,4 @@
-﻿using HoscyCore.Services.Interfacing;
+﻿using HoscyCore.Ipc;
 using HoscyCore.Services.Recognition.Extra;
 using Newtonsoft.Json;
 using Serilog.Events;
@@ -10,6 +10,7 @@ public class Program
     private static ConsoleDataWriter _writer = null!;
     private static WhisperIpcConfig _config = null!;
     private static IpcReceivePipe? _pipe;
+    private static KeepAliveTimer? _keepAlive;
 
     public static async Task Main(string[] args)
     {
@@ -21,7 +22,9 @@ public class Program
         if (!string.IsNullOrWhiteSpace(_config.ParentSendingPipe))
         {
             _pipe = new IpcReceivePipe(logger, _config.ParentSendingPipe);
+            _pipe.OnDataReceived += HandleIpcData;
             _pipe.Start();
+            //_keepAlive = new(logger, TimeSpan.FromSeconds(10));
             //todo: create pipe here for handling and keepalive
         }
 
@@ -43,6 +46,9 @@ public class Program
         {
             await Task.Delay(5);
         }
+        
+        _keepAlive?.OnKeepAliveFailed += cts.Cancel;
+        _keepAlive?.Start();
 
         if (recCore.IsRunning && !cts.IsCancellationRequested && !task.IsCompleted)
         {
@@ -66,6 +72,7 @@ public class Program
             logger.Error(task.Exception, "Listening task encountered an error");
         }
 
+        _keepAlive?.Stop();
         _writer.SendStatus(false);
     }
 
@@ -73,7 +80,7 @@ public class Program
     {
         if (args.Length == 0)
         {
-            _writer = new(true);
+            _writer = new(false);
             _writer.SendLog(LogEventLevel.Information, "Starting process without args, likely running independent");
             _config = new WhisperIpcConfig()
             {
@@ -102,5 +109,10 @@ public class Program
     private static void HandleRecognitionOutput(WhisperIpcRecognition args)
     {
         _writer.SendRecognized(args);
+    }
+
+    private static void HandleIpcData(string data)
+    {
+        throw new NotImplementedException();
     }
 }
