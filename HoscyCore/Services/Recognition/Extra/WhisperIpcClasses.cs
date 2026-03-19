@@ -48,37 +48,27 @@ public enum WhisperIpcVadOperatingMode
     VeryAggressive
 }
 
-public record WhisperIpcLog
+public record WhisperIpcLog(LogEventLevel LogLevel, string Message, string? Trace = null)
 {
     public const char IDENTIFIER = 'L';
-    public required LogEventLevel LogLevel { get; init; }
-    public required string Message { get; init; }
-    public string? Trace { get; init; }
 }
 
-public record WhisperIpcRecognition
+public record WhisperIpcRecognition(string Text, uint Id, uint SubId, bool IsFinal)
 {
     public const char IDENTIFIER = 'R';
-    public required string Text { get; init; }
-    public required uint Id { get; init; }
-    public required uint SubId { get; init; }
-    public bool IsFinal { get; init; }
 }
 
-public record WhisperIpcKeepalive
+public record WhisperIpcKeepalive(uint Index)
 {
     public const char IDENTIFIER = 'K';
-    public required uint Index { get; init; }
 }
 
-public record WhisperIpcMute
+public record WhisperIpcMute(bool State)
 {
     public const char IDENTIFIER = 'M';
-    public required bool State { get; init; }
 }
 
-public record WhisperIpcStatus
+public record WhisperIpcStatus(bool State)
 {
     public const char IDENTIFIER = 'S';
-    public required bool State { get; init; }
 }

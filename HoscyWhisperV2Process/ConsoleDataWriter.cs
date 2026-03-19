@@ -1,5 +1,5 @@
+using HoscyCore.Ipc;
 using HoscyCore.Services.Recognition.Extra;
-using Newtonsoft.Json;
 using Serilog.Core;
 using Serilog.Events;
 
@@ -13,7 +13,7 @@ public class ConsoleDataWriter(bool asJson)
     {
         if (_asJson)
         {
-            var log = new WhisperIpcLog() { LogLevel = level, Message = message, Trace = trace };
+            var log = new WhisperIpcLog(level, message, trace);
             SendAsJson(WhisperIpcLog.IDENTIFIER, log);
         }
         else
@@ -49,7 +49,7 @@ public class ConsoleDataWriter(bool asJson)
     {
         if (_asJson)
         {
-            SendAsJson(WhisperIpcStatus.IDENTIFIER, new WhisperIpcStatus() { State = status });
+            SendAsJson(WhisperIpcStatus.IDENTIFIER, new WhisperIpcStatus(status));
         }
         else
         {
@@ -61,14 +61,14 @@ public class ConsoleDataWriter(bool asJson)
     public void SendKeepalive()
     {
         if (!_asJson) return;
-        SendAsJson(WhisperIpcKeepalive.IDENTIFIER, new WhisperIpcKeepalive() { Index = _keepAliveTick++ });
+        SendAsJson(WhisperIpcKeepalive.IDENTIFIER, new WhisperIpcKeepalive(_keepAliveTick++));
     }
 
     public void SendMute(bool state)
     {
         if (_asJson)
         {
-            SendAsJson(WhisperIpcMute.IDENTIFIER, new WhisperIpcMute() { State = state });
+            SendAsJson(WhisperIpcMute.IDENTIFIER, new WhisperIpcMute(state));
         }
         else
         {
@@ -76,12 +76,12 @@ public class ConsoleDataWriter(bool asJson)
         }
     }
 
-    private static void SendAsJson<T>(char id, T data)
+    private static void SendAsJson<T>(char id, T data) where T : class
     {
         try
         {
-            var json = JsonConvert.SerializeObject(data, Formatting.None);
-            Console.WriteLine($"{id} {json}");
+            var output = IpcDataConverter.SeralizeRaw(id, data);
+            Console.WriteLine(output);
         }
         catch (Exception ex)
         {

@@ -45,8 +45,7 @@ public class IpcDataConverter(ILogger logger)
     {
         try
         {
-            var json = JsonConvert.SerializeObject(input, Formatting.None);
-            serialized = $"{id} {json}";
+            serialized = SeralizeRaw(id, input);
             return true;
         }
         catch (Exception ex)
@@ -56,5 +55,10 @@ public class IpcDataConverter(ILogger logger)
             serialized = null;
             return false;
         }
+    }
+    public static string SeralizeRaw<T>(char id, T input) where T : class
+    {
+        var json = JsonConvert.SerializeObject(input, Formatting.None);
+        return $"{id} {json}";
     }
 }

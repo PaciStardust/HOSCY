@@ -27,6 +27,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config)
     : RecognitionModuleBase(logger.ForContext<WhisperRecognitionModule>()) //todo: [REFACTOR] Add disposable?
 {
     private readonly ConfigModel _config = config;
+    private readonly IpcDataConverter _ipcConverter = new(logger.ForContext<WhisperRecognitionModule>());
 
     private Process? _whisperProcess = null;
     private IpcSendPipe? _ipcPipe = null;
@@ -208,57 +209,46 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config)
     #region IPC Receive
     private void HandleConsoleOutput(object _, DataReceivedEventArgs args)
     {
-        if (args.Data is null || args.Data.Length < 4) return;
+        if (args.Data is null || !_ipcConverter.IsValid(args.Data)) return;
 
-        var id = args.Data[0];
+        var id = _ipcConverter.GetIdentifier(args.Data);
         switch (id)
         {
             case WhisperIpcLog.IDENTIFIER:
-                var resLog = ConvertCoutStringToType<WhisperIpcLog>(args.Data);
-                if (resLog is null) return;
-                var text = resLog.Trace is null ? resLog.Message : $"{resLog.Message}\n{resLog.Trace}";
-                _logger.Write(resLog.LogLevel, $"Process: {text}");
+                if (_ipcConverter.TryDeserialize<WhisperIpcLog>(args.Data, out var resLog))
+                {
+                    var text = resLog.Trace is null ? resLog.Message : $"{resLog.Message}\n{resLog.Trace}";
+                    _logger.Write(resLog.LogLevel, $"Process: {text}");
+                }
                 return;
 
             case WhisperIpcRecognition.IDENTIFIER:
-                var resRec = ConvertCoutStringToType<WhisperIpcRecognition>(args.Data);
-                if (resRec is null) return;
-                _logger.Debug($"{resRec.Id}-{resRec.SubId} {resRec.IsFinal}: {resRec.Text}");
-                //todo: handling and processing!
+                if (_ipcConverter.TryDeserialize<WhisperIpcRecognition>(args.Data, out var resRec))
+                {
+                    _logger.Debug($"{resRec.Id}-{resRec.SubId} {resRec.IsFinal}: {resRec.Text}");
+                    //todo: handling and processing!
+                }
                 return;
                 
             case WhisperIpcStatus.IDENTIFIER:
-                var resSta = ConvertCoutStringToType<WhisperIpcStatus>(args.Data);
-                if (resSta is null) return;
-                if (resSta.State)
+                if (_ipcConverter.TryDeserialize<WhisperIpcStatus>(args.Data, out var resSta)) 
                 {
-                    _logger.Debug("Received start signal from process");
-                    _startedSignalReceived = true;
-                }
-                else
-                {
-                    _logger.Debug("Received stop signal from process");
-                    Stop();
-                }
+                    if (resSta.State)
+                    {
+                        _logger.Debug("Received start signal from process");
+                        _startedSignalReceived = true;
+                    }
+                    else
+                    {
+                        _logger.Debug("Received stop signal from process");
+                        Stop();
+                    }
+                }                
                 return;
 
             default: 
                 _logger.Warning("Received unknown data with identifier {id}: \"{data}\"", id, args.Data);
                 return;
-        }
-    }
-
-    private T? ConvertCoutStringToType<T>(string input) where T : class
-    {
-        try
-        {
-            var substr = input[2..];
-            return JsonConvert.DeserializeObject<T>(substr);
-        }
-        catch (Exception ex)
-        {
-            _logger.Warning(ex, "Failed to convert input \"{input}\" to type {type}", input, typeof(T).FullName);
-            return null;
         }
     }
     #endregion
