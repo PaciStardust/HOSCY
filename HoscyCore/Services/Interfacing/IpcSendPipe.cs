@@ -1,29 +1,16 @@
 using System.Collections.Concurrent;
 using System.IO.Pipes;
-using HoscyCore.Services.Core;
 using Newtonsoft.Json;
 using Serilog;
 
 namespace HoscyCore.Services.Interfacing;
 
-public class IpcSendPipe : IDisposable
+public class IpcSendPipe(ILogger logger) : IpcPipeBase<AnonymousPipeServerStream>(logger)
 {
-    private readonly AnonymousPipeServerStream _ipcPipe;
-    private readonly Thread _ipcThread;
-    private readonly ConcurrentQueue<string> _ipcQueue = [];
-    private readonly ILogger _logger;
-    private bool _isDisposed = false;
-    private bool _shouldThreadRun = false;
+    protected override AnonymousPipeServerStream CreatePipe()
+        => new(PipeDirection.Out, HandleInheritability.Inheritable);
 
-    public IpcSendPipe(ILogger logger)
-    {
-        _ipcPipe = new(PipeDirection.Out, HandleInheritability.Inheritable);
-        _ipcThread = new(IpcSendLoop)
-        {
-            IsBackground = true
-        };
-        _logger = logger;
-    }
+    private readonly ConcurrentQueue<string> _ipcQueue = [];
 
     public bool IsPipeConnected
         => _ipcPipe.IsConnected;
@@ -52,48 +39,24 @@ public class IpcSendPipe : IDisposable
         }
     }
 
-    public void Start()
+    protected override void DoStopCleanup()
     {
-        if (_shouldThreadRun || _ipcThread.IsAlive) return;
-        _shouldThreadRun = true;
-
-        _ipcThread.Start();
-        Thread.Sleep(10);
-        if (!_ipcThread.IsAlive)
-        {
-            _shouldThreadRun = false;
-            _ipcThread.Join();
-            _logger.Error("IPC thread failed to start");
-            throw new StartStopServiceException($"IPC thread failed to start");
-        }
+        _ipcQueue.Clear();
     }
 
-    public void Stop()
+    protected override void DoDisposeCleanup()
     {
-        if (!_shouldThreadRun && !_ipcThread.IsAlive) return;
-        _ipcQueue?.Clear();
-        _shouldThreadRun = false;
-        try
-        {
-            _ipcThread.Join(50);
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, "Failed to stop IPC thread");
-        }
+        _ipcPipe.DisposeLocalCopyOfClientHandle();
     }
 
-    private void IpcSendLoop()
+    protected override void ThreadLoopInternal()
     {
-        if (_isDisposed || !_shouldThreadRun) return;
-
-        _logger.Information("Entering IPC loop");
         using var sw = new StreamWriter(_ipcPipe) { AutoFlush = true };
-        while (!_isDisposed && _shouldThreadRun)
+        while (ShouldLoopContinue())
         {
             if (!_ipcPipe.IsConnected || _ipcQueue.Count == 0 || !_ipcQueue.TryDequeue(out var messageToSend))
             {
-                Thread.Sleep(10);
+                DelayLoop();
                 continue;
             }
 
@@ -108,14 +71,5 @@ public class IpcSendPipe : IDisposable
                 _logger.Warning(ex, "Failed to send message {message} to process", messageToSend);
             }
         }
-        _logger.Information("Leaving IPC loop");
-    }
-
-    public void Dispose()
-    {
-        _isDisposed = true;
-        Stop();
-        _ipcPipe.DisposeLocalCopyOfClientHandle();
-        _ipcPipe.Dispose();
     }
 }
