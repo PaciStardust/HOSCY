@@ -57,11 +57,10 @@ public class ConsoleDataWriter(bool asJson)
         }
     }
 
-    private uint _keepAliveTick = 0;
-    public void SendKeepalive()
+    public void SendKeepAlive(uint index)
     {
         if (!_asJson) return;
-        SendAsJson(WhisperIpcKeepalive.IDENTIFIER, new WhisperIpcKeepalive(_keepAliveTick++));
+        SendAsJson(WhisperIpcKeepalive.IDENTIFIER, new WhisperIpcKeepalive(index));
     }
 
     public void SendMute(bool state)
@@ -99,4 +98,3 @@ public class ConsoleDataWriterLogSink(ConsoleDataWriter writer) : ILogEventSink
         _writer.SendLog(logEvent.Level, logEvent.RenderMessage(), logEvent.Exception?.StackTrace);
     }
 }
-

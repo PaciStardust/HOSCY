@@ -31,6 +31,8 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config)
 
     private Process? _whisperProcess = null;
     private IpcSendPipe? _ipcPipe = null;
+    private KeepAliveTimer? _keepAlive = null;
+
     private bool _started = false; //todo: remove later
     private bool _startedSignalReceived = false;
     protected override void StartForService()
@@ -91,7 +93,11 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config)
             throw ex;
         }
 
-        //todo: init keepalive
+        _keepAlive = new(_logger, TimeSpan.FromSeconds(10));
+        _keepAlive.OnKeepAliveFailed += Stop;
+        _keepAlive.OnKeepAliveSend += (x) => SendKeepAlive(x);
+
+        _keepAlive.Start();
 
         _started = true; //todo: remove
     }
@@ -99,11 +105,18 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config)
     protected override void StopForRecognitionModule()
     {
         PerformCleanup();
-        return; //todo: impl
+        return;
     }
 
-    private void PerformCleanup() //todo: apply this to other classes?
+    private void PerformCleanup() //todo: [REFACTOR] Apply this to other classes?
     {
+        if (_keepAlive is not null)
+        {
+            _keepAlive.Stop();
+            _keepAlive.Dispose();
+            _keepAlive = null;
+        }
+
         if (_whisperProcess is not null)
         {
             try //todo: notify?
@@ -211,6 +224,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config)
     {
         if (args.Data is null || !_ipcConverter.IsValid(args.Data)) return;
 
+        _logger.Verbose("Received \"{output}\" via IPC", args.Data);
         var id = _ipcConverter.GetIdentifier(args.Data);
         switch (id)
         {
@@ -246,10 +260,20 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config)
                 }                
                 return;
 
+            case WhisperIpcKeepalive.IDENTIFIER:
+                _keepAlive?.TriggerKeepAlive();
+                return;
+
             default: 
                 _logger.Warning("Received unknown data with identifier {id}: \"{data}\"", id, args.Data);
                 return;
         }
+    }
+
+    private void SendKeepAlive(uint index)
+    {
+        if (_ipcPipe is not null && _ipcPipe.CanEnqueue)
+            _ipcPipe.Enqueue(WhisperIpcKeepalive.IDENTIFIER,new WhisperIpcKeepalive(index));
     }
     #endregion
 }

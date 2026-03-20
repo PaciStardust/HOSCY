@@ -258,13 +258,7 @@ public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProc
             _logger.Debug("Recognition ID {id}-{subId} result: {result}",
                 current.Id, current.SubId, fullResult);
 
-            var args = new WhisperIpcRecognition()
-            {
-                Id = current.Id,
-                SubId = current.SubId,
-                Text = fullResult,
-                IsFinal = current.IsFinal
-            };
+            var args = new WhisperIpcRecognition(fullResult, current.Id, current.SubId, current.IsFinal);
             _lastRecognitionResult = args;
 
             callback(args);
@@ -317,13 +311,7 @@ public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProc
             && _lastRecognitionResult.Id == current.Id 
             && _lastRecognitionResult.SubId < current.SubId)
         {
-            var args = new WhisperIpcRecognition()
-            {
-                Id = current.Id,
-                SubId = current.SubId,
-                IsFinal = true,
-                Text = _lastRecognitionResult.Text
-            };
+            var args = new WhisperIpcRecognition(_lastRecognitionResult.Text, current.Id, current.SubId, true);
             _logger.Debug("Final send was cancelled and last sent was of same ID, resending as final (ID {id}-{subId}): {message}",
                 args.Id, args.SubId, args.Text);
             callback(args);

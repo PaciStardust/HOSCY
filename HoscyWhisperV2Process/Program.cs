@@ -1,6 +1,7 @@
 ﻿using HoscyCore.Ipc;
 using HoscyCore.Services.Recognition.Extra;
 using Newtonsoft.Json;
+using Serilog;
 using Serilog.Events;
 
 namespace HoscyWhisperV2Process;
@@ -9,6 +10,9 @@ public class Program
 {   
     private static ConsoleDataWriter _writer = null!;
     private static WhisperIpcConfig _config = null!;
+    private static ILogger _logger = null!;
+
+    private static IpcDataConverter? _ipcConverter;
     private static IpcReceivePipe? _pipe;
     private static KeepAliveTimer? _keepAlive;
 
@@ -17,26 +21,28 @@ public class Program
         if (!InitConfigAndWriter(args)) return;
 
         var factory = new RecognitionComponentFactory(_config);
-        var logger = factory.CreateLogger(_writer);
+        _logger = factory.CreateLogger(_writer);
 
         if (!string.IsNullOrWhiteSpace(_config.ParentSendingPipe))
         {
-            _pipe = new IpcReceivePipe(logger, _config.ParentSendingPipe);
+            _ipcConverter = new(_logger);
+
+            _pipe = new IpcReceivePipe(_logger, _config.ParentSendingPipe);
             _pipe.OnDataReceived += HandleIpcData;
             _pipe.Start();
-            //_keepAlive = new(logger, TimeSpan.FromSeconds(10));
-            //todo: create pipe here for handling and keepalive
+
+            _keepAlive = new(_logger, TimeSpan.FromSeconds(10));
         }
 
         _writer.SendStatus(true);
 
-        using var audioEngine = factory.CreateAudioEngine(logger);
-        using var capture = factory.CreateCaptureDevice(audioEngine, logger);
-        using var vad = factory.CreateVad(logger);
+        using var audioEngine = factory.CreateAudioEngine(_logger);
+        using var capture = factory.CreateCaptureDevice(audioEngine, _logger);
+        using var vad = factory.CreateVad(_logger);
         var audioProcessor = factory.CreateAudioProcessor(vad);
-        using var whisperProcessor = factory.CreateWhisperProcessor(logger);
+        using var whisperProcessor = factory.CreateWhisperProcessor(_logger);
 
-        using var recCore = new WhisperRecognitionCore(whisperProcessor, audioProcessor, capture, logger);
+        using var recCore = new WhisperRecognitionCore(whisperProcessor, audioProcessor, capture, _logger);
 
         using var cts = new CancellationTokenSource();
         var task = Task.Run(async () => await recCore.RecognizeAsync(cts.Token, HandleRecognitionOutput));
@@ -48,6 +54,7 @@ public class Program
         }
         
         _keepAlive?.OnKeepAliveFailed += cts.Cancel;
+        _keepAlive?.OnKeepAliveSend += (x) => _writer.SendKeepAlive(x);
         _keepAlive?.Start();
 
         if (recCore.IsRunning && !cts.IsCancellationRequested && !task.IsCompleted)
@@ -64,15 +71,21 @@ public class Program
         }
         else
         {
-            logger.Error("Recognition task is unexpectedly not running");
+            _logger.Error("Recognition task is unexpectedly not running");
         }
 
         if (task.Exception is not null)
         {
-            logger.Error(task.Exception, "Listening task encountered an error");
+            _logger.Error(task.Exception, "Listening task encountered an error");
         }
 
-        _keepAlive?.Stop();
+        if (_keepAlive is not null)
+        {
+            _keepAlive.Stop();
+            _keepAlive.Dispose();
+            _keepAlive = null;
+        }
+
         _writer.SendStatus(false);
     }
 
@@ -113,6 +126,27 @@ public class Program
 
     private static void HandleIpcData(string data)
     {
-        throw new NotImplementedException();
+        if (_ipcConverter is null)
+        {
+            _logger.Warning("Unable to handle IPC data {data}, converter missing", data);
+            return;
+        }
+        if (!_ipcConverter.IsValid(data))
+        {
+            _logger.Warning("Unable to handle IPC data {data}, it is invalid", data);
+            return;
+        }
+
+        var id = _ipcConverter.GetIdentifier(data);
+        switch (id)
+        {
+            case WhisperIpcKeepalive.IDENTIFIER:
+                _keepAlive?.TriggerKeepAlive();
+                return;
+
+            default: 
+                _logger.Warning("Received unknown data with identifier {id}: \"{data}\"", id, data);
+                return;
+        }
     }
 }

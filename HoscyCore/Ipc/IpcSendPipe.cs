@@ -16,12 +16,15 @@ public class IpcSendPipe(ILogger logger) : IpcPipeBase<AnonymousPipeServerStream
     public bool IsPipeConnected
         => _ipcPipe.IsConnected;
 
+    public bool CanEnqueue
+        => !_isDisposed && _shouldThreadRun && _ipcThread.IsAlive;
+
     public string GetPipeClientHandle()
         => _ipcPipe.GetClientHandleAsString();
 
     public void Enqueue<T>(char id, T message)
     {
-        if (_isDisposed || !_shouldThreadRun || !_ipcThread.IsAlive)
+        if (!CanEnqueue)
         {
             _logger.Warning("Unable to queue new item of type {type}, not running", typeof(T).Name);
             return;
