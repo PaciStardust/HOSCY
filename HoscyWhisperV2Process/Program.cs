@@ -1,4 +1,5 @@
-﻿using HoscyCore.Ipc;
+﻿using System.Diagnostics.CodeAnalysis;
+using HoscyCore.Ipc;
 using HoscyCore.Services.Recognition.Extra;
 using Newtonsoft.Json;
 using Serilog;
@@ -8,77 +9,152 @@ namespace HoscyWhisperV2Process;
 
 public class Program
 {   
-    private static ConsoleDataWriter _writer = null!;
-    private static WhisperIpcConfig _config = null!;
-    private static ILogger _logger = null!;
-
-    private static IpcDataConverter? _ipcConverter;
+    private static IpcDataHandler? _ipcDataHandler;
     private static IpcReceivePipe? _pipe;
     private static KeepAliveTimer? _keepAlive;
 
     public static async Task Main(string[] args)
     {
-        if (!InitConfigAndWriter(args)) return;
+        if (!InitConfigAndWriter(args, out var writer, out var config)) return;
 
-        var factory = new RecognitionComponentFactory(_config);
-        _logger = factory.CreateLogger(_writer);
-
-        if (!string.IsNullOrWhiteSpace(_config.ParentSendingPipe))
+        writer.SendLog(LogEventLevel.Debug, "Config loaded, entering logic");
+        try
         {
-            _ipcConverter = new(_logger);
-
-            _pipe = new IpcReceivePipe(_logger, _config.ParentSendingPipe);
-            _pipe.OnDataReceived += HandleIpcData;
-            _pipe.Start();
-
-            _keepAlive = new(_logger, TimeSpan.FromSeconds(10));
+            await DoLogic(writer, config);
         }
-
-        _writer.SendStatus(true);
-
-        using var audioEngine = factory.CreateAudioEngine(_logger);
-        using var capture = factory.CreateCaptureDevice(audioEngine, _logger);
-        using var vad = factory.CreateVad(_logger);
-        var audioProcessor = factory.CreateAudioProcessor(vad);
-        using var whisperProcessor = factory.CreateWhisperProcessor(_logger);
-
-        using var recCore = new WhisperRecognitionCore(whisperProcessor, audioProcessor, capture, _logger);
-
-        using var cts = new CancellationTokenSource();
-        var task = Task.Run(async () => await recCore.RecognizeAsync(cts.Token, HandleRecognitionOutput));
-
-        var wait = 250 / 5;
-        while(!recCore.IsRunning && !cts.IsCancellationRequested && !task.IsCompleted && wait-- > 0)
+        catch (Exception ex)
         {
+            writer.SendLog(LogEventLevel.Error, $"Logic stopped due to Exception of type {ex.GetType().Name}: {ex.Message}", ex.StackTrace);
+        }
+        writer.SendLog(LogEventLevel.Debug, "Logic left, shutting down");
+
+        HandleShutdown(writer);
+    }
+
+    private static async Task DoLogic(ConsoleDataWriter writer, WhisperIpcConfig config)
+    {
+        var factory = new RecognitionComponentFactory(config);
+        var logger = factory.CreateLogger(writer);
+
+        CreateIpcClassesIfNeeded(config.ParentSendingPipe, logger);
+
+        writer.SendStatus(true);
+
+        using var audioEngine = factory.CreateAudioEngine(logger);
+        using var capture = factory.CreateCaptureDevice(audioEngine, logger);
+        _ipcDataHandler?.OnMute += (x) =>
+        {
+            capture.SetListening(x.State);
+            writer.SendMute(capture.IsListening);
+        };
+
+        using var vad = factory.CreateVad(logger);
+        var audioProcessor = factory.CreateAudioProcessor(vad);
+        using var whisperProcessor = factory.CreateWhisperProcessor(logger);
+
+        using var recCore = new WhisperRecognitionCore(whisperProcessor, audioProcessor, capture, logger);
+        using var cts = new CancellationTokenSource();
+        var recognitionTask = Task.Run(async () => await recCore.RecognizeAsync(cts.Token, writer.SendRecognized));
+
+        logger.Debug("Waiting for recognition to start");
+        var taskRunningWaitSteps = 250 / 5;
+        while(!recCore.IsRunning && !cts.IsCancellationRequested && !recognitionTask.IsCompleted && taskRunningWaitSteps > 0)
+        {
+            taskRunningWaitSteps--;
             await Task.Delay(5);
         }
         
-        _keepAlive?.OnKeepAliveFailed += cts.Cancel;
-        _keepAlive?.OnKeepAliveSend += (x) => _writer.SendKeepAlive(x);
-        _keepAlive?.Start();
+        StartKeepAliveIfNeeded(cts, writer);
 
-        if (recCore.IsRunning && !cts.IsCancellationRequested && !task.IsCompleted)
+        if (recCore.IsRunning && !cts.IsCancellationRequested && !recognitionTask.IsCompleted)
         {
-            if (args.Length == 0)
+            if (_pipe is null)
             {
                 capture.SetListening(true);
                 Console.ReadLine();
                 capture.SetListening(false);
                 cts.Cancel();
             }
-
-            await task;
+            logger.Debug("Waiting for recognition to end");
+            await recognitionTask;
         }
         else
         {
-            _logger.Error("Recognition task is unexpectedly not running");
+            logger.Error("Recognition task is unexpectedly not running");
         }
 
-        if (task.Exception is not null)
+        if (recognitionTask.Exception is not null)
         {
-            _logger.Error(task.Exception, "Listening task encountered an error");
+            logger.Error(recognitionTask.Exception, "Listening task encountered an error");
+        }
+    }
+
+    private static bool InitConfigAndWriter(string[] args, 
+        [NotNullWhen(true)] out ConsoleDataWriter? writer, [NotNullWhen(true)] out WhisperIpcConfig? config)
+    {
+        if (args.Length == 0)
+        {
+            writer = new ConsoleDataWriter(false);
+            writer.SendLog(LogEventLevel.Information, "Starting process without args, likely running independent");
+            config = new WhisperIpcConfig()
+            {
+                Whisper_ModelPath = Console.ReadLine()!
+            };
+            return true;
+        }
+        else
+        {
+            writer = new ConsoleDataWriter(true);
+            writer.SendLog(LogEventLevel.Information, "Starting process with args");
+            try
+            {
+                var bytes = Convert.FromBase64String(args[0]);
+                var decoded = System.Text.Encoding.UTF8.GetString(bytes);
+                config = JsonConvert.DeserializeObject<WhisperIpcConfig>(decoded)!;
+                return true;
+            }
+            catch(Exception ex)
+            {
+                writer.SendLog(LogEventLevel.Error, $"{ex.GetType().Name}: {ex.Message}");
+                config = null;
+                return false;
+            }
+        }
+    }
+
+    private static void CreateIpcClassesIfNeeded(string pipeHandle, ILogger logger)
+    {
+        if (string.IsNullOrWhiteSpace(pipeHandle))
+        {
+            logger.Debug("No pipe handle found, not initializing IPC");
+            return;
         }
 
+        logger.Debug("Creating IPC classes");
+
+        _ipcDataHandler = new IpcDataHandler(logger);
+
+        _pipe = new IpcReceivePipe(logger, pipeHandle);
+        _pipe.OnDataReceived += _ipcDataHandler.Handle;
+        _pipe.Start();
+
+        _keepAlive = new(logger, TimeSpan.FromSeconds(10));
+        _ipcDataHandler.OnMute += (_) => _keepAlive.TriggerKeepAlive();
+
+        logger.Debug("IPC classes created");
+    }
+
+    private static void StartKeepAliveIfNeeded(CancellationTokenSource cts, ConsoleDataWriter writer)
+    {
+        if (_keepAlive is null) return;
+        
+        _keepAlive.OnKeepAliveFailed += cts.Cancel;
+        _keepAlive.OnKeepAliveSend += writer.SendKeepAlive;
+        _keepAlive.Start();
+    }
+
+    private static void HandleShutdown(ConsoleDataWriter writer)
+    {
         if (_keepAlive is not null)
         {
             _keepAlive.Stop();
@@ -86,67 +162,9 @@ public class Program
             _keepAlive = null;
         }
 
-        _writer.SendStatus(false);
-    }
+        writer.SendStatus(false);
 
-    private static bool InitConfigAndWriter(string[] args)
-    {
-        if (args.Length == 0)
-        {
-            _writer = new(false);
-            _writer.SendLog(LogEventLevel.Information, "Starting process without args, likely running independent");
-            _config = new WhisperIpcConfig()
-            {
-                Whisper_ModelPath = Console.ReadLine()!
-            };
-        }
-        else
-        {
-            _writer = new(true);
-            _writer.SendLog(LogEventLevel.Information, "Starting process args, starting...");
-            try
-            {
-                var bytes = Convert.FromBase64String(args[0]);
-                var decoded = System.Text.Encoding.UTF8.GetString(bytes);
-                _config = JsonConvert.DeserializeObject<WhisperIpcConfig>(decoded)!;
-            }
-            catch(Exception ex)
-            {
-                _writer.SendLog(LogEventLevel.Error, $"{ex.GetType().Name}: {ex.Message}");
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static void HandleRecognitionOutput(WhisperIpcRecognition args)
-    {
-        _writer.SendRecognized(args);
-    }
-
-    private static void HandleIpcData(string data)
-    {
-        if (_ipcConverter is null)
-        {
-            _logger.Warning("Unable to handle IPC data {data}, converter missing", data);
-            return;
-        }
-        if (!_ipcConverter.IsValid(data))
-        {
-            _logger.Warning("Unable to handle IPC data {data}, it is invalid", data);
-            return;
-        }
-
-        var id = _ipcConverter.GetIdentifier(data);
-        switch (id)
-        {
-            case WhisperIpcKeepalive.IDENTIFIER:
-                _keepAlive?.TriggerKeepAlive();
-                return;
-
-            default: 
-                _logger.Warning("Received unknown data with identifier {id}: \"{data}\"", id, data);
-                return;
-        }
+        _pipe?.Stop();
+        _pipe?.Dispose();
     }
 }
