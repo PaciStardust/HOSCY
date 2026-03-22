@@ -55,6 +55,12 @@ public class Program
         using var recCore = new WhisperRecognitionCore(whisperProcessor, audioProcessor, capture, logger);
         using var cts = new CancellationTokenSource();
         var recognitionTask = Task.Run(async () => await recCore.RecognizeAsync(cts.Token, writer.SendRecognized));
+        _ipcDataHandler?.OnStatus += (x) =>
+        {
+            if (x.State) return;
+            logger.Information("Recognition stop signal received");
+            cts.Cancel();
+        };
 
         logger.Debug("Waiting for recognition to start");
         var taskRunningWaitSteps = 250 / 5;

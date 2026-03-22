@@ -11,6 +11,7 @@ public class IpcDataHandler(ILogger logger)
 
     public event Action<WhisperIpcKeepalive> OnKeepAlive = delegate { };
     public event Action<WhisperIpcMute> OnMute = delegate { };
+    public event Action<WhisperIpcStatus> OnStatus = delegate { };
 
     public void Handle(string data)
     {
@@ -35,6 +36,14 @@ public class IpcDataHandler(ILogger logger)
                 {
                     _logger.Debug("Received mute sigmal with state \"{data}\"", id, resMute.State);
                     OnMute(resMute);
+                }
+                return;
+
+            case WhisperIpcStatus.IDENTIFIER:
+                if (_converter.TryDeserialize<WhisperIpcStatus>(data, out var resStatus))
+                {
+                    _logger.Debug("Received status sigmal with state \"{data}\"", id, resStatus.State);
+                    OnStatus(resStatus);
                 }
                 return;
 
