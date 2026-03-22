@@ -8,6 +8,7 @@ using HoscyCore.Services.Recognition.Extra;
 using HoscyCore.Utility;
 using Newtonsoft.Json;
 using Serilog;
+using HoscyCore.Services.Interfacing;
 
 namespace HoscyCore.Services.Recognition.Modules;
 
@@ -23,23 +24,26 @@ public class WhisperRecognitionModuleStartInfo : IRecognitionModuleStartInfo
 }
 
 [PrototypeLoadIntoDiContainer(typeof(WhisperRecognitionModule), Lifetime.Transient)]
-public class WhisperRecognitionModule(ILogger logger, ConfigModel config)
-    : RecognitionModuleBase(logger.ForContext<WhisperRecognitionModule>()) //todo: [REFACTOR] Add disposable?
+public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackToFrontNotifyService notify)
+    : RecognitionModuleBase(logger.ForContext<WhisperRecognitionModule>()) //todo: [REFACTOR++] Add disposable to classes like this and applu cleanup methods?
 {
+    #region Vars
     private readonly ConfigModel _config = config;
     private readonly IpcDataConverter _ipcConverter = new(logger.ForContext<WhisperRecognitionModule>());
+    private readonly IBackToFrontNotifyService _notify = notify;
 
     private Process? _whisperProcess = null;
     private IpcSendPipe? _ipcPipe = null;
     private KeepAliveTimer? _keepAlive = null;
+    #endregion
 
-    private bool _started = false; //todo: remove later
+    #region Startup
     private bool _startedSignalReceived = false;
     protected override void StartForService()
     {
         _ipcPipe = new(_logger);
 
-        var procPath = Path.Combine(PathUtils.PathExecutableFolder, "HoscyWhisperV2Process"); //todo: .exe needed on win?
+        var procPath = Path.Combine(PathUtils.PathExecutableFolder, "HoscyWhisperV2Process"); //todo: [TEST] .exe needed on win?
         var process = new Process()
         {
             StartInfo = new ProcessStartInfo(procPath)
@@ -56,6 +60,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config)
         process.OutputDataReceived += HandleConsoleOutput;
         process.ErrorDataReceived += HandleConsoleOutput;
 
+        _startedSignalReceived = false;
         if (process.Start())
         {
             process.BeginErrorReadLine();
@@ -69,18 +74,14 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config)
             throw new StartStopServiceException($"Unable to start whisper process");
         }
 
-        var loops = 10;
-        while (loops-- > 0)
-        {
-            Thread.Sleep(50);
-            if (_startedSignalReceived) break;
-        }
-        if (!_startedSignalReceived)
+        var started = OtherUtils.WaitWhile(() => { return !_startedSignalReceived; }, 5000, 10); 
+        if (!started)
         {
             _logger.Error("Did not receive startup signal from process");
             PerformCleanup();
             throw new StartStopServiceException($"Did not receive startup signal from process");
         }
+        _whisperProcess.Exited += OnUnexpectedProcessExit;
 
         try
         {
@@ -90,83 +91,27 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config)
         {
             _logger.Error(ex, "IPC pipe did not start correctly");
             PerformCleanup();
-            throw ex;
+            throw;
         }
 
         _keepAlive = new(_logger, TimeSpan.FromSeconds(10));
         _keepAlive.OnKeepAliveFailed += Stop;
-        _keepAlive.OnKeepAliveSend += (x) => SendKeepAlive(x);
-
+        _keepAlive.OnKeepAliveSend += SendKeepAlive;
         _keepAlive.Start();
-
-        _started = true; //todo: remove
     }
+    protected override bool UseAlreadyStartedProtection => true;
 
-    protected override void StopForRecognitionModule()
+    protected override bool IsStarted()
+        => _whisperProcess is not null || _ipcPipe is not null || _keepAlive is not null;
+    protected override bool IsProcessing()
     {
-        PerformCleanup();
-        return;
+        if (_ipcPipe is null || !_ipcPipe.IsPipeConnected || _keepAlive is null || _whisperProcess is null)
+            return false;
+
+        _whisperProcess.Refresh();
+        return !_whisperProcess.HasExited;
     }
 
-    private void PerformCleanup() //todo: [REFACTOR] Apply this to other classes?
-    {
-        if (_keepAlive is not null)
-        {
-            _keepAlive.Stop();
-            _keepAlive.Dispose();
-            _keepAlive = null;
-        }
-
-        if (_whisperProcess is not null)
-        {
-            try //todo: notify?
-            {
-                if (!_whisperProcess.HasExited)
-                {
-                    _whisperProcess.Kill(); //todo: should be gently stopped before
-                    if (_whisperProcess.WaitForExit(100)!)
-                    {
-                        _logger.Error("Failed to exit whisper process within 100ms"); 
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Encountered an error stopping the whisper process");
-            }
-            _whisperProcess.Dispose();
-            _whisperProcess = null;
-        }
-
-        _ipcPipe?.Dispose();
-        _ipcPipe = null;
-
-        _started = false;
-        _startedSignalReceived = false;
-    }
-
-    public override bool IsListening => true; //todo: impl
-
-    protected override bool UseOnlySetListeningWhenStartedProtection => true; //todo: impl
-
-    protected override bool UseAlreadyStartedProtection => true; //todo: impl
-
-    protected override bool IsProcessing() //todo: impl
-    {
-        return _started;
-    }
-
-    protected override bool IsStarted() //todo: impl
-    {
-        return _started;
-    }
-
-    protected override bool SetListeningForRecognitionModule(bool state) //todo: impl
-    {
-        return true;
-    }
-
-    #region Startup
     private string CreateWhisperConfigArg(string pipeHandleSend)
     {
         if (string.IsNullOrWhiteSpace(_config.Recognition_Whisper_SelectedModel) 
@@ -219,7 +164,90 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config)
     }
     #endregion
 
-    #region IPC Receive
+    #region Stopping
+    protected override void StopForRecognitionModule()
+    {
+        PerformCleanup();
+        return;
+    }
+
+    private void PerformCleanup()
+    {
+        _logger.Debug("Performing cleanup");
+
+        if (_keepAlive is not null)
+        {
+            _keepAlive.Stop();
+            _keepAlive.Dispose();
+            _keepAlive = null;
+        }
+
+        StopWhisperProcessIfNeeded();
+
+        _ipcPipe?.Dispose();
+        _ipcPipe = null;
+    }
+
+    private void OnUnexpectedProcessExit(object? sender, EventArgs e)
+    {
+        _logger.Warning("Process stopped unexpectedly!");
+        Stop();
+    }
+
+    private void StopWhisperProcessIfNeeded()
+    {
+        if (_whisperProcess is null) return;
+
+        _whisperProcess.Refresh();
+        if (_whisperProcess.HasExited) //todo: [FIX] This can throw an exception????
+        {
+            _whisperProcess.Dispose();
+            _whisperProcess = null;
+            return;
+        }
+
+        _whisperProcess.Exited -= OnUnexpectedProcessExit;
+        var cancelResult = _ipcPipe?.Enqueue(WhisperIpcStatus.IDENTIFIER, new WhisperIpcStatus(false)) ?? false;
+        if (!cancelResult)
+        {
+            _logger.Warning("Unable to send stop signal to process (pipeExists={exists})", _ipcPipe is not null);
+        }
+
+        try
+        {
+            WaitForProcessExit(cancelResult);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Encountered an error stopping the whisper process");
+        }
+
+        _whisperProcess.Dispose();
+        _whisperProcess = null;
+    }
+
+    private void WaitForProcessExit(bool cancelSent)
+    {
+        if (cancelSent)
+        {
+            _whisperProcess!.WaitForExit(250);
+            _whisperProcess.Refresh();
+            if (_whisperProcess.HasExited) //todo: Subscribe to Exited event
+            {
+                _logger.Debug("Process has exited");
+                return;
+            }
+        }
+
+        _whisperProcess!.Kill();
+        if (_whisperProcess.WaitForExit(100))
+        {
+            _logger.Error("Failed to exit whisper process within 100ms"); //todo: notify?
+        }
+    }
+    #endregion
+
+    #region IPC
     private void HandleConsoleOutput(object _, DataReceivedEventArgs args)
     {
         if (args.Data is null || !_ipcConverter.IsValid(args.Data)) return;
@@ -264,6 +292,14 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config)
                 _keepAlive?.TriggerKeepAlive();
                 return;
 
+            case WhisperIpcMute.IDENTIFIER:
+                if (_ipcConverter.TryDeserialize<WhisperIpcMute>(args.Data, out var resMute))
+                {
+                    _logger.Debug("Mute status received with value {value}", resMute.State);
+                    _muteSignalReceived = resMute.State;
+                }
+                return;
+
             default: 
                 _logger.Warning("Received unknown data with identifier {id}: \"{data}\"", id, args.Data);
                 return;
@@ -275,5 +311,33 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config)
         if (_ipcPipe is not null && _ipcPipe.CanEnqueue)
             _ipcPipe.Enqueue(WhisperIpcKeepalive.IDENTIFIER,new WhisperIpcKeepalive(index));
     }
+    #endregion
+
+    #region Listening
+    private bool _listening = false;
+    public override bool IsListening => _listening;
+
+    private bool? _muteSignalReceived = null;
+    protected override bool SetListeningForRecognitionModule(bool state) //todo: impl
+    {
+        if (_ipcPipe is null || !_ipcPipe.Enqueue(WhisperIpcMute.IDENTIFIER, new WhisperIpcMute(state)))
+        {
+            _logger.Warning("Unable to send listening status, IPC failure"); //todo: notify
+            return IsListening;
+        }
+
+        _muteSignalReceived = null;
+        _logger.Debug("Sending mute signal and waiting for result");
+        if (OtherUtils.WaitWhile(() => { return _muteSignalReceived is null; }, 50, 5))
+        {
+            _listening = _muteSignalReceived!.Value;
+        }
+        else
+        {
+            _logger.Warning("Failed to receive mute signal"); //todo: notify
+        }
+        return IsListening;
+    }
+    protected override bool UseOnlySetListeningWhenStartedProtection => true;
     #endregion
 }

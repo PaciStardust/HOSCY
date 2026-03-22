@@ -53,4 +53,26 @@ public static class OtherUtils
             throw new PlatformNotSupportedException($"Feature not supported on this platform, only available on: {platformString}");
         }
     }
+
+    public static bool WaitWhile(Func<bool> waitIfTrue, int waitTotalMs, int intervalMs)
+    {
+        var waitSteps = waitTotalMs / intervalMs;
+        while(waitIfTrue() && waitSteps > 0)
+        {
+            waitSteps--;
+            Thread.Sleep(5);
+        }
+        return !waitIfTrue();
+    }
+
+    public static async Task<bool> WaitWhileAsync(Func<bool> waitIfTrue, int waitTotalMs, int intervalMs, CancellationToken? ct = null)
+    {
+        var waitSteps = waitTotalMs / intervalMs;
+        while(waitIfTrue() && waitSteps > 0 && ((!ct?.IsCancellationRequested) ?? true))
+        {
+            waitSteps--;
+            await Task.Delay(5);
+        }
+        return !waitIfTrue();
+    }
 }

@@ -22,12 +22,12 @@ public class IpcSendPipe(ILogger logger) : IpcPipeBase<AnonymousPipeServerStream
     public string GetPipeClientHandle()
         => _ipcPipe.GetClientHandleAsString();
 
-    public void Enqueue<T>(char id, T message)
+    public bool Enqueue<T>(char id, T message)
     {
         if (!CanEnqueue)
         {
             _logger.Warning("Unable to queue new item of type {type}, not running", typeof(T).Name);
-            return;
+            return false;
         }
 
         try
@@ -36,10 +36,12 @@ public class IpcSendPipe(ILogger logger) : IpcPipeBase<AnonymousPipeServerStream
             var queueMessage = $"{id} {serialized}";
             _logger.Verbose("Adding \"{queueItem}\" to IPC send queue", queueMessage);
             _ipcQueue.Enqueue(queueMessage);
+            return true;
         }
         catch (Exception ex)
         {
             _logger.Warning(ex, "Failed to convert type {type} to JSON", typeof(T).Name);
+            return false;
         }
     }
 

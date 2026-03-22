@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using HoscyCore.Ipc;
 using HoscyCore.Services.Recognition.Extra;
+using HoscyCore.Utility;
 using Newtonsoft.Json;
 using Serilog;
 using Serilog.Events;
@@ -63,17 +64,13 @@ public class Program
         };
 
         logger.Debug("Waiting for recognition to start");
-        var taskRunningWaitSteps = 250 / 5;
-        while(!recCore.IsRunning && !cts.IsCancellationRequested && !recognitionTask.IsCompleted && taskRunningWaitSteps > 0)
-        {
-            taskRunningWaitSteps--;
-            await Task.Delay(5);
-        }
-        
-        StartKeepAliveIfNeeded(cts, writer);
 
+        await OtherUtils.WaitWhileAsync(() => { return !recCore.IsRunning && !cts.IsCancellationRequested && !recognitionTask.IsCompleted; }, 250, 5);
+        
         if (recCore.IsRunning && !cts.IsCancellationRequested && !recognitionTask.IsCompleted)
         {
+            StartKeepAliveIfNeeded(cts, writer);
+
             if (_pipe is null)
             {
                 capture.SetListening(true);
@@ -93,6 +90,8 @@ public class Program
         {
             logger.Error(recognitionTask.Exception, "Listening task encountered an error");
         }
+
+        _ipcDataHandler?.ClearActions();
     }
 
     private static bool InitConfigAndWriter(string[] args, 
@@ -145,7 +144,7 @@ public class Program
         _pipe.Start();
 
         _keepAlive = new(logger, TimeSpan.FromSeconds(10));
-        _ipcDataHandler.OnMute += (_) => _keepAlive.TriggerKeepAlive();
+        _ipcDataHandler.OnKeepAlive += (_) => _keepAlive.TriggerKeepAlive();
 
         logger.Debug("IPC classes created");
     }
@@ -154,13 +153,19 @@ public class Program
     {
         if (_keepAlive is null) return;
         
-        _keepAlive.OnKeepAliveFailed += cts.Cancel;
+        _keepAlive.OnKeepAliveFailed += () =>
+        {
+            cts.Cancel();
+        };
         _keepAlive.OnKeepAliveSend += writer.SendKeepAlive;
         _keepAlive.Start();
     }
 
     private static void HandleShutdown(ConsoleDataWriter writer)
     {
+        _ipcDataHandler?.ClearActions();
+        _ipcDataHandler = null; //todo: This is ugly
+
         if (_keepAlive is not null)
         {
             _keepAlive.Stop();
@@ -172,5 +177,7 @@ public class Program
 
         _pipe?.Stop();
         _pipe?.Dispose();
+        
+        writer.SendStatus(false);
     }
 }

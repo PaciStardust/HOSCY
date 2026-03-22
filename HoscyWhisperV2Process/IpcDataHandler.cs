@@ -52,4 +52,11 @@ public class IpcDataHandler(ILogger logger)
                 return;
         }
     }
+
+    public void ClearActions()
+    {
+        OnKeepAlive = delegate { };
+        OnMute = delegate { };
+        OnStatus = delegate { };
+    }
 }
