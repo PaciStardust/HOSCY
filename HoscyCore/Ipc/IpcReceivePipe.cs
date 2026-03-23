@@ -42,4 +42,9 @@ public class IpcReceivePipe(ILogger logger, string handle, bool logVerboseExtra)
             OnDataReceived.Invoke(output);
         }
     }
+
+    public void ClearAction()
+    {
+        OnDataReceived = delegate { };
+    }
 }
