@@ -136,7 +136,7 @@ public class RecognitionCommandModule
         return res ? CommandResult.Success : CommandResult.Error;
     }
 
-    [SubCommandModule(["toogle-mute", "mute", "unmute"], "Toggle listening status of recognizer")]
+    [SubCommandModule(["toggle-mute", "mute", "unmute"], "Toggle listening status of recognizer")]
     public CommandResult CmdToggleMute()
     {
         var mode = !_recognition.IsListening;

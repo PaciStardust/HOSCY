@@ -13,7 +13,7 @@ using HoscyCore.Services.Interfacing;
 namespace HoscyCore.Services.Recognition.Modules;
 
 [PrototypeLoadIntoDiContainer(typeof(WhisperRecognitionModuleStartInfo), Lifetime.Singleton)]
-public class WhisperRecognitionModuleStartInfo : IRecognitionModuleStartInfo
+public class WhisperRecognitionModuleStartInfo : IRecognitionModuleStartInfo //todo: Cleanup of process, output handling, toggle for IPC log, config in CLI
 {
     public string Name => "Whisper Recognizer";
     public string Description => "Local AI, quality / RAM, VRAM usage varies, startup may take a while";
@@ -155,7 +155,9 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
             Whisper_TemperatureInc = _config.Recognition_Whisper_CfgAdv_TemperatureInc,
             Whisper_ThreadCount = _config.Recognition_Whisper_CfgAdv_ThreadsUsed,
             Whisper_UseBeamSearchSampling = _config.Recognition_Whisper_CfgAdv_UseBeamSearchSampling,
-            Whisper_UseGreedySampling = _config.Recognition_Whisper_CfgAdv_UseGreedySampling
+            Whisper_UseGreedySampling = _config.Recognition_Whisper_CfgAdv_UseGreedySampling,
+
+            Debug_LogVerboseExtra = _config.Debug_LogVerboseExtra
         };
 
         var argsJson = JsonConvert.SerializeObject(args, Formatting.None);
@@ -232,7 +234,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
         {
             _whisperProcess!.WaitForExit(250);
             _whisperProcess.Refresh();
-            if (_whisperProcess.HasExited) //todo: Subscribe to Exited event
+            if (_whisperProcess.HasExited)
             {
                 _logger.Debug("Process has exited");
                 return;
@@ -318,7 +320,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
     public override bool IsListening => _listening;
 
     private bool? _muteSignalReceived = null;
-    protected override bool SetListeningForRecognitionModule(bool state) //todo: impl
+    protected override bool SetListeningForRecognitionModule(bool state)
     {
         if (_ipcPipe is null || !_ipcPipe.Enqueue(WhisperIpcMute.IDENTIFIER, new WhisperIpcMute(state)))
         {

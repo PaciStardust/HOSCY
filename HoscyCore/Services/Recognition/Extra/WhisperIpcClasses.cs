@@ -38,6 +38,8 @@ public record WhisperIpcConfig
     public int Whisper_BeamSize { get; init => value.MinMax(0, 10); } = 0;
     public bool Whisper_UseGpu { get; init; } = true;
     public int Whisper_GpuId { get; init => value.MinMax(0, int.MaxValue); } = 0;
+
+    public bool Debug_LogVerboseExtra { get; init; } = false;
 }
 
 public enum WhisperIpcVadOperatingMode

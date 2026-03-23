@@ -272,6 +272,16 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
         set => SetProperty(ref _debug_LogFilters, value);
     }
     private List<FilterModel> _debug_LogFilters = [];
+
+    /// <summary>
+    /// Adds extra verbose logging in case it is needed
+    /// </summary>
+    public bool Debug_LogVerboseExtra //todo: [FEAT] add to cli
+    {
+        get => _debug_LogeVerboseExtra;
+        set => SetProperty(ref _debug_LogeVerboseExtra, value);
+    }
+    private bool _debug_LogeVerboseExtra = false;
     #endregion
 
     #region External Input
