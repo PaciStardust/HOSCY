@@ -37,9 +37,7 @@ public class Program
         var factory = new RecognitionComponentFactory(config);
         var logger = factory.CreateLogger(writer);
 
-        CreateIpcClassesIfNeeded(config.ParentSendingPipe, logger);
-
-        writer.SendStatus(true);
+        CreateIpcClassesIfNeeded(config.ParentSendingPipe, config.Debug_LogVerboseExtra, logger);
 
         using var audioEngine = factory.CreateAudioEngine(logger);
         using var capture = factory.CreateCaptureDevice(audioEngine, logger);
@@ -64,9 +62,10 @@ public class Program
         };
 
         logger.Debug("Waiting for recognition to start");
-
         await OtherUtils.WaitWhileAsync(() => { return !recCore.IsRunning && !cts.IsCancellationRequested && !recognitionTask.IsCompleted; }, 250, 5);
         
+        writer.SendStatus(true);
+
         if (recCore.IsRunning && !cts.IsCancellationRequested && !recognitionTask.IsCompleted)
         {
             StartKeepAliveIfNeeded(cts, writer);
@@ -127,7 +126,7 @@ public class Program
         }
     }
 
-    private static void CreateIpcClassesIfNeeded(string pipeHandle, ILogger logger)
+    private static void CreateIpcClassesIfNeeded(string pipeHandle, bool logVerboseExtra, ILogger logger)
     {
         if (string.IsNullOrWhiteSpace(pipeHandle))
         {
@@ -139,7 +138,7 @@ public class Program
 
         _ipcDataHandler = new IpcDataHandler(logger);
 
-        _pipe = new IpcReceivePipe(logger, pipeHandle);
+        _pipe = new IpcReceivePipe(logger, pipeHandle, logVerboseExtra);
         _pipe.OnDataReceived += _ipcDataHandler.Handle;
         _pipe.Start();
 

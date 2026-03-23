@@ -13,7 +13,7 @@ using HoscyCore.Services.Interfacing;
 namespace HoscyCore.Services.Recognition.Modules;
 
 [PrototypeLoadIntoDiContainer(typeof(WhisperRecognitionModuleStartInfo), Lifetime.Singleton)]
-public class WhisperRecognitionModuleStartInfo : IRecognitionModuleStartInfo //todo: Cleanup of process, output handling, toggle for IPC log, config in CLI
+public class WhisperRecognitionModuleStartInfo : IRecognitionModuleStartInfo //todo: Cleanup of process, output handling, config in CLI
 {
     public string Name => "Whisper Recognizer";
     public string Description => "Local AI, quality / RAM, VRAM usage varies, startup may take a while";
@@ -41,7 +41,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
     private bool _startedSignalReceived = false;
     protected override void StartForService()
     {
-        _ipcPipe = new(_logger);
+        _ipcPipe = new(_logger, _config.Debug_LogVerboseExtra);
 
         var procPath = Path.Combine(PathUtils.PathExecutableFolder, "HoscyWhisperV2Process"); //todo: [TEST] .exe needed on win?
         var process = new Process()
@@ -254,7 +254,10 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
     {
         if (args.Data is null || !_ipcConverter.IsValid(args.Data)) return;
 
-        _logger.Verbose("Received \"{output}\" via IPC", args.Data);
+        if (_config.Debug_LogVerboseExtra)
+        {
+            _logger.Verbose("Received \"{output}\" via IPC", args.Data);
+        }
         var id = _ipcConverter.GetIdentifier(args.Data);
         switch (id)
         {

@@ -3,9 +3,10 @@ using Serilog;
 
 namespace HoscyCore.Ipc;
 
-public class IpcReceivePipe(ILogger logger, string handle) : IpcPipeBase<AnonymousPipeClientStream>(logger.ForContext<IpcReceivePipe>())
+public class IpcReceivePipe(ILogger logger, string handle, bool logVerboseExtra) : IpcPipeBase<AnonymousPipeClientStream>(logger.ForContext<IpcReceivePipe>())
 {
     private readonly string _handle = handle;
+    private readonly bool _logVerboseExtra = logVerboseExtra;
     public event Action<string> OnDataReceived = delegate { };
 
     public bool IsPipeConnected
@@ -35,7 +36,9 @@ public class IpcReceivePipe(ILogger logger, string handle) : IpcPipeBase<Anonymo
                 continue;
             }
 
-            _logger.Verbose("Received \"{output}\" via IPC", output);
+            if (_logVerboseExtra) {
+                _logger.Verbose("Received \"{output}\" via IPC", output);
+            }
             OnDataReceived.Invoke(output);
         }
     }

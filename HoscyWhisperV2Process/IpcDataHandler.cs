@@ -34,7 +34,7 @@ public class IpcDataHandler(ILogger logger)
             case WhisperIpcMute.IDENTIFIER:
                 if (_converter.TryDeserialize<WhisperIpcMute>(data, out var resMute))
                 {
-                    _logger.Debug("Received mute sigmal with state \"{data}\"", id, resMute.State);
+                    _logger.Debug("Received mute signal with state \"{data}\"", resMute.State);
                     OnMute(resMute);
                 }
                 return;
@@ -42,7 +42,7 @@ public class IpcDataHandler(ILogger logger)
             case WhisperIpcStatus.IDENTIFIER:
                 if (_converter.TryDeserialize<WhisperIpcStatus>(data, out var resStatus))
                 {
-                    _logger.Debug("Received status sigmal with state \"{data}\"", id, resStatus.State);
+                    _logger.Debug("Received status signal with state \"{data}\"", resStatus.State);
                     OnStatus(resStatus);
                 }
                 return;

@@ -6,8 +6,10 @@ using Serilog;
 
 namespace HoscyCore.Ipc;
 
-public class IpcSendPipe(ILogger logger) : IpcPipeBase<AnonymousPipeServerStream>(logger.ForContext<IpcSendPipe>())
+public class IpcSendPipe(ILogger logger, bool logVerboseExtra) : IpcPipeBase<AnonymousPipeServerStream>(logger.ForContext<IpcSendPipe>())
 {
+    private readonly bool _logVerboseExtra = logVerboseExtra;
+
     protected override AnonymousPipeServerStream CreatePipe()
         => new(PipeDirection.Out, HandleInheritability.Inheritable);
 
@@ -34,7 +36,10 @@ public class IpcSendPipe(ILogger logger) : IpcPipeBase<AnonymousPipeServerStream
         {
             var serialized = JsonConvert.SerializeObject(message);
             var queueMessage = $"{id} {serialized}";
-            _logger.Verbose("Adding \"{queueItem}\" to IPC send queue", queueMessage);
+            if (_logVerboseExtra)
+            {
+                _logger.Verbose("Adding \"{queueItem}\" to IPC send queue", queueMessage);
+            }
             _ipcQueue.Enqueue(queueMessage);
             return true;
         }
@@ -68,7 +73,10 @@ public class IpcSendPipe(ILogger logger) : IpcPipeBase<AnonymousPipeServerStream
 
             try
             {
-                _logger.Verbose("Sending \"{queueItem}\" via IPC", messageToSend);
+                if (_logVerboseExtra)
+                {
+                    _logger.Verbose("Sending \"{queueItem}\" via IPC", messageToSend);
+                }
                 sw.WriteLine(messageToSend);
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
