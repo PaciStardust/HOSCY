@@ -276,7 +276,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Adds extra verbose logging in case it is needed
     /// </summary>
-    public bool Debug_LogVerboseExtra //todo: [FEAT] add to cli
+    public bool Debug_LogVerboseExtra
     {
         get => _debug_LogeVerboseExtra;
         set => SetProperty(ref _debug_LogeVerboseExtra, value);

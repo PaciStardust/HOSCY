@@ -162,6 +162,8 @@ public class Program
 
     private static void HandleShutdown(ConsoleDataWriter writer)
     {
+        writer.SendLog(LogEventLevel.Information, "Handling shutdown");
+        
         _ipcDataHandler?.ClearActions();
         _ipcDataHandler = null; //todo: This is ugly
 
@@ -172,11 +174,9 @@ public class Program
             _keepAlive = null;
         }
 
-        writer.SendStatus(false);
-
         _pipe?.Stop();
-        _pipe?.Dispose();
+        _pipe?.Dispose();        
         
-        writer.SendStatus(false);
+        writer.SendLog(LogEventLevel.Information, "Handled shutdown");
     }
 }

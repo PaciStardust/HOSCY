@@ -59,7 +59,14 @@ public abstract class IpcPipeBase<T> : IDisposable where T : PipeStream
         if (_isDisposed || !_shouldThreadRun) return;
 
         _logger.Information("Entering IPC loop");
-        ThreadLoopInternal();
+        try
+        {
+            ThreadLoopInternal();
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Caught exception in ThreadLoopInternal");
+        }
         _logger.Information("Leaving IPC loop");
     }
     protected abstract void ThreadLoopInternal();

@@ -14,6 +14,7 @@ public class IpcSendPipe(ILogger logger, bool logVerboseExtra) : IpcPipeBase<Ano
         => new(PipeDirection.Out, HandleInheritability.Inheritable);
 
     private readonly ConcurrentQueue<string> _ipcQueue = [];
+    public bool HasItemsQueued => !_ipcQueue.IsEmpty;
 
     public bool IsPipeConnected
         => _ipcPipe.IsConnected;

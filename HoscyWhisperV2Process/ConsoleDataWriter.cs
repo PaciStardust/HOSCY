@@ -95,6 +95,9 @@ public class ConsoleDataWriterLogSink(ConsoleDataWriter writer) : ILogEventSink
 
     public void Emit(LogEvent logEvent)
     {
-        _writer.SendLog(logEvent.Level, logEvent.RenderMessage(), logEvent.Exception?.StackTrace);
+        var message = logEvent.Exception is null 
+            ? logEvent.RenderMessage()
+            : $"{logEvent.RenderMessage()} ({logEvent.Exception.Message})";
+        _writer.SendLog(logEvent.Level, message, logEvent.Exception?.StackTrace);
     }
 }

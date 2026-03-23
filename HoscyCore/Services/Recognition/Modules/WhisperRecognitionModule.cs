@@ -173,7 +173,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
         return;
     }
 
-    private void PerformCleanup()
+    private void PerformCleanup() //todo: [FIX] Cleanup is called twice because IPC sends stop signal
     {
         _logger.Debug("Performing cleanup");
 
@@ -184,10 +184,15 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
             _keepAlive = null;
         }
 
-        StopWhisperProcessIfNeeded();
+        var signalSent = SendWhisperProcessSignalIfNeeded();
 
         _ipcPipe?.Dispose();
         _ipcPipe = null;
+
+        if (signalSent.HasValue)
+        {
+            WaitForWhisperProcessStop(signalSent.Value);
+        } 
     }
 
     private void OnUnexpectedProcessExit(object? sender, EventArgs e)
@@ -196,35 +201,48 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
         Stop();
     }
 
-    private void StopWhisperProcessIfNeeded()
+    private bool? SendWhisperProcessSignalIfNeeded()
     {
-        if (_whisperProcess is null) return;
+        if (_whisperProcess is null) return null;
 
         _whisperProcess.Refresh();
         if (_whisperProcess.HasExited) //todo: [FIX] This can throw an exception????
         {
             _whisperProcess.Dispose();
             _whisperProcess = null;
-            return;
+            return null;
         }
 
         _whisperProcess.Exited -= OnUnexpectedProcessExit;
-        var cancelResult = _ipcPipe?.Enqueue(WhisperIpcStatus.IDENTIFIER, new WhisperIpcStatus(false)) ?? false;
-        if (!cancelResult)
+        var signalSent = _ipcPipe?.Enqueue(WhisperIpcStatus.IDENTIFIER, new WhisperIpcStatus(false)) ?? false;
+        if (!signalSent)
         {
-            _logger.Warning("Unable to send stop signal to process (pipeExists={exists})", _ipcPipe is not null);
+            _logger.Warning("Unable to queue stop signal to process (pipeExists={exists})", _ipcPipe is not null);
+            return false;
+        }
+    
+        var waitRes = OtherUtils.WaitWhile(() => _ipcPipe!.HasItemsQueued, 50, 5);
+        if (!waitRes)
+        {
+            _logger.Warning("Unable to send stop signal to process in 50ms");
+            return false;
         }
 
+        return true;
+    }
+
+    private void WaitForWhisperProcessStop(bool signalSent)
+    {
         try
         {
-            WaitForProcessExit(cancelResult);
+            WaitForProcessExit(signalSent);
         }
         catch (Exception ex)
         {
             _logger.Error(ex, "Encountered an error stopping the whisper process");
         }
 
-        _whisperProcess.Dispose();
+        _whisperProcess!.Dispose();
         _whisperProcess = null;
     }
 
@@ -232,7 +250,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
     {
         if (cancelSent)
         {
-            _whisperProcess!.WaitForExit(250);
+            _whisperProcess!.WaitForExit(500);
             _whisperProcess.Refresh();
             if (_whisperProcess.HasExited)
             {
@@ -242,9 +260,10 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
         }
 
         _whisperProcess!.Kill();
-        if (_whisperProcess.WaitForExit(100))
+        if (_whisperProcess.WaitForExit(500))
         {
-            _logger.Error("Failed to exit whisper process within 100ms"); //todo: notify?
+            _notify.SendError("Error stopping Whisper Process", "The Whisper Process failed to properly close in 500ms, it might not exit");
+            _logger.Error("Failed to exit whisper process within 500ms");
         }
     }
     #endregion
@@ -284,11 +303,6 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
                     {
                         _logger.Debug("Received start signal from process");
                         _startedSignalReceived = true;
-                    }
-                    else
-                    {
-                        _logger.Debug("Received stop signal from process");
-                        Stop();
                     }
                 }                
                 return;
