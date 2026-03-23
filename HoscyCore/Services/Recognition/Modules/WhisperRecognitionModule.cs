@@ -67,7 +67,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
             process.BeginOutputReadLine();
             _whisperProcess = process;
         }
-        if (_whisperProcess is null || _whisperProcess.HasExited)
+        if (_whisperProcess is null || OtherUtils.HasProcessExitedSafe(_whisperProcess))
         {
             _logger.Error("Unable to start whisper process");
             PerformCleanup();
@@ -108,8 +108,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
         if (_ipcPipe is null || !_ipcPipe.IsPipeConnected || _keepAlive is null || _whisperProcess is null)
             return false;
 
-        _whisperProcess.Refresh();
-        return !_whisperProcess.HasExited;
+        return !OtherUtils.HasProcessExitedSafe(_whisperProcess);
     }
 
     private string CreateWhisperConfigArg(string pipeHandleSend)
@@ -173,7 +172,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
         return;
     }
 
-    private void PerformCleanup() //todo: [FIX] Cleanup is called twice because IPC sends stop signal
+    private void PerformCleanup()
     {
         _logger.Debug("Performing cleanup");
 
@@ -205,8 +204,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
     {
         if (_whisperProcess is null) return null;
 
-        _whisperProcess.Refresh();
-        if (_whisperProcess.HasExited) //todo: [FIX] This can throw an exception????
+        if (OtherUtils.HasProcessExitedSafe(_whisperProcess))
         {
             _whisperProcess.Dispose();
             _whisperProcess = null;
@@ -250,9 +248,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
     {
         if (cancelSent)
         {
-            _whisperProcess!.WaitForExit(500);
-            _whisperProcess.Refresh();
-            if (_whisperProcess.HasExited)
+            if (_whisperProcess!.WaitForExit(500))
             {
                 _logger.Debug("Process has exited");
                 return;
@@ -341,7 +337,8 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
     {
         if (_ipcPipe is null || !_ipcPipe.Enqueue(WhisperIpcMute.IDENTIFIER, new WhisperIpcMute(state)))
         {
-            _logger.Warning("Unable to send listening status, IPC failure"); //todo: notify
+            _logger.Warning("Unable to send listening status, IPC failure (pipeExists={exists})", _ipcPipe is not null);
+            _notify.SendWarning("Unable to mute", "Process communication currently not possible");
             return IsListening;
         }
 
@@ -353,7 +350,8 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
         }
         else
         {
-            _logger.Warning("Failed to receive mute signal"); //todo: notify
+            _logger.Warning("Failed to receive mute signal to process");
+            _notify.SendWarning("Unable to mute", "Failed to receive mute signal to process");
         }
         return IsListening;
     }
