@@ -9,11 +9,13 @@ using HoscyCore.Utility;
 using Newtonsoft.Json;
 using Serilog;
 using HoscyCore.Services.Interfacing;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace HoscyCore.Services.Recognition.Modules;
 
 [PrototypeLoadIntoDiContainer(typeof(WhisperRecognitionModuleStartInfo), Lifetime.Singleton)]
-public class WhisperRecognitionModuleStartInfo : IRecognitionModuleStartInfo //todo: Cleanup of process, output handling, config in CLI
+public class WhisperRecognitionModuleStartInfo : IRecognitionModuleStartInfo //todo: config in CLI
 {
     public string Name => "Whisper Recognizer";
     public string Description => "Local AI, quality / RAM, VRAM usage varies, startup may take a while";
@@ -160,7 +162,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
         };
 
         var argsJson = JsonConvert.SerializeObject(args, Formatting.None);
-        var argBytes = System.Text.Encoding.UTF8.GetBytes(argsJson);
+        var argBytes = Encoding.UTF8.GetBytes(argsJson);
         return Convert.ToBase64String(argBytes);
     }
     #endregion
@@ -168,6 +170,11 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
     #region Stopping
     protected override void StopForRecognitionModule()
     {
+        if (_filteredActions.Count > 0)
+        {
+            LogFilteredActions();
+        }
+
         PerformCleanup();
         return;
     }
@@ -287,8 +294,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
             case WhisperIpcRecognition.IDENTIFIER:
                 if (_ipcConverter.TryDeserialize<WhisperIpcRecognition>(args.Data, out var resRec))
                 {
-                    _logger.Debug($"{resRec.Id}-{resRec.SubId} {resRec.IsFinal}: {resRec.Text}");
-                    //todo: handling and processing!
+                    ProcessReceivedRecognition(resRec);
                 }
                 return;
                 
@@ -356,5 +362,123 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
         return IsListening;
     }
     protected override bool UseOnlySetListeningWhenStartedProtection => true;
+    #endregion
+
+    #region Output Processing
+    private void ProcessReceivedRecognition(WhisperIpcRecognition recognition)
+    {
+        if (string.IsNullOrWhiteSpace(recognition.Text)) return;
+        var text = recognition.Text.Trim();
+
+        _logger.Verbose("Received raw recognition => Id={id}-{subId} Final={final} Text=\"{text}\"",
+            recognition.Id, recognition.SubId, recognition.IsFinal, text);
+
+        if (!ReplaceActions(ref text))
+        {
+            _logger.Verbose("Processed recognition actions => Id={id}-{subId} is empty",
+                recognition.Id, recognition.SubId);
+            return;
+        }
+
+        logger.Verbose("Processed recognition actions => Id={id}-{subId} Text=\"{text}\"",
+                recognition.Id, recognition.SubId, text);
+
+        if (!CleanText(ref text))
+        {
+            _logger.Verbose("Cleaned recognition => Id={id}-{subId} is empty",
+                recognition.Id, recognition.SubId);
+            return;
+        }
+
+        if (recognition.IsFinal)
+        {
+            logger.Debug("Cleaned recognition => Id={id}-{subId} Text=\"{text}\" => Is final, sending output and disabling activity",
+                recognition.Id, recognition.SubId, text);
+            
+            InvokeSpeechActivity(false);
+            InvokeSpeechRecognized(text);
+        } 
+        else
+        {
+            logger.Debug("Cleaned recognition => Id={id}-{subId} Text=\"{text}\" => Is not final, enabling activity only",
+                recognition.Id, recognition.SubId, text);
+
+            InvokeSpeechActivity(true);
+        }
+    }
+
+    private static readonly Regex _actionDetector = new(@"( *)[\[\(\*] *([^\]\*\)]+) *[\*\)\]]");
+    private readonly Dictionary<string, int> _filteredActions = [];
+
+    /// <summary>
+    /// Replaces all actions if valid
+    /// </summary>
+    /// <param name="text">Text to replace actions in</param>
+    private bool ReplaceActions(ref string text)
+    {
+        var matches = _actionDetector.Matches(text);
+        if ((matches?.Count ?? 0) == 0)
+            return true;
+
+        var sb = new StringBuilder(text);
+        //Reversed so we can use sb.Remove()
+        foreach (var match in matches!.Reverse())
+        {
+            var groupText = match.Groups[2].Value.ToLower();
+            sb.Remove(match.Index, match.Length);
+
+            var isValidAction = false;
+            foreach (var filter in _config.Recognition_Whisper_Cfg_NoiseFilter.Values)
+            {
+                if (groupText.StartsWith(filter))
+                {
+                    isValidAction = true;
+                    break;
+                }
+            }
+
+            if (isValidAction)
+            {
+                if (_config.Recognition_Fixup_CapitalizeFirstLetter)
+                    groupText = groupText.FirstCharToUpper();
+
+                sb.Insert(match.Index, $"{match.Groups[1].Value}|{groupText}|");
+            }
+            else if (_config.Recognition_Whisper_Dbg_LogFilteredNoises && groupText != "BLANK_AUDIO")
+            {
+                //Adding it to the filtered list
+                if (_filteredActions.TryGetValue(groupText, out var value))
+                    _filteredActions[groupText] = value + 1;
+                else
+                    _filteredActions[groupText] = 1;
+                _logger.Debug($"Noise \"{groupText}\" filtered out by whisper noise whitelist");
+            }
+        }
+
+        text = sb.ToString();
+        return !string.IsNullOrWhiteSpace(text);
+    }
+
+    private void LogFilteredActions()
+    {
+        var sortedActions = _filteredActions.Select(x => (x.Key, x.Value))
+            .OrderByDescending(x => x.Value)
+            .Select(x => $"\"{x.Key}\" ({x.Value}x)");
+        _logger.Information("Filtered actions by Whisper: " + string.Join(", ", sortedActions));
+    }
+
+    /// <summary>
+    /// Removes odd AI noise and replaces action indicator with an asterisk
+    /// </summary>
+    /// <param name="text">Text to clean</param>
+    private bool CleanText(ref string text)
+    {
+        text = _config.Recognition_Whisper_Fix_RemoveRandomBrackets
+            ? text.TrimStart(' ', '-', '(', '[', '*').TrimEnd()
+            : text.TrimStart(' ', '-').TrimEnd();
+
+        text.Replace('|', '*');
+        return !string.IsNullOrWhiteSpace(text);
+    }
     #endregion
 }

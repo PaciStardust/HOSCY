@@ -28,7 +28,7 @@ public partial class FileCommandOutputPreprocessor(ILogger logger) : IOutputPrep
     public bool ShouldContinueIfHandled()
         => true;
 
-    public bool TryProcess(string input, [NotNullWhen(true)] out string? output)
+    public bool TryProcess(string input, [NotNullWhen(true)] out string? output) //todo: [REFACTOR] Could a reference be better here
     {
         if (!input.StartsWith(COMMAND_PREFIX, System.StringComparison.OrdinalIgnoreCase))
         {
