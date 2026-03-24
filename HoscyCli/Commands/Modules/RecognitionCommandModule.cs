@@ -94,7 +94,7 @@ public class RecognitionCommandModule
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Fixup_RemoveEndPeriod));
     }
 
-    [SubCommandModule(["fix-capitalize-first-letter"])]
+    [SubCommandModule(["fix-capitalize-first-letter"], "Capitalize first letter of result")]
     public CommandResult CmdFixCapitalizeFirstLetter()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Fixup_CapitalizeFirstLetter));

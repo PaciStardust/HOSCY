@@ -45,7 +45,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
     {
         _ipcPipe = new(_logger, _config.Debug_LogVerboseExtra);
 
-        var procPath = Path.Combine(PathUtils.PathExecutableFolder, "HoscyWhisperV2Process"); //todo: [TEST] .exe needed on win?
+        var procPath = Path.Combine(PathUtils.PathExecutableFolder, "HoscyWhisperV2Process");
         var process = new Process()
         {
             StartInfo = new ProcessStartInfo(procPath)
