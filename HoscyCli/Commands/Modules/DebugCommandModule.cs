@@ -54,4 +54,10 @@ public class DebugCommandModule(ReflectPropEditCommandModule _reflectCm) : Attri
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Debug_LogFilters));
     }
+
+    [SubCommandModule(["log-verbose-extra"], "Enable extra verbose logging")]
+    public CommandResult CmdLogVerboseExtra()
+    {
+        return _reflectCm.SetProperty(nameof(ConfigModel.Debug_LogVerboseExtra));
+    }
 }

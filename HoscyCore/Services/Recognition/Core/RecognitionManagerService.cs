@@ -97,7 +97,7 @@ public class RecognitionManagerService //todo: [TEST] create test for this
     #endregion
 
     #region Functionality
-    private void HandleOnSpeechRecognized(string message)
+    private void HandleOnSpeechRecognized(string message) //todo: [LOG] Better logging
     {
         message = CleanMessage(message);
 

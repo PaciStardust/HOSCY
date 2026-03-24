@@ -287,16 +287,11 @@ public static class LegacyConfigModelLoader
             Recognition_Whisper_Cfg_UseSingleSegmentMode = oldConfig.Speech.WhisperSingleSegment,
             Recognition_Whisper_Cfg_TranslateToEnglish = oldConfig.Speech.WhisperToEnglish,
             Recognition_Whisper_Fix_RemoveRandomBrackets = oldConfig.Speech.WhisperBracketFix,
-            Recognition_Whisper_Cfg_IncreaseThreadPriority = oldConfig.Speech.WhisperHighPerformance,
             Recognition_Whisper_Dbg_LogFilteredNoises = oldConfig.Speech.WhisperLogFilteredNoises,
-            Recognition_Whisper_Cfg_Language = oldConfig.Speech.WhisperLanguage,
+            
             Recognition_Whisper_Cfg_NoiseFilter = ConvertDictionary(oldConfig.Speech.WhisperNoiseFilter),
-            Recognition_Whisper_Cfg_ThreadsUsed = oldConfig.Speech.WhisperThreads,
-            Recognition_Whisper_Cfg_MaxContext = oldConfig.Speech.WhisperMaxContext,
-            Recognition_Whisper_Cfg_MaxSegmentLength = oldConfig.Speech.WhisperMaxSegLen,
-            Recognition_Whisper_Cfg_MaxSentenceDurationSeconds = oldConfig.Speech.WhisperRecMaxDuration,
-            Recognition_Whisper_Cfg_DetectPauseDurationSeconds = oldConfig.Speech.WhisperRecPauseDuration,
-            Recognition_Whisper_Cfg_GraphicsAdapter = oldConfig.Speech.WhisperGraphicsAdapter,
+            Recognition_Whisper_CfgAdv_ThreadsUsed = oldConfig.Speech.WhisperThreads,
+            Recognition_Whisper_CfgAdv_MaxSegmentLength = oldConfig.Speech.WhisperMaxSegLen,
 
             Recognition_Windows_ModelId = oldConfig.Speech.WinModelId,
 

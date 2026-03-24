@@ -1,5 +1,3 @@
-using Whisper;
-
 namespace HoscyCore.Configuration.Legacy;
 
 public class LegacyConfigModel
@@ -116,7 +114,7 @@ public class LegacyConfigSpeechModel
     public bool WhisperBracketFix { get; set; } = true;
     public bool WhisperHighPerformance { get; set; }
     public bool WhisperLogFilteredNoises { get; set; }
-    public eLanguage WhisperLanguage { get; set; } = eLanguage.English;
+    public int WhisperLanguage { get; set; } = 0;
     public Dictionary<string, string> WhisperNoiseFilter { get; set; } = [];
     public int WhisperThreads { get; set; } = -4;
     public int WhisperMaxContext { get; set; } = 0;
