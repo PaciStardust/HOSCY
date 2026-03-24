@@ -15,7 +15,7 @@ using System.Text.RegularExpressions;
 namespace HoscyCore.Services.Recognition.Modules;
 
 [PrototypeLoadIntoDiContainer(typeof(WhisperRecognitionModuleStartInfo), Lifetime.Singleton)]
-public class WhisperRecognitionModuleStartInfo : IRecognitionModuleStartInfo //todo: config in CLI
+public class WhisperRecognitionModuleStartInfo : IRecognitionModuleStartInfo
 {
     public string Name => "Whisper Recognizer";
     public string Description => "Local AI, quality / RAM, VRAM usage varies, startup may take a while";

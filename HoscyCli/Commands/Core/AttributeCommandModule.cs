@@ -78,7 +78,8 @@ public abstract class AttributeCommandModule : ICommandModule
     [SubCommandModule(["help", "?"], "Lists all available commands.")]
     public CommandResult CmdHelp()
     {
-        var print = string.Join("\n", _commandInfo.Select(info => $" - {string.Join("/", info.Attribute.Identifiers[0])} - {info.Attribute.Description}"));
+        var print = string.Join("\n", _commandInfo.OrderBy(x => x.Attribute.Identifiers[0])
+            .Select(info => $" - {string.Join("/", info.Attribute.Identifiers[0])} - {info.Attribute.Description}"));
         Console.WriteLine($"Available Commands:\n{print}");
         return CommandResult.Success;
     }

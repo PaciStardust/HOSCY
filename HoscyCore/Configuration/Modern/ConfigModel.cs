@@ -1061,7 +1061,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Fixes random brackets in the output "('( ( (')"
     /// </summary>
-    public bool Recognition_Whisper_Fix_RemoveRandomBrackets //todo: impl
+    public bool Recognition_Whisper_Fix_RemoveRandomBrackets
     {
         get => _recognition_Whisper_Fix_RemoveRandomBrackets;
         set => SetProperty(ref _recognition_Whisper_Fix_RemoveRandomBrackets, value);
@@ -1071,7 +1071,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Write noises that have been filtered out to the logs
     /// </summary>
-    public bool Recognition_Whisper_Dbg_LogFilteredNoises //todo: impl
+    public bool Recognition_Whisper_Dbg_LogFilteredNoises
     {
         get => _recognition_Whisper_Dbg_LogFilteredNoises;
         set => SetProperty(ref _recognition_Whisper_Dbg_LogFilteredNoises, value);
@@ -1081,7 +1081,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// List of allowed whisper noises
     /// </summary>
-    public Dictionary<string, string> Recognition_Whisper_Cfg_NoiseFilter //todo: impl
+    public Dictionary<string, string> Recognition_Whisper_Cfg_NoiseFilter
     {
         get => _recognition_Whisper_Cfg_NoiseFilter;
         set => SetProperty(ref _recognition_Whisper_Cfg_NoiseFilter, value);
@@ -1111,7 +1111,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Translate to English if the detected language is not English
     /// </summary>
-    public bool Recognition_Whisper_Cfg_UseGpu //todo: impl
+    public bool Recognition_Whisper_Cfg_UseGpu
     {
         get => _recognition_Whisper_Cfg_UseGpu;
         set => SetProperty(ref _recognition_Whisper_Cfg_UseGpu, value);
@@ -1121,7 +1121,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Should language automatically be detected?
     /// </summary>
-    public bool Recognition_Whisper_Cfg_DetectLanguage //todo: impl
+    public bool Recognition_Whisper_Cfg_DetectLanguage
     {
         get => _recognition_Whisper_Cfg_DetectLanguage;
         set => SetProperty(ref _recognition_Whisper_Cfg_DetectLanguage, value);
@@ -1131,7 +1131,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Shortcode for language
     /// </summary>
-    public string Recognition_Whisper_Cfg_Language //todo: impl
+    public string Recognition_Whisper_Cfg_Language
     {
         get => _recognition_Whisper_Cfg_Language;
         set => SetProperty(ref _recognition_Whisper_Cfg_Language, value);
@@ -1141,7 +1141,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Cutoff time for a sentence in MS
     /// </summary>
-    public int Recognition_Whisper_Cfg_MaxSentenceDurationMs //todo: impl
+    public int Recognition_Whisper_Cfg_MaxSentenceDurationMs
     {
         get => _recognition_Whisper_Cfg_MaxSentenceDurationMs;
         set => SetProperty(ref _recognition_Whisper_Cfg_MaxSentenceDurationMs, value.MinMax(4_000, int.MaxValue));
@@ -1151,7 +1151,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Minimum time for a sentence in MS
     /// </summary>
-    public int Recognition_Whisper_Cfg_MinSentenceDurationMs //todo: impl
+    public int Recognition_Whisper_Cfg_MinSentenceDurationMs
     {
         get => _recognition_Whisper_Cfg_MinSentenceDurationMs;
         set => SetProperty(ref _recognition_Whisper_Cfg_MinSentenceDurationMs, value.MinMax(100, 2_000));
@@ -1161,7 +1161,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Duration to recognize a pause in MS
     /// </summary>
-    public int Recognition_Whisper_Cfg_DetectPauseDurationMs //todo: impl
+    public int Recognition_Whisper_Cfg_DetectPauseDurationMs
     {
         get => _recognition_Whisper_Cfg_DetectPauseDurationMs;
         set => SetProperty(ref _recognition_Whisper_Cfg_DetectPauseDurationMs, value.MinMax(250, 2_000));
@@ -1171,7 +1171,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Duration to recognize a silence in outer segments in MS
     /// </summary>
-    public int Recognition_Whisper_Cfg_DetectOuterSilenceDurationMs //todo: impl
+    public int Recognition_Whisper_Cfg_DetectOuterSilenceDurationMs
     {
         get => _recognition_Whisper_Cfg_DetectOuterSilenceDurationMs;
         set => SetProperty(ref _recognition_Whisper_Cfg_DetectOuterSilenceDurationMs, value.MinMax(100, 1000));
@@ -1181,7 +1181,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// How often in MS should recognition be updated in between? Lower means more processing
     /// </summary>
-    public int Recognition_Whisper_Cfg_RecognitionUpdateIntervalMs //todo: impl
+    public int Recognition_Whisper_Cfg_RecognitionUpdateIntervalMs
     {
         get => _recognition_Whisper_Cfg_RecognitionUpdateIntervalMs;
         set => SetProperty(ref _recognition_Whisper_Cfg_RecognitionUpdateIntervalMs, value.MinMax(250, 4_000));
@@ -1191,7 +1191,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Operating mode for voice activity detection
     /// </summary>
-    public WhisperIpcVadOperatingMode Recognition_Whisper_Cfg_VadOperatingMode //todo: impl
+    public WhisperIpcVadOperatingMode Recognition_Whisper_Cfg_VadOperatingMode
     {
         get => _recognition_Whisper_Cfg_VadOperatingMode;
         set => SetProperty(ref _recognition_Whisper_Cfg_VadOperatingMode, value);
@@ -1201,7 +1201,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Beam size for beam search sampling strategy
     /// </summary>
-    public int Recognition_Whisper_CfgAdv_BeamSize //todo: impl
+    public int Recognition_Whisper_CfgAdv_BeamSize
     {
         get => _recognition_Whisper_CfgAdv_BeamSize;
         set => SetProperty(ref _recognition_Whisper_CfgAdv_BeamSize, value.MinMax(0, 10));
@@ -1211,7 +1211,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Best of for greedy sampling strategy
     /// </summary>
-    public int Recognition_Whisper_CfgAdv_GreedyBestOf //todo: impl
+    public int Recognition_Whisper_CfgAdv_GreedyBestOf
     {
         get => _recognition_Whisper_CfgAdv_GreedyBestOf;
         set => SetProperty(ref _recognition_Whisper_CfgAdv_GreedyBestOf, value.MinMax(0, 10));
@@ -1221,7 +1221,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// GPU to use
     /// </summary>
-    public int Recognition_Whisper_CfgAdv_GraphicsAdapterId //todo: impl
+    public int Recognition_Whisper_CfgAdv_GraphicsAdapterId
     {
         get => _recognition_Whisper_CfgAdv_GraphicsAdapterId;
         set => SetProperty(ref _recognition_Whisper_CfgAdv_GraphicsAdapterId, value.MinMax(0, int.MaxValue));
@@ -1231,7 +1231,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// MaxInitialT for Whisper
     /// </summary>
-    public float Recognition_Whisper_CfgAdv_MaxInitialT //todo: impl
+    public float Recognition_Whisper_CfgAdv_MaxInitialT
     {
         get => _recognition_Whisper_CfgAdv_MaxInitialT;
         set => SetProperty(ref _recognition_Whisper_CfgAdv_MaxInitialT, value.MinMax(-1, 1));
@@ -1241,7 +1241,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// No speech threshold for Whisper
     /// </summary>
-    public float Recognition_Whisper_CfgAdv_NoSpeechThreshold //todo: impl
+    public float Recognition_Whisper_CfgAdv_NoSpeechThreshold
     {
         get => _recognition_Whisper_CfgAdv_NoSpeechThreshold;
         set => SetProperty(ref _recognition_Whisper_CfgAdv_NoSpeechThreshold, value.MinMax(-1, 1));
@@ -1251,7 +1251,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Temperature for Whisper
     /// </summary>
-    public float Recognition_Whisper_CfgAdv_Temperature //todo: impl
+    public float Recognition_Whisper_CfgAdv_Temperature
     {
         get => _recognition_Whisper_CfgAdv_Temperature;
         set => SetProperty(ref _recognition_Whisper_CfgAdv_Temperature, value.MinMax(-1, 1));
@@ -1261,7 +1261,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// TemperatureInc for Whisper
     /// </summary>
-    public float Recognition_Whisper_CfgAdv_TemperatureInc //todo: impl
+    public float Recognition_Whisper_CfgAdv_TemperatureInc
     {
         get => _recognition_Whisper_CfgAdv_TemperatureInc;
         set => SetProperty(ref _recognition_Whisper_CfgAdv_TemperatureInc, value.MinMax(-1, 1));
@@ -1281,7 +1281,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Maxiumum amount of tokens per segment
     /// </summary>
-    public int Recognition_Whisper_CfgAdv_MaxTokensPerSegment //todo: impl
+    public int Recognition_Whisper_CfgAdv_MaxTokensPerSegment
     {
         get => _recognition_Whisper_CfgAdv_MaxTokensPerSegment;
         set => SetProperty(ref _recognition_Whisper_CfgAdv_MaxTokensPerSegment, value.MinMax(0, int.MaxValue));
@@ -1291,7 +1291,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Initial prompt
     /// </summary>
-    public string Recognition_Whisper_CfgAdv_Prompt //todo: impl
+    public string Recognition_Whisper_CfgAdv_Prompt
     {
         get => _recognition_Whisper_CfgAdv_Prompt;
         set => SetProperty(ref _recognition_Whisper_CfgAdv_Prompt, value);
@@ -1301,7 +1301,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Should thread count be set
     /// </summary>
-    public bool Recognition_Whisper_CfgAdv_SetThreads //todo: impl
+    public bool Recognition_Whisper_CfgAdv_SetThreads
     {
         get => _recognition_Whisper_CfgAdv_SetThreads;
         set => SetProperty(ref _recognition_Whisper_CfgAdv_SetThreads, value);
@@ -1311,7 +1311,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Use beam search sampling strategy
     /// </summary>
-    public bool Recognition_Whisper_CfgAdv_UseBeamSearchSampling //todo: impl
+    public bool Recognition_Whisper_CfgAdv_UseBeamSearchSampling
     {
         get => _recognition_Whisper_CfgAdv_UseBeamSearchSampling;
         set => SetProperty(ref _recognition_Whisper_CfgAdv_UseBeamSearchSampling, value);
@@ -1321,7 +1321,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Use greedy sampling strategy
     /// </summary>
-    public bool Recognition_Whisper_CfgAdv_UseGreedySampling //todo: impl
+    public bool Recognition_Whisper_CfgAdv_UseGreedySampling
     {
         get => _recognition_Whisper_CfgAdv_UseGreedySampling;
         set => SetProperty(ref _recognition_Whisper_CfgAdv_UseGreedySampling, value);
