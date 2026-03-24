@@ -19,7 +19,7 @@ public class RecognitionManagerService //todo: [TEST] create test for this
     ConfigModel config,
     IOutputManagerService output
 ) 
-    : SoloModuleManagerBase<IRecognitionModuleStartInfo, IRecognitionModule>
+    : SoloModuleManagerBase<IRecognitionModuleStartInfo, IRecognitionModule> //todo: [FIX] send notify on unexpected shutdown too
         (notify, logger.ForContext<RecognitionManagerService>(), infoLoader, moduleLoader),
     IRecognitionManagerService
 {
@@ -45,7 +45,7 @@ public class RecognitionManagerService //todo: [TEST] create test for this
                 _logger.Warning("Failed to correctly set listening status on startup");
             }
         }
-        InvokeModuleStatusChanged(listening, true);   
+        InvokeModuleStatusChanged(listening, true);
     }
 
     protected override void OnModulePreStop(IRecognitionModule module)
@@ -72,9 +72,11 @@ public class RecognitionManagerService //todo: [TEST] create test for this
     protected override string GetSelectedModuleName()
         => _config.Recognition_SelectedModuleName;
 
-    public bool SetListening(bool state)
+    public bool SetListening(bool state) //todo: [REFACTOR] Does not allow the module on its own to send updates
     {
-        return SetListeningInternal(_currentModule, state);
+        var res = SetListeningInternal(_currentModule, state);
+        InvokeModuleStatusChanged(res, true);
+        return res;
     }
     public bool SetListeningInternal(IRecognitionModule? module, bool state)
     {
