@@ -58,11 +58,13 @@ public class LiveCommandModule(IRecognitionManagerService recognition, IOutputMa
         {
             case ConsoleKey.M:
                 _logger.Information("Requested mute state toggle");
+                Console.WriteLine("Mute toggle requested...");
                 _recognition.SetListening(!_recognition.IsListening);
                 return;
 
             case ConsoleKey.S:
                 _logger.Information("Requested recognition state toggle");
+                Console.WriteLine("Recognition toggle requested...");
                 if (_recognition.GetCurrentModuleInfo() is null)
                     _recognition.StartModule();
                 else

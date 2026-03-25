@@ -99,12 +99,17 @@ public class RecognitionManagerService //todo: [TEST] create test for this
     #endregion
 
     #region Functionality
-    private void HandleOnSpeechRecognized(string message) //todo: [LOG] Better logging
+    private uint _messageIndex = 0;
+    private void HandleOnSpeechRecognized(string message)
     {
-        message = CleanMessage(message);
-
-        if (string.IsNullOrWhiteSpace(message))
+        _messageIndex++;
+        _logger.Verbose("Received unclean message {id} => \"{message}\"", _messageIndex, message);
+        if (!CleanMessage(ref message))
+        {
+            _logger.Verbose("Cleaned message {id} => Is empty", _messageIndex);
             return;
+        }
+        _logger.Debug("Cleaned message {id} => \"{message}\"", _messageIndex, message);
 
         var flags = OutputSettingsFlags.None;
 
@@ -125,7 +130,7 @@ public class RecognitionManagerService //todo: [TEST] create test for this
     }
 
     private Regex _inputDenoiseFilter = new(" *");
-    private string CleanMessage(string message)
+    private bool CleanMessage(ref string message)
     {
         message = _config.Recognition_Fixup_RemoveEndPeriod
             ? message.TrimStart().TrimEnd(' ', '.', '。')
@@ -133,13 +138,14 @@ public class RecognitionManagerService //todo: [TEST] create test for this
 
         var denoiseMatch = _inputDenoiseFilter.Match(message);
         if (!denoiseMatch.Success)
-            return string.Empty;
+            return false;
+
         message = denoiseMatch.Groups[1].Value.Trim();
 
         if (_config.Recognition_Fixup_CapitalizeFirstLetter)
             message = message.FirstCharToUpper();
 
-        return message;
+        return !string.IsNullOrWhiteSpace(message);
     }
 
     public void UpdateSettings()
