@@ -331,7 +331,7 @@ public class DiContainer
 
             _logger.Debug("Starting service {currenStart}/{toStart}: {currentService} as {currentServiceBase}",
                 i + 1, orderedServicesToStart.Count, currentService.Type.FullName, currentService.AsType.FullName);
-            onProgress?.Invoke($"Starting service {i + 1}/{orderedServicesToStart.Count}:\n{currentService.Type.Name}"); //todo: [FIX] Newlines on OS
+            onProgress?.Invoke($"Starting service {i + 1}/{orderedServicesToStart.Count}:\n{currentService.Type.Name}");
 
             var subSw = Stopwatch.StartNew();
             currentService.Service.Start();

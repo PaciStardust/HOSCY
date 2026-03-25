@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using HoscyCli.Commands.Core;
 using HoscyCli.Commands.Modules;
 using HoscyCore;
@@ -20,7 +21,7 @@ public class CliCoreWrapper
         _coreApp = new HoscyCoreApp(_logger);
         var coreAppParams = new HoscyCoreAppStartParameters()
         {
-            OnProgress = new((s) => Console.WriteLine($"Loading: {s.Replace(Environment.NewLine, " ")}")),
+            OnProgress = new((s) => Console.WriteLine($"Loading: {Regex.Replace(s, @"\r?\n", " ")}")),
             ShouldOpenConsoleIfRequested = true,
             DisableConsoleLog = true
         };
