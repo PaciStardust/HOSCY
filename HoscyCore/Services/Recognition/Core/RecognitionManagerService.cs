@@ -19,7 +19,7 @@ public class RecognitionManagerService //todo: [TEST] create test for this
     ConfigModel config,
     IOutputManagerService output
 ) 
-    : SoloModuleManagerBase<IRecognitionModuleStartInfo, IRecognitionModule> //todo: [FIX] send notify on unexpected shutdown too
+    : SoloModuleManagerBase<IRecognitionModuleStartInfo, IRecognitionModule>
         (notify, logger.ForContext<RecognitionManagerService>(), infoLoader, moduleLoader),
     IRecognitionManagerService
 {
@@ -52,9 +52,13 @@ public class RecognitionManagerService //todo: [TEST] create test for this
     {
         module.SetListening(false);
 
-        InvokeModuleStatusChanged(false, false);
         module.OnSpeechActivity -= HandleOnSpeechActivity;
         module.OnSpeechRecognized -= HandleOnSpeechRecognized;
+    }
+
+    protected override void OnModulePostStop()
+    {
+        InvokeModuleStatusChanged(false, false);
     }
     #endregion
 
