@@ -97,4 +97,9 @@ public class ApiPresetModel : ObservableObject
         && !string.IsNullOrWhiteSpace(ResultField)
         && !string.IsNullOrWhiteSpace(ContentType);
     }
+
+    public override string ToString()
+    {
+        return $"{Name} ({TargetUrl})";
+    }
 }

@@ -79,7 +79,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// List of all API Presets that are used in various locations
     /// </summary>
-    public List<ApiPresetModel> Api_Presets //todo: [IMPL] Add to CLI
+    public List<ApiPresetModel> Api_Presets
     {
         get => _api_Presets;
         set => SetProperty(ref _api_Presets, value);
