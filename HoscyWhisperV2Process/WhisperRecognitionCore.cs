@@ -1,6 +1,5 @@
 // #define DBG_AUDIO
 
-using System.Buffers.Binary;
 using HoscyCore.Services.Audio;
 using HoscyCore.Services.Recognition.Extra;
 using Serilog;
@@ -147,8 +146,8 @@ public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProc
             var recognitionData = new byte[streamPos + 44]; //Wave header
 
             Buffer.BlockCopy(_audioStream.GetBuffer(), 0, recognitionData, 44, streamPos);
-            Buffer.BlockCopy(_baseHeader, 0, recognitionData, 0, _baseHeader.Length);
-            WriteRestOfHeader(recognitionData.AsSpan());
+            Buffer.BlockCopy(AudioUtils.BaseWavHeader, 0, recognitionData, 0, AudioUtils.BaseWavHeader.Length);
+            AudioUtils.WriteRestOfWavHeader(recognitionData.AsSpan());
 
             _processingQueueItem = new()
             { 
@@ -166,37 +165,6 @@ public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProc
                 _activelyRecordingSegmentId, _activelyRecordingSegmentSubId);
             return;
         }
-    }
-    #endregion
-
-    #region WAV Utils
-    private static readonly byte[] _baseHeader = CreateBaseWavHeader();
-    private static byte[] CreateBaseWavHeader()
-    {
-        byte[] header = [
-            (byte)'R', (byte)'I', (byte)'F', (byte)'F',
-            0, 0, 0, 0, // File size tbd
-            (byte)'W', (byte)'A', (byte)'V', (byte)'E',
-            (byte)'f', (byte)'m', (byte)'t', (byte)' ',
-            16, 0, 0, 0, // Format data len
-            1, 0, 1, 0, // PCM / Channel
-            0, 0, 0, 0, // Sample rate tdb
-            0, 0, 0, 0, // Byte rate tbd
-            2, 0, 16, 0, // Block size, Bits per sample
-            (byte)'d', (byte)'a', (byte)'t', (byte)'a',
-            0, 0, 0, 0 // Data size tbd
-        ];
-
-        BinaryPrimitives.WriteUInt32LittleEndian(header.AsSpan(24), 16_000); // Sample Rate
-        BinaryPrimitives.WriteUInt32LittleEndian(header.AsSpan(28), 32_000); // Byte Rate
-
-        return header;
-    }
-
-    private static void WriteRestOfHeader(Span<byte> dataWithHeader)
-    {
-        BinaryPrimitives.WriteUInt32LittleEndian(dataWithHeader.Slice(4, 4), (uint)dataWithHeader.Length - 8);
-        BinaryPrimitives.WriteUInt32LittleEndian(dataWithHeader.Slice(40, 4), (uint)dataWithHeader.Length - 44);
     }
     #endregion
 

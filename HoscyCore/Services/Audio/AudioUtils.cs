@@ -1,6 +1,6 @@
+using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 using Serilog;
-using SoundFlow.Abstracts;
 using SoundFlow.Structs;
 
 namespace HoscyCore.Services.Audio;
@@ -56,5 +56,34 @@ public static class AudioUtils
             float clamped = Math.Max(-1.0f, Math.Min(1.0f, samplesIn[i]));
             shortView[i] = (short)(clamped * 32767f);
         }
+    }
+
+    public static readonly byte[] BaseWavHeader = CreateBaseWavHeader();
+    private static byte[] CreateBaseWavHeader()
+    {
+        byte[] header = [
+            (byte)'R', (byte)'I', (byte)'F', (byte)'F',
+            0, 0, 0, 0, // File size tbd
+            (byte)'W', (byte)'A', (byte)'V', (byte)'E',
+            (byte)'f', (byte)'m', (byte)'t', (byte)' ',
+            16, 0, 0, 0, // Format data len
+            1, 0, 1, 0, // PCM / Channel
+            0, 0, 0, 0, // Sample rate tdb
+            0, 0, 0, 0, // Byte rate tbd
+            2, 0, 16, 0, // Block size, Bits per sample
+            (byte)'d', (byte)'a', (byte)'t', (byte)'a',
+            0, 0, 0, 0 // Data size tbd
+        ];
+
+        BinaryPrimitives.WriteUInt32LittleEndian(header.AsSpan(24), 16_000); // Sample Rate
+        BinaryPrimitives.WriteUInt32LittleEndian(header.AsSpan(28), 32_000); // Byte Rate
+
+        return header;
+    }
+
+    public static void WriteRestOfWavHeader(Span<byte> dataWithHeader)
+    {
+        BinaryPrimitives.WriteUInt32LittleEndian(dataWithHeader.Slice(4, 4), (uint)dataWithHeader.Length - 8);
+        BinaryPrimitives.WriteUInt32LittleEndian(dataWithHeader.Slice(40, 4), (uint)dataWithHeader.Length - 44);
     }
 }
