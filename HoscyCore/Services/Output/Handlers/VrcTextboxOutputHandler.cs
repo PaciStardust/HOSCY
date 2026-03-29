@@ -1,0 +1,391 @@
+using System.Collections.Concurrent;
+using HoscyCore.Configuration.Modern;
+using HoscyCore.Services.Core;
+using HoscyCore.Services.Dependency;
+using HoscyCore.Services.Osc.SendReceive;
+using HoscyCore.Services.Output.Core;
+using HoscyCore.Utility;
+using Serilog;
+
+namespace HoscyCore.Services.Output.Handlers;
+
+[LoadIntoDiContainer(typeof(VrcTextboxOutputHandlerStartInfo))] //todo: [FEAT] API Output Handler
+public class VrcTextboxOutputHandlerStartInfo(ConfigModel config) : IOutputHandlerStartInfo
+{
+    private readonly ConfigModel _config = config;
+
+    public Type ModuleType 
+        => typeof(VrcTextboxOutputHandler);
+
+    public bool ShouldBeEnabled()
+        => _config.VrcTextbox_Enabled;
+}
+
+[LoadIntoDiContainer(typeof(VrcTextboxOutputHandler), Lifetime.Transient)]
+public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSendService sender)
+    : OutputHandlerBase(logger.ForContext<VrcTextboxOutputHandler>())
+{
+    #region Injected Services
+    private readonly ConfigModel _config = config;
+    private readonly IOscSendService _sender = sender;
+    #endregion
+
+    #region Processor Variables
+    //Queue
+    private (string Text, OutputNotificationPriority Priority)? _currentNotification = null;
+    private readonly ConcurrentQueue<string> _currentMessages = [];
+
+    //Processing Indicator
+    private bool _lastSetProcessingState = false;
+    private DateTimeOffset _lastSentTypingIndicator = DateTimeOffset.MinValue;
+
+    //Send Loop
+    public const int TIMEOUT_MINIMUM_MS = 1250;
+    public const int TIMEOUT_WAIT_MS = 50;
+    private CancellationTokenSource? _cts = null;
+    private Task? _workerTask = null;
+    private bool _isClearPending = false;
+    private DateTimeOffset _intendedTimeoutUntil = DateTimeOffset.MinValue;
+    private DateTimeOffset _minimumTimeoutUntil = DateTimeOffset.MinValue;
+    private OutputNotificationPriority? _lastSentNotificationPriority = null;
+    #endregion
+
+    #region Information
+    public override string Name 
+        => "VRC Textbox";
+
+    public override OutputsAsMediaFlags OutputTypeFlags 
+        => OutputsAsMediaFlags.OutputsAsText;
+
+    public override OutputTranslationFormat GetTranslationOutputMode()
+    {
+        return _config.VrcTextbox_Output_ShowTranslation
+            ? _config.VrcTextbox_Output_AddOriginalToTranslation
+                ? OutputTranslationFormat.Both
+                : OutputTranslationFormat.Translation
+            : OutputTranslationFormat.Untranslated; 
+    }
+    #endregion
+
+    #region Logic Loop
+    private async Task ProcessingLoop()
+    {
+        _logger.Debug("Started textbox message processing loop");
+        while (_cts is not null && !_cts.IsCancellationRequested)
+        {
+            await ProcessingLoopLogic();
+        }
+        _logger.Debug("Stopped textbox message processing loop");
+    }
+
+    private async Task ProcessingLoopLogic()
+    {
+        var now = DateTimeOffset.UtcNow;
+
+        //If we have not reached the minimum timeout yet, wait a bit and exit
+        if (_minimumTimeoutUntil > now)
+        {
+            await Task.Delay(TIMEOUT_WAIT_MS);
+            return;
+        }
+
+        string? textToSend = null;
+        var playTextboxSound = false;
+
+        //Messages have priority
+        //Only sends once timeout has passed OR the last sent was a notification and skip is enabled
+        if (_currentMessages.Count > 0)
+        {
+            var timeoutBypass = _lastSentNotificationPriority is not null && _config.VrcTextbox_Notification_SkipWhenMessageAvailable;
+            
+            if (now >= _intendedTimeoutUntil || timeoutBypass)
+            {
+                if (timeoutBypass)
+                {
+                    _logger.Verbose("Notification timeout was shortened due to incoming message");
+                }
+
+                var success = _currentMessages.TryDequeue(out textToSend);
+                if (!success)
+                {
+                    await Task.Delay(TIMEOUT_WAIT_MS);
+                    return;
+                }
+
+                playTextboxSound = _config.VrcTextbox_Sound_OnMessage;
+                _lastSentNotificationPriority = null;
+                _isClearPending = _config.VrcTextbox_Timeout_AutomaticallyClearMessage;
+            }
+        }
+
+        //Notifications only get handled when we do not have messages
+        //Only sends once timeout has passed OR the last sent message was a notification and of the same type or higher priority
+        else if (_currentNotification is not null)
+        {
+            var timeoutBypass = _lastSentNotificationPriority is not null
+                && _config.VrcTextbox_Notification_UsePrioritySystem
+                && _currentNotification.Value.Priority >= _lastSentNotificationPriority;
+
+            if (now >= _intendedTimeoutUntil || timeoutBypass)
+            {
+                if (timeoutBypass)
+                {
+                    _logger.Verbose("Notification timeout was shortened due to last priority {lastPriority} being lower or equal to current {currentPriority}", _lastSentNotificationPriority, _currentNotification.Value.Priority);
+                }
+
+                textToSend = _currentNotification.Value.Text;
+                var prio = _currentNotification.Value.Priority;
+                ClearNotification();
+                playTextboxSound = _config.VrcTextbox_Sound_OnNotification;
+                _lastSentNotificationPriority = prio;
+                _isClearPending = _config.VrcTextbox_Timeout_AutomaticallyClearNotification;
+            }
+        }
+
+        //Handles clearing if nothing else is there to be displayed
+        else if (_isClearPending && now >= _intendedTimeoutUntil)
+        {
+            //Early timeout
+            SendMessage(string.Empty, false);
+            _isClearPending = false;
+            _minimumTimeoutUntil = now.AddMilliseconds(TIMEOUT_MINIMUM_MS);
+            _intendedTimeoutUntil = DateTimeOffset.MinValue;
+        }
+
+        //Send if we have anything
+        if (!string.IsNullOrWhiteSpace(textToSend))
+        {
+            SendMessage(textToSend, playTextboxSound);
+            var msgTimeout = GetMessageTimeout(textToSend);
+
+            if (_lastSentNotificationPriority is not null)
+                _logger.Debug("Sent notification with timeout {threadSleep}-{msgTimeout}: {textToSend}", TIMEOUT_MINIMUM_MS, msgTimeout, textToSend);
+            else
+                _logger.Debug("Sent message with timeout {threadSleep}-{msgTimeout}: {textToSend}", TIMEOUT_MINIMUM_MS, msgTimeout, textToSend);
+
+            _minimumTimeoutUntil = now.AddMilliseconds(TIMEOUT_MINIMUM_MS);
+            _intendedTimeoutUntil = now.AddMilliseconds(msgTimeout);
+        }
+        
+        await Task.Delay(TIMEOUT_WAIT_MS);
+    }
+
+    public const int VRC_TEXTBOX_LIMIT = 140;
+    private void SendMessage(string message, bool playSound)
+    {
+        if (!_config.VrcTextbox_Do_Output) return;
+
+        if (message.Length > VRC_TEXTBOX_LIMIT) //Clamp for VRC
+            message = message[..VRC_TEXTBOX_LIMIT];
+
+        _sender.SendToDefaultSyncFireAndForget(_config.Osc_Address_Game_Textbox, message, true, playSound);
+    }
+
+    private double GetMessageTimeout(string message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+            return TIMEOUT_MINIMUM_MS; //to avoid hitting ratelimit
+
+        if (!_config.VrcTextbox_Timeout_UseDynamic)
+            return _config.VrcTextbox_Timeout_StaticMs;
+
+        var timeout = (int)(Math.Ceiling(message.Length / 20f) * _config.VrcTextbox_Timeout_DynamicPer20CharactersDisplayedMs);
+        return Math.Max(timeout, _config.VrcTextbox_Timeout_DynamicMinimumMs);
+    }
+    #endregion
+
+    #region Processing Indicator
+    /// <summary>
+    /// Enables typing indicator for textbox
+    /// Note: This only stays on for 5 seconds ingame
+    /// </summary>
+    public override void SetProcessingIndicator(bool isProcessing)
+    {
+        if (!isProcessing && !_lastSetProcessingState) return;
+        if (isProcessing && !CanSetProcessingIndicator()) return;
+
+        if (isProcessing)
+        {
+            _lastSentTypingIndicator = isProcessing ? DateTimeOffset.UtcNow : DateTimeOffset.MinValue;
+        }
+        _lastSetProcessingState = isProcessing;
+
+        _sender.SendToDefaultSyncFireAndForget(_config.Osc_Address_Game_Typing, isProcessing ? 1 : 0);
+    }
+
+    public const int INDICATOR_COOLDOWN_S = 3;
+    private bool CanSetProcessingIndicator()
+    {
+        return _config.VrcTextbox_Do_Indicator &&
+            _lastSentTypingIndicator.AddSeconds(INDICATOR_COOLDOWN_S) < DateTimeOffset.UtcNow;
+    }
+    #endregion
+
+    #region Input Processing
+    public override void HandleNotification(string contents, OutputNotificationPriority priority)
+    {
+        if (!_config.VrcTextbox_Do_Output) return;
+
+        if (string.IsNullOrWhiteSpace(contents))
+        {
+            if (_currentNotification.HasValue && _currentNotification.Value.Priority == priority)
+                ClearNotification();
+            return;
+        }
+
+        if (_config.VrcTextbox_Notification_UsePrioritySystem && _currentNotification.HasValue && priority < _currentNotification.Value.Priority)
+        {
+            _logger.Verbose("Did not override notification with contents \"{notificationContents}\" and priority {notificationPriority} => priority lower than current {currentPriority}",
+                contents, priority, _currentNotification.Value.Priority);
+            return;
+        }
+
+        if (contents.Length > _config.VrcTextbox_Output_MaxDisplayedCharacters)
+        {
+            contents = contents[..(_config.VrcTextbox_Output_MaxDisplayedCharacters - 1)] + "-";
+        }
+        contents = $"{_config.VrcTextbox_Notification_IndicatorTextStart}{contents}{_config.VrcTextbox_Notification_IndicatorTextEnd}";
+
+        _logger.Debug("Setting notification to \"{contents}\" with priority {priority}", contents, priority);
+        _currentNotification = (contents, priority);
+    }
+
+    public override void HandleMessage(string contents)  
+    {
+        if (!_config.VrcTextbox_Do_Output) return;
+
+        if (string.IsNullOrWhiteSpace(contents)) return;
+
+        foreach (var message in SplitMessageIntoSegments(contents))
+        {
+            _logger.Verbose("Added to MessageQueue (Position:{queuePosition}, Length:{messageLength}) Message:\"{messageContents}\"", _currentMessages.Count, message.Length, message);
+            _currentMessages.Enqueue(message);
+        }
+    }   
+
+    private const string SPLIT_LONG_WORD_CUTOFF = "-";
+    private const string SPLIT_HAS_PREVIOUS_INDICATOR = "... ";
+    private const string SPLIT_HAS_AFTER_INDICATOR = " ...";
+    /// <summary>
+    /// Splitting message into displayable segments
+    /// </summary>
+    /// <returns>Split message</returns>
+    private List<string> SplitMessageIntoSegments(string message)
+    {
+        var segments = new List<(int Index, int Length)>(); //Should be pairs of values => 1st is start index, 2nd is length
+        var currentSegmentStart = -1;
+        var currentWordStart = -1;
+        var currentSegmentPotentialEnd = -1;
+        var maxLength = _config.VrcTextbox_Output_MaxDisplayedCharacters;
+        for (var charIndex = 0; charIndex <= message.Length; charIndex++)
+        {
+            var isWordSeparator = charIndex == message.Length || message[charIndex] == ' ' || message[charIndex] == '\r' || message[charIndex] == '\n' || message[charIndex] == '\t';
+            if (currentWordStart == -1) // We were not in a word
+            {
+                if (!isWordSeparator) //We are now in a word
+                {
+                    if (currentSegmentStart == -1)
+                    {
+                        currentSegmentStart = charIndex;
+                    }
+                    currentWordStart = charIndex;
+                }
+                continue;
+            }
+
+            if (!isWordSeparator) continue; //Do not do any logic if we are still in a word
+
+            var expectedLength = charIndex - currentSegmentStart;
+            if (expectedLength <= maxLength) //Completed word is within limits
+            {
+                currentWordStart = -1;
+                currentSegmentPotentialEnd = charIndex;
+                continue;
+            }
+
+            if (currentSegmentPotentialEnd != -1) //Not the first word in segment => At least 1 word already fit in
+            {
+                segments.Add((currentSegmentStart, currentSegmentPotentialEnd - currentSegmentStart));
+                currentSegmentPotentialEnd = -1;
+                currentSegmentStart = currentWordStart;
+            }
+            else //This word is the first word and too long for bounds
+            {
+                segments.Add((currentSegmentStart, charIndex - currentSegmentStart));
+                currentSegmentStart = -1;
+            }
+            currentWordStart = -1;
+        }
+        if (currentSegmentStart != -1) //Handles loop ending on a valid character
+        {
+            segments.Add((currentSegmentStart, message.Length - currentSegmentStart));
+        }
+
+        var messageSegments = new List<string>();
+        if (segments.Count == 0) return messageSegments;
+
+        for (var i = 0; i < segments.Count; i++)
+        {
+            var length = segments[i].Length;
+            var aboveLimits = false;
+            if (length > maxLength)
+            {
+                length = maxLength - 1;
+                aboveLimits = true;
+            }
+
+            var text = $"{(i > 0 ? SPLIT_HAS_PREVIOUS_INDICATOR : string.Empty)}{message.Substring(segments[i].Index, length)}{(aboveLimits ? SPLIT_LONG_WORD_CUTOFF : string.Empty)}{(segments.Count > 1 && i + 1 < segments.Count ? SPLIT_HAS_AFTER_INDICATOR : string.Empty)}";
+            messageSegments.Add(text);
+        }
+        return messageSegments;
+    }
+    #endregion
+
+    #region Input Cleaning
+    public override void Clear()
+    {
+        _logger.Debug("Clearing message queue");
+        _currentMessages.Clear();
+        ClearNotification();
+        _isClearPending = true;
+        _intendedTimeoutUntil = DateTimeOffset.MinValue; //Min timeout never gets cleared because of VRC rate limits
+        SetProcessingIndicator(false);
+    }
+
+    private void ClearNotification()
+    {
+        _lastSentNotificationPriority = null;
+        _currentNotification = null;
+    }
+    #endregion
+
+    #region Start / Stop
+    protected override void StartForService()
+    {
+        _cts = new CancellationTokenSource();
+        _workerTask = Task.Run(ProcessingLoop);
+    }
+    protected override bool UseAlreadyStartedProtection => true;
+
+    protected override void StopForModule()
+    {
+        _logger.Debug("Stopping processing loop...");
+        _cts?.Cancel();
+        var ex = LaunchUtils.SafelyWaitForTaskWithTimeoutAndLogException(_workerTask, TIMEOUT_WAIT_MS * 2, new StartStopServiceException("Message handling loop failed to stop within time limit"));
+        if (ex is not null)
+        {
+            _logger.Error(ex, "Caught exception while stopping loop");
+        }
+
+        _logger.Debug("Cleanup of internals...");
+        _cts?.Dispose();
+        _cts = null;
+        _workerTask = null;
+    }
+
+    protected override bool IsStarted()
+        => _cts is not null || _workerTask is not null;
+    protected override bool IsProcessing()
+        => _cts is not null && _workerTask is not null;
+    #endregion
+}

@@ -1,0 +1,37 @@
+using HoscyCore.Configuration.Modern;
+using HoscyCore.Services.Dependency;
+using HoscyCore.Services.Afk;
+using LucHeart.CoreOSC;
+using Serilog;
+
+namespace HoscyCore.Services.Osc.MessageHandling.Handlers;
+
+[PrototypeLoadIntoDiContainer(typeof(AfkOscMessageHandler), Lifetime.Transient)]
+public class AfkOscMessageHandler(ILogger logger, IAfkService afkService, ConfigModel config) : IOscMessageHandler
+{
+    private readonly IAfkService _afkService = afkService;
+    private readonly ILogger _logger = logger.ForContext<AfkOscMessageHandler>();
+    private readonly ConfigModel _config = config;
+
+    public bool HandleMessage(OscMessage message)
+    {
+        if(!message.Address.Equals(_config.Osc_Address_Game_Afk, StringComparison.OrdinalIgnoreCase))
+            return false;
+
+        _logger.Debug("Received OSC AFK packet");
+        if (message.Arguments.Length == 0 || message.Arguments[0] is not bool afkState) {
+            _logger.Warning("OSC AFK packet did not have bool as first arg");
+            return true;
+        }
+        _logger.Verbose("OSC AFK packet is set to {afkState}", afkState);
+        if (afkState)
+        {
+            _afkService.StartAfk();
+        } else
+        {
+            _afkService.StopAfk();
+        }
+        _logger.Verbose("Handled OSC AFK packet");
+        return true;
+    }
+}

@@ -1,5 +1,51 @@
-﻿# HOSCY 
+﻿# REWORK IN PROGRESS
+For the following reasons this project is currently being rewritten from the ground up:
+- The original is reliant on WPF and other Windows-Only components
+- The project started development with 1 year of experience, leading to an unmaintainable mess
+- As a personal challenge to try out things
 
+**If you wish to view the code of the current release version, refer to any tag lower than v1**
+
+## Current Progress
+### Initial Release V1
+- ❌ **Initial Startup**
+  - ✅ Dependency injection
+  - ✅ Logging
+  - ✅ Config Loading
+  - ❌ Displaying startup errors (Currently windows only)
+  - 🆗 Loading splash screen
+  - ❌ Version checking & updating
+- ❌ **User Interface**
+  - ✅ Recreation of original Hoscy components
+  - ❌ Recreation of UI
+- ❌ **Features**
+  - ✅ OSC
+    - ✅ Sending
+    - ✅ Receiving
+    - ✅ Routing
+    - ✅ OscQuery
+  - ❌ Hotkeys
+  - ❌ Media
+    - ❌ Control
+    - ❌ Display
+  - ✅ Translation
+  - ✅ Textbox Control
+  - ❌ STT
+    - ✅ Voice Commands
+    - 🆗 API Recognition
+    - ❌ Azure Recognition
+    - ❌ Vosk Recognition
+    - ✅ Whisper Recognition
+    - ✅ Windows Recognition (V1 & V2)
+  - ❌ TTS
+    - ❌ Azure TTS
+    - ❌ Windows TTS
+### Future Updates
+- ❌ UI Themes
+- ❌ Updating Whisper
+- ❌ Improved TTS with Piper
+
+# HOSCY (Old version)
 HOSCY is a free and Open-Source tool with many utilities for communication and OSC aimed at making communication and use of OSC easier
 
 Need help setting this up? Check the **[Quickstart Guide](https://github.com/PaciStardust/HOSCY/wiki/Quickstart-Guide)**
