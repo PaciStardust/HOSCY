@@ -6,8 +6,6 @@ using HoscyCore.Services.Network;
 using HoscyCore.Services.Recognition.Core;
 using HoscyCore.Utility;
 using Serilog;
-using SoundFlow.Abstracts.Devices;
-using SoundFlow.Components;
 using SoundFlow.Enums;
 
 namespace HoscyCore.Services.Recognition.Modules;
@@ -39,16 +37,15 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
     private readonly ConfigModel _config = config;
 
     private MemoryStream? _stream = null;
-    private AudioCaptureDevice? _mic = null;
-    private Recorder? _recorder = null;
+    private AudioCaptureDeviceProxy? _mic = null;
     #endregion
 
     #region Start / Stop
     protected override bool IsStarted()
-        => _stream is not null || _mic is not null || _recorder is not null;
+        => _stream is not null || _mic is not null ;
 
     protected override bool IsProcessing()
-        => _stream is not null && _mic is not null && _recorder is not null && _mic.IsRunning && _client.IsPresetLoaded();
+        => _stream is not null && _mic is not null && _mic.IsStarted && _client.IsPresetLoaded();
 
     protected override void StartForService()
     {
@@ -73,27 +70,17 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
         _logger.Debug("Starting up audio");
 
         _stream = new();
-        _mic = _audio.CreateCaptureDevice();
-        _recorder = new Recorder(_mic, _stream)
-        {
-            ProcessCallback = OnRecorderProcessed
-        };
+        _mic = _audio.CreateCaptureDeviceProxy();
+        _mic.OnAudioProcessed += OnAudioProcessed;
         _mic.Start();
     }
     protected override bool UseAlreadyStartedProtection => true;
 
     protected override void StopForRecognitionModule()
     {
-        if (_recorder is not null)
-        {
-            if (_recorder.State != PlaybackState.Stopped)
-                _recorder.StopRecording();
-            _recorder.Dispose();
-            _recorder = null;
-        }
-
         if (_mic is not null)
         {
+            _mic.SetListening(false);
             _mic.Stop();
             _mic.Dispose();
             _mic = null;
@@ -112,7 +99,7 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
 
     #region Listening
     public override bool IsListening 
-        =>  (_recorder?.State ?? PlaybackState.Stopped) != PlaybackState.Stopped;
+        =>  _mic?.IsListening ?? false;
 
     protected override bool SetListeningForRecognitionModule(bool state)
     {
@@ -127,7 +114,7 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
     private DateTimeOffset _recordingStartedAt = DateTimeOffset.MaxValue;
     private void StartRecording()
     {
-        if (_stream is null || _recorder is null || _mic is null)
+        if (_stream is null || _mic is null)
         {
             var ex = new ArgumentException("Failed to start listening, some component is missing");
             _logger.Warning(ex, "Failed to start listening, some component is missing");
@@ -136,42 +123,31 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
         }
 
         _logger.Debug("Starting listening and clearing stream");
-        _stream.SetLength(0);
+        InitStream(_stream);
 
         try
         {
             _recordingStartedAt = DateTimeOffset.UtcNow;
-            _recorder.StartRecording();
+            _mic.SetListening(true);
         }
         catch (Exception ex)
         {
-            _logger.Warning(ex, "Failed to start recording");
+            _logger.Warning(ex, "Failed to start listening");
             SetFault(ex);
         }
     }
 
     private void StopRecording()
     {
-        if (_stream is null || _recorder is null || _mic is null)
-        {
-            var ex = new ArgumentException("Some component is missing while stopping listening");
-            _logger.Warning(ex, "Some component is missing while stopping listening");
-            SetFault(ex);
-        }
-
-        try
-        {
-            _recorder?.StopRecording();
-        }
-        catch (Exception ex)
-        {
-            _logger.Warning(ex, "Failed to start recording");
-            SetFault(ex);
-        }
+        _stream?.Position = 0;
+        var streamContents = _stream?.GetBuffer().ToArray();
+        _mic?.SetListening(false);
+        //todo: [FEAT] invoke internal listening change here
+        InitStream(_stream);
 
         InvokeSpeechActivity(false);
         
-        if (_stream is null || _stream.Length == 0)
+        if (streamContents is null || streamContents.Length == 0)
         {
             _logger.Warning("No data available in stream");
             return;
@@ -179,34 +155,50 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
 
         try
         {
-            _stream.Position = 0;
-            RequestRecognition(_stream.GetBuffer()).RunWithoutAwait();
-            _stream.SetLength(0);
+            AudioUtils.WriteRestOfWavHeader(streamContents);
+            RequestRecognition(streamContents).RunWithoutAwait(); //todo: [FIX] Does not display anywhere on error
+            InitStream(_stream);
         } 
         catch (Exception ex)
         {
-            _logger.Warning(ex, "Failed to start recording");
+            _logger.Warning(ex, "Failed to stop listening");
             SetFault(ex);
         }
     }
     protected override bool UseOnlySetListeningWhenStartedProtection => true;
 
-    private void OnRecorderProcessed(Span<float> _, Capability __)
+    private void OnAudioProcessed(Span<byte> span, Capability capability)
     {
-        if (_recordingStartedAt.AddSeconds(_config.Recognition_Api_MaxRecordingTime) > DateTimeOffset.Now)
+        if (!IsListening) return;
+
+        if (_recordingStartedAt.AddSeconds(_config.Recognition_Api_MaxRecordingTime) < DateTimeOffset.UtcNow)
         {
             _logger.Debug("Hit maximum recording time, cancelling");
             SetListening(false);
             return;
         }
 
-        if (IsListening) InvokeSpeechActivity(true);
+        InvokeSpeechActivity(true); //todo: [FIX] This needs a cooldown
+        try
+        {
+            _stream?.Write(span);
+        }
+        catch (Exception ex)
+        {
+            _logger.Warning(ex, "Failed to write to audio stream");
+        }
     }
 
     private async Task RequestRecognition(byte[] audioData)
     {
         var result = await _client.SendBytesAsync(audioData);
         InvokeSpeechRecognized(result);
+    }
+
+    private void InitStream(MemoryStream? stream)
+    {
+        stream?.SetLength(0);
+        stream?.Write(AudioUtils.BaseWavHeader);
     }
     #endregion
 }
