@@ -142,7 +142,6 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
         _stream?.Position = 0;
         var streamContents = _stream?.GetBuffer().ToArray();
         _mic?.SetListening(false);
-        //todo: [FEAT] invoke internal listening change here
         InitStream(_stream);
 
         InvokeSpeechActivity(false);
@@ -175,6 +174,7 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
         {
             _logger.Debug("Hit maximum recording time, cancelling");
             SetListening(false);
+            InvokeInternalListeningStatusChange();
             return;
         }
 

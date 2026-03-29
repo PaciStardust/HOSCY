@@ -14,6 +14,10 @@ public abstract class RecognitionModuleBase(ILogger logger)
     public event Action<bool> OnSpeechActivity = delegate { };
     protected void InvokeSpeechActivity(bool state)
         => OnSpeechActivity.Invoke(state);
+
+    public event Action OnInternalListeningStatusChange = delegate { };
+    protected void InvokeInternalListeningStatusChange()
+        => OnInternalListeningStatusChange.Invoke();
     #endregion
 
     #region Listening

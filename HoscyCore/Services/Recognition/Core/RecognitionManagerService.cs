@@ -35,6 +35,7 @@ public class RecognitionManagerService //todo: [TEST] create test for this
 
         module.OnSpeechActivity += HandleOnSpeechActivity;
         module.OnSpeechRecognized += HandleOnSpeechRecognized;
+        module.OnInternalListeningStatusChange += HandleOnInternalListeningStatusChange;
 
         bool listening = false;
         if (_config.Recognition_Mute_StartUnmuted)
@@ -54,6 +55,7 @@ public class RecognitionManagerService //todo: [TEST] create test for this
 
         module.OnSpeechActivity -= HandleOnSpeechActivity;
         module.OnSpeechRecognized -= HandleOnSpeechRecognized;
+        module.OnInternalListeningStatusChange -= HandleOnInternalListeningStatusChange;
     }
 
     protected override void OnModulePostStop()
@@ -76,7 +78,7 @@ public class RecognitionManagerService //todo: [TEST] create test for this
     protected override string GetSelectedModuleName()
         => _config.Recognition_SelectedModuleName;
 
-    public bool SetListening(bool state) //todo: [REFACTOR] Does not allow the module on its own to send updates
+    public bool SetListening(bool state)
     {
         var res = SetListeningInternal(_currentModule, state);
         InvokeModuleStatusChanged(res, true);
@@ -174,6 +176,13 @@ public class RecognitionManagerService //todo: [TEST] create test for this
     {
         _logger.Verbose("Forwarding speech activity state {state} to output", state);
         _output.SetProcessingIndicator(state);
+    }
+
+    private void HandleOnInternalListeningStatusChange()
+    {
+        var listening = IsListening;
+        _logger.Verbose("Received internal listening status change to {listening} from module", listening);
+        InvokeModuleStatusChanged(listening, true);
     }
     #endregion
 
