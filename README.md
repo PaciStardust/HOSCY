@@ -1,6 +1,6 @@
 ﻿# REWORK IN PROGRESS
-For the following reasons this project is currenntly being rewritten from the ground up:
-- The original is WPF so unfortunatly can not run on Linux
+For the following reasons this project is currently being rewritten from the ground up:
+- The original is reliant on WPF and other Windows-Only components
 - The project started development with 1 year of experience, leading to an unmaintainable mess
 - As a personal challenge to try out things
 
