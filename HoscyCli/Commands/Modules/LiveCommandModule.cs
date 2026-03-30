@@ -6,7 +6,7 @@ using Serilog;
 
 namespace HoscyCli.Commands.Modules;
 
-[PrototypeLoadIntoDiContainer(typeof(LiveCommandModule))] //todo: [FIX] Does not correctly receive listening status on startup
+[PrototypeLoadIntoDiContainer(typeof(LiveCommandModule))]
 public class LiveCommandModule(IRecognitionManagerService recognition, IOutputManagerService output, ILogger logger) : AttributeCommandModule, ICoreCommandModule
 {
     #region Vars

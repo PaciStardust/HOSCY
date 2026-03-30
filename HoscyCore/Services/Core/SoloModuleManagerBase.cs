@@ -155,6 +155,7 @@ public abstract class SoloModuleManagerBase<TModuleStartInfo, TModule>
         OnModulePostStart(moduleMatch);
         _currentModule = moduleMatch;
         _logger.Information("Started module with name \"{moduleName}\" and type \"{moduleType}\"", infoMatch.Name, infoMatch.ModuleType.Name);
+        OnModulePostAssign();
     }
 
     public bool StopModule()
@@ -289,6 +290,7 @@ public abstract class SoloModuleManagerBase<TModuleStartInfo, TModule>
 
     protected virtual void OnModulePreStart(TModule module) { }
     protected virtual void OnModulePostStart(TModule module) { }
+    protected virtual void OnModulePostAssign() { }
     protected virtual void OnModulePreStop(TModule module) { }
     protected virtual void OnModulePostStop() { }
     #endregion

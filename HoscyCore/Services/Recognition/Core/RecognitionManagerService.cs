@@ -46,7 +46,11 @@ public class RecognitionManagerService //todo: [TEST] create test for this
                 _logger.Warning("Failed to correctly set listening status on startup");
             }
         }
-        InvokeModuleStatusChanged(listening, true);
+    }
+
+    protected override void OnModulePostAssign()
+    {
+        InvokeModuleStatusChanged();
     }
 
     protected override void OnModulePreStop(IRecognitionModule module)
@@ -60,7 +64,7 @@ public class RecognitionManagerService //todo: [TEST] create test for this
 
     protected override void OnModulePostStop()
     {
-        InvokeModuleStatusChanged(false, false);
+        InvokeModuleStatusChanged();
     }
     #endregion
 
@@ -69,10 +73,12 @@ public class RecognitionManagerService //todo: [TEST] create test for this
         => _currentModule?.IsListening ?? false;
 
     public event EventHandler<RecognitionStatusChangedEventArgs> OnModuleStatusChanged = delegate {};
-    private void InvokeModuleStatusChanged(bool listening, bool started)
+    private void InvokeModuleStatusChanged()
     {
-        _logger.Verbose("Triggering event for module status update started={started} listening={listening}", started, listening);
-        OnModuleStatusChanged.Invoke(this, new(listening, started));
+        var status = GetCurrentModuleStatus();
+        _logger.Verbose("Triggering event for module status update started={started} listening={listening}",
+            status, IsListening);
+        OnModuleStatusChanged.Invoke(this, new(IsListening, status));
     }
 
     protected override string GetSelectedModuleName()
@@ -81,7 +87,7 @@ public class RecognitionManagerService //todo: [TEST] create test for this
     public bool SetListening(bool state)
     {
         var res = SetListeningInternal(_currentModule, state);
-        InvokeModuleStatusChanged(res, true);
+        InvokeModuleStatusChanged();
         return res;
     }
     public bool SetListeningInternal(IRecognitionModule? module, bool state)
@@ -182,7 +188,7 @@ public class RecognitionManagerService //todo: [TEST] create test for this
     {
         var listening = IsListening;
         _logger.Verbose("Received internal listening status change to {listening} from module", listening);
-        InvokeModuleStatusChanged(listening, true);
+        InvokeModuleStatusChanged();
     }
     #endregion
 
