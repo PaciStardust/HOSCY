@@ -155,7 +155,7 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
         try
         {
             AudioUtils.WriteRestOfWavHeader(streamContents);
-            RequestRecognition(streamContents).RunWithoutAwait(); //todo: [FIX] Does not display anywhere on error
+            RequestRecognition(streamContents).RunWithoutAwait(); //todo: [FIX] Does not display anywhere on error, should have a CT?
             InitStream(_stream);
         } 
         catch (Exception ex)

@@ -27,7 +27,7 @@ public class WhisperRecognitionModuleStartInfo : IRecognitionModuleStartInfo
 
 [PrototypeLoadIntoDiContainer(typeof(WhisperRecognitionModule), Lifetime.Transient)]
 public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackToFrontNotifyService notify)
-    : RecognitionModuleBase(logger.ForContext<WhisperRecognitionModule>()) //todo: [REFACTOR++] Add disposable to classes like this and applu cleanup methods?
+    : RecognitionModuleBase(logger.ForContext<WhisperRecognitionModule>())
 {
     #region Vars
     private readonly ConfigModel _config = config;
