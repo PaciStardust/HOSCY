@@ -1,6 +1,7 @@
 using HoscyCli.Commands.Core;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
+using HoscyCore.Utility;
 
 namespace HoscyCli.Commands.Modules;
 
@@ -18,13 +19,13 @@ public class RecApiCommandModule
     public string[] ModuleCommands => ["rec-api"];
 
     [SubCommandModule(["selected-preset"], "Preset to use")]
-    public CommandResult CmdSelectedPreset()
+    public Res CmdSelectedPreset()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Api_Preset));
     }
 
     [SubCommandModule(["max-recording-time"], "Maximum recording time")]
-    public CommandResult CmdMaxRecordingTime()
+    public Res CmdMaxRecordingTime()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Api_MaxRecordingTime));
     }

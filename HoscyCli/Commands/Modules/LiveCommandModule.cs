@@ -2,6 +2,7 @@ using HoscyCli.Commands.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Output.Core;
 using HoscyCore.Services.Recognition.Core;
+using HoscyCore.Utility;
 using Serilog;
 
 namespace HoscyCli.Commands.Modules;
@@ -23,7 +24,7 @@ public class LiveCommandModule(IRecognitionManagerService recognition, IOutputMa
 
     #region Functionality
     [SubCommandModule(["start", "run"], "StartDo partial replacements Live")]
-    public CommandResult CmdStart()
+    public Res CmdStart()
     {
         _logger.Information("Entering LIVE");
 
@@ -49,7 +50,7 @@ public class LiveCommandModule(IRecognitionManagerService recognition, IOutputMa
         _output.OnClear -= OnClear;
 
         _logger.Information("Exiting LIVE");
-        return CommandResult.Success;
+        return ResC.Ok();
     }
 
     private void HandleKey(ConsoleKey key)
@@ -65,10 +66,15 @@ public class LiveCommandModule(IRecognitionManagerService recognition, IOutputMa
             case ConsoleKey.S:
                 _logger.Information("Requested recognition state toggle");
                 Console.WriteLine("Recognition toggle requested...");
-                if (_recognition.GetCurrentModuleInfo() is null)
-                    _recognition.StartModule();
+                var currentModule = _recognition.GetCurrentModuleInfo();
+
+                if (currentModule is null)
+                    _recognition.StartModule().IfFail(x => CResH.Print("Failed to start module", x));
+                else if (!currentModule.IsOk)
+                    CResH.Print("Could not get current module info", currentModule.Msg);
                 else
-                    _recognition.StopModule();
+                    _recognition.StopModule().IfFail(x => CResH.Print("Failed to stop module", x));
+
                 return;
 
             default:
@@ -122,7 +128,8 @@ public class LiveCommandModule(IRecognitionManagerService recognition, IOutputMa
     private void SendReminder(string? extra)
     {
         var text = extra is null ? string.Empty : $"\n{extra}";
-        var info = $"Rec={_recognition.GetCurrentModuleInfo()?.Name ?? "None"} Status={_recognition.GetCurrentStatus()} Listen={_recognition.IsListening}";
+        var moduleInfo = _recognition.GetCurrentModuleInfo();
+        var info = $"Rec={(moduleInfo is null ? "None" : moduleInfo.IsOk ? moduleInfo.Value.Name : "ERROR")} Status={_recognition.GetCurrentStatus()} Listen={_recognition.IsListening}";
 
         Console.WriteLine($"\n\n + + + You are currently in LIVE Mode + + + \n > {info}\n\n > Key Commands: E=Exit, S=Start/Stop, M=Mute\n{text}\n");
     }

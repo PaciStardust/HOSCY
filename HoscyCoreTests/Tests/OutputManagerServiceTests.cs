@@ -2,6 +2,7 @@ using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Core;
 using HoscyCore.Services.Output.Core;
 using HoscyCore.Services.Translation.Core;
+using HoscyCore.Utility;
 using HoscyCoreTests.Mocks.Impl;
 using HoscyCoreTests.Utils;
 
@@ -128,7 +129,7 @@ public class OutputManagerServiceStartupTests : OutputManagerServiceTestBase<Out
             Assert.That(_handlerB.Started, Is.False);
         }
 
-        _output.Start();
+        _output.Start().AssertOk();
         using (Assert.EnterMultipleScope())
         {
             AssertServiceStarted(_output);
@@ -139,7 +140,7 @@ public class OutputManagerServiceStartupTests : OutputManagerServiceTestBase<Out
         }
 
         _infoA.Enabled = true;
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
         using (Assert.EnterMultipleScope())
         {
             AssertServiceProcessing(_output);
@@ -152,9 +153,9 @@ public class OutputManagerServiceStartupTests : OutputManagerServiceTestBase<Out
         }
 
         if (restartNotStart)
-            _output.Restart();
+            _output.Restart().AssertOk();
         else
-            _output.Start();
+            _output.Start().AssertOk();
         using (Assert.EnterMultipleScope())
         {
             AssertServiceProcessing(_output);
@@ -166,7 +167,7 @@ public class OutputManagerServiceStartupTests : OutputManagerServiceTestBase<Out
             Assert.That(_handlerB.Started, Is.False);
         }
 
-        _output.Stop();
+        _output.Stop().AssertOk();
         using (Assert.EnterMultipleScope())
         {
             AssertServiceStopped(_output);
@@ -178,7 +179,7 @@ public class OutputManagerServiceStartupTests : OutputManagerServiceTestBase<Out
 
         if (!doAgain) return;
 
-        _output.Start();
+        _output.Start().AssertOk();
         using (Assert.EnterMultipleScope())
         {
             AssertServiceProcessing(_output);
@@ -190,7 +191,7 @@ public class OutputManagerServiceStartupTests : OutputManagerServiceTestBase<Out
             Assert.That(_handlerB.Started, Is.False);
         }
 
-        _output.Stop();
+        _output.Stop().AssertOk();
         using (Assert.EnterMultipleScope())
         {
             AssertServiceStopped(_output);
@@ -204,21 +205,23 @@ public class OutputManagerServiceStartupTests : OutputManagerServiceTestBase<Out
     [Test]
     public void ThrowOnHandlerStart()
     {
-        var ex = new Exception();
-        _handlerA.ExceptionToThrow = ex;
+        var failRes = ResC.Fail("Error"); //todo: [FEAT] Launch errors should be displayed after launch if service marked as faulted?
+        _handlerA.ResultToReturn = failRes;
 
-        _output.Start();
+        _output.Start().AssertOk();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_output.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
-            Assert.That(_output.GetFaultIfExists(), Is.EqualTo(ex));
+            Assert.That(_output.GetFaultIfExists()?.Message, Does.Contain(failRes.Msg!.Message));
             Assert.That(_handlerA.Started, Is.False);
             Assert.That(_output.GetHandlerInfos(true), Is.Empty);
+            Assert.That(_notify.Notifications, Has.Count.EqualTo(1));
         }
+        Assert.That(_notify.Notifications[0].Exception!.ToString(), Does.Contain(failRes.Msg.Message));
 
-        _handlerA.ExceptionToThrow = null;
+        _handlerA.ResultToReturn = null;
 
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_output.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Faulted));
@@ -231,7 +234,7 @@ public class OutputManagerServiceStartupTests : OutputManagerServiceTestBase<Out
     [Test]
     public void ThrowOnHandlerStop()
     {
-        _output.Start();
+        _output.Start().AssertOk();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_output.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Faulted));
@@ -240,13 +243,13 @@ public class OutputManagerServiceStartupTests : OutputManagerServiceTestBase<Out
             Assert.That(_output.GetHandlerInfos(true), Has.Count.EqualTo(1));
         }
 
-        var ex = new Exception();
-        _handlerA.ExceptionToThrow = ex;
+        var failRes = ResC.Fail("Error");
+        _handlerA.ResultToReturn = failRes;
 
         _infoA.Enabled = false;
 
-        _output.RefreshHandlers();
-        var fault = _output.GetFaultIfExists() as CombinedException;
+        _output.RefreshHandlers().AssertOk();
+        var fault = _output.GetFaultIfExists();
 
         using (Assert.EnterMultipleScope())
         {
@@ -254,19 +257,20 @@ public class OutputManagerServiceStartupTests : OutputManagerServiceTestBase<Out
             Assert.That(fault, Is.Not.Null);
             Assert.That(_handlerA.Started, Is.False);
             Assert.That(_output.GetHandlerInfos(true), Is.Empty);
+            Assert.That(_notify.Notifications, Has.Count.EqualTo(1));
         }
-        Assert.That(fault!.Exceptions, Has.Count.EqualTo(2));
+
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(fault.Exceptions[0], Is.EqualTo(ex));
-            Assert.That(fault.Exceptions[1], Is.EqualTo(ex));
+            Assert.That(fault.Message, Does.Contain(failRes.Msg!.Message));
+            Assert.That(_notify.Notifications[0].Exception!.ToString(), Does.Contain(failRes.Msg!.Message));
         }
     }
 
     [Test]
     public void ThrowOnHandlerRestart()
     {
-        _output.Start();
+        _output.Start().AssertOk();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_output.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Faulted));
@@ -275,17 +279,19 @@ public class OutputManagerServiceStartupTests : OutputManagerServiceTestBase<Out
             Assert.That(_output.GetHandlerInfos(true), Has.Count.EqualTo(1));
         }
 
-        var ex = new Exception();
-        _handlerA.ExceptionToThrow = ex;
+        var failRes = ResC.Fail("Error");
+        _handlerA.ResultToReturn = failRes;
 
-        _output.RestartHandlers();
+        _output.RestartHandlers().AssertOk();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_output.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
-            Assert.That(_output.GetFaultIfExists(), Is.EqualTo(ex));
+            Assert.That(_output.GetFaultIfExists()?.Message, Does.Contain(failRes.Msg!.Message));
             Assert.That(_handlerA.Started, Is.True);
             Assert.That(_output.GetHandlerInfos(true), Has.Count.EqualTo(1));
+            Assert.That(_notify.Notifications, Has.Count.EqualTo(1));
         }
+        Assert.That(_notify.Notifications[0].Exception!.ToString(), Does.Contain(failRes.Msg!.Message));
     }
 }
 
@@ -294,7 +300,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
     protected override void OneTimeSetupExtra()
     {
         SetSharedClasses();
-        _output.Start();
+        _output.Start().AssertOk();
     }
 
     protected override void SetupExtra()
@@ -313,7 +319,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         _infoD.Enabled = false;
         _infoE.Enabled = false;
 
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
         Assert.That(_output.GetHandlerInfos(true), Is.Empty);
 
         _translator.ReceivedInput.Clear();
@@ -334,8 +340,8 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
     {
         _infoA.Enabled = true;
 
-        var preRefreshHandlers = _output.GetHandlerInfos(true);
-        _output.RefreshHandlers();
+        var preRefreshHandlerss = _output.GetHandlerInfos(true);
+        _output.RefreshHandlers().AssertOk();
 
         var allHandlers = _output.GetHandlerInfos(false);
         var activeHandlers = _output.GetHandlerInfos(true);
@@ -343,7 +349,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         using (Assert.EnterMultipleScope())
         {
             Assert.That(allHandlers, Has.Count.EqualTo(5));
-            Assert.That(preRefreshHandlers, Is.Empty);
+            Assert.That(preRefreshHandlerss, Is.Empty);
             Assert.That(activeHandlers, Has.Count.EqualTo(1));
             Assert.That(_handlerA.Started, Is.True);
             Assert.That(_handlerB.Started, Is.False);
@@ -368,13 +374,13 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         AssertServiceStarted(_output);
 
         _infoA.Enabled = true;
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
 
         Assert.That(_output.GetHandlerInfos(true), Has.Count.EqualTo(1));
         AssertServiceProcessing(_output);
 
         _infoA.Enabled = false;
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
 
         Assert.That(_output.GetHandlerInfos(true), Is.Empty);
         AssertServiceStarted(_output);
@@ -387,7 +393,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         Assert.That(status, Is.EqualTo(ServiceStatus.Stopped));
         
         _infoA.Enabled = true;
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
 
         _handlerA.OverrideRunningStatus = ServiceStatus.Started;
         status = _output.GetProcessorStatus(_infoA);
@@ -402,7 +408,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         Assert.That(status, Is.EqualTo(ServiceStatus.Faulted));
 
         _infoA.Enabled = false;
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
 
         status = _output.GetProcessorStatus(_infoA);
         Assert.That(status, Is.EqualTo(ServiceStatus.Stopped));
@@ -415,7 +421,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         _infoA.Enabled = true;
         _infoB.Enabled = true;
 
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
         Assert.That(_output.GetHandlerInfos(true), Has.Count.EqualTo(2));
 
         var stoppedA = false;
@@ -426,7 +432,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         void onBStopped(object? _, EventArgs __) { stoppedB = true; }
         _handlerB.OnModuleStopped += onBStopped;
 
-        _output.RestartHandlers();
+        _output.RestartHandlers().AssertOk();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_output.GetHandlerInfos(true), Has.Count.EqualTo(2));
@@ -490,7 +496,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
             Assert.That(stoppedB, Is.False);
         }
 
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
 
         using (Assert.EnterMultipleScope())
         {
@@ -532,7 +538,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
             Assert.That(stoppedB, Is.False);
         }
 
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
 
         using (Assert.EnterMultipleScope())
         {
@@ -574,7 +580,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
             Assert.That(stoppedB, Is.True);
         }
 
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
 
         using (Assert.EnterMultipleScope())
         {
@@ -605,7 +611,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         Assert.That(_output.GetHandlerInfos(true), Is.Empty);
 
         _infoE.Enabled = true;
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
 
         var ex = _output.GetFaultIfExists();
         using (Assert.EnterMultipleScope())
@@ -615,7 +621,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         }
 
         _infoE.Enabled = false;
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
 
         var ex2 = _output.GetFaultIfExists();
         using (Assert.EnterMultipleScope())
@@ -631,15 +637,15 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         Assert.That(_output.GetHandlerInfos(true), Is.Empty);
         
         _infoA.Enabled = true;
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
 
         Assert.That(_output.GetHandlerInfos(true), Has.Count.EqualTo(1));
 
-        _handlerA.Stop();
+        _handlerA.Stop().AssertOk();
 
         Assert.That(_output.GetHandlerInfos(true), Is.Empty);
 
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
 
         Assert.That(_output.GetHandlerInfos(true), Has.Count.EqualTo(1));
     }
@@ -650,7 +656,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         Assert.That(_output.GetHandlerInfos(true), Is.Empty);
 
         _infoA.Enabled = true;
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
 
         Assert.That(_output.GetHandlerInfos(true), Has.Count.EqualTo(1));
 
@@ -676,7 +682,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         Assert.That(faultOutputConverted, Is.EqualTo(testEx));
 
         _handlerA.InduceError(null);
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
 
         faultOutput = _output.GetFaultIfExists();
         faultHandler = _handlerA.GetFaultIfExists();
@@ -698,7 +704,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         _infoB.Enabled = true;
         void onIndicator(object? _, bool x) { lastIndicator = x; }
         _output.OnProcessingIndicatorSet += onIndicator;
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
         
         _output.SetProcessingIndicator(true);
 
@@ -712,7 +718,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         Assert.That(_handlerA.ReceivedIndicatorStates[0], Is.True);
 
         _infoB.Enabled = false;
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
 
         _output.SetProcessingIndicator(false);
 
@@ -737,7 +743,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         _infoB.Enabled = true;
         void onClear(object? _, EventArgs __) { clears++; }
         _output.OnClear += onClear;
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
         
         _output.Clear();
 
@@ -750,7 +756,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         }
 
         _infoB.Enabled = false;
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
 
         _output.Clear();
 
@@ -789,7 +795,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         _infoA.Enabled = true;
         _infoB.Enabled = true;
         _infoC.Enabled = true;
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
 
         _output.SendMessage("TestMessage", OutputSettingsFlags.AllowAllOutputs);
         _output.SendNotification("TestNotification", OutputNotificationPriority.Critical, OutputSettingsFlags.AllowAllOutputs);
@@ -832,7 +838,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         }
 
         _infoB.Enabled = false;
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
 
         _handlerA.ResetStats();
         _handlerB.ResetStats();
@@ -936,7 +942,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         _infoC.Enabled = true;
         _infoD.Enabled = true;
 
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
 
         for (var i = 0; i < 0b1000; i++)
         {
@@ -1022,7 +1028,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         _infoA.Enabled = true;
         _infoB.Enabled = true;
         _infoC.Enabled = true;
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
 
         var flags = OutputSettingsFlags.AllowAllOutputs | OutputSettingsFlags.DoTranslate;
         _output.SendMessage("MsgTest", flags);
@@ -1089,7 +1095,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         _translator.TranslateResult = TranslationResult.Succeeded;
 
         _infoB.Enabled = true;
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
 
         var flags = OutputSettingsFlags.AllowAllOutputs | OutputSettingsFlags.DoTranslate;
 
@@ -1146,7 +1152,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
 
         _infoB.Enabled = true;
         _infoC.Enabled = true;
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
 
         var flags = OutputSettingsFlags.AllowAllOutputs | OutputSettingsFlags.DoTranslate;
 
@@ -1166,7 +1172,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         }
 
         _infoB.Enabled = false;
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
 
         _output.SendMessage("Test2", flags);
 
@@ -1200,7 +1206,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         _preprocessorLatePartial.Enabled = true;
 
         _infoA.Enabled = true;
-        _output.RefreshHandlers();
+        _output.RefreshHandlers().AssertOk();
 
         var flags = OutputSettingsFlags.AllowAllOutputs | OutputSettingsFlags.DoPreprocessAll;
 
@@ -1349,6 +1355,6 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
     
     protected override void OneTimeTearDownExtra()
     {
-        _output.Stop();
+        _output.Stop().AssertOk();
     }
 }

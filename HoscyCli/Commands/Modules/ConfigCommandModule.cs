@@ -19,7 +19,7 @@ public class ConfigCommandModule(ReflectPropEditCommandModule reflectionCm, Conf
     public string[] ModuleCommands => ["config", "cfg"];
 
     [SubCommandModule(["list", "l", "all", "a"], "Get all editable properties (additional text filters)")]
-    public CommandResult GetAll(string? filter)
+    public Res GetAll(string? filter)
     {
         var allProps = ReflectPropEditCommandModule.GetAllConfigValues();
         if (!string.IsNullOrWhiteSpace(filter))
@@ -32,13 +32,13 @@ public class ConfigCommandModule(ReflectPropEditCommandModule reflectionCm, Conf
             ? "All properties:\n" + string.Join(", ", propText)
             : "No properties found";
         Console.WriteLine(printText);
-        return CommandResult.Success;
+        return ResC.Ok();
     }
 
     [SubCommandModule(["pick"], "Pick an editable property")]
-    public CommandResult PickOne(string? message)
+    public Res PickOne(string? message)
     {
-        if (OnEmpty(message, "You must specify a property to edit")) return CommandResult.MissingParameter;
+        if (OnEmpty(message)) return ResC.Fail("You must specify a property to edit", ResMsgLvl.Info);
 
         var (command, parameters) = Util.SplitAtFirstSpace(message);
         if (string.IsNullOrWhiteSpace(parameters))
@@ -51,16 +51,16 @@ public class ConfigCommandModule(ReflectPropEditCommandModule reflectionCm, Conf
                 ? null 
                 : _allProps[index]
             : _allProps.FirstOrDefault(x => x.Equals(command, StringComparison.OrdinalIgnoreCase));
-        if (OnTrue(match is null, "No property match found for input")) return CommandResult.Error;
+        if (match is null) return ResC.Fail("No property match found for input");
         return _reflectionCm.Execute(parameters, match);
     }
 
     [SubCommandModule(["save", "s"], "Save the config file")]
-    public CommandResult Save()
+    public Res Save()
     {
         var success = _config.TrySave(PathUtils.PathConfigFolder,ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
-        if (OnFalse(success, "Saving failed!")) return CommandResult.Error;
+        if (!success) return ResC.Fail("Saving failed!");
         Console.WriteLine("Config saved");
-        return CommandResult.Success;
+        return ResC.Ok();
     }
 }

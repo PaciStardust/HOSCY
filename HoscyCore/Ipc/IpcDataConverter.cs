@@ -1,4 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
+using HoscyCore.Utility;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -18,42 +18,42 @@ public class IpcDataConverter(ILogger logger)
         return input[0];
     }
 
-    public bool TryDeserialize<T>(string input, [NotNullWhen(true)] out T? deserialized) where T : class
+    public Res<T> Deserialize<T>(string input) where T : class
     {
         try
         {
             var substr = input[2..];
-            deserialized = JsonConvert.DeserializeObject<T>(substr);
+            var deserialized = JsonConvert.DeserializeObject<T>(substr);
             if (deserialized is null)
             {
-                _logger.Warning("DataConverter: Failed to deserialize from data {data} to type {type}, no output",
-                    input, typeof(T).Name);
-                return false;
+                var type = typeof(T);
+                _logger.Warning("DataConverter: Failed to deserialize from data {input} to type {type}, no output",
+                    input, type.FullName);
+                return ResC.TFail<T>(ResMsg.Wrn($"DataConverter: Failed to deserialize from data {input} to type {type.Name}, no output"));
             }
-            return true;
+            return ResC.TOk(deserialized);
         }
         catch (Exception ex)
         {
-            _logger.Warning(ex, "DataConverter: Failed to deserialize from data {data} to type {type}",
-                input, typeof(T).Name);
-            deserialized = null;
-            return false;
+            var type = typeof(T);
+            _logger.Warning(ex, "DataConverter: Failed to deserialize from data {input} to type {type}",
+                input, type.FullName);
+            return ResC.TFail<T>(ResMsg.Wrn(ResMsg.FmtEx(ex, $"DataConverter: Failed to deserialize from data {input} to type {type.Name}")));
         }
     }
 
-    public bool TrySerialize<T>(char id, T input, [NotNullWhen(true)] out string? serialized) where T : class
+    public Res<string> Serialize<T>(char id, T input) where T : class
     {
         try
         {
-            serialized = SeralizeRaw(id, input);
-            return true;
+            return ResC.TOk(SeralizeRaw(id, input));
         }
         catch (Exception ex)
         {
+            var type = typeof(T);
             _logger.Warning(ex, "DataConverter: Failed to serialize data of type {type} with id {id}",
-                typeof(T).Name, id);
-            serialized = null;
-            return false;
+                type.FullName, id);
+            return ResC.TFail<string>(ResMsg.Wrn(ResMsg.FmtEx(ex, $"DataConverter: Failed to serialize data of type {typeof(T).Name} with id {id}")));
         }
     }
     public static string SeralizeRaw<T>(char id, T input) where T : class

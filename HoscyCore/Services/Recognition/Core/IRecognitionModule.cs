@@ -1,4 +1,5 @@
 using HoscyCore.Services.Core;
+using HoscyCore.Utility;
 
 namespace HoscyCore.Services.Recognition.Core;
 
@@ -30,5 +31,5 @@ public interface IRecognitionModule : IStartStopModule
     /// </summary>
     /// <param name="state">Target state</param>
     /// <returns>Result state</returns>
-    public bool SetListening(bool state);
+    public Res<bool> SetListening(bool state);
 }

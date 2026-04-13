@@ -2,6 +2,7 @@ using HoscyCli.Commands.Core;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Translation.Core;
+using HoscyCore.Utility;
 
 namespace HoscyCli.Commands.Modules;
 
@@ -22,48 +23,48 @@ public class TranslationCommandModule
 
     #region Config
     [SubCommandModule(["modules"], "Lists translation modules")] 
-    public CommandResult CmdModules()
+    public Res CmdModules()
     {
         var modules = _translation.GetModuleInfos();
         var moduleText = modules.Count > 0
             ? string.Join("\n", modules.Select(x => $" - {x.Name} > {x.Description}"))
             : "[NONE]";
         Console.WriteLine($"All available translation modules:\n{moduleText}");
-        return CommandResult.Success;
+        return ResC.Ok();
     }
 
     [SubCommandModule(["selected-module"], "Set module to use")]
-    public CommandResult CmdSelectedModule()
+    public Res CmdSelectedModule()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Translation_SelectedModuleName));
     }
 
     [SubCommandModule(["autostart"], "Should module be started on launch")]
-    public CommandResult CmdAutostart()
+    public Res CmdAutostart()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Translation_AutoStart));
     }
 
     [SubCommandModule(["skip-longer-messages"], "Should longer messages be skipped")]
-    public CommandResult CmdSkipLongerMessages()
+    public Res CmdSkipLongerMessages()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Translation_SkipLongerMessages));
     }
 
     [SubCommandModule(["max-length"], "Maximum length of text to be translated")]
-    public CommandResult CmdMaxLength()
+    public Res CmdMaxLength()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Translation_MaxTextLength));
     }
 
     [SubCommandModule(["untranslated-unavailable"], "Should untranslated content be sent if no translator available")]
-    public CommandResult CmdUntranslatedUnavailable()
+    public Res CmdUntranslatedUnavailable()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Translation_SendUntranslatedIfUnavailable));
     }
 
     [SubCommandModule(["untranslated-failed"], "Should untranslated content be sent if translation failed")]
-    public CommandResult CmdUntranslatedFailed()
+    public Res CmdUntranslatedFailed()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Translation_SendUntranslatedIfFailed));
     }
@@ -71,32 +72,30 @@ public class TranslationCommandModule
 
     #region Start / Stop
     [SubCommandModule(["status"], "Get the translation status")]
-    public CommandResult CmdStatus()
+    public Res CmdStatus()
     {
-        var text = $"Manager: {_translation.GetCurrentStatus()}\nModule ({_translation.GetCurrentModuleInfo()?.Name ?? "None"}): {_translation.GetCurrentModuleStatus()}";
+        var moduleInfo = _translation.GetCurrentModuleInfo();
+        var text = $"Manager: {_translation.GetCurrentStatus()}\nModule ({(moduleInfo is null ? "None" : moduleInfo.IsOk ? moduleInfo.Value.Name : "ERROR")}): {_translation.GetCurrentModuleStatus()}";
         Console.WriteLine(text);
-        return CommandResult.Success;
+        return ResC.Ok();
     }
 
     [SubCommandModule(["start"], "Start translation module")]
-    public CommandResult CmdStart()
+    public Res CmdStart()
     {
-        var res = _translation.StartModule();
-        return res ? CommandResult.Success : CommandResult.Error;
+        return _translation.StartModule();
     }
 
     [SubCommandModule(["stop"], "Stop translation module")]
-    public CommandResult CmdStop()
+    public Res CmdStop()
     {
-        var res = _translation.StopModule();
-        return res ? CommandResult.Success : CommandResult.Error;
+        return _translation.StopModule();
     }
 
     [SubCommandModule(["restart"], "Restart translation module")]
-    public CommandResult CmdRestart()
+    public Res CmdRestart()
     {
-        var res = _translation.RestartModule();
-        return res ? CommandResult.Success : CommandResult.Error;
+        return _translation.RestartModule();
     }
     #endregion
 }

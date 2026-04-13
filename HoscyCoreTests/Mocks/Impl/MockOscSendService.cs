@@ -1,5 +1,6 @@
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Osc.SendReceive;
+using HoscyCore.Utility;
 
 namespace HoscyCoreTests.Mocks.Impl;
 
@@ -23,18 +24,18 @@ public class MockOscSendService(ConfigModel config) : IOscSendService
     public ushort GetDefaultPort()
         => _config.Osc_Routing_TargetPort;
 
-    public async Task<bool> SendAsync(string ip, ushort port, string address, params object?[] args)
+    public async Task<Res> SendAsync(string ip, ushort port, string address, params object?[] args)
     {
-        if (IsInBanlist(ip, port)) return false;
+        if (IsInBanlist(ip, port)) return ResC.Fail("Address in ban list");
         ReceivedMessages.Add((ip, port, address, args));
-        return true;
+        return ResC.Ok();
     }
 
-    public bool SendSync(string ip, ushort port, string address, params object?[] args)
+    public Res SendSync(string ip, ushort port, string address, params object?[] args)
     {
-        if (IsInBanlist(ip, port)) return false;
+        if (IsInBanlist(ip, port)) return ResC.Fail("Address in ban list");
         ReceivedMessages.Add((ip, port, address, args));
-        return true;
+        return ResC.Ok();
     }
 
     public void SendSyncFireAndForget(string ip, ushort port, string address, params object?[] args)
@@ -43,16 +44,16 @@ public class MockOscSendService(ConfigModel config) : IOscSendService
         ReceivedMessages.Add((ip, port, address, args));
     }
 
-    public async Task<bool> SendToDefaultAsync(string address, params object?[] args)
+    public async Task<Res> SendToDefaultAsync(string address, params object?[] args)
     {
         ReceivedMessages.Add((GetDefaultIp(), GetDefaultPort(), address, args));
-        return true;
+        return ResC.Ok();
     }
 
-    public bool SendToDefaultSync(string address, params object?[] args)
+    public Res SendToDefaultSync(string address, params object?[] args)
     {
         ReceivedMessages.Add((GetDefaultIp(), GetDefaultPort(), address, args));
-        return true;
+        return ResC.Ok();
     }
 
     public void SendToDefaultSyncFireAndForget(string address, params object?[] args)

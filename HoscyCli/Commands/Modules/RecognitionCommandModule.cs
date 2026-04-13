@@ -2,6 +2,7 @@ using HoscyCli.Commands.Core;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Recognition.Core;
+using HoscyCore.Utility;
 
 namespace HoscyCli.Commands.Modules;
 
@@ -22,80 +23,81 @@ public class RecognitionCommandModule
 
     #region Config
     [SubCommandModule(["send-text"], "Should recognition be sent as text")]
-    public CommandResult CmdSendText()
+    public Res CmdSendText()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Send_ViaText));
     }
 
     [SubCommandModule(["send-audio"], "Should recognition be sent as audio")]
-    public CommandResult CmdSendAudio()
+    public Res CmdSendAudio()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Send_ViaOther));
     }
 
     [SubCommandModule(["send-other"], "Should recognition be sent as other")]
-    public CommandResult CmdSendOther()
+    public Res CmdSendOther()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Send_ViaOther));
     }
 
     [SubCommandModule(["translate"], "Should recognition be translated")]
-    public CommandResult CmdDoTranslate()
+    public Res CmdDoTranslate()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Send_DoTranslate));
     }
 
     [SubCommandModule(["preprocess-partial"], "Should partial preprocessing be done")]
-    public CommandResult CmdPreprocessPartial()
+    public Res CmdPreprocessPartial()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Send_DoPreprocessPartial));
     }
 
     [SubCommandModule(["preprocess-full"], "Should full preprocessing be done")]
-    public CommandResult CmdPreprocessFull()
+    public Res CmdPreprocessFull()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Send_DoPreprocessFull));
     }
 
     [SubCommandModule(["start-unmuted"], "Should recognizers start unmuted")]
-    public CommandResult CmdStartUnmuted()
+    public Res CmdStartUnmuted()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Mute_StartUnmuted));
     }
 
     [SubCommandModule(["modules"], "Lists recognition modules")] 
-    public CommandResult CmdModules()
+    public Res CmdModules()
     {
         var modules = _recognition.GetModuleInfos();
         var moduleText = modules.Count > 0
             ? string.Join("\n", modules.Select(x => $" - {x.Name} > {x.Description}"))
             : "[NONE]";
         Console.WriteLine($"All available recognition modules:\n{moduleText}");
-        return CommandResult.Success;
+        return ResC.Ok();
     }
 
     [SubCommandModule(["selected-module"], "Module to use for recognition")]
-    public CommandResult CmdSelectedModule()
+    public Res CmdSelectedModule()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_SelectedModuleName));
     }
 
     [SubCommandModule(["fix-noise-filter"], "Manage noise filtering")]
-    public CommandResult CmdFixNoiseFilter()
+    public Res CmdFixNoiseFilter()
     {
         var res = _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Fixup_NoiseFilter));
-        _recognition.UpdateSettings();
-        return res;
+        if (!res.IsOk) return res;
+
+        return _recognition.UpdateSettings();
     }
 
     [SubCommandModule(["fix-remove-end-period"], "Removes period at the end of last sentence")]
-    public CommandResult CmdFixRemoveEndPeriod()
+    public Res CmdFixRemoveEndPeriod()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Fixup_RemoveEndPeriod));
     }
 
     [SubCommandModule(["fix-capitalize-first-letter"], "Capitalize first letter of result")]
-    public CommandResult CmdFixCapitalizeFirstLetter()
+    public Res CmdFixCapitalizeFirstLetter()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Fixup_CapitalizeFirstLetter));
     }
@@ -103,46 +105,48 @@ public class RecognitionCommandModule
     
     #region Start / Stop
     [SubCommandModule(["status"], "Get the recognition status")]
-    public CommandResult CmdStatus()
+    public Res CmdStatus()
     {
+        var info = _recognition.GetCurrentModuleInfo();
+        var infoText = info is null ? "None" : info.IsOk ? info.Value.Name : "ERROR";
+
         string[] textSplit = [
             $"Manager: {_recognition.GetCurrentStatus()}",
-            $"Module ({_recognition.GetCurrentModuleInfo()?.Name ?? "None"}): {_recognition.GetCurrentModuleStatus()}",
+            $"Module ({infoText}): {_recognition.GetCurrentModuleStatus()}",
             $"Listening: {_recognition.IsListening}"
         ];
         var text = string.Join("\n", textSplit);
         Console.WriteLine(text);
-        return CommandResult.Success;
+        return ResC.Ok();
     }
 
     [SubCommandModule(["start"], "Start recognition module")]
-    public CommandResult CmdStart()
+    public Res CmdStart()
     {
-        var res = _recognition.StartModule();
-        return res ? CommandResult.Success : CommandResult.Error;
+        return _recognition.StartModule();
     }
 
     [SubCommandModule(["stop"], "Stop recognition module")]
-    public CommandResult CmdStop()
+    public Res CmdStop()
     {
-        var res = _recognition.StopModule();
-        return res ? CommandResult.Success : CommandResult.Error;
+        return _recognition.StopModule();
     }
 
     [SubCommandModule(["restart"], "Restart recognition module")]
-    public CommandResult CmdRestart()
+    public Res CmdRestart()
     {
-        var res = _recognition.RestartModule();
-        return res ? CommandResult.Success : CommandResult.Error;
+        return _recognition.RestartModule();
     }
 
     [SubCommandModule(["toggle-mute", "mute", "unmute"], "Toggle listening status of recognizer")]
-    public CommandResult CmdToggleMute()
+    public Res CmdToggleMute()
     {
         var mode = !_recognition.IsListening;
         var result = _recognition.SetListening(mode);
-        Console.WriteLine($"Listening set to {result} (requested={mode})");
-        return mode == result ? CommandResult.Success : CommandResult.Error;
+        if (!result.IsOk) return ResC.Fail(result.Msg);
+
+        Console.WriteLine($"Listening set to {result.Value} (requested={mode})");
+        return ResC.Ok();
     }
     #endregion
 }

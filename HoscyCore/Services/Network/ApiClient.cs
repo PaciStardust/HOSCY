@@ -35,13 +35,13 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient
         return this;
     }
 
-    public bool LoadPreset(ApiPresetModel preset)
+    public Res LoadPreset(ApiPresetModel preset)
     {
         _logger.Debug("{id}: Loading new ApiPreset \"{name}\"", _identifier, preset.Name);
         if (preset.Equals(_currentPreset))
         {
             _logger.Verbose("{id}: Skipped loading new ApiPreset \"{name}\", it is already loaded", _identifier, preset.Name);
-            return true;
+            return ResC.Ok();
         }
 
         ClearPreset();
@@ -49,18 +49,19 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient
         if (!preset.IsValid())
         {
             _logger.Error("{id}: Did not load ApiPreset \"{name}\" as it is invalid", _identifier, preset.Name);
-            return false;
+            return ResC.Fail(ResMsg.Err($"{_identifier}: Did not load ApiPreset \"{preset.Name}\" as it is invalid"));
         }
 
         _currentPreset = preset;
-        return true;
+        return ResC.Ok();
     }
     #endregion
 
     #region Sending
-    private async Task<string> SendAsync(HttpContent content, ApiPresetModel preset)
+    private async Task<Res<string>> SendAsync(HttpContent content, ApiPresetModel preset)
     {
-        ClientHealthCheck();
+        var health = ClientHealthCheck();
+        if (!health.IsOk) return ResC.TFail<string>(health.Msg);
         
         var requestMessage = new HttpRequestMessage(HttpMethod.Post, preset.TargetUrl)
         {
@@ -70,51 +71,52 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient
         AddHeaders(requestMessage);
 
         var jsonIn = await _client.SendAsync(requestMessage, preset.ConnectionTimeout);
-
-        if (jsonIn is null)
+        if (!jsonIn.IsOk)
         {
-            _logger.Warning("{id}: Received response for request, but json is null", _identifier);
-            throw new HttpRequestException("Received response for request, but json is null");
+            _logger.Warning("{id}: Received response for request, but json is null ({res})", _identifier, jsonIn);
+            return jsonIn;
         }
 
-        var result = OtherUtils.ExtractFromJson(preset.ResultField, jsonIn);
-        if (result is null)
+        var result = OtherUtils.ExtractFromJson(preset.ResultField, jsonIn.Value, logger);
+        if (!result.IsOk)
         {
-            _logger.Warning("{id}: Unable to find content with key \"{resultField}\" in result \"{jsonIn}\"", _identifier, preset.ResultField, jsonIn);
-            throw new HttpRequestException($"Unable to find content with key \"{preset.ResultField}\" in result \"{jsonIn}\"");
+            _logger.Warning("{id}: Unable to find content with key \"{resultField}\" in result \"{jsonIn}\"",
+                _identifier, preset.ResultField, jsonIn);
+            return ResC.TFail<string>(ResMsg.Err($"Unable to find content with key \"{preset.ResultField}\" in result \"{jsonIn}\""));
         }
-        else
-        {
-            _logger.Verbose("{id}: Found content with value \"{resultField}\": {result}", _identifier, preset.ResultField, result);
-        }
+
+        _logger.Verbose("{id}: Found content with value \"{resultField}\": {result}", _identifier, preset.ResultField, result);
         return result;
     }
 
-    public async Task<string> SendBytesAsync(byte[] bytes)
+    public async Task<Res<string>> SendBytesAsync(byte[] bytes)
     {
         _logger.Verbose("{id}: Sending byte request via ApiPreset \"{presetName}\"", _identifier, _currentPreset?.Name ?? "NULL");
-        PresetHealthCheck();
+        var health = PresetHealthCheck();
+        if (!health.IsOk) return ResC.TFail<string>(health.Msg);
 
         var content = new ByteArrayContent(bytes);
         if (string.IsNullOrWhiteSpace(_currentPreset!.ContentType) || !content.Headers.TryAddWithoutValidation("Content-Type", _currentPreset.ContentType))
         {
             _logger.Warning("{id}: Unable to send data to API as ContentType \"{contentType}\" is invalid, are you using the Type suggested by the API's documentation?", _identifier, _currentPreset.ContentType);
-            throw new ArgumentException($"Unable to send data to API as ContentType \"{_currentPreset.ContentType}\" is invalid");
+            return ResC.TFail<string>(ResMsg.Err($"Unable to send data to API as ContentType \"{_currentPreset.ContentType}\" is invalid"));
         }
 
         return await SendAsync(content, _currentPreset);
     }
 
-    public async Task<string> SendTextAsync(string text)
+    public async Task<Res<string>> SendTextAsync(string text)
     {
         _logger.Verbose("{id}: Sending text request via ApiPreset \"{presetName}\"", _identifier, _currentPreset?.Name ?? "NULL");
-        PresetHealthCheck();
+        var health = PresetHealthCheck();
+        if (!health.IsOk) return ResC.TFail<string>(health.Msg);
 
         var jsonOut = ReplaceToken(_currentPreset!.SentData, "[T]", text);
         if (_currentPreset.SentData == jsonOut)
         {
             _logger.Warning("{id}: Unable to send data to API as JSON contains no token to replace, have you made sure the JSON option contains \"[T]\"?", _identifier);
-            throw new ArgumentException($"Unable to send data to API as JSON contains no token to replace, have you made sure the JSON option contains \"[T]\"?");
+            var message = $"Unable to send data to API as JSON contains no token to replace, have you made sure the JSON option contains \"[T]\"?";
+            return ResC.TFail<string>(ResMsg.Err(message));
         }
 
         return await SendAsync(new StringContent(jsonOut, Encoding.UTF8, _currentPreset.ContentType), _currentPreset);
@@ -122,30 +124,31 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient
     #endregion
 
     #region Health Check
-    private void ClientHealthCheck()
+    private Res ClientHealthCheck()
     {
         if (_client.GetCurrentStatus() == ServiceStatus.Stopped)
         {
             _logger.Warning(messageTemplate: "{id}: Not sending request as WebClient is stopped", _identifier);
-            throw new InvalidOperationException("Client has been stopped");
+            return ResC.Fail(ResMsg.Err("Not sending request as WebClient is stopped"));
         }
+        return ResC.Ok();
     }
 
-    private void PresetHealthCheck()
+    private Res PresetHealthCheck()
     {
         if (_currentPreset is null || !_currentPreset.IsValid())
         {
             _logger.Warning(messageTemplate: "{id}: Not sending request as no valid ApiPreset is loaded", _identifier);
-            throw new InvalidOperationException("No valid ApiPreset loaded");
+            return ResC.Fail(ResMsg.Err("Not sending request as no valid ApiPreset is loaded"));
         }
+        return ResC.Ok();
     }
     #endregion
 
     #region Utils
     private void AddHeaders(HttpRequestMessage content)
     {
-        if (_currentPreset == null)
-            return;
+        if (_currentPreset == null) return;
 
         content.Headers.Authorization = _currentPreset.AuthenticationHeader();
 
@@ -153,7 +156,8 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient
         {
             if (!content.Headers.TryAddWithoutValidation(headerInfo.Key, headerInfo.Value))
             {
-                _logger.Warning("{id}: Skipped adding header info \"{headerInfoKey}\" : \"{headerInfoValue}\". As it was deemed invalid, it will be removed", _identifier, headerInfo.Key, headerInfo.Value);
+                _logger.Warning("{id}: Skipped adding header info \"{headerInfoKey}\" : \"{headerInfoValue}\". As it was deemed invalid, it will be removed",
+                    _identifier, headerInfo.Key, headerInfo.Value);
                 _currentPreset.HeaderValues.Remove(headerInfo.Key);
             }
         }

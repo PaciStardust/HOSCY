@@ -14,7 +14,7 @@ public static class LegacyConfigModelLoader
     /// Loads a legacy config file
     /// </summary>
     /// <returns>Null when no config could be loaded</returns>
-    public static LegacyConfigModel? TryLoad(string configFolder, string configFilename, ILogger logger) //Yes I am aware this code is duplicated and should be fixed
+    public static Res<LegacyConfigModel>? TryLoad(string configFolder, string configFilename, ILogger logger) //Yes I am aware this code is duplicated and should be fixed
     {
         var path = Path.Combine(configFolder, configFilename);
         logger.Information("Attempting to load LegacyConfig at path \"{legacyConfigPath}\"", path);
@@ -25,17 +25,15 @@ public static class LegacyConfigModelLoader
             string configData = File.ReadAllText(path, Encoding.UTF8);
             var newData = JsonConvert.DeserializeObject<LegacyConfigModel>(configData);
             if (newData is not null)
-                return newData;
+                return ResC.TOk(newData);
         }
         catch (JsonReaderException ex)
         {
-            logger.Error(ex, "Unable to read legacy JSON file at \"{legacyConfigPath}\" correctly", path);
-            throw;
+            return ResC.TFailLog<LegacyConfigModel>($"Unable to read legacy JSON file at \"{path}\" correctly", logger, ex);
         }
         catch (Exception ex)
         {
-            logger.Error(ex, "Unexpected error while reading legacy JSON file at \"{legacyConfigPath}\"", path);
-            throw;
+            return ResC.TFailLog<LegacyConfigModel>($"Unexpected error while reading legacy JSON file at \"{path}\"", logger, ex);
         }
 
         return null;
@@ -44,7 +42,7 @@ public static class LegacyConfigModelLoader
     /// <summary>
     /// Upgrades a LegacyConfigModel
     /// </summary>
-    public static LegacyConfigModel Upgrade(this LegacyConfigModel config, ILogger logger)
+    public static Res Upgrade(this LegacyConfigModel config, ILogger logger)
     {
         Dictionary<int, Action> steps = new()
         {
@@ -153,13 +151,15 @@ public static class LegacyConfigModelLoader
         if (config.ConfigVersion == newestVersion)
         {
             logger.Debug("Legacy config is already at version {newestVersion}, skipping upgrade", newestVersion);
-            return config;
+            return ResC.Ok();
         }
-        logger.Information("Legacy config is at version {currentVersion}, newst is {newestVersion}, starting upgrade", config.ConfigVersion, newestVersion);
+        logger.Information("Legacy config is at version {currentVersion}, newst is {newestVersion}, starting upgrade",
+            config.ConfigVersion, newestVersion);
 
         foreach (var (version, action) in steps.OrderBy(x => x.Key))
         {
-            logger.Debug("Upgrading legacy config from version {oldVersion} to version {newVersion}, newest is {newestVersion}", config.ConfigVersion, version, newestVersion);
+            logger.Debug("Upgrading legacy config from version {oldVersion} to version {newVersion}, newest is {newestVersion}",
+                config.ConfigVersion, version, newestVersion);
             try
             {
                 action();
@@ -167,13 +167,14 @@ public static class LegacyConfigModelLoader
             }
             catch (Exception ex)
             {
-                logger.Error(ex, "Failed to upgrade legacy config from version {oldVersion} to version {newVersion}, newest is {newestVersion}", config.ConfigVersion, version, newestVersion);
-                throw;
+                var message = $"Failed to upgrade legacy config from version {config.ConfigVersion} to version {version}, newest is {newestVersion}";
+                return ResC.FailLog(message, logger, ex);
             }
-            logger.Debug("Upgraded legacy config from version {oldVersion} to version {newVersion}, newest is {newestVersion}", config.ConfigVersion, version, newestVersion);
+            logger.Debug("Upgraded legacy config from version {oldVersion} to version {newVersion}, newest is {newestVersion}",
+                config.ConfigVersion, version, newestVersion);
         }
         logger.Debug("Finished upgrading legacy config to version {newestVersion}", newestVersion);
-        return config;
+        return ResC.Ok();
     }
 
     /// <summary>

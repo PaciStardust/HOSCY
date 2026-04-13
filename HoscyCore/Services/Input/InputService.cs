@@ -1,6 +1,7 @@
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Output.Core;
+using HoscyCore.Utility;
 using Serilog;
 
 namespace HoscyCore.Services.Input;
@@ -16,6 +17,7 @@ public class InputService(ConfigModel config, IOutputManagerService output, ILog
     public void SendManualMessage(string contents)
     {
         if (string.IsNullOrWhiteSpace(contents)) return;
+    
         var flags = GenerateManualFlags();
         _logger.Debug("Forwarding manual input message \"{message}\"", contents);
         _output.SendMessage(contents, flags);
@@ -52,6 +54,7 @@ public class InputService(ConfigModel config, IOutputManagerService output, ILog
     private void SendExternalMessage(string contents, OutputSettingsFlags extraFlag, string logText)
     {
         if (string.IsNullOrWhiteSpace(contents)) return;
+
         var flags = GenerateExternalProcessingFlags() | extraFlag;
         _logger.Debug("Forwarding external {logText} message \"{message}\"", logText, contents);
         _output.SendMessage(contents, flags);
@@ -61,6 +64,7 @@ public class InputService(ConfigModel config, IOutputManagerService output, ILog
     public void SendExternalTextNotification(string contents, OutputNotificationPriority prio = OutputNotificationPriority.Medium)
     {
         if (string.IsNullOrWhiteSpace(contents)) return;
+
         var flags = GenerateExternalProcessingFlags() | OutputSettingsFlags.AllowTextOutput;
         _logger.Debug("Forwarding external text notification \"{message}\"", contents);
         _output.SendNotification(contents, prio, flags);

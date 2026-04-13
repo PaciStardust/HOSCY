@@ -2,6 +2,7 @@ using HoscyCli.Commands.Core;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Output.Preprocessing;
+using HoscyCore.Utility;
 
 namespace HoscyCli.Commands.Modules;
 
@@ -22,19 +23,19 @@ public class PreprocessingCommandModule
     public string[] ModuleCommands => ["preprocessing"];
 
     [SubCommandModule(["do-replace-partial"], "Do partial replacements")]
-    public CommandResult CmdDoReplacePartial()
+    public Res CmdDoReplacePartial()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Preprocessing_DoReplacementsPartial));
     }
 
     [SubCommandModule(["do-replace-full"], "Do full replacements")]
-    public CommandResult CmdDoReplaceFull()
+    public Res CmdDoReplaceFull()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Preprocessing_DoReplacementsFull));
     }
 
     [SubCommandModule(["edit-replace-partial"], "Edit partial replacements")]
-    public CommandResult CmdEditReplacePartial()
+    public Res CmdEditReplacePartial()
     {
         var res = _reflectCm.SetProperty(nameof(ConfigModel.Preprocessing_ReplacementsPartial));
         _preprocessPartial.ReloadReplacements();
@@ -42,7 +43,7 @@ public class PreprocessingCommandModule
     }
 
     [SubCommandModule(["edit-replace-full"], "Edit full replacements")]
-    public CommandResult CmdEditReplaceFull()
+    public Res CmdEditReplaceFull()
     {
         var res = _reflectCm.SetProperty(nameof(ConfigModel.Preprocessing_ReplacementsFull));
         _preprocessFull.ReloadReplacements();
@@ -50,7 +51,7 @@ public class PreprocessingCommandModule
     }
 
     [SubCommandModule(["ignorechars-replace-full"], "Edit ignored characters for full replacements")]
-    public CommandResult CmdIgnorecharsReplaceFull()
+    public Res CmdIgnorecharsReplaceFull()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Preprocessing_ReplacementFullIgnoredCharacters));
     }

@@ -1,4 +1,5 @@
 using HoscyCore.Services.Core;
+using HoscyCore.Utility;
 
 namespace HoscyCore.Services.Osc.SendReceive;
 
@@ -7,5 +8,5 @@ namespace HoscyCore.Services.Osc.SendReceive;
 /// </summary>
 public interface IOscListenService : IAutoStartStopService
 {
-    public int? GetPort();
+    public Res<int> GetPort();
 }

@@ -22,12 +22,14 @@ public class DiContainerStartupTests : TestBase<DiContainerStartupTests>
     {
         List<string> progress = [];
 
-        var container = DiContainer.CreateWithAssembly(_logger, _config, null);
-        
-        container.StartServices(x => progress.Add(x));
+        var containerResult = DiContainer.CreateWithAssembly(_logger, _config, null);
+        containerResult.AssertOk();
+        var container = containerResult.Value!;
+
+        container.StartServices(x => progress.Add(x)).AssertOk();
         Assert.That(progress, Is.Not.Empty);
 
-        container.StopServices();
+        container.StopServices().AssertOk();
     }
 
     [Test]
@@ -37,10 +39,10 @@ public class DiContainerStartupTests : TestBase<DiContainerStartupTests>
 
         var container = DiContainer.Empty();
         
-        container.StartServices(x => progress.Add(x));
+        container.StartServices(x => progress.Add(x)).AssertOk();
         Assert.That(progress, Is.Not.Empty);
 
-        container.StopServices();
+        container.StopServices().AssertOk();
     }
 }
 
@@ -54,11 +56,13 @@ public class DiContainerFunctionTests : TestBase<DiContainerFunctionTests>
 
     protected override void OneTimeSetupExtra()
     {
-        _container = DiContainer.CreateWithAssembly(_logger, _config, x =>
+        var containerRes = DiContainer.CreateWithAssembly(_logger, _config, x =>
         {
             x.AddSingleton<DiTestService2>();
         });
-        _container.StartServices(null);
+        containerRes.AssertOk();
+        containerRes.Value!.StartServices(null).AssertOk();
+        _container = containerRes.Value;
     }
 
     [Test]
@@ -68,7 +72,8 @@ public class DiContainerFunctionTests : TestBase<DiContainerFunctionTests>
         var newLogger = _container.GetService<ILogger>();
         Assert.That(newLogger, Is.Not.Null, "Logger from container is null");
         var newConfig = _container.GetRequiredService<ConfigModel>();
-        Assert.That(newConfig.Afk_StartText, Is.EqualTo(_config.Afk_StartText), "Did not retrieve init config");
+        newConfig.AssertOk();
+        Assert.That(newConfig.Value!.Afk_StartText, Is.EqualTo(_config.Afk_StartText), "Did not retrieve init config");
 
         var shouldPass = _container.GetService<IDiTestService>();
         Assert.That(shouldPass, Is.Not.Null, "Di Test shouldve worked");
@@ -80,6 +85,6 @@ public class DiContainerFunctionTests : TestBase<DiContainerFunctionTests>
 
     protected override void OneTimeTearDownExtra()
     {
-        _container.StopServices();
+        _container.StopServices().AssertOk();
     }
 }

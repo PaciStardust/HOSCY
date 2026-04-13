@@ -3,6 +3,7 @@ using System.Speech.Recognition;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Recognition.Core;
 using HoscyCore.Services.Recognition.Extra;
+using HoscyCore.Utility;
 using Serilog;
 
 namespace HoscyCore.Services.Recognition.Modules;
@@ -17,11 +18,14 @@ public abstract class WindowsRecognitionModuleBase(ILogger logger, ConfigModel c
     #endregion
 
     #region Functionality
-    protected SpeechRecognitionEngine CreateEngine()
+    protected Res<SpeechRecognitionEngine> CreateEngine()
     {
         _logger.Debug("Creating new windows speech recognition engine");
 
-        var recognizerInfo = _modelProvider.GetWindowsRecognizers()
+        var recognizers = _modelProvider.GetWindowsRecognizers();
+        if (!recognizers.IsOk) return ResC.TFail<SpeechRecognitionEngine>(recognizers.Msg);
+
+        var recognizerInfo = recognizers.Value
             .Where(x => x.Id == _config.Recognition_Windows_ModelId)
             .ToArray();
 
@@ -29,13 +33,14 @@ public abstract class WindowsRecognitionModuleBase(ILogger logger, ConfigModel c
         {
             _logger.Warning("Unable to instantiate engine with provided model id {modelId}, trying without", 
                 _config.Recognition_Windows_ModelId);
-            return new();
+            return ResC.TWrapR(() => new SpeechRecognitionEngine(), "Failed to create empty speech recognition engine", _logger);
         } else if (recognizerInfo.Length > 1)
         {
             _logger.Warning("Multiple matching infos found for model id {modelId}, picking first", _config.Recognition_Windows_ModelId);
         }
 
-        return new(recognizerInfo[0].Id);
+        return ResC.TWrapR(() => new SpeechRecognitionEngine(recognizerInfo[0].Id),
+            $"Failed to create speech recognition engine for info {recognizerInfo[0].Name}", _logger);
     }
 
     protected void HandleSpeechDetected(object? sender, SpeechDetectedEventArgs e)

@@ -1,5 +1,6 @@
 using HoscyCore.Services.Core;
 using HoscyCore.Services.Output.Core;
+using HoscyCore.Utility;
 using HoscyCoreTests.Mocks.Base;
 
 namespace HoscyCoreTests.Mocks.Impl;
@@ -42,16 +43,17 @@ public class MockOutputManagerService : MockStartStopServiceBase, IOutputManager
         OnProcessingIndicatorSet.Invoke(this, isProcessing);
     }
 
-    public override void Start()
+    public override Res Start()
     {
-        base.Start();
+        var res = base.Start();
         Clear();
+        return res;
     }
 
-    public override void Stop()
+    public override Res Stop()
     {
         Clear();
-        base.Stop();
+        return base.Stop();
     }
 
     public IReadOnlyList<IOutputHandlerStartInfo> GetHandlerInfos(bool _)
@@ -64,13 +66,13 @@ public class MockOutputManagerService : MockStartStopServiceBase, IOutputManager
         return ServiceStatus.Processing;
     }
 
-    public void RefreshHandlers()
+    public Res RefreshHandlers()
     {
-        return;
+        return ResC.Ok();
     }
 
-    public void RestartHandlers()
+    public Res RestartHandlers()
     {
-        return;
+        return ResC.Ok();
     }
 }

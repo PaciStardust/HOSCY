@@ -1,6 +1,7 @@
 using HoscyCli.Commands.Core;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
+using HoscyCore.Utility;
 
 namespace HoscyCli.Commands.Modules;
 
@@ -14,7 +15,7 @@ public class ApiCommandModule(ReflectPropEditCommandModule reflectCm) : Attribut
     public string[] ModuleCommands => ["api"];
 
     [SubCommandModule(["presets"], "Configure API presets")] 
-    public CommandResult CmdPresets()
+    public Res CmdPresets()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Api_Presets));
     }

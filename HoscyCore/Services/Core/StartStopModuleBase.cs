@@ -1,3 +1,4 @@
+using HoscyCore.Utility;
 using Serilog;
 
 namespace HoscyCore.Services.Core;
@@ -21,13 +22,13 @@ public abstract class StartStopModuleBase(ILogger logger) : StartStopServiceBase
     #endregion
 
     #region Start / Stop
-    protected sealed override void StopForService()
+    protected sealed override Res StopForService()
     {
-        StopForModule();
+        var result = StopForModule();
         OnModuleStopped.Invoke(this, EventArgs.Empty);
+        return result;
     }
 
-    // Yes this is horribly named, I am aware
-    protected abstract void StopForModule();
+    protected abstract Res StopForModule();
     #endregion
 }

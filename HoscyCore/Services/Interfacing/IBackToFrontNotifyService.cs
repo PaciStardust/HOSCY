@@ -1,4 +1,5 @@
 using HoscyCore.Services.Core;
+using HoscyCore.Utility;
 
 namespace HoscyCore.Services.Interfacing;
 
@@ -9,6 +10,7 @@ public interface IBackToFrontNotifyService : IService
 {
     public event EventHandler<BackToFrontNotifyEventArgs> OnNotificationSent;
 
+    public void SendResult(string title, ResMsg resMsg);
     public void SendInfo(string title, string content = "", Exception? exception = null);
     public void SendWarning(string title, string content = "", Exception? exception = null);
     public void SendError(string title, string content = "", Exception? exception = null);

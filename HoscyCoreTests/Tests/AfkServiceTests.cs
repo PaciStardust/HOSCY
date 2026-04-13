@@ -8,7 +8,7 @@ using HoscyCoreTests.Utils;
 namespace HoscyCoreTests.Tests.AfkServiceTests;
 #pragma warning restore IDE0130 // Namespace does not match folder structure
 
-public class AfkServiceStartupTests : TestBase<AfkServiceStartupTests>
+public class AfkServiceStartupTests : TestBase<AfkServiceStartupTests> //todo: [TEST++] Are new tests needed with this new system
 {
     private ConfigModel _config = null!;
     private MockOutputManagerService _output = null!;
@@ -32,13 +32,13 @@ public class AfkServiceStartupTests : TestBase<AfkServiceStartupTests>
     [Test]
     public void StartStopRestartTest()
     {
-        _afk.Start();
+        _afk.Start().AssertOk();
         AssertServiceStarted(_afk);
 
-        _afk.Restart();
+        _afk.Restart().AssertOk();
         AssertServiceStarted(_afk);
 
-        _afk.Stop();
+        _afk.Stop().AssertOk();
 
         Assert.That(_output.Notifications, Is.Empty);
         Thread.Sleep(6000);
@@ -48,15 +48,15 @@ public class AfkServiceStartupTests : TestBase<AfkServiceStartupTests>
     [Test]
     public void DoubleStartTest()
     {
-        _afk.Start();
+        _afk.Start().AssertOk();
         AssertServiceStarted(_afk);
 
-        _afk.Stop();
+        _afk.Stop().AssertOk();
 
-        _afk.Start();
+        _afk.Start().AssertOk();
         AssertServiceStarted(_afk);
 
-        _afk.Stop();
+        _afk.Stop().AssertOk();
 
         Assert.That(_output.Notifications, Is.Empty);
         Thread.Sleep(6000);
@@ -66,7 +66,7 @@ public class AfkServiceStartupTests : TestBase<AfkServiceStartupTests>
     [Test]
     public void StartStopRestartWithAfkTest()
     {
-        _afk.Start();
+        _afk.Start().AssertOk();
         AssertServiceStarted(_afk);
 
         _afk.StartAfk();
@@ -76,7 +76,7 @@ public class AfkServiceStartupTests : TestBase<AfkServiceStartupTests>
             Assert.That(_output.Notifications, Has.Count.EqualTo(1));
         }
 
-        _afk.Restart();
+        _afk.Restart().AssertOk();
         using (Assert.EnterMultipleScope())
         {
             AssertServiceStarted(_afk);
@@ -92,7 +92,7 @@ public class AfkServiceStartupTests : TestBase<AfkServiceStartupTests>
             Assert.That(_output.Notifications, Has.Count.EqualTo(3));
         }
 
-        _afk.Stop();
+        _afk.Stop().AssertOk();
 
         Assert.That(_output.Notifications, Has.Count.EqualTo(4));
         Thread.Sleep(6000);
@@ -109,7 +109,7 @@ public class AfkServiceFunctionTests : TestBase<AfkServiceFunctionTests>
     protected override void OneTimeSetupExtra()
     {
         var afk = new AfkService(_config, _output, _logger);
-        afk.Start();
+        afk.Start().AssertOk();
         _afk = afk;
     }
 
@@ -122,7 +122,7 @@ public class AfkServiceFunctionTests : TestBase<AfkServiceFunctionTests>
         if (_afk.GetCurrentStatus() != ServiceStatus.Stopped)
             _afk.StopAfk();
         else 
-            _afk.Start();
+            _afk.Start().AssertOk();
 
         _output.Clear();
 
@@ -224,7 +224,7 @@ public class AfkServiceFunctionTests : TestBase<AfkServiceFunctionTests>
         });
         Assert.That(_output.Notifications[1].Message, Does.StartWith(STATUS), "Wrong afk status message");
 
-        _afk.Stop();
+        _afk.Stop().AssertOk();
         Assert.Multiple(() =>
         {
             Assert.That(_afk.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Started), "Not started");
@@ -233,7 +233,7 @@ public class AfkServiceFunctionTests : TestBase<AfkServiceFunctionTests>
         });
         Assert.That(_output.Notifications[2].Message, Is.EqualTo(RETURN), "Wrong afk stop message");
 
-        _afk.Start();
+        _afk.Start().AssertOk();
         Assert.That(_afk.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Started), "Not started");
 
         Thread.Sleep(6000);
@@ -276,6 +276,6 @@ public class AfkServiceFunctionTests : TestBase<AfkServiceFunctionTests>
 
     protected override void OneTimeTearDownExtra()
     {
-        _afk.Stop();
+        _afk.Stop().AssertOk();
     }
 }

@@ -41,9 +41,15 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
 
     #region Startup
     private bool _startedSignalReceived = false;
-    protected override void StartForService()
+    protected override Res StartForService()
     {
-        _ipcPipe = new(_logger, _config.Debug_LogVerboseExtra);
+        var pipeRes = ResC.TWrapR(() => new IpcSendPipe(_logger, _config.Debug_LogVerboseExtra),
+            "Failed to create IPC pipe", _logger);
+        if (!pipeRes.IsOk) return ResC.Fail(pipeRes.Msg);
+        _ipcPipe = pipeRes.Value;
+
+        var confRes = CreateWhisperConfigArg(_ipcPipe.GetPipeClientHandle());
+        if (!confRes.IsOk) return ResC.Fail(confRes.Msg);
 
         var procPath = Path.Combine(PathUtils.PathExecutableFolder, "HoscyWhisperV2Process");
         var process = new Process()
@@ -54,7 +60,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
                 RedirectStandardError = true,
                 RedirectStandardOutput = true,
                 ErrorDialog = false,
-                Arguments = CreateWhisperConfigArg(_ipcPipe.GetPipeClientHandle())
+                Arguments = confRes.Value
             },
             EnableRaisingEvents = true,
         };
@@ -63,25 +69,29 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
         process.ErrorDataReceived += HandleConsoleOutput;
 
         _startedSignalReceived = false;
-        if (process.Start())
+        var procRes = ResC.TWrapR(process.Start, "Failed to start process", _logger);
+        if (procRes.IsOk && procRes.Value)
         {
             process.BeginErrorReadLine();
             process.BeginOutputReadLine();
             _whisperProcess = process;
         }
+
         if (_whisperProcess is null || OtherUtils.HasProcessExitedSafe(_whisperProcess))
         {
-            _logger.Error("Unable to start whisper process");
+            var message = "Unable to start whisper process";
+            _logger.Error(message);
             PerformCleanup();
-            throw new StartStopServiceException($"Unable to start whisper process");
+            return ResC.Fail(procRes.IsOk ? ResMsg.Ftl(message) : procRes.Msg);
         }
 
         var started = OtherUtils.WaitWhile(() => { return !_startedSignalReceived; }, 5000, 10); 
         if (!started)
         {
-            _logger.Error("Did not receive startup signal from process");
+            var message = "Did not receive startup signal from process";
+            _logger.Error(message);
             PerformCleanup();
-            throw new StartStopServiceException($"Did not receive startup signal from process");
+            return ResC.Fail(ResMsg.Err(message));
         }
         _whisperProcess.Exited += OnUnexpectedProcessExit;
 
@@ -97,9 +107,11 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
         }
 
         _keepAlive = new(_logger, TimeSpan.FromSeconds(10));
-        _keepAlive.OnKeepAliveFailed += Stop;
+        _keepAlive.OnKeepAliveFailed += OnKeepAliveFailed;
         _keepAlive.OnKeepAliveSend += SendKeepAlive;
         _keepAlive.Start();
+
+        return ResC.Ok();
     }
     protected override bool UseAlreadyStartedProtection => true;
 
@@ -113,13 +125,12 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
         return !OtherUtils.HasProcessExitedSafe(_whisperProcess);
     }
 
-    private string CreateWhisperConfigArg(string pipeHandleSend)
+    private Res<string> CreateWhisperConfigArg(string pipeHandleSend)
     {
         if (string.IsNullOrWhiteSpace(_config.Recognition_Whisper_SelectedModel) 
             || !_config.Recognition_Whisper_Models.TryGetValue(_config.Recognition_Whisper_SelectedModel, out var modelPath))
         {
-            _logger.Error("Could not find whisper model in config with name \"{modelName}\"", _config.Recognition_Whisper_SelectedModel);
-            throw new StartStopServiceException($"Could not find whisper model in config with name \"{_config.Recognition_Whisper_SelectedModel}\"");
+            return ResC.TFailLog<string>($"Could not find whisper model in config with name \"{_config.Recognition_Whisper_SelectedModel}\"", _logger);
         }
 
         var args = new WhisperIpcConfig()
@@ -161,22 +172,36 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
             Debug_LogVerboseExtra = _config.Debug_LogVerboseExtra
         };
 
-        var argsJson = JsonConvert.SerializeObject(args, Formatting.None);
-        var argBytes = Encoding.UTF8.GetBytes(argsJson);
-        return Convert.ToBase64String(argBytes);
+        try
+        {
+            var argsJson = JsonConvert.SerializeObject(args, Formatting.None);
+            var argBytes = Encoding.UTF8.GetBytes(argsJson);
+            return ResC.TOk(Convert.ToBase64String(argBytes));
+        }
+        catch (Exception ex)
+        {
+            return ResC.TFailLog<string>("Failed converting whisper config to string", _logger, ex);
+        }
     }
     #endregion
 
     #region Stopping
-    protected override void StopForRecognitionModule()
+    protected override Res StopForRecognitionModule()
     {
         if (_filteredActions.Count > 0)
         {
             LogFilteredActions();
         }
-
         PerformCleanup();
-        return;
+        return ResC.Ok();
+    }
+
+    private void OnKeepAliveFailed()
+    {
+        _logger.Warning("KeepAlive has failed, stopping");
+        var res = Stop();
+        if (!res.IsOk)
+            _logger.Warning("KeepAlive stop has run into an error: {result}", res);
     }
 
     private void PerformCleanup()
@@ -204,7 +229,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
     private void OnUnexpectedProcessExit(object? sender, EventArgs e)
     {
         _logger.Warning("Process stopped unexpectedly!");
-        Stop();
+        Stop().IfFail(x => _logger.Error("Stop failed after unexpected exit ({result})", x)); //todo: [FEAT] Cleanup?
     }
 
     private bool? SendWhisperProcessSignalIfNeeded()
@@ -219,10 +244,11 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
         }
 
         _whisperProcess.Exited -= OnUnexpectedProcessExit;
-        var signalSent = _ipcPipe?.Enqueue(WhisperIpcStatus.IDENTIFIER, new WhisperIpcStatus(false)) ?? false;
-        if (!signalSent)
+        var signalSent = _ipcPipe?.Enqueue(WhisperIpcStatus.IDENTIFIER, new WhisperIpcStatus(false)) ?? ResC.Fail("IPC pipe is null");
+        if (!signalSent.IsOk)
         {
-            _logger.Warning("Unable to queue stop signal to process (pipeExists={exists})", _ipcPipe is not null);
+            _logger.Warning("Unable to queue stop signal to process ({info})",
+                _ipcPipe is null ? "Pipe missing" : signalSent.ToString());
             return false;
         }
     
@@ -272,7 +298,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
     #endregion
 
     #region IPC
-    private void HandleConsoleOutput(object _, DataReceivedEventArgs args)
+    private void HandleConsoleOutput(object _, DataReceivedEventArgs args) //todo: [FIX] Add Base64 encode
     {
         if (args.Data is null || !_ipcConverter.IsValid(args.Data)) return;
 
@@ -284,28 +310,29 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
         switch (id)
         {
             case WhisperIpcLog.IDENTIFIER:
-                if (_ipcConverter.TryDeserialize<WhisperIpcLog>(args.Data, out var resLog))
+                var resLog = _ipcConverter.Deserialize<WhisperIpcLog>(args.Data);
+                if (resLog.IsOk)
                 {
-                    var text = resLog.Trace is null ? resLog.Message : $"{resLog.Message}\n{resLog.Trace}";
-                    _logger.Write(resLog.LogLevel, $"Process: {text}");
+                    var log = resLog.Value;
+                    var text = log.Trace is null ? log.Message : $"{log.Message}\n{log.Trace}";
+                    _logger.Write(log.LogLevel, $"Process: {text}");
                 }
                 return;
 
             case WhisperIpcRecognition.IDENTIFIER:
-                if (_ipcConverter.TryDeserialize<WhisperIpcRecognition>(args.Data, out var resRec))
+                var resRec = _ipcConverter.Deserialize<WhisperIpcRecognition>(args.Data);
+                if (resRec.IsOk)
                 {
-                    ProcessReceivedRecognition(resRec);
+                    ProcessReceivedRecognition(resRec.Value);
                 }
                 return;
                 
             case WhisperIpcStatus.IDENTIFIER:
-                if (_ipcConverter.TryDeserialize<WhisperIpcStatus>(args.Data, out var resSta)) 
+                var resSta = _ipcConverter.Deserialize<WhisperIpcStatus>(args.Data);
+                if (resSta.IsOk && resSta.Value.State) 
                 {
-                    if (resSta.State)
-                    {
-                        _logger.Debug("Received start signal from process");
-                        _startedSignalReceived = true;
-                    }
+                    _logger.Debug("Received start signal from process");
+                    _startedSignalReceived = true;
                 }                
                 return;
 
@@ -314,10 +341,11 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
                 return;
 
             case WhisperIpcMute.IDENTIFIER:
-                if (_ipcConverter.TryDeserialize<WhisperIpcMute>(args.Data, out var resMute))
+                var resMute = _ipcConverter.Deserialize<WhisperIpcMute>(args.Data);
+                if (resMute.IsOk)
                 {
-                    _logger.Debug("Mute status received with value {value}", resMute.State);
-                    _muteSignalReceived = resMute.State;
+                    _logger.Debug("Mute status received with value {value}", resMute.Value.State);
+                    _muteSignalReceived = resMute.Value.State;
                 }
                 return;
 
@@ -339,13 +367,14 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
     public override bool IsListening => _listening;
 
     private bool? _muteSignalReceived = null;
-    protected override bool SetListeningForRecognitionModule(bool state)
+    protected override Res<bool> SetListeningForRecognitionModule(bool state)
     {
-        if (_ipcPipe is null || !_ipcPipe.Enqueue(WhisperIpcMute.IDENTIFIER, new WhisperIpcMute(state)))
+        var enqueueRes = _ipcPipe?.Enqueue(WhisperIpcMute.IDENTIFIER, new WhisperIpcMute(state)) 
+            ?? ResC.Fail(ResMsg.Err("Pipe is missing"));
+        if (!enqueueRes.IsOk)
         {
             _logger.Warning("Unable to send listening status, IPC failure (pipeExists={exists})", _ipcPipe is not null);
-            _notify.SendWarning("Unable to mute", "Process communication currently not possible");
-            return IsListening;
+            return ResC.TFail<bool>(enqueueRes.Msg.WithContext("WhisperIPC"));
         }
 
         _muteSignalReceived = null;
@@ -353,13 +382,12 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
         if (OtherUtils.WaitWhile(() => { return _muteSignalReceived is null; }, 50, 5))
         {
             _listening = _muteSignalReceived!.Value;
+            return ResC.TOk(_listening);
         }
         else
         {
-            _logger.Warning("Failed to receive mute signal to process");
-            _notify.SendWarning("Unable to mute", "Failed to receive mute signal to process");
+            return ResC.TFailLog<bool>("Failed to receive mute signal to process", _logger, lvl: ResMsgLvl.Warning);
         }
-        return IsListening;
     }
     protected override bool UseOnlySetListeningWhenStartedProtection => true;
     #endregion

@@ -1,6 +1,7 @@
 using HoscyCore.Services.Audio;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Recognition.Core;
+using HoscyCore.Utility;
 using Serilog;
 using SoundFlow.Enums;
 
@@ -33,20 +34,29 @@ public class TestRecognitionModule(ILogger logger, IAudioService audio)
 
     #region Start / Stop
 
-    protected override void StartForService()
+    protected override Res StartForService()
     {
-        _mic = _audio.CreateCaptureDeviceProxy();
+        var micRes = _audio.CreateCaptureDeviceProxy();
+        if (!micRes.IsOk) return ResC.Fail(micRes.Msg);
+
+        _mic = micRes.Value;
         _mic.OnAudioProcessed += OnAudioProcessed;
-        _mic.Start();
+        return _mic.Start();
     }
     protected override bool UseAlreadyStartedProtection => true;
 
-    protected override void StopForRecognitionModule()
+    protected override Res StopForRecognitionModule()
     {
-        _mic?.Stop();
-        _mic?.OnAudioProcessed -= OnAudioProcessed;
-        _mic?.Dispose();
-        _mic = null;
+        if (_mic is not null)
+        {
+            var resStop = _mic.Stop();
+            _mic.OnAudioProcessed -= OnAudioProcessed;
+            _mic.Dispose();
+            _mic = null;
+            
+            if (!resStop.IsOk) return resStop;
+        }
+        return ResC.Ok();
     }
 
     protected override bool IsStarted()
@@ -61,10 +71,15 @@ public class TestRecognitionModule(ILogger logger, IAudioService audio)
     #endregion
 
     #region Control
-    protected override bool SetListeningForRecognitionModule(bool state)
+    protected override Res<bool> SetListeningForRecognitionModule(bool state)
     {
-        _mic?.SetListening(state);
-        return IsListening;
+        if (_mic is null)
+        {
+            return ResC.TFailLog<bool>($"Failed to set listening to state {state}, mic is null", _logger);
+        }
+
+        _mic.SetListening(state);
+        return ResC.TOk(IsListening);
     }
     protected override bool UseOnlySetListeningWhenStartedProtection => true;
     #endregion

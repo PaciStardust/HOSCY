@@ -113,40 +113,35 @@ public partial class App : Application
             Logger.Sink = new SerilogAvaloniaSink(_startLogger);
         });
 
-        try
+        var startParams = new HoscyCoreAppStartParameters()
         {
-            var startParams = new HoscyCoreAppStartParameters()
-            {
-                OnProgress = onProgressAction,
-                OnNewLoggerCreated = onNewLoggerLoaded
-            };
-            _coreApp.Start(startParams);
+            OnProgress = onProgressAction,
+            OnNewLoggerCreated = onNewLoggerLoaded
+        };
+
+        var startRes = ResC.Wrap(() => _coreApp.Start(startParams), "Failed to start core app", _startLogger, ResMsgLvl.Fatal);
+        if (startRes.IsOk)
+        {
             onProgressAction.Invoke("Switching to main UI");
-        } catch (Exception ex)
-        {
-            _startLogger.Fatal(ex, "Failed starting Services in background");
-            onProgressAction.Invoke("Unable to load, please check logs");
-            try
+
+            Dispatcher.UIThread.Invoke(() =>
             {
-                _coreApp.Stop();
-            } catch (Exception ex2)
-            {
-                _startLogger.Error(ex2, "Failed to stop Hoscy correcly");
-            }
+                mainWindowModel.CurrentView = new MainMenu()
+                {
+                    DataContext = new MainMenuViewModel()
+                };
+            });
+
             return;
         }
 
-        Dispatcher.UIThread.Invoke(() =>
-        {
-            mainWindowModel.CurrentView = new MainMenu()
-            {
-                DataContext = new MainMenuViewModel()
-            };
-        });
+        _startLogger.Fatal("Failed starting Services in background ({result})", startRes);
+        onProgressAction.Invoke($"Unable to load: {startRes}");
     }
 
     private void OnShutdownRequested(object? sender, ShutdownRequestedEventArgs e)
     {
-        _coreApp.Stop();
+        var res = ResC.Wrap(_coreApp.Stop, "Failed to shut down core app correctly", _startLogger, ResMsgLvl.Fatal);
+        res.IfFail((x) => _startLogger.Error("Failed to shut down core app correctly ({result})", x));
     }
 }

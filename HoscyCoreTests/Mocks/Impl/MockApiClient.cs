@@ -1,5 +1,6 @@
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Network;
+using HoscyCore.Utility;
 
 namespace HoscyCoreTests.Mocks.Impl;
 
@@ -30,28 +31,26 @@ public class MockApiClient : IApiClient
 
     public ApiPresetModel? LoadedModel { get; private set; }
     public bool PresetLoadSuccessful { get; set; } = true;
-    public bool LoadPreset(ApiPresetModel preset)
+    public Res LoadPreset(ApiPresetModel preset)
     {
         LoadedModel = preset;
-        return PresetLoadSuccessful;
+        return PresetLoadSuccessful ? ResC.Ok() : ResC.Fail(ResMsg.Err("Preset load failed"));
     }
 
     public readonly List<byte[]> ReceivedBytes = [];
     public string SendBytesResult = string.Empty;
-    public Task<string> SendBytesAsync(byte[] bytes)
+    public Task<Res<string>> SendBytesAsync(byte[] bytes)
     {
         ReceivedBytes.Add(bytes);
-        ThrowIfNeeded();
-        return Task.FromResult(SendBytesResult);
+        return Task.FromResult(ErrorOnSend ? ResC.TFail<string>(ResMsg.Err("err")) : ResC.TOk(SendBytesResult));
     }
 
     public readonly List<string> ReceivedStrings = [];
     public string SendTextResult = string.Empty;
-    public Task<string> SendTextAsync(string text)
+    public Task<Res<string>> SendTextAsync(string text)
     {
         ReceivedStrings.Add(text);
-        ThrowIfNeeded();
-        return Task.FromResult(SendTextResult);
+        return Task.FromResult(ErrorOnSend ? ResC.TFail<string>(ResMsg.Err("err")) : ResC.TOk(SendTextResult));
     }
 
     public void ClearReceived()
@@ -60,11 +59,5 @@ public class MockApiClient : IApiClient
         ReceivedStrings.Clear();
     }
 
-    public bool ThrowOnceOnSend { get; set; } = false; 
-    private void ThrowIfNeeded()
-    {
-        if (!ThrowOnceOnSend) return;
-        ThrowOnceOnSend = false;
-        throw new Exception();
-    }
+    public bool ErrorOnSend { get; set; } = false; 
 }

@@ -2,6 +2,7 @@ using HoscyCli.Commands.Core;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Input;
+using HoscyCore.Utility;
 
 namespace HoscyCli.Commands.Modules;
 
@@ -18,55 +19,55 @@ public class InputCommandModule(IInputService input, ReflectPropEditCommandModul
 
     #region External
     [SubCommandModule(["e-send-t"], "Send an external text message")]
-    public CommandResult CmdExSendText(string? args)
+    public Res CmdExSendText(string? args)
     {
-        if (OnEmpty(args, "Must provide contents to send")) return CommandResult.MissingParameter;
+        if (OnEmpty(args)) return CResH.MissingParameter("Text Message");
         _input.SendExternalTextMessage(args);
         Console.WriteLine($"Sent external text message: {args}");
-        return CommandResult.Success;   
+        return ResC.Ok();   
     }
 
     [SubCommandModule(["e-send-a"], "Send an external audio message")]
-    public CommandResult CmdExSendAudio(string? args)
+    public Res CmdExSendAudio(string? args)
     {
-        if (OnEmpty(args, "Must provide contents to send")) return CommandResult.MissingParameter;
+        if (OnEmpty(args)) return CResH.MissingParameter("Audio Message");
         _input.SendExternalAudioMessage(args);
         Console.WriteLine($"Sent external audio message: {args}");
-        return CommandResult.Success;   
+        return ResC.Ok();   
     }
 
     [SubCommandModule(["e-send-o"], "Send an external other message")]
-    public CommandResult CmdExSendOther(string? args)
+    public Res CmdExSendOther(string? args)
     {
-        if (OnEmpty(args, "Must provide contents to send")) return CommandResult.MissingParameter;
+        if (OnEmpty(args)) return CResH.MissingParameter("Other Message");
         _input.SendExternalOtherMessage(args);
         Console.WriteLine($"Sent external other message: {args}");
-        return CommandResult.Success;   
+        return ResC.Ok();   
     }
 
     [SubCommandModule(["e-sent-notify-t"], "Send an external notification")]
-    public CommandResult CmdExSendNotifyText(string? args)
+    public Res CmdExSendNotifyText(string? args)
     {
-        if (OnEmpty(args: args, message: "Must provide contents to send")) return CommandResult.MissingParameter;
+        if (OnEmpty(args)) return CResH.MissingParameter("External Notification");
         _input.SendExternalTextNotification(args);
         Console.WriteLine($"Sent external text notification: {args}");
-        return CommandResult.Success;   
+        return ResC.Ok();   
     }
 
     [SubCommandModule(["e-preprocess-full"], "Edit external DoPreprocessFull Flag")]
-    public CommandResult CmdExPreprocessFull()
+    public Res CmdExPreprocessFull()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.ExternalInput_DoPreprocessFull));
     }
 
     [SubCommandModule(["e-preprocess-partial"], "Edit external DoPreprocessPartial Flag")]
-    public CommandResult CmdExPreprocessPartial()
+    public Res CmdExPreprocessPartial()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.ExternalInput_DoPreprocessPartial));
     }
 
     [SubCommandModule(["e-translate"], "Edit external DoTranslate Flag")]
-    public CommandResult CmdExTranslate()
+    public Res CmdExTranslate()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.ExternalInput_DoTranslate));
     }
@@ -74,75 +75,75 @@ public class InputCommandModule(IInputService input, ReflectPropEditCommandModul
 
     #region External
     [SubCommandModule(["m-send"], "Send an manual message")]
-    public CommandResult CmdMaSend(string? args)
+    public Res CmdMaSend(string? args)
     {
-        if (OnEmpty(args, "Must provide contents to send")) return CommandResult.MissingParameter;
+        if (OnEmpty(args)) return CResH.MissingParameter("Manual Message");
         _input.SendManualMessage(args);
         Console.WriteLine($"Sent manual message: {args}");
-        return CommandResult.Success;   
+        return ResC.Ok();   
     }
 
     [SubCommandModule(["m-preprocess-full"], "Edit manual DoPreprocessFull Flag")]
-    public CommandResult CmdMaPreprocessFull()
+    public Res CmdMaPreprocessFull()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.ManualInput_DoPreprocessFull));
     }
 
     [SubCommandModule(["m-preprocess-partial"], "Edit manual DoPreprocessPartial Flag")]
-    public CommandResult CmdMaPreprocessPartial()
+    public Res CmdMaPreprocessPartial()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.ManualInput_DoPreprocessPartial));
     }
 
     [SubCommandModule(["m-translate"], "Edit manual DoTranslate Flag")]
-    public CommandResult CmdMaTranslate()
+    public Res CmdMaTranslate()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.ManualInput_DoTranslate));
     }
 
     [SubCommandModule(["m-audio"], "Edit manual SendViaAudio Flag")]
-    public CommandResult CmdMaSendViaAudio()
+    public Res CmdMaSendViaAudio()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.ManualInput_SendViaAudio));
     }
 
     [SubCommandModule(["m-other"], "Edit manual SendViaOther Flag")]
-    public CommandResult CmdMaSendViaOther()
+    public Res CmdMaSendViaOther()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.ManualInput_SendViaOther));
     }
 
     [SubCommandModule(["m-text"], "Edit manual SendViaText Flag")]
-    public CommandResult CmdMaSendViaText()
+    public Res CmdMaSendViaText()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.ManualInput_SendViaText));
     }
 
     [SubCommandModule(["m-p-edit", "m-p-list"], "Edit manual presets")]
-    public CommandResult CmdMaPresetEdit()
+    public Res CmdMaPresetEdit()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.ManualInput_TextPresets));
     }
 
     [SubCommandModule(["m-p-send"], "Send a manual preset")] 
-    public CommandResult CmdMaPresetSend(string? preset)
+    public Res CmdMaPresetSend(string? preset)
     {
         var presets = _config.ManualInput_TextPresets;
         if (presets.Count == 0)
         {
             Console.WriteLine("No presets were found");
-            return CommandResult.Success;
+            return ResC.Ok();
         }
 
-        if (string.IsNullOrWhiteSpace(preset))
+        if (OnEmpty(preset))
         {
             Console.WriteLine($"All presets: {string.Join("\n", presets.Select(x => $" - {x.Key} : {x.Value}"))}");
-            return CommandResult.NotFound;
+            return CResH.NotFound("Preset");
         }
         
         var match = presets.TryGetValue(preset, out var val);
-        if (OnFalse(match, "Unable to locate preset with specified name"))
-            return CommandResult.NotFound;
+        if (!match)
+            return CResH.NotFound($"Preset with name \"{preset}\"");
 
         return CmdMaSend(val);
     }

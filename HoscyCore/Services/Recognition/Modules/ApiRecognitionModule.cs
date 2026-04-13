@@ -47,41 +47,46 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
     protected override bool IsProcessing()
         => _stream is not null && _mic is not null && _mic.IsStarted && _client.IsPresetLoaded();
 
-    protected override void StartForService()
+    protected override Res StartForService()
     {
         _logger.Debug("Initializing Api Client");
 
         var matchingModel = _config.Api_Presets
             .FirstOrDefault(x => x.Name == _config.Recognition_Api_Preset);
-            
         if (matchingModel is null)
         {
-            _logger.Error("Could not find preset \"{preset}\"", _config.Recognition_Api_Preset);
-            throw new StartStopServiceException($"Could not find preset {_config.Recognition_Api_Preset}");
+            return ResC.FailLog($"Could not find preset \"{_config.Recognition_Api_Preset}\"", _logger);
         }
 
         var loaded = _client.LoadPreset(matchingModel);
-        if (!loaded)
+        if (!loaded.IsOk)
         {
             _logger.Error("Could not find load \"{preset}\"", matchingModel.Name);
-            throw new StartStopServiceException($"Could not load preset {matchingModel.Name}, check logs for more information");
+            return loaded;
         }
 
         _logger.Debug("Starting up audio");
 
         _stream = new();
-        _mic = _audio.CreateCaptureDeviceProxy();
+
+        var micResult = _audio.CreateCaptureDeviceProxy();
+        if (!micResult.IsOk) return ResC.Fail(micResult.Msg);
+
+        _mic = micResult.Value;
         _mic.OnAudioProcessed += OnAudioProcessed;
-        _mic.Start();
+
+        return _mic.Start();
     }
     protected override bool UseAlreadyStartedProtection => true;
 
-    protected override void StopForRecognitionModule()
+    protected override Res StopForRecognitionModule()
     {
+        List<ResMsg> fails = []; 
+
         if (_mic is not null)
         {
             _mic.SetListening(false);
-            _mic.Stop();
+            _mic.Stop().IfFail(fails.Add);
             _mic.Dispose();
             _mic = null;
         }
@@ -94,6 +99,8 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
         {
             _client.ClearPreset();
         }
+
+        return fails.Count == 0 ? ResC.Ok() : ResC.FailM(fails);
     }
     #endregion
 
@@ -101,43 +108,31 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
     public override bool IsListening 
         =>  _mic?.IsListening ?? false;
 
-    protected override bool SetListeningForRecognitionModule(bool state)
+    protected override Res<bool> SetListeningForRecognitionModule(bool state)
     {
-        if (state)
-            StartRecording();
-        else
-            StopRecording();
-
-        return IsListening;
+        var res = state ? StartRecording() : StopRecording();
+        return res.IsOk ? ResC.TOk(IsListening) : ResC.TFail<bool>(res.Msg);
     }
 
     private DateTimeOffset _recordingStartedAt = DateTimeOffset.MaxValue;
-    private void StartRecording()
+    private Res StartRecording()
     {
         if (_stream is null || _mic is null)
         {
             var ex = new ArgumentException("Failed to start listening, some component is missing");
-            _logger.Warning(ex, "Failed to start listening, some component is missing");
             SetFault(ex);
-            return;
+            return ResC.FailLog("Failed to start listening, some component is missing", _logger, ex, ResMsgLvl.Warning); //todo: [FIX] use of exception?
         }
 
         _logger.Debug("Starting listening and clearing stream");
         InitStream(_stream);
 
-        try
-        {
-            _recordingStartedAt = DateTimeOffset.UtcNow;
-            _mic.SetListening(true);
-        }
-        catch (Exception ex)
-        {
-            _logger.Warning(ex, "Failed to start listening");
-            SetFault(ex);
-        }
+        _recordingStartedAt = DateTimeOffset.UtcNow;
+        _mic.SetListening(true);
+        return ResC.Ok();
     }
 
-    private void StopRecording()
+    private Res StopRecording()
     {
         _stream?.Position = 0;
         var streamContents = _stream?.GetBuffer().ToArray();
@@ -149,7 +144,7 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
         if (streamContents is null || streamContents.Length == 0)
         {
             _logger.Warning("No data available in stream");
-            return;
+            return ResC.Ok();
         }
 
         try
@@ -157,11 +152,12 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
             AudioUtils.WriteRestOfWavHeader(streamContents);
             RequestRecognition(streamContents).RunWithoutAwait(); //todo: [FIX] Does not display anywhere on error, should have a CT?
             InitStream(_stream);
+            return ResC.Ok();
         } 
         catch (Exception ex)
         {
-            _logger.Warning(ex, "Failed to stop listening");
             SetFault(ex);
+            return ResC.FailLog("Failed to stop listening", _logger, ex, ResMsgLvl.Warning);
         }
     }
     protected override bool UseOnlySetListeningWhenStartedProtection => true;
@@ -192,7 +188,10 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
     private async Task RequestRecognition(byte[] audioData)
     {
         var result = await _client.SendBytesAsync(audioData);
-        InvokeSpeechRecognized(result);
+        if (result.IsOk)
+        {
+            InvokeSpeechRecognized(result.Value);
+        }
     }
 
     private void InitStream(MemoryStream? stream)

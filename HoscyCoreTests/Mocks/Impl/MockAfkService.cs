@@ -1,4 +1,5 @@
 using HoscyCore.Services.Afk;
+using HoscyCore.Utility;
 using HoscyCoreTests.Mocks.Base;
 
 namespace HoscyCoreTests.Mocks.Impl;
@@ -10,10 +11,10 @@ public class MockAfkService : MockStartStopServiceBase, IAfkService
     {
         AfkRunning = true;
     }
-    public override void Stop()
+    public override Res Stop()
     {
         StopAfk();
-        base.Stop();
+        return base.Stop();
     }
     public void StopAfk()
     {

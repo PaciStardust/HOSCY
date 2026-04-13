@@ -11,7 +11,7 @@ public class HoscyCoreApp(ILogger? initialLogger = null)
     private DiContainer? _container = null;
     private HoscyCoreAppDebug? _debug = null;
 
-    public HoscyCoreApp Start(HoscyCoreAppStartParameters startParameters)
+    public Res Start(HoscyCoreAppStartParameters startParameters)
     {
         var onProgress = startParameters.OnProgress;
         var config = startParameters.PreloadedConfig;
@@ -25,13 +25,9 @@ public class HoscyCoreApp(ILogger? initialLogger = null)
         if (config is null)
         {
             onProgress?.Invoke("Loading Config");
-            config = LaunchUtils.LoadConfigModel(_currentLogger, startParameters.CreateNewConfigIfMissing);
-            if (config is null)
-            {
-                var ex = new ArgumentNullException("Unable to load config file");
-                _currentLogger.Fatal(ex, "Unable to load config file");
-                throw ex;
-            }
+            var configRes = LaunchUtils.LoadConfigModel(_currentLogger, startParameters.CreateNewConfigIfMissing);
+            if (!configRes.IsOk) return ResC.Fail(configRes.Msg);
+            config = configRes.Value;
         }
 
         if (startParameters.CreateLoggerFromConfiguration)
@@ -43,43 +39,56 @@ public class HoscyCoreApp(ILogger? initialLogger = null)
         }
 
         onProgress?.Invoke("Starting external logging");
-        _debug = new(_currentLogger);
-        _debug.Start(startParameters, config);
+        var debug = new HoscyCoreAppDebug(_currentLogger);
+        var resDebug = debug.Start(startParameters, config);
+        if (!resDebug.IsOk) return ResC.Fail(resDebug.Msg);
+        _debug = debug;
 
         onProgress?.Invoke("Loading DI container");
-        _container = DiContainer.CreateWithAssembly(_currentLogger, config, startParameters.AdditionalContainerInserts);
+        var containerRes = DiContainer.CreateWithAssembly(_currentLogger, config, startParameters.AdditionalContainerInserts);
+        if (!containerRes.IsOk) return ResC.Fail(containerRes.Msg);
+        _container = containerRes.Value;
 
-        _container.StartServices(onProgress);
+        var startRes = _container.StartServices(onProgress);
+        if (!startRes.IsOk) return ResC.Fail(startRes.Msg); //todo: [FEAT] cleanup?
+
         onProgress?.Invoke("Done!");
-        return this;
+        return ResC.Ok();
     }
 
-    public void Stop()
+    public Res Stop()
     {
+        List<ResMsg> stopErrors = [];
+
         _currentLogger.Information("Shutting down HOSCY...");
-        try
-        {
-            _container?.GetService<ConfigModel>()?.
-                TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _currentLogger);
-            _container?.StopServices();
-        }
-        catch (Exception ex)
-        {
-            _currentLogger.Fatal(ex, "Unable to stop Services correctly");
-        }
-        _debug?.Stop();
-        _debug = null;
-        _currentLogger.Information("HOSCY has shut down, goodnight!");
-    }
-
-    public DiContainer GetContainer()
-    {
         if (_container is not null)
         {
-            return _container;
+            _container.GetService<ConfigModel>()?.
+                TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _currentLogger);
+            _container.StopServices().IfFail(stopErrors.Add);
+            _container = null;
         }
-        var ex = new ArgumentException("Container was requested but is not available");
-        _currentLogger.Error(ex, "Failed to retrieve container");
-        throw ex;
+
+        _debug?.Stop().IfFail(stopErrors.Add);
+        _debug = null;
+
+        if (stopErrors.Count == 0)
+        {
+            _currentLogger.Information("HOSCY has shut down, goodnight!");
+            return ResC.Ok();
+        }
+        else
+        {
+            var result = ResC.FailM(stopErrors);
+            _currentLogger.Fatal("HOSCY has shut down with errors, goodnight! ({result})", result);
+            return result;
+        }
+    }
+
+    public Res<DiContainer> GetContainer()
+    {
+        return _container is not null
+            ? ResC.TOk(_container)
+            : ResC.TFailLog<DiContainer>("Container was requested but is not available", _currentLogger);
     }
 }

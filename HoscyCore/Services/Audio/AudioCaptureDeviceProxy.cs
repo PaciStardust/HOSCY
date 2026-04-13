@@ -1,5 +1,5 @@
 using System.Buffers;
-using System.Runtime.InteropServices;
+using HoscyCore.Utility;
 using Serilog;
 using SoundFlow.Abstracts.Devices;
 using SoundFlow.Enums;
@@ -14,25 +14,35 @@ public class AudioCaptureDeviceProxy(AudioCaptureDevice wrappedDevice, ILogger l
     public bool IsStarted { get; private set; } = false;
     public bool IsListening { get; private set; } = false;
 
-    public void Start()
+    public Res Start()
     {
-        if (IsStarted) return;
+        if (IsStarted) return ResC.Ok();
 
         _logger.Debug("Starting AudioCaptureDeviceProxy");
-        _wrappedDevice.Start();
-        _wrappedDevice.OnAudioProcessed += HandleAudioProcessed;
-        IsStarted = true;
+        var res = ResC.WrapR(_wrappedDevice.Start, "Failed to start inner audio device", _logger);
+
+        if (res.IsOk)
+        {
+            _wrappedDevice.OnAudioProcessed += HandleAudioProcessed;
+            IsStarted = true;
+        }
+        return res;
     }
 
-    public void Stop()
+    public Res Stop()
     {
-        if (!IsStarted) return;
+        if (!IsStarted) return ResC.Ok();
 
         _logger.Debug("Stopping AudioCaptureDeviceProxy");
         SetListening(false);
-        _wrappedDevice.Stop();
+        var res = ResC.WrapR(_wrappedDevice.Stop, "Failed to stop inner audio device", _logger);
+
+        if (res.IsOk)
+        {
+            IsStarted = false;
+        }
         _wrappedDevice.OnAudioProcessed -= HandleAudioProcessed;
-        IsStarted = false;
+        return res;
     }
 
     public bool SetListening(bool state)
@@ -76,7 +86,7 @@ public class AudioCaptureDeviceProxy(AudioCaptureDevice wrappedDevice, ILogger l
 
     public void Dispose()
     {
-        Stop();
+        Stop(); //Result does not matter
         if (!_wrappedDevice.IsDisposed)
             _wrappedDevice.Dispose();
     }

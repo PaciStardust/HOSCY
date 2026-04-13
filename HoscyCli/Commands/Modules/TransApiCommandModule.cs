@@ -1,6 +1,7 @@
 using HoscyCli.Commands.Core;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
+using HoscyCore.Utility;
 
 namespace HoscyCli.Commands.Modules;
 
@@ -14,7 +15,7 @@ public class TransApiCommandModule(ReflectPropEditCommandModule _reflectCm) : At
     public string[] ModuleCommands => [ "trans-api" ];
 
     [SubCommandModule(["preset"], "Selected API preset for module")]
-    public CommandResult CmdPreset()
+    public Res CmdPreset()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Translation_Api_Preset));
     }

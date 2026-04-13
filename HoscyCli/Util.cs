@@ -1,3 +1,5 @@
+using HoscyCore.Utility;
+
 namespace HoscyCli;
 
 public static class Util

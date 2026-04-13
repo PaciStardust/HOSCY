@@ -1,10 +1,11 @@
 using HoscyCore.Services.Core;
+using HoscyCore.Utility;
 
 namespace HoscyCoreTests.Mocks.Base;
 
 public abstract class MockStartStopModuleBase : MockStartStopServiceBase, IStartStopModule
 {    
-    public Exception? ExceptionToThrow { get; set; } = null;
+    public Res? ResultToReturn { get; set; } = null;
 
     public event EventHandler<Exception> OnRuntimeError = delegate { };
     public event EventHandler OnModuleStopped = delegate { };
@@ -19,21 +20,19 @@ public abstract class MockStartStopModuleBase : MockStartStopServiceBase, IStart
         return ServiceStatus.Stopped;
     }
 
-    public override void Start()
+    public override Res Start()
     {
-        ThrowIfNeeded();
-        base.Start();
+        return ResultToReturn ?? base.Start();
     }
-    public override void Stop()
+    public override Res Stop()
     {
-        base.Stop();
-        ThrowIfNeeded();
+        var res = base.Stop();
         OnModuleStopped.Invoke(this, EventArgs.Empty);
+        return ResultToReturn ?? res;
     }
-    public override void Restart()
+    public override Res Restart()
     {
-        ThrowIfNeeded();
-        base.Restart();
+        return ResultToReturn ?? base.Restart();
     }
 
     protected Exception? _fault = null;
@@ -50,15 +49,9 @@ public abstract class MockStartStopModuleBase : MockStartStopServiceBase, IStart
         }
     }
 
-    private void ThrowIfNeeded()
-    {
-        if (ExceptionToThrow is null) return;
-        throw ExceptionToThrow;
-    }
-
     public virtual void ResetStats()
     {
-        ExceptionToThrow = null;
+        ResultToReturn = null;
         _fault = null;
         OverrideRunningStatus = null;
     }

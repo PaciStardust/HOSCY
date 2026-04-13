@@ -360,27 +360,28 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
     #endregion
 
     #region Start / Stop
-    protected override void StartForService()
+    protected override Res StartForService()
     {
         _cts = new CancellationTokenSource();
         _workerTask = Task.Run(ProcessingLoop);
+        return ResC.Ok();
     }
     protected override bool UseAlreadyStartedProtection => true;
 
-    protected override void StopForModule()
+    protected override Res StopForModule()
     {
         _logger.Debug("Stopping processing loop...");
         _cts?.Cancel();
-        var ex = LaunchUtils.SafelyWaitForTaskWithTimeoutAndLogException(_workerTask, TIMEOUT_WAIT_MS * 2, new StartStopServiceException("Message handling loop failed to stop within time limit"));
-        if (ex is not null)
-        {
-            _logger.Error(ex, "Caught exception while stopping loop");
-        }
+
+        var res = LaunchUtils.SafelyWaitForTaskWithTimeoutAndReturnException(_workerTask, TIMEOUT_WAIT_MS * 2,
+            new StartStopServiceException("Message handling loop failed to stop within time limit"), _logger);
 
         _logger.Debug("Cleanup of internals...");
         _cts?.Dispose();
         _cts = null;
         _workerTask = null;
+
+        return res;
     }
 
     protected override bool IsStarted()

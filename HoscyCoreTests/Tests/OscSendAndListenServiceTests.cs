@@ -47,9 +47,10 @@ public class OscSendAndListenServiceFunctionTests : TestBase<OscSendAndListenSer
     protected override void OneTimeSetupExtra()
     {
         _send = new(_logger, _config, _notify);
-        _listen = new(_config, _logger, _notify, _handler, _relay);
 
-        _listen.Start();
+        var listen = new OscListenService(_config, _logger, _notify, _handler, _relay);
+        listen.Start().AssertOk();
+        _listen = listen;
     }
 
     protected override void SetupExtra()
@@ -63,17 +64,23 @@ public class OscSendAndListenServiceFunctionTests : TestBase<OscSendAndListenSer
         _config.Osc_Relay_IgnoreIfHandled = true;
 
         _config.Osc_Routing_ListenPort = 8642;
-        _listen.Restart();
-        Assert.That(_listen.GetPort(), Is.EqualTo(_config.Osc_Routing_ListenPort));
+        _listen.Restart().AssertOk();
+
+        var portResult = _listen.GetPort();
+        portResult.AssertOk();
+        Assert.That(portResult.Value!, Is.EqualTo(_config.Osc_Routing_ListenPort));
     }
 
     [Test]
     public async Task SendImplicitIpTestAsync()
     {
+        var portResult = _listen.GetPort();
+        portResult.AssertOk();
+
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_config.Osc_Routing_TargetPort, Is.EqualTo(_config.Osc_Routing_ListenPort));
-            Assert.That(_config.Osc_Routing_ListenPort, Is.EqualTo(_listen.GetPort()));
+            Assert.That(_config.Osc_Routing_ListenPort, Is.EqualTo(portResult.Value));
 
             Assert.That(_send.GetDefaultIp(), Is.EqualTo(_config.Osc_Routing_TargetIp));
             Assert.That(_send.GetDefaultPort(), Is.EqualTo(_config.Osc_Routing_TargetPort));
@@ -84,7 +91,7 @@ public class OscSendAndListenServiceFunctionTests : TestBase<OscSendAndListenSer
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(result, Is.True);
+            result.AssertOk();
             Assert.That(_notify.Notifications, Is.Empty);
             Assert.That(_handler.ReceivedMessages, Has.Count.EqualTo(1));
         }
@@ -95,7 +102,7 @@ public class OscSendAndListenServiceFunctionTests : TestBase<OscSendAndListenSer
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(result, Is.True);
+            result.AssertOk();
             Assert.That(_notify.Notifications, Is.Empty);
             Assert.That(_handler.ReceivedMessages, Has.Count.EqualTo(2));
         }
@@ -114,13 +121,14 @@ public class OscSendAndListenServiceFunctionTests : TestBase<OscSendAndListenSer
         _config.Osc_Routing_TargetPort++;
 
         result = _send.SendToDefaultSync("/sync2", true);
-        result &= await _send.SendToDefaultAsync("/async2", true);
+        var result2 = await _send.SendToDefaultAsync("/async2", true);
         _send.SendToDefaultSyncFireAndForget("/forget2", true);
         await Task.Delay(5);
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(result, Is.True);
+            result.AssertOk();
+            result2.AssertOk();
             Assert.That(_notify.Notifications, Is.Empty);
             Assert.That(_handler.ReceivedMessages, Has.Count.EqualTo(3));
         }
@@ -132,7 +140,10 @@ public class OscSendAndListenServiceFunctionTests : TestBase<OscSendAndListenSer
     public async Task SendExplicitIpTestAsync()
     {
         _config.Osc_Routing_TargetPort++;
-        var listenPort = _listen.GetPort()!.Value.ConvertToUshort();
+        var portResult = _listen.GetPort();
+        portResult.AssertOk();
+
+        var listenPort = portResult.Value.ConvertToUshort();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_config.Osc_Routing_TargetPort, Is.Not.EqualTo(_config.Osc_Routing_ListenPort));
@@ -140,13 +151,14 @@ public class OscSendAndListenServiceFunctionTests : TestBase<OscSendAndListenSer
         }
 
         var result = _send.SendSync(_config.Osc_Routing_TargetIp, _config.Osc_Routing_TargetPort, "/sync", true);
-        result &= await _send.SendAsync(_config.Osc_Routing_TargetIp, _config.Osc_Routing_TargetPort, "/async", true);
+        var result2 = await _send.SendAsync(_config.Osc_Routing_TargetIp, _config.Osc_Routing_TargetPort, "/async", true);
         _send.SendSyncFireAndForget(_config.Osc_Routing_TargetIp, _config.Osc_Routing_TargetPort, "/forget", true);
         await Task.Delay(5);
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(result, Is.True);
+            result.AssertOk();
+            result2.AssertOk();
             Assert.That(_notify.Notifications, Is.Empty);
             Assert.That(_handler.ReceivedMessages, Is.Empty);
         }
@@ -156,7 +168,7 @@ public class OscSendAndListenServiceFunctionTests : TestBase<OscSendAndListenSer
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(result, Is.True);
+            result.AssertOk();
             Assert.That(_notify.Notifications, Is.Empty);
             Assert.That(_handler.ReceivedMessages, Has.Count.EqualTo(1));
         }
@@ -167,7 +179,7 @@ public class OscSendAndListenServiceFunctionTests : TestBase<OscSendAndListenSer
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(result, Is.True);
+            result.AssertOk();
             Assert.That(_notify.Notifications, Is.Empty);
             Assert.That(_handler.ReceivedMessages, Has.Count.EqualTo(2));
         }
@@ -196,7 +208,7 @@ public class OscSendAndListenServiceFunctionTests : TestBase<OscSendAndListenSer
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(result, Is.True);
+            result.AssertOk();
             Assert.That(_handler.ReceivedMessages, Has.Count.EqualTo(1));
         }
         using (Assert.EnterMultipleScope())
@@ -214,13 +226,13 @@ public class OscSendAndListenServiceFunctionTests : TestBase<OscSendAndListenSer
     public void SenderErrorHandlingTest()
     {
         var result = _send.SendSync("notAnIp", _config.Osc_Routing_TargetPort, "/test", false);
-        Assert.That(result, Is.False);
+        result.AssertFail();
 
         result = _send.SendSync(_config.Osc_Routing_TargetIp, 0, "/test", false);
-        Assert.That(result, Is.False);
+        result.AssertFail();
 
         result = _send.SendSync(_config.Osc_Routing_TargetIp, _config.Osc_Routing_TargetPort, "/test", this);
-        Assert.That(result, Is.False);
+        result.AssertFail();
 
         Thread.Sleep(10);
 
@@ -242,7 +254,7 @@ public class OscSendAndListenServiceFunctionTests : TestBase<OscSendAndListenSer
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(result, Is.True);
+            result.AssertOk();
             Assert.That(_notify.Notifications, Has.Count.EqualTo(0));
             Assert.That(_handler.ReceivedMessages, Has.Count.EqualTo(1));
             Assert.That(_relay.ReceivedMessages, Has.Count.EqualTo(1));
@@ -263,7 +275,7 @@ public class OscSendAndListenServiceFunctionTests : TestBase<OscSendAndListenSer
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(result, Is.True);
+            result.AssertOk();
             Assert.That(_notify.Notifications, Has.Count.EqualTo(0));
             Assert.That(_handler.ReceivedMessages, Has.Count.EqualTo(2));
             Assert.That(_relay.ReceivedMessages, Has.Count.EqualTo(1));
@@ -283,7 +295,7 @@ public class OscSendAndListenServiceFunctionTests : TestBase<OscSendAndListenSer
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(result, Is.True);
+            result.AssertOk();
             Assert.That(_notify.Notifications, Has.Count.EqualTo(0));
             Assert.That(_handler.ReceivedMessages, Has.Count.EqualTo(3));
             Assert.That(_relay.ReceivedMessages, Has.Count.EqualTo(2));
@@ -304,7 +316,7 @@ public class OscSendAndListenServiceFunctionTests : TestBase<OscSendAndListenSer
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(result, Is.True);
+            result.AssertOk();
             Assert.That(_notify.Notifications, Has.Count.EqualTo(0));
             Assert.That(_handler.ReceivedMessages, Has.Count.EqualTo(4));
             Assert.That(_relay.ReceivedMessages, Has.Count.EqualTo(3));
@@ -321,6 +333,6 @@ public class OscSendAndListenServiceFunctionTests : TestBase<OscSendAndListenSer
 
     protected override void OneTimeTearDownExtra()
     {
-        _listen.Stop();
+        _listen.Stop().AssertOk();
     }
 }

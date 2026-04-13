@@ -1,4 +1,5 @@
 using HoscyCore.Services.Core;
+using HoscyCore.Utility;
 
 namespace HoscyCoreTests.Mocks.Base;
 
@@ -11,9 +12,9 @@ public abstract class MockSoloModuleManagerBase<TModuleStartInfo> : MockStartSto
         return CurrentModuleStatus;
     }
 
-    public TModuleStartInfo? GetCurrentModuleInfo()
+    public Res<TModuleStartInfo> GetCurrentModuleInfo()
     {
-        return null;
+        return ResC.TFail<TModuleStartInfo>(ResMsg.Err("No module available"));
     }
 
     public IReadOnlyList<TModuleStartInfo> GetModuleInfos()
@@ -21,18 +22,18 @@ public abstract class MockSoloModuleManagerBase<TModuleStartInfo> : MockStartSto
         return [];
     }
 
-    public bool StartModule()
+    public Res StartModule()
     {
-        return true;
+        return ResC.Ok();
     }
 
-    public bool RestartModule()
+    public Res RestartModule()
     {
-        return true;
+        return ResC.Ok();
     }
 
-    public bool StopModule()
+    public Res StopModule()
     {
-        return true;
+        return ResC.Ok();
     }
 }

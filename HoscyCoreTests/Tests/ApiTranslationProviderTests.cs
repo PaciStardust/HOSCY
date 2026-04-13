@@ -29,7 +29,7 @@ public class ApiTranslationProviderStartupTests : TestBase<ApiTranslationProvide
     public void InvalidModelTest()
     {
         _config.Translation_Api_Preset = "Test";
-        Assert.That(_provider.Start, Throws.Exception);
+        _provider.Start().AssertFail();
     }
 
     [Test]
@@ -39,8 +39,7 @@ public class ApiTranslationProviderStartupTests : TestBase<ApiTranslationProvide
         _config.Api_Presets.Add(new() { Name = "Test" });
 
         _client.PresetLoadSuccessful = false;
-
-        Assert.That(_provider.Start, Throws.Exception);
+        _provider.Start().AssertFail();
     }
 
     [TestCase(false, false), TestCase(true, false), TestCase(false, true)]
@@ -52,22 +51,22 @@ public class ApiTranslationProviderStartupTests : TestBase<ApiTranslationProvide
 
         _client.PresetLoadSuccessful = true;
 
-        _provider.Start();
+        _provider.Start().AssertOk();
         using (Assert.EnterMultipleScope()) {
             AssertServiceProcessing(_provider);
             Assert.That(_client.LoadedModel, Is.EqualTo(preset));
         }
 
         if (restartNotStart)
-            _provider.Restart();
+            _provider.Restart().AssertOk();
         else 
-            _provider.Start();
+            _provider.Start().AssertOk();
         using (Assert.EnterMultipleScope()) {
             AssertServiceProcessing(_provider);
             Assert.That(_client.LoadedModel, Is.EqualTo(preset));
         }
 
-        _provider.Stop();
+        _provider.Stop().AssertOk();
         using (Assert.EnterMultipleScope()) {
             AssertServiceStopped(_provider);
             Assert.That(_client.LoadedModel, Is.Null);
@@ -75,13 +74,13 @@ public class ApiTranslationProviderStartupTests : TestBase<ApiTranslationProvide
 
         if (!doAgain) return;
 
-        _provider.Start();
+        _provider.Start().AssertOk();
         using (Assert.EnterMultipleScope()) {
             AssertServiceProcessing(_provider);
             Assert.That(_client.LoadedModel, Is.EqualTo(preset));
         }
 
-        _provider.Stop();
+        _provider.Stop().AssertOk();
         using (Assert.EnterMultipleScope()) {
             AssertServiceStopped(_provider);
             Assert.That(_client.LoadedModel, Is.Null);
@@ -102,15 +101,16 @@ public class ApiTranslationProviderFunctionTests : TestBase<ApiTranslationProvid
         _config.Api_Presets.Add(new() { Name = "Test" });
         _config.Translation_Api_Preset = "Test";
 
-        _provider = new(_logger, _config, _client);
-
-        _provider.Start();
+        var provider = new ApiTranslationModule(_logger, _config, _client);
+        provider.Start().AssertOk();
+        _provider = provider;
     }
 
     protected override void SetupExtra()
     {
         _client.ClearReceived();
         _provider.ClearFault();
+        _client.ErrorOnSend = false;
     }
 
     [Test]
@@ -148,7 +148,7 @@ public class ApiTranslationProviderFunctionTests : TestBase<ApiTranslationProvid
     public void ExceptionTest()
     {
         _client.SendTextResult = "Yay";
-        _client.ThrowOnceOnSend = true;
+        _client.ErrorOnSend = true;
 
         var result = _provider.TryTranslate("Test", out var output);
 
@@ -181,6 +181,6 @@ public class ApiTranslationProviderFunctionTests : TestBase<ApiTranslationProvid
 
     protected override void OneTimeTearDownExtra()
     {
-        _provider.Stop();
+        _provider.Stop().AssertOk();
     }
 }

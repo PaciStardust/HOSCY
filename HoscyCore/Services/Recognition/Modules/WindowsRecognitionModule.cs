@@ -42,26 +42,32 @@ public class WindowsRecognitionModule : WindowsRecognitionModuleBase
     #endregion
 
     #region Start / Stop
-    protected override void StartForService()
+    protected override Res StartForService()
     {
-        var engine = CreateEngine();
-        engine.LoadGrammar(new DictationGrammar());
-        engine.SpeechDetected += HandleSpeechDetected;
-        engine.SpeechRecognized += HandleSpeechRecognized;
-        engine.SetInputToDefaultAudioDevice();
-        _engine = engine;
+        var engineResult = CreateEngine();
+        if (!engineResult.IsOk) return ResC.Fail(engineResult.Msg); 
+
+        _engine = engineResult.Value;
+        _engine.LoadGrammar(new DictationGrammar());
+        _engine.SpeechDetected += HandleSpeechDetected;
+        _engine.SpeechRecognized += HandleSpeechRecognized;
+
+        var audioSetResult = ResC.WrapR(_engine.SetInputToDefaultAudioDevice, "Failed to set audio device", _logger);
+        return audioSetResult;
     }
     protected override bool UseAlreadyStartedProtection => true;
 
-    protected override void StopForRecognitionModule()
+    protected override Res StopForRecognitionModule()
     {
         if (_engine is not null)
         {
-            _engine.RecognizeAsyncCancel();
+            var res = ResC.WrapR(_engine.RecognizeAsyncCancel, "Failed to cancel recognition", _logger);
             _engine.SpeechRecognized -= HandleSpeechRecognized;
             _engine.SpeechDetected -= HandleSpeechDetected;
             _engine.Dispose();
+            return res;
         }
+        return ResC.Ok();
     }
 
     protected override bool IsStarted()
@@ -79,7 +85,7 @@ public class WindowsRecognitionModule : WindowsRecognitionModuleBase
     public override bool IsListening => _isListening;
     private bool _isListening = false;
 
-    protected override bool SetListeningForRecognitionModule(bool state)
+    protected override Res<bool> SetListeningForRecognitionModule(bool state)
     {
         try
         {
@@ -98,11 +104,11 @@ public class WindowsRecognitionModule : WindowsRecognitionModuleBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed changing listening state to {requestedState}", state);
-            SetFault(ex); //todo: [REFACTOR] Should set fault not also provide a message maybe, also warnings?
+            SetFault(ex); //todo: [REFACTOR] Should set fault not also provide a message maybe, also warnings or also just set fault globally?
+            return ResC.TFailLog<bool>($"Failed changing listening state to {state}", _logger, ex);
         }
 
-        return IsListening;
+        return ResC.TOk(IsListening);
     }
     protected override bool UseOnlySetListeningWhenStartedProtection => true;
     #endregion

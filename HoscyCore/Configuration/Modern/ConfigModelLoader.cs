@@ -1,4 +1,5 @@
 using System.Text;
+using HoscyCore.Utility;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -12,7 +13,7 @@ public static class ConfigModelLoader
     /// Loads a ConfigModel from a file
     /// </summary>
     /// <returns>Null when no config could be loaded</returns>
-    public static ConfigModel? TryLoad(string cfgFolder, string cfgFilename, ILogger logger)
+    public static Res<ConfigModel>? TryLoad(string cfgFolder, string cfgFilename, ILogger logger)
     {
         var path = Path.Combine(cfgFolder, cfgFilename);
         logger.Information("Attempting to load Config at path \"{configPath}\"", path);
@@ -24,17 +25,15 @@ public static class ConfigModelLoader
             TryCreateRawBackup(configData, path + ".backup", logger);
             var newData = JsonConvert.DeserializeObject<ConfigModel>(configData);
             if (newData is not null)
-                return newData;
+                return ResC.TOk(newData);
         }
         catch (JsonReaderException ex)
         {
-            logger.Error(ex, "Unable to read JSON file at \"{configPath}\" correctly", path);
-            throw;
+            return ResC.TFailLog<ConfigModel>($"Unable to read JSON file at \"{path}\" correctly", logger, ex);
         }
         catch (Exception ex)
         {
-            logger.Error(ex, "Unexpected error while reading JSON file at \"{configPath}\"", path);
-            throw;
+            return ResC.TFailLog<ConfigModel>($"Unexpected error while reading JSON file at \"{path}\"", logger, ex);
         }
 
         return null;
@@ -73,7 +72,7 @@ public static class ConfigModelLoader
     /// Writes the raw text of a loaded config into a file
     /// </summary>
     /// <returns>Success</returns>
-    private static bool TryCreateRawBackup(string contents, string path, ILogger logger)
+    private static void TryCreateRawBackup(string contents, string path, ILogger logger)
     {
         try
         {
@@ -83,16 +82,14 @@ public static class ConfigModelLoader
         }
         catch (Exception ex)
         {
-            logger.Error(ex, "Failed creation of backup of config file at \"{backupPath}\"", path);
-            return false;
+            logger.Error(ex, $"Failed creation of backup of config file at \"{path}\"");
         }
-        return true;
     }
 
     /// <summary>
     /// Upgrades a ConfigModel to the newest version
     /// </summary>
-    public static ConfigModel Upgrade(this ConfigModel config, ILogger logger)
+    public static Res Upgrade(this ConfigModel config, ILogger logger)
     {
         Dictionary<int, Action> steps = new()
         {
@@ -197,7 +194,7 @@ public static class ConfigModelLoader
         if (config.ConfigVersion == newestVersion)
         {
             logger.Debug("Config is already at version {newestVersion}, skipping upgrade", newestVersion);
-            return config;
+            return ResC.Ok();
         }
         logger.Information("Config is at version {currentVersion}, newest is {newestVersion}, starting upgrade", config.ConfigVersion, newestVersion);
 
@@ -211,12 +208,12 @@ public static class ConfigModelLoader
             }
             catch (Exception ex)
             {
-                logger.Error(ex, "Failed to upgrade config from version {oldVersion} to version {newVersion}, newest is {newestVersion}", config.ConfigVersion, version, newestVersion);
-                throw;
+                var message = $"Failed to upgrade legacy config from version {config.ConfigVersion} to version {version}, newest is {newestVersion}";
+                return ResC.FailLog(message, logger, ex);
             }
             logger.Debug("Upgraded config from version {oldVersion} to version {newVersion}, newest is {newestVersion}", config.ConfigVersion, version, newestVersion);
         }
         logger.Debug("Finished upgrading config to version {newestVersion}", newestVersion);
-        return config;
+        return ResC.Ok();
     }
 }

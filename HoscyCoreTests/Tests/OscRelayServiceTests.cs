@@ -30,7 +30,7 @@ public class OscRelayServiceStartupTests : TestBase<OscRelayServiceStartupTests>
     {
         AssertServiceStopped(_relay);
         
-        _relay.Start();
+        _relay.Start().AssertOk();
         AssertServiceStarted(_relay);
 
         _config.Osc_Relay_Filters.Add(new()
@@ -42,13 +42,13 @@ public class OscRelayServiceStartupTests : TestBase<OscRelayServiceStartupTests>
         });
 
         if (restartNotStart)
-            _relay.Restart();
+            _relay.Restart().AssertOk();
         else
-            _relay.Start();
+            _relay.Start().AssertOk();
             
         AssertServiceProcessing(_relay);
 
-        _relay.Stop();
+        _relay.Stop().AssertOk();
         AssertServiceStopped(_relay);
     }
 }
@@ -63,16 +63,17 @@ public class OscRelayServiceFunctionTests : TestBase<OscRelayServiceFunctionTest
     protected override void OneTimeSetupExtra()
     {
         _sender = new(_config);
-        _relay = new(_logger, _config, _sender, _notify);
 
-        _relay.Start();
+        var relay = new OscRelayService(_logger, _config, _sender, _notify);
+        relay.Start().AssertOk();
+        _relay = relay;
     }
 
     protected override void SetupExtra()
     {
         _sender.Clear();
         _config.Osc_Relay_Filters.Clear();
-        _relay.Restart();
+        _relay.Restart().AssertOk();
         AssertServiceStarted(_relay);
     }
 
@@ -114,7 +115,7 @@ public class OscRelayServiceFunctionTests : TestBase<OscRelayServiceFunctionTest
                 Enabled = false
             }
         ]);
-        _relay.Restart();
+        _relay.Restart().AssertOk();
 
         var invalidFilters = _relay.GetInvalidFilterNames();
         using (Assert.EnterMultipleScope())
@@ -170,7 +171,7 @@ public class OscRelayServiceFunctionTests : TestBase<OscRelayServiceFunctionTest
             }
         ]);
 
-        _relay.Restart();
+        _relay.Restart().AssertOk();
         Assert.That(_sender.ReceivedMessages, Has.Count.EqualTo(3));
         _sender.Clear();
 
@@ -194,6 +195,6 @@ public class OscRelayServiceFunctionTests : TestBase<OscRelayServiceFunctionTest
 
     protected override void OneTimeTearDownExtra()
     {
-        _relay.Stop();
+        _relay.Stop().AssertOk();
     }
 }

@@ -1,4 +1,5 @@
 using HoscyCore.Services.Interfacing;
+using HoscyCore.Utility;
 
 namespace HoscyCoreTests.Mocks.Impl;
 
@@ -32,6 +33,13 @@ public class MockBackToFrontNotifyService : IBackToFrontNotifyService
     public void SendWarning(string title, string content = "", Exception? exception = null)
     {
         var args = new BackToFrontNotifyEventArgs(BackToFrontNotifyLevel.Warning, title, content, exception);
+        Notifications.Add(args);
+        OnNotificationSent?.Invoke(this, args);
+    }
+
+    public void SendResult(string title, ResMsg resMsg)
+    {
+        var args = new BackToFrontNotifyEventArgs(BackToFrontNotifyLevel.Error, title, resMsg.Message, null);
         Notifications.Add(args);
         OnNotificationSent?.Invoke(this, args);
     }

@@ -1,4 +1,6 @@
 using HoscyCore.Services.Core;
+using HoscyCore.Services.Dependency;
+using HoscyCore.Utility;
 
 namespace HoscyCoreTests.Mocks.Impl;
 
@@ -6,13 +8,14 @@ public class MockContainerBulkLoader<T>(Func<IEnumerable<T>> instanceGenerator) 
 {
     private readonly Func<IEnumerable<T>> _instanceGenerator = instanceGenerator;
 
-    public T? GetInstance(Type type)
+    public Res<T> GetInstance(Type type)
     {
-        return _instanceGenerator().FirstOrDefault(x => x.GetType() == type);
+        var inst = _instanceGenerator().FirstOrDefault(x => x.GetType() == type);
+        return inst is null ? ResC.TFail<T>(ResMsg.Err("No instance found")) : ResC.TOk(inst);
     }
 
-    public IEnumerable<T> GetInstances()
+    public Res<List<T>> GetInstances()
     {
-        return _instanceGenerator();
+        return ResC.TOk(_instanceGenerator().ToList());
     }
 }

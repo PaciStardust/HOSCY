@@ -6,6 +6,7 @@ using Serilog.Extensions.Logging;
 using Vrc = VRC.OSCQuery;
 using Timer = System.Timers.Timer;
 using HoscyCore.Services.Core;
+using HoscyCore.Utility;
 
 namespace HoscyCore.Services.Osc.Query;
 
@@ -21,28 +22,16 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
     private Timer? _serviceRefreshTimer = null;
 
     #region Start/Stop
-    protected override void StartForService()
+    protected override Res StartForService()
     {
         var udpPort = _listener.GetPort();
-        if (!udpPort.HasValue)
-        {
-            _logger.Error("Could not retrieve UDP Port from OscListenService");
-            throw new StartStopServiceException("Could not retrieve UDP Port from OscListenService");
-        }
-
-        var msftLogger = new SerilogLoggerFactory(_logger)
-            .CreateLogger<Vrc.OSCQueryService>();
+        if (!udpPort.IsOk) return ResC.Fail(udpPort.Msg);
 
         var id = Guid.NewGuid().ToString()[..8];
-        var tcpPort = Vrc.Extensions.GetAvailableTcpPort();
-        var oscQuery = new Vrc.OSCQueryServiceBuilder()
-            .WithServiceName($"HOSCY-{id}")
-            .WithTcpPort(tcpPort)
-            .WithUdpPort(udpPort.Value)
-            .WithLogger(msftLogger)
-            .WithDefaults()
-            .Build();
+        var serviceResult = CreateQueryService(id, udpPort.Value);
+        if (!serviceResult.IsOk) return ResC.Fail(serviceResult.Msg);
 
+        var (tcpPort, oscQuery) = serviceResult.Value;
         _logger.Debug("Runnung OscQuery with UDP {udp}, TCP {tcp} and ID {id}", udpPort.Value, tcpPort, id);
 
         oscQuery.AddEndpoint("/*", "[,]", Vrc.Attributes.AccessValues.ReadWrite, null,
@@ -58,10 +47,39 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
         var timer = CreateRefreshTimer(_oscQuery, _hostRegistry, 5000);
         timer.Start();
         _serviceRefreshTimer = timer;
+
+        return ResC.Ok();
     }
     protected override bool UseAlreadyStartedProtection => true;
 
-    protected override void StopForService()
+    private Res<(int TcpPort, Vrc.OSCQueryService QueryService)> CreateQueryService(string id, int udpPort) 
+    {
+        var msftLogger = new SerilogLoggerFactory(_logger)
+            .CreateLogger<Vrc.OSCQueryService>();
+
+        Vrc.OSCQueryService? service = null;
+        try
+        {
+            var tcp = Vrc.Extensions.GetAvailableTcpPort();
+            service = new Vrc.OSCQueryServiceBuilder()
+                .WithServiceName($"HOSCY-{id}")
+                .WithTcpPort(tcp)
+                .WithUdpPort(udpPort)
+                .WithLogger(msftLogger)
+                .WithDefaults()
+                .Build();
+
+            return ResC.TOk((tcp, service));
+        } 
+        catch (Exception ex)
+        {
+            var res = ResC.TFailLog<(int, Vrc.OSCQueryService)>("Failed creating OSCQueryService", _logger, ex);
+            service?.Dispose();
+            return res;
+        }
+    }
+
+    protected override Res StopForService()
     {
         _logger.Debug("Stopping refresh timer");
         _serviceRefreshTimer?.Stop();
@@ -72,6 +90,8 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
         _oscQuery?.Dispose();
         _oscQuery = null;
         _hostRegistry.Clear();
+
+        return ResC.Ok();
     }
 
     protected override bool IsStarted()
@@ -85,17 +105,14 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
     /// <summary>
     /// Safely adds HostInfo to list
     /// </summary>
-    private void TryAddHostInfoFromServiceProfile(Vrc.OSCQueryServiceProfile profile)
+    private Res TryAddHostInfoFromServiceProfile(Vrc.OSCQueryServiceProfile profile)
     {
-        try
+        var res = _hostRegistry.AddHostInfoFromServiceProfile(profile);
+        res.IfFail((x) =>
         {
-            _hostRegistry.AddHostInfoFromServiceProfile(profile);
-        }
-        catch (Exception ex)
-        {
-            _logger.Warning(ex, "Failed to add HostInfo");
-            _notify.SendWarning("Failed to add Hostinfo", exception: ex);
-        }
+            _notify.SendResult("Failed to add Hostinfo", x);
+        });
+        return res;
     }
 
     /// <summary>

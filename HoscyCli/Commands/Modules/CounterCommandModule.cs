@@ -1,6 +1,7 @@
 using HoscyCli.Commands.Core;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
+using HoscyCore.Utility;
 
 namespace HoscyCli.Commands.Modules;
 
@@ -14,25 +15,25 @@ public class CounterCommandModule(ReflectPropEditCommandModule _reflectCm) : Att
     public string[] ModuleCommands => ["counters"];
 
     [SubCommandModule(["show"], "Show counter notifications")]
-    public CommandResult CmdShow()
+    public Res CmdShow()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Counters_ShowNotification));
     }
 
     [SubCommandModule(["edit", "list"], "Edit counters")]
-    public CommandResult CmdEdit()
+    public Res CmdEdit()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Counters_List));
     }
 
     [SubCommandModule(["dsp-duration"], "How long counters should be displayed after change (in seconds)")]
-    public CommandResult CmdDspDuration()
+    public Res CmdDspDuration()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Counters_DisplayDurationSeconds));
     }
 
     [SubCommandModule(["dsp-cooldown"], "How long between counter notifications (in seconds)")]
-    public CommandResult CmdDspCooldown()
+    public Res CmdDspCooldown()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Counters_DisplayCooldownSeconds));
     }

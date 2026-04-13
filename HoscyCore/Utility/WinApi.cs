@@ -7,8 +7,7 @@ namespace HoscyCore.Utility;
 public static class WinApi
 {
     static WinApi() {
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            throw new PlatformNotSupportedException("This class is only supported on Windows!");
+        OtherUtils.ThrowOnInvalidPlatform([OSPlatform.Windows]);
     }
 
 

@@ -22,10 +22,12 @@ public class ConfigFunctionTests : TestBase<ConfigFunctionTests>
         var saveRes = createdConfig.TrySave(_tempFolder, TEST_CONFIGNAME, _logger);
         Assert.That(saveRes, "Unable to save config");
 
-        var loadedConfig = ConfigModelLoader.TryLoad(_tempFolder, TEST_CONFIGNAME, _logger);
-        Assert.That(loadedConfig, Is.Not.Null, "Config could not be loaded");
+        var configResult = ConfigModelLoader.TryLoad(_tempFolder, TEST_CONFIGNAME, _logger);
+        Assert.That(configResult, Is.Not.Null, "Config could not be loaded");
 
-        Assert.That(loadedConfig.Afk_StartText, Is.EqualTo(createdConfig.Afk_StartText), "Loaded config does not match created config");
+        configResult.AssertOk();
+        Assert.That(configResult.Value!.Afk_StartText, Is.EqualTo(createdConfig.Afk_StartText),
+            "Loaded config does not match created config");
     }
 
     [Test]
@@ -33,13 +35,14 @@ public class ConfigFunctionTests : TestBase<ConfigFunctionTests>
     {
         var legacyConfig = LegacyConfigModelLoader.TryLoad(TestUtils.GetResourceFolder(), "old-config.json", _logger);
         Assert.That(legacyConfig, Is.Not.Null, "Failed to load legacy config");
+        legacyConfig.AssertOk();
     }
 
     [Test]
     public void UpgradeLegacy()
     {
         var legacyConfig = new LegacyConfigModel();
-        legacyConfig.Upgrade(_logger);
+        legacyConfig.Upgrade(_logger).AssertOk();
         Assert.That(legacyConfig.ConfigVersion, Is.GreaterThan(0), "Legacy config did not get upgraded");
     }
 
@@ -47,7 +50,7 @@ public class ConfigFunctionTests : TestBase<ConfigFunctionTests>
     public void UpgradeModern()
     {
         var config = new ConfigModel();
-        config.Upgrade(_logger);
+        config.Upgrade(_logger).AssertOk();
         Assert.That(config.ConfigVersion, Is.GreaterThan(0), "Config did not get upgraded");
     }
 
@@ -56,9 +59,12 @@ public class ConfigFunctionTests : TestBase<ConfigFunctionTests>
     {
         const string TEST_VALUE = "I am a test value";
 
-        var legacyConfig = LegacyConfigModelLoader.TryLoad(TestUtils.GetResourceFolder(), "old-config.json", _logger);
-        Assert.That(legacyConfig, Is.Not.Null, "Failed to load legacy config");
-        legacyConfig.Osc.AfkStartText = TEST_VALUE;
+        var legacyConfigResult = LegacyConfigModelLoader.TryLoad(TestUtils.GetResourceFolder(), "old-config.json", _logger);
+        Assert.That(legacyConfigResult, Is.Not.Null, "Failed to load legacy config");
+        legacyConfigResult.AssertOk();
+
+        var legacyConfig = legacyConfigResult.Value;
+        legacyConfig!.Osc.AfkStartText = TEST_VALUE;
 
         var newConfig = legacyConfig.Migrate(_logger);
         Assert.That(newConfig, Is.Not.Null, "Failed to migrate legacy config");

@@ -31,8 +31,9 @@ public class AudioServiceFunctionTests : TestBase<AudioServiceFunctionTests>
 
     protected override void OneTimeSetupExtra()
     {
-        _audioService = new(_logger, _config);
-        _audioService.Start();
+        var audioService = new AudioService(_logger, _config);
+        audioService.Start().AssertOk();
+        _audioService = audioService;
     }
 
     [Test]
@@ -51,6 +52,6 @@ public class AudioServiceFunctionTests : TestBase<AudioServiceFunctionTests>
 
     protected override void OneTimeTearDownExtra()
     {
-        _audioService.Stop();
+        _audioService.Stop().AssertOk();
     }
 }

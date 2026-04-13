@@ -1,4 +1,3 @@
-using HoscyCore.Services.Core;
 using HoscyCore.Utility;
 using Serilog;
 
@@ -10,14 +9,22 @@ public class ContainerBulkLoader<T>(IServiceProvider serviceProvider, ILogger lo
     private readonly IServiceProvider _serviceProvider = serviceProvider;
     private readonly ILogger _logger = logger.ForContext(typeof(ContainerBulkLoader<>));
 
-    public IEnumerable<T> GetInstances()
+    public Res<List<T>> GetInstances()
     {
-        return LaunchUtils.GetImplementationsInContainerForClass<T>(_serviceProvider, _logger).ToArray();
+        return LaunchUtils.GetImplementationsInContainerForClass<T>(_serviceProvider, _logger);
     }
 
-    public T? GetInstance(Type type)
+    public Res<T> GetInstance(Type type)
     {
         var instance = _serviceProvider.GetService(type);
-        return instance is T correctType ? correctType : null;
+        if (instance is T correctType)
+        {
+            _logger.Debug("Retrieved instance of type {type} for requested type {requestedType}",
+                instance.GetType().FullName, type.FullName);
+            return ResC.TOk(correctType);
+        }
+
+        _logger.Warning("Failed to retrieve instance of type \"{type}\"", type.FullName);
+        return ResC.TFail<T>(ResMsg.Err($"Failed to retrieve instance of type \"{type.Name}\""));
     }
 }

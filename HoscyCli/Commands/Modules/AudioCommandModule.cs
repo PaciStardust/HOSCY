@@ -2,6 +2,7 @@ using HoscyCli.Commands.Core;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Audio;
 using HoscyCore.Services.Dependency;
+using HoscyCore.Utility;
 
 namespace HoscyCli.Commands.Modules;
 
@@ -16,40 +17,43 @@ public class AudioCommandModule(IAudioService audio, ReflectPropEditCommandModul
     public string[] ModuleCommands => ["audio"];
 
     [SubCommandModule(["devices"], "List all devices")]
-    public CommandResult CmdDevices()
+    public Res CmdDevices()
     {
-        var mics = _audio.GetCaptureDevices();
-        var speakers = _audio.GetPlaybackDevices();
+        var micResult = _audio.GetCaptureDevices();
+        if (!micResult.IsOk) return ResC.Fail(micResult.Msg);
 
-        var micString = mics is null
+        var speakerResult = _audio.GetPlaybackDevices();
+        if (!speakerResult.IsOk) return ResC.Fail(speakerResult.Msg);
+
+        var micString = micResult is null
             ? "[NOT LOADED]"
-            : mics.Length == 0
+            : micResult.Value.Length == 0
                 ? "[NONE]"
-                : string.Join("\n", mics.Select(x => $" - {x.Name}"));
-        var speakerString = speakers is null
+                : string.Join("\n", micResult.Value.Select(x => $" - {x.Name}"));
+        var speakerString = speakerResult is null
             ? "[NOT LOADED]"
-            : speakers.Length == 0
+            : speakerResult.Value.Length == 0
                 ? "[NONE]"
-                : string.Join("\n", speakers.Select(x => $" - {x.Name}"));
+                : string.Join("\n", speakerResult.Value.Select(x => $" - {x.Name}"));
 
         Console.WriteLine($"Microphones:\n{micString}\n\nSpeakers:\n{speakerString}");
-        return CommandResult.Success;
+        return ResC.Ok();
     }
 
     [SubCommandModule(["microphone-id"], "Set the microphone to use")]
-    public CommandResult CmdMicrophone()
+    public Res CmdMicrophone()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Audio_CurrentMicrophoneName));
     }
 
     [SubCommandModule(["system-speaker-id"], "Set the speaker to use for system audio")]
-    public CommandResult CmdSystemSpeaker()
+    public Res CmdSystemSpeaker()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Audio_CurrentSpeakerSystemName));
     }
 
     [SubCommandModule(["system-output-id"], "Set the speaker to use for output audio")]
-    public CommandResult CmdOutputSpeaker()
+    public Res CmdOutputSpeaker()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Audio_CurrentSpeakerOutputName));
     }

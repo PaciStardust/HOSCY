@@ -41,9 +41,10 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
     protected override void OneTimeSetupExtra()
     {
         _send = new(_config);
-        _handler = new(_logger, _config, _send);
 
-        _handler.Start();
+        var handler = new VrcTextboxOutputHandler(_logger, _config, _send);
+        handler.Start().AssertOk();
+        _handler = handler;
     }
 
     protected override void SetupExtra()
@@ -625,7 +626,7 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
 
     protected override void OneTimeTearDownExtra()
     {
-        _handler.Stop();
+        _handler.Stop().AssertOk();
     }
 
     private void ClearAndWait()

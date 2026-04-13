@@ -1,4 +1,5 @@
 using HoscyCore.Services.Core;
+using HoscyCore.Utility;
 
 namespace HoscyCore.Services.Output.Core;
 
@@ -10,8 +11,8 @@ public interface IOutputManagerService : IAutoStartStopService
     #endregion
 
     #region Control
-    public void RefreshHandlers();
-    public void RestartHandlers();
+    public Res RefreshHandlers();
+    public Res RestartHandlers();
     #endregion
 
     #region Processor Control

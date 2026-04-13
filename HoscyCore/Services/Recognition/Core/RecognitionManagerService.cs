@@ -29,23 +29,25 @@ public class RecognitionManagerService //todo: [TEST] create test for this
     #endregion
 
     #region Module => Start / Stop
-    protected override void OnModulePostStart(IRecognitionModule module)
+    protected override Res OnModulePostStart(IRecognitionModule module)
     {
-        UpdateSettings();
+        UpdateSettings(); //If this fails, it is okay
 
         module.OnSpeechActivity += HandleOnSpeechActivity;
         module.OnSpeechRecognized += HandleOnSpeechRecognized;
         module.OnInternalListeningStatusChange += HandleOnInternalListeningStatusChange;
 
-        bool listening = false;
         if (_config.Recognition_Mute_StartUnmuted)
         {
-            listening = SetListeningInternal(module, true);
-            if (!listening)
+            var resListening = SetListeningInternal(module, true);
+
+            if (!resListening.IsOk || !resListening.Value)
             {
                 _logger.Warning("Failed to correctly set listening status on startup");
+                return ResC.Fail(resListening.Msg ?? ResMsg.Err("Listening status did not change as expected"));
             }
         }
+        return ResC.Ok();
     }
 
     protected override void OnModulePostAssign()
@@ -53,13 +55,15 @@ public class RecognitionManagerService //todo: [TEST] create test for this
         InvokeModuleStatusChanged();
     }
 
-    protected override void OnModulePreStop(IRecognitionModule module)
+    protected override Res OnModulePreStop(IRecognitionModule module)
     {
-        module.SetListening(false);
+        var res = module.SetListening(false); //todo: [FIX] ??? why internal
 
         module.OnSpeechActivity -= HandleOnSpeechActivity;
         module.OnSpeechRecognized -= HandleOnSpeechRecognized;
         module.OnInternalListeningStatusChange -= HandleOnInternalListeningStatusChange;
+
+        return res.IsOk ? ResC.Ok() : ResC.Fail(res.Msg);
     }
 
     protected override void OnModulePostStop()
@@ -84,29 +88,31 @@ public class RecognitionManagerService //todo: [TEST] create test for this
     protected override string GetSelectedModuleName()
         => _config.Recognition_SelectedModuleName;
 
-    public bool SetListening(bool state)
+    public Res<bool> SetListening(bool state)
     {
         var res = SetListeningInternal(_currentModule, state);
         InvokeModuleStatusChanged();
         return res;
     }
-    public bool SetListeningInternal(IRecognitionModule? module, bool state)
+    private Res<bool> SetListeningInternal(IRecognitionModule? module, bool state)
     {
         _logger.Debug("Setting listening to {state}", state);
 
         bool newState;
+        Res<bool> result;
         if (module is null || module.GetCurrentStatus() == ServiceStatus.Stopped)
         {
-            _logger.Warning("Unable to set listening, provided module is null or stopped");
+            result = ResC.TFailLog<bool>("Unable to set listening, provided module is null or stopped", logger, lvl: ResMsgLvl.Warning);
             newState = false;
         }
         else
         {
-            newState = module.SetListening(state);
+            result = ResC.TWrap(() => module.SetListening(state), $"Setting listening to {state} failed", _logger); 
+            newState = result.IsOk ? result.Value : IsListening;
         }
 
         _logger.Debug("Listening was requested to be set to {state} and is now {actualState}", state, newState);
-        return newState;
+        return result;
     }
     #endregion
 
@@ -160,7 +166,7 @@ public class RecognitionManagerService //todo: [TEST] create test for this
         return !string.IsNullOrWhiteSpace(message);
     }
 
-    public void UpdateSettings()
+    public Res UpdateSettings()
     {
         var filterWords = _config.Recognition_Fixup_NoiseFilter.Select(x => $"(?:{Regex.Escape(x)})");
         var filterCombined = string.Join('|', filterWords);
@@ -170,11 +176,13 @@ public class RecognitionManagerService //todo: [TEST] create test for this
         try
         {
             _inputDenoiseFilter = new Regex(regString, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+            return ResC.Ok();
         }
         catch (Exception ex)
         {
             _logger.Error(ex, "Failed to set denoiser to {regString}, it will not be overridden", regString);
-            _notify.SendWarning("Recognition denoiser not loaded", $"Unable to load denoiser, it will not be used:\n{regString}");
+            SetFault(ex); //todo: [REFACTOR] Should faults even be exceptions?
+            return ResC.Fail(ResMsg.Wrn("Failed to set denoiser, it will not be overridden"));
         }
     }
 

@@ -5,6 +5,7 @@ using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Interfacing;
 using HoscyCore.Services.Translation.Core;
+using HoscyCore.Utility;
 using Serilog;
 
 namespace HoscyCore.Services.Output.Core;
@@ -23,7 +24,7 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
     ITranslationManagerService translator
 )
 : StartStopServiceBase(logger.ForContext<OutputManagerService>()), IOutputManagerService
-{
+{ //todo: [REFACTOR?] Should this be made more resilient?
     #region Injected Classes
     private readonly IBackToFrontNotifyService _notify = notify;
     private readonly ConfigModel _config = config;
@@ -54,62 +55,88 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
     protected override bool IsProcessing()
         => IsStarted() && _activeHandlers.Count > 0;
 
-    private readonly List<Exception> _refreshExceptions = [];
+    private readonly List<ResMsg> _refreshExceptions = [];
     #endregion
 
     #region Start/Stop
-    protected override void StartForService()
+    protected override Res StartForService()
     {
         _logger.Debug("Loading available OutputHandlerInfos");
 
         _handlerInfos.Clear();
         _preprocessors.Clear();
 
-        _handlerInfos.AddRange(_loadHandlerStartInfo.GetInstances());
-        if (_handlerInfos.Count == 0)
+        var handlerStartInfoResult = _loadHandlerStartInfo.GetInstances();
+        if (!handlerStartInfoResult.IsOk) return ResC.Fail(handlerStartInfoResult.Msg);
+
+        if (handlerStartInfoResult.Value.Count == 0)
         {
             _logger.Warning("No OutputHandlersInfos could be located, Service will have no functionality and will be NOT be marked as running");
-            return;
+            return ResC.Ok();
         }
 
-        _logger.Debug("Loading Preprocessors");
-        var preprocessorsWithInstance = _loadPreprocessors.GetInstances();
-        _preprocessors.AddRange(preprocessorsWithInstance.OrderBy(x => x.GetHandlingStage()));
+        _handlerInfos.AddRange(handlerStartInfoResult.Value);
 
-        RefreshHandlers();
+        _logger.Debug("Loading Preprocessors");
+        var preprocessorResult = _loadPreprocessors.GetInstances();
+        if (!preprocessorResult.IsOk) return ResC.Fail(preprocessorResult.Msg);
+
+        _preprocessors.AddRange(preprocessorResult.Value.OrderBy(x => x.GetHandlingStage()));
+
+        var refreshResult = RefreshHandlers();
+        if (!refreshResult.IsOk)
+        {
+            _logger.Warning("Failed to refresh handlers correctly on launch ({result})", refreshResult);
+        }
 
         _indicatorResetTimer ??= CreateIndicatorResetTimer();
 
         _logger.Debug("Loaded {handlerCount} OutputHandlerInfos ({activeCount} active) and {preprocessorCount} OutputPreprocessors",
             _handlerInfos.Count, _activeHandlers.Count, _preprocessors.Count);
+        return ResC.Ok();
     }
     protected override bool UseAlreadyStartedProtection => true;
 
-    protected override void StopForService()
+    protected override Res StopForService() //todo: [REFACTOR] improve this shutdown sequence
     {
         StopIndicatorResetTimer();
 
         var activeHandlerCount = _activeHandlers.Count;
         _logger.Debug("Shutting down {activeHandlers} Handlers", activeHandlerCount);
+
+        List<string> handlerErrors = [];
         for (var i = _activeHandlers.Count - 1; i >= 0; i--)
         {
             var handler = _activeHandlers[i];
-            ShutdownHandlerSafe(handler);
+            var res = ShutdownHandler(handler);
+            if (!res.IsOk)
+            {
+                handlerErrors.Add(res.Msg?.WithContext(handler.Name).ToString() ?? $"Unspecified error from handler {handler.Name}");
+            }
         }
 
         var stillActiveHandlers = _activeHandlers.Where(x => x.GetCurrentStatus() != ServiceStatus.Stopped).ToArray();
         if (stillActiveHandlers.Length > 0)
         {
             var notStoppedHandlers = string.Join(", ", stillActiveHandlers.Select(x => x.GetType().FullName));
-            _logger.Error("Following Handlers failed to comply with a shutdown call: {notStoppedHandlers}", notStoppedHandlers);
-            throw new StartStopServiceException($"Following Handlers failed to comply with a shutdown call: {notStoppedHandlers}");
+            var message = $"Following Handlers failed to comply with a shutdown call: {notStoppedHandlers}";
+            _logger.Error(message);
+            handlerErrors.Add(message);
         }
 
         _activeHandlers.Clear();
         _handlerInfos.Clear();
         _preprocessors.Clear();
+
+        if (handlerErrors.Count > 0)
+        {
+            var combined = string.Join("\n", handlerErrors);
+            var message = $"Handlers had the following errors while stopping:\n{combined}";
+            return ResC.FailLog(message, _logger);
+        }
         
         _logger.Debug("Shut down {activeHandlers} Handlers", activeHandlerCount);
+        return ResC.Ok();
     }
     #endregion
 
@@ -140,7 +167,11 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
     public ServiceStatus GetProcessorStatus(IOutputHandlerStartInfo handlerInfo)
     {
         var activeHandler = RetrieveActiveHandlerByType(handlerInfo.ModuleType);
-        if (activeHandler is null) return ServiceStatus.Stopped;
+        if (activeHandler is null)
+        {
+            return ServiceStatus.Stopped;
+        } 
+
         var activeStatus = activeHandler.GetCurrentStatus();
         if (activeStatus == ServiceStatus.Stopped)
         {
@@ -152,14 +183,20 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
     #endregion
 
     #region Handlers => Internal Start / Stop Unsafe
-    private void ActivateHandlerUnsafe(IOutputHandlerStartInfo handlerInfo)
+    private Res ActivateHandler(IOutputHandlerStartInfo handlerInfo)
     {
         _logger.Information("Activating Handler with type \"{handlerType}\"", handlerInfo.ModuleType.FullName);
         var activeMatch = RetrieveActiveHandlerByType(handlerInfo.ModuleType);
         if (activeMatch is not null)
         {
             _logger.Debug("Terminating old Handler with type \"{handlerType}\"", handlerInfo.ModuleType.FullName);
-            ShutdownHandlerUnsafe(activeMatch);
+            var shutdownRes = ShutdownHandler(activeMatch);
+            if (!shutdownRes.IsOk)
+            {
+                _logger.Error("Failed to terminate old Handler with type \"{handlerType}\" ({result})",
+                    handlerInfo.ModuleType.FullName, shutdownRes);
+                return shutdownRes;
+            }
 
             activeMatch = RetrieveActiveHandlerByType(handlerInfo.ModuleType);
             if (activeMatch is null)
@@ -169,81 +206,70 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
             else
             {
                 _logger.Error("Failed to terminate old Handler with type \"{handlerType}\"", handlerInfo.ModuleType.FullName);
-                throw new StartStopServiceException($"Unable to shut down Handler {handlerInfo.ModuleType.FullName}");
+                return ResC.Fail(ResMsg.Err($"Failed to terminate old Handler with type \"{handlerInfo.ModuleType.Name}\""));
             }
         }
 
-        var newHandler = RetrieveHandlerInstanceForType(handlerInfo.ModuleType);
+        var newHandlerResult = RetrieveHandlerInstanceForType(handlerInfo.ModuleType);
+        if (!newHandlerResult.IsOk) 
+            return ResC.Fail(newHandlerResult.Msg);
+        var newHandler = newHandlerResult.Value;
+
         newHandler.OnRuntimeError += HandleOnRuntimeError;
         newHandler.OnModuleStopped += HandleOnModuleStopped;
-        newHandler.Start();
+
+        var startRes = ResC.Wrap(newHandler.Start, "Handler start failed", _logger);
+        if (!startRes.IsOk)
+        {
+            _logger.Error("Failed to activate Handler with type \"{handlerType}\" ({result})",
+                handlerInfo.ModuleType.FullName, startRes);
+            return startRes;
+        }
+
         _activeHandlers.Add(newHandler);
         _logger.Information("Activated Handler with type \"{handlerType}\"", handlerInfo.ModuleType.FullName);
+        return ResC.Ok();
     }
 
-    private void ShutdownHandlerUnsafe(IOutputHandler handler)
+    private Res ShutdownHandler(IOutputHandler handler)
     {
-        _logger.Information("Shutting down Handler with type \"{hanlderType}\"", handler.GetType().FullName);
-        handler.Clear();
+        _logger.Information("Shutting down Handler with type \"{handlerType}\"", handler.GetType().FullName);
+        ResC.WrapR(handler.Clear, "Clear on handler shutdown failed", _logger); // Result is not relevant here
         handler.OnModuleStopped -= HandleOnModuleStopped; //This is not needed when manually shutting down
-        handler.Stop();
+
+        var res = ResC.Wrap(handler.Stop, "Handler shutdown failed", _logger); //todo: [FEAT] Cleanup?
         CleanupAfterHandlerShutdown(handler);
-        _logger.Information("Shut down Handler with type \"{handlerType}\"", handler.GetType().FullName);
+        
+        if (res.IsOk)
+            _logger.Information("Shut down Handler with type \"{handlerType}\"", handler.GetType().FullName);
+        else
+            _logger.Warning("Shut down Handler with type \"{handlerType}\" with error ({res})",
+                handler.GetType().FullName, res);
+
+        return res;
     }
 
-    private void RestartHandlerUnsafe(IOutputHandler handler)
+    private Res RestartHandler(IOutputHandler handler)
     {
         _logger.Information("Restarting Handler with type \"{handlerType}\"", handler.GetType().FullName);
         handler.OnModuleStopped -= HandleOnModuleStopped;
-        handler.Restart();
+        
+        var res = handler.Restart();
+        if (!res.IsOk)
+        {
+            _logger.Error("Failed restarting Handler with type \"{handlerType}\" ({result})",
+                handler.GetType().FullName, res);
+            return res;
+        }
+        
         handler.OnModuleStopped += HandleOnModuleStopped;
         _logger.Information("Restarted Handler with type \"{handlerType}\"", handler.GetType().FullName);
+        
+        return ResC.Ok();
     }
     #endregion
 
     #region Handlers => Internal Start / Stop Safe
-    private bool ActivateHandlerSafe(IOutputHandlerStartInfo handlerInfo)
-    {
-        try
-        {
-            ActivateHandlerUnsafe(handlerInfo);
-            return true;
-        }
-        catch (Exception ex)
-        {
-            AddRefreshException(ex, "Unable to safely activate handler with type \"{handlerType}\"", handlerInfo.ModuleType.FullName);
-            return false;
-        }
-    }
-
-    private bool RestartHandlerSafe(IOutputHandler handler)
-    {
-        try
-        {
-            RestartHandlerUnsafe(handler);
-            return true;
-        }
-        catch (Exception e)
-        {
-            AddRefreshException(e, "Failed to restart handler with type \"{handlerType}\"", handler.GetType().FullName);
-            return false;
-        }
-    }
-
-    private bool ShutdownHandlerSafe(IOutputHandler handler)
-    {
-        try
-        {
-            ShutdownHandlerUnsafe(handler);
-            return true;
-        }
-        catch (Exception ex)
-        {
-            AddRefreshException(ex, "Unable to safely shutdown handler with type \"{handlerType}\"", handler.GetType().FullName);
-            return false;
-        }
-    }
-
     private void HandleOnModuleStopped(object? sender, EventArgs e)
     {
         if (sender is null) return;
@@ -262,7 +288,7 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
     #endregion
 
     #region Handlers => Public Control
-    public void RefreshHandlers()
+    public Res RefreshHandlers()
     {
         _refreshExceptions.Clear();
 
@@ -280,7 +306,8 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
                 {
                     _logger.Debug("Handler of type \"{handlerType}\" is enabled but not active, starting...",
                         handlerInfo.ModuleType);
-                    ActivateHandlerSafe(handlerInfo);
+                    var res = ActivateHandler(handlerInfo);
+                    AddRefreshExceptionIfMessage(res, handlerInfo.ModuleType.Name);
                 }
                 permittedTypes.Add(handlerInfo.ModuleType);
             } else
@@ -289,7 +316,8 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
                 {
                     _logger.Debug("Handler of type \"{handlerType}\" is disabled but active, stopping...",
                         handlerInfo.ModuleType);
-                    ShutdownHandlerSafe(match);
+                    var res = ShutdownHandler(match);
+                    AddRefreshExceptionIfMessage(res, match.Name);
                 }
             }
         }
@@ -307,11 +335,12 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
 
             _logger.Warning("Handler of type \"{handlerType}\" is active but not on enabled list, stopping...",
                 handlerType);
-            var res = ShutdownHandlerSafe(handler);
-            if (!res)
+            var res = ShutdownHandler(handler);
+            if (!res.IsOk)
             {
                 _logger.Warning("Handler of type \"{handlerType}\" failed shutting down, removing from list forcefully - This should not be ignored!",
                     handlerType);
+                AddRefreshExceptionIfMessage(res, handler.Name);
                 CleanupAfterHandlerShutdown(handler);
             }
         }
@@ -319,21 +348,24 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
         diagnosticSw.Stop();
         _logger.Debug("Finished refreshing Output Handlers in {timeMs}ms", diagnosticSw.ElapsedMilliseconds);
 
-        NotifyIfRefreshExceptions();
+        NotifyIfRefreshExceptions(); //todo: [REFACTOR] no more notify?
+        return ResC.Ok(); //todo: [FIX] not always return ok
     }
 
-    public void RestartHandlers() 
+    public Res RestartHandlers() 
     {
         _refreshExceptions.Clear();
 
         _logger.Debug("Restarting all {handlerCount} active Handlers...", _activeHandlers.Count);
         foreach(var handler in _activeHandlers)
         {
-            RestartHandlerSafe(handler);
+            var res = RestartHandler(handler);
+            AddRefreshExceptionIfMessage(res, handler.Name);
         }
         _logger.Debug("Finished restarting all {handlerCount} active Handlers", _activeHandlers.Count);
 
-        NotifyIfRefreshExceptions();
+        NotifyIfRefreshExceptions(); //todo: [REFACTOR] no more notify?
+        return ResC.Ok(); //todo: [FIX] not always return ok
     }
     #endregion
 
@@ -372,13 +404,12 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
         }
     }
 
-    private IOutputHandler RetrieveHandlerInstanceForType(Type type)
+    private Res<IOutputHandler> RetrieveHandlerInstanceForType(Type type)
     {
         var searchMatch = _loadOutputHandler.GetInstance(type);
-        if (searchMatch is null)
+        if (!searchMatch.IsOk)
         {
             _logger.Error("Unable to retrieve Handler for type \"{handlerType}\"", type.FullName);
-            throw new DiResolveException($"Unable to retrieve Handler for type {type.FullName}");
         }
         return searchMatch;
     }
@@ -643,7 +674,7 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
         {
             exList.Add(baseException);
         }
-        exList.AddRange(_refreshExceptions);
+        exList.AddRange(_refreshExceptions.Select(x => new Exception(x.Message)));
         exList.AddRange(GetHandlerExceptions());
 
         return exList.Count == 0
@@ -653,17 +684,16 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
                 : exList[0];
     }
 
-    private void AddRefreshException(Exception ex, string message, params object?[]? args)
+    private void AddRefreshExceptionIfMessage(ResBase res, string context)
     {
-        _logger.Error(ex, message, args);
-        _refreshExceptions.Add(ex);
+        res.IfFail(x => _refreshExceptions.Add(x.WithContext(context)));
     }
 
-    private void NotifyIfRefreshExceptions()
+    private void NotifyIfRefreshExceptions() //todo: [REFACTOR] is this still needed?
     {
         if (_refreshExceptions.Count == 0) return;
         
-        var ex = new CombinedException(_refreshExceptions);
+        var ex = new CombinedException(_refreshExceptions.Select(x => new Exception(x.Message)).ToList());
         _logger.Warning(ex, "Following exceptions popped up during refresh");
         _notify.SendError("Errors ocurred during refresh", "The following errors occured while refreshing handlers", ex);
     }

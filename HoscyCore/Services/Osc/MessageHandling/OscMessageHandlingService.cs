@@ -1,5 +1,6 @@
 using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
+using HoscyCore.Utility;
 using LucHeart.CoreOSC;
 using Serilog;
 
@@ -36,16 +37,31 @@ public class OscMessageHandlingService(ILogger logger, IContainerBulkLoader<IOsc
     protected override bool IsProcessing()
         => IsStarted() && _handlers!.Length > 0;
 
-    protected override void StartForService()
+    protected override Res StartForService()
     {
         _logger.Verbose("Loading Message Handlers");
-        _handlers = _bulkLoader.GetInstances().ToArray();
+        _handlers = null;
+
+        var res = _bulkLoader.GetInstances();
+        if (!res.IsOk)
+            return ResC.Fail(res.Msg);
+
+        _handlers = [];
+        if (res.Value.Count == 0)
+        {
+            _logger.Warning("No message handlers could be located, service will have no functionality and will be NOT be marked as running");
+            return ResC.Ok();
+        }
+
+        _handlers = res.Value.ToArray();
+        return ResC.Ok();
     }
     protected override bool UseAlreadyStartedProtection => false;
     
-    protected override void StopForService()
+    protected override Res StopForService()
     {
         _handlers = null;
+        return ResC.Ok();
     }
     #endregion
 }

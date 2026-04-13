@@ -42,13 +42,13 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
     protected override void OneTimeSetupExtra()
     {
         SetupSharedClasses();
-        _manager.Start();
+        _manager.Start().AssertOk();
     }
 
     protected override void SetupExtra()
     {
         SetModule(string.Empty);
-        _manager.StopModule();
+        _manager.StopModule().AssertOk();
 
         _config.Translation_SendUntranslatedIfFailed = false;
         _config.Translation_SkipLongerMessages = false;
@@ -76,7 +76,7 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
         }
 
         SetModule(_infoA.Name);
-        _manager.StartModule();
+        _manager.StartModule().AssertOk();
         _moduleA.OverrideRunningStatus = ServiceStatus.Stopped;
 
         result = _manager.TryTranslate("Test", out output);
@@ -110,7 +110,7 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
         _moduleA.ReturnedResult = overrideResult;
 
         SetModule(_infoA.Name);
-        _manager.StartModule();
+        _manager.StartModule().AssertOk();
         
         var result = _manager.TryTranslate("Test", out var output);
         using (Assert.EnterMultipleScope())
@@ -133,7 +133,7 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
         _moduleA.ReturnedOutput = "Echo";
 
         SetModule(_infoA.Name);
-        _manager.StartModule();
+        _manager.StartModule().AssertOk();
 
         var result = _manager.TryTranslate("0123456789", out var output);
         using (Assert.EnterMultipleScope())
@@ -163,7 +163,7 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
         _moduleA.ReturnedOutput = "Echo";
 
         SetModule(_infoA.Name);
-        _manager.StartModule();
+        _manager.StartModule().AssertOk();
 
         var result = _manager.TryTranslate(input, out var output);
         using (Assert.EnterMultipleScope())
@@ -177,6 +177,6 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
 
     protected override void OneTimeTearDownExtra()
     {
-        _manager.Stop();
+        _manager.Stop().AssertOk();
     }
 }

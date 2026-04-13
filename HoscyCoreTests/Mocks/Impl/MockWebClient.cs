@@ -1,4 +1,5 @@
 using HoscyCore.Services.Network;
+using HoscyCore.Utility;
 using HoscyCoreTests.Mocks.Base;
 
 namespace HoscyCoreTests.Mocks.Impl;
@@ -10,38 +11,40 @@ public class MockWebClient : MockStartStopServiceBase, IWebClient
     public readonly List<HttpRequestMessage> Requests = [];
     public int ArtificialDelayMs { get; set; } = 0;
 
-    public async Task DownloadAsync(string _, string fileLocation, int timeoutMs = 5000)
+    public async Task<Res> DownloadAsync(string _, string fileLocation, int timeoutMs = 5000)
     {
         if (ArtificialDelayMs > timeoutMs)
         {
             await Task.Delay(timeoutMs);
-            throw new TimeoutException("MockWebClient: Download timed out");
+            return ResC.Fail(ResMsg.Err("MockWebClient: Download timed out"));
         }
         await Task.Delay(ArtificialDelayMs);
         File.WriteAllText(fileLocation, DownloadContents);
+        return ResC.Ok();
     }
 
-    public async Task<string> SendAsync(HttpRequestMessage requestMessage, int timeoutMs = 5000)
+    public async Task<Res<string>> SendAsync(HttpRequestMessage requestMessage, int timeoutMs = 5000)
     {
         Requests.Add(requestMessage);
         if (ArtificialDelayMs > timeoutMs)
         {
             await Task.Delay(timeoutMs);
-            throw new TimeoutException("MockWebClient: Send timed out");
+            return ResC.TFail<string>(ResMsg.Err("MockWebClient: Download timed out"));
         }
         await Task.Delay(ArtificialDelayMs);
-        return SendResult;
+        return ResC.TOk(SendResult);
     }
 
-    public override void Start()
+    public override Res Start()
     {
         Requests.Clear();
-        base.Start();
+        return base.Start();
     }
 
-    public override void Stop()
+    public override Res Stop()
     {
-        base.Stop();
+        var res = base.Stop();
         Requests.Clear();
+        return res;
     }
 }

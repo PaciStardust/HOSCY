@@ -1,4 +1,5 @@
 using HoscyCore.Services.Osc.Command;
+using HoscyCore.Utility;
 using HoscyCoreTests.Mocks.Base;
 
 namespace HoscyCoreTests.Mocks.Impl;
@@ -9,11 +10,11 @@ public class MockOscCommandService : MockStartStopServiceBase, IOscCommandServic
 
     public List<string> ReceivedStrings { get; init; } = []; 
     public List<string> PassedStrings { get; init; } = []; 
-    public OscCommandState ReturnedState { get; set; } = OscCommandState.Success;
+    public Res<OscCommandState> ReturnedState { get; set; } = ResC.TOk(OscCommandState.Success);
 
-    public OscCommandState DetectAndHandleCommand(string commandString)
+    public Res<OscCommandState> DetectAndHandleCommand(string commandString)
     {
-        if (!DetectCommand(commandString)) return OscCommandState.NotCommand;
+        if (!DetectCommand(commandString)) return ResC.TOk(OscCommandState.NotCommand);
         return HandleCommand(commandString);
     }
 
@@ -23,7 +24,7 @@ public class MockOscCommandService : MockStartStopServiceBase, IOscCommandServic
         return commandString.StartsWith(CommandIdentifier);
     }
 
-    public OscCommandState HandleCommand(string commandString)
+    public Res<OscCommandState> HandleCommand(string commandString)
     {
         PassedStrings.Add(commandString);
         return ReturnedState;

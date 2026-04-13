@@ -1,11 +1,12 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using HoscyCore.Utility;
 
 namespace HoscyCli.Commands.Core;
 
 public abstract class AttributeCommandModule : ICommandModule
 {
-    private readonly List<(SubCommandModuleAttribute Attribute, Func<string?, CommandResult> Func)> _commandInfo = [];
+    private readonly List<(SubCommandModuleAttribute Attribute, Func<string?, Res> Func)> _commandInfo = [];
 
     public AttributeCommandModule()
     {
@@ -15,9 +16,9 @@ public abstract class AttributeCommandModule : ICommandModule
             var attribute = method.GetCustomAttribute<SubCommandModuleAttribute>();
             if (attribute is null) continue;
 
-            if (method.ReturnType != typeof(CommandResult))
+            if (method.ReturnType != typeof(Res))
             {
-                throw new ArgumentException($"Method {method.Name} does not return type {nameof(CommandResult)}");
+                throw new ArgumentException($"Method {method.Name} does not return type {nameof(Res)}");
             }
 
             var methodParameters = method.GetParameters();
@@ -28,7 +29,7 @@ public abstract class AttributeCommandModule : ICommandModule
 
             if (methodParameters.Length == 0)
             {
-                _commandInfo.Add((attribute, _ => (CommandResult)method.Invoke(this, [])!));
+                _commandInfo.Add((attribute, _ => (Res)method.Invoke(this, [])!));
                 continue;
             }
 
@@ -37,14 +38,14 @@ public abstract class AttributeCommandModule : ICommandModule
                 throw new ArgumentException($"Method {method.Name} parameter is not string");
             }
 
-            _commandInfo.Add((attribute, x => (CommandResult)method.Invoke(this, [x])!));
+            _commandInfo.Add((attribute, x => (Res)method.Invoke(this, [x])!));
         }
 
         AddExtrasSubcommands(_commandInfo);
     }
-    protected virtual void AddExtrasSubcommands(List<(SubCommandModuleAttribute Attribute, Func<string?, CommandResult> Func)> list) { }
+    protected virtual Res AddExtrasSubcommands(List<(SubCommandModuleAttribute Attribute, Func<string?, Res> Func)> list) { return ResC.Ok(); }
 
-    public CommandResult ExecutePrependArgs(string command, string prependArgs)
+    public Res ExecutePrependArgs(string command, string prependArgs)
     {
         var (Command, Parameters) = Util.SplitAtFirstSpace(command);
         return string.IsNullOrWhiteSpace(Parameters)
@@ -52,18 +53,18 @@ public abstract class AttributeCommandModule : ICommandModule
             : Execute(Command, string.Join(" ", prependArgs, Parameters));
     }
 
-    public CommandResult Execute(string command)
+    public Res Execute(string command)
     {
         var (Command, Parameters) = Util.SplitAtFirstSpace(command);
         return Execute(Command, Parameters);
     }
 
-    public CommandResult Execute(string command, string? args)
+    public Res Execute(string command, string? args)
     {
         var match = GetSubCommandIndex(command);
         if (match != -1) return _commandInfo[match].Func(args);
         Console.WriteLine($"{GetType().Name} is unable to locate command {command}");
-        return CommandResult.NotFound;
+        return CResH.NotFound($"Command \"{command}\"");
     }
 
     private int GetSubCommandIndex(string command)
@@ -76,50 +77,24 @@ public abstract class AttributeCommandModule : ICommandModule
     }
 
     [SubCommandModule(["help", "?"], "Lists all available commands.")]
-    public CommandResult CmdHelp()
+    public Res CmdHelp()
     {
         var print = string.Join("\n", _commandInfo.OrderBy(x => x.Attribute.Identifiers[0])
             .Select(info => $" - {string.Join("/", info.Attribute.Identifiers[0])} - {info.Attribute.Description}"));
         Console.WriteLine($"Available Commands:\n{print}");
-        return CommandResult.Success;
+        return ResC.Ok();
     }
 
-    protected static bool OnEmpty([NotNullWhen(false)] string? args, string message)
+    protected static bool OnEmpty([NotNullWhen(false)] string? args)
     {
-        if (string.IsNullOrWhiteSpace(args))
-        {
-            Console.WriteLine(message);
-            return true;
-        }
-        return false;
+        return string.IsNullOrWhiteSpace(args);
     }
 
-    protected static bool OnFalse(bool check, string message)
-    {
-        if (!check)
-        {
-            Console.WriteLine(message);
-            return true;
-        }
-        return false;
-    }
-
-    protected static bool OnTrue(bool check, string message)
-    {
-        if (check)
-        {
-            Console.WriteLine(message);
-            return true;
-        }
-        return false;
-    }
-
-    protected static bool OnInvalidInt(string? args, [NotNullWhen(false)] out int? validInt, int minInc, int maxExc, string message)
+    protected static bool OnInvalidInt(string? args, [NotNullWhen(false)] out int? validInt, int minInc, int maxExc)
     {
         if (!int.TryParse(args, out var parsed) || parsed < minInc || parsed >= maxExc)
         {
             validInt = null;
-            Console.WriteLine(message);
             return true;
         }
         validInt = parsed;

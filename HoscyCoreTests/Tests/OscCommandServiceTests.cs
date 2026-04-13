@@ -44,9 +44,10 @@ public class OscCommandServiceFunctionTests : TestBase<OscCommandServiceFunction
     {
         _registry = new(_logger);
         _sender = new(_config);
-        _commandService = new(_logger, _registry, _sender);
 
-        _commandService.Start();
+        var commandService = new OscCommandService(_logger, _registry, _sender);
+        commandService.Start().AssertOk();
+        _commandService = commandService;
     }
 
     protected override void SetupExtra()
@@ -70,17 +71,17 @@ public class OscCommandServiceFunctionTests : TestBase<OscCommandServiceFunction
     [Test]
     public void AddressTest()
     {
-        var targets = new List<(string Message, OscCommandState state)> {
-            ("Waaaa",           OscCommandState.Malformed),
-            ("/",               OscCommandState.Malformed),
+        var targets = new List<(string Message, OscCommandState? state)> {
+            ("Waaaa",           null),
+            ("/",               null),
             ("/abc",            OscCommandState.Success),
             ("/123",            OscCommandState.Success),
-            ("/***",            OscCommandState.Malformed),
+            ("/***",            null),
             ("/abc/def",        OscCommandState.Success),
             ("/abc/123/456",    OscCommandState.Success),
-            ("//",              OscCommandState.Malformed),
-            ("/abc/",           OscCommandState.Malformed),
-            ("/abcdef//abc",    OscCommandState.Malformed)
+            ("//",              null),
+            ("/abc/",           null),
+            ("/abcdef//abc",    null)
         };
 
         var arrayIndex = 0;
@@ -88,9 +89,15 @@ public class OscCommandServiceFunctionTests : TestBase<OscCommandServiceFunction
         {
             var fullMessage = $"[OSC] [{addr} [b]true]";
             var result = _commandService.DetectAndHandleCommand(fullMessage);
-            Assert.That(result, Is.EqualTo(handle), $"Failed on {addr}");
+            if (handle is null)
+                result.AssertFail($"Did not fail on {addr}");
+            else
+            {
+                result.AssertOk($"Failed on {addr}");
+                Assert.That(result.Value, Is.EqualTo(handle), $"Failed on {addr}");
+            }
 
-            if (handle != OscCommandState.Success) continue;
+            if (handle is null || handle != OscCommandState.Success) continue;
             Thread.Sleep(50);
             Assert.That(_sender.ReceivedMessages, Has.Count.EqualTo(arrayIndex + 1),$"Failed on {addr}");
             Assert.That(_sender.ReceivedMessages[arrayIndex].Address, Is.EqualTo(addr), $"Failed on {addr}");
@@ -141,13 +148,21 @@ public class OscCommandServiceFunctionTests : TestBase<OscCommandServiceFunction
                 paramList.Add(possibleVariables[r.Next(possibleVariables.Count)]);
             }
             
-            var expectedResult = paramList.All(x => x.Valid) ? OscCommandState.Success : OscCommandState.Malformed;
+            var expectedResult = paramList.All(x => x.Valid);
             var paramString = string.Join(" ", paramList.Select(x => x.Parameter));
             var fullMessage = $"[OSC] [/test {paramString}]";
             var result = _commandService.DetectAndHandleCommand(fullMessage);
-            Assert.That(result, Is.EqualTo(expectedResult),$"Failed on {paramString}");
 
-            if (result != OscCommandState.Success) continue;
+            if (expectedResult)
+            {
+                var msg = $"Failed on {paramString}";
+                result.AssertOk(msg);
+                Assert.That(result.Value, Is.EqualTo(OscCommandState.Success), msg);
+            }
+            else
+                result.AssertFail($"Failed on {paramString}");
+
+            if (!expectedResult) continue;
             Thread.Sleep(50);
             Assert.That(_sender.ReceivedMessages, Has.Count.EqualTo(resultIndex + 1),$"Failed on {paramString}");
             Assert.That(_sender.ReceivedMessages[resultIndex].Args, Is.EqualTo(paramList.Select(x => x.ExpectedValue).ToArray()), $"Failed on {paramString}");
@@ -186,7 +201,14 @@ public class OscCommandServiceFunctionTests : TestBase<OscCommandServiceFunction
         {
             var fullMessage = $"[OSC] [/test [b]true {text}]";
             var result = _commandService.DetectAndHandleCommand(fullMessage);
-            Assert.That(result, Is.EqualTo(valid ? OscCommandState.Success : OscCommandState.Malformed), $"Failed on {text}");
+            if (valid)
+            {
+                var msg = $"Failed on {text}";
+                result.AssertOk(msg);
+                Assert.That(result.Value, Is.EqualTo(OscCommandState.Success), msg);
+            }
+            else
+                result.AssertFail($"Failed on {text}");
 
             if (!valid) continue;
             Thread.Sleep(50);
@@ -224,7 +246,14 @@ public class OscCommandServiceFunctionTests : TestBase<OscCommandServiceFunction
         {
             var fullMessage = $"[OSC] [/test [b]true {text}]";
             var result = _commandService.DetectAndHandleCommand(fullMessage);
-            Assert.That(result, Is.EqualTo(valid ? OscCommandState.Success : OscCommandState.Malformed), $"Failed on {text}");
+            if (valid)
+            {
+                var msg = $"Failed on {text}";
+                result.AssertOk(msg);
+                Assert.That(result.Value, Is.EqualTo(OscCommandState.Success), msg);
+            }
+            else
+                result.AssertFail($"Failed on {text}");
 
             if (!valid) continue;
             Thread.Sleep(50);
@@ -264,7 +293,11 @@ public class OscCommandServiceFunctionTests : TestBase<OscCommandServiceFunction
             _sender.ReceivedMessages.Clear();
             var text = sb.ToString();
             var result = _commandService.DetectAndHandleCommand(text);
-            Assert.That(result, Is.EqualTo(fails == count ? OscCommandState.Malformed : OscCommandState.Success), $"Failed on {text}");
+            
+            var msg = $"Failed on {text}";
+            Assert.That(result.IsOk, Is.EqualTo(fails != count), msg);
+            if (result.IsOk)
+                Assert.That(result.Value, Is.EqualTo(OscCommandState.Success), msg);
 
             Thread.Sleep(50);
             Assert.That(_sender.ReceivedMessages, Has.Count.EqualTo(count - fails));
@@ -274,12 +307,12 @@ public class OscCommandServiceFunctionTests : TestBase<OscCommandServiceFunction
     [Test]
     public void WaitTest()
     {
-        var possibleVariables = new List<(string Text, bool Valid, int? ExpectedWait)>
+        var possibleVariables = new List<(string Text, bool Valid, int? ExpectedWait)> 
         {
             ("w200",    true,   200),
             ("w400",    true,   400),
-            ("200",     false,  null),
-            ("50w",     false,  null),
+            ("200",     false,  null), 
+            ("50w",     false,  null), 
             ("w0a",     false,  null),
             ("w-100",   false,  null)
         };
@@ -289,8 +322,10 @@ public class OscCommandServiceFunctionTests : TestBase<OscCommandServiceFunction
             _sender.ReceivedMessages.Clear();
 
             var fullMessage = $"[OSC] [/test [b]true {text}] [/test2 [b]false]";
-            var result = _commandService.DetectAndHandleCommand(fullMessage);
-            Assert.That(result, Is.EqualTo(OscCommandState.Success), $"Failed on {text}");
+            var result = _commandService.DetectAndHandleCommand(fullMessage); 
+            
+            result.AssertOk(); //todo: [FIX] This should not pass validation!
+            Assert.That(result.Value, Is.EqualTo(OscCommandState.Success), $"Failed on {text}");
 
             if (valid)
             {
@@ -338,7 +373,8 @@ public class OscCommandServiceFunctionTests : TestBase<OscCommandServiceFunction
         var message = "[OSC] [/test/step/1 [s]\"Hello World\" [b]t [B]False [i]-4767 [f]0.001 10.0.0.4: \"self\" w250] [/test/step/2 [f]-0.001 [i]4767 [B]True [b]f [s]\"Goodbye World\" :9876 \"self\"]";
         var result = _commandService.DetectAndHandleCommand(message);
 
-        Assert.That(result, Is.EqualTo(OscCommandState.Success), "Command was not valid");
+        result.AssertOk();
+        Assert.That(result.Value!, Is.EqualTo(OscCommandState.Success), "Command was not valid");
         Thread.Sleep(200);
 
         Assert.That(_sender.ReceivedMessages, Has.Count.EqualTo(1));
@@ -380,6 +416,6 @@ public class OscCommandServiceFunctionTests : TestBase<OscCommandServiceFunction
 
     protected override void OneTimeTearDownExtra()
     {
-        _commandService.Stop();
+        _commandService.Stop().AssertOk();
     }
 }

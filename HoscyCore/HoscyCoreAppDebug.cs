@@ -12,23 +12,26 @@ internal class HoscyCoreAppDebug(ILogger logger)
     private Process? _debugProcess = null;
     private bool _started = false;
 
-    public void Start(HoscyCoreAppStartParameters startParameters, ConfigModel config)
+    public Res Start(HoscyCoreAppStartParameters startParameters, ConfigModel config)
     {
         if(_started)
         {
             _logger.Debug("Debug already started, skipping start");
-            return;
+            return ResC.Ok();
         }
         _started = true;
 
-        if (!startParameters.ShouldOpenConsoleIfRequested) return;
+        if (!startParameters.ShouldOpenConsoleIfRequested) return ResC.Ok();
 
         if (config.Debug_LogViaCmdOnWindows && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             _logger.Information("Starting windows console logger");
-            WinApi.OpenConsole();
-            _logger.Debug("Started windows console logger");
-            return;
+            var winConsoleRes = ResC.WrapR(WinApi.OpenConsole, "Failed opening console on windows", _logger);
+            if (winConsoleRes.IsOk)
+            {
+                _logger.Debug("Started windows console logger");
+            }
+            return winConsoleRes;
         }
 
         if (config.Debug_LogViaFileFollow)
@@ -36,13 +39,13 @@ internal class HoscyCoreAppDebug(ILogger logger)
             if (string.IsNullOrWhiteSpace(config.Debug_LogFileFollowCommand) || string.IsNullOrWhiteSpace(config.Debug_LogFileFollowProcess))
             {
                 _logger.Warning("LogViaFileFollow was enabled but no command or process set");
-                return;
+                return ResC.Ok();
             }
 
             if (!config.Debug_LogFileFollowCommand.Contains("[LOGFILE]"))
             {
                 _logger.Warning("LogFileFollowCommand does not contain file token \"[LOGFILE]\"");
-                return;
+                return ResC.Ok();
             }
 
             _logger.Information("Starting debug terminal...");
@@ -59,28 +62,36 @@ internal class HoscyCoreAppDebug(ILogger logger)
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, "Unable to start debug terminal");
+                return ResC.FailLog("Unable to start debug terminal", _logger, ex);
             }
-            return;
+
+            return ResC.Ok();
         }
 
-        return;
+        return ResC.Ok();
     }
 
-    public void Stop()
+    public Res Stop()
     {
-        if (_debugProcess is null) return;
+        if (_debugProcess is null) return ResC.Ok();
+
         _logger.Information("Stopping debug process...");
         try
         {
             _debugProcess.Kill();
             _debugProcess.WaitForExit();
+            _logger.Debug("Stopped debug process");
+        } 
+        catch (Exception ex)
+        {
+            return ResC.FailLog("Unable to stop debug process", _logger, ex);
+        }
+        finally
+        {
             _debugProcess.Dispose();
             _debugProcess = null;
-            _logger.Debug("Stopped debug process");
-        } catch (Exception ex)
-        {
-            _logger.Error(ex, "Unable to stop debug process");
         }
+
+        return ResC.Ok();
     }
 }

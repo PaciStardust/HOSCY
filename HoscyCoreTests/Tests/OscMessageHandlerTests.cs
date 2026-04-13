@@ -1,7 +1,6 @@
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Osc.MessageHandling.Handlers;
 using HoscyCore.Services.Output.Core;
-using HoscyCoreTests.Mocks;
 using HoscyCoreTests.Mocks.Impl;
 using HoscyCoreTests.Utils;
 using LucHeart.CoreOSC;
@@ -18,7 +17,7 @@ public class OscMessageHandlerFunctionTests : TestBase<OscMessageHandlerFunction
     public void TestAfkHandler()
     {
         var afkService = new MockAfkService();
-        afkService.Start();
+        afkService.Start().AssertOk();
         var afkHandler = new AfkOscMessageHandler(_logger, afkService, _config);
         
         // Status sanity check

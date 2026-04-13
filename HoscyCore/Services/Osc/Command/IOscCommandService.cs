@@ -1,4 +1,5 @@
 using HoscyCore.Services.Core;
+using HoscyCore.Utility;
 
 namespace HoscyCore.Services.Osc.Command;
 
@@ -17,13 +18,13 @@ public interface IOscCommandService : IAutoStartStopService
     /// Executes OscCommandString
     /// </summary>
     /// <returns>Success</returns>
-    public OscCommandState HandleCommand(string commandString);
+    public Res<OscCommandState> HandleCommand(string commandString);
 
     /// <summary>
     /// Checks if a string of text is an OSC command and executes it
     /// </summary>
     /// <returns>Success</returns>
-    public OscCommandState DetectAndHandleCommand(string commandString);
+    public Res<OscCommandState> DetectAndHandleCommand(string commandString);
 
     /// <summary>
     /// Gets the text needed to identify a command
@@ -35,6 +36,4 @@ public enum OscCommandState
 {
     Success,
     NotCommand,
-    Malformed,
-    Shutdown
 }

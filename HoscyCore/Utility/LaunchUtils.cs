@@ -39,80 +39,121 @@ public static class LaunchUtils
     /// Loads in the config model or generates a new one
     /// </summary>
     /// <returns>Null if creation fails</returns>
-    public static ConfigModel? LoadConfigModel(ILogger logger, bool createNewIfMissing = true)
+    public static Res<ConfigModel> LoadConfigModel(ILogger logger, bool createNewIfMissing = true)
     {
-
-        ConfigModel? config;
         try
         {
             logger.Information("Attempting to load config file...");
-            config = ConfigModelLoader.TryLoad(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, logger);
+            var resConfig = ConfigModelLoader.TryLoad(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, logger);
+            if (resConfig is not null && !resConfig.IsOk)
+            {
+                return resConfig;
+            }
+
+            var config = resConfig?.Value;
             if (config is null)
             {
                 logger.Information("Could not find config file, attempting to load legacy config file instead...");
-                config = LegacyConfigModelLoader.TryLoad(PathUtils.PathConfigFolder, LegacyConfigModelLoader.DEFAULT_FILE_NAME, logger)?
-                .Upgrade(logger)
-                .Migrate(logger);
+
+                var resLegacyConfig = LegacyConfigModelLoader.TryLoad(PathUtils.PathConfigFolder, LegacyConfigModelLoader.DEFAULT_FILE_NAME, logger);
+                var resLegacyUpgrade = resLegacyConfig is null ? null : (resLegacyConfig.IsOk ? resLegacyConfig.Value.Upgrade(logger) : ResC.Fail(resLegacyConfig.Msg));
+
+                if (resLegacyUpgrade is not null && !resLegacyUpgrade.IsOk)
+                    return ResC.TFail<ConfigModel>(resLegacyUpgrade.Msg);
+
+                config = resLegacyConfig?.Value?.Migrate(logger);
             }
+
             if (config is null)
             {
                 if (!createNewIfMissing)
                 {
-                    logger.Error("Could not find legacy config file, creation of new file is disabled, returning null");
-                    return null;
+                    return ResC.TFailLog<ConfigModel>("Could not find legacy config file, creation of new file is disabled, returning null",
+                        logger, lvl: ResMsgLvl.Fatal);
                 }
                 logger.Information("Could not find legacy config file, creating new file insted...");
                 config = new();
             }
-            config.Upgrade(logger);
+
+            var resUpgrade = config.Upgrade(logger);
+            if (!resUpgrade.IsOk)
+            {
+                logger.Fatal("Failed and upgrading the provided configuration ({res})", resUpgrade);
+                return ResC.TFail<ConfigModel>(resUpgrade.Msg);
+            }
+
             logger.Information("Successfully created and upgraded the provided configuration");
             config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, logger);
-            return config;
+            return ResC.TOk(config);
         }
         catch (Exception ex)
         {
-            logger.Fatal(ex, "Program wil shut down - Failed loading config file");
+            return ResC.TFailLog<ConfigModel>($"Failed loading config file", logger, ex, ResMsgLvl.Fatal);
         }
-        return null;
     }
 
-    public static IEnumerable<Type> GetCompleteTypesFromAssemblies()
+    public static Res<IEnumerable<Type>> GetCompleteTypesFromAssemblies(ILogger logger)
     {
-        return AppDomain.CurrentDomain.GetAssemblies()
-            .SelectMany(x => x.GetTypes())
-            .Distinct()
-            .Where(x => !(x.IsAbstract || x.IsInterface));
+        try
+        {
+            var types = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(x => x.GetTypes())
+                .Distinct()
+                .Where(x => !(x.IsAbstract || x.IsInterface));
+            
+            logger.Debug("Retrieved all types from assembly");
+            return ResC.TOk(types);
+        } 
+        catch (Exception ex)
+        {
+            return ResC.TFailLog<IEnumerable<Type>>("Failed to retrieve types from assembly", logger, ex);
+        }
     }
 
     /// <summary>
-    /// Returns all implementations of a class that can be located in the procided container
+    /// Returns all implementations of a class that can be located in the provided container
     /// </summary>
-    public static List<T> GetImplementationsInContainerForClass<T>(IServiceProvider container, ILogger? logger)
+    public static Res<List<T>> GetImplementationsInContainerForClass<T>(IServiceProvider container, ILogger logger)
     {
         List<T> instances = [];
         var searchType = typeof(T);
-        logger?.Debug("Locating instances of \"{baseType}\"", searchType.FullName);
-        foreach (var type in GetCompleteTypesFromAssemblies())
-        {
-            if (!type.IsAssignableTo(searchType)) continue;
-            var diType = type.GetCustomAttribute<LoadIntoDiContainerAttribute>()?.AsType ?? type;
+        logger.Debug("Locating instances of \"{baseType}\"", searchType.FullName);
 
-            if (container.GetService(diType) is not T instance)
+        var allTypesResult = GetCompleteTypesFromAssemblies(logger);
+        if (!allTypesResult.IsOk)
+            return ResC.TFail<List<T>>(allTypesResult.Msg);
+
+        try
+        {
+            foreach (var type in allTypesResult.Value)
             {
-                logger?.Debug("Could not locate instance of \"{baseType}\" \"{serviceType}\"", searchType.FullName, type.FullName);
-                continue;
+                if (!type.IsAssignableTo(searchType)) continue;
+                var diType = type.GetCustomAttribute<LoadIntoDiContainerAttribute>()?.AsType ?? type;
+
+                if (container.GetService(diType) is not T instance)
+                {
+                    logger.Debug("Could not locate instance of \"{baseType}\" \"{serviceType}\"", searchType.FullName, type.FullName);
+                    continue;
+                }
+                logger.Verbose("Located instance of \"{baseType}\" \"{serviceType}\"", searchType.FullName, type.FullName);
+                instances.Add(instance);
             }
-            logger?.Verbose("Located instance of \"{baseType}\" \"{serviceType}\"", searchType.FullName, type.FullName);
-            instances.Add(instance);
+        } 
+        catch (Exception ex)
+        {
+            logger.Error(ex, "Failed to retrieve instances of type \"{type}\" from type list", searchType.FullName);
+            var message = ResMsg.Err(ResMsg.FmtEx(ex, $"Failed to retrieve instances of type \"{searchType.Name}\" from type list"));
+            return ResC.TFail<List<T>>(message);
         }
-        logger?.Debug("Located {moduleCount} instances of \"{baseType}\"", instances.Count, searchType.FullName);
-        return instances;
+        
+        logger.Debug("Located {moduleCount} instances of \"{baseType}\"", instances.Count, searchType.FullName);
+        return ResC.TOk(instances);
     }
 
     /// <summary>
     /// Creates and starts a timer to throw an exception in N ms
     /// </summary>
-    public static Timer CreateTimerToThrowException(Exception exceptionToThrow, int msToThrowIn)
+    private static Timer CreateTimerToThrowException(Exception exceptionToThrow, int msToThrowIn)
     {
         using var timer = new Timer(msToThrowIn)
         {
@@ -132,18 +173,18 @@ public static class LaunchUtils
     /// <param name="msToWaitFor">Ms to wait before throwing exception</param>
     /// <param name="exceptionToThrow">Exception to throw when timing out</param>
     /// <returns>Exception if occured while waiting</returns>
-    public static Exception? SafelyWaitForTaskWithTimeoutAndLogException(Task? task, int msToWaitFor, Exception exceptionToThrow)
+    public static Res SafelyWaitForTaskWithTimeoutAndReturnException(Task? task, int msToWaitFor, Exception exceptionToThrow, ILogger logger)
     {
         try
         {
             using var timer = CreateTimerToThrowException(exceptionToThrow, msToWaitFor);
             task?.GetAwaiter().GetResult();
             timer.Stop();
+            return ResC.Ok();
         }
         catch (Exception ex)
         {
-            return ex;
+            return ResC.FailLog("Timed out waiting for task to end", logger, ex);
         }
-        return null;
     }
 }

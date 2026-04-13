@@ -1,4 +1,5 @@
 using HoscyCore.Services.Network;
+using HoscyCore.Utility;
 using HoscyCoreTests.Utils;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure
@@ -27,8 +28,9 @@ public class WebClientFunctionTests : TestBase<WebClientFunctionTests>
 
     protected override void OneTimeSetupExtra()
     {
-        _client = new WebClient(_logger);
-        _client.Start();
+        var client = new WebClient(_logger);
+        client.Start().AssertOk();
+        _client = client;
 
         AssertServiceProcessing(_client);
     }
@@ -37,7 +39,7 @@ public class WebClientFunctionTests : TestBase<WebClientFunctionTests>
     public async Task TestDownloadAsync()
     {
         var path = Path.Join(_tempFolder, "dltest.html");
-        await _client.DownloadAsync("https://paci.dev/", path);
+        (await _client.DownloadAsync("https://paci.dev/", path)).AssertOk();
         
         var fileInfo = new FileInfo(path);
         using (Assert.EnterMultipleScope())
@@ -53,12 +55,13 @@ public class WebClientFunctionTests : TestBase<WebClientFunctionTests>
         var requestMessage = new HttpRequestMessage(HttpMethod.Get, "https://paci.dev/");
         var result = await _client.SendAsync(requestMessage);
 
-        Assert.That(result, Is.Not.Empty, "Result was empty");
+        result.AssertOk();
+        Assert.That(result.Value, Is.Not.Empty, "Result was empty");
     }
 
     protected override void OneTimeTearDownExtra()
     {
-        _client.Stop();
+        _client.Stop().AssertOk();
         AssertServiceStopped(_client);
     }
 }

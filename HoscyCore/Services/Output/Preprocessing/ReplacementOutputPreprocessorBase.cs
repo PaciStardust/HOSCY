@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Output.Core;
+using HoscyCore.Utility;
 using Serilog;
 
 namespace HoscyCore.Services.Output.Preprocessing;
@@ -35,7 +36,7 @@ public abstract class ReplacementOutputPreprocessorBase<T> : IOutputPreprocessor
     #endregion
 
     #region Updating
-    public void ReloadReplacements()
+    public Res ReloadReplacements()
     {
         _handlers.Clear();
 
@@ -75,8 +76,14 @@ public abstract class ReplacementOutputPreprocessorBase<T> : IOutputPreprocessor
         LastLoadBroken = countBroken;
         LastLoadDisabled = countDisabled;
 
-        _logger.Debug("Reloaded {replacementModelCountLoaded}/{replacementModelCount} handlers, {disabledCount} disabled, {brokenCount} broken", converted.Count, models.Count, countDisabled, countBroken);
+
+        _logger.Debug("Reloaded {replacementModelCountLoaded}/{replacementModelCount} handlers, {disabledCount} disabled, {brokenCount} broken",
+            converted.Count, models.Count, countDisabled, countBroken);
         _handlers.AddRange(converted);
+
+        return countBroken == 0
+            ? ResC.Ok()
+            : ResC.FailLog($"{countBroken} models could not be loaded and have been disabled", _logger, lvl: ResMsgLvl.Warning);
     }
     #endregion
 }

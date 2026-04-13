@@ -1,3 +1,5 @@
+using HoscyCore.Utility;
+
 namespace HoscyCore.Services.Core;
 
 /// <summary>
@@ -5,9 +7,9 @@ namespace HoscyCore.Services.Core;
 /// </summary>
 public interface IStartStopService : IService
 {
-    public void Start();
-    public void Stop();
-    public void Restart();
+    public Res Start();
+    public Res Stop();
+    public Res Restart();
     public ServiceStatus GetCurrentStatus();
     public Exception? GetFaultIfExists();
 }

@@ -1,6 +1,7 @@
 using HoscyCli.Commands.Core;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
+using HoscyCore.Utility;
 
 namespace HoscyCli.Commands.Modules;
 
@@ -14,61 +15,61 @@ public class AddressCommandModule(ReflectPropEditCommandModule _reflectCm) : Att
     public string[] ModuleCommands => [ "address", "osc-address" ];
 
     [SubCommandModule(["game-afk", "afk"], "Set games AFK address")] 
-    public CommandResult CmdGameAfk()
+    public Res CmdGameAfk()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Game_Afk));
     }
 
     [SubCommandModule(["game-textbox", "textbox"], "Set games textbox address")] 
-    public CommandResult CmdGameTextbox()
+    public Res CmdGameTextbox()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Game_Textbox));
     }
 
     [SubCommandModule(["game-typing", "typing"], "Set games typing address")] 
-    public CommandResult CmdGameTyping()
+    public Res CmdGameTyping()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Game_Typing));
     }
 
     [SubCommandModule(["game-mute", "mute"], "Set games mute address")] 
-    public CommandResult CmdGameMute()
+    public Res CmdGameMute()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Game_Mute));
     }
 
     [SubCommandModule(["in-message-text", "message-text"], "Set HOSCY text message input address")] 
-    public CommandResult CmdInMessageText()
+    public Res CmdInMessageText()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Input_TextMessage));
     }
 
     [SubCommandModule(["in-message-audio", "message-audio"], "Set HOSCY audio message input address")] 
-    public CommandResult CmdInMessageAudio()
+    public Res CmdInMessageAudio()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Input_AudioMessage));
     }
 
     [SubCommandModule(["in-message-other", "message-other"], "Set HOSCY other message input address")] 
-    public CommandResult CmdInMessageOther()
+    public Res CmdInMessageOther()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Input_OtherMessage));
     }
 
     [SubCommandModule(["in-notification", "notification"], "Set HOSCY notification input address")] 
-    public CommandResult CmdInNotification()
+    public Res CmdInNotification()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Input_TextNotification));
     }
 
     [SubCommandModule(["rec-toggle-mute", "toggle-mute"], "Set HOSCY recognition mute toggle address")] 
-    public CommandResult CmdRecToggleMute()
+    public Res CmdRecToggleMute()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Tool_ToggleMute));
     }
 
     [SubCommandModule(["rec-toggle-auto-mute", "toggle-auto-mute"], "Set HOSCY recognition automatic mute toggle address")] 
-    public CommandResult CmdRecToggleAutoMute()
+    public Res CmdRecToggleAutoMute()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Mute_OnGameMute));
     }

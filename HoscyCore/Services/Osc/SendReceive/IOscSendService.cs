@@ -1,4 +1,5 @@
 using HoscyCore.Services.Core;
+using HoscyCore.Utility;
 
 namespace HoscyCore.Services.Osc.SendReceive;
 
@@ -12,8 +13,8 @@ public interface IOscSendService : IService
 
     public void SendToDefaultSyncFireAndForget(string address, params object?[] args);
     public void SendSyncFireAndForget(string ip, ushort port, string address, params object?[] args);
-    public bool SendToDefaultSync(string address, params object?[] args);
-    public bool SendSync(string ip, ushort port, string address, params object?[] args);
-    public Task<bool> SendToDefaultAsync(string address, params object?[] args);
-    public Task<bool> SendAsync(string ip, ushort port, string address, params object?[] args);
+    public Res SendToDefaultSync(string address, params object?[] args);
+    public Res SendSync(string ip, ushort port, string address, params object?[] args);
+    public Task<Res> SendToDefaultAsync(string address, params object?[] args);
+    public Task<Res> SendAsync(string ip, ushort port, string address, params object?[] args);
 }

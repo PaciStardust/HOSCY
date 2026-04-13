@@ -25,25 +25,28 @@ public class IpcDataHandler(ILogger logger)
         switch (id)
         {
             case WhisperIpcKeepalive.IDENTIFIER:
-                if (_converter.TryDeserialize<WhisperIpcKeepalive>(data, out var resAlive))
+                var resAlive = _converter.Deserialize<WhisperIpcKeepalive>(data);
+                if (resAlive.IsOk)
                 {
-                    OnKeepAlive(resAlive);
+                    OnKeepAlive(resAlive.Value);
                 }
                 return;
 
             case WhisperIpcMute.IDENTIFIER:
-                if (_converter.TryDeserialize<WhisperIpcMute>(data, out var resMute))
+                var resMute = _converter.Deserialize<WhisperIpcMute>(data);
+                if (resMute.IsOk)
                 {
-                    _logger.Debug("Received mute signal with state \"{data}\"", resMute.State);
-                    OnMute(resMute);
+                    _logger.Debug("Received mute signal with state \"{data}\"", resMute.Value.State);
+                    OnMute(resMute.Value);
                 }
                 return;
 
             case WhisperIpcStatus.IDENTIFIER:
-                if (_converter.TryDeserialize<WhisperIpcStatus>(data, out var resStatus))
+                var resStatus = _converter.Deserialize<WhisperIpcStatus>(data);
+                if (resStatus.IsOk)
                 {
-                    _logger.Debug("Received status signal with state \"{data}\"", resStatus.State);
-                    OnStatus(resStatus);
+                    _logger.Debug("Received status signal with state \"{data}\"", resStatus.Value.State);
+                    OnStatus(resStatus.Value);
                 }
                 return;
 

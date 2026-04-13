@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.IO.Pipes;
 using System.Runtime.InteropServices;
+using HoscyCore.Utility;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -25,12 +26,13 @@ public class IpcSendPipe(ILogger logger, bool logVerboseExtra) : IpcPipeBase<Ano
     public string GetPipeClientHandle()
         => _ipcPipe.GetClientHandleAsString();
 
-    public bool Enqueue<T>(char id, T message)
+    public Res Enqueue<T>(char id, T message)
     {
         if (!CanEnqueue)
         {
-            _logger.Warning("Unable to queue new item of type {type}, not running", typeof(T).Name);
-            return false;
+            var type = typeof(T);
+            _logger.Warning("Unable to queue new item of type {type}, not running", type.FullName);
+            return ResC.Fail(ResMsg.Wrn($"Unable to queue new item of type {type.Name}, not running"));
         }
 
         try
@@ -42,12 +44,13 @@ public class IpcSendPipe(ILogger logger, bool logVerboseExtra) : IpcPipeBase<Ano
                 _logger.Verbose("Adding \"{queueItem}\" to IPC send queue", queueMessage);
             }
             _ipcQueue.Enqueue(queueMessage);
-            return true;
+            return ResC.Ok();
         }
         catch (Exception ex)
         {
-            _logger.Warning(ex, "Failed to convert type {type} to JSON", typeof(T).Name);
-            return false;
+            var type = typeof(T);
+            _logger.Warning(ex, "Failed to convert type {type} to JSON", type.FullName);
+            return ResC.Fail(ResMsg.Wrn(ResMsg.FmtEx(ex, $"Failed to convert type {type.Name} to JSON")));
         }
     }
 

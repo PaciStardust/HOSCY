@@ -3,6 +3,7 @@ using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Output.Core;
+using HoscyCore.Utility;
 using Serilog;
 
 namespace HoscyCore.Services.Afk;
@@ -82,15 +83,17 @@ public class AfkService(ConfigModel config, IOutputManagerService output, ILogge
     protected override bool IsProcessing()
         => _afkTimer is not null;
 
-    protected override void StartForService()
+    protected override Res StartForService()
     {
         _logger.Debug("AfkService start/stop only exists for shutdown cleanup!");
+        return ResC.Ok();
     }
     protected override bool UseAlreadyStartedProtection => false;
 
-    protected override void StopForService()
+    protected override Res StopForService()
     {
         StopAfk();
+        return ResC.Ok();
     }
     #endregion
 }

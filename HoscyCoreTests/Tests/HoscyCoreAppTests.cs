@@ -24,8 +24,8 @@ public class HoscyCoreAppStartupTests : TestBase<HoscyCoreAppStartupTests>
         var coreApp = new HoscyCoreApp(_logger);
         var config = HoscyCoreAppTestUtil.CreateSimpleStartupParameters(_config);
 
-        coreApp.Start(config);
-        coreApp.Stop();
+        coreApp.Start(config).AssertOk();
+        coreApp.Stop().AssertOk();
     }
 
     [Test]
@@ -37,8 +37,8 @@ public class HoscyCoreAppStartupTests : TestBase<HoscyCoreAppStartupTests>
         config.CreateNewConfigIfMissing = true;
         config.CreateLoggerFromConfiguration = true;
 
-        coreApp.Start(config);
-        coreApp.Stop();
+        coreApp.Start(config).AssertOk();
+        coreApp.Stop().AssertOk();
     }
 }
 
@@ -54,7 +54,7 @@ public class HoscyCoreAppFunctionTests : TestBase<HoscyCoreAppFunctionTests>
     {
         var coreApp = new HoscyCoreApp(_logger);
         var config = HoscyCoreAppTestUtil.CreateSimpleStartupParameters(_config);
-        coreApp.Start(config);
+        coreApp.Start(config).AssertOk();
         _coreApp = coreApp;
     }
 
@@ -62,13 +62,15 @@ public class HoscyCoreAppFunctionTests : TestBase<HoscyCoreAppFunctionTests>
     public void GetService()
     {
         Assert.That(_coreApp, Is.Not.Null, message: "Core App is null!");
-        var container = _coreApp.GetContainer();
+        var containerResult = _coreApp.GetContainer();
+        containerResult.AssertOk();
+        var container = containerResult.Value!;
 
-        Assert.That(container, Is.Not.Null, "Container is null!");
         var newLogger = container.GetService<ILogger>();
         Assert.That(newLogger, Is.Not.Null, "Logger from container is null");
         var newConfig = container.GetRequiredService<ConfigModel>();
-        Assert.That(newConfig.Afk_StartText, Is.EqualTo(_config.Afk_StartText), "Did not retrieve init config");
+        newConfig.AssertOk();
+        Assert.That(newConfig.Value!.Afk_StartText, Is.EqualTo(_config.Afk_StartText), "Did not retrieve init config");
 
         var shouldPass = container.GetService<IDiTestService>();
         Assert.That(shouldPass, Is.Not.Null, "Di Test shouldve worked");
@@ -80,7 +82,7 @@ public class HoscyCoreAppFunctionTests : TestBase<HoscyCoreAppFunctionTests>
 
     protected override void OneTimeTearDownExtra()
     {
-        _coreApp.Stop();
+        _coreApp.Stop().AssertOk();
     }
 }
 

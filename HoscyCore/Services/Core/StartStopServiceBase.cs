@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using HoscyCore.Services.Interfacing;
+using HoscyCore.Utility;
 using Serilog;
 
 namespace HoscyCore.Services.Core;
@@ -28,56 +29,41 @@ public abstract class StartStopServiceBase(ILogger logger) : IStartStopService
     #endregion
 
     #region Startup
-    public void Start()
+    public Res Start()
     {
-        _logger.Debug("Service starting");
-
-        if (UseAlreadyStartedProtection && IsStarted())
+        return SafeExecute("start", StartForService, () =>
         {
-            _logger.Debug("Service start cancelled, already started");
-            return;
-        }
-
-        ClearFault();
-        var sw = Stopwatch.StartNew();
-        StartForService();
-        sw.Stop();
-
-        _logger.Debug("Service started in {elapsed}ms", sw.ElapsedMilliseconds);
+            if (UseAlreadyStartedProtection && IsStarted())
+            {
+                _logger.Debug("Service start cancelled, already started");
+                return ResC.Ok();
+            }
+            return null;
+        });
     }
     protected abstract bool UseAlreadyStartedProtection { get; }
-    protected abstract void StartForService();
+    protected abstract Res StartForService();
     #endregion
 
     #region Stopping
-    public void Stop()
+    public Res Stop()
     {
-        _logger.Debug("Service stopping");
-
-        var sw = Stopwatch.StartNew();
-        StopForService();
-        sw.Stop();
-
-        _logger.Debug("Service stopped in {elapsed}ms", sw.ElapsedMilliseconds);
+        return SafeExecute("stop", StopForService);
     }
-    protected abstract void StopForService();
+    protected abstract Res StopForService();
     #endregion
 
     #region Restart
-    public void Restart()
+    public Res Restart()
     {
-        _logger.Debug("Service restarting");
-
-        var sw = Stopwatch.StartNew();
-        RestartInternal();
-        sw.Stop();
-
-        _logger.Debug("Service restarted in {elapsed}ms", sw.ElapsedMilliseconds);
+        return SafeExecute("restart", RestartForService);
     }
-    protected virtual void RestartInternal()
+    protected virtual Res RestartForService() //todo: [REFACTOR] Check if even needed
     {
-        Stop();
-        Start();
+        var resStop = Stop();
+        if (!resStop.IsOk) return resStop;
+
+        return Start();
     }
     #endregion
 
@@ -99,6 +85,35 @@ public abstract class StartStopServiceBase(ILogger logger) : IStartStopService
         SetFault(ex);
         logger?.Error(ex, message);
         notify?.SendError(message, exception: ex);
+    }
+    #endregion
+
+    #region Utils
+    private Res SafeExecute(string verb, Func<Res> wrappedFunc, Func<Res?>? extraFunc = null)
+    {
+        _logger.Debug("Service {verb} begin", verb);
+
+        var extraRes = extraFunc?.Invoke();
+        if (extraRes is not null)
+        {
+            return extraRes;
+        }
+
+        var sw = Stopwatch.StartNew();
+        var res = ResC.Wrap(wrappedFunc, $"Service {verb} failed", _logger);
+        sw.Stop();
+
+        if (!res.IsOk)
+        {
+            _logger.Warning("Service {verb} encountered error after {elapsed}ms => {result}", 
+                verb, sw.ElapsedMilliseconds, res);
+        }
+        else
+        {
+            _logger.Debug("Service {verb} completed in {elapsed}ms", verb, sw.ElapsedMilliseconds);
+        }
+
+        return res;
     }
     #endregion
 }

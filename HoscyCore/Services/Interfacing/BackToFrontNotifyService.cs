@@ -1,4 +1,5 @@
 using HoscyCore.Services.Dependency;
+using HoscyCore.Utility;
 using Serilog;
 
 namespace HoscyCore.Services.Interfacing;
@@ -17,6 +18,22 @@ public class BackToFrontNotifyService(ILogger logger) : IBackToFrontNotifyServic
     #endregion
 
     #region Invocation
+    public void SendResult(string title, ResMsg resMsg)
+    {
+        _logger.Verbose("Calling SendResult with title {title} and result {result}", title, resMsg);
+        
+        var level = resMsg.Level switch
+        {
+            ResMsgLvl.Info => BackToFrontNotifyLevel.Info,
+            ResMsgLvl.Warning => BackToFrontNotifyLevel.Warning,
+            ResMsgLvl.Error => BackToFrontNotifyLevel.Error,
+            ResMsgLvl.Fatal => BackToFrontNotifyLevel.Fatal,
+            _ => BackToFrontNotifyLevel.Error
+        };
+
+        OnNotificationSent.Invoke(this, CreateArgs(level, title, resMsg.Message));
+    }
+
     public void SendInfo(string title, string content = "", Exception? exception = null)
     {
         _logger.Verbose(exception, "Calling SendInfo with title {title} and content {content}", title, content);

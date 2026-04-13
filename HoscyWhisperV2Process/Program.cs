@@ -5,9 +5,9 @@ using Serilog.Events;
 
 namespace HoscyWhisperV2Process;
 
-public class Program
+public class Program //todo: [FIX] Typing indicator not good, noises, encoding, japanese
 {   
-    public static async Task Main(string[] args)
+    public static async Task Main(string[] args) //todo: [REFACTOR?] Should result type see heavier usage here
     {
         if (!InitConfigAndWriter(args, out var writer, out var config)) return;
 

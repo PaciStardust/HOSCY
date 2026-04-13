@@ -1,5 +1,6 @@
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Translation.Core;
+using HoscyCore.Utility;
 using Serilog;
 
 namespace HoscyCore.Services.Translation.Modules;
@@ -48,14 +49,16 @@ public class TestTranslationModule(ILogger logger)
         return _running;
     }
 
-    protected override void StartForService()
+    protected override Res StartForService()
     {
         _running = true;
+        return ResC.Ok();
     }
     protected override bool UseAlreadyStartedProtection => false;
 
-    protected override void StopForModule()
+    protected override Res StopForModule()
     {
         _running = false;
+        return ResC.Ok();
     }
 }

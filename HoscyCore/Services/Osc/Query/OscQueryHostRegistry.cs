@@ -1,4 +1,5 @@
 using HoscyCore.Services.Dependency;
+using HoscyCore.Utility;
 using Serilog;
 using Vrc = VRC.OSCQuery;
 
@@ -9,48 +10,67 @@ public class OscQueryHostRegistry(ILogger logger)
 {
     private readonly ILogger _logger = logger.ForContext<OscQueryHostRegistry>();
     private readonly Dictionary<string, (Vrc.HostInfo Host, DateTimeOffset LastHeard)> _hosts = [];
+    private HashSet<string> _nameBlacklist = [];
     private (string Ip, int Port)? _self;
     
     /// <summary>
     /// Adds HostInfo to list
     /// </summary>
-    public void AddHostInfoFromServiceProfile(Vrc.OSCQueryServiceProfile profile)
+    public Res AddHostInfoFromServiceProfile(Vrc.OSCQueryServiceProfile profile)
     {
         var lowerName = profile.name.ToLower();
+        if (_nameBlacklist.Contains(lowerName)) return ResC.Ok();
+
         if (!_hosts.ContainsKey(lowerName))
         {
             _logger.Debug("Received ServiceProfile \"{profileName}\"", profile.name);
         }
 
-        var hostInfo = Vrc.Extensions.GetHostInfo(profile.address, profile.port).GetAwaiter().GetResult();
-        if (hostInfo == null)
+        var hostInfo = GetVrcHostInfo(profile);
+        if (!hostInfo.IsOk)
         {
-            _logger.Warning("Failed to grab HostInfo for ServiceProfile \"{profileName}\"", profile.name);
-            throw new ArgumentException("Failed to grab HostInfo for ServiceProfile " + profile.name);
+            _nameBlacklist.Add(lowerName);
+            return ResC.Fail(hostInfo.Msg);
         }
 
         // We do not log refreshes
         if (!_hosts.ContainsKey(lowerName))
         {
             _logger.Debug("Adding HostInfo {hostInfoName} (IP={hostIp} Port={hostPort}) from ServiceProfile \"{profileName}\" to hosts list",
-                lowerName, hostInfo.oscIP, hostInfo.oscPort, profile.name);
+                lowerName, hostInfo.Value.oscIP, hostInfo.Value.oscPort, profile.name);
         }
-        _hosts[lowerName] = (hostInfo, DateTimeOffset.UtcNow);
+
+        _hosts[lowerName] = (hostInfo.Value, DateTimeOffset.UtcNow);
+        return ResC.Ok();
     }
 
-    public (string Ip, int Port)? GetServiceAddressByName(string name)
+    private Res<Vrc.HostInfo> GetVrcHostInfo(Vrc.OSCQueryServiceProfile profile)
+    {
+        return ResC.TWrap(() =>
+        {
+            var host = Vrc.Extensions.GetHostInfo(profile.address, profile.port).GetAwaiter().GetResult();
+            return ResC.TOk(host);
+        }, $"Failed to grab HostInfo for ServiceProfile \"{profile.name}\"", _logger);
+    }
+
+    public Res<(string Ip, int Port)> GetServiceAddressByName(string name)
     {
         var lowerName = name.ToLower();
 
         if (lowerName == "self")
-            return _self;
-
+        {
+            return _self is null 
+                ? ResC.TFailLog<(string, int)>("Unable to get OSC host info for \"self\", value is not set", _logger)
+                : ResC.TOk(_self.Value);
+        }
+        
+            
         (string, int)? returnValue = _hosts.TryGetValue(lowerName, out var hostData)
             ? (hostData.Host.oscIP, hostData.Host.oscPort)
             : null;
 
         if (returnValue is not null)
-            return returnValue;
+            return ResC.TOk(returnValue.Value);
 
         var returnKeys = _hosts
             .Select(x => x.Key)
@@ -58,16 +78,17 @@ public class OscQueryHostRegistry(ILogger logger)
             .ToArray();
         
         if (returnKeys.Length == 0)
-            return null;
+            return ResC.TFailLog<(string, int)>($"Unable to get OSC host info for \"{lowerName}\", value could not be found", _logger);
 
         var keyValue = _hosts[returnKeys[0]].Host;
-        return (keyValue.oscIP, keyValue.oscPort);
+        return ResC.TOk((keyValue.oscIP, keyValue.oscPort));
     }
 
     public void Clear()
     {
         _logger.Debug("Clearing host registry");
         _hosts.Clear();
+        _nameBlacklist.Clear();
         _self = null;
         _logger.Debug("Cleared host registry");
     }

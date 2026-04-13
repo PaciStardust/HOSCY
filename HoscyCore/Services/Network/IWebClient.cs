@@ -1,4 +1,5 @@
 using HoscyCore.Services.Core;
+using HoscyCore.Utility;
 
 namespace HoscyCore.Services.Network;
 
@@ -10,7 +11,7 @@ public interface IWebClient : IAutoStartStopService
     /// <param name="requestMessage">Message to send</param>
     /// <param name="timeoutMs">Timeout before cancellation</param>
     /// <returns>Result</returns>
-    public Task<string> SendAsync(HttpRequestMessage requestMessage, int timeoutMs = 5000);
+    public Task<Res<string>> SendAsync(HttpRequestMessage requestMessage, int timeoutMs = 5000);
 
     /// <summary>
     /// Downloads a file
@@ -18,7 +19,7 @@ public interface IWebClient : IAutoStartStopService
     /// <param name="sourceUrl">Url of file to download</param>
     /// <param name="fileLocation">Location to save file to</param>
     /// <param name="timeoutMs">Timeout before cancellation</param>
-    public Task DownloadAsync(string sourceUrl, string fileLocation, int timeoutMs = 5000);
+    public Task<Res> DownloadAsync(string sourceUrl, string fileLocation, int timeoutMs = 5000);
 
     /// <summary>
     /// Gets a unique identifier for a request

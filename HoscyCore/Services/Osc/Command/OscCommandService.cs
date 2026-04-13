@@ -9,7 +9,7 @@ using Serilog;
 
 namespace HoscyCore.Services.Osc.Command;
 
-[LoadIntoDiContainer(typeof(IOscCommandService), Lifetime.Singleton)]
+[LoadIntoDiContainer(typeof(IOscCommandService), Lifetime.Singleton)] //todo: [FIX?] Does this notify?
 public class OscCommandService(ILogger logger, OscQueryHostRegistry hostRegistry, IOscSendService sender)
     : StartStopServiceBase(logger.ForContext<OscCommandService>()), IOscCommandService
 {
@@ -31,56 +31,51 @@ public class OscCommandService(ILogger logger, OscQueryHostRegistry hostRegistry
     public bool DetectCommand(string commandString)
     {
         if (!commandString.StartsWith(OSC_COMMAND_IDENTIFIER, StringComparison.OrdinalIgnoreCase))
-        {
             return false;
-        }
+
         _logger.Verbose("Detected OSC command identifier in string \"{commandString}\"", commandString);
         return true;
     }
 
-    public OscCommandState HandleCommand(string commandString)
+    public Res<OscCommandState> HandleCommand(string commandString)
     {
-        if (_cts is null || _cts.IsCancellationRequested) return OscCommandState.Shutdown;
+        if (_cts is null || _cts.IsCancellationRequested)
+            return ResC.TFail<OscCommandState>(ResMsg.Err($"Unable to handle OSC command \"{commandString}\", service is shut down"));
 
         _logger.Debug("Attempting to parse command string \"{commandString}\"", commandString);
         var commandMatches = _oscCommandIdentifier.Matches(commandString);
-        if (commandMatches is null || commandMatches.Count == 0)
-        {
-            _logger.Warning("Failed parsing OSC command, it did not match the filter");
-            return OscCommandState.Malformed;
-        }
+        if (commandMatches is null || commandMatches.Count == 0) //todo: [FIX] Validation should also take into account count of passed commands somehow?
+            return ResC.TFailLog<OscCommandState>("Failed parsing OSC command \"{commandString}\", it did not match the filter", _logger, lvl: ResMsgLvl.Warning);
 
-        _logger.Verbose("{commandMatchCount} OSC command matches found in string \"{commandString}\", parsing individual commands", commandMatches.Count, commandString);
+        _logger.Verbose("{commandMatchCount} OSC command matches found in string \"{commandString}\", parsing individual commands",
+            commandMatches.Count, commandString);
         var commandInfos = new List<OscCommandInfo>();
         foreach (Match commandMatch in commandMatches)
         {
-            var output = ParseOscCommandString(commandMatch);
-            if (output is null)
-                return OscCommandState.Malformed;
+            var stringParseOutput = ParseOscCommandString(commandMatch);
+            if (!stringParseOutput.IsOk)
+                return ResC.TFail<OscCommandState>(stringParseOutput.Msg);
 
-            commandInfos.Add(output);
+            commandInfos.Add(stringParseOutput.Value);
         }
 
         if (commandInfos.Count == 0)
-        {
-            _logger.Warning("Failed to find any command messages to execute");
-            return OscCommandState.Malformed;
-        }
+            return ResC.TFailLog<OscCommandState>($"Failed to find any command messages to execute in string \"{commandString}\"", _logger, lvl: ResMsgLvl.Warning);
 
         var threadId = "ST-" + Guid.NewGuid().ToString().Split('-')[0];
         _logger.Debug("Parsed {commandMessageCount} OSC command infos from string \"{commandString}\", executing as id {threadId}",
             commandInfos.Count, commandString, threadId);
         var task = Task.Run(() => ExecuteOscCommands(threadId, commandInfos));
+
         PerformTaskCleanup();
         _runningTasks.Add(task);
-        return OscCommandState.Success;
+        return ResC.TOk(OscCommandState.Success);
     }
 
-    public OscCommandState DetectAndHandleCommand(string commandString)
+    public Res<OscCommandState> DetectAndHandleCommand(string commandString)
     {
-        if (_cts is null || _cts.IsCancellationRequested) return OscCommandState.Shutdown;
-
-        if (!DetectCommand(commandString)) return OscCommandState.NotCommand;
+        if (!DetectCommand(commandString))
+            return ResC.TOk(OscCommandState.NotCommand);
 
         return HandleCommand(commandString);
     }
@@ -88,7 +83,7 @@ public class OscCommandService(ILogger logger, OscQueryHostRegistry hostRegistry
     /// <summary>
     /// Turns a command string into a message and wait
     /// </summary>
-    private OscCommandInfo? ParseOscCommandString(Match commandMatch)
+    private Res<OscCommandInfo> ParseOscCommandString(Match commandMatch)
     {
         _logger.Verbose("Attempting to parse OSC subcommand \"{subcommandString}\"", commandMatch.Value);
 
@@ -108,8 +103,8 @@ public class OscCommandService(ILogger logger, OscQueryHostRegistry hostRegistry
         {
             if (!int.TryParse(waitText, out var parsedWaitTmp))
             {
-                _logger.Warning("Failed parsing OSC subcommand \"{subcommandString}\", unable to parse wait \"{wait}\"", commandMatch.Value, waitText);
-                return null;
+                var msg = $"Failed parsing OSC subcommand \"{commandMatch.Value}\", unable to parse wait \"{waitText}\"";
+                return ResC.TFailLog<OscCommandInfo>(msg, _logger, lvl: ResMsgLvl.Warning);
             }
             parsedWait = parsedWaitTmp;
         }
@@ -119,11 +114,12 @@ public class OscCommandService(ILogger logger, OscQueryHostRegistry hostRegistry
         {
             if (!ushort.TryParse(portText, out var parsedPortTmp))
             {
-                _logger.Warning("Failed parsing OSC subcommand \"{subcommandString}\", unable to parse port {port}", commandMatch.Value, portText);
-                return null;
+                var msg = $"Failed parsing OSC subcommand \"{commandMatch.Value}\", unable to parse port {portText}";
+                return ResC.TFailLog<OscCommandInfo>(msg, _logger, lvl: ResMsgLvl.Warning);
             }
             parsedPort = parsedPortTmp;
-        } else
+        } 
+        else
         {
             parsedPort = null;
         }
@@ -131,31 +127,38 @@ public class OscCommandService(ILogger logger, OscQueryHostRegistry hostRegistry
         if (targetText is not null && (ipText is null || portText is null))
         {
             var target = _hostRegistry.GetServiceAddressByName(targetText);
-            if (!target.HasValue)
+            if (!target.IsOk)
             {
-                _logger.Warning("Failed parsing OSC subcommand \"{subcommandString}\", specified target \"{target}\" not found", commandMatch.Value, targetText);
-                return null;
+                var msg = $"Failed parsing OSC subcommand \"{commandMatch.Value}\", specified target \"{targetText}\" not found";
+                return ResC.TFailLog<OscCommandInfo>(msg, _logger, lvl: ResMsgLvl.Warning);
             }
             ipText ??= target.Value.Ip;
             parsedPort ??= target.Value.Port.ConvertToUshort();
         }
 
+        var parsedVariables = ParseOscVariables(valuesText);
+        if (!parsedVariables.IsOk)
+        {
+            return ResC.TFail<OscCommandInfo>(parsedVariables.Msg);
+        }
+
         var info = new OscCommandInfo()
         {
             Address = addressText,
-            Arguments = ParseOscVariables(valuesText).ToArray(),
+            Arguments = parsedVariables.Value.ToArray(),
             Ip = ipText,
             Port = parsedPort,
             Wait = parsedWait
         };
+        
         _logger.Verbose("Parsed OSC subcommand \"{subcommandString}\"", commandMatch.Value);
-        return info;
+        return ResC.TOk(info);
     }
 
     /// <summary>
     /// Parses osc variables from string
     /// </summary>
-    private List<object> ParseOscVariables(string valuesText)
+    private Res<List<object>> ParseOscVariables(string valuesText)
     {
         _logger.Verbose("Parsing OSC variables \"{valuesText}\"", valuesText);
         var variableMatches = _oscParameterExtractor.Matches(valuesText);
@@ -168,8 +171,8 @@ public class OscCommandService(ILogger logger, OscQueryHostRegistry hostRegistry
 
             if (string.IsNullOrWhiteSpace(type))
             {
-                _logger.Warning("Failed Parsing OSC variable in \"{valuesText}\" => type missing for value \"{valueText}\"", valuesText, value);
-                continue;
+                var msg = $"Failed Parsing OSC variable in \"{valuesText}\" => type missing for value \"{value}\"";
+                return ResC.TFailLog<List<object>>(msg, _logger, lvl: ResMsgLvl.Warning);
             }
 
             switch (type.ToLower())
@@ -186,24 +189,30 @@ public class OscCommandService(ILogger logger, OscQueryHostRegistry hostRegistry
                     if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out float parsedFloat))
                         parsedVariables.Add(parsedFloat);
                     else
-                        _logger.Warning("Failed Parsing OSC variable in \"{valuesText}\" => type \"{typeText}\" for value \"{valueText}\"", valuesText, type, value);
+                        return InvalidTypeValueResult(valuesText, type, value);
                     continue;
 
                 case "i":
                     if (int.TryParse(value, out var parsedInt))
                         parsedVariables.Add(parsedInt);
                     else
-                        _logger.Warning("Failed Parsing OSC variable in \"{valuesText}\" => type \"{typeText}\" for value \"{valueText}\"", valuesText, type, value);
+                        return InvalidTypeValueResult(valuesText, type, value);
                     continue;
 
                 default:
-                    _logger.Warning("Failed Parsing OSC variable in \"{valuesText}\" => type \"{typeText}\" for value \"{valueText}\"", valuesText, type, value);
-                    continue;
+                    return InvalidTypeValueResult(valuesText, type, value);
             }
         }
 
-        _logger.Verbose("Parsed {parsedCount}/{totalCount} OSC variables from \"{valuesText}\"", parsedVariables.Count, variableMatches.Count, valuesText);
-        return parsedVariables;
+        _logger.Verbose("Parsed {parsedCount}/{totalCount} OSC variables from \"{valuesText}\"",
+            parsedVariables.Count, variableMatches.Count, valuesText);
+        return ResC.TOk(parsedVariables);
+    }
+
+    private Res<List<object>> InvalidTypeValueResult(string values, string type, string value)
+    {
+        var msg = $"Failed Parsing OSC variable in \"{values}\" => type \"{type}\" for value \"{value}\"";
+        return ResC.TFailLog<List<object>>(msg, _logger, lvl: ResMsgLvl.Warning);
     }
 
     /// <summary>
@@ -226,11 +235,13 @@ public class OscCommandService(ILogger logger, OscQueryHostRegistry hostRegistry
 
             var cmdInfo = commandInfos[i];
             _logger.Verbose("{taskId}: Step {step}/{cmdCount} sending {cmdInfo}", taskId, i + 1, cmdCount, cmdInfo.ToString());
-            if (!_sender.SendSync(cmdInfo.Ip ?? _sender.GetDefaultIp(), cmdInfo.Port ?? _sender.GetDefaultPort(), cmdInfo.Address, cmdInfo.Arguments))
+            var sendResult = _sender.SendSync(cmdInfo.Ip ?? _sender.GetDefaultIp(), cmdInfo.Port ?? _sender.GetDefaultPort(), cmdInfo.Address, cmdInfo.Arguments);
+            if (!sendResult.IsOk)
             {
                 _logger.Warning("{taskId}: Step {step}/{cmdCount} with info {cmdInfo} failed to send", taskId, i + 1, cmdCount, cmdInfo.ToString());
                 return Task.CompletedTask;
             }
+
             if (i != cmdCount - 1 && cmdInfo.Wait.HasValue && cmdInfo.Wait.Value > 0)
             {
                 _logger.Verbose("{taskId}: Step {step}/{cmdCount} waiting for {timeout}ms after execution", taskId, i + 1, cmdCount, cmdInfo.Wait);
@@ -272,7 +283,7 @@ public class OscCommandService(ILogger logger, OscQueryHostRegistry hostRegistry
     #endregion
 
     #region Start / Stop
-    protected override void StartForService()
+    protected override Res StartForService()
     {
         if (_cts is null)
         {
@@ -283,7 +294,8 @@ public class OscCommandService(ILogger logger, OscQueryHostRegistry hostRegistry
         {
             _logger.Debug("Service not started, it is already running");    
         }
-        return;
+
+        return ResC.Ok();
     }
     protected override bool UseAlreadyStartedProtection => false;
 
@@ -292,26 +304,38 @@ public class OscCommandService(ILogger logger, OscQueryHostRegistry hostRegistry
     protected override bool IsProcessing()
         => IsStarted();
 
-    protected override void StopForService()
+    protected override Res StopForService()
     {
         _logger.Verbose("Ensuring all tasks ended");
-        _cts?.Cancel();
 
-        var remain = PerformTaskCleanup();
-        if (remain > 0)
+        try
         {
-            _logger.Verbose("{remain} tasks are still running, waiting a timer period to allow them to safely stop", remain);
-            Thread.Sleep(OSC_COMMAND_MAX_UNINTERRUPTED_WAIT + 1); //This should ensure all tasks to have a chance of exiting unless stuck
-            remain = PerformTaskCleanup();
+            _cts?.Cancel();
+
+            var remain = PerformTaskCleanup();
             if (remain > 0)
             {
-                _logger.Verbose("{remain} tasks refused to stop in expected duration, forcing shutdown", remain);
-                _runningTasks.Clear();
+                _logger.Verbose("{remain} tasks are still running, waiting a timer period to allow them to safely stop", remain);
+                Thread.Sleep(OSC_COMMAND_MAX_UNINTERRUPTED_WAIT + 1); //This should ensure all tasks to have a chance of exiting unless stuck
+                remain = PerformTaskCleanup();
+                if (remain > 0)
+                {
+                    _logger.Warning("{remain} tasks refused to stop in expected duration, forcing shutdown", remain);
+                    _runningTasks.Clear();
+                }
             }
+        } 
+        catch (Exception ex)
+        {
+            return ResC.FailLog("Failed stopping tasks", _logger, ex);
+        }
+        finally
+        {
+            _cts?.Dispose();
+            _cts = null;
         }
 
-        _cts?.Dispose();
-        _cts = null;
+        return ResC.Ok();
     }
     #endregion
 }

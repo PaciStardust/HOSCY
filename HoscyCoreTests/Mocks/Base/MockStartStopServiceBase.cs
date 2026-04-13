@@ -1,4 +1,5 @@
 using HoscyCore.Services.Core;
+using HoscyCore.Utility;
 
 namespace HoscyCoreTests.Mocks.Base;
 
@@ -19,17 +20,20 @@ public abstract class MockStartStopServiceBase : IStartStopService
     public virtual Exception? GetFaultIfExists()
         => null;
 
-    public virtual void Restart()
+    public virtual Res Restart()
     {
-        Stop();
-        Start();
+        var res = Stop();
+        if (!res.IsOk) return res;
+        return Start();
     }
-    public virtual void Start()
+    public virtual Res Start()
     {
         Started = true;
+        return ResC.Ok();
     }
-    public virtual void Stop()
+    public virtual Res Stop()
     {
         Started = false;
+        return ResC.Ok();
     }
 }

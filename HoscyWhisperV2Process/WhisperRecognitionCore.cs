@@ -28,7 +28,8 @@ public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProc
         Task recTask = Task.Run(() => RunRecognitionAsync(ct, callback));
 
         _audioCapture.OnAudioProcessed += ProcessAudioFrames;
-        _audioCapture.Start();
+        var res = _audioCapture.Start();
+        if (!res.IsOk) return;
 
         IsRunning = true;
         await recTask;
@@ -38,7 +39,7 @@ public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProc
             _logger.Error(recTask.Exception, "Recognition stopping with Exception");
         }
 
-        _audioCapture.Stop();
+        _audioCapture.Stop(); //Result does not matter
         _audioCapture.OnAudioProcessed -= ProcessAudioFrames;
 
         IsRunning = false;

@@ -3,6 +3,7 @@ using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Interfacing;
 using HoscyCore.Services.Osc.SendReceive;
+using HoscyCore.Utility;
 using LucHeart.CoreOSC;
 using Serilog;
 
@@ -19,22 +20,23 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
     private List<OscReadonlyRelayFilter>? _filters = null;
 
     #region Start / Stop 
-    protected override void StartForService()
+    protected override Res StartForService()
     {
-        ReloadValidRelayFilters(_config.Osc_Relay_Filters.ToList());
+        return ReloadValidRelayFilters(_config.Osc_Relay_Filters.ToList());
     }
     protected override bool UseAlreadyStartedProtection => false;
 
-    protected override void StopForService()
+    protected override Res StopForService()
     {
-        ReloadValidRelayFilters([]);
+        var res = ReloadValidRelayFilters([]);
         _filters = null;
+        return res;
     }
 
-    protected override void RestartInternal()
+    protected override Res RestartForService()
     {
         ClearFault();
-        ReloadValidRelayFilters(_config.Osc_Relay_Filters.ToList());
+        return ReloadValidRelayFilters(_config.Osc_Relay_Filters.ToList());
     }
 
     protected override bool IsStarted()
@@ -54,7 +56,7 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
         }
     }
 
-    private void ReloadValidRelayFilters(List<OscRelayFilterModel> filterModels)
+    private Res ReloadValidRelayFilters(List<OscRelayFilterModel> filterModels)
     {
         const string OSC_TEST_ADDRESS = "/osctest123";
 
@@ -63,9 +65,9 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
         List<OscReadonlyRelayFilter> filters = [];
         if (filterModels.Count == 0)
         {
-            _logger.Verbose("No relay filters found");
+            _logger.Verbose("No relay filters found, will not be marked as processing");
             _filters = [];
-            return;
+            return ResC.Ok();
         }
 
         foreach (var filterModel in filterModels)
@@ -75,11 +77,14 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
             var readonlyFilter = new OscReadonlyRelayFilter(filterModel);
             _logger.Debug("Checking validity of Relay Filter \"{filterName}\"", readonlyFilter.Name);
 
-            var result = !string.IsNullOrWhiteSpace(readonlyFilter.Ip)
+            var textChecks = !string.IsNullOrWhiteSpace(readonlyFilter.Ip)
                 && !string.IsNullOrWhiteSpace(readonlyFilter.Name)
-                && readonlyFilter.Port != ushort.MinValue
-                && _sender.SendSync(readonlyFilter.Ip, readonlyFilter.Port, OSC_TEST_ADDRESS, false);
-            if (!result)
+                && readonlyFilter.Port != ushort.MinValue;
+            var sendResult = textChecks
+                ? _sender.SendSync(readonlyFilter.Ip, readonlyFilter.Port, OSC_TEST_ADDRESS, false)
+                : ResC.Fail("Text checks have failed");
+
+            if (!sendResult.IsOk)
             {
                 _logger.Warning("Skipping creation of listener \"{filterName}\" as its values are invalid (Name / Port / Ip / Filters)", readonlyFilter.Name);
                 filterModel.SetValidity(false);
@@ -98,11 +103,13 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
         if (invalidFilters.Length > 0)
         {
             var filterString = $"The following filters are invalid: {string.Join(", ", invalidFilters)}";
-            var argEx = new ArgumentException(filterString);
-            SetFaultLogAndNotify(argEx, _logger, _notify, filterString);
-        } else
+            SetFaultLogAndNotify(new(filterString), _logger, _notify, filterString);
+            return ResC.Ok();
+        } 
+        else
         {
             ClearFault();
+            return ResC.Ok();
         }
     }
 

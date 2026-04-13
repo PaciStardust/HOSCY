@@ -39,11 +39,12 @@ public class OscQueryServiceFunctionTests : TestBase<OscQueryServiceFunctionTest
 
     protected override void OneTimeSetupExtra()
     {
-        _listen.Start();
+        _listen.Start().AssertOk();
         _registry = new(_logger);
 
-        _query = new(_logger, _notify, _listen, _registry);
-        _query.Start();
+        var query = new OscQueryService(_logger, _notify, _listen, _registry);
+        query.Start().AssertOk();
+        _query = query;
     }
 
     [Test]
@@ -63,6 +64,6 @@ public class OscQueryServiceFunctionTests : TestBase<OscQueryServiceFunctionTest
 
     protected override void OneTimeTearDownExtra()
     {
-        _query.Stop();
+        _query.Stop().AssertOk();
     }
 }

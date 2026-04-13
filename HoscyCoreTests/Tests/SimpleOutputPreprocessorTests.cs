@@ -1,5 +1,6 @@
 using HoscyCore.Services.Osc.Command;
 using HoscyCore.Services.Output.Preprocessing;
+using HoscyCore.Utility;
 using HoscyCoreTests.Mocks.Impl;
 using HoscyCoreTests.Utils;
 
@@ -24,7 +25,7 @@ public class SimpleOutputPreprocessorFunctionTests : TestBase<SimpleOutputPrepro
     public void OscCommandOutputPreprocessorTest()
     {
         Assert.That(_oscPre.ShouldContinueIfHandled(), Is.False);
-        _oscCommand.ReturnedState = OscCommandState.Success;
+        _oscCommand.ReturnedState = ResC.TOk(OscCommandState.Success);
 
         List<(string Input, bool ExpectedOutput)> valueTries = [
             (_oscCommand.CommandIdentifier, true),

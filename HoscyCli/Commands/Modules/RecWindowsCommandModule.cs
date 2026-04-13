@@ -2,6 +2,7 @@ using HoscyCli.Commands.Core;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Recognition.Extra;
+using HoscyCore.Utility;
 
 namespace HoscyCli.Commands.Modules;
 
@@ -20,19 +21,21 @@ public class RecWindowsCommandModule
     public string ModuleDescription => "Configure the Windows Recognition modules";
     public string[] ModuleCommands => ["rec-windows"];
 
-    [SubCommandModule(["models"], "List available windows rreognizer models")]
-    public CommandResult CmdModels()
+    [SubCommandModule(["models"], "List available windows recognizer models")]
+    public Res CmdModels()
     {
         var models = _modelProvider.GetWindowsRecognizers();
-        var modelText = models.Count > 0
-            ? string.Join("\n", models.Select(x => $" - {x.Name} > {x.Desc} > {x.Id}"))
+        if (!models.IsOk) return ResC.Fail(models.Msg);
+
+        var modelText = models.Value.Count > 0
+            ? string.Join("\n", models.Value.Select(x => $" - {x.Name} > {x.Desc} > {x.Id}"))
             : "[NONE]";
         Console.WriteLine($"All available windows recognizer models:\n{modelText}");
-        return CommandResult.Success;
+        return ResC.Ok();
     }
 
     [SubCommandModule(["selected-model"], "Recognition model to use")]
-    public CommandResult CmdSelectedModel()
+    public Res CmdSelectedModel()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Windows_ModelId));
     }

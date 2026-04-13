@@ -1,5 +1,4 @@
 using HoscyCore.Services.Osc.MessageHandling;
-using HoscyCoreTests.Mocks;
 using HoscyCoreTests.Mocks.Impl;
 using HoscyCoreTests.Utils;
 using LucHeart.CoreOSC;
@@ -27,20 +26,20 @@ public class OscMessageHandlingServiceStartupTests : TestBase<OscMessageHandling
     {
         AssertServiceStopped(_handlingService);
         
-        _handlingService.Start();
+        _handlingService.Start().AssertOk();
         AssertServiceProcessing(_handlingService);
 
-        _handlingService.Stop();
+        _handlingService.Stop().AssertOk();
         AssertServiceStopped(_handlingService);
 
         _bulkLoader = new(() => []);
         _handlingService = new(_logger, _bulkLoader);
         AssertServiceStopped(_handlingService);
 
-        _handlingService.Start();
+        _handlingService.Start().AssertOk();
         AssertServiceStarted(_handlingService);
 
-        _handlingService.Stop();
+        _handlingService.Stop().AssertOk();
         AssertServiceStopped(_handlingService);
     }
 
@@ -65,8 +64,9 @@ public class OscMessageHandlingServiceFunctionTests : TestBase<OscMessageHandlin
             return [_mockHandlerA, _mockHandlerB];
         });
 
-        _handlingService = new(_logger, _bulkLoader);
-        _handlingService.Start();
+        var handlingService = new OscMessageHandlingService(_logger, _bulkLoader);
+        handlingService.Start().AssertOk();
+        _handlingService = handlingService;
     }
 
     [Test]
@@ -131,6 +131,6 @@ public class OscMessageHandlingServiceFunctionTests : TestBase<OscMessageHandlin
 
     protected override void OneTimeTearDownExtra()
     {
-        _handlingService.Stop();
+        _handlingService.Stop().AssertOk();
     }
 }

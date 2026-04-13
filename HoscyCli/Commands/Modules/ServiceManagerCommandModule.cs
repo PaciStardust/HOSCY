@@ -20,15 +20,23 @@ public class ServiceManagerCommandModule : AttributeCommandModule, ICoreCommandM
     public ServiceManagerCommandModule(IServiceProvider services, ILogger logger)
     {
         _logger = logger.ForContext<ServiceManagerCommandModule>();
-        _services = LaunchUtils.GetImplementationsInContainerForClass<IService>(services, _logger).ToArray();
+        var serviceResult = LaunchUtils.GetImplementationsInContainerForClass<IService>(services, _logger);
+        if (!serviceResult.IsOk) {
+            CResH.Print("Failed to load service list", serviceResult.Msg);
+            _services = [];
+        }
+        else
+        {
+            _services = serviceResult.Value.ToArray();
+        }
     }        
 
     [SubCommandModule(["list", "l", "all", "a"], "List all running services")]
-    public CommandResult List()
+    public Res List()
     {
         var serviceString = GenerateServiceString(_services);
         Console.WriteLine(serviceString);
-        return CommandResult.Success;
+        return ResC.Ok();
     }
 
     private static string GenerateServiceString(IService[] services)
@@ -60,7 +68,7 @@ public class ServiceManagerCommandModule : AttributeCommandModule, ICoreCommandM
     }
 
     [SubCommandModule(["errors"], "List service errors")]
-    public CommandResult Errors(string? args)
+    public Res Errors(string? args)
     {
         if (string.IsNullOrWhiteSpace(args))
         {
@@ -87,17 +95,23 @@ public class ServiceManagerCommandModule : AttributeCommandModule, ICoreCommandM
         } 
         else
         {
-            if (OnInvalidInt(args, out var idx, 0, _services.Length, "Specified argument not a valid index"))
-                return CommandResult.Error;
+            if (OnInvalidInt(args, out var idx, 0, _services.Length))
+                return ResC.Fail("Specified argument not a valid index");
             
             var selected = _services[idx.Value];
             var startStopService = selected as IStartStopService;
-            if (OnTrue(startStopService is null, $"Service {selected.GetType().Name} does not have a status"))
-                return CommandResult.Success;
+            if (startStopService is null)
+            {
+                Console.WriteLine($"Service {selected.GetType().Name} does not have a status");
+                return ResC.Ok();
+            }
 
             var serviceEx = startStopService!.GetFaultIfExists();
-            if (OnTrue(serviceEx is null, $"Service {selected.GetType().Name} does not have an error"))
-                return CommandResult.Success;
+            if (serviceEx is null)
+            {
+                Console.WriteLine($"Service {selected.GetType().Name} does not have an error");
+                return ResC.Ok();
+            }
 
             var exceptions = new List<Exception>();
             while (serviceEx != null)
@@ -110,57 +124,63 @@ public class ServiceManagerCommandModule : AttributeCommandModule, ICoreCommandM
             var message = $"Errors from {selected.GetType().Name}:\n\n{string.Join("\n\n--------------\n\n", exStrings)}";
             Console.WriteLine(message);
         }
-        return CommandResult.Success;
+        return ResC.Ok();
     }
 
     [SubCommandModule(["up"], "Starts a service")]
-    public CommandResult ServiceUp(string? args)
+    public Res ServiceUp(string? args)
     {
-        if (OnInvalidInt(args, out var validInt, 0, _services.Length, "You must specify a service to start"))
-            return CommandResult.MissingParameter;
+        if (OnInvalidInt(args, out var validInt, 0, _services.Length))
+            return CResH.MissingParameter("Service to start");
         var selected = _services[validInt.Value];
 
         var startStopService = selected as IStartStopService;
-        if (OnTrue(startStopService is null, "Selected service does not support starting")) 
-            return CommandResult.Error;
+        if (startStopService is null) return ResC.Fail( "Selected service does not support starting"); 
 
         _logger.Debug("Manually starting service: \"{serviceName}\"", selected.GetType().Name);
-        startStopService!.Start();
-        _logger.Debug("Manually started service: \"{serviceName}\"", selected.GetType().Name);
-        return CommandResult.Success;
+        var res = startStopService!.Start();
+        if (res.IsOk)
+            _logger.Debug("Manually started service: \"{serviceName}\"", selected.GetType().Name);
+        else 
+            _logger.Debug("Failed manually starting service: \"{serviceName}\" ({result})", selected.GetType().Name, res);
+        return res;
     }
 
     [SubCommandModule(["down"], "Stops a service")]
-    public CommandResult ServiceDown(string? args)
+    public Res ServiceDown(string? args)
     {
-        if (OnInvalidInt(args, out var validInt, 0, _services.Length, "You must specify a service to stop"))
-            return CommandResult.MissingParameter;
+        if (OnInvalidInt(args, out var validInt, 0, _services.Length))
+            return CResH.MissingParameter("Service to stop");
         var selected = _services[validInt.Value];
 
         var startStopService = selected as IStartStopService;
-        if (OnTrue(startStopService is null, "Selected service does not support stopping")) 
-            return CommandResult.Error;
+        if (startStopService is null) return ResC.Fail( "Selected service does not support stopping"); 
 
         _logger.Debug("Manually stopping service: \"{serviceName}\"", selected.GetType().Name);
-        startStopService!.Stop();
-        _logger.Debug("Manually stopping service: \"{serviceName}\"", selected.GetType().Name);
-        return CommandResult.Success;
+        var res = startStopService!.Stop();
+        if (res.IsOk)
+            _logger.Debug("Manually stopped service: \"{serviceName}\"", selected.GetType().Name);
+        else 
+            _logger.Debug("Failed manually stopping service: \"{serviceName}\" ({result})", selected.GetType().Name, res);
+        return res;
     }
 
     [SubCommandModule(["restart"], "Restarts a service")]
-    public CommandResult ServiceRestart(string? args)
+    public Res ServiceRestart(string? args)
     {
-        if (OnInvalidInt(args, out var validInt, 0, _services.Length, "You must specify a service to restart"))
-            return CommandResult.MissingParameter;
+        if (OnInvalidInt(args, out var validInt, 0, _services.Length))
+            return CResH.MissingParameter("Service to restart");
         var selected = _services[validInt.Value];
 
         var startStopService = selected as IStartStopService;
-        if (OnTrue(startStopService is null, "Selected service does not support restarting")) 
-            return CommandResult.Error;
+        if (startStopService is null) return ResC.Fail( "Selected service does not support restarting"); 
 
         _logger.Debug("Manually restarting service: \"{serviceName}\"", selected.GetType().Name);
-        startStopService!.Restart();
-        _logger.Debug("Manually restarting service: \"{serviceName}\"", selected.GetType().Name);
-        return CommandResult.Success;
+        var res = startStopService!.Restart();
+        if (res.IsOk)
+            _logger.Debug("Manually restarted service: \"{serviceName}\"", selected.GetType().Name);
+        else 
+            _logger.Debug("Failed manually restarting service: \"{serviceName}\" ({result})", selected.GetType().Name, res);
+        return res;
     }
 }

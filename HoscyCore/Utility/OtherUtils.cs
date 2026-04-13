@@ -10,21 +10,23 @@ public static class OtherUtils
     /// <summary>
     /// Starts a process
     /// </summary>
-    public static bool StartProcess(string path, ILogger logger)
+    public static Res<Process> StartProcess(string path, ILogger logger)
     {
         try
         {
-            Process.Start(new ProcessStartInfo()
+            var proc = Process.Start(new ProcessStartInfo()
             {
                 FileName = path,
                 UseShellExecute = true
             });
-            return true;
+
+            return proc is null || proc.HasExited
+                ? ResC.TFailLog<Process>($"Process \"{path}\" could not be created for unknown reason", logger)
+                : ResC.TOk(proc);
         }
         catch (Exception ex)
         {
-            logger.Error(ex, "Failed to start process.");
-            return false;
+            return ResC.TFailLog<Process>($"Failed to start process \"{path}\"", logger, ex);
         }
     }
 
@@ -50,16 +52,25 @@ public static class OtherUtils
     /// <param name="name">Name of the field to search</param>
     /// <param name="json">The text inside the field or string.Empty if unavailable</param>
     /// <returns></returns>
-    public static string? ExtractFromJson(string name, string json)
+    public static Res<string> ExtractFromJson(string name, string json, ILogger logger)
     {
-        string regstring = name + @""" *: *""(?<value>([^""\\]|\\.)*)""";
-        var regex = new Regex(regstring, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        try
+        {
+            string regstring = name + @""" *: *""(?<value>([^""\\]|\\.)*)""";
+            var regex = new Regex(regstring, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
-        var result = regex.Match(json)?.Groups["value"].Value ?? null;
-        return string.IsNullOrWhiteSpace(result) ? null : Regex.Unescape(result);
+            var result = regex.Match(json)?.Groups["value"].Value ?? null;
+            return string.IsNullOrWhiteSpace(result) 
+                ? ResC.TFailLog<string>($"Unable to locate value for key \"{name}\" in json: {json}", logger, lvl: ResMsgLvl.Warning) 
+                : ResC.TOk(Regex.Unescape(result));
+        }
+        catch (Exception ex)
+        {
+            return ResC.TFailLog<string>($"Failed to extract with key \"{name}\" from json \"{json}\"", logger, ex);
+        }
     }
 
-    public static void ThrowOnInvalidPlatform(OSPlatform[] platforms)
+    public static void ThrowOnInvalidPlatform(OSPlatform[] platforms) //todo: [REFACTOR] Needed?
     {
         var isCompatible = platforms.Any(RuntimeInformation.IsOSPlatform);
         if (!isCompatible)

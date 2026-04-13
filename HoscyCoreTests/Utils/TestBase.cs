@@ -90,25 +90,24 @@ public abstract class TestBase<T>
 
         AssertServiceStopped(service);
         
-        service.Start();
+        service.Start().AssertOk();
         AssertServiceRunning(service, startedNotProcessing);
 
         if (restartNotStart)
-            service.Restart();
+            service.Restart().AssertOk();
         else 
-            service.Start();
+            service.Start().AssertOk();
         AssertServiceRunning(service, startedNotProcessing);
 
-        service.Stop();
+        service.Stop().AssertOk();
         AssertServiceStopped(service);
 
         if (!doAgain) return;
 
-        service.Start();
+        service.Start().AssertOk();
         AssertServiceRunning(service, startedNotProcessing);
 
-        service.Stop();
+        service.Stop().AssertOk();
         AssertServiceStopped(service);
-
     }
 }

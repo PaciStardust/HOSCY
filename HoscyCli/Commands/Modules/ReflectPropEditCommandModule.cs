@@ -1,27 +1,33 @@
 using System.Collections.Frozen;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reflection;
 using HoscyCli.Commands.Core;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
+using HoscyCore.Utility;
+using Serilog;
 using Serilog.Events;
 
 namespace HoscyCli.Commands.Modules;
 
 [LoadIntoDiContainer(typeof(ReflectPropEditCommandModule))]
-public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommandModule
+public class ReflectPropEditCommandModule(ConfigModel config, ILogger logger) : AttributeCommandModule
 {
     private readonly ConfigModel _config = config;
+    private readonly ILogger _logger = logger.ForContext<ReflectPropEditCommandModule>();
+
     private const string EMPTY_INDICATOR = "[EMPTY]";
 
     #region Entrypoint
     [SubCommandModule(["get", "g", ">"], "Get a variable")]
-    public CommandResult GetProperty(string? name)
+    public Res GetProperty(string? name)
     {
-        if (OnEmpty(name, "Variable to retrieve must be specified")) return CommandResult.MissingParameter;
-        var info = GetPropertyInfo(name);
-        HandleType(info.PropertyType,
+        if (OnEmpty(name)) return CResH.MissingParameter("Variable to retrieve");
+        var infoResult = GetPropertyInfo(name);
+        if (!infoResult.IsOk) return ResC.Fail(infoResult.Msg);
+        var info = infoResult.Value;
+
+        return ResC.WrapR(() => HandleType(info.PropertyType,
         () => DisplaySimpleInfo(info.PropertyType, info.GetValue(_config)!, info.Name),
         () =>
             {
@@ -29,16 +35,18 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
                 Console.WriteLine($"Contents of complex property {info.Name} of type {info.PropertyType.Name}:\n{GenerateComplexList(complexProps, info.GetValue(_config)!)}");
             },
             () => Console.WriteLine($"Collection {info.Name} can only be viewed in editor")
-        );
-        return CommandResult.Success;
+        ), $"Failed to get info for property \"{name}\"", _logger);
     }
 
     [SubCommandModule(["set", "s", "<", "edit", "e"], "Set a variable")]
-    public CommandResult SetProperty(string? name)
+    public Res SetProperty(string? name)
     {
-        if (OnEmpty(name, "Variable to edit must be specified")) return CommandResult.MissingParameter;
-        var info = GetPropertyInfo(name);
-        HandleType(info.PropertyType,
+        if (OnEmpty(name)) return CResH.MissingParameter("Variable to edit");
+        var infoResult = GetPropertyInfo(name);
+        if (!infoResult.IsOk) return ResC.Fail(infoResult.Msg);
+        var info = infoResult.Value;
+        
+        return ResC.WrapR(() => HandleType(info.PropertyType,
             () =>
             {
                 info.SetValue(_config, AskForSimpleTypeValue(info.PropertyType, info.GetValue(_config)!, info.Name));
@@ -46,15 +54,15 @@ public class ReflectPropEditCommandModule(ConfigModel config) : AttributeCommand
             },
             () => OpenComplexEditor(info.GetValue(_config)!, info.Name),
             () => OpenCollectionEditor(info.GetValue(_config)!, info.Name)
-        );
-        return CommandResult.Success;
+        ), $"Failed to set property \"{name}\"", _logger);
     }
 
-    private PropertyInfo GetPropertyInfo(string name)
+    private Res<PropertyInfo> GetPropertyInfo(string name)
     {
-        var match = _config.GetType().GetProperty(name) ?? throw new ArgumentException($"Unable to find property {name}");
-        if (!match.CanRead) throw new ArgumentException($"Property {name} is not readable");
-        return match;
+        var match = _config.GetType().GetProperty(name);
+        if (match is null) return ResC.TFail<PropertyInfo>($"Unable to find property {name}");
+        if (!match.CanRead) return ResC.TFail<PropertyInfo>($"Property {name} is not readable");
+        return ResC.TOk(match);
     }
     #endregion
 

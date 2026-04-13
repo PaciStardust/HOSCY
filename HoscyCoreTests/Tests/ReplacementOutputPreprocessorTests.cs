@@ -27,8 +27,8 @@ public class ReplacementOutputPreprocessorFunctionTests : TestBase<ReplacementOu
         _config.Preprocessing_ReplacementsFull.Clear();
         _config.Preprocessing_ReplacementsPartial.Clear();
 
-        _partPre.ReloadReplacements();
-        _fullPre.ReloadReplacements();
+        _partPre.ReloadReplacements().AssertOk();
+        _fullPre.ReloadReplacements().AssertOk();
     }
 
     [Test]
@@ -64,7 +64,7 @@ public class ReplacementOutputPreprocessorFunctionTests : TestBase<ReplacementOu
             modelC
         ]);
 
-        _fullPre.ReloadReplacements();
+        _fullPre.ReloadReplacements().AssertFail();
 
         using (Assert.EnterMultipleScope())
         {
@@ -88,7 +88,7 @@ public class ReplacementOutputPreprocessorFunctionTests : TestBase<ReplacementOu
             modelC
         ]);
 
-        _partPre.ReloadReplacements();
+        _partPre.ReloadReplacements().AssertFail();
 
         using (Assert.EnterMultipleScope())
         {
@@ -114,7 +114,7 @@ public class ReplacementOutputPreprocessorFunctionTests : TestBase<ReplacementOu
         };
         _config.Preprocessing_ReplacementsFull.Add(model);
 
-        _fullPre.ReloadReplacements();
+        _fullPre.ReloadReplacements().AssertOk();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_fullPre.LastLoadCorrect, Is.EqualTo(1));
@@ -146,7 +146,7 @@ public class ReplacementOutputPreprocessorFunctionTests : TestBase<ReplacementOu
         };
         _config.Preprocessing_ReplacementsPartial.Add(model);
 
-        _partPre.ReloadReplacements();
+        _partPre.ReloadReplacements().AssertOk();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_partPre.LastLoadCorrect, Is.EqualTo(1));
@@ -183,8 +183,8 @@ public class ReplacementOutputPreprocessorFunctionTests : TestBase<ReplacementOu
         _config.Preprocessing_ReplacementsPartial.Add(model);
         _config.Preprocessing_ReplacementsFull.Add(model);
 
-        _partPre.ReloadReplacements();
-        _fullPre.ReloadReplacements();
+        _partPre.ReloadReplacements().AssertOk();
+        _fullPre.ReloadReplacements().AssertOk();
 
         using (Assert.EnterMultipleScope())
         {
@@ -209,8 +209,8 @@ public class ReplacementOutputPreprocessorFunctionTests : TestBase<ReplacementOu
 
         model.IgnoreCase = true;
 
-        _partPre.ReloadReplacements();
-        _fullPre.ReloadReplacements();
+        _partPre.ReloadReplacements().AssertOk();
+        _fullPre.ReloadReplacements().AssertOk();
 
         using (Assert.EnterMultipleScope())
         {
@@ -266,8 +266,8 @@ public class ReplacementOutputPreprocessorFunctionTests : TestBase<ReplacementOu
         _config.Preprocessing_ReplacementsPartial.Add(model);
         _config.Preprocessing_ReplacementsFull.Add(model);
 
-        _partPre.ReloadReplacements();
-        _fullPre.ReloadReplacements();
+        _partPre.ReloadReplacements().AssertOk();
+        _fullPre.ReloadReplacements().AssertOk();
 
         using (Assert.EnterMultipleScope())
         {
@@ -286,8 +286,8 @@ public class ReplacementOutputPreprocessorFunctionTests : TestBase<ReplacementOu
 
         model.UseRegex = true;
 
-        _partPre.ReloadReplacements();
-        _fullPre.ReloadReplacements();
+        _partPre.ReloadReplacements().AssertOk();
+        _fullPre.ReloadReplacements().AssertOk();
 
         using (Assert.EnterMultipleScope())
         {
@@ -355,7 +355,7 @@ public class ReplacementOutputPreprocessorFunctionTests : TestBase<ReplacementOu
             modelD
         ]);
 
-        _partPre.ReloadReplacements();
+        _partPre.ReloadReplacements().AssertOk();
         Assert.That(_partPre.LastLoadCorrect, Is.EqualTo(4));
 
         var res = _partPre.TryProcess("hello world", out var output);
@@ -391,7 +391,7 @@ public class ReplacementOutputPreprocessorFunctionTests : TestBase<ReplacementOu
             modelB
         ]);
 
-        _fullPre.ReloadReplacements();
+        _fullPre.ReloadReplacements().AssertOk();
         Assert.That(_fullPre.LastLoadCorrect, Is.EqualTo(2));
 
         var res = _fullPre.TryProcess("hello world", out var output);

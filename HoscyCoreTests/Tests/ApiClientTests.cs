@@ -15,13 +15,13 @@ public class ApiClientFunctionTests : TestBase<ApiClientFunctionTests>
 
     protected override void OneTimeSetupExtra()
     {
-        _webClient.Start();
+        _webClient.Start().AssertOk();
         _apiClient = new ApiClient(_webClient, _logger);
     }
 
     protected override void SetupExtra()
     {
-        _webClient.Start();
+        _webClient.Start().AssertOk();
         _apiClient.ClearPreset();
     }
 
@@ -44,7 +44,7 @@ public class ApiClientFunctionTests : TestBase<ApiClientFunctionTests>
 
             Assert.Multiple(() =>
             {
-                Assert.That(result, i == 0b01111 ? Is.True : Is.False, "Expected result wrong");
+                Assert.That(result.IsOk, i == 0b01111 ? Is.True : Is.False, "Expected result wrong");
                 Assert.That(_apiClient.IsPresetValid(), i == 0b01111 ? Is.True : Is.False, "Expected preset validity wrong");
             });
         }
@@ -55,7 +55,7 @@ public class ApiClientFunctionTests : TestBase<ApiClientFunctionTests>
     {
         Assert.That(_apiClient.IsPresetLoaded(), Is.False, "No preset should be loaded");
         var validPreset = GetValidApiPreset();
-        _apiClient.LoadPreset(validPreset);
+        _apiClient.LoadPreset(validPreset).AssertOk();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_apiClient.IsPresetLoaded(), Is.True, "Preset should be loaded");
@@ -74,7 +74,7 @@ public class ApiClientFunctionTests : TestBase<ApiClientFunctionTests>
     public async Task TestSendBytes()
     {
         var preset = GetUsageTestApiPreset();
-        _apiClient.LoadPreset(preset);
+        _apiClient.LoadPreset(preset).AssertOk();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_apiClient.IsPresetLoaded(), Is.True, "Preset should be loaded");
@@ -84,9 +84,10 @@ public class ApiClientFunctionTests : TestBase<ApiClientFunctionTests>
         _webClient.SendResult = USG_TEST_CONTENT_VALUE_FULL;
         byte[] dataToSend = Encoding.UTF8.GetBytes(USG_TEST_SEND_VALUE);
         var res = await _apiClient.SendBytesAsync(dataToSend);
+        res.AssertOk();
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(res, Is.EqualTo(USG_TEST_CONTENT_VALUE), "Response did not get parsed correctly");
+            Assert.That(res.Value, Is.EqualTo(USG_TEST_CONTENT_VALUE), "Response did not get parsed correctly");
             Assert.That(_webClient.Requests, Has.Count.EqualTo(1), "Request was not sent");
         }
 
@@ -102,7 +103,7 @@ public class ApiClientFunctionTests : TestBase<ApiClientFunctionTests>
     public async Task TestSendText()
     {
         var preset = GetUsageTestApiPreset();
-        _apiClient.LoadPreset(preset);
+        _apiClient.LoadPreset(preset).AssertOk();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_apiClient.IsPresetLoaded(), Is.True, "Preset should be loaded");
@@ -111,9 +112,10 @@ public class ApiClientFunctionTests : TestBase<ApiClientFunctionTests>
 
         _webClient.SendResult = USG_TEST_CONTENT_VALUE_FULL;
         var res = await _apiClient.SendTextAsync(USG_TEST_SEND_VALUE);
+        res.AssertOk();
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(res, Is.EqualTo(USG_TEST_CONTENT_VALUE), "Response did not get parsed correctly");
+            Assert.That(res.Value, Is.EqualTo(USG_TEST_CONTENT_VALUE), "Response did not get parsed correctly");
             Assert.That(_webClient.Requests, Has.Count.EqualTo(1), "Request was not sent");
         }
 
@@ -129,27 +131,36 @@ public class ApiClientFunctionTests : TestBase<ApiClientFunctionTests>
     public async Task NotStartTest()
     {
         _webClient.SendResult = USG_TEST_CONTENT_VALUE_FULL;
-        _webClient.Stop();
+        _webClient.Stop().AssertOk();
 
         //No preset
-        Assert.CatchAsync<Exception>(async () => await _apiClient.SendTextAsync("Test"), "Exception should be thrown as no preset is loaded");
+        (await _apiClient.SendTextAsync("Test")).AssertFail("Exception should be thrown as no preset is loaded");
 
         //Invalid preset
         var invalidPreset = new ApiPresetModel()
         {
             ContentType = string.Empty
         };
-        _apiClient.LoadPreset(invalidPreset);
-        Assert.CatchAsync<Exception>(async () => await _apiClient.SendTextAsync("Test"), "Exception should be thrown as no preset invalid loaded");
+        _apiClient.LoadPreset(invalidPreset).AssertFail();
+        var res = await _apiClient.SendTextAsync("Test");
+        using (Assert.EnterMultipleScope())
+        {
+            res.AssertFail("Exception should be thrown as no preset invalid loaded");
+            Assert.That(_apiClient.IsPresetLoaded(), Is.False);
+        }
 
         //No client
         var validPreset = GetValidApiPreset();
-        _apiClient.LoadPreset(validPreset);
-        Assert.CatchAsync<Exception>(async () => await _apiClient.SendTextAsync("Test"), "Exception should be thrown as no web client is started");
+        _apiClient.LoadPreset(validPreset).AssertOk();
+        using (Assert.EnterMultipleScope())
+        {
+            res.AssertFail("Exception should be thrown as no web client is started");
+            Assert.That(_apiClient.IsPresetLoaded(), Is.True);
+        }
 
         //OK
-        _webClient.Start();
-        Assert.DoesNotThrowAsync(async () => await _apiClient.SendTextAsync("Test"), "Exception should not be thrown as all is loaded");
+        _webClient.Start().AssertOk();
+        (await _apiClient.SendTextAsync("Test")).AssertOk("Exception should not be thrown as all is loaded");
     }
 
     [Test]
@@ -158,13 +169,13 @@ public class ApiClientFunctionTests : TestBase<ApiClientFunctionTests>
         var preset = GetValidApiPreset();
         preset.ConnectionTimeout = 25;
         _webClient.SendResult = USG_TEST_CONTENT_VALUE_FULL;
-        _apiClient.LoadPreset(preset);
+        _apiClient.LoadPreset(preset).AssertOk();
 
         _webClient.ArtificialDelayMs = 30;
         using (Assert.EnterMultipleScope())
         {
-            Assert.CatchAsync<Exception>(async () => await _apiClient.SendTextAsync("Test"), "Send should time out");
-            Assert.CatchAsync<Exception>(async () => await _apiClient.SendBytesAsync([0]), "Send should time out");
+            (await _apiClient.SendTextAsync("Test")).AssertFail("Send should time out");
+            (await _apiClient.SendBytesAsync([0])).AssertFail("Send should time out");
         }
         Assert.That(_webClient.Requests, Has.Count.EqualTo(2), "2 requests should have been sent");
 
@@ -172,8 +183,8 @@ public class ApiClientFunctionTests : TestBase<ApiClientFunctionTests>
         _webClient.ArtificialDelayMs = 20;
         using (Assert.EnterMultipleScope())
         {
-            Assert.DoesNotThrowAsync(async () => await _apiClient.SendTextAsync("Test"), "Send should not time out");
-            Assert.DoesNotThrowAsync(async () => await _apiClient.SendBytesAsync([0]), "Send should not time out");
+            (await _apiClient.SendTextAsync("Test")).AssertOk("Send should not time out");
+            (await _apiClient.SendBytesAsync([0])).AssertOk("Send should not time out");
         }
         Assert.That(_webClient.Requests, Has.Count.EqualTo(2), "2 requests should have been sent");
     }
@@ -184,7 +195,7 @@ public class ApiClientFunctionTests : TestBase<ApiClientFunctionTests>
         {
             _apiClient.ClearPreset();
         }
-        _webClient.Stop();
+        _webClient.Stop().AssertOk();
     }
     
     private const string TEST_CONTENT_TYPE = "application/json";

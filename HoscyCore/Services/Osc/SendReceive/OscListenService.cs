@@ -33,34 +33,52 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
     protected override bool IsProcessing()
         => _workerTask is not null && _cts is not null && _listener is not null;
 
-    public int? GetPort()
+    public Res<int> GetPort()
     {
-        return IsStarted() ? _config.Osc_Routing_ListenPort : null;
+        return IsStarted() 
+            ? ResC.TOk(_config.Osc_Routing_ListenPort) 
+            : ResC.TFail<int>(ResMsg.Err("Listen port not available, service not started"));
     }
 
-    protected override void StartForService()
+    protected override Res StartForService()
     {
-        _logger.Debug("Starting up listener on localhost:{port}", _config.Osc_Routing_ListenPort);
-        _listener = new(new(IPAddress.Loopback, _config.Osc_Routing_ListenPort))
+        try
         {
-            EnableTransparentBundleToMessageConversion = true
-        };
-        _cts = new CancellationTokenSource();
+            _logger.Debug("Starting up listener on localhost:{port}", _config.Osc_Routing_ListenPort);
+            _listener = new(new(IPAddress.Loopback, _config.Osc_Routing_ListenPort))
+            {
+                EnableTransparentBundleToMessageConversion = true
+            };
+            _cts = new CancellationTokenSource();
 
-        _workerTask = Task.Run(ListenLoop);
+            _workerTask = Task.Run(ListenLoop);
+
+            return ResC.Ok();
+        }
+        catch (Exception ex)
+        {
+            var res = ResC.FailLog("Failed starting OSC Listener", _logger, ex);
+            CleanupInternals();
+            return res;
+        }
     }
     protected override bool UseAlreadyStartedProtection => true;
 
-    protected override void StopForService()
+    protected override Res StopForService()
     {
         _logger.Debug("Stopping listen loop...");
         _cts?.Cancel();
-        var ex = LaunchUtils.SafelyWaitForTaskWithTimeoutAndLogException(_workerTask, 1000, new StartStopServiceException("Unable to stop listen loop"));
-        if (ex is not null)
-        {
-            _logger.Error(ex, "Caught exception while stopping listen loop");
-        }
+
+        var taskResult = LaunchUtils.SafelyWaitForTaskWithTimeoutAndReturnException(_workerTask, 1000,
+            new StartStopServiceException("Unable to stop listen loop"), _logger);
         
+        CleanupInternals();
+
+        return taskResult;
+    }
+
+    private void CleanupInternals()
+    {
         _logger.Debug("Cleanup of internals...");
         _cts?.Dispose();
         _cts = null;
