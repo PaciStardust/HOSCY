@@ -97,7 +97,7 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
     }
     protected override bool UseAlreadyStartedProtection => true;
 
-    protected override Res StopForService() //todo: [REFACTOR] improve this shutdown sequence
+    protected override Res StopForService()
     {
         StopIndicatorResetTimer();
 
@@ -124,10 +124,6 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
             handlerErrors.Add(message);
         }
 
-        _activeHandlers.Clear();
-        _handlerInfos.Clear();
-        _preprocessors.Clear();
-
         if (handlerErrors.Count > 0)
         {
             var combined = string.Join("\n", handlerErrors);
@@ -137,6 +133,12 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
         
         _logger.Debug("Shut down {activeHandlers} Handlers", activeHandlerCount);
         return ResC.Ok();
+    }
+    protected override void DisposeCleanup()
+    {
+        _activeHandlers.Clear();
+        _handlerInfos.Clear();
+        _preprocessors.Clear();
     }
     #endregion
 
@@ -237,7 +239,7 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
         ResC.WrapR(handler.Clear, "Clear on handler shutdown failed", _logger); // Result is not relevant here
         handler.OnModuleStopped -= HandleOnModuleStopped; //This is not needed when manually shutting down
 
-        var res = ResC.Wrap(handler.Stop, "Handler shutdown failed", _logger); //todo: [FEAT] Cleanup?
+        var res = ResC.Wrap(handler.Stop, "Handler shutdown failed", _logger);
         CleanupAfterHandlerShutdown(handler);
         
         if (res.IsOk)

@@ -373,15 +373,14 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
         _logger.Debug("Stopping processing loop...");
         _cts?.Cancel();
 
-        var res = LaunchUtils.SafelyWaitForTaskWithTimeoutAndReturnException(_workerTask, TIMEOUT_WAIT_MS * 2,
+        return LaunchUtils.SafelyWaitForTaskWithTimeoutAndReturnException(_workerTask, TIMEOUT_WAIT_MS * 2,
             new StartStopServiceException("Message handling loop failed to stop within time limit"), _logger);
-
-        _logger.Debug("Cleanup of internals...");
+    }
+    protected override void DisposeCleanup()
+    {
         _cts?.Dispose();
         _cts = null;
         _workerTask = null;
-
-        return res;
     }
 
     protected override bool IsStarted()

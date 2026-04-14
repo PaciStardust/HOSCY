@@ -61,4 +61,5 @@ public class TestTranslationModule(ILogger logger)
         _running = false;
         return ResC.Ok();
     }
+    protected override void DisposeCleanup() { }
 }

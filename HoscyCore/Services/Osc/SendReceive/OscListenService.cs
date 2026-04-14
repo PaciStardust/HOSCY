@@ -57,9 +57,7 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
         }
         catch (Exception ex)
         {
-            var res = ResC.FailLog("Failed starting OSC Listener", _logger, ex);
-            CleanupInternals();
-            return res;
+            return ResC.FailLog("Failed starting OSC Listener", _logger, ex);
         }
     }
     protected override bool UseAlreadyStartedProtection => true;
@@ -69,17 +67,12 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
         _logger.Debug("Stopping listen loop...");
         _cts?.Cancel();
 
-        var taskResult = LaunchUtils.SafelyWaitForTaskWithTimeoutAndReturnException(_workerTask, 1000,
+        return LaunchUtils.SafelyWaitForTaskWithTimeoutAndReturnException(_workerTask, 1000,
             new StartStopServiceException("Unable to stop listen loop"), _logger);
-        
-        CleanupInternals();
 
-        return taskResult;
     }
-
-    private void CleanupInternals()
+    protected override void DisposeCleanup()
     {
-        _logger.Debug("Cleanup of internals...");
         _cts?.Dispose();
         _cts = null;
         _workerTask = null;

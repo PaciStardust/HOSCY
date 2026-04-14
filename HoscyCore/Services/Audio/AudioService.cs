@@ -43,12 +43,15 @@ public class AudioService(ILogger logger, ConfigModel config)
 
     protected override Res StopForService()
     {
+        return ResC.Ok();
+    }
+    protected override void DisposeCleanup()
+    {
         if (_audioEngine is not null && !_audioEngine.IsDisposed)
         {
             _audioEngine.Dispose();
         }
         _audioEngine = null;
-        return ResC.Ok();
     }
     #endregion
 
@@ -67,7 +70,7 @@ public class AudioService(ILogger logger, ConfigModel config)
         if (!deviceInfos.IsOk) return ResC.TFail<AudioCaptureDevice>(deviceInfos.Msg);
 
         var deviceInfo = FindDeviceWithChecks(deviceInfos.Value, _config.Audio_CurrentMicrophoneName, "capture");
-        if (!deviceInfo.IsOk) return ResC.TFailM<AudioCaptureDevice>(deviceInfo.Msg);
+        if (!deviceInfo.IsOk) return ResC.TFail<AudioCaptureDevice>(deviceInfo.Msg);
 
         var format = new AudioFormat
         {

@@ -329,13 +329,14 @@ public class OscCommandService(ILogger logger, OscQueryHostRegistry hostRegistry
         {
             return ResC.FailLog("Failed stopping tasks", _logger, ex);
         }
-        finally
-        {
-            _cts?.Dispose();
-            _cts = null;
-        }
 
         return ResC.Ok();
+    }
+    protected override void DisposeCleanup()
+    {
+        _runningTasks.Clear();
+        _cts?.Dispose();
+        _cts = null;
     }
     #endregion
 }

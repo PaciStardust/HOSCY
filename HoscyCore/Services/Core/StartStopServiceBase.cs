@@ -31,7 +31,7 @@ public abstract class StartStopServiceBase(ILogger logger) : IStartStopService
     #region Startup
     public Res Start()
     {
-        return SafeExecute("start", StartForService, () =>
+        var res = SafeExecute("start", StartForService, () =>
         {
             if (UseAlreadyStartedProtection && IsStarted())
             {
@@ -40,6 +40,11 @@ public abstract class StartStopServiceBase(ILogger logger) : IStartStopService
             }
             return null;
         });
+        if (res.IsOk) return res;
+
+        _logger.Debug("Start failed performing dispose...");
+        var resDispose = ResC.WrapR(DisposeCleanup, "Failed to dispose", _logger);
+        return ResC.FailM(res.Msg?.WithContext("Start"), resDispose.Msg?.WithContext("Dispose"));
     }
     protected abstract bool UseAlreadyStartedProtection { get; }
     protected abstract Res StartForService();
@@ -48,9 +53,13 @@ public abstract class StartStopServiceBase(ILogger logger) : IStartStopService
     #region Stopping
     public Res Stop()
     {
-        return SafeExecute("stop", StopForService);
+        var res = SafeExecute("stop", StopForService);
+        _logger.Debug("Performing dispose...");
+        var resDispose = ResC.WrapR(DisposeCleanup, "Failed to dispose", _logger);
+        return res.IsOk && resDispose.IsOk ? ResC.Ok() : ResC.FailM(res.Msg?.WithContext("Stop"), resDispose.Msg?.WithContext("Dispose"));
     }
     protected abstract Res StopForService();
+    protected abstract void DisposeCleanup();
     #endregion
 
     #region Restart

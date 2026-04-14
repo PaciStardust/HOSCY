@@ -1,5 +1,4 @@
 using HoscyCore.Configuration.Modern;
-using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Network;
 using HoscyCore.Services.Translation.Core;
@@ -51,6 +50,7 @@ public class ApiTranslationModule(ILogger logger, ConfigModel config, IApiClient
         }
         return ResC.Ok();
     }
+    protected override void DisposeCleanup() { }
 
     protected override bool IsStarted()
         => _client.IsPresetLoaded();

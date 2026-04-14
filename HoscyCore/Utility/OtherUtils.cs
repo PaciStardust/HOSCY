@@ -70,7 +70,7 @@ public static class OtherUtils
         }
     }
 
-    public static void ThrowOnInvalidPlatform(OSPlatform[] platforms) //todo: [REFACTOR] Needed?
+    public static void ThrowOnInvalidPlatform(OSPlatform[] platforms)
     {
         var isCompatible = platforms.Any(RuntimeInformation.IsOSPlatform);
         if (!isCompatible)

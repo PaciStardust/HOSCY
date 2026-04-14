@@ -86,14 +86,9 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
         if (_mic is not null)
         {
             _mic.SetListening(false);
-            _mic.Stop().IfFail(fails.Add);
-            _mic.Dispose();
-            _mic = null;
+            _mic.Stop().IfFail((x) => fails.Add(x.WithContext("Mic Stop")));
+            
         }
-
-        _stream?.SetLength(0);
-        _stream?.Close();
-        _stream = null;
 
         if (_client.IsPresetLoaded())
         {
@@ -101,6 +96,15 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
         }
 
         return fails.Count == 0 ? ResC.Ok() : ResC.FailM(fails);
+    }
+    protected override void DisposeCleanup()
+    {
+        _mic?.Dispose();
+        _mic = null;
+
+        _stream?.SetLength(0);
+        _stream?.Close();
+        _stream = null;
     }
     #endregion
 

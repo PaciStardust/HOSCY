@@ -50,7 +50,7 @@ public class HoscyCoreApp(ILogger? initialLogger = null)
         _container = containerRes.Value;
 
         var startRes = _container.StartServices(onProgress);
-        if (!startRes.IsOk) return ResC.Fail(startRes.Msg); //todo: [FEAT] cleanup?
+        if (!startRes.IsOk) return ResC.Fail(startRes.Msg);
 
         onProgress?.Invoke("Done!");
         return ResC.Ok();
@@ -65,11 +65,11 @@ public class HoscyCoreApp(ILogger? initialLogger = null)
         {
             _container.GetService<ConfigModel>()?.
                 TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _currentLogger);
-            _container.StopServices().IfFail(stopErrors.Add);
+            _container.StopServices().IfFail((x) => stopErrors.Add(x.WithContext("StopServices")));
             _container = null;
         }
 
-        _debug?.Stop().IfFail(stopErrors.Add);
+        _debug?.Stop().IfFail((x) => stopErrors.Add(x.WithContext("StopDebug")));
         _debug = null;
 
         if (stopErrors.Count == 0)

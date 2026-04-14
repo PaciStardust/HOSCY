@@ -195,6 +195,17 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
         PerformCleanup();
         return ResC.Ok();
     }
+    protected override void DisposeCleanup()
+    {
+        _keepAlive?.Dispose();
+        _keepAlive = null;
+
+        _ipcPipe?.Dispose();
+        _ipcPipe = null;
+
+        _whisperProcess?.Dispose();
+        _whisperProcess = null;
+    }
 
     private void OnKeepAliveFailed()
     {
@@ -229,7 +240,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
     private void OnUnexpectedProcessExit(object? sender, EventArgs e)
     {
         _logger.Warning("Process stopped unexpectedly!");
-        Stop().IfFail(x => _logger.Error("Stop failed after unexpected exit ({result})", x)); //todo: [FEAT] Cleanup?
+        Stop().IfFail(x => _logger.Error("Stop failed after unexpected exit ({result})", x));
     }
 
     private bool? SendWhisperProcessSignalIfNeeded()

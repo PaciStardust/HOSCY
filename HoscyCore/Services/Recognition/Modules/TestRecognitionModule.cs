@@ -51,12 +51,14 @@ public class TestRecognitionModule(ILogger logger, IAudioService audio)
         {
             var resStop = _mic.Stop();
             _mic.OnAudioProcessed -= OnAudioProcessed;
-            _mic.Dispose();
-            _mic = null;
-            
             if (!resStop.IsOk) return resStop;
         }
         return ResC.Ok();
+    }
+    protected override void DisposeCleanup()
+    {
+        _mic?.Dispose();
+        _mic = null;
     }
 
     protected override bool IsStarted()

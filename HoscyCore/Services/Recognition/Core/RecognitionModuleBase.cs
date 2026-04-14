@@ -50,7 +50,7 @@ public abstract class RecognitionModuleBase(ILogger logger)
     {
         var resListening = SetListening(false);
         var resRecognition = StopForRecognitionModule();
-        return resRecognition.IsOk ? ResC.Ok() : ResC.FailM(resListening.Msg, resRecognition.Msg);
+        return resRecognition.IsOk ? ResC.Ok() : ResC.FailM(resListening.Msg?.WithContext("Listening"), resRecognition.Msg?.WithContext("Stop"));
     }
     protected abstract Res StopForRecognitionModule();
     #endregion

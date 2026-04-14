@@ -60,8 +60,11 @@ public class OscMessageHandlingService(ILogger logger, IContainerBulkLoader<IOsc
     
     protected override Res StopForService()
     {
-        _handlers = null;
         return ResC.Ok();
+    }
+    protected override void DisposeCleanup()
+    {
+        _handlers = null;
     }
     #endregion
 }

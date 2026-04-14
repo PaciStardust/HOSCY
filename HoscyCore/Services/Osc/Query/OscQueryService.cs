@@ -33,20 +33,19 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
 
         var (tcpPort, oscQuery) = serviceResult.Value;
         _logger.Debug("Runnung OscQuery with UDP {udp}, TCP {tcp} and ID {id}", udpPort.Value, tcpPort, id);
+        _oscQuery = oscQuery;
 
-        oscQuery.AddEndpoint("/*", "[,]", Vrc.Attributes.AccessValues.ReadWrite, null,
+        _oscQuery.AddEndpoint("/*", "[,]", Vrc.Attributes.AccessValues.ReadWrite, null,
             "Any -> HOSCY sends and receives anything for routing and custom commands");
 
         _hostRegistry.Clear();
-        oscQuery.OnOscQueryServiceAdded += (profile) => TryAddHostInfoFromServiceProfile(profile);
-        _oscQuery = oscQuery;
+        _oscQuery.OnOscQueryServiceAdded += (profile) => TryAddHostInfoFromServiceProfile(profile);
 
         _hostRegistry.SetSelf(_oscQuery.HostInfo.oscIP, _oscQuery.HostInfo.oscPort);
 
         _logger.Debug("Starting service refresh timer");
-        var timer = CreateRefreshTimer(_oscQuery, _hostRegistry, 5000);
-        timer.Start();
-        _serviceRefreshTimer = timer;
+        _serviceRefreshTimer = CreateRefreshTimer(_oscQuery, _hostRegistry, 5000);
+        _serviceRefreshTimer.Start();
 
         return ResC.Ok();
     }
@@ -83,15 +82,18 @@ public class OscQueryService(Serilog.ILogger logger, IBackToFrontNotifyService n
     {
         _logger.Debug("Stopping refresh timer");
         _serviceRefreshTimer?.Stop();
+        return ResC.Ok();
+    }
+    protected override void DisposeCleanup()
+    {
+        _logger.Debug("Disposing Refresh");
         _serviceRefreshTimer?.Dispose();
         _serviceRefreshTimer = null;
 
-        _logger.Debug("Stopping OSCQuery");
+        _logger.Debug("Disposing OSCQuery");
         _oscQuery?.Dispose();
         _oscQuery = null;
         _hostRegistry.Clear();
-
-        return ResC.Ok();
     }
 
     protected override bool IsStarted()

@@ -39,7 +39,7 @@ public class WebClientFunctionTests : TestBase<WebClientFunctionTests>
     public async Task TestDownloadAsync()
     {
         var path = Path.Join(_tempFolder, "dltest.html");
-        (await _client.DownloadAsync("https://paci.dev/", path)).AssertOk();
+        (await _client.DownloadAsync("https://paci.dev/", path, 10000)).AssertOk();
         
         var fileInfo = new FileInfo(path);
         using (Assert.EnterMultipleScope())
@@ -53,7 +53,7 @@ public class WebClientFunctionTests : TestBase<WebClientFunctionTests>
     public async Task TestPostAsync()
     {
         var requestMessage = new HttpRequestMessage(HttpMethod.Get, "https://paci.dev/");
-        var result = await _client.SendAsync(requestMessage);
+        var result = await _client.SendAsync(requestMessage, 10000);
 
         result.AssertOk();
         Assert.That(result.Value, Is.Not.Empty, "Result was empty");

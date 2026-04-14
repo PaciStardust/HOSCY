@@ -108,9 +108,11 @@ SoloModuleManagerBase<TModuleStartInfo, TModule>
 
     protected override Res StopForService() 
     {
-        var result = StopModule();
+        return StopModule();
+    }
+    protected override void DisposeCleanup()
+    {
         _moduleInfos.Clear();
-        return result;
     }
 
     protected override bool IsStarted()
@@ -181,7 +183,7 @@ SoloModuleManagerBase<TModuleStartInfo, TModule>
         {
             _logger.Error("Failed to start module with name \"{moduleName}\" and type \"{moduleType}\" ({result})",
                 info.Name, info.ModuleType.FullName, res);
-            return ResC.FailM(resPre.Msg, res.Msg, resPost.Msg); //todo: [REFACTOR] Proper cleanup here?
+            return ResC.FailM(resPre.Msg, res.Msg, resPost.Msg);
         };
 
         _currentModule = module;
@@ -213,7 +215,7 @@ SoloModuleManagerBase<TModuleStartInfo, TModule>
 
         if (!resPre.IsOk || !res.IsOk)
         {
-            var result = ResC.FailM(resPre.Msg, res.Msg);
+            var result = ResC.FailM(resPre.Msg?.WithContext("Pre-Stop"), res.Msg?.WithContext("Stop"));
             _logger.Warning("Stopped current module with problems ({result})", result);
             return result;
         }

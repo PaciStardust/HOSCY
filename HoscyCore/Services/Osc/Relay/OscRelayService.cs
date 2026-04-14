@@ -28,9 +28,11 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
 
     protected override Res StopForService()
     {
-        var res = ReloadValidRelayFilters([]);
+        return ReloadValidRelayFilters([]);
+    }
+    protected override void DisposeCleanup()
+    {
         _filters = null;
-        return res;
     }
 
     protected override Res RestartForService()

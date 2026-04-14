@@ -64,10 +64,14 @@ public class WindowsRecognitionModule : WindowsRecognitionModuleBase
             var res = ResC.WrapR(_engine.RecognizeAsyncCancel, "Failed to cancel recognition", _logger);
             _engine.SpeechRecognized -= HandleSpeechRecognized;
             _engine.SpeechDetected -= HandleSpeechDetected;
-            _engine.Dispose();
             return res;
         }
         return ResC.Ok();
+    }
+    protected override void DisposeCleanup()
+    {
+        _engine?.Dispose();
+        _engine = null;
     }
 
     protected override bool IsStarted()

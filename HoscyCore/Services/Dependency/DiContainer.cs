@@ -199,7 +199,7 @@ public class DiContainer
             else
             {
                 _logger.Warning("Failed assessing required IServices for IService \"{serviceType}\"", serviceType.FullName);
-                failMessages.Add(deps.Msg);
+                failMessages.Add(deps.Msg.WithContext(serviceType.Name));
             }
         }
 
@@ -374,7 +374,7 @@ public class DiContainer
             var subSw = Stopwatch.StartNew();
             var startResult = ResC.Wrap(currentService.Service.Start, $"Failed starting service {currentService.Type.Name}", _logger);
             subSw.Stop();
-            if (!startResult.IsOk) //todo: [FEAT] Proper cleanup?
+            if (!startResult.IsOk)
             {
                 _logger.Debug("Failed starting service {currenStart}/{toStart}: {currentService} as {currentServiceBase} ({result})",
                     i + 1, orderedServicesToStart.Count, currentService.Type.FullName, currentService.AsType.FullName, startResult);
@@ -436,7 +436,7 @@ public class DiContainer
             {
                 _logger.Error("Failed to stop service {currenStart}/{toStop}: {currentService} (Took {startDuration}ms, DI taken {diDuration}ms so far) ({result})",
                     i + 1, orderedServicesToStop.Count, currentService.Type.FullName, subSw.ElapsedMilliseconds, diagnosticSw.ElapsedMilliseconds, stopResult);
-                failedStops.Add(stopResult.Msg);
+                failedStops.Add(stopResult.Msg.WithContext(currentService.Type.Name));
             }
             else
             {

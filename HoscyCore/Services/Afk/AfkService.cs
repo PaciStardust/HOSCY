@@ -52,8 +52,8 @@ public class AfkService(ConfigModel config, IOutputManagerService output, ILogge
         if (_afkTimer is not null)
         {
             _output.SendNotification(_config.Afk_StopText, _afkNotificationPriority, _outputFlags);
-            _afkTimer?.Stop();
-            _afkTimer?.Dispose();
+            _afkTimer.Stop();
+            _afkTimer.Dispose();
             _afkTimer = null;
         }
         _logger.Debug("Stopped AFK timer");
@@ -94,6 +94,12 @@ public class AfkService(ConfigModel config, IOutputManagerService output, ILogge
     {
         StopAfk();
         return ResC.Ok();
+    }
+
+    protected override void DisposeCleanup()
+    {
+        _afkTimer?.Dispose();
+        _afkTimer = null;
     }
     #endregion
 }

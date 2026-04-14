@@ -16,15 +16,14 @@ public class WebClient(ILogger logger)
     protected override Res StartForService()
     {
         _logger.Debug("Starting internal HttpClient");
-        var client = new HttpClient(new SocketsHttpHandler()
+        _client = new HttpClient(new SocketsHttpHandler()
         {
             PooledConnectionLifetime = TimeSpan.FromMinutes(1),
             UseProxy = false,
         });
 
         //Below is required for Github Access
-        client.DefaultRequestHeaders.UserAgent.Add(new("User-Agent", "request"));
-        _client = client;
+        _client.DefaultRequestHeaders.UserAgent.Add(new("User-Agent", "request"));
 
         return ResC.Ok();
     }
@@ -32,10 +31,12 @@ public class WebClient(ILogger logger)
 
     protected override Res StopForService()
     {
+        return ResC.Ok();
+    }
+    protected override void DisposeCleanup()
+    {
         _client?.Dispose();
         _client = null;
-
-        return ResC.Ok();
     }
 
     protected override bool IsStarted()

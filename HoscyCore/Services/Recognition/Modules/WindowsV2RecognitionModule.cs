@@ -63,29 +63,26 @@ public class WindowsV2RecognitionModule : WindowsRecognitionModuleBase
 
         var micResult = _audio.CreateCaptureDeviceProxy();
         if (!micResult.IsOk) return ResC.Fail(micResult.Msg);
-        var mic = micResult.Value;
+        _mic = micResult.Value;
 
-        mic.OnAudioProcessed += HandleAudioProcessed;
-        var micStartRes = mic.Start();
+        _mic.OnAudioProcessed += HandleAudioProcessed;
+        var micStartRes = _mic.Start();
         if (!micStartRes.IsOk) return micStartRes;
-
-        _mic = mic;
 
         var engineResult = CreateEngine();
         if (!engineResult.IsOk) return ResC.Fail(engineResult.Msg); 
 
-        var engine = engineResult.Value;
-        engine.LoadGrammar(new DictationGrammar());
-        engine.SpeechDetected += HandleSpeechDetected;
-        engine.SpeechRecognized += HandleSpeechRecognized;
-        engine.SetInputToAudioStream(_stream, 
+        _engine = engineResult.Value;
+        _engine.LoadGrammar(new DictationGrammar());
+        _engine.SpeechDetected += HandleSpeechDetected;
+        _engine.SpeechRecognized += HandleSpeechRecognized;
+        _engine.SetInputToAudioStream(_stream, 
             new(16000, AudioBitsPerSample.Sixteen, AudioChannel.Mono));
 
-        var recResult = ResC.WrapR(() => engine.RecognizeAsync(RecognizeMode.Multiple),
+        var recResult = ResC.WrapR(() => _engine.RecognizeAsync(RecognizeMode.Multiple),
             "Failed to start recognition", _logger);
         if (!recResult.IsOk) return recResult;
 
-        _engine = engine;
         return ResC.Ok();
     }
 
@@ -103,26 +100,30 @@ public class WindowsV2RecognitionModule : WindowsRecognitionModuleBase
         if (_engine is not null)
         {
             ResC.WrapR(_engine.RecognizeAsyncCancel, "Failed to stop recognition", _logger)
-                .IfFail(messages.Add);
+                .IfFail(x => messages.Add(x.WithContext("Engine stop")));
             _engine.SpeechRecognized -= HandleSpeechRecognized;
             _engine.SpeechDetected -= HandleSpeechDetected;
-            _engine.Dispose();
-            _engine = null;
         }
         
         if (_mic is not null)
         {
             ResC.TWrapR(_mic.Stop, "Failed to stop recognition", _logger)
-                .IfFail(messages.Add);
+                .IfFail(x => messages.Add(x.WithContext("Mic stop")));
             _mic.OnAudioProcessed -= HandleAudioProcessed;
-            _mic.Dispose();
-            _mic = null;
         }
+
+        return messages.Count == 0 ? ResC.Ok() : ResC.FailM(messages);
+    }
+    protected override void DisposeCleanup()
+    {
+        _engine?.Dispose();
+        _engine = null;
+
+        _mic?.Dispose();
+        _mic = null;
 
         _stream?.Dispose();
         _stream = null;
-
-        return messages.Count == 0 ? ResC.Ok() : ResC.FailM(messages);
     }
 
     protected override bool IsStarted()
