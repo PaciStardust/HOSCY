@@ -11,5 +11,5 @@ public static class CResH
         => ResC.Fail(ResMsg.Inf($"{name} was not found"));
 
     public static void Print(string message, ResMsg msg)
-        => Console.WriteLine($"{message}: {msg})");
+        => Console.WriteLine($"{message}: {msg}");
 }

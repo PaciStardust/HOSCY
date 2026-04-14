@@ -1,3 +1,4 @@
+using System.Text;
 using HoscyCore.Utility;
 using Newtonsoft.Json;
 using Serilog;
@@ -18,7 +19,16 @@ public class IpcDataConverter(ILogger logger)
         return input[0];
     }
 
-    public Res<T> Deserialize<T>(string input) where T : class
+    public Res<string> DeserializeBase64(string input)
+    {
+        return ResC.TWrap(() =>
+        {
+            var bytes = Convert.FromBase64String(input);
+            return ResC.TOk(Encoding.UTF8.GetString(bytes));
+        }, "Failed to decode message from Base64", _logger, ResMsgLvl.Warning);
+    }
+
+    public Res<T> DeserializeJson<T>(string input) where T : class
     {
         try
         {
@@ -59,6 +69,8 @@ public class IpcDataConverter(ILogger logger)
     public static string SeralizeRaw<T>(char id, T input) where T : class
     {
         var json = JsonConvert.SerializeObject(input, Formatting.None);
-        return $"{id} {json}";
+        var base64Bytes = Encoding.UTF8.GetBytes($"{id} {json}");
+        var base64String = Convert.ToBase64String(base64Bytes);
+        return base64String;
     }
 }

@@ -298,19 +298,22 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
     #endregion
 
     #region IPC
-    private void HandleConsoleOutput(object _, DataReceivedEventArgs args) //todo: [FIX] Add Base64 encode
+    private void HandleConsoleOutput(object _, DataReceivedEventArgs args)
     {
-        if (args.Data is null || !_ipcConverter.IsValid(args.Data)) return;
+        if (args.Data is null) return;
+        
+        var json = _ipcConverter.DeserializeBase64(args.Data);
+        if (!json.IsOk || !_ipcConverter.IsValid(json.Value)) return;
 
         if (_config.Debug_LogVerboseExtra)
         {
-            _logger.Verbose("Received \"{output}\" via IPC", args.Data);
+            _logger.Verbose("Received \"{output}\" via IPC", json.Value);
         }
-        var id = _ipcConverter.GetIdentifier(args.Data);
+        var id = _ipcConverter.GetIdentifier(json.Value);
         switch (id)
         {
             case WhisperIpcLog.IDENTIFIER:
-                var resLog = _ipcConverter.Deserialize<WhisperIpcLog>(args.Data);
+                var resLog = _ipcConverter.DeserializeJson<WhisperIpcLog>(json.Value);
                 if (resLog.IsOk)
                 {
                     var log = resLog.Value;
@@ -320,7 +323,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
                 return;
 
             case WhisperIpcRecognition.IDENTIFIER:
-                var resRec = _ipcConverter.Deserialize<WhisperIpcRecognition>(args.Data);
+                var resRec = _ipcConverter.DeserializeJson<WhisperIpcRecognition>(json.Value);
                 if (resRec.IsOk)
                 {
                     ProcessReceivedRecognition(resRec.Value);
@@ -328,7 +331,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
                 return;
                 
             case WhisperIpcStatus.IDENTIFIER:
-                var resSta = _ipcConverter.Deserialize<WhisperIpcStatus>(args.Data);
+                var resSta = _ipcConverter.DeserializeJson<WhisperIpcStatus>(json.Value);
                 if (resSta.IsOk && resSta.Value.State) 
                 {
                     _logger.Debug("Received start signal from process");
@@ -341,7 +344,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
                 return;
 
             case WhisperIpcMute.IDENTIFIER:
-                var resMute = _ipcConverter.Deserialize<WhisperIpcMute>(args.Data);
+                var resMute = _ipcConverter.DeserializeJson<WhisperIpcMute>(json.Value);
                 if (resMute.IsOk)
                 {
                     _logger.Debug("Mute status received with value {value}", resMute.Value.State);
@@ -350,7 +353,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
                 return;
 
             default: 
-                _logger.Warning("Received unknown data with identifier {id}: \"{data}\"", id, args.Data);
+                _logger.Warning("Received unknown data with identifier {id}: \"{data}\"", id, json.Value);
                 return;
         }
     }
