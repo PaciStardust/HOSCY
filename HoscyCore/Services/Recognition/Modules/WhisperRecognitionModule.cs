@@ -519,7 +519,8 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
             ? text.TrimStart(' ', '-', '(', '[', '*').TrimEnd()
             : text.TrimStart(' ', '-').TrimEnd();
 
-        text.Replace('|', '*');
+        text = text.Replace('|', '*');
+        
         return !string.IsNullOrWhiteSpace(text);
     }
     #endregion
