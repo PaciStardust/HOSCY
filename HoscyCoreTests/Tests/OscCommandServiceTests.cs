@@ -14,6 +14,7 @@ public class OscCommandServiceStartupTests : TestBase<OscCommandServiceStartupTe
     private ConfigModel _config = null!;
     private MockOscSendService _sender = null!;
     private OscQueryHostRegistry _registry = null!;
+    private OscCommandParser _parser = null!;
 
     private OscCommandService _commandService = null!;
 
@@ -22,8 +23,9 @@ public class OscCommandServiceStartupTests : TestBase<OscCommandServiceStartupTe
         _config = new();
         _sender = new(_config);
         _registry = new(_logger);
+        _parser = new(_logger, _registry);
 
-        _commandService = new(_logger, _registry, _sender);
+        _commandService = new(_logger, _parser, _sender);
     }
 
     [TestCase(false, false), TestCase(true, false), TestCase(false, true)]
@@ -38,14 +40,16 @@ public class OscCommandServiceFunctionTests : TestBase<OscCommandServiceFunction
     private OscCommandService _commandService = null!;
     private OscQueryHostRegistry _registry = null!;
     private MockOscSendService _sender = null!;
+    private OscCommandParser _parser = null!;
     private readonly ConfigModel _config = new();
 
     protected override void OneTimeSetupExtra()
     {
         _registry = new(_logger);
+        _parser = new(_logger, _registry);
         _sender = new(_config);
 
-        var commandService = new OscCommandService(_logger, _registry, _sender);
+        var commandService = new OscCommandService(_logger, _parser, _sender);
         commandService.Start().AssertOk();
         _commandService = commandService;
     }
@@ -80,7 +84,7 @@ public class OscCommandServiceFunctionTests : TestBase<OscCommandServiceFunction
             ("/abc/def",        OscCommandState.Success),
             ("/abc/123/456",    OscCommandState.Success),
             ("//",              null),
-            ("/abc/",           null),
+            ("/abc/",           OscCommandState.Success),
             ("/abcdef//abc",    null)
         };
 
@@ -100,7 +104,7 @@ public class OscCommandServiceFunctionTests : TestBase<OscCommandServiceFunction
             if (handle is null || handle != OscCommandState.Success) continue;
             Thread.Sleep(50);
             Assert.That(_sender.ReceivedMessages, Has.Count.EqualTo(arrayIndex + 1),$"Failed on {addr}");
-            Assert.That(_sender.ReceivedMessages[arrayIndex].Address, Is.EqualTo(addr), $"Failed on {addr}");
+            Assert.That(_sender.ReceivedMessages[arrayIndex].Address, Is.EqualTo(addr.TrimEnd('/')), $"Failed on {addr}");
             arrayIndex++;
         }
     }
@@ -134,6 +138,14 @@ public class OscCommandServiceFunctionTests : TestBase<OscCommandServiceFunction
             ("[F]123ba",        false,  null),
             ("[f]1001",         true,   1001f),
             ("[f]-1001111.24",  true,   -1001111.24f),
+            ("[f]-10011.11.2",  false,  null),
+            ("[f]-",            false,  null),
+            ("[f]-.",           false,  null),
+            ("[i]-",            false,  null),
+            ("[i]",             false,  null),
+            ("[f]",             false,  null),
+            ("[B]",             false,  null),
+            ("[s]",             false,  null),
         };
 
         var r = new Random();
@@ -179,11 +191,13 @@ public class OscCommandServiceFunctionTests : TestBase<OscCommandServiceFunction
             (string.Empty,      true,     _config.Osc_Routing_TargetIp, _config.Osc_Routing_TargetPort),
             (":",               true,     _config.Osc_Routing_TargetIp, _config.Osc_Routing_TargetPort),
             ("127.0.0.1:",      true,     "127.0.0.1", _config.Osc_Routing_TargetPort),
+            ("127.0.0.1",       true,     "127.0.0.1", _config.Osc_Routing_TargetPort),
             ("0.0.0.0:",        true,     "0.0.0.0", _config.Osc_Routing_TargetPort),
             ("255.255.255.255:",true,     "255.255.255.255", _config.Osc_Routing_TargetPort),
             (":9021",           true,     _config.Osc_Routing_TargetIp, 9021),
             (":1",              true,     _config.Osc_Routing_TargetIp, 1),
             (":65535",          true,     _config.Osc_Routing_TargetIp, 65535),
+            ("65535",           false,    null, null),
             ("127.0.0.1:9021",  true,     "127.0.0.1", 9021),
             ("[target]",        false,    null, null),
             ("[target]:8000",   false,    null, null),
@@ -293,14 +307,20 @@ public class OscCommandServiceFunctionTests : TestBase<OscCommandServiceFunction
             _sender.ReceivedMessages.Clear();
             var text = sb.ToString();
             var result = _commandService.DetectAndHandleCommand(text);
-            
+
             var msg = $"Failed on {text}";
-            Assert.That(result.IsOk, Is.EqualTo(fails != count), msg);
-            if (result.IsOk)
+            if (fails > 0)
+            {
+                result.AssertFail();
+            }
+            else
+            {
+                result.AssertOk();
                 Assert.That(result.Value, Is.EqualTo(OscCommandState.Success), msg);
+            }
 
             Thread.Sleep(50);
-            Assert.That(_sender.ReceivedMessages, Has.Count.EqualTo(count - fails));
+            Assert.That(_sender.ReceivedMessages, Has.Count.EqualTo(fails > 0 ? 0 : count));
         }
     }
 
@@ -324,11 +344,13 @@ public class OscCommandServiceFunctionTests : TestBase<OscCommandServiceFunction
             var fullMessage = $"[OSC] [/test [b]true {text}] [/test2 [b]false]";
             var result = _commandService.DetectAndHandleCommand(fullMessage); 
             
-            result.AssertOk(); //todo: [FIX] This should not pass validation!
-            Assert.That(result.Value, Is.EqualTo(OscCommandState.Success), $"Failed on {text}");
+            
 
             if (valid)
             {
+                result.AssertOk();
+                Assert.That(result.Value, Is.EqualTo(OscCommandState.Success), $"Failed on {text}");
+
                 Thread.Sleep(wait!.Value - 50);
             
                 Assert.That(_sender.ReceivedMessages, Has.Count.EqualTo(1));
@@ -351,14 +373,10 @@ public class OscCommandServiceFunctionTests : TestBase<OscCommandServiceFunction
             }
             else
             {
+                result.AssertFail();
+
                 Thread.Sleep(50);
-                Assert.That(_sender.ReceivedMessages, Has.Count.EqualTo(1));
-                using (Assert.EnterMultipleScope())
-                {
-                    Assert.That(_sender.ReceivedMessages[0].Address, Is.EqualTo("/test2"));
-                    Assert.That(_sender.ReceivedMessages[0].Args, Has.Length.EqualTo(1));
-                }
-                Assert.That(_sender.ReceivedMessages[0].Args[0], Is.False);
+                Assert.That(_sender.ReceivedMessages, Has.Count.EqualTo(0));
             }
         }
     }
@@ -370,7 +388,7 @@ public class OscCommandServiceFunctionTests : TestBase<OscCommandServiceFunction
         const string REG_IP = "1.0.255.10";
         _registry.SetSelf(REG_IP, REG_PORT);
 
-        var message = "[OSC] [/test/step/1 [s]\"Hello World\" [b]t [B]False [i]-4767 [f]0.001 10.0.0.4: \"self\" w250] [/test/step/2 [f]-0.001 [i]4767 [B]True [b]f [s]\"Goodbye World\" :9876 \"self\"]";
+        var message = "[OSC]    [   /test/step/1     [s]\"Hello World\"      [b]t     [B]False   [i]-4767   [f]0.001    10.0.0.4:   \"self\"    w250  ]    [/test/step/2 [f]-0.001 [i]4767 [B]True [b]f [s]\"Goodbye World\" :9876 \"self\"]";
         var result = _commandService.DetectAndHandleCommand(message);
 
         result.AssertOk();
