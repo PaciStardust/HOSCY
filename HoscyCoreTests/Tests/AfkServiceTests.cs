@@ -8,7 +8,7 @@ using HoscyCoreTests.Utils;
 namespace HoscyCoreTests.Tests.AfkServiceTests;
 #pragma warning restore IDE0130 // Namespace does not match folder structure
 
-public class AfkServiceStartupTests : TestBase<AfkServiceStartupTests> //todo: [TEST++] Are new tests needed with this new system
+public class AfkServiceStartupTests : TestBase<AfkServiceStartupTests>
 {
     private ConfigModel _config = null!;
     private MockOutputManagerService _output = null!;

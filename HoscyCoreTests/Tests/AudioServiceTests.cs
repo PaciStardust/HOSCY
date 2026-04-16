@@ -40,14 +40,14 @@ public class AudioServiceFunctionTests : TestBase<AudioServiceFunctionTests>
     public void GetCapturesTest()
     {
         var dev = _audioService.GetCaptureDevices();
-        Assert.That(dev, Is.Not.Null);
+        dev.AssertOk();
     }
 
     [Test]
     public void GetPlaybacksTest()
     {
         var dev = _audioService.GetPlaybackDevices();
-        Assert.That(dev, Is.Not.Null);
+        dev.AssertOk();
     }
 
     protected override void OneTimeTearDownExtra()

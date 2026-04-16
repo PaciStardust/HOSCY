@@ -7,7 +7,7 @@ namespace HoscyWhisperV2Process;
 
 public class Program //todo: [FIX] Typing indicator not good, noises, encoding, japanese
 {   
-    public static async Task Main(string[] args) //todo: [REFACTOR?] Should result type see heavier usage here
+    public static async Task Main(string[] args)
     {
         if (!InitConfigAndWriter(args, out var writer, out var config)) return;
 

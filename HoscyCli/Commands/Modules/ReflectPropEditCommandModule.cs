@@ -150,7 +150,6 @@ public class ReflectPropEditCommandModule(ConfigModel config, ILogger logger) : 
                 Util.DisplayEx(e);
             }
         }
-        DisplaySimpleInfo(simpleType, currentValue, fieldName);
         return currentValue;
     }
 
