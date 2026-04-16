@@ -91,19 +91,20 @@ public class ReflectPropEditCommandModule(ConfigModel config, ILogger logger) : 
         {typeof(int),           (s) => int.Parse(s, NumberStyles.Any)},
         {typeof(bool),          (s) => ConvertBool(s)},
         {typeof(float),         (s) => float.Parse(s, NumberStyles.Any, CultureInfo.InvariantCulture)},
-        {typeof(LogEventLevel), (s) => ConvertEnum<LogEventLevel>(s)},
         {typeof(ushort),        (s) => ushort.Parse(s, NumberStyles.Any)},
         {typeof(uint),          (s) => uint.Parse(s, NumberStyles.Any)}
     }.ToFrozenDictionary();
 
     private static bool IsSimpleType(Type t)
     {
-        return _simpleTypeConverters.ContainsKey(t);
+        return _simpleTypeConverters.ContainsKey(t) || t.IsEnum;
     }
 
     private static object ParseSimpleTypeString(string value, Type targetType)
     {
-        return _simpleTypeConverters[targetType].Invoke(value);
+        return targetType.IsEnum
+            ? ConvertEnum(targetType, value)
+            : _simpleTypeConverters[targetType].Invoke(value);
     }   
 
     private static readonly FrozenSet<string> _trueStrings = ["true", "t", "1", "yes", "on"];
@@ -116,16 +117,16 @@ public class ReflectPropEditCommandModule(ConfigModel config, ILogger logger) : 
         throw new ArgumentException($"Value {value} can not be converted to bool");
     }
 
-    private static T ConvertEnum<T>(string value) where T : Enum {
+    private static object ConvertEnum(Type type, string value) {
         try
         {
             if (int.TryParse(value, out var convInt))
-                return (T)(object)convInt;
-            return (T)Enum.Parse(typeof(T), value);
+                return (object)convInt;
+            return Enum.Parse(type, value);
         }
         catch
         {
-            Console.WriteLine($"Failed to convert to enum {typeof(T).FullName}, possible values: {string.Join(", ", Enum.GetNames(typeof(T)))}");
+            Console.WriteLine($"Failed to convert to enum {type.FullName}, possible values: {string.Join(", ", Enum.GetNames(type))}");
             throw;
         }
     }
@@ -149,6 +150,7 @@ public class ReflectPropEditCommandModule(ConfigModel config, ILogger logger) : 
                 Util.DisplayEx(e);
             }
         }
+        DisplaySimpleInfo(simpleType, currentValue, fieldName);
         return currentValue;
     }
 
