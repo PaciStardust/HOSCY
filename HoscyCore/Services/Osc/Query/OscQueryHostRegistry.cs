@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Utility;
 using Serilog;
@@ -9,7 +10,7 @@ namespace HoscyCore.Services.Osc.Query;
 public class OscQueryHostRegistry(ILogger logger)
 {
     private readonly ILogger _logger = logger.ForContext<OscQueryHostRegistry>();
-    private readonly Dictionary<string, (Vrc.HostInfo Host, DateTimeOffset LastHeard)> _hosts = [];
+    private readonly ConcurrentDictionary<string, (Vrc.HostInfo Host, DateTimeOffset LastHeard)> _hosts = [];
     private HashSet<string> _nameBlacklist = [];
     private (string Ip, int Port)? _self;
     
@@ -96,7 +97,7 @@ public class OscQueryHostRegistry(ILogger logger)
     public void CleanOldEntries()
     {
         var limit = DateTimeOffset.UtcNow.AddMinutes(-3);
-        var missing = _hosts.Where(kvp => kvp.Value.LastHeard < limit) //todo: Collection was modified; enumeration operation may not execute.
+        var missing = _hosts.Where(kvp => kvp.Value.LastHeard < limit)
             .Select(kvp => kvp.Key).ToArray();
         
         if (missing.Length == 0) return;
@@ -104,7 +105,7 @@ public class OscQueryHostRegistry(ILogger logger)
         foreach(var key in missing)
         {
             logger.Debug("Removing host \"{host}\" because of expired lifetime", key);
-            _hosts.Remove(key);
+            _hosts.TryRemove(key, out _);
         }
     }
 
