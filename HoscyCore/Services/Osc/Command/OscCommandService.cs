@@ -1,17 +1,26 @@
 using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
+using HoscyCore.Services.Interfacing;
 using HoscyCore.Services.Osc.SendReceive;
 using HoscyCore.Utility;
 using Serilog;
 
 namespace HoscyCore.Services.Osc.Command;
 
-[LoadIntoDiContainer(typeof(IOscCommandService), Lifetime.Singleton)] //todo: [FIX?] Does this notify?
-public class OscCommandService(ILogger logger, IOscCommandParser parser, IOscSendService sender)
+[LoadIntoDiContainer(typeof(IOscCommandService), Lifetime.Singleton)]
+public class OscCommandService
+(
+    ILogger logger,
+    IOscCommandParser parser, 
+    IOscSendService sender,
+    IBackToFrontNotifyService notify
+)
     : StartStopServiceBase(logger.ForContext<OscCommandService>()), IOscCommandService
 {
     private readonly IOscCommandParser _parser = parser;
     private readonly IOscSendService _sender = sender;
+    private readonly IBackToFrontNotifyService _notify = notify;
+
     private readonly List<Task> _runningTasks = [];
     private CancellationTokenSource? _cts = null;
 
@@ -35,8 +44,11 @@ public class OscCommandService(ILogger logger, IOscCommandParser parser, IOscSen
 
         _logger.Debug("Attempting to parse command string \"{commandString}\"", commandString);
         var parseResult = _parser.Parse(commandString);
-        if (!parseResult.IsOk) 
+        if (!parseResult.IsOk)
+        {
+            _notify.SendWarning("OSC Command Failed", $"The OSC command \"{commandString}\" could not be processed:\n\n{parseResult.Msg}");
             return ResC.TFail<OscCommandState>(parseResult.Msg);
+        }
 
         if (parseResult.Value.Length == 0)
             return ResC.TFailLog<OscCommandState>($"Failed to find any command messages to execute in string \"{commandString}\"", _logger, lvl: ResMsgLvl.Warning);
