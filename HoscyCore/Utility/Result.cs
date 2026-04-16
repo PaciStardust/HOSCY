@@ -15,15 +15,15 @@ public static class ResC
 
     public static Res Fail(ResMsg message)
         => Res.Fail(message);
-    public static Res Fail(string context, ResMsgLvl lvl = ResMsgLvl.Error)
-        => Res.Fail(new(lvl, $"Unknown fail from {context}"));
+    public static Res Fail(string message, ResMsgLvl lvl = ResMsgLvl.Error)
+        => Res.Fail(new(lvl, message));
     public static Res FailM(params IEnumerable<ResMsg?> messages)
         => Fail(ResMsg.Combine(messages));
 
     public static Res<T> TFail<T>(ResMsg message) where T : notnull
         => Res<T>.Fail(message);
-    public static Res<T> TFail<T>(string context, ResMsgLvl lvl = ResMsgLvl.Error) where T : notnull
-        => TFail<T>(new(lvl, $"Unknown fail from {context}"));
+    public static Res<T> TFail<T>(string message, ResMsgLvl lvl = ResMsgLvl.Error) where T : notnull
+        => TFail<T>(new(lvl, message));
     public static Res<T> TFailM<T>(params IEnumerable<ResMsg?> messages) where T : notnull
         => TFail<T>(ResMsg.Combine(messages));
 

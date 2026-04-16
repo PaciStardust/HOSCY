@@ -173,11 +173,11 @@ SoloModuleManagerBase<TModuleStartInfo, TModule>
 
         var res = resPre.IsOk 
             ? ResC.Wrap(module.Start, $"{selectedModuleName} Module Start failed", _logger) 
-            : ResC.Fail($"{selectedModuleName} Module Pre-Start");
+            : ResC.Fail($"{selectedModuleName} Module Pre-Start prerequisite failed");
         
         var resPost = res.IsOk 
             ? ResC.Wrap(() => OnModulePostStart(module), $"{selectedModuleName} Module Post-Start failed", _logger)
-            : ResC.Fail($"{selectedModuleName} Module Post-Start");
+            : ResC.Fail($"{selectedModuleName} Module Post-Start prerequisite failed");
 
         if (!resPost.IsOk)
         {

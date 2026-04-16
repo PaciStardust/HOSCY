@@ -118,7 +118,7 @@ public class RecWhisperCommandModule
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_Cfg_RecognitionUpdateIntervalMs));
     }
 
-    [SubCommandModule(["cfg-vad-operating-mode"], "Operating mode for Voice Activity Detection")]
+    [SubCommandModule(["cfg-vad-operating-mode"], "Operating mode for Voice Activity Detection")] //todo: Complex property WhisperIpcVadOperatingMode has no readable properties
     public Res CmdCfgVadOperatingMode()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_Cfg_VadOperatingMode));

@@ -96,7 +96,7 @@ public class OscQueryHostRegistry(ILogger logger)
     public void CleanOldEntries()
     {
         var limit = DateTimeOffset.UtcNow.AddMinutes(-3);
-        var missing = _hosts.Where(kvp => kvp.Value.LastHeard < limit)
+        var missing = _hosts.Where(kvp => kvp.Value.LastHeard < limit) //todo: Collection was modified; enumeration operation may not execute.
             .Select(kvp => kvp.Key).ToArray();
         
         if (missing.Length == 0) return;
