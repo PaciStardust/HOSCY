@@ -11,7 +11,7 @@ public interface IStartStopService : IService
     public Res Stop();
     public Res Restart();
     public ServiceStatus GetCurrentStatus();
-    public Exception? GetFaultIfExists();
+    public ResMsg? GetErrorMessageIfExists();
 }
 
 /// <summary>

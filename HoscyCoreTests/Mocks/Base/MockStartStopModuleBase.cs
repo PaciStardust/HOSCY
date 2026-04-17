@@ -7,7 +7,7 @@ public abstract class MockStartStopModuleBase : MockStartStopServiceBase, IStart
 {    
     public Res? ResultToReturn { get; set; } = null;
 
-    public event EventHandler<Exception> OnRuntimeError = delegate { };
+    public event EventHandler<ResMsg> OnRuntimeError = delegate { };
     public event EventHandler OnModuleStopped = delegate { };
 
     public ServiceStatus? OverrideRunningStatus { get; set; } = null;
@@ -35,17 +35,17 @@ public abstract class MockStartStopModuleBase : MockStartStopServiceBase, IStart
         return ResultToReturn ?? base.Restart();
     }
 
-    protected Exception? _fault = null;
-    public override Exception? GetFaultIfExists()
+    protected ResMsg? _fault = null;
+    public override ResMsg? GetErrorMessageIfExists()
     {
         return _fault;
     }
-    public void InduceError(Exception? ex)
+    public void InduceError(ResMsg? msg)
     {
-        _fault = ex;
-        if (ex is not null)
+        _fault = msg;
+        if (msg is not null)
         {
-            OnRuntimeError.Invoke(this, ex);
+            OnRuntimeError.Invoke(this, msg);
         }
     }
 

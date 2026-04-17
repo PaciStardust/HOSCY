@@ -26,7 +26,7 @@ SoloModuleManagerBase<TModuleStartInfo, TModule>
     #region Service Variables
     protected TModule? _currentModule;
     private readonly List<TModuleStartInfo> _moduleInfos = [];
-    private Res? _moduleChangeException = null;
+    private ResMsg? _moduleChangeErrorMessage = null;
     #endregion
 
     #region Info
@@ -258,14 +258,12 @@ SoloModuleManagerBase<TModuleStartInfo, TModule>
 
     private Res CallModuleStateChangeSafe(Func<Res> stateChangeAction, string verb)
     {
-        _moduleChangeException = null;
-
+        _moduleChangeErrorMessage = null;
         var res = ResC.Wrap(stateChangeAction, $"Model state change ({verb}) failed", _logger);
         if (!res.IsOk)
         {
-            _moduleChangeException = res;
+            _moduleChangeErrorMessage = res.Msg;
         }
-
         return res;
     }
 
@@ -292,38 +290,38 @@ SoloModuleManagerBase<TModuleStartInfo, TModule>
         }
     }
 
-    private void HandleOnRuntimeError(object? sender, Exception ex)
+    private void HandleOnRuntimeError(object? sender, ResMsg msg)
     {
         var moduleType = sender?.GetType();
-        _logger.Error(ex, "Encountered an error in Module \"{moduleType}\"", moduleType?.FullName);
-        _notify.SendError("Module error", $"Encountered an error in Module {moduleType?.FullName ?? "???"}", ex);
+        _logger.Error("Encountered an error in Module \"{moduleType}\": {msg}", moduleType?.FullName, msg);
+        _notify.SendResult("Module error", msg.WithContext($"Error in Module \"{moduleType?.Name ?? "???"}\""));
     }
     #endregion
 
     #region Errors
-    public override Exception? GetFaultIfExists()
+    public override ResMsg? GetErrorMessageIfExists()
     {
-        var exList = new List<Exception>();
+        var exList = new List<ResMsg>();
 
-        var baseException = base.GetFaultIfExists();
+        var baseException = base.GetErrorMessageIfExists();
         if (baseException is not null)
         {
             exList.Add(baseException);
         }
-        var moduleError = _currentModule?.GetFaultIfExists();
+        var moduleError = _currentModule?.GetErrorMessageIfExists();
         if (moduleError is not null)
         {
             exList.Add(moduleError);
         }
-        if (_moduleChangeException is not null)
+        if (_moduleChangeErrorMessage is not null)
         {
-            exList.Add(new(_moduleChangeException.ToString())); //todo: [FEAT] fix this
+            exList.Add(_moduleChangeErrorMessage);
         }
 
         return exList.Count == 0
             ? null
             : exList.Count > 1
-                ? new CombinedException(exList)
+                ? ResMsg.Combine(exList)
                 : exList[0];
     }
     #endregion

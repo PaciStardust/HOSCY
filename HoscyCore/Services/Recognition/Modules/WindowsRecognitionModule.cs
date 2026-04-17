@@ -108,8 +108,9 @@ public class WindowsRecognitionModule : WindowsRecognitionModuleBase
         }
         catch (Exception ex)
         {
-            SetFault(ex); //todo: [REFACTOR] Should set fault not also provide a message maybe, also warnings or also just set fault globally?
-            return ResC.TFailLog<bool>($"Failed changing listening state to {state}", _logger, ex);
+            var res = ResC.TFailLog<bool>($"Failed changing listening state to {state}", _logger, ex);
+            SetFault(res.Msg);
+            return res;
         }
 
         return ResC.TOk(IsListening);

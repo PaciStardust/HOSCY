@@ -24,7 +24,7 @@ public class OscCommandModule(IOscRelayService oscRelay, IOscListenService oscLi
     [SubCommandModule(["status"], "Display overall OSC status")]
     public Res CmdDisplayStatus()
     {
-        var relayError = _oscRelay.GetFaultIfExists();
+        var relayError = _oscRelay.GetErrorMessageIfExists();
 
         var statusLines = new Dictionary<string, string>()
         {

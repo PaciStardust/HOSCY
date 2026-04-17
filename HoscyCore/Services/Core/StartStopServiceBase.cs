@@ -12,14 +12,14 @@ public abstract class StartStopServiceBase(ILogger logger) : IStartStopService
 {
     #region Variables
     protected readonly ILogger _logger = logger; 
-    private Exception? _internalException = null;
+    private ResMsg? _internalErrorMessage = null;
     #endregion
 
     #region Status
     public ServiceStatus GetCurrentStatus()
     {
         if (!IsStarted()) return ServiceStatus.Stopped;
-        if (GetFaultIfExists() is not null) return ServiceStatus.Faulted;
+        if (GetErrorMessageIfExists() is not null) return ServiceStatus.Faulted;
         if (IsProcessing()) return ServiceStatus.Processing;
         return ServiceStatus.Started;
     }
@@ -77,24 +77,22 @@ public abstract class StartStopServiceBase(ILogger logger) : IStartStopService
     #endregion
 
     #region Exceptions
-    public virtual Exception? GetFaultIfExists()
-        => _internalException;
+    public virtual ResMsg? GetErrorMessageIfExists()
+        => _internalErrorMessage;
 
-    protected virtual void SetFault(Exception? ex)
+    protected virtual void SetFault(ResMsg? msg)
     {
-        _internalException = ex;
+        _internalErrorMessage = msg;
     }
+    protected void SetFaultLogNotify(ResMsg msg, string title, IBackToFrontNotifyService? notify, ILogger? logger)
+    {
+        SetFault(msg);
+        logger?.Error($"{title}: {msg}");
+        notify?.SendResult(title, msg);
+    }
+
     public void ClearFault()
-    {
-        SetFault(null);
-    }
-
-    protected void SetFaultLogAndNotify(Exception ex, ILogger? logger, IBackToFrontNotifyService? notify, string message)
-    {
-        SetFault(ex);
-        logger?.Error(ex, message);
-        notify?.SendError(message, exception: ex);
-    }
+        => SetFault(null);
     #endregion
 
     #region Utils

@@ -22,7 +22,7 @@ public interface IRecognitionModule : IStartStopModule
 {
     public event Action<string> OnSpeechRecognized;
     public event Action<bool> OnSpeechActivity;
-    public event Action OnInternalListeningStatusChange; //todo: [FEAT++] Can we use this to send a mute event to the client?
+    public event Action OnInternalListeningStatusChange;
 
     public bool IsListening { get; }
     

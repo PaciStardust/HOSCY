@@ -99,7 +99,8 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
         }
         catch (Exception ex)
         {
-            SetFaultLogAndNotify(ex, _logger, _notify, "Listen Loop encountered an unexpected error");
+            var res = ResC.FailLog("OSC Listen Loop encountered an unexpected error", _logger, ex);
+            SetFaultLogNotify(res.Msg!, "OSC Listen Loop Error", _notify, null);
             while (_cts is not null && !_cts.IsCancellationRequested)
             {
                 await Task.Delay(100);

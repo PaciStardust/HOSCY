@@ -1,6 +1,5 @@
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Audio;
-using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Network;
 using HoscyCore.Services.Recognition.Core;
@@ -123,9 +122,9 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
     {
         if (_stream is null || _mic is null)
         {
-            var ex = new ArgumentException("Failed to start listening, some component is missing");
-            SetFault(ex);
-            return ResC.FailLog("Failed to start listening, some component is missing", _logger, ex, ResMsgLvl.Warning); //todo: [FIX] use of exception?
+            var res = ResMsg.Wrn("Failed to start listening, some component is missing");
+            SetFaultLogNotify(res, "Recording start failed", null, _logger);
+            return ResC.Fail(res);
         }
 
         _logger.Debug("Starting listening and clearing stream");
@@ -160,8 +159,9 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
         } 
         catch (Exception ex)
         {
-            SetFault(ex);
-            return ResC.FailLog("Failed to stop listening", _logger, ex, ResMsgLvl.Warning);
+            var res = ResC.FailLog("Failed to stop listening", _logger, ex, ResMsgLvl.Warning);
+            SetFault(res.Msg);
+            return res;
         }
     }
     protected override bool UseOnlySetListeningWhenStartedProtection => true;

@@ -372,11 +372,11 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
     #endregion
 
     #region Handlers => Exception Handling
-    private void HandleOnRuntimeError(object? sender, Exception ex)
+    private void HandleOnRuntimeError(object? sender, ResMsg msg)
     {
         var handlerType = sender?.GetType();
-        _logger.Error(ex, "Encountered an error in Handler \"{handlerType}\"", handlerType?.FullName);
-        _notify.SendError("Handler error", $"Encountered an error in Handler {handlerType?.FullName ?? "???"}", exception: ex);
+        _logger.Error("Encountered an error in Handler \"{handlerType}\": {msg}", handlerType?.FullName, msg);
+        _notify.SendResult("Handler error", msg.WithContext($"Error in Handler \"{handlerType?.Name ?? "???"}\""));
     }
     #endregion
 
@@ -667,23 +667,23 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
     #endregion
 
     #region Errors
-    public override Exception? GetFaultIfExists()
+    public override ResMsg? GetErrorMessageIfExists()
     {
-        var exList = new List<Exception>();
+        var msgList = new List<ResMsg>();
 
-        var baseException = base.GetFaultIfExists();
+        var baseException = base.GetErrorMessageIfExists();
         if (baseException is not null)
         {
-            exList.Add(baseException);
+            msgList.Add(baseException);
         }
-        exList.AddRange(_refreshExceptions.Select(x => new Exception(x.Message)));
-        exList.AddRange(GetHandlerExceptions());
+        msgList.AddRange(_refreshExceptions);
+        msgList.AddRange(GetHandlerExceptions());
 
-        return exList.Count == 0
+        return msgList.Count == 0
             ? null
-            : exList.Count > 1
-                ? new CombinedException(exList)
-                : exList[0];
+            : msgList.Count > 1
+                ? ResMsg.Combine(msgList)
+                : msgList[0];
     }
 
     private void AddRefreshExceptionIfMessage(ResBase res, string context)
@@ -700,16 +700,16 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
         _notify.SendError("Errors ocurred during refresh", "The following errors occured while refreshing handlers", ex);
     }
 
-    private List<Exception> GetHandlerExceptions()
+    private List<ResMsg> GetHandlerExceptions()
     {
-        var exList = new List<Exception>();
+        var resMsgList = new List<ResMsg>();
         foreach (var handler in _activeHandlers)
         {
-            var ex = handler.GetFaultIfExists();
+            var ex = handler.GetErrorMessageIfExists();
             if (ex is not null)
-                exList.Add(ex);
+                resMsgList.Add(ex);
         }
-        return exList;
+        return resMsgList;
     }
     #endregion
 }

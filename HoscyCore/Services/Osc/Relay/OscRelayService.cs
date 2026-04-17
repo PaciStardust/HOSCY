@@ -105,7 +105,7 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
         if (invalidFilters.Length > 0)
         {
             var filterString = $"The following filters are invalid: {string.Join(", ", invalidFilters)}";
-            SetFaultLogAndNotify(new(filterString), _logger, _notify, filterString);
+            SetFaultLogNotify(ResMsg.Wrn(filterString), "Invalid filters found", _notify, _logger);
             return ResC.Ok();
         } 
         else

@@ -75,9 +75,9 @@ public class ApiTranslationModule(ILogger logger, ConfigModel config, IApiClient
 
         if (!result.IsOk)
         {
-            _logger.Warning("Failed translation of text \"{input}\" ({result})", result);
+            var msg = ResMsg.Wrn($"Translation of \"{input}\" failed: {result.Msg}");
+            SetFaultLogNotify(msg, "Translation failed", null, _logger); //todo: [FEAT] Notify?
             output = null;
-            SetFault(new Exception(result.Msg.Message));
             return TranslationResult.Failed;
         }
 

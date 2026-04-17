@@ -10,14 +10,14 @@ public abstract class MockStartStopServiceBase : IStartStopService
     public virtual ServiceStatus GetCurrentStatus()
     {
         return Started ? (
-            GetFaultIfExists() is null
+            GetErrorMessageIfExists() is null
             ? ServiceStatus.Processing
             : ServiceStatus.Faulted
         )
         : ServiceStatus.Stopped;
     }
 
-    public virtual Exception? GetFaultIfExists()
+    public virtual ResMsg? GetErrorMessageIfExists()
         => null;
 
     public virtual Res Restart()

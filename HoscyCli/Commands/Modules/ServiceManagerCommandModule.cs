@@ -73,7 +73,7 @@ public class ServiceManagerCommandModule : AttributeCommandModule, ICoreCommandM
         if (string.IsNullOrWhiteSpace(args))
         {
             var startStopServices = _services.Select(x => x as IStartStopService);
-            var exceptions = startStopServices.Select(x => x?.GetFaultIfExists());
+            var exceptions = startStopServices.Select(x => x?.GetErrorMessageIfExists());
 
             var idx = -1;
             var exceptionStrings = exceptions.Select(x =>
@@ -106,22 +106,14 @@ public class ServiceManagerCommandModule : AttributeCommandModule, ICoreCommandM
                 return ResC.Ok();
             }
 
-            var serviceEx = startStopService!.GetFaultIfExists();
+            var serviceEx = startStopService!.GetErrorMessageIfExists();
             if (serviceEx is null)
             {
                 Console.WriteLine($"Service {selected.GetType().Name} does not have an error");
                 return ResC.Ok();
             }
 
-            var exceptions = new List<Exception>();
-            while (serviceEx != null)
-            {
-                exceptions.Add(serviceEx);
-                serviceEx = serviceEx.InnerException;
-            }
-
-            var exStrings = exceptions.Select(x => $"{x.GetType().Name} -> {x.Message}:\n{x.StackTrace}");
-            var message = $"Errors from {selected.GetType().Name}:\n\n{string.Join("\n\n--------------\n\n", exStrings)}";
+            var message = $"Error from {selected.GetType().Name}: {serviceEx}";
             Console.WriteLine(message);
         }
         return ResC.Ok();

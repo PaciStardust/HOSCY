@@ -140,7 +140,7 @@ public class StartStopModuleControllerBaseStartupTests : SoloModuleManagerBaseTe
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_manager.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
-            Assert.That(_manager.GetFaultIfExists()?.Message, Does.Contain(ex.Msg!.Message));
+            Assert.That(_manager.GetErrorMessageIfExists()?.Message, Does.Contain(ex.Msg!.Message));
             Assert.That(_moduleA.Started, Is.False);
             Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
         }
@@ -151,7 +151,7 @@ public class StartStopModuleControllerBaseStartupTests : SoloModuleManagerBaseTe
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_manager.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Faulted));
-            Assert.That(_manager.GetFaultIfExists(), Is.Null);
+            Assert.That(_manager.GetErrorMessageIfExists(), Is.Null);
             Assert.That(_moduleA.Started, Is.True);
             Assert.That(_manager.GetCurrentModuleInfo()?.Value, Is.EqualTo(_infoA));
         }
@@ -166,7 +166,7 @@ public class StartStopModuleControllerBaseStartupTests : SoloModuleManagerBaseTe
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_manager.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Faulted));
-            Assert.That(_manager.GetFaultIfExists(), Is.Null);
+            Assert.That(_manager.GetErrorMessageIfExists(), Is.Null);
             Assert.That(_moduleA.Started, Is.True);
             Assert.That(_manager.GetCurrentModuleInfo()?.Value, Is.EqualTo(_infoA));
         }
@@ -179,7 +179,7 @@ public class StartStopModuleControllerBaseStartupTests : SoloModuleManagerBaseTe
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_manager.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
-            Assert.That(_manager.GetFaultIfExists()?.Message, Does.Contain(ex.Msg!.Message));
+            Assert.That(_manager.GetErrorMessageIfExists()?.Message, Does.Contain(ex.Msg!.Message));
             Assert.That(_moduleA.Started, Is.False);
             Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
         }
@@ -194,7 +194,7 @@ public class StartStopModuleControllerBaseStartupTests : SoloModuleManagerBaseTe
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_manager.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Faulted));
-            Assert.That(_manager.GetFaultIfExists(), Is.Null);
+            Assert.That(_manager.GetErrorMessageIfExists(), Is.Null);
             Assert.That(_moduleA.Started, Is.True);
             Assert.That(_manager.GetCurrentModuleInfo()?.Value, Is.EqualTo(_infoA));
         }
@@ -206,7 +206,7 @@ public class StartStopModuleControllerBaseStartupTests : SoloModuleManagerBaseTe
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_manager.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
-            Assert.That(_manager.GetFaultIfExists()?.Message, Does.Contain(ex.Msg!.Message));
+            Assert.That(_manager.GetErrorMessageIfExists()?.Message, Does.Contain(ex.Msg!.Message));
             Assert.That(_moduleA.Started, Is.True);
             Assert.That(_manager.GetCurrentModuleInfo()?.Value, Is.EqualTo(_infoA));
         }
@@ -487,7 +487,7 @@ public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseT
         SetModule(_infoC.Name);
         _manager.StartModule().AssertFail();
 
-        var ex = _manager.GetFaultIfExists();
+        var ex = _manager.GetErrorMessageIfExists();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(ex, Is.Not.Null);
@@ -496,7 +496,7 @@ public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseT
 
         _manager.StopModule().AssertOk();
 
-        var ex2 = _manager.GetFaultIfExists();
+        var ex2 = _manager.GetErrorMessageIfExists();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(ex2, Is.Null);
@@ -533,11 +533,11 @@ public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseT
 
         Assert.That(_manager.GetCurrentModuleInfo()?.Value, Is.EqualTo(_infoA));
 
-        var testEx = new Exception("test");
+        var testEx = ResMsg.Err("test");
         _moduleA.InduceError(testEx);
 
-        var faultOutput = _manager.GetFaultIfExists();
-        var faultHandler = _moduleA.GetFaultIfExists();
+        var faultOutput = _manager.GetErrorMessageIfExists();
+        var faultHandler = _moduleA.GetErrorMessageIfExists();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_manager.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
@@ -551,8 +551,8 @@ public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseT
         _manager.StopModule().AssertOk();
         _manager.StartModule().AssertOk();
 
-        faultOutput = _manager.GetFaultIfExists();
-        faultHandler = _moduleA.GetFaultIfExists();
+        faultOutput = _manager.GetErrorMessageIfExists();
+        faultHandler = _moduleA.GetErrorMessageIfExists();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_manager.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Faulted));

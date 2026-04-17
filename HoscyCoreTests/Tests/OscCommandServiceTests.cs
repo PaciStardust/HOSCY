@@ -13,6 +13,7 @@ public class OscCommandServiceStartupTests : TestBase<OscCommandServiceStartupTe
 {
     private ConfigModel _config = null!;
     private MockOscSendService _sender = null!;
+    private MockBackToFrontNotifyService _notify = null!;
     private OscQueryHostRegistry _registry = null!;
     private OscCommandParser _parser = null!;
 
@@ -24,8 +25,9 @@ public class OscCommandServiceStartupTests : TestBase<OscCommandServiceStartupTe
         _sender = new(_config);
         _registry = new(_logger);
         _parser = new(_logger, _registry);
+        _notify = new();
 
-        _commandService = new(_logger, _parser, _sender);
+        _commandService = new(_logger, _parser, _sender, _notify);
     }
 
     [TestCase(false, false), TestCase(true, false), TestCase(false, true)]
@@ -40,6 +42,7 @@ public class OscCommandServiceFunctionTests : TestBase<OscCommandServiceFunction
     private OscCommandService _commandService = null!;
     private OscQueryHostRegistry _registry = null!;
     private MockOscSendService _sender = null!;
+    private MockBackToFrontNotifyService _notify = null!;
     private OscCommandParser _parser = null!;
     private readonly ConfigModel _config = new();
 
@@ -48,8 +51,9 @@ public class OscCommandServiceFunctionTests : TestBase<OscCommandServiceFunction
         _registry = new(_logger);
         _parser = new(_logger, _registry);
         _sender = new(_config);
+        _notify = new();
 
-        var commandService = new OscCommandService(_logger, _parser, _sender);
+        var commandService = new OscCommandService(_logger, _parser, _sender, _notify);
         commandService.Start().AssertOk();
         _commandService = commandService;
     }

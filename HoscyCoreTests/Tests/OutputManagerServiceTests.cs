@@ -212,7 +212,7 @@ public class OutputManagerServiceStartupTests : OutputManagerServiceTestBase<Out
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_output.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
-            Assert.That(_output.GetFaultIfExists()?.Message, Does.Contain(failRes.Msg!.Message));
+            Assert.That(_output.GetErrorMessageIfExists()?.Message, Does.Contain(failRes.Msg!.Message));
             Assert.That(_handlerA.Started, Is.False);
             Assert.That(_output.GetHandlerInfos(true), Is.Empty);
             Assert.That(_notify.Notifications, Has.Count.EqualTo(1));
@@ -225,7 +225,7 @@ public class OutputManagerServiceStartupTests : OutputManagerServiceTestBase<Out
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_output.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Faulted));
-            Assert.That(_output.GetFaultIfExists(), Is.Null);
+            Assert.That(_output.GetErrorMessageIfExists(), Is.Null);
             Assert.That(_handlerA.Started, Is.True);
             Assert.That(_output.GetHandlerInfos(true), Has.Count.EqualTo(1));
         }
@@ -238,7 +238,7 @@ public class OutputManagerServiceStartupTests : OutputManagerServiceTestBase<Out
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_output.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Faulted));
-            Assert.That(_output.GetFaultIfExists(), Is.Null);
+            Assert.That(_output.GetErrorMessageIfExists(), Is.Null);
             Assert.That(_handlerA.Started, Is.True);
             Assert.That(_output.GetHandlerInfos(true), Has.Count.EqualTo(1));
         }
@@ -249,7 +249,7 @@ public class OutputManagerServiceStartupTests : OutputManagerServiceTestBase<Out
         _infoA.Enabled = false;
 
         _output.RefreshHandlers().AssertOk();
-        var fault = _output.GetFaultIfExists();
+        var fault = _output.GetErrorMessageIfExists();
 
         using (Assert.EnterMultipleScope())
         {
@@ -274,7 +274,7 @@ public class OutputManagerServiceStartupTests : OutputManagerServiceTestBase<Out
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_output.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Faulted));
-            Assert.That(_output.GetFaultIfExists(), Is.Null);
+            Assert.That(_output.GetErrorMessageIfExists(), Is.Null);
             Assert.That(_handlerA.Started, Is.True);
             Assert.That(_output.GetHandlerInfos(true), Has.Count.EqualTo(1));
         }
@@ -286,7 +286,7 @@ public class OutputManagerServiceStartupTests : OutputManagerServiceTestBase<Out
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_output.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
-            Assert.That(_output.GetFaultIfExists()?.Message, Does.Contain(failRes.Msg!.Message));
+            Assert.That(_output.GetErrorMessageIfExists()?.Message, Does.Contain(failRes.Msg!.Message));
             Assert.That(_handlerA.Started, Is.True);
             Assert.That(_output.GetHandlerInfos(true), Has.Count.EqualTo(1));
             Assert.That(_notify.Notifications, Has.Count.EqualTo(1));
@@ -613,7 +613,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         _infoE.Enabled = true;
         _output.RefreshHandlers().AssertOk();
 
-        var ex = _output.GetFaultIfExists();
+        var ex = _output.GetErrorMessageIfExists();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(ex, Is.Not.Null);
@@ -623,7 +623,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         _infoE.Enabled = false;
         _output.RefreshHandlers().AssertOk();
 
-        var ex2 = _output.GetFaultIfExists();
+        var ex2 = _output.GetErrorMessageIfExists();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(ex2, Is.Null);
@@ -660,11 +660,11 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
 
         Assert.That(_output.GetHandlerInfos(true), Has.Count.EqualTo(1));
 
-        var testEx = new Exception("test");
+        var testEx = ResMsg.Err("test");
         _handlerA.InduceError(testEx);
 
-        var faultOutput = _output.GetFaultIfExists();
-        var faultHandler = _handlerA.GetFaultIfExists();
+        var faultOutput = _output.GetErrorMessageIfExists();
+        var faultHandler = _handlerA.GetErrorMessageIfExists();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_output.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
@@ -684,8 +684,8 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         _handlerA.InduceError(null);
         _output.RefreshHandlers().AssertOk();
 
-        faultOutput = _output.GetFaultIfExists();
-        faultHandler = _handlerA.GetFaultIfExists();
+        faultOutput = _output.GetErrorMessageIfExists();
+        faultHandler = _handlerA.GetErrorMessageIfExists();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_output.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Faulted));

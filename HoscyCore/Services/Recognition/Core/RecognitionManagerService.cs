@@ -180,8 +180,8 @@ public class RecognitionManagerService //todo: [TEST] create test for this
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to set denoiser to {regString}, it will not be overridden", regString);
-            SetFault(ex); //todo: [REFACTOR] Should faults even be exceptions?
+            var res = ResC.FailLog($"Failed to set denoiser to \"{regString}\", it will not be overridden", _logger, ex);
+            SetFault(res.Msg);
             return ResC.Fail(ResMsg.Wrn("Failed to set denoiser, it will not be overridden"));
         }
     }
