@@ -39,7 +39,7 @@ public class RecognitionManagerService //todo: [TEST] create test for this
 
         if (_config.Recognition_Mute_StartUnmuted)
         {
-            var resListening = SetListeningInternal(module, true);
+            var resListening = SetListeningInternal(module, true); // Internal to not notify of change yet
 
             if (!resListening.IsOk || !resListening.Value)
             {
@@ -57,7 +57,7 @@ public class RecognitionManagerService //todo: [TEST] create test for this
 
     protected override Res OnModulePreStop(IRecognitionModule module)
     {
-        var res = module.SetListening(false); //todo: [FIX] ??? why internal
+        var res = SetListeningInternal(module, false); // Internal to not notify of change yet
 
         module.OnSpeechActivity -= HandleOnSpeechActivity;
         module.OnSpeechRecognized -= HandleOnSpeechRecognized;
