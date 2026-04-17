@@ -1,4 +1,5 @@
 using HoscyCore.Configuration.Modern;
+using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCoreTests.Utils;
 using Microsoft.Extensions.DependencyInjection;
@@ -81,6 +82,23 @@ public class DiContainerFunctionTests : TestBase<DiContainerFunctionTests>
         Assert.That(shouldFail, Is.Null, "Di Test shouldve not worked");
         var shouldPass2 = _container.GetService<DiTestService2>();
         Assert.That(shouldPass2, Is.Not.Null, "Di Test shouldve worked");
+    }
+
+    [Test]
+    public void BulkLoaderTest()
+    {
+        var loaderRes = _container.GetRequiredService<IContainerBulkLoader<IService>>();
+        loaderRes.AssertOk();
+
+        var loader = loaderRes.Value!;
+        
+        var all = loader.GetInstances();
+        all.AssertOk();
+        Assert.That(all.Value!, Is.Not.Empty);
+
+        var one = loader.GetInstance(typeof(DiTestService2));
+        one.AssertOk();
+        Assert.That(one.Value, Is.InstanceOf<DiTestService2>());
     }
 
     protected override void OneTimeTearDownExtra()
