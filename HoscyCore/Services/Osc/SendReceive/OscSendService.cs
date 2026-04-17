@@ -1,5 +1,6 @@
 using System.Net;
 using HoscyCore.Configuration.Modern;
+using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Interfacing;
 using HoscyCore.Utility;
@@ -12,12 +13,28 @@ namespace HoscyCore.Services.Osc.SendReceive;
 /// Default Sender for OSC
 /// </summary>
 [LoadIntoDiContainer(typeof(IOscSendService), Lifetime.Singleton)]
-public class OscSendService(ILogger logger, ConfigModel config, IBackToFrontNotifyService notify) : IOscSendService, IDisposable
+public class OscSendService(ILogger logger, ConfigModel config, IBackToFrontNotifyService notify) 
+    : StartStopServiceBase(logger.ForContext<OscSendService>()), IOscSendService
 {
     private readonly Dictionary<string, OscSender> _senders = [];
-    private readonly ILogger _logger = logger.ForContext<OscSendService>();
     private readonly ConfigModel _config = config;
     private readonly IBackToFrontNotifyService _notify = notify;
+
+    #region Start / Stop
+    protected override bool IsProcessing() => true;
+    protected override bool IsStarted() => true;
+    protected override Res StartForService() => ResC.Ok();
+    protected override Res StopForService() => ResC.Ok();
+    protected override bool UseAlreadyStartedProtection => true;
+    protected override void DisposeCleanup()
+    {
+        foreach(var key in _senders.Keys)
+        {
+            _senders[key].Dispose();
+        }
+        _senders.Clear();
+    }
+    #endregion
 
     #region Defaults
     public string GetDefaultIp()
@@ -128,15 +145,6 @@ public class OscSendService(ILogger logger, ConfigModel config, IBackToFrontNoti
             return ResC.TFailLog<IPEndPoint>(message, _logger);
         }
         return ResC.TOk(new IPEndPoint(ipAddress, port));
-    }
-
-    public void Dispose()
-    {
-        foreach(var key in _senders.Keys)
-        {
-            _senders[key].Dispose();
-        }
-        _senders.Clear();
     }
     #endregion
 }

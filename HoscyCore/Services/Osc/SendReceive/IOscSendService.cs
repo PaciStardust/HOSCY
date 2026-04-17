@@ -6,7 +6,7 @@ namespace HoscyCore.Services.Osc.SendReceive;
 /// <summary>
 /// Interface for an OSC Sender
 /// </summary>
-public interface IOscSendService : IService
+public interface IOscSendService : IStartStopService
 {
     public string GetDefaultIp();
     public ushort GetDefaultPort();
