@@ -336,7 +336,7 @@ public class DiContainer
     /// <summary>
     /// Grabs all services from the container and starts them in an order established using their dependencies
     /// </summary>
-    public Res StartServices(Action<string>? onProgress)
+    public Res<ResMsg[]> StartServices(Action<string>? onProgress)
     {
         var diagnosticSw = Stopwatch.StartNew();
         _logger.Information("Locating all registered services for startup...");
@@ -346,7 +346,7 @@ public class DiContainer
         if (!serviceResult.IsOk)
         {
             _logger.Fatal("Failed locating registered services ({result})", serviceResult);
-            return ResC.Fail(serviceResult.Msg);
+            return ResC.TFail<ResMsg[]>(serviceResult.Msg);
         }
         var registeredServices = serviceResult.Value;
 
@@ -357,13 +357,14 @@ public class DiContainer
         if (!orderResult.IsOk)
         {
             _logger.Fatal("Failed establishing startup order ({result})", serviceResult);
-            return ResC.Fail(orderResult.Msg);
+            return ResC.TFail<ResMsg[]>(orderResult.Msg);
         }
 
         var orderedServicesToStart = orderResult.Value;
         _logger.Debug("Order of {toStart} startable services established, proceeding with startup... (DI taken {diDuration}ms so far)",
             orderedServicesToStart.Count, diagnosticSw.ElapsedMilliseconds);
         
+        List<ResMsg> extraErrors = [];
         for (var i = 0; i < orderedServicesToStart.Count; i++)
         {
             var currentService = orderedServicesToStart[i];
@@ -378,7 +379,15 @@ public class DiContainer
             {
                 _logger.Debug("Failed starting service {currenStart}/{toStart}: {currentService} as {currentServiceBase} ({result})",
                     i + 1, orderedServicesToStart.Count, currentService.Type.FullName, currentService.AsType.FullName, startResult);
-                return ResC.Fail(startResult.Msg.WithContext($"StartServices > {currentService.Type.Name}"));
+                return ResC.TFail<ResMsg[]>(startResult.Msg.WithContext($"StartServices > {currentService.Type.Name}"));
+            }
+
+            var extraErrorMsg = currentService.Service.GetErrorMessageIfExists();
+            if (extraErrorMsg is not null)
+            {
+                _logger.Warning("Service {serviceName} had an error message after successfull start ({message})",
+                    currentService.Type.FullName, extraErrorMsg);
+                extraErrors.Add(extraErrorMsg.WithContext(currentService.Type.Name));
             }
 
             _logger.Debug("Started service {currenStart}/{toStart}: {currentService} (Took {startDuration}ms, DI taken {diDuration}ms so far)",
@@ -389,7 +398,7 @@ public class DiContainer
         _logger.Debug("Successfully started {toStart} startable services in {diDuration}ms", 
             orderedServicesToStart.Count, diagnosticSw.ElapsedMilliseconds);
         onProgress?.Invoke($"Started {orderedServicesToStart.Count} services");
-        return ResC.Ok();
+        return ResC.TOk(extraErrors.ToArray());
     }
 
     /// <summary>

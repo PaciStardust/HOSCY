@@ -11,7 +11,7 @@ public class HoscyCoreApp(ILogger? initialLogger = null)
     private DiContainer? _container = null;
     private HoscyCoreAppDebug? _debug = null;
 
-    public Res Start(HoscyCoreAppStartParameters startParameters)
+    public Res<ResMsg[]> Start(HoscyCoreAppStartParameters startParameters)
     {
         var onProgress = startParameters.OnProgress;
         var config = startParameters.PreloadedConfig;
@@ -26,7 +26,7 @@ public class HoscyCoreApp(ILogger? initialLogger = null)
         {
             onProgress?.Invoke("Loading Config");
             var configRes = LaunchUtils.LoadConfigModel(_currentLogger, startParameters.CreateNewConfigIfMissing);
-            if (!configRes.IsOk) return ResC.Fail(configRes.Msg);
+            if (!configRes.IsOk) return ResC.TFail<ResMsg[]>(configRes.Msg);
             config = configRes.Value;
         }
 
@@ -41,19 +41,19 @@ public class HoscyCoreApp(ILogger? initialLogger = null)
         onProgress?.Invoke("Starting external logging");
         var debug = new HoscyCoreAppDebug(_currentLogger);
         var resDebug = debug.Start(startParameters, config);
-        if (!resDebug.IsOk) return ResC.Fail(resDebug.Msg);
+        if (!resDebug.IsOk) return ResC.TFail<ResMsg[]>(resDebug.Msg);
         _debug = debug;
 
         onProgress?.Invoke("Loading DI container");
         var containerRes = DiContainer.CreateWithAssembly(_currentLogger, config, startParameters.AdditionalContainerInserts);
-        if (!containerRes.IsOk) return ResC.Fail(containerRes.Msg);
+        if (!containerRes.IsOk) return ResC.TFail<ResMsg[]>(containerRes.Msg);
         _container = containerRes.Value;
 
         var startRes = _container.StartServices(onProgress);
-        if (!startRes.IsOk) return ResC.Fail(startRes.Msg);
+        if (!startRes.IsOk) return ResC.TFail<ResMsg[]>(startRes.Msg);
 
         onProgress?.Invoke("Done!");
-        return ResC.Ok();
+        return startRes;
     }
 
     public Res Stop()

@@ -13,9 +13,9 @@ public class CliCoreWrapper
     private HoscyCoreApp? _coreApp = null;
     private ILogger? _logger = null;
 
-    public Res Start()
+    public Res<ResMsg[]> Start()
     {
-        if (_coreApp is not null) return ResC.Ok();
+        if (_coreApp is not null) return ResC.TOk<ResMsg[]>([]);
         _logger = LogUtils.CreateTemporaryLogger<CliCoreWrapper>(disableConsoleLogging: true);
 
         _coreApp = new HoscyCoreApp(_logger);
@@ -29,13 +29,13 @@ public class CliCoreWrapper
         if (!res.IsOk) return res;
 
         var containerRes = _coreApp.GetContainer();
-        if (!containerRes.IsOk) return ResC.Fail(containerRes.Msg);
+        if (!containerRes.IsOk) return ResC.TFail<ResMsg[]>(containerRes.Msg);
 
         var loggerRes = containerRes.Value.GetRequiredService<ILogger>();
-        if (!loggerRes.IsOk) return ResC.Fail(loggerRes.Msg);
+        if (!loggerRes.IsOk) return ResC.TFail<ResMsg[]>(loggerRes.Msg);
 
         _logger = loggerRes.Value.ForContext<CliCoreWrapper>();
-        return ResC.Ok();
+        return res;
     }
 
     public Res RunLoop()

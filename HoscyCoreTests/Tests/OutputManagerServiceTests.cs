@@ -205,7 +205,7 @@ public class OutputManagerServiceStartupTests : OutputManagerServiceTestBase<Out
     [Test]
     public void ThrowOnHandlerStart()
     {
-        var failRes = ResC.Fail("Error"); //todo: [FEAT] Launch errors should be displayed after launch if service marked as faulted?
+        var failRes = ResC.Fail("Error");
         _handlerA.ResultToReturn = failRes;
 
         _output.Start().AssertOk();

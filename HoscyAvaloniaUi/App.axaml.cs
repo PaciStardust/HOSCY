@@ -119,11 +119,12 @@ public partial class App : Application
             OnNewLoggerCreated = onNewLoggerLoaded
         };
 
-        var startRes = ResC.Wrap(() => _coreApp.Start(startParams), "Failed to start core app", _startLogger, ResMsgLvl.Fatal);
+        var startRes = ResC.TWrap(() => _coreApp.Start(startParams), "Failed to start core app", _startLogger, ResMsgLvl.Fatal);
         if (startRes.IsOk)
         {
             onProgressAction.Invoke("Switching to main UI");
 
+            //todo: [FEAT] Display of startup errors
             Dispatcher.UIThread.Invoke(() =>
             {
                 mainWindowModel.CurrentView = new MainMenu()
