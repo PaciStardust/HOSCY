@@ -87,7 +87,6 @@ SoloModuleManagerBase<TModuleStartInfo, TModule>
 
         if (instances.Value.Count == 0)
         {
-            //todo: [REFACTOR?] Notify on startup not possible, check for missing areas
             var msg = ResMsg.Wrn("No ModuleStartInfos could be located, Service will have no functionality and will be NOT be marked as running");
             SetFaultLogNotify(msg, "Failed to load Modules", null, _logger);
             return ResC.Ok();

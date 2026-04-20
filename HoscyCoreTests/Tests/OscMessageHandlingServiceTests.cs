@@ -37,7 +37,7 @@ public class OscMessageHandlingServiceStartupTests : TestBase<OscMessageHandling
         AssertServiceStopped(_handlingService);
 
         _handlingService.Start().AssertOk();
-        AssertServiceStarted(_handlingService);
+        AssertServiceFaulted(_handlingService);
 
         _handlingService.Stop().AssertOk();
         AssertServiceStopped(_handlingService);

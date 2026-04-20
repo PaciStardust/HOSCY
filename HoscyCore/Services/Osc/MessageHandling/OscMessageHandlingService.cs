@@ -49,7 +49,8 @@ public class OscMessageHandlingService(ILogger logger, IContainerBulkLoader<IOsc
         _handlers = [];
         if (res.Value.Count == 0)
         {
-            _logger.Warning("No message handlers could be located, service will have no functionality and will be NOT be marked as running");
+            var msg = ResMsg.Wrn("No message handlers could be located, service will have no functionality and will be NOT be marked as running");
+            SetFaultLogNotify(msg, title: "Failed to load Handlers", null, _logger);
             return ResC.Ok();
         }
 

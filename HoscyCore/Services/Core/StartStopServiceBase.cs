@@ -67,7 +67,7 @@ public abstract class StartStopServiceBase(ILogger logger) : IStartStopService
     {
         return SafeExecute("restart", RestartForService);
     }
-    protected virtual Res RestartForService() //todo: [REFACTOR] Check if even needed
+    protected virtual Res RestartForService()
     {
         var resStop = Stop();
         if (!resStop.IsOk) return resStop;
