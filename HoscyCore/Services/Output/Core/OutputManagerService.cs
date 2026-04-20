@@ -69,7 +69,7 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
         var handlerStartInfoResult = _loadHandlerStartInfo.GetInstances();
         if (!handlerStartInfoResult.IsOk) return ResC.Fail(handlerStartInfoResult.Msg);
 
-        if (handlerStartInfoResult.Value.Count == 0)
+        if (handlerStartInfoResult.Value.Count == 0) //todo: [REFACTOR] Mark all instances of this happening as faulty and write tests for it
         {
             _logger.Warning("No OutputHandlersInfos could be located, Service will have no functionality and will be NOT be marked as running");
             return ResC.Ok();

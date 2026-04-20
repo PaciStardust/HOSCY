@@ -26,7 +26,7 @@ SoloModuleManagerBase<TModuleStartInfo, TModule>
     #region Service Variables
     protected TModule? _currentModule;
     private readonly List<TModuleStartInfo> _moduleInfos = [];
-    private ResMsg? _moduleChangeErrorMessage = null;
+    private readonly List<ResMsg> _moduleChangeErrorMessages = [];
     #endregion
 
     #region Info
@@ -87,7 +87,9 @@ SoloModuleManagerBase<TModuleStartInfo, TModule>
 
         if (instances.Value.Count == 0)
         {
-            _logger.Warning("No ModuleStartInfos could be located, Service will have no functionality and will be NOT be marked as running");
+            //todo: [REFACTOR?] Notify on startup not possible, check for missing areas
+            var msg = ResMsg.Wrn("No ModuleStartInfos could be located, Service will have no functionality and will be NOT be marked as running");
+            SetFaultLogNotify(msg, "Failed to load Modules", null, _logger);
             return ResC.Ok();
         }
         _moduleInfos.AddRange(instances.Value);
@@ -98,11 +100,13 @@ SoloModuleManagerBase<TModuleStartInfo, TModule>
             var moduleStart = StartModule();
 
             if (!moduleStart.IsOk)
-                _logger.Error("Module startup failed");
+            {
+                _logger.Error("Module startup failed ({result})", moduleStart);
+            }
         }
 
         _logger.Debug("Started up Service with {moduleCount} ModuleStartInfos and module refresh", _moduleInfos.Count);
-        return ResC.Ok(); //todo: [FIX] Should this be ok if module startup fails?
+        return ResC.Ok();
     }
     protected override bool UseAlreadyStartedProtection => true;
 
@@ -133,7 +137,7 @@ SoloModuleManagerBase<TModuleStartInfo, TModule>
 
         if (string.IsNullOrWhiteSpace(selectedModuleName))
         {
-            _logger.Information("No module is selected, not starting"); //todo: [FEAT] Notify?
+            _logger.Information("No module is selected, not starting");
             return ResC.Ok();
         }
 
@@ -236,7 +240,7 @@ SoloModuleManagerBase<TModuleStartInfo, TModule>
         
         if (_currentModule is null)
         {
-            _logger.Information("Did not restart current module, no module running"); //todo: [FEAT] Notify?
+            _logger.Information("Did not restart current module, no module running");
             return ResC.Ok();
         }
 
@@ -258,11 +262,11 @@ SoloModuleManagerBase<TModuleStartInfo, TModule>
 
     private Res CallModuleStateChangeSafe(Func<Res> stateChangeAction, string verb)
     {
-        _moduleChangeErrorMessage = null;
+        _moduleChangeErrorMessages.Clear();
         var res = ResC.Wrap(stateChangeAction, $"Model state change ({verb}) failed", _logger);
         if (!res.IsOk)
         {
-            _moduleChangeErrorMessage = res.Msg;
+            _moduleChangeErrorMessages.Add(res.Msg);
         }
         return res;
     }
@@ -270,9 +274,15 @@ SoloModuleManagerBase<TModuleStartInfo, TModule>
     private void HandleOnModuleStopped(object? sender, EventArgs e)
     {
         if (sender is null) return;
-        _logger.Warning("HandleOnShutdownCompleted called for module of type \"{senderType}\", this should only happen when a shutdown was called unexpectedly", sender.GetType().FullName);
+
+        var type = sender.GetType();
+        _logger.Warning("HandleOnShutdownCompleted called for module of type \"{senderType}\", this should only happen when a shutdown was called unexpectedly", type.FullName);
+        
         CleanupAfterModuleShutdown();
-        //todo: [FEAT] notify here?
+        
+        var msg = ResMsg.Wrn($"Unexpected shutdown of module of type \"{type.Name}\" occured");
+        _moduleChangeErrorMessages.Add(msg);
+        _notify.SendResult("Module shut down unexpectedly", msg);
     }
 
     private void CleanupAfterModuleShutdown()
@@ -284,7 +294,7 @@ SoloModuleManagerBase<TModuleStartInfo, TModule>
             _currentModule.OnRuntimeError -= HandleOnRuntimeError;
             _currentModule.OnModuleStopped -= HandleOnModuleStopped;
             _currentModule = null;
-            OnModulePostStop();
+            ResC.WrapR(OnModulePostStop, "Module Post-Stop failed", _logger);
 
             _logger.Debug("Performed module post-shutdown cleanup");
         }
@@ -313,9 +323,9 @@ SoloModuleManagerBase<TModuleStartInfo, TModule>
         {
             exList.Add(moduleError);
         }
-        if (_moduleChangeErrorMessage is not null)
+        if (_moduleChangeErrorMessages.Count > 0)
         {
-            exList.Add(_moduleChangeErrorMessage);
+            exList.AddRange(_moduleChangeErrorMessages);
         }
 
         return exList.Count == 0
