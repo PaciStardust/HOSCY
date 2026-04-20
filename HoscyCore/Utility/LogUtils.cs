@@ -85,7 +85,7 @@ public static class LogUtils
                 File.Delete(path: file);
                 logger.Debug("Deleted old log file: \"{file}\"", file);
             }
-            logger.Debug("Deleted {count} old log files");
+            logger.Debug("Deleted {count} old log files", logFilesToDelete.Length);
         }
         catch (Exception ex)
         {
