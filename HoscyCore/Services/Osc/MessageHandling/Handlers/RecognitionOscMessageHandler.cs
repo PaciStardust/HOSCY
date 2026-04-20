@@ -28,7 +28,7 @@ public class RecognitionOscMessageHandler(ILogger logger, IRecognitionManagerSer
 
             if (_recognition.GetCurrentModuleStatus() != Core.ServiceStatus.Stopped)
             {
-                _recognition.SetListening(state);
+                _recognition.SetListening(!state);
             }
 
             return true;
