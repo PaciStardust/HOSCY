@@ -30,6 +30,7 @@ public abstract class MockTranslationModule : MockStartStopModuleBase, ITranslat
         ReceivedInput.Clear();
         ReturnedResult = TranslationResult.Succeeded;
         ReturnedOutput = null;
+        ResultToReturn = null;
     }
 }
 

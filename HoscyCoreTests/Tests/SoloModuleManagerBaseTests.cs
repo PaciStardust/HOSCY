@@ -129,89 +129,6 @@ public class StartStopModuleControllerBaseStartupTests : SoloModuleManagerBaseTe
         }
     }
 
-    [Test]
-    public void ThrowOnModuleStart()
-    {
-        var ex = ResC.Fail(ResMsg.Err("This is a test"));
-        _moduleA.ResultToReturn = ex;
-        SetModule(_infoA.Name);
-
-        _manager.Start().AssertOk();
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(_manager.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
-            Assert.That(_manager.GetErrorMessageIfExists()?.Message, Does.Contain(ex.Msg!.Message));
-            Assert.That(_moduleA.Started, Is.False);
-            Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
-        }
-
-        _moduleA.ResultToReturn = null;
-        _manager.StartModule().AssertOk();
-
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(_manager.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Faulted));
-            Assert.That(_manager.GetErrorMessageIfExists(), Is.Null);
-            Assert.That(_moduleA.Started, Is.True);
-            Assert.That(_manager.GetCurrentModuleInfo()?.Value, Is.EqualTo(_infoA));
-        }
-    }
-
-    [Test]
-    public void ThrowOnModuleStop()
-    {
-        SetModule(_infoA.Name);
-
-        _manager.Start().AssertOk();
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(_manager.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Faulted));
-            Assert.That(_manager.GetErrorMessageIfExists(), Is.Null);
-            Assert.That(_moduleA.Started, Is.True);
-            Assert.That(_manager.GetCurrentModuleInfo()?.Value, Is.EqualTo(_infoA));
-        }
-
-        var ex = ResC.Fail(ResMsg.Err("This is a test"));
-        _moduleA.ResultToReturn = ex;
-
-        _manager.StopModule().AssertFail();
-
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(_manager.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
-            Assert.That(_manager.GetErrorMessageIfExists()?.Message, Does.Contain(ex.Msg!.Message));
-            Assert.That(_moduleA.Started, Is.False);
-            Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
-        }
-    }
-
-    [Test]
-    public void ThrowOnModuleRestart()
-    {
-        SetModule(_infoA.Name);
-
-        _manager.Start().AssertOk();
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(_manager.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Faulted));
-            Assert.That(_manager.GetErrorMessageIfExists(), Is.Null);
-            Assert.That(_moduleA.Started, Is.True);
-            Assert.That(_manager.GetCurrentModuleInfo()?.Value, Is.EqualTo(_infoA));
-        }
-
-        var ex = ResC.Fail(ResMsg.Err("This is a test"));
-        _moduleA.ResultToReturn = ex;
-
-        _manager.RestartModule().AssertFail();
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(_manager.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
-            Assert.That(_manager.GetErrorMessageIfExists()?.Message, Does.Contain(ex.Msg!.Message));
-            Assert.That(_moduleA.Started, Is.True);
-            Assert.That(_manager.GetCurrentModuleInfo()?.Value, Is.EqualTo(_infoA));
-        }
-    }
-
     [TestCase(false), TestCase(true)]
     public void AutomaticModuleStartTest(bool automaticStart)
     {
@@ -247,6 +164,45 @@ public class StartStopModuleControllerBaseStartupTests : SoloModuleManagerBaseTe
             Assert.That(_moduleB.Started, Is.False);
         }
     }
+
+    [Test]
+    public void NoModuleInfosOnStartTest()
+    {
+        _infoLoader.InstanceGenerator = () => [];
+
+        Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
+        _manager.Start().AssertOk();
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
+            Assert.That(_moduleA.Started, Is.False);
+            Assert.That(_manager.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_manager.GetErrorMessageIfExists(), Is.Not.Null);
+        }
+    }
+
+    [Test]
+    public void AutomaticModuleStartFailTest()
+    {
+        _config.Translation_AutoStart = true;
+        var ex = ResMsg.Err("Module error");
+
+        SetModule(_infoA.Name);
+        _moduleA.ResultToReturn = ResC.Fail(ex);
+
+        Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
+        _manager.Start().AssertOk();
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
+            Assert.That(_moduleA.Started, Is.False);
+            Assert.That(_manager.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
+            Assert.That(_manager.GetErrorMessageIfExists(), Is.Not.Null);
+        }
+        Assert.That(_manager.GetErrorMessageIfExists().Message, Does.Contain(ex.Message));
+    }
 }
 
 public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseTestBase<StartStopModuleControllerBaseFunctionTests>
@@ -259,8 +215,12 @@ public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseT
 
     protected override void SetupExtra()
     {
+        _moduleA.ResetStats();
+        _moduleB.ResetStats();
+
         _manager.StopModule().AssertOk();
         SetModule(string.Empty);
+        _manager.StartModule().AssertOk();
 
         _notify.Notifications.Clear();
 
@@ -669,6 +629,149 @@ public class StartStopModuleControllerBaseFunctionTests : SoloModuleManagerBaseT
             Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
             Assert.That(_moduleA.Started, Is.False);
             Assert.That(_manager.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Started));
+        }
+    }
+
+    [Test]
+    public void UnexpectedModuleStopTest()
+    {
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
+            Assert.That(_moduleA.Started, Is.False);
+            Assert.That(_manager.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Started));
+            Assert.That(_manager.GetErrorMessageIfExists(), Is.Null);
+            Assert.That(_notify.Notifications, Is.Empty);
+        }
+
+        SetModule(_infoA.Name);
+        _manager.StartModule().AssertOk();
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_manager.GetCurrentModuleInfo()?.Value, Is.EqualTo(_infoA));
+            Assert.That(_moduleA.Started, Is.True);
+            Assert.That(_manager.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Processing));
+            Assert.That(_manager.GetErrorMessageIfExists(), Is.Null);
+            Assert.That(_notify.Notifications, Is.Empty);
+        }
+
+        _moduleA.Stop().AssertOk();
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
+            Assert.That(_moduleA.Started, Is.False);
+            Assert.That(_manager.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
+            Assert.That(_manager.GetErrorMessageIfExists(), Is.Not.Null);
+            Assert.That(_notify.Notifications, Has.Count.EqualTo(1));
+        }
+    }
+
+    [Test]
+    public void ThrowOnModuleRestartTest()
+    {
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
+            Assert.That(_moduleA.Started, Is.False);
+            Assert.That(_manager.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Started));
+            Assert.That(_manager.GetErrorMessageIfExists(), Is.Null);
+        }
+
+        SetModule(_infoA.Name);
+        _manager.StartModule().AssertOk();
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_manager.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Faulted));
+            Assert.That(_manager.GetErrorMessageIfExists(), Is.Null);
+            Assert.That(_moduleA.Started, Is.True);
+            Assert.That(_manager.GetCurrentModuleInfo()?.Value, Is.EqualTo(_infoA));
+        }
+
+        var ex = ResC.Fail(ResMsg.Err("This is a test"));
+        _moduleA.ResultToReturn = ex;
+
+        _manager.RestartModule().AssertFail();
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_manager.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
+            Assert.That(_manager.GetErrorMessageIfExists()?.Message, Does.Contain(ex.Msg!.Message));
+            Assert.That(_moduleA.Started, Is.True);
+            Assert.That(_manager.GetCurrentModuleInfo()?.Value, Is.EqualTo(_infoA));
+        }
+    }
+
+    [Test]
+    public void ThrowOnModuleStopTest()
+    {
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
+            Assert.That(_moduleA.Started, Is.False);
+            Assert.That(_manager.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Started));
+            Assert.That(_manager.GetErrorMessageIfExists(), Is.Null);
+        }
+
+        SetModule(_infoA.Name);
+        _manager.StartModule().AssertOk();
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_manager.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Faulted));
+            Assert.That(_manager.GetErrorMessageIfExists(), Is.Null);
+            Assert.That(_moduleA.Started, Is.True);
+            Assert.That(_manager.GetCurrentModuleInfo()?.Value, Is.EqualTo(_infoA));
+        }
+
+        var ex = ResC.Fail(ResMsg.Err("This is a test"));
+        _moduleA.ResultToReturn = ex;
+
+        _manager.StopModule().AssertFail();
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_manager.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
+            Assert.That(_manager.GetErrorMessageIfExists()?.Message, Does.Contain(ex.Msg!.Message));
+            Assert.That(_moduleA.Started, Is.False);
+            Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
+        }
+    }
+
+    [Test] 
+    public void ThrowOnModuleStartTest()
+    {
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
+            Assert.That(_moduleA.Started, Is.False);
+            Assert.That(_manager.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Started));
+            Assert.That(_manager.GetErrorMessageIfExists(), Is.Null);
+        }
+
+        var ex = ResC.Fail(ResMsg.Err("This is a test"));
+        _moduleA.ResultToReturn = ex;
+        SetModule(_infoA.Name);
+        _manager.StartModule().AssertFail();
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_manager.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
+            Assert.That(_manager.GetErrorMessageIfExists()?.Message, Does.Contain(ex.Msg!.Message));
+            Assert.That(_moduleA.Started, Is.False);
+            Assert.That(_manager.GetCurrentModuleInfo(), Is.Null);
+        }
+
+        _moduleA.ResultToReturn = null;
+        _manager.StartModule().AssertOk();
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_manager.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Faulted));
+            Assert.That(_manager.GetErrorMessageIfExists(), Is.Null);
+            Assert.That(_moduleA.Started, Is.True);
+            Assert.That(_manager.GetCurrentModuleInfo()?.Value, Is.EqualTo(_infoA));
         }
     }
 
