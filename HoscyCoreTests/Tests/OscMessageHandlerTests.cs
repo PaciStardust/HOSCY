@@ -13,6 +13,7 @@ public class OscMessageHandlerFunctionTests : TestBase<OscMessageHandlerFunction
 {
     private readonly ConfigModel _config = new();
 
+    #region AFK
     [Test]
     public void TestAfkHandler()
     {
@@ -64,7 +65,9 @@ public class OscMessageHandlerFunctionTests : TestBase<OscMessageHandlerFunction
             Assert.That(afkService.AfkRunning, shouldBeRunning ? Is.True : Is.False, "Afk Service running state wrong");
         }
     }
+    #endregion
 
+    #region Counter
     [Test]
     public void TestCounterHandlerIncrease()
     {
@@ -351,7 +354,9 @@ public class OscMessageHandlerFunctionTests : TestBase<OscMessageHandlerFunction
             Assert.That(output.Notifications[idx].Flags, Is.EqualTo(expectedFlag), "Notification has the wrong flags");
         }
     }
+    #endregion
 
+    #region External Input
     [Test]
     public void TestExternalInputMessageHandler()
     {
@@ -407,4 +412,142 @@ public class OscMessageHandlerFunctionTests : TestBase<OscMessageHandlerFunction
         }
         Assert.That(getListString(0), Is.EqualTo(testText), "Received incorrect message");
     }
+    #endregion
+
+    #region Recognition
+    [Test]
+    public void TestRecognitionMessageHandlerSimpleToggles()
+    {
+        var recognition = new MockRecognitionManagerService();
+        var handler = new RecognitionOscMessageHandler(_logger, recognition, _config);
+
+        var listening = recognition.IsListening;
+        var muteOnMute = _config.Recognition_Mute_OnGameMute;
+
+        var msg = new OscMessage("/wawa", []);
+        var res = handler.HandleMessage(msg);
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(res, Is.False);
+            Assert.That(listening, Is.EqualTo(recognition.IsListening));
+            Assert.That(muteOnMute, Is.EqualTo(_config.Recognition_Mute_OnGameMute));
+        }
+
+        msg = new OscMessage(_config.Osc_Address_Tool_ToggleMute, []);
+        res = handler.HandleMessage(msg);
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(res, Is.True);
+            Assert.That(listening, Is.Not.EqualTo(recognition.IsListening));
+            Assert.That(muteOnMute, Is.EqualTo(_config.Recognition_Mute_OnGameMute));
+        }
+
+        res = handler.HandleMessage(msg);
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(res, Is.True);
+            Assert.That(listening, Is.EqualTo(recognition.IsListening));
+            Assert.That(muteOnMute, Is.EqualTo(_config.Recognition_Mute_OnGameMute));
+        }
+
+        msg = new OscMessage(_config.Osc_Address_Tool_ToggleRecognitionAutoMute, []);
+        res = handler.HandleMessage(msg);
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(res, Is.True);
+            Assert.That(listening, Is.EqualTo(recognition.IsListening));
+            Assert.That(muteOnMute, Is.Not.EqualTo(_config.Recognition_Mute_OnGameMute));
+        }
+
+        res = handler.HandleMessage(msg);
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(res, Is.True);
+            Assert.That(listening, Is.EqualTo(recognition.IsListening));
+            Assert.That(muteOnMute, Is.EqualTo(_config.Recognition_Mute_OnGameMute));
+        }
+    }
+
+    [Test]
+    public void TestRecognitionMessageHandlerMute()
+    {
+        _config.Recognition_Mute_OnGameMute = true;
+
+        var recognition = new MockRecognitionManagerService() { CurrentModuleStatus = HoscyCore.Services.Core.ServiceStatus.Processing };
+        var handler = new RecognitionOscMessageHandler(_logger, recognition, _config);
+
+        var msg = new OscMessage(_config.Osc_Address_Game_Mute, [false]);
+        var res = handler.HandleMessage(msg);
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(res, Is.True);
+            Assert.That(recognition.IsListening, Is.True);
+        }
+        
+        msg = new OscMessage(_config.Osc_Address_Game_Mute, [true]);
+        res = handler.HandleMessage(msg);
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(res, Is.True);
+            Assert.That(recognition.IsListening, Is.False);
+        }
+
+        recognition.CurrentModuleStatus = HoscyCore.Services.Core.ServiceStatus.Stopped;
+
+        msg = new OscMessage(_config.Osc_Address_Game_Mute, [false]);
+        res = handler.HandleMessage(msg);
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(res, Is.True);
+            Assert.That(recognition.IsListening, Is.False);
+        }
+
+        recognition.CurrentModuleStatus = HoscyCore.Services.Core.ServiceStatus.Processing;
+        msg = new OscMessage(_config.Osc_Address_Game_Mute, ["wawa"]);
+        res = handler.HandleMessage(msg);
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(res, Is.True);
+            Assert.That(recognition.IsListening, Is.False);
+        }
+
+        msg = new OscMessage(_config.Osc_Address_Game_Mute, []);
+        res = handler.HandleMessage(msg);
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(res, Is.True);
+            Assert.That(recognition.IsListening, Is.False);
+        }
+
+        _config.Recognition_Mute_OnGameMute = false;
+        msg = new OscMessage(_config.Osc_Address_Game_Mute, [false]);
+        res = handler.HandleMessage(msg);
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(res, Is.True);
+            Assert.That(recognition.IsListening, Is.False);
+        }
+
+        _config.Recognition_Mute_OnGameMute = true;
+        msg = new OscMessage(_config.Osc_Address_Game_Mute, [false]);
+        res = handler.HandleMessage(msg);
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(res, Is.True);
+            Assert.That(recognition.IsListening, Is.True);
+        }
+    }
+    #endregion
 }

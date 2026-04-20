@@ -1,10 +1,11 @@
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Osc.SendReceive;
 using HoscyCore.Utility;
+using HoscyCoreTests.Mocks.Base;
 
 namespace HoscyCoreTests.Mocks.Impl;
 
-public class MockOscSendService(ConfigModel config) : IOscSendService
+public class MockOscSendService(ConfigModel config) : MockStartStopServiceBase, IOscSendService
 {
     private readonly ConfigModel _config = config;
 
