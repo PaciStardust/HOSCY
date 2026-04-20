@@ -64,7 +64,7 @@ public class AudioService(ILogger logger, ConfigModel config)
             : ResC.TFail<DeviceInfo[]>(refRes.Msg);
     }
 
-    public Res<AudioCaptureDevice> CreateCaptureDevice() //todo: [TEST] create test for this
+    public Res<AudioCaptureDevice> CreateCaptureDevice()
     {
         var deviceInfos = GetCaptureDevices();
         if (!deviceInfos.IsOk) return ResC.TFail<AudioCaptureDevice>(deviceInfos.Msg);

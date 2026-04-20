@@ -50,6 +50,78 @@ public class AudioServiceFunctionTests : TestBase<AudioServiceFunctionTests>
         dev.AssertOk();
     }
 
+    [TestCase(true), TestCase(false)]
+    public void GetCaptureDeviceTest(bool setDevName)
+    {
+        var deviceResult = _audioService.GetPlaybackDevices();
+        deviceResult.AssertOk();
+
+        var devices = deviceResult.Value!;
+        if (devices.Length == 0)
+            Assert.Inconclusive("Could not locate audio device for test");
+
+        if (setDevName)
+        {
+            _config.Audio_CurrentMicrophoneName = devices[0].Name;
+        }
+
+        var captureResult = _audioService.CreateCaptureDevice();
+        captureResult.AssertOk();
+        var capture = captureResult.Value!;
+
+        var dataReceived = false;
+        capture.OnAudioProcessed += new((_, __) => dataReceived = true);
+
+        capture.Start();
+        Thread.Sleep(200); // To make sure it actually triggers
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(dataReceived, Is.True);
+            Assert.That(capture.IsRunning, Is.True);
+        }
+
+        capture.Stop();
+        Assert.That(capture.IsRunning, Is.False);
+
+        capture.Dispose();
+    }
+
+    [TestCase(true), TestCase(false)]
+    public void GetCaptureDeviceProxyTest(bool setDevName)
+    {
+        var deviceResult = _audioService.GetPlaybackDevices();
+        deviceResult.AssertOk();
+
+        var devices = deviceResult.Value!;
+        if (devices.Length == 0)
+            Assert.Inconclusive("Could not locate audio device for test");
+
+        if (setDevName)
+        {
+            _config.Audio_CurrentMicrophoneName = devices[0].Name;
+        }
+
+        var captureResult = _audioService.CreateCaptureDeviceProxy();
+        captureResult.AssertOk();
+        var capture = captureResult.Value!;
+
+        var dataReceived = false;
+        capture.OnAudioProcessed += new((_, __) => dataReceived = true);
+
+        capture.Start();
+        Thread.Sleep(200); // To make sure it actually triggers
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(dataReceived, Is.True);
+            Assert.That(capture.IsStarted, Is.True);
+        }
+
+        capture.Stop();
+        Assert.That(capture.IsStarted, Is.False);
+
+        capture.Dispose();
+    }
+
     protected override void OneTimeTearDownExtra()
     {
         _audioService.Stop().AssertOk();
