@@ -799,6 +799,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
 
         _output.SendMessage("TestMessage", OutputSettingsFlags.AllowAllOutputs);
         _output.SendNotification("TestNotification", OutputNotificationPriority.Critical, OutputSettingsFlags.AllowAllOutputs);
+        Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
         {
@@ -849,6 +850,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
 
         _output.SendMessage("TestMessage2", OutputSettingsFlags.AllowAllOutputs);
         _output.SendNotification("TestNotification2", OutputNotificationPriority.Minimal, OutputSettingsFlags.AllowAllOutputs);
+        Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
         {
@@ -907,6 +909,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
 
             _output.SendMessage(messageText, flags);
             _output.SendNotification(notificationText, OutputNotificationPriority.Critical, flags);
+            Thread.Sleep(50);
 
             using (Assert.EnterMultipleScope())
             {
@@ -960,6 +963,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
 
             _output.SendMessage(messageText, flags);
             _output.SendNotification(notificationText, OutputNotificationPriority.Critical, flags);
+            Thread.Sleep(50);
 
             using (Assert.EnterMultipleScope())
             {
@@ -1032,6 +1036,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
 
         var flags = OutputSettingsFlags.AllowAllOutputs | OutputSettingsFlags.DoTranslate;
         _output.SendMessage("MsgTest", flags);
+        Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
         {
@@ -1064,6 +1069,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
 
         flags = OutputSettingsFlags.AllowAllOutputs;
         _output.SendMessage("MsgTest2", flags);
+        Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
         {
@@ -1100,6 +1106,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         var flags = OutputSettingsFlags.AllowAllOutputs | OutputSettingsFlags.DoTranslate;
 
         _output.SendMessage("Message1", flags);
+        Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
         {
@@ -1115,6 +1122,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         _translator.TranslateResult = TranslationResult.UseOriginal;
 
         _output.SendMessage("Message2", flags);
+        Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
         {
@@ -1130,6 +1138,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         _translator.TranslateResult = TranslationResult.Failed;
 
         _output.SendMessage("Message3", flags);
+        Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
         {
@@ -1157,6 +1166,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         var flags = OutputSettingsFlags.AllowAllOutputs | OutputSettingsFlags.DoTranslate;
 
         _output.SendMessage("Test1", flags);
+        Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
         {
@@ -1175,6 +1185,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         _output.RefreshHandlers().AssertOk();
 
         _output.SendMessage("Test2", flags);
+        Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
         {
@@ -1186,6 +1197,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         _config.Translation_SendUntranslatedIfUnavailable = true;
 
         _output.SendMessage("Test3", flags);
+        Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
         {
@@ -1212,6 +1224,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
 
         _output.SendMessage("Msg1", flags);
         _output.SendNotification("Notif1", OutputNotificationPriority.Critical, flags);
+        Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
         {
@@ -1237,6 +1250,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
 
         _output.SendMessage("Msg2", flags);
         _output.SendNotification("Notif2", OutputNotificationPriority.Critical, flags);
+        Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
         {
@@ -1262,6 +1276,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
 
         _output.SendMessage("Msg3", flags);
         _output.SendNotification("Notif3", OutputNotificationPriority.Critical, flags);
+        Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
         {
@@ -1281,6 +1296,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
 
         _output.SendMessage("Msg4", flags);
         _output.SendNotification("Notif4", OutputNotificationPriority.Critical, flags);
+        Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
         {
@@ -1306,6 +1322,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
 
         _output.SendMessage("Msg5", flags);
         _output.SendNotification("Notif5", OutputNotificationPriority.Critical, flags);
+        Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
         {
@@ -1337,6 +1354,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         var flags = OutputSettingsFlags.AllowAllOutputs | OutputSettingsFlags.DoPreprocessAll;
         
         _output.SendMessage("Test", flags);
+        Thread.Sleep(50);
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_preprocessorEarlyFull.ReceivedInput, Has.Count.EqualTo(1));
@@ -1346,6 +1364,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         _preprocessorLatePartial.Enabled = false;
 
         _output.SendMessage("Test2", flags);
+        Thread.Sleep(50);
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_preprocessorEarlyFull.ReceivedInput, Has.Count.EqualTo(2));

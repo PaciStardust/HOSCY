@@ -11,7 +11,7 @@ using Serilog;
 namespace HoscyCore.Services.Output.Core;
 
 [LoadIntoDiContainer(typeof(IOutputManagerService), Lifetime.Singleton)]
-public class OutputManagerService //todo: [REFACTOR++] This should maybe be its own thread in the future if it causes delay
+public class OutputManagerService
 (
     ILogger logger,
     IBackToFrontNotifyService notify, 
@@ -40,6 +40,8 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
     private readonly List<IOutputPreprocessor> _preprocessors = [];
     private readonly List<IOutputHandlerStartInfo> _handlerInfos = [];
     private readonly List<IOutputHandler> _activeHandlers = [];
+
+    private OutputMessageLoop? _messageLoop;
     #endregion
 
     #region Events
@@ -51,7 +53,7 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
 
     #region State
     protected override bool IsStarted()
-        => _preprocessors.Count > 0 || _handlerInfos.Count > 0;
+        => _handlerInfos.Count > 0 && (_messageLoop?.IsRunning ?? false);
     protected override bool IsProcessing()
         => IsStarted() && _activeHandlers.Count > 0;
 
@@ -94,6 +96,9 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
 
         _logger.Debug("Loaded {handlerCount} OutputHandlerInfos ({activeCount} active) and {preprocessorCount} OutputPreprocessors",
             _handlerInfos.Count, _activeHandlers.Count, _preprocessors.Count);
+
+        _messageLoop = new(_logger, OnHandleMessage, OnHandleNotification);
+        _messageLoop.Start();
         return ResC.Ok();
     }
     protected override bool UseAlreadyStartedProtection => true;
@@ -125,6 +130,8 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
             handlerErrors.Add(message);
         }
 
+        _messageLoop?.Stop().IfFail(x => handlerErrors.Add(x.WithContext("Handler loop").ToString()));
+
         if (handlerErrors.Count > 0)
         {
             var combined = string.Join("\n", handlerErrors);
@@ -140,6 +147,7 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
         _activeHandlers.Clear();
         _handlerInfos.Clear();
         _preprocessors.Clear();
+        _messageLoop?.Dispose();
     }
     #endregion
 
@@ -430,6 +438,11 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
             contents = processedOutput;
         }
 
+        _messageLoop?.AddMessage(contents, settings);
+    }
+
+    public async Task OnHandleMessage(string contents, OutputSettingsFlags settings)
+    {
         var compatibleHandlers = _activeHandlers
             .Where(x => IsHandlerCompatible(x, settings))
             .ToArray();
@@ -506,6 +519,11 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
             contents = processedOutput;
         }
 
+        _messageLoop?.AddNotification(contents, priority, settings);
+    }
+
+    public async Task OnHandleNotification(string contents, OutputNotificationPriority priority, OutputSettingsFlags settings) //todo: [FEAT] Make sending async if needed, not available error?
+    {
         var compatibleHandlers = _activeHandlers
             .Where(x => IsHandlerCompatible(x, settings))
             .ToArray();
@@ -531,11 +549,12 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
     public void Clear()
     {
         _logger.Verbose("Sending {handlerCount} handlers a clear command", _activeHandlers.Count);
-        OnClear(this, EventArgs.Empty);
+        _messageLoop?.Clear();
         foreach (var handler in _activeHandlers)
         {
             handler.Clear();
         }
+        OnClear(this, EventArgs.Empty);
         _logger.Verbose("Sent {handlerCount} handlers a clear command", _activeHandlers.Count);
     }
     #endregion
@@ -592,7 +611,6 @@ public class OutputManagerService //todo: [REFACTOR++] This should maybe be its 
         SetProcessingIndicator(false);
     }
     #endregion
-
 
     #region Preprocessors
     /// <summary>
