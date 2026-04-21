@@ -182,6 +182,10 @@ public static class LaunchUtils
             timer.Stop();
             return ResC.Ok();
         }
+        catch (OperationCanceledException)
+        {
+            return ResC.Ok();
+        }
         catch (Exception ex)
         {
             return ResC.FailLog("Timed out waiting for task to end", logger, ex);
