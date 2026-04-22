@@ -19,15 +19,17 @@ public abstract class MockOutputHandler : MockStartStopModuleBase, IOutputHandle
         => TranslationFormat;
 
     public List<string> ReceivedMessages { get; init; } = [];
-    public void HandleMessage(string contents)
+    public Task HandleMessage(string contents)
     {
         ReceivedMessages.Add(contents);
+        return Task.CompletedTask;
     }
 
     public List<(string Message, OutputNotificationPriority Priority)> ReceivedNotifications { get; init; } = [];
-    public void HandleNotification(string contents, OutputNotificationPriority priority)
+    public Task HandleNotification(string contents, OutputNotificationPriority priority)
     {
         ReceivedNotifications.Add((contents, priority));
+        return Task.CompletedTask;
     }
 
     public List<bool> ReceivedIndicatorStates { get; init; } = [];

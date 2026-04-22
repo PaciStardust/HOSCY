@@ -222,22 +222,22 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
     #endregion
 
     #region Input Processing
-    public override void HandleNotification(string contents, OutputNotificationPriority priority)
+    public override Task HandleNotification(string contents, OutputNotificationPriority priority)
     {
-        if (!_config.VrcTextbox_Do_Output) return;
+        if (!_config.VrcTextbox_Do_Output) return Task.CompletedTask;
 
         if (string.IsNullOrWhiteSpace(contents))
         {
             if (_currentNotification.HasValue && _currentNotification.Value.Priority == priority)
                 ClearNotification();
-            return;
+            return Task.CompletedTask;
         }
 
         if (_config.VrcTextbox_Notification_UsePrioritySystem && _currentNotification.HasValue && priority < _currentNotification.Value.Priority)
         {
             _logger.Verbose("Did not override notification with contents \"{notificationContents}\" and priority {notificationPriority} => priority lower than current {currentPriority}",
                 contents, priority, _currentNotification.Value.Priority);
-            return;
+            return Task.CompletedTask;
         }
 
         if (contents.Length > _config.VrcTextbox_Output_MaxDisplayedCharacters)
@@ -248,19 +248,21 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
 
         _logger.Debug("Setting notification to \"{contents}\" with priority {priority}", contents, priority);
         _currentNotification = (contents, priority);
+        return Task.CompletedTask;
     }
 
-    public override void HandleMessage(string contents)  
+    public override Task HandleMessage(string contents)  
     {
-        if (!_config.VrcTextbox_Do_Output) return;
+        if (!_config.VrcTextbox_Do_Output) return Task.CompletedTask;
 
-        if (string.IsNullOrWhiteSpace(contents)) return;
+        if (string.IsNullOrWhiteSpace(contents)) return Task.CompletedTask;
 
         foreach (var message in SplitMessageIntoSegments(contents))
         {
             _logger.Verbose("Added to MessageQueue (Position:{queuePosition}, Length:{messageLength}) Message:\"{messageContents}\"", _currentMessages.Count, message.Length, message);
             _currentMessages.Enqueue(message);
         }
+        return Task.CompletedTask;
     }   
 
     private const string SPLIT_LONG_WORD_CUTOFF = "-";

@@ -13,8 +13,8 @@ public interface IOutputHandler : IStartStopModule
     #endregion
 
     #region Functionality
-    public void HandleMessage(string contents);
-    public void HandleNotification(string contents, OutputNotificationPriority priority);
+    public Task HandleMessage(string contents);
+    public Task HandleNotification(string contents, OutputNotificationPriority priority);
     public void Clear();
     public void SetProcessingIndicator(bool isProcessing);
     #endregion

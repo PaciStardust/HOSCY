@@ -53,11 +53,12 @@ public class OutputManagerService
 
     #region State
     protected override bool IsStarted()
-        => _handlerInfos.Count > 0 && (_messageLoop?.IsRunning ?? false);
+        => _handlerInfos.Count > 0 && _messageLoop is not null;
     protected override bool IsProcessing()
-        => IsStarted() && _activeHandlers.Count > 0;
+        => IsStarted() && _activeHandlers.Count > 0 && _messageLoop!.IsRunning;
 
     private readonly List<ResMsg> _refreshExceptions = [];
+    private ResMsg? _loopException = null;
     #endregion
 
     #region Start/Stop
@@ -97,7 +98,7 @@ public class OutputManagerService
         _logger.Debug("Loaded {handlerCount} OutputHandlerInfos ({activeCount} active) and {preprocessorCount} OutputPreprocessors",
             _handlerInfos.Count, _activeHandlers.Count, _preprocessors.Count);
 
-        _messageLoop = new(_logger, OnHandleMessage, OnHandleNotification);
+        _messageLoop = new(_logger, HandleMessagePostQueue, HandleNotificationPostQueue);
         _messageLoop.Start();
         return ResC.Ok();
     }
@@ -191,6 +192,14 @@ public class OutputManagerService
         }
         return activeStatus;
     }
+
+    private static bool IsHandlerCompatible(IOutputHandler handler, OutputSettingsFlags settings)
+    {
+        var id = handler.OutputTypeFlags;
+        return (settings.HasFlag(OutputSettingsFlags.AllowTextOutput) && id.HasFlag(OutputsAsMediaFlags.OutputsAsText))
+            || (settings.HasFlag(OutputSettingsFlags.AllowOtherOutput) && id.HasFlag(OutputsAsMediaFlags.OutputsAsOther))
+            || (settings.HasFlag(OutputSettingsFlags.AllowAudioOutput) && id.HasFlag(OutputsAsMediaFlags.OutputsAsAudio));
+    }
     #endregion
 
     #region Handlers => Internal Start / Stop Unsafe
@@ -280,7 +289,7 @@ public class OutputManagerService
     }
     #endregion
 
-    #region Handlers => Internal Start / Stop Safe
+    #region Handlers => Internal Cleanup
     private void HandleOnModuleStopped(object? sender, EventArgs e)
     {
         if (sender is null) return;
@@ -426,124 +435,35 @@ public class OutputManagerService
     }
     #endregion
 
-    #region Handler => Control
+    #region Handlers => Output
+    private bool IsLoopAvailable(string contents)
+    {
+        if (_messageLoop?.IsRunning ?? false)
+        {
+            _loopException = null;
+            return true;
+        }
+
+        var msg = ResC.FailLog($"Failed to send contents \"{contents}\", loop is not running", _logger, lvl: ResMsgLvl.Warning);
+        var notify = _loopException is null;
+        _loopException = msg.Msg;
+        if (notify)
+        {
+            _notify.SendResult("Failed to send contents", msg.Msg!);
+        }
+        return false;
+    }
+    
     public void SendMessage(string contents, OutputSettingsFlags settings)
     {
-        if (string.IsNullOrWhiteSpace(contents)) return;
-
-        var compatiblePreprocessors = _preprocessors.Where(x => IsPreprocessorCompatible(x, settings)).ToArray();
-        if (compatiblePreprocessors.Length > 0 && TryPreprocess(contents, compatiblePreprocessors, out var processedOutput))
-        {
-            if (string.IsNullOrWhiteSpace(processedOutput)) return;
-            contents = processedOutput;
-        }
-
+        if (string.IsNullOrWhiteSpace(contents) || !IsLoopAvailable(contents)) return;
         _messageLoop?.AddMessage(contents, settings);
-    }
-
-    public async Task OnHandleMessage(string contents, OutputSettingsFlags settings)
-    {
-        var compatibleHandlers = _activeHandlers
-            .Where(x => IsHandlerCompatible(x, settings))
-            .ToArray();
-        if (compatibleHandlers.Length == 0)
-        {
-            OnMessage.Invoke(this, new(contents, [], null));
-            _logger.Warning("Message with contents \"{message}\" was not handled as no handlers fit the criteria", contents);
-            return;
-        }
-
-        if (settings.HasFlag(OutputSettingsFlags.DoTranslate) 
-            && TryTranslateContentsIfNeeded(contents, compatibleHandlers, out var translatedText))
-        {
-            if (translatedText is null) return;
-            SendMessageTranslatedInternal(contents, translatedText, compatibleHandlers);
-        } 
-        else
-        {
-            SendMessageInternal(contents, compatibleHandlers);
-        }
-    }
-
-    private static bool IsHandlerCompatible(IOutputHandler handler, OutputSettingsFlags settings)
-    {
-        var id = handler.OutputTypeFlags;
-        return (settings.HasFlag(OutputSettingsFlags.AllowTextOutput) && id.HasFlag(OutputsAsMediaFlags.OutputsAsText))
-            || (settings.HasFlag(OutputSettingsFlags.AllowOtherOutput) && id.HasFlag(OutputsAsMediaFlags.OutputsAsOther))
-            || (settings.HasFlag(OutputSettingsFlags.AllowAudioOutput) && id.HasFlag(OutputsAsMediaFlags.OutputsAsAudio));
-    }
-
-    private void SendMessageInternal(string contents, IOutputHandler[] handlers)
-    {
-        _logger.Verbose("Sending {handlerCount} handlers a message with contents \"{contentsMessage}\"",
-            handlers.Length, contents);
-        var handlerNames = handlers.Select(x => x.Name).ToArray();
-        OnMessage.Invoke(this, new(contents, handlerNames, null));
-        foreach (var handler in handlers)
-        {
-            handler.HandleMessage(contents);
-        }
-        _logger.Verbose("Sent {handlerCount} handlers a message with contents \"{contentsMessage}\"",
-            handlers.Length, contents);
-    }
-
-    private void SendMessageTranslatedInternal(string contents, string translation, IOutputHandler[] handlers)
-    {
-        _logger.Verbose("Sending {handlerCount} handlers a message with contents \"{contentsMessage}\" and translation \"{translation}\"",
-            handlers.Length, contents, translation);
-        var handlerNames = handlers.Select(x => x.Name).ToArray();
-        OnMessage.Invoke(this, new(contents, handlerNames, translation));
-        foreach (var handler in handlers)
-        {
-            var newContents = handler.GetTranslationOutputMode() switch
-            {
-                OutputTranslationFormat.Translation => translation,
-                OutputTranslationFormat.Untranslated => contents,
-                OutputTranslationFormat.Both => $"{translation} / {contents}",
-                _ => throw new ArgumentException("Unsupported TranslationOutputMode")
-            };
-            handler.HandleMessage(newContents);
-        }
-        _logger.Verbose("Sent {handlerCount} handlers a message with contents \"{contentsMessage}\" and translation \"{translation}\"",
-            handlers.Length, contents, translation);
     }
 
     public void SendNotification(string contents, OutputNotificationPriority priority, OutputSettingsFlags settings)
     {
-        if (string.IsNullOrWhiteSpace(contents)) return;
-
-        var compatiblePreprocessors = _preprocessors.Where(x => IsPreprocessorCompatible(x, settings)).ToArray();
-        if (compatiblePreprocessors.Length > 0 && TryPreprocess(contents, compatiblePreprocessors, out var processedOutput))
-        {
-            if (string.IsNullOrWhiteSpace(processedOutput)) return;
-            contents = processedOutput;
-        }
-
+        if (string.IsNullOrWhiteSpace(contents) || !IsLoopAvailable(contents)) return;
         _messageLoop?.AddNotification(contents, priority, settings);
-    }
-
-    public async Task OnHandleNotification(string contents, OutputNotificationPriority priority, OutputSettingsFlags settings) //todo: [FEAT] Make sending async if needed, not available error?
-    {
-        var compatibleHandlers = _activeHandlers
-            .Where(x => IsHandlerCompatible(x, settings))
-            .ToArray();
-        if (compatibleHandlers.Length == 0)
-        {
-            OnNotification.Invoke(this, new(contents, [], priority));
-            _logger.Warning("Notification with contents \"{message}\" was not handled as no handlers fit the criteria", contents);
-            return;
-        }
-
-        _logger.Verbose("Sending {handlerCount} handlers a notification of priority {priority} with contents \"{contentsNotification}\"", 
-            compatibleHandlers.Length, priority.ToString(), contents);
-        var handlerNames = compatibleHandlers.Select(x => x.Name).ToArray();
-        OnNotification.Invoke(this, new(contents, handlerNames, priority));
-        foreach (var handler in compatibleHandlers)
-        {
-            handler.HandleNotification(contents, priority);
-        }
-        _logger.Verbose("Sent {handlerCount} handlers a notification of priority {priority} with contents \"{contentsNotification}\"",
-            compatibleHandlers.Length, priority.ToString(), contents);
     }
 
     public void Clear()
@@ -559,7 +479,118 @@ public class OutputManagerService
     }
     #endregion
 
-    #region Processing Indicator
+    #region Handlers => Send Post-Queue
+    public async Task HandleMessagePostQueue(string contents, OutputSettingsFlags settings)
+    {
+        var compatiblePreprocessors = _preprocessors.Where(x => IsPreprocessorCompatible(x, settings)).ToArray();
+        if (compatiblePreprocessors.Length > 0 && TryPreprocess(contents, compatiblePreprocessors, out var processedOutput))
+        {
+            if (string.IsNullOrWhiteSpace(processedOutput)) return;
+            contents = processedOutput;
+        }
+
+        var compatibleHandlers = _activeHandlers
+            .Where(x => IsHandlerCompatible(x, settings))
+            .ToArray();
+        if (compatibleHandlers.Length == 0)
+        {
+            OnMessage.Invoke(this, new(contents, [], null));
+            _logger.Warning("Message with contents \"{message}\" was not handled as no handlers fit the criteria", contents);
+            return;
+        }
+
+        if (settings.HasFlag(OutputSettingsFlags.DoTranslate) 
+            && TryTranslateContentsIfNeeded(contents, compatibleHandlers, out var translatedText))
+        {
+            if (translatedText is null) return;
+            await ForwardMessageTranslated(contents, translatedText, compatibleHandlers);
+        } 
+        else
+        {
+            await ForwardMessage(contents, compatibleHandlers);
+        }
+    }
+
+    private async Task ForwardMessage(string contents, IOutputHandler[] handlers)
+    {
+        _logger.Verbose("Sending {handlerCount} handlers a message with contents \"{contentsMessage}\"",
+            handlers.Length, contents);
+        
+        await WaitForHandlers(handlers, x => x.HandleMessage(contents), contents);
+
+        var handlerNames = handlers.Select(x => x.Name).ToArray();
+        OnMessage.Invoke(this, new(contents, handlerNames, null));
+        _logger.Verbose("Sent {handlerCount} handlers a message with contents \"{contentsMessage}\"",
+                handlers.Length, contents);
+    }
+
+    private async Task ForwardMessageTranslated(string contents, string translation, IOutputHandler[] handlers)
+    {
+        _logger.Verbose("Sending {handlerCount} handlers a message with contents \"{contentsMessage}\" and translation \"{translation}\"",
+            handlers.Length, contents, translation);
+
+        await WaitForHandlers(handlers, handler =>
+        {
+            var newContents = handler.GetTranslationOutputMode() switch
+            {
+                OutputTranslationFormat.Translation => translation,
+                OutputTranslationFormat.Untranslated => contents,
+                OutputTranslationFormat.Both => $"{translation} / {contents}",
+                _ => throw new ArgumentException("Unsupported TranslationOutputMode")
+            };
+            return handler.HandleMessage(newContents);
+        }, contents);
+
+        var handlerNames = handlers.Select(x => x.Name).ToArray();
+        OnMessage.Invoke(this, new(contents, handlerNames, translation));
+        _logger.Verbose("Sent {handlerCount} handlers a message with contents \"{contentsMessage}\" and translation \"{translation}\"",
+            handlers.Length, contents, translation);
+    }
+
+    public async Task HandleNotificationPostQueue(string contents, OutputNotificationPriority priority, OutputSettingsFlags settings)
+    {
+        var compatiblePreprocessors = _preprocessors.Where(x => IsPreprocessorCompatible(x, settings)).ToArray();
+        if (compatiblePreprocessors.Length > 0 && TryPreprocess(contents, compatiblePreprocessors, out var processedOutput))
+        {
+            if (string.IsNullOrWhiteSpace(processedOutput)) return;
+            contents = processedOutput;
+        }
+
+        var compatibleHandlers = _activeHandlers
+            .Where(x => IsHandlerCompatible(x, settings))
+            .ToArray();
+        if (compatibleHandlers.Length == 0)
+        {
+            OnNotification.Invoke(this, new(contents, [], priority));
+            _logger.Warning("Notification with contents \"{message}\" was not handled as no handlers fit the criteria", contents);
+            return;
+        }
+
+        _logger.Verbose("Sending {handlerCount} handlers a notification of priority {priority} with contents \"{contentsNotification}\"", 
+            compatibleHandlers.Length, priority.ToString(), contents);
+
+        await WaitForHandlers(compatibleHandlers, x => x.HandleNotification(contents, priority), contents);
+
+        var handlerNames = compatibleHandlers.Select(x => x.Name).ToArray();
+        OnNotification.Invoke(this, new(contents, handlerNames, priority));
+        _logger.Verbose("Sent {handlerCount} handlers a notification of priority {priority} with contents \"{contentsNotification}\"",
+            compatibleHandlers.Length, priority.ToString(), contents);
+    }
+    private async Task WaitForHandlers(IEnumerable<IOutputHandler> handlers, Func<IOutputHandler, Task> handlerTask, string contents)
+    {
+        try
+        {
+            await Task.WhenAll(handlers.Select(handlerTask));
+        }
+        catch (Exception ex)
+        {
+            var res =  ResC.FailLog($"Failed handling contents \"{contents}\"", _logger, ex, ResMsgLvl.Warning);
+            _notify.SendResult("Handler error", res.Msg!);
+        }
+    }
+    #endregion
+
+    #region Handlers => Processing Indicator
     private System.Timers.Timer? _indicatorResetTimer = null;
     public void SetProcessingIndicator(bool isProcessing)
     {
@@ -659,7 +690,7 @@ public class OutputManagerService
     /// <param name="contents">Text to translate</param>
     /// <param name="translatedText">Translated text if sucessfully translated, null if returning false or an error occured</param>
     /// <returns>Attempted translation?</returns>
-    private bool TryTranslateContentsIfNeeded(string contents, IOutputHandler[] handlers, out string? translatedText)
+    private bool TryTranslateContentsIfNeeded(string contents, IOutputHandler[] handlers, out string? translatedText) //todo: [REFACTOR] this
     {
         if (!handlers.Any(x => x.GetTranslationOutputMode() != OutputTranslationFormat.Untranslated))
         {
@@ -694,6 +725,10 @@ public class OutputManagerService
         if (baseException is not null)
         {
             msgList.Add(baseException);
+        }
+        if (_loopException is not null)
+        {
+            msgList.Add(_loopException);
         }
         msgList.AddRange(_refreshExceptions);
         msgList.AddRange(GetHandlerExceptions());

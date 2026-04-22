@@ -13,8 +13,8 @@ public abstract class OutputHandlerBase(ILogger logger) : StartStopModuleBase(lo
 
     #region Functionality
     public abstract void Clear();
-    public abstract void HandleMessage(string contents);
-    public abstract void HandleNotification(string contents, OutputNotificationPriority priority);
+    public abstract Task HandleMessage(string contents);
+    public abstract Task HandleNotification(string contents, OutputNotificationPriority priority);
     public abstract void SetProcessingIndicator(bool isProcessing);
     #endregion
 }
