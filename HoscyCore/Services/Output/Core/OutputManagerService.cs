@@ -368,8 +368,7 @@ public class OutputManagerService
         diagnosticSw.Stop();
         _logger.Debug("Finished refreshing Output Handlers in {timeMs}ms", diagnosticSw.ElapsedMilliseconds);
 
-        NotifyIfRefreshExceptions(); //todo: [REFACTOR] no more notify?
-        return ResC.Ok(); //todo: [FIX] not always return ok
+        return GetRefreshResult();
     }
 
     public Res RestartHandlers() 
@@ -384,8 +383,7 @@ public class OutputManagerService
         }
         _logger.Debug("Finished restarting all {handlerCount} active Handlers", _activeHandlers.Count);
 
-        NotifyIfRefreshExceptions(); //todo: [REFACTOR] no more notify?
-        return ResC.Ok(); //todo: [FIX] not always return ok
+        return GetRefreshResult();
     }
     #endregion
 
@@ -692,6 +690,7 @@ public class OutputManagerService
     /// <returns>Attempted translation?</returns>
     private bool TryTranslateContentsIfNeeded(string contents, IOutputHandler[] handlers, out string? translatedText) //todo: [REFACTOR] this
     {
+        //todo: [REFACTOR] Use SB?
         if (!handlers.Any(x => x.GetTranslationOutputMode() != OutputTranslationFormat.Untranslated))
         {
             _logger.Warning("Attempted translation of message with contents \"{contents}\", but could not find a suitable output or translator", contents);
@@ -745,13 +744,13 @@ public class OutputManagerService
         res.IfFail(x => _refreshExceptions.Add(x.WithContext(context)));
     }
 
-    private void NotifyIfRefreshExceptions() //todo: [REFACTOR] is this still needed?
+    private Res GetRefreshResult()
     {
-        if (_refreshExceptions.Count == 0) return;
-        
-        var ex = new CombinedException(_refreshExceptions.Select(x => new Exception(x.Message)).ToList());
-        _logger.Warning(ex, "Following exceptions popped up during refresh");
-        _notify.SendError("Errors ocurred during refresh", "The following errors occured while refreshing handlers", ex);
+        if (_refreshExceptions.Count == 0) return ResC.Ok();
+
+        var result = ResC.FailM(_refreshExceptions);
+        _logger.Warning("Following exceptions popped up during refresh: {result}", result);
+        return result;
     }
 
     private List<ResMsg> GetHandlerExceptions()
