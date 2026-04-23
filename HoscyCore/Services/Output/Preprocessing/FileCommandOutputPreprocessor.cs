@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using System.Text.RegularExpressions;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Output.Core;
@@ -25,31 +26,24 @@ public partial class FileCommandOutputPreprocessor(ILogger logger) : IOutputPrep
     public bool IsFullReplace()
         => true;
 
-    public bool ShouldContinueIfHandled()
-        => true;
-
-    public bool TryProcess(string input, [NotNullWhen(true)] out string? output)
+    public OutputPreprocessorResult Process(ref string contents)
     {
-        if (!input.StartsWith(COMMAND_PREFIX, System.StringComparison.OrdinalIgnoreCase))
-        {
-            output = null;
-            return false;
-        }
+        if (!contents.StartsWith(COMMAND_PREFIX, StringComparison.OrdinalIgnoreCase))
+            return OutputPreprocessorResult.NotProcessed;
 
-        _logger.Debug("File command detected \"{fileCommand}\", attempting to load", input);
-        var filePath = _commandPrefixRemover.Replace(input, string.Empty);
+        _logger.Debug("File command detected \"{fileCommand}\", attempting to load", contents);
+        var filePath = _commandPrefixRemover.Replace(contents, string.Empty);
         try
         {
             var lines = File.ReadLines(filePath);
             _logger.Debug("Successfully loaded contents of file from path \"{filePath}\"", filePath);
-            output = string.Join("\n", lines);
-            return true;
+            contents = string.Join("\n", lines);
         }
         catch (Exception ex)
         {
             _logger.Error(ex, "Unable to load file from path \"{filePath}\"", filePath);
-            output = "[File Read Error]";
-            return true;
+            contents = "[File Read Error]";
         }
+        return OutputPreprocessorResult.ProcessedStopOutput;
     }
 }

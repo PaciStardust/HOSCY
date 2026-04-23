@@ -10,7 +10,8 @@ namespace HoscyCore.Services.Output.Preprocessing;
 /// Handles partial replacements of text
 /// </summary>
 [LoadIntoDiContainer(typeof(PartialReplacementOutputPreprocessor), Lifetime.Transient)]
-public class PartialReplacementOutputPreprocessor(ConfigModel config, ILogger logger) : ReplacementOutputPreprocessorBase<PartialReplacementHandler>(config, logger.ForContext<PartialReplacementOutputPreprocessor>())
+public class PartialReplacementOutputPreprocessor(ConfigModel config, ILogger logger)
+    : ReplacementOutputPreprocessorBase<PartialReplacementHandler>(config, logger.ForContext<PartialReplacementOutputPreprocessor>())
 {
     #region Simple Overrides
     public override bool IsEnabled()
@@ -29,28 +30,23 @@ public class PartialReplacementOutputPreprocessor(ConfigModel config, ILogger lo
 
     public override bool IsFullReplace()
         => false;
-
-    public override bool ShouldContinueIfHandled()
-        => true;
     #endregion
 
     #region Processing
-    public override bool TryProcess(string input, [NotNullWhen(true)] out string? output)
+    public override OutputPreprocessorResult Process(ref string contents)
     {
-        output = null;
+        string? output = null;
 
         foreach (var handler in _handlers)
         {
-            output = handler.Replace(output ?? input);
+            output = handler.Replace(output ?? contents);
         }
 
-        if (output is null || string.Equals(input, output, StringComparison.Ordinal))
-        {
-            output = null;
-            return false;
-        }
+        if (output is null || string.Equals(contents, output, StringComparison.Ordinal))
+            return OutputPreprocessorResult.NotProcessed;
         
-        return true;
+        contents = output;
+        return OutputPreprocessorResult.ProcessedContinue;
     }
     #endregion
 }

@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Osc.Command;
 using HoscyCore.Services.Output.Core;
@@ -24,20 +23,14 @@ public class OscCommandOutputPreprocessor(IOscCommandService cmd, ILogger logger
     public bool IsFullReplace()
         => true;
 
-    public bool ShouldContinueIfHandled()
-        => false;
-
-    public bool TryProcess(string input, [NotNullWhen(true)] out string? output)
+    public OutputPreprocessorResult Process(ref string contents)
     {
-        if (!_cmd.DetectCommand(input))
-        {
-            output = null;
-            return false;
-        }
+        if (!_cmd.DetectCommand(contents))
+            return OutputPreprocessorResult.NotProcessed;
 
-        _logger.Debug("Detected command \"{command}\", forwarding to service", input);
-        var result = _cmd.HandleCommand(input);
-        output = $"Command => {(result.IsOk ? result.Value : $"Fail ({result.Msg})")}";
-        return true;
+        _logger.Debug("Detected command \"{command}\", forwarding to service", contents);
+        var result = _cmd.HandleCommand(contents);
+        // output = $"Command => {(result.IsOk ? result.Value : $"Fail ({result.Msg})")}";
+        return OutputPreprocessorResult.ProcessedStop;
     }
 }

@@ -11,6 +11,7 @@ public class MockOutputPreprocessor : IOutputPreprocessor
 
     public bool Enabled { get; set; } = false;
     public string? ProcessedOutput { get; set; } = null;
+    public bool OutputAfterStop { get; set; } = false;
     public List<string> ReceivedInput { get; init; } = [];
 
     public OutputPreprocessorHandlingStage GetHandlingStage()
@@ -22,20 +23,20 @@ public class MockOutputPreprocessor : IOutputPreprocessor
     public bool IsFullReplace()
         => FullReplace;
 
-    public bool ShouldContinueIfHandled()
-        => ContinueIfHandled;
-
-    public bool TryProcess(string input, [NotNullWhen(true)] out string? output)
+    public OutputPreprocessorResult Process(ref string contents)
     {
-        ReceivedInput.Add(input);
+        ReceivedInput.Add(contents);
 
         if (ProcessedOutput is not null)
         {
-            output = ProcessedOutput;
-            return true;
+            contents = ProcessedOutput;
+            return ContinueIfHandled 
+                ? OutputPreprocessorResult.ProcessedContinue 
+                : OutputAfterStop
+                    ? OutputPreprocessorResult.ProcessedStopOutput
+                    : OutputPreprocessorResult.ProcessedStop;
         }
         
-        output = null;
-        return false;
+        return OutputPreprocessorResult.NotProcessed;
     }
 }

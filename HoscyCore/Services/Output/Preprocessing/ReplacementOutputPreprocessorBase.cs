@@ -1,4 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Output.Core;
 using HoscyCore.Utility;
@@ -31,8 +31,7 @@ public abstract class ReplacementOutputPreprocessorBase<T> : IOutputPreprocessor
     public abstract OutputPreprocessorHandlingStage GetHandlingStage();
     public abstract bool IsEnabled();
     public abstract bool IsFullReplace();
-    public abstract bool ShouldContinueIfHandled();
-    public abstract bool TryProcess(string input, [NotNullWhen(true)] out string? output);
+    public abstract OutputPreprocessorResult Process(ref string contents);
     #endregion
 
     #region Updating

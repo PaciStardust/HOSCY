@@ -10,7 +10,8 @@ namespace HoscyCore.Services.Output.Preprocessing;
 /// Handles replacing text fully
 /// </summary>
 [LoadIntoDiContainer(typeof(FullReplacementOutputPreprocessor), Lifetime.Transient)]
-public class FullReplacementOutputPreprocessor(ConfigModel config, ILogger logger) : ReplacementOutputPreprocessorBase<FullReplacementHandler>(config, logger.ForContext<FullReplacementOutputPreprocessor>())
+public class FullReplacementOutputPreprocessor(ConfigModel config, ILogger logger) 
+    : ReplacementOutputPreprocessorBase<FullReplacementHandler>(config, logger.ForContext<FullReplacementOutputPreprocessor>())
 {
     #region Simple Overrides
     public override bool IsEnabled()
@@ -29,25 +30,21 @@ public class FullReplacementOutputPreprocessor(ConfigModel config, ILogger logge
 
     public override bool IsFullReplace()
         => true;
-
-    public override bool ShouldContinueIfHandled()
-        => true;
     #endregion
 
     #region Processing
-    public override bool TryProcess(string input, [NotNullWhen(true)] out string? output)
+    public override OutputPreprocessorResult Process(ref string contents)
     {
-        input = string.Concat(input.Where(x => !_config.Preprocessing_ReplacementFullIgnoredCharacters.Contains(x)));
+        var input = string.Concat(contents.Where(x => !_config.Preprocessing_ReplacementFullIgnoredCharacters.Contains(x)));
         foreach (var handler in _handlers)
         {
             if (!handler.Compare(input)) continue;
 
-            output = handler.GetReplacement();
-            return true;
+            contents = handler.GetReplacement();
+            return OutputPreprocessorResult.ProcessedContinue;
         }
 
-        output = null;
-        return false;
+        return OutputPreprocessorResult.NotProcessed;
     }
     #endregion
 }

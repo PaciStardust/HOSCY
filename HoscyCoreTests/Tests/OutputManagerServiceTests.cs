@@ -332,10 +332,12 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         _preprocessorEarlyFull.Enabled = false;
         _preprocessorEarlyFull.ProcessedOutput = null;
         _preprocessorEarlyFull.ContinueIfHandled = true;
+        _preprocessorEarlyFull.OutputAfterStop = false;
 
         _preprocessorLatePartial.Enabled = false;
         _preprocessorLatePartial.ProcessedOutput = null;
         _preprocessorLatePartial.ContinueIfHandled = true;
+        _preprocessorLatePartial.OutputAfterStop = false;
 
         _infoA.Enabled = false;
         _infoB.Enabled = false;
@@ -1316,7 +1318,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
             Assert.That(_preprocessorEarlyFull.ReceivedInput[5], Is.EqualTo("Notif3"));
         }
 
-        _preprocessorEarlyFull.ContinueIfHandled = true;
+        _preprocessorEarlyFull.OutputAfterStop = true;
 
         _output.SendMessage("Msg4", flags);
         _output.SendNotification("Notif4", OutputNotificationPriority.Critical, flags);
@@ -1325,7 +1327,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_preprocessorEarlyFull.ReceivedInput, Has.Count.EqualTo(8));
-            Assert.That(_preprocessorLatePartial.ReceivedInput, Has.Count.EqualTo(6));
+            Assert.That(_preprocessorLatePartial.ReceivedInput, Has.Count.EqualTo(4));
             
             Assert.That(_handlerA.ReceivedMessages, Has.Count.EqualTo(3));
             Assert.That(_handlerA.ReceivedNotifications, Has.Count.EqualTo(3));
@@ -1334,15 +1336,9 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         {
             Assert.That(_preprocessorEarlyFull.ReceivedInput[6], Is.EqualTo("Msg4"));
             Assert.That(_preprocessorEarlyFull.ReceivedInput[7], Is.EqualTo("Notif4"));
-
-            Assert.That(_preprocessorLatePartial.ReceivedInput[4], Is.EqualTo("Processed"));
-            Assert.That(_preprocessorLatePartial.ReceivedInput[5], Is.EqualTo("Processed"));
-
-            Assert.That(_handlerA.ReceivedMessages[2], Is.EqualTo("Processed"));
-            Assert.That(_handlerA.ReceivedNotifications[2].Message, Is.EqualTo("Processed"));
         }
 
-        _preprocessorLatePartial.ProcessedOutput = "Processed2";
+        _preprocessorEarlyFull.ContinueIfHandled = true; //todo: fix numers below
 
         _output.SendMessage("Msg5", flags);
         _output.SendNotification("Notif5", OutputNotificationPriority.Critical, flags);
@@ -1351,7 +1347,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_preprocessorEarlyFull.ReceivedInput, Has.Count.EqualTo(10));
-            Assert.That(_preprocessorLatePartial.ReceivedInput, Has.Count.EqualTo(8));
+            Assert.That(_preprocessorLatePartial.ReceivedInput, Has.Count.EqualTo(6));
             
             Assert.That(_handlerA.ReceivedMessages, Has.Count.EqualTo(4));
             Assert.That(_handlerA.ReceivedNotifications, Has.Count.EqualTo(4));
@@ -1361,11 +1357,37 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
             Assert.That(_preprocessorEarlyFull.ReceivedInput[8], Is.EqualTo("Msg5"));
             Assert.That(_preprocessorEarlyFull.ReceivedInput[9], Is.EqualTo("Notif5"));
 
+            Assert.That(_preprocessorLatePartial.ReceivedInput[4], Is.EqualTo("Processed"));
+            Assert.That(_preprocessorLatePartial.ReceivedInput[5], Is.EqualTo("Processed"));
+
+            Assert.That(_handlerA.ReceivedMessages[3], Is.EqualTo("Processed"));
+            Assert.That(_handlerA.ReceivedNotifications[3].Message, Is.EqualTo("Processed"));
+        }
+
+        _preprocessorLatePartial.ProcessedOutput = "Processed2";
+
+        _output.SendMessage("Msg6", flags);
+        _output.SendNotification("Notif6", OutputNotificationPriority.Critical, flags);
+        Thread.Sleep(50);
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_preprocessorEarlyFull.ReceivedInput, Has.Count.EqualTo(12));
+            Assert.That(_preprocessorLatePartial.ReceivedInput, Has.Count.EqualTo(8));
+            
+            Assert.That(_handlerA.ReceivedMessages, Has.Count.EqualTo(5));
+            Assert.That(_handlerA.ReceivedNotifications, Has.Count.EqualTo(5));
+        }
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_preprocessorEarlyFull.ReceivedInput[10], Is.EqualTo("Msg6"));
+            Assert.That(_preprocessorEarlyFull.ReceivedInput[11], Is.EqualTo("Notif6"));
+
             Assert.That(_preprocessorLatePartial.ReceivedInput[6], Is.EqualTo("Processed"));
             Assert.That(_preprocessorLatePartial.ReceivedInput[7], Is.EqualTo("Processed"));
 
-            Assert.That(_handlerA.ReceivedMessages[3], Is.EqualTo("Processed2"));
-            Assert.That(_handlerA.ReceivedNotifications[3].Message, Is.EqualTo("Processed2"));
+            Assert.That(_handlerA.ReceivedMessages[4], Is.EqualTo("Processed2"));
+            Assert.That(_handlerA.ReceivedNotifications[4].Message, Is.EqualTo("Processed2"));
         }
     }
 

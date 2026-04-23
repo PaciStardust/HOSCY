@@ -1,4 +1,5 @@
 using HoscyCore.Configuration.Modern;
+using HoscyCore.Services.Output.Core;
 using HoscyCore.Services.Output.Preprocessing;
 using HoscyCoreTests.Utils;
 
@@ -102,8 +103,6 @@ public class ReplacementOutputPreprocessorFunctionTests : TestBase<ReplacementOu
     [Test]
     public void FullBasicTest()
     {
-        Assert.That(_fullPre.ShouldContinueIfHandled(), Is.True);
-
         var model = new ReplacementDataModel()
         {
             Enabled = true,
@@ -114,28 +113,27 @@ public class ReplacementOutputPreprocessorFunctionTests : TestBase<ReplacementOu
         };
         _config.Preprocessing_ReplacementsFull.Add(model);
 
+        string[] messages = ["HELLO world", "hello world", "HELLO", "hello"];
         _fullPre.ReloadReplacements().AssertOk();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_fullPre.LastLoadCorrect, Is.EqualTo(1));
-            Assert.That(_fullPre.TryProcess("HELLO world", out _), Is.False);
-            Assert.That(_fullPre.TryProcess("hello world", out _), Is.False);
-            Assert.That(_fullPre.TryProcess("HELLO", out _), Is.False);
+            Assert.That(_fullPre.Process(ref messages[0]), Is.EqualTo(OutputPreprocessorResult.NotProcessed));
+            Assert.That(_fullPre.Process(ref messages[1]), Is.EqualTo(OutputPreprocessorResult.NotProcessed));
+            Assert.That(_fullPre.Process(ref messages[2]), Is.EqualTo(OutputPreprocessorResult.NotProcessed));
         }
 
-        var result = _fullPre.TryProcess("hello", out var output);
+        var result = _fullPre.Process(ref messages[3]);
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(result, Is.True);
-            Assert.That(output, Is.EqualTo("goodbye"));
+            Assert.That(result, Is.EqualTo(OutputPreprocessorResult.ProcessedContinue));
+            Assert.That(messages[3], Is.EqualTo("goodbye"));
         }
     }
 
     [Test]
     public void PartialBasicTest()
     {
-        Assert.That(_partPre.ShouldContinueIfHandled(), Is.True);
-
         var model = new ReplacementDataModel()
         {
             Enabled = true,
@@ -146,26 +144,27 @@ public class ReplacementOutputPreprocessorFunctionTests : TestBase<ReplacementOu
         };
         _config.Preprocessing_ReplacementsPartial.Add(model);
 
+        string[] messages = ["HELLO world", "HELLO", "hello", "hello world"];
         _partPre.ReloadReplacements().AssertOk();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_partPre.LastLoadCorrect, Is.EqualTo(1));
-            Assert.That(_partPre.TryProcess("HELLO world", out _), Is.False);
-            Assert.That(_partPre.TryProcess("HELLO", out _), Is.False);
+            Assert.That(_partPre.Process(ref messages[0]), Is.EqualTo(OutputPreprocessorResult.NotProcessed));
+            Assert.That(_partPre.Process(ref messages[1]), Is.EqualTo(OutputPreprocessorResult.NotProcessed));
         }
 
-        var result = _partPre.TryProcess("hello", out var output);
+        var result = _partPre.Process(ref messages[2]);
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(result, Is.True);
-            Assert.That(output, Is.EqualTo("goodbye"));
+            Assert.That(result, Is.EqualTo(OutputPreprocessorResult.ProcessedContinue));
+            Assert.That(messages[2], Is.EqualTo("goodbye"));
         }
 
-        result = _partPre.TryProcess("hello world", out output);
+        result = _partPre.Process(ref messages[3]);
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(result, Is.True);
-            Assert.That(output, Is.EqualTo("goodbye world"));
+            Assert.That(result, Is.EqualTo(OutputPreprocessorResult.ProcessedContinue));
+            Assert.That(messages[3], Is.EqualTo("goodbye world"));
         }
     }
 
@@ -186,28 +185,30 @@ public class ReplacementOutputPreprocessorFunctionTests : TestBase<ReplacementOu
         _partPre.ReloadReplacements().AssertOk();
         _fullPre.ReloadReplacements().AssertOk();
 
+        string[] messages = ["HELLO world", "HELLO", "hello world", "hello"]; 
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_partPre.LastLoadCorrect, Is.EqualTo(1));
             Assert.That(_fullPre.LastLoadCorrect, Is.EqualTo(1));
 
-            Assert.That(_partPre.TryProcess("HELLO world", out _), Is.False);
-            Assert.That(_fullPre.TryProcess("HELLO", out _), Is.False);
+            Assert.That(_partPre.Process(ref messages[0]), Is.EqualTo(OutputPreprocessorResult.NotProcessed));
+            Assert.That(_fullPre.Process(ref messages[1]), Is.EqualTo(OutputPreprocessorResult.NotProcessed));
         }
 
-        var resPart = _partPre.TryProcess("hello world", out var outputPart);
-        var resFull = _fullPre.TryProcess("hello", out var outputFull);
+        var resPart = _partPre.Process(ref messages[2]);
+        var resFull = _fullPre.Process(ref messages[3]);
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(resPart, Is.True);
-            Assert.That(resFull, Is.True);
+            Assert.That(resPart, Is.EqualTo(OutputPreprocessorResult.ProcessedContinue));
+            Assert.That(resFull, Is.EqualTo(OutputPreprocessorResult.ProcessedContinue));
 
-            Assert.That(outputPart, Is.EqualTo("goodbye world"));
-            Assert.That(outputFull, Is.EqualTo("goodbye"));
+            Assert.That(messages[2], Is.EqualTo("goodbye world"));
+            Assert.That(messages[3], Is.EqualTo("goodbye"));
         }
 
         model.IgnoreCase = true;
+        messages = ["HELLO world", "HELLO", "hello world", "hello"]; 
 
         _partPre.ReloadReplacements().AssertOk();
         _fullPre.ReloadReplacements().AssertOk();
@@ -218,41 +219,41 @@ public class ReplacementOutputPreprocessorFunctionTests : TestBase<ReplacementOu
             Assert.That(_fullPre.LastLoadCorrect, Is.EqualTo(1));
         }
 
-        resPart = _partPre.TryProcess("hello world", out outputPart);
-        resFull = _fullPre.TryProcess("hello", out outputFull);
+        resPart = _partPre.Process(ref messages[2]);
+        resFull = _fullPre.Process(ref messages[3]);
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(resPart, Is.True);
-            Assert.That(resFull, Is.True);
+            Assert.That(resPart, Is.EqualTo(OutputPreprocessorResult.ProcessedContinue));
+            Assert.That(resFull, Is.EqualTo(OutputPreprocessorResult.ProcessedContinue));
 
-            Assert.That(outputPart, Is.EqualTo("goodbye world"));
-            Assert.That(outputFull, Is.EqualTo("goodbye"));
+            Assert.That(messages[2], Is.EqualTo("goodbye world"));
+            Assert.That(messages[3], Is.EqualTo("goodbye"));
         }
 
-        resPart = _partPre.TryProcess("HELLO world", out outputPart);
-        resFull = _fullPre.TryProcess("HELLO", out outputFull);
+        resPart = _partPre.Process(ref messages[0]);
+        resFull = _fullPre.Process(ref messages[1]);
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(resPart, Is.True);
-            Assert.That(resFull, Is.True);
+            Assert.That(resPart, Is.EqualTo(OutputPreprocessorResult.ProcessedContinue));
+            Assert.That(resFull, Is.EqualTo(OutputPreprocessorResult.ProcessedContinue));
 
-            Assert.That(outputPart, Is.EqualTo("goodbye world"));
-            Assert.That(outputFull, Is.EqualTo("goodbye"));
+            Assert.That(messages[0], Is.EqualTo("goodbye world"));
+            Assert.That(messages[1], Is.EqualTo("goodbye"));
         }
     }
 
     [Test]
     public void RegexTest()
     {
-        List<(string Input, bool StateFull, bool StatePartial, string Output)> testValues = [
-            ("hello world",     false,      true,   "goodbye world"),
-            ("hello",           true,       true,   "goodbye"),
-            ("Hello world",     false,      true,   "goodbye world"),
-            ("Hello",           true,       true,   "goodbye"),
-            ("Hellooooo world", false,      true,   "goodbye world"),
-            ("Hellooooo",       true,       true,   "goodbye")
+        List<(string Input, OutputPreprocessorResult StateFull, OutputPreprocessorResult StatePartial, string Output)> testValues = [
+            ("hello world",     OutputPreprocessorResult.NotProcessed,              OutputPreprocessorResult.ProcessedContinue,     "goodbye world"),
+            ("hello",           OutputPreprocessorResult.ProcessedContinue,         OutputPreprocessorResult.ProcessedContinue,     "goodbye"),
+            ("Hello world",     OutputPreprocessorResult.NotProcessed,              OutputPreprocessorResult.ProcessedContinue,     "goodbye world"),
+            ("Hello",           OutputPreprocessorResult.ProcessedContinue,         OutputPreprocessorResult.ProcessedContinue,     "goodbye"),
+            ("Hellooooo world", OutputPreprocessorResult.NotProcessed,              OutputPreprocessorResult.ProcessedContinue,     "goodbye world"),
+            ("Hellooooo",       OutputPreprocessorResult.ProcessedContinue,         OutputPreprocessorResult.ProcessedContinue,     "goodbye")
         ];
 
         var model = new ReplacementDataModel()
@@ -269,18 +270,21 @@ public class ReplacementOutputPreprocessorFunctionTests : TestBase<ReplacementOu
         _partPre.ReloadReplacements().AssertOk();
         _fullPre.ReloadReplacements().AssertOk();
 
+        string[] rgxMsg = ["[hH]ello+ world", "[hH]ello+"];
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_partPre.LastLoadCorrect, Is.EqualTo(1));
             Assert.That(_fullPre.LastLoadCorrect, Is.EqualTo(1));
 
-            Assert.That(_partPre.TryProcess("[hH]ello+ world", out _), Is.True);
-            Assert.That(_fullPre.TryProcess("[hH]ello+", out _), Is.True);
+            Assert.That(_partPre.Process(ref rgxMsg[0]), Is.EqualTo(OutputPreprocessorResult.ProcessedContinue));
+            Assert.That(_fullPre.Process(ref rgxMsg[1]), Is.EqualTo(OutputPreprocessorResult.ProcessedContinue));
 
             foreach(var (input, _, _, _) in testValues)
             {
-                Assert.That(_partPre.TryProcess(input, out _), Is.False, input);
-                Assert.That(_fullPre.TryProcess(input, out _), Is.False, input);
+                var inputCpy = input;
+                Assert.That(_partPre.Process(ref inputCpy), Is.EqualTo(OutputPreprocessorResult.NotProcessed), input);
+                Assert.That(_fullPre.Process(ref inputCpy), Is.EqualTo(OutputPreprocessorResult.NotProcessed), input);
+                Assert.That(input, Is.EqualTo(inputCpy));
             }
         }
 
@@ -299,15 +303,18 @@ public class ReplacementOutputPreprocessorFunctionTests : TestBase<ReplacementOu
         {
             foreach (var (input, passFull, passPart, expectedOutput) in testValues)
             {
-                var resPart = _partPre.TryProcess(input, out var outputPart);
-                Assert.That(resPart, Is.EqualTo(passPart), input);
-                if (passPart)
-                    Assert.That(outputPart, Is.EqualTo(expectedOutput), input);
+                var inputCpyPart = input;
+                var inputCpyFull = input;
 
-                var resFull = _fullPre.TryProcess(input, out var outputFull);
+                var resPart = _partPre.Process(ref inputCpyPart);
+                Assert.That(resPart, Is.EqualTo(passPart), input);
+                if (passPart == OutputPreprocessorResult.ProcessedContinue)
+                    Assert.That(inputCpyPart, Is.EqualTo(expectedOutput), input);
+
+                var resFull = _fullPre.Process(ref inputCpyFull);
                 Assert.That(resFull, Is.EqualTo(passFull), input);
-                if (passFull)
-                    Assert.That(outputFull, Is.EqualTo(expectedOutput), input);
+                if (passFull == OutputPreprocessorResult.ProcessedContinue)
+                    Assert.That(inputCpyFull, Is.EqualTo(expectedOutput), input);
             }
         }
     }
@@ -358,11 +365,12 @@ public class ReplacementOutputPreprocessorFunctionTests : TestBase<ReplacementOu
         _partPre.ReloadReplacements().AssertOk();
         Assert.That(_partPre.LastLoadCorrect, Is.EqualTo(4));
 
-        var res = _partPre.TryProcess("hello world", out var output);
+        var txt = "hello world";
+        var res = _partPre.Process(ref txt);
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(res, Is.True);
-            Assert.That(output, Is.EqualTo("goodbye cat"));
+            Assert.That(res, Is.EqualTo(OutputPreprocessorResult.ProcessedContinue));
+            Assert.That(txt, Is.EqualTo("goodbye cat"));
         }
     }
 
@@ -394,11 +402,12 @@ public class ReplacementOutputPreprocessorFunctionTests : TestBase<ReplacementOu
         _fullPre.ReloadReplacements().AssertOk();
         Assert.That(_fullPre.LastLoadCorrect, Is.EqualTo(2));
 
-        var res = _fullPre.TryProcess("hello world", out var output);
+        var txt = "hello world";
+        var res = _fullPre.Process(ref txt);
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(res, Is.True);
-            Assert.That(output, Is.EqualTo("goodbye world"));
+            Assert.That(res, Is.EqualTo(OutputPreprocessorResult.ProcessedContinue));
+            Assert.That(txt, Is.EqualTo("goodbye world"));
         }
     }
 }

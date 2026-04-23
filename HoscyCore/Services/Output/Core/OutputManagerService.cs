@@ -481,11 +481,9 @@ public class OutputManagerService
     public async Task HandleMessagePostQueue(string contents, OutputSettingsFlags settings)
     {
         var compatiblePreprocessors = _preprocessors.Where(x => IsPreprocessorCompatible(x, settings)).ToArray();
-        if (compatiblePreprocessors.Length > 0 && TryPreprocess(contents, compatiblePreprocessors, out var processedOutput))
-        {
-            if (string.IsNullOrWhiteSpace(processedOutput)) return;
-            contents = processedOutput;
-        }
+        var preProcessResult = Preprocess(ref contents, compatiblePreprocessors);
+
+        if (string.IsNullOrWhiteSpace(contents) || preProcessResult == OutputPreprocessorResult.ProcessedStop) return;
 
         var compatibleHandlers = _activeHandlers
             .Where(x => IsHandlerCompatible(x, settings))
@@ -548,11 +546,9 @@ public class OutputManagerService
     public async Task HandleNotificationPostQueue(string contents, OutputNotificationPriority priority, OutputSettingsFlags settings)
     {
         var compatiblePreprocessors = _preprocessors.Where(x => IsPreprocessorCompatible(x, settings)).ToArray();
-        if (compatiblePreprocessors.Length > 0 && TryPreprocess(contents, compatiblePreprocessors, out var processedOutput))
-        {
-            if (string.IsNullOrWhiteSpace(processedOutput)) return;
-            contents = processedOutput;
-        }
+        var preProcessResult = Preprocess(ref contents, compatiblePreprocessors);
+
+        if (string.IsNullOrWhiteSpace(contents) || preProcessResult == OutputPreprocessorResult.ProcessedStop) return;
 
         var compatibleHandlers = _activeHandlers
             .Where(x => IsHandlerCompatible(x, settings))
@@ -648,26 +644,30 @@ public class OutputManagerService
     /// <param name="input">String to preprocess</param>
     /// <param name="output">Preprocessed string if success and not handled entirely by a processor</param>
     /// <returns>Success</returns>
-    private bool TryPreprocess(string input, IOutputPreprocessor[] preprocessors, out string? output)
+    private OutputPreprocessorResult Preprocess(ref string contents, IOutputPreprocessor[] preprocessors)
     {
-        _logger.Verbose("Preprocessing \"{preProcessorInput}\" ...", input);
-        string? currentOutput = null;
+        _logger.Verbose("Preprocessing \"{preProcessorInput}\" ...", contents);
+        
         foreach (var preprocessor in preprocessors)
         {
-            if (!preprocessor.TryProcess(currentOutput ?? input, out var processedOutput)) continue;
+            var original = contents;
+            var result = preprocessor.Process(ref contents);
 
-            if (!preprocessor.ShouldContinueIfHandled())
+            if (result == OutputPreprocessorResult.NotProcessed) continue;
+
+            if (result == OutputPreprocessorResult.ProcessedContinue)
             {
-                _logger.Verbose("Preprocessor \"{preprocessorName}\" has done final handling on \"{preProcessorInput}\" with message \"{preProcessorOutput}\"", preprocessor.GetType().Name, input, processedOutput);
-                output = null;
-                return true;
+                _logger.Verbose("Preprocessor \"{preprocessorName}\" converted \"{currentInput}\" to \"{currentOutput}\"",
+                    preprocessor.GetType().Name, original, contents);
+                continue;
             }
 
-            _logger.Verbose("Preprocessor \"{preprocessorName}\" converted \"{currentInput}\" to \"{currentOutput}\"", currentOutput ?? input, processedOutput);
-            currentOutput = processedOutput;
+            _logger.Verbose("Preprocessor \"{preprocessorName}\" has done final handling on \"{preProcessorInput}\" with message \"{preProcessorOutput}\"",
+                preprocessor.GetType().Name, original, contents);
+            return result;
         }
-        output = currentOutput;
-        return output is not null;
+
+        return OutputPreprocessorResult.ProcessedContinue;
     }
 
     private static bool IsPreprocessorCompatible(IOutputPreprocessor preprocessor, OutputSettingsFlags settings)

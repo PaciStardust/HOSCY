@@ -1,4 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using HoscyCore.Services.Core;
 
 namespace HoscyCore.Services.Output.Core;
@@ -21,14 +21,17 @@ public interface IOutputPreprocessor : IService
     public bool IsFullReplace();
 
     /// <summary>
-    /// Indicates if processing should continue if processing successful
-    /// </summary>
-    public bool ShouldContinueIfHandled();
-
-    /// <summary>
     /// Tries processing the input
     /// </summary>
     /// <param name="input">Input to process</param>
     /// <param name="output">Output of processing if returning true</param>
-    public bool TryProcess(string input, [NotNullWhen(true)] out string? output);
+    public OutputPreprocessorResult Process(ref string contents);
+}
+
+public enum OutputPreprocessorResult
+{
+    NotProcessed = 0,
+    ProcessedContinue = 1,
+    ProcessedStop = 2,
+    ProcessedStopOutput = 3
 }

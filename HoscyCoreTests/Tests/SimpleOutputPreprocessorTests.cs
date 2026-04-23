@@ -1,4 +1,5 @@
 using HoscyCore.Services.Osc.Command;
+using HoscyCore.Services.Output.Core;
 using HoscyCore.Services.Output.Preprocessing;
 using HoscyCore.Utility;
 using HoscyCoreTests.Mocks.Impl;
@@ -24,25 +25,22 @@ public class SimpleOutputPreprocessorFunctionTests : TestBase<SimpleOutputPrepro
     [Test]
     public void OscCommandOutputPreprocessorTest()
     {
-        Assert.That(_oscPre.ShouldContinueIfHandled(), Is.False);
         _oscCommand.ReturnedState = ResC.TOk(OscCommandState.Success);
 
-        List<(string Input, bool ExpectedOutput)> valueTries = [
-            (_oscCommand.CommandIdentifier, true),
-            ("Test123", false),
+        List<(string Input, OutputPreprocessorResult ExpectedOutput)> valueTries = [
+            (_oscCommand.CommandIdentifier, OutputPreprocessorResult.ProcessedStop),
+            ("Test123", OutputPreprocessorResult.NotProcessed),
         ];
 
         foreach(var (input, expectedOutput) in valueTries)
         {
-            var result = _oscPre.TryProcess(input, out var output);
+            var inputCpy = input;
+
+            var result = _oscPre.Process(ref inputCpy);
             using (Assert.EnterMultipleScope())
             {
                 Assert.That(expectedOutput, Is.EqualTo(result));
-                Assert.That(_oscCommand.PassedStrings.LastOrDefault(), result ? Is.EqualTo(input) : Is.Not.EqualTo(input));
-            }
-            if (result)
-            {
-                Assert.That(output, Does.Contain(OscCommandState.Success.ToString()));
+                Assert.That(_oscCommand.PassedStrings.LastOrDefault(), result == OutputPreprocessorResult.ProcessedStop ? Is.EqualTo(input) : Is.Not.EqualTo(input));
             }
         }
     }
@@ -50,27 +48,24 @@ public class SimpleOutputPreprocessorFunctionTests : TestBase<SimpleOutputPrepro
     [Test]
     public void FileCommandOutputPreprocessorTest()
     {
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(_filePre.ShouldContinueIfHandled(), Is.True);
-            Assert.That(_filePre.TryProcess("aaaa", out _), Is.False);
-        }
+        var txt = "aaaa";
+        Assert.That(_filePre.Process(ref txt), Is.EqualTo(OutputPreprocessorResult.NotProcessed));
+        Assert.That(txt, Is.EqualTo("aaaa"));
 
-        var result = _filePre.TryProcess("[file] aaa", out var output);
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(result, Is.True);
-            Assert.That(output, Does.Contain("Error"));
-        }
+        txt = "[file] aaa";
+        var result = _filePre.Process(ref txt);
+        Assert.That(result, Is.EqualTo(OutputPreprocessorResult.ProcessedStopOutput));
+        Assert.That(txt, Does.Contain("Error"));
 
         var testfile = Path.Combine(_tempFolder, "FileTest.txt");
         File.WriteAllText(testfile, "This is a test");
 
-        result = _filePre.TryProcess($"[file] {testfile}", out output);
+        txt = $"[file] {testfile}";
+        result = _filePre.Process(ref txt);
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(result, Is.True);
-            Assert.That(output, Is.EqualTo("This is a test"));
+            Assert.That(result, Is.EqualTo(OutputPreprocessorResult.ProcessedStopOutput));
+            Assert.That(txt, Is.EqualTo("This is a test"));
         }
     }
 }
