@@ -59,15 +59,11 @@ public class ApiTranslationModule(ILogger logger, ConfigModel config, IApiClient
     #endregion
 
     #region Functionality
-    public override TranslationResult TryTranslate(string input, out string? output)
+    public override Res<string> Translate(string input)
     {
-        input = input.Replace("\"", string.Empty);
-
+        input = input.Replace("\"", " ");
         if (string.IsNullOrWhiteSpace(input))
-        {
-            output = null;
-            return TranslationResult.Failed;
-        }
+            return ResC.TFail<string>("Provided input to translate is empty");
 
         _logger.Verbose("Requesting translation of text \"{input}\"", input);
         var result = ResC.TWrap(() => _client.SendTextAsync(input).GetAwaiter().GetResult(),
@@ -76,21 +72,15 @@ public class ApiTranslationModule(ILogger logger, ConfigModel config, IApiClient
         if (!result.IsOk)
         {
             var msg = ResMsg.Wrn($"Translation of \"{input}\" failed: {result.Msg}");
-            SetFaultLogNotify(msg, "Translation failed", null, _logger); //todo: [FEAT] Notify?
-            output = null;
-            return TranslationResult.Failed;
+            SetFault(msg);
+            return ResC.TFail<string>(msg);
         }
 
         if (string.IsNullOrWhiteSpace(result.Value))
-        {
-            _logger.Warning("Failed translation of text \"{input}\", no output received", input);
-            output = null;
-            return TranslationResult.Failed;
-        }
+            return ResC.TFailLog<string>($"Failed translation of text \"{input}\", no output received", _logger, lvl: ResMsgLvl.Warning);
 
         _logger.Verbose("Translated text \"{input}\" to \"{output}\"", input, result);
-        output = result.Value;
-        return TranslationResult.Succeeded;
+        return ResC.TOk(result.Value);
     }
     #endregion
 }

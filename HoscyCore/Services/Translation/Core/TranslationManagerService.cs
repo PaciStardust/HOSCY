@@ -2,6 +2,7 @@ using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Interfacing;
+using HoscyCore.Utility;
 using Serilog;
 
 namespace HoscyCore.Services.Translation.Core;
@@ -68,37 +69,25 @@ public class TranslationManagerService
                 .TrimEnd();
         }
 
-        var result = _currentModule.TryTranslate(input, out var translatedOutput);
-        switch (result)
+        var result = _currentModule.Translate(input);
+        if (!result.IsOk)
         {
-            case TranslationResult.Succeeded:
-                output = translatedOutput;
-                return result;
-            case TranslationResult.Failed:
-                output = null;
-                LogFailedTranslation(input);
-                return _config.Translation_SendUntranslatedIfFailed
-                    ? TranslationResult.UseOriginal
-                    : TranslationResult.Failed;
-            case TranslationResult.UseOriginal:
-                output = null;
-                return result;
-            default:
-                _logger.Warning("Unexpected translation result {result} when translating \"{input}\"",
-                    result, input);
-                output = null;
-                return TranslationResult.Failed;
+            _logger.Warning("Translation of message with contents \"{input}\" failed ({result})", input, result);
+            _notify.SendResult("Translation failed", result.Msg);
+
+            output = null;
+            return _config.Translation_SendUntranslatedIfFailed
+                ? TranslationResult.UseOriginal
+                : TranslationResult.Failed;
         }
+
+        output = result.Value;
+        return TranslationResult.Succeeded;
     }
 
     private void LogProviderNotAvailable(string inputForLog)
     {
         _logger.Warning("Skipped translation request for input \"{input}\", no provider running", inputForLog);
-    }
-
-    private void LogFailedTranslation(string inputForLog)
-    {
-        _logger.Warning("Translation of message with contents \"{input}\" failed", inputForLog);
     }
     #endregion
 

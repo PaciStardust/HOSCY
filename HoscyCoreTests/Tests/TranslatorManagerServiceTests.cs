@@ -99,15 +99,13 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
         }
     }
 
-    [TestCase(TranslationResult.Succeeded, false)]
-    [TestCase(TranslationResult.UseOriginal, false)]
-    [TestCase(TranslationResult.Failed, false)]
-    [TestCase(TranslationResult.Failed, true)]
-    public void TranslationTest(TranslationResult overrideResult, bool untranslatedIfFailed)
+    [TestCase("Echo", false, TranslationResult.Succeeded)]
+    [TestCase(null, false, TranslationResult.Failed)]
+    [TestCase(null, true, TranslationResult.UseOriginal)]
+    public void TranslationTest(string? message, bool untranslatedIfFailed, TranslationResult expectedResult)
     {
         _config.Translation_SendUntranslatedIfFailed = untranslatedIfFailed;
-        _moduleA.ReturnedOutput = "Echo";
-        _moduleA.ReturnedResult = overrideResult;
+        _moduleA.ReturnedOutput = message;
 
         SetModule(_infoA.Name);
         _manager.StartModule().AssertOk();
@@ -117,8 +115,8 @@ public class TranslatorManagerServiceFunctionTests : TranslatorManagerServiceTes
         {
             Assert.That(_moduleA.ReceivedInput, Has.Count.EqualTo(1));
             Assert.That(_moduleB.ReceivedInput, Is.Empty);
-            Assert.That(result, Is.EqualTo(untranslatedIfFailed ? TranslationResult.UseOriginal : overrideResult));
-            Assert.That(output, overrideResult == TranslationResult.Succeeded ? Is.EqualTo("Echo") : Is.Null);
+            Assert.That(result, Is.EqualTo(expectedResult));
+            Assert.That(output, Is.EqualTo(message));
         }
         Assert.That(_moduleA.ReceivedInput[0], Is.EqualTo("Test"));
     }

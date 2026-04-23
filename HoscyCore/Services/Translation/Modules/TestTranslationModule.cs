@@ -25,7 +25,7 @@ public class TestTranslationModule(ILogger logger)
     private readonly Random _random = new();
     private bool _running = false;
 
-    public override TranslationResult TryTranslate(string input, out string? output)
+    public override Res<string> Translate(string input)
     {
         var characters = _random.Next(100);
         var words = new char[characters];
@@ -35,8 +35,7 @@ public class TestTranslationModule(ILogger logger)
             words[i] = CHARACTER_LIST[_random.Next(CHARACTER_LIST.Length)];
         }
 
-        output = new string(words);
-        return TranslationResult.Succeeded;
+        return ResC.TOk(new string(words));
     }
 
     protected override bool IsProcessing()

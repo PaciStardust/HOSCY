@@ -1,5 +1,4 @@
 using HoscyCore.Configuration.Modern;
-using HoscyCore.Services.Translation.Core;
 using HoscyCore.Services.Translation.Modules;
 using HoscyCoreTests.Mocks.Impl;
 using HoscyCoreTests.Utils;
@@ -116,13 +115,12 @@ public class ApiTranslationProviderFunctionTests : TestBase<ApiTranslationProvid
     [Test]
     public void EmptyTest()
     {
-        var result = _provider.TryTranslate(string.Empty, out var output);
+        var result = _provider.Translate(string.Empty);
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(result, Is.EqualTo(TranslationResult.Failed));
+            result.AssertFail();
             Assert.That(_client.ReceivedStrings, Is.Empty);
-            Assert.That(output, Is.Null);
             AssertServiceProcessing(_provider);
         }
     }
@@ -132,13 +130,12 @@ public class ApiTranslationProviderFunctionTests : TestBase<ApiTranslationProvid
     {
         _client.SendTextResult = string.Empty;
 
-        var result = _provider.TryTranslate("Test", out var output);
+        var result = _provider.Translate("Test");
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(result, Is.EqualTo(TranslationResult.Failed));
+            result.AssertFail();
             Assert.That(_client.ReceivedStrings, Is.Not.Empty);
-            Assert.That(output, Is.Null);
             AssertServiceProcessing(_provider);
         }
         Assert.That(_client.ReceivedStrings[0], Is.EqualTo("Test"));
@@ -150,13 +147,12 @@ public class ApiTranslationProviderFunctionTests : TestBase<ApiTranslationProvid
         _client.SendTextResult = "Yay";
         _client.ErrorOnSend = true;
 
-        var result = _provider.TryTranslate("Test", out var output);
+        var result = _provider.Translate("Test");
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(result, Is.EqualTo(TranslationResult.Failed));
+            result.AssertFail();
             Assert.That(_client.ReceivedStrings, Is.Not.Empty);
-            Assert.That(output, Is.Null);
             AssertServiceFaulted(_provider);
         }
         Assert.That(_client.ReceivedStrings[0], Is.EqualTo("Test"));
@@ -167,13 +163,13 @@ public class ApiTranslationProviderFunctionTests : TestBase<ApiTranslationProvid
     {
         _client.SendTextResult = "Yay";
 
-        var result = _provider.TryTranslate("Test", out var output);
+        var result = _provider.Translate("Test");
 
+        result.AssertOk();
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(result, Is.EqualTo(TranslationResult.Succeeded));
             Assert.That(_client.ReceivedStrings, Is.Not.Empty);
-            Assert.That(output, Is.EqualTo("Yay"));
+            Assert.That(result.Value, Is.EqualTo("Yay"));
             AssertServiceProcessing(_provider);
         }
         Assert.That(_client.ReceivedStrings[0], Is.EqualTo("Test"));

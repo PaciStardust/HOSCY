@@ -1,4 +1,5 @@
 using HoscyCore.Services.Translation.Core;
+using HoscyCore.Utility;
 using HoscyCoreTests.Mocks.Base;
 
 namespace HoscyCoreTests.Mocks.Impl;
@@ -12,23 +13,22 @@ public class MockTranslationModuleStartInfo : MockSoloModuleStartInfoBase, ITran
 
 public abstract class MockTranslationModule : MockStartStopModuleBase, ITranslationModule
 {
-    public TranslationResult ReturnedResult { get; set; } = TranslationResult.Succeeded;
     public string? ReturnedOutput { get; set; } = null;
 
     public List<string> ReceivedInput { get; init; } = [];
 
-    public TranslationResult TryTranslate(string input, out string? output)
+    public Res<string> Translate(string input)
     {
         ReceivedInput.Add(input);
-        output = ReturnedOutput;
-        return ReturnedResult;
+        return ReturnedOutput is null
+            ? ResC.TFail<string>("No result")
+            : ResC.TOk(ReturnedOutput);
     }
 
     public override void ResetStats()
     {
         base.ResetStats();
         ReceivedInput.Clear();
-        ReturnedResult = TranslationResult.Succeeded;
         ReturnedOutput = null;
         ResultToReturn = null;
     }

@@ -688,9 +688,8 @@ public class OutputManagerService
     /// <param name="contents">Text to translate</param>
     /// <param name="translatedText">Translated text if sucessfully translated, null if returning false or an error occured</param>
     /// <returns>Attempted translation?</returns>
-    private bool TryTranslateContentsIfNeeded(string contents, IOutputHandler[] handlers, out string? translatedText) //todo: [REFACTOR] this
+    private bool TryTranslateContentsIfNeeded(string contents, IOutputHandler[] handlers, out string? translatedText)
     {
-        //todo: [REFACTOR] Use SB?
         if (!handlers.Any(x => x.GetTranslationOutputMode() != OutputTranslationFormat.Untranslated))
         {
             _logger.Warning("Attempted translation of message with contents \"{contents}\", but could not find a suitable output or translator", contents);

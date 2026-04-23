@@ -1,4 +1,5 @@
 using HoscyCore.Services.Core;
+using HoscyCore.Utility;
 
 namespace HoscyCore.Services.Translation.Core;
 
@@ -17,5 +18,5 @@ public enum TranslationModuleConfigFlags
 
 public interface ITranslationModule : IStartStopModule
 {
-    public TranslationResult TryTranslate(string input, out string? output);
+    public Res<string> Translate(string input);
 }
