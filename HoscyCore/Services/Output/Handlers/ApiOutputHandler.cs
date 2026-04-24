@@ -83,13 +83,36 @@ public class ApiOutputHandler(ILogger logger, IApiClient client, ConfigModel con
             return;
         }
 
+        _logger.Debug("Sending {action} for preset \"{preset}\" with contents \"{contents}\"",
+            actionForLog, presetName, contents);
+
         var idx = _config.Api_Presets_GetIndex(presetName); //todo: [REFACTOR] Replace with result and actually make use of it
         if (idx == -1) return; //todo: [FIX] make error
 
         var preset = _client.LoadPreset(_config.Api_Presets[idx]);
         if (!preset.IsOk) return; //todo: [FIX] make error
 
-        _client.SendTextAsync(contents).RunWithoutAwait(); //todo: [FIX] make error?
+        _client.SendTextAsync(contents)
+            .ContinueWith((x, _) => OnSendTaskComplete(x, actionForLog, presetName, contents), TaskContinuationOptions.None)
+            .RunWithoutAwait();
+
+        _logger.Debug("Sent {action} for preset \"{preset}\" with contents \"{contents}\"",
+            actionForLog, presetName, contents);
+    }
+
+    private Task OnSendTaskComplete(Task<Res<string>> task, string actionForLog, string presetName, string contents)
+    {
+        if (task.IsFaulted)
+        {
+            var msg = ResC.FailLog($"Failed to send {actionForLog} \"{contents}\" via \"{presetName}\" for unknown reason", _logger, task.Exception);
+            SetFault(msg.Msg!);
+        }
+        else if (task.IsCompletedSuccessfully && task.Result is not null && !task.Result.IsOk)
+        {
+            _logger.Warning($"Failed to send {actionForLog} \"{contents}\" via \"{presetName}\" with result: {task.Result.Msg}");
+            SetFault(task.Result.Msg);
+        } 
+        return Task.CompletedTask;
     }
     #endregion
 }
