@@ -13,20 +13,18 @@ public class TextboxCommandModule
 (
     IOutputManagerService output,
     VrcTextboxOutputHandlerStartInfo info,
-    ReflectPropEditCommandModule reflectCm,
-    IBackToFrontNotifyService notify
+    ReflectPropEditCommandModule reflectCm
 ) 
 : AttributeCommandModule, ICoreCommandModule
 {
     private readonly IOutputManagerService _output = output;
     private readonly VrcTextboxOutputHandlerStartInfo _info = info;
     private readonly ReflectPropEditCommandModule _reflectCm = reflectCm;
-    private readonly IBackToFrontNotifyService _notify = notify;
 
     public string ModuleName 
-        => "Output: Textbox";
+        => "Output: VRC Textbox";
     public string ModuleDescription 
-        => "Configure the Vrc Textbox output module";
+        => "Configure the VRC Textbox output module";
     public string[] ModuleCommands 
         => ["out-textbox"];
 

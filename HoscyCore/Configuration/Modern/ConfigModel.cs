@@ -811,7 +811,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion
 
     #region Output - API
-    public bool ApiOut_Enabled //todo: impl
+    public bool ApiOut_Enabled
     {
         get => _apiOut_Enabled;
         set => SetProperty(ref _apiOut_Enabled, value);
@@ -823,49 +823,49 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
         get => _apiOut_Preset_Message;
         set => SetProperty(ref _apiOut_Preset_Message, value);
     }
-    private string _apiOut_Preset_Message = string.Empty; //todo: impl
+    private string _apiOut_Preset_Message = string.Empty;
 
     public string ApiOut_Preset_Notification
     {
         get => _apiOut_Preset_Notification;
         set => SetProperty(ref _apiOut_Preset_Notification, value);
     }
-    private string _apiOut_Preset_Notification = string.Empty; //todo: impl
+    private string _apiOut_Preset_Notification = string.Empty;
 
     public string ApiOut_Preset_Clear
     {
         get => _apiOut_Preset_Clear;
         set => SetProperty(ref _apiOut_Preset_Clear, value);
     }
-    private string _apiOut_Preset_Clear = string.Empty; //todo: impl
+    private string _apiOut_Preset_Clear = string.Empty;
 
     public string ApiOut_Preset_Processing
     {
         get => _apiOut_Preset_Processing;
         set => SetProperty(ref _apiOut_Preset_Processing, value);
     }
-    private string _apiOut_Preset_Processing = string.Empty; //todo: impl
+    private string _apiOut_Preset_Processing = string.Empty;
 
     public string ApiOut_Value_True
     {
         get => _apiOut_Value_True;
         set => SetProperty(ref _apiOut_Value_True, value);
     }
-    private string _apiOut_Value_True = string.Empty; //todo: impl
+    private string _apiOut_Value_True = string.Empty;
 
     public string ApiOut_Value_False
     {
         get => _apiOut_Value_False;
         set => SetProperty(ref _apiOut_Value_False, value);
     }
-    private string _apiOut_Value_False = string.Empty; //todo: impl
+    private string _apiOut_Value_False = string.Empty;
 
     public OutputTranslationFormat ApiOut_TranslationFormat
     {
         get => _apiOut_TranslationFormat;
         set => SetProperty(ref _apiOut_TranslationFormat, value);
     }
-    private OutputTranslationFormat _apiOut_TranslationFormat = OutputTranslationFormat.Both; //todo: impl
+    private OutputTranslationFormat _apiOut_TranslationFormat = OutputTranslationFormat.Both;
     #endregion
 
     #region Output - VRC Textbox

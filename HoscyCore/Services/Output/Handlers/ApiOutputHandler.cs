@@ -21,7 +21,7 @@ public class ApiOutputHandlerStartInfo(ConfigModel config) : IOutputHandlerStart
 
 [PrototypeLoadIntoDiContainer(typeof(ApiOutputHandler), Lifetime.Transient)] //todo: [TEST] Write tests for this
 public class ApiOutputHandler(ILogger logger, IApiClient client, ConfigModel config) : OutputHandlerBase(logger.ForContext<ApiOutputHandler>())
-{ //todo: [FEAT] CLI options
+{
     private readonly IApiClient _client = client;
     private readonly ConfigModel _config = config;
 
