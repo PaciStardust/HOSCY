@@ -69,7 +69,8 @@ public class TranslationManagerService
                 .TrimEnd();
         }
 
-        var result = _currentModule.Translate(input);
+        var result = ResC.TWrap(() => _currentModule.Translate(input), 
+            $"Translation of message with contents \"{input}\" failed", _logger);
         if (!result.IsOk)
         {
             _logger.Warning("Translation of message with contents \"{input}\" failed ({result})", input, result);

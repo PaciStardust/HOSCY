@@ -24,7 +24,7 @@ public class OutputManagerService
     ITranslationManagerService translator
 )
 : StartStopServiceBase(logger.ForContext<OutputManagerService>()), IOutputManagerService
-{ //todo: [REFACTOR?] Should this be made more resilient?
+{
     #region Injected Classes
     private readonly IBackToFrontNotifyService _notify = notify;
     private readonly ConfigModel _config = config;
@@ -468,11 +468,15 @@ public class OutputManagerService
     {
         _logger.Verbose("Sending {handlerCount} handlers a clear command", _activeHandlers.Count);
         _messageLoop?.Clear();
-        foreach (var handler in _activeHandlers)
-        {
-            handler.Clear();
-        }
+
+        var res = DoBulkSafe(_activeHandlers, x => x.Clear(), "Failed to clear");
         OnClear(this, EventArgs.Empty);
+        if (!res.IsOk)
+        {
+            _logger.Warning("Failed to clear ({res})", res);
+            _notify.SendResult("Failed to clear handler", res.Msg);
+        }
+
         _logger.Verbose("Sent {handlerCount} handlers a clear command", _activeHandlers.Count);
     }
     #endregion
@@ -483,7 +487,7 @@ public class OutputManagerService
         var compatiblePreprocessors = _preprocessors.Where(x => IsPreprocessorCompatible(x, settings)).ToArray();
         var preProcessResult = Preprocess(ref contents, compatiblePreprocessors);
 
-        if (string.IsNullOrWhiteSpace(contents) || preProcessResult == OutputPreprocessorResult.ProcessedStop) return;
+        if (!preProcessResult.IsOk || string.IsNullOrWhiteSpace(contents) || preProcessResult.Value == OutputPreprocessorResult.ProcessedStop) return;
 
         var compatibleHandlers = _activeHandlers
             .Where(x => IsHandlerCompatible(x, settings))
@@ -548,7 +552,7 @@ public class OutputManagerService
         var compatiblePreprocessors = _preprocessors.Where(x => IsPreprocessorCompatible(x, settings)).ToArray();
         var preProcessResult = Preprocess(ref contents, compatiblePreprocessors);
 
-        if (string.IsNullOrWhiteSpace(contents) || preProcessResult == OutputPreprocessorResult.ProcessedStop) return;
+        if (!preProcessResult.IsOk || string.IsNullOrWhiteSpace(contents) || preProcessResult.Value == OutputPreprocessorResult.ProcessedStop) return;
 
         var compatibleHandlers = _activeHandlers
             .Where(x => IsHandlerCompatible(x, settings))
@@ -597,11 +601,16 @@ public class OutputManagerService
         
         _logger.Verbose("Sending {handlerCount} handlers command to set processing indicator to {indicatorState}",
             _activeHandlers.Count, isProcessing);
+
+        var res = DoBulkSafe(_activeHandlers, x => x.SetProcessingIndicator(isProcessing),
+            $"Failed to set processing indicator to {isProcessing}");
         OnProcessingIndicatorSet(this, isProcessing);
-        foreach (var handler in _activeHandlers)
+        if (!res.IsOk)
         {
-            handler.SetProcessingIndicator(isProcessing);
+            _logger.Warning("Failed to set processing indicator to {isProcessing} ({res})", isProcessing, res);
+            _notify.SendResult("Failed to set processing indicator", res.Msg);
         }
+
         _logger.Verbose("Sent {handlerCount} handlers command to set processing indicator to {indicatorState}",
             _activeHandlers.Count, isProcessing);
     }
@@ -644,30 +653,39 @@ public class OutputManagerService
     /// <param name="input">String to preprocess</param>
     /// <param name="output">Preprocessed string if success and not handled entirely by a processor</param>
     /// <returns>Success</returns>
-    private OutputPreprocessorResult Preprocess(ref string contents, IOutputPreprocessor[] preprocessors)
+    private Res<OutputPreprocessorResult> Preprocess(ref string contents, IOutputPreprocessor[] preprocessors)
     {
         _logger.Verbose("Preprocessing \"{preProcessorInput}\" ...", contents);
-        
-        foreach (var preprocessor in preprocessors)
+
+        try
         {
-            var original = contents;
-            var result = preprocessor.Process(ref contents);
-
-            if (result == OutputPreprocessorResult.NotProcessed) continue;
-
-            if (result == OutputPreprocessorResult.ProcessedContinue)
+            foreach (var preprocessor in preprocessors)
             {
-                _logger.Verbose("Preprocessor \"{preprocessorName}\" converted \"{currentInput}\" to \"{currentOutput}\"",
-                    preprocessor.GetType().Name, original, contents);
-                continue;
-            }
+                var original = contents;
+                var result = preprocessor.Process(ref contents);
 
-            _logger.Verbose("Preprocessor \"{preprocessorName}\" has done final handling on \"{preProcessorInput}\" with message \"{preProcessorOutput}\"",
-                preprocessor.GetType().Name, original, contents);
-            return result;
+                if (result == OutputPreprocessorResult.NotProcessed) continue;
+
+                if (result == OutputPreprocessorResult.ProcessedContinue)
+                {
+                    _logger.Verbose("Preprocessor \"{preprocessorName}\" converted \"{currentInput}\" to \"{currentOutput}\"",
+                        preprocessor.GetType().Name, original, contents);
+                    continue;
+                }
+
+                _logger.Verbose("Preprocessor \"{preprocessorName}\" has done final handling on \"{preProcessorInput}\" with message \"{preProcessorOutput}\"",
+                    preprocessor.GetType().Name, original, contents);
+                return ResC.TOk(result);
+            }
+        }
+        catch (Exception ex)
+        {
+            var msg = ResC.TFailLog<OutputPreprocessorResult>($"Failed to process contents \"{contents}\"", _logger, ex);
+            _notify.SendResult("Preprocessing error", msg.Msg!);
+            return msg;
         }
 
-        return OutputPreprocessorResult.ProcessedContinue;
+        return ResC.TOk(OutputPreprocessorResult.ProcessedContinue);
     }
 
     private static bool IsPreprocessorCompatible(IOutputPreprocessor preprocessor, OutputSettingsFlags settings)
@@ -762,6 +780,20 @@ public class OutputManagerService
                 resMsgList.Add(ex);
         }
         return resMsgList;
+    }
+
+    private Res DoBulkSafe(IEnumerable<IOutputHandler> handlers, Action<IOutputHandler> handlerAction, string message)
+    {
+        List<ResMsg> errors = [];
+        foreach(var handler in handlers)
+        {
+            ResC.WrapR(() => handlerAction(handler), message, _logger)
+                .IfFail(x => errors.Add(x.WithContext(handler.GetType().Name)));
+        }
+
+        return errors.Count == 0
+            ? ResC.Ok()
+            : ResC.FailM(errors);
     }
     #endregion
 }
