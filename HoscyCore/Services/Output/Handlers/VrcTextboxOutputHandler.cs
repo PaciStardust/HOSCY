@@ -9,7 +9,7 @@ using Serilog;
 
 namespace HoscyCore.Services.Output.Handlers;
 
-[LoadIntoDiContainer(typeof(VrcTextboxOutputHandlerStartInfo))] //todo: [FEAT] API Output Handler
+[LoadIntoDiContainer(typeof(VrcTextboxOutputHandlerStartInfo))]
 public class VrcTextboxOutputHandlerStartInfo(ConfigModel config) : IOutputHandlerStartInfo
 {
     private readonly ConfigModel _config = config;

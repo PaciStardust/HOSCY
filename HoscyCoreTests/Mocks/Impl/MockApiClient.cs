@@ -33,8 +33,14 @@ public class MockApiClient : IApiClient
     public bool PresetLoadSuccessful { get; set; } = true;
     public Res LoadPreset(ApiPresetModel preset)
     {
-        LoadedModel = preset;
-        return PresetLoadSuccessful ? ResC.Ok() : ResC.Fail(ResMsg.Err("Preset load failed"));
+        if (PresetLoadSuccessful)
+        {
+            LoadedModel = preset;
+            return ResC.Ok();
+        }
+
+        LoadedModel = null;
+        return ResC.Fail(ResMsg.Err("Preset load failed"));
     }
 
     public readonly List<byte[]> ReceivedBytes = [];

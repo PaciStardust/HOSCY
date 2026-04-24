@@ -1338,7 +1338,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
             Assert.That(_preprocessorEarlyFull.ReceivedInput[7], Is.EqualTo("Notif4"));
         }
 
-        _preprocessorEarlyFull.ContinueIfHandled = true; //todo: fix numers below
+        _preprocessorEarlyFull.ContinueIfHandled = true;
 
         _output.SendMessage("Msg5", flags);
         _output.SendNotification("Notif5", OutputNotificationPriority.Critical, flags);

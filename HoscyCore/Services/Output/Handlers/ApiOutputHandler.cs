@@ -19,7 +19,7 @@ public class ApiOutputHandlerStartInfo(ConfigModel config) : IOutputHandlerStart
         => _config.ApiOut_Enabled;
 }
 
-[PrototypeLoadIntoDiContainer(typeof(ApiOutputHandler), Lifetime.Transient)] //todo: [TEST] Write tests for this
+[LoadIntoDiContainer(typeof(ApiOutputHandler), Lifetime.Transient)]
 public class ApiOutputHandler(ILogger logger, IApiClient client, ConfigModel config) : OutputHandlerBase(logger.ForContext<ApiOutputHandler>())
 {
     private readonly IApiClient _client = client;
