@@ -75,7 +75,7 @@ public class ApiOutputHandler(ILogger logger, IApiClient client, ConfigModel con
             isProcessing ? _config.ApiOut_Value_True : _config.ApiOut_Value_False);
     }
 
-    private void SendInternal(string presetName, string actionForLog, string contents) //todo: [FEAT] Logging
+    private void SendInternal(string presetName, string actionForLog, string contents)
     {
         if (string.IsNullOrWhiteSpace(presetName))
         {
@@ -86,11 +86,23 @@ public class ApiOutputHandler(ILogger logger, IApiClient client, ConfigModel con
         _logger.Debug("Sending {action} for preset \"{preset}\" with contents \"{contents}\"",
             actionForLog, presetName, contents);
 
-        var idx = _config.Api_Presets_GetIndex(presetName); //todo: [REFACTOR] Replace with result and actually make use of it
-        if (idx == -1) return; //todo: [FIX] make error
+        var idx = _config.Api_Presets_GetIndex(presetName);
+        if (idx == -1)
+        {
+            var res = ResC.FailLog($"Failed to send {actionForLog} \"{contents}\" via \"{presetName}\": Unable to locate preset",
+                _logger, lvl: ResMsgLvl.Warning);
+            SetFault(res.Msg!);
+            return;
+        }
 
         var preset = _client.LoadPreset(_config.Api_Presets[idx]);
-        if (!preset.IsOk) return; //todo: [FIX] make error
+        if (!preset.IsOk)
+        {
+            var res = ResC.FailLog($"Failed to send {actionForLog} \"{contents}\" via \"{presetName}\": Preset is not valid",
+                _logger, lvl: ResMsgLvl.Warning);
+            SetFault(res.Msg!);
+            return;
+        }
 
         _client.SendTextAsync(contents)
             .ContinueWith((x, _) => OnSendTaskComplete(x, actionForLog, presetName, contents), TaskContinuationOptions.None)
