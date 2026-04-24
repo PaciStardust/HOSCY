@@ -62,9 +62,10 @@ public class ApiOutputHandler(ILogger logger, IApiClient client, ConfigModel con
         return Task.CompletedTask;
     }
 
-    public override Task HandleNotification(string contents, OutputNotificationPriority priority) //todo: [FEAT] Implement priority?
+    public override Task HandleNotification(string contents, OutputNotificationPriority priority)
     {
-        SendInternal(_config.ApiOut_Preset_Notification, "Notification", contents);
+        SendInternal(_config.ApiOut_Preset_Notification, "Notification",
+            _config.ApiOut_PrependNotificationPriority ? $"{priority} > {contents}" : contents);
         return Task.CompletedTask;
     }
 

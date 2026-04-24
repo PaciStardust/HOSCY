@@ -866,6 +866,13 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
         set => SetProperty(ref _apiOut_TranslationFormat, value);
     }
     private OutputTranslationFormat _apiOut_TranslationFormat = OutputTranslationFormat.Both;
+    
+    public bool ApiOut_PrependNotificationPriority
+    {
+        get => _apiOut_PrependNotificationPriority;
+        set => SetProperty(ref _apiOut_PrependNotificationPriority, value);
+    }
+    private bool _apiOut_PrependNotificationPriority = false;
     #endregion
 
     #region Output - VRC Textbox

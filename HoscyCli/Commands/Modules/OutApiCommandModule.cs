@@ -85,4 +85,10 @@ public class OutApiCommandModule
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.ApiOut_TranslationFormat));
     }
+
+    [SubCommandModule(["prepend-priority"], "Prepend notification priority")] 
+    public Res CmdPrependPrio()
+    {
+        return _reflectCm.SetProperty(nameof(ConfigModel.ApiOut_PrependNotificationPriority));
+    }
 }
