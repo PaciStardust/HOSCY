@@ -184,6 +184,7 @@ SoloModuleManagerBase<TModuleStartInfo, TModule>
 
         if (!resPost.IsOk)
         {
+            UnsubscribeFromModuleEvents(module);
             _logger.Error("Failed to start module with name \"{moduleName}\" and type \"{moduleType}\" ({result})",
                 info.Name, info.ModuleType.FullName, res);
             return ResC.FailM(resPre.Msg, res.Msg, resPost.Msg);
@@ -290,14 +291,22 @@ SoloModuleManagerBase<TModuleStartInfo, TModule>
         {
             _logger.Debug("Performing module post-shutdown cleanup");
 
-            _currentModule.OnRuntimeError -= HandleOnRuntimeError;
-            _currentModule.OnModuleStopped -= HandleOnModuleStopped;
+            UnsubscribeFromModuleEvents(_currentModule);
+
             _currentModule = null;
             ResC.WrapR(OnModulePostStop, "Module Post-Stop failed", _logger);
 
             _logger.Debug("Performed module post-shutdown cleanup");
         }
     }
+
+    private void UnsubscribeFromModuleEvents(TModule module)
+    {
+        UnsubscribeFromModuleEventsInternal(module);
+        module.OnRuntimeError -= HandleOnRuntimeError;
+        module.OnModuleStopped -= HandleOnModuleStopped;
+    }
+    protected virtual void UnsubscribeFromModuleEventsInternal(TModule module) { }
 
     private void HandleOnRuntimeError(object? sender, ResMsg msg)
     {
