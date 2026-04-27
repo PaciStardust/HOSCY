@@ -1256,7 +1256,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// List of available vosk models with file path
     /// </summary>
-    public Dictionary<string, string> Recognition_Vosk_Models //todo: [IMPL] To be implemented
+    public Dictionary<string, string> Recognition_Vosk_Models
     {
         get => _recognition_Vosk_Models;
         set => SetProperty(ref _recognition_Vosk_Models, value);
@@ -1266,7 +1266,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Currently used vosk model
     /// </summary>
-    public string Recognition_Vosk_CurrentModel //todo: [IMPL] To be implemented
+    public string Recognition_Vosk_CurrentModel
     {
         get => _recognition_Vosk_CurrentModel;
         set => SetProperty(ref _recognition_Vosk_CurrentModel, value);
@@ -1276,7 +1276,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Time to wait in MS for new word before stopping sentence
     /// </summary>
-    public int Recognition_Vosk_NewWordWaitTimeMs //todo: [IMPL] To be implemented
+    public int Recognition_Vosk_NewWordWaitTimeMs
     {
         get => _recognition_Vosk_NewWordWaitTimeMs;
         set => SetProperty(ref _recognition_Vosk_NewWordWaitTimeMs,value.MinMax(500, 30000));
