@@ -153,7 +153,7 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
         try
         {
             AudioUtils.WriteRestOfWavHeader(streamContents);
-            RequestRecognition(streamContents).RunWithoutAwait(); //todo: [FIX] Does not display anywhere on error, should have a CT?
+            RequestRecognition(streamContents).RunWithoutAwait();
             InitStream(_stream);
             return ResC.Ok();
         } 
@@ -189,13 +189,38 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
         }
     }
 
+    private int _recId = 0;
     private async Task RequestRecognition(byte[] audioData)
     {
+        var recId = ++_recId;
+        _logger.Debug("Requesting recognition result for ID {recId}", recId);
         var result = await _client.SendBytesAsync(audioData);
+
         if (result.IsOk)
         {
+            _logger.Debug("Received text \"{text}\" for ID {recId}", result.Value, recId);
             InvokeSpeechRecognized(result.Value);
         }
+        else
+        {
+            _logger.Debug("Failed to receive for ID {recId} ({result})", recId, result);
+            SetFault(result.Msg);
+        }
+    }
+
+    private Task OnSendTaskComplete(Task<Res<string>> task, string actionForLog, string presetName, string contents)
+    {
+        if (task.IsFaulted)
+        {
+            var msg = ResC.FailLog($"Failed to send {actionForLog} \"{contents}\" via \"{presetName}\" for unknown reason", _logger, task.Exception);
+            SetFault(msg.Msg!);
+        }
+        else if (task.IsCompletedSuccessfully && task.Result is not null && !task.Result.IsOk)
+        {
+            _logger.Warning($"Failed to send {actionForLog} \"{contents}\" via \"{presetName}\" with result: {task.Result.Msg}");
+            SetFault(task.Result.Msg);
+        } 
+        return Task.CompletedTask;
     }
 
     private void InitStream(MemoryStream? stream)
