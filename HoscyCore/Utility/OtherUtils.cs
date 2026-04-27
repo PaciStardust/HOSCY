@@ -59,10 +59,11 @@ public static class OtherUtils
             string regstring = name + @""" *: *""(?<value>([^""\\]|\\.)*)""";
             var regex = new Regex(regstring, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
-            var result = regex.Match(json)?.Groups["value"].Value ?? null;
-            return string.IsNullOrWhiteSpace(result) 
-                ? ResC.TFailLog<string>($"Unable to locate value for key \"{name}\" in json: {json}", logger, lvl: ResMsgLvl.Warning) 
-                : ResC.TOk(Regex.Unescape(result));
+            var resultMatch = regex.Match(json);
+            if (!resultMatch.Success) 
+                ResC.TFailLog<string>($"Unable to locate value for key \"{name}\" in json: {json}", logger, lvl: ResMsgLvl.Warning);
+
+            return ResC.TOk(Regex.Unescape(resultMatch.Groups["value"].Value));
         }
         catch (Exception ex)
         {
