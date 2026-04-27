@@ -732,7 +732,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         _output.OnProcessingIndicatorSet += onIndicator;
         _output.RefreshHandlers().AssertOk();
         
-        _output.SetProcessingIndicator(true);
+        _output.SetProcessingIndicator(true, string.Empty);
 
         using (Assert.EnterMultipleScope())
         {
@@ -746,7 +746,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         _infoB.Enabled = false;
         _output.RefreshHandlers().AssertOk();
 
-        _output.SetProcessingIndicator(false);
+        _output.SetProcessingIndicator(false, string.Empty);
 
         using (Assert.EnterMultipleScope())
         {
@@ -758,6 +758,32 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         Assert.That(_handlerA.ReceivedIndicatorStates[1], Is.False);
 
         _output.OnProcessingIndicatorSet -= onIndicator;
+    }
+
+    [Test]
+    public void DoubleIndicatorTest()
+    {
+        _infoA.Enabled = true;
+        _output.RefreshHandlers().AssertOk();
+        
+        _output.SetProcessingIndicator(true, "1");
+
+        Assert.That(_handlerA.ReceivedIndicatorStates, Has.Count.EqualTo(1));
+        Assert.That(_handlerA.ReceivedIndicatorStates[0], Is.True);
+
+        _output.SetProcessingIndicator(true, "2");
+
+        Assert.That(_handlerA.ReceivedIndicatorStates, Has.Count.EqualTo(2));
+        Assert.That(_handlerA.ReceivedIndicatorStates[1], Is.True);
+
+        _output.SetProcessingIndicator(false, "1");
+
+        Assert.That(_handlerA.ReceivedIndicatorStates, Has.Count.EqualTo(2));
+
+        _output.SetProcessingIndicator(false, "2");
+
+        Assert.That(_handlerA.ReceivedIndicatorStates, Has.Count.EqualTo(3));
+        Assert.That(_handlerA.ReceivedIndicatorStates[2], Is.False);
     }
 
     [Test]

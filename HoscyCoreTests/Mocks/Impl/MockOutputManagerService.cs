@@ -37,7 +37,7 @@ public class MockOutputManagerService : MockStartStopServiceBase, IOutputManager
         OnNotification.Invoke(this, new(contents, [], priority));
     }
 
-    public void SetProcessingIndicator(bool isProcessing)
+    public void SetProcessingIndicator(bool isProcessing, string id)
     {
         ProcessingIndicator = isProcessing;
         OnProcessingIndicatorSet.Invoke(this, isProcessing);

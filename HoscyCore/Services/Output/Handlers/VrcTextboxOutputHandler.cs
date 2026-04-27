@@ -351,7 +351,6 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
         ClearNotification();
         _isClearPending = true;
         _intendedTimeoutUntil = DateTimeOffset.MinValue; //Min timeout never gets cleared because of VRC rate limits
-        SetProcessingIndicator(false);
     }
 
     private void ClearNotification()

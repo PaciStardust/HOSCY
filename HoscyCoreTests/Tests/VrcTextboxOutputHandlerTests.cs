@@ -116,8 +116,8 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
             Assert.That(_send.ReceivedMessages[3].Args, Is.EqualTo([1]));
         }
 
-        // Clear also does typing indicator
         _handler.Clear();
+        _handler.SetProcessingIndicator(false);
         Thread.Sleep(VrcTextboxOutputHandler.TIMEOUT_WAIT_MS * 2);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(6)); //Increase by 2 because clear
         using (Assert.EnterMultipleScope())

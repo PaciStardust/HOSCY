@@ -68,6 +68,7 @@ public class OutputManagerService
 
         _handlerInfos.Clear();
         _preprocessors.Clear();
+        _indicatorSources.Clear();
 
         var handlerStartInfoResult = _loadHandlerStartInfo.GetInstances();
         if (!handlerStartInfoResult.IsOk) return ResC.Fail(handlerStartInfoResult.Msg);
@@ -148,6 +149,7 @@ public class OutputManagerService
         _activeHandlers.Clear();
         _handlerInfos.Clear();
         _preprocessors.Clear();
+        _indicatorSources.Clear();
         _messageLoop?.Dispose();
     }
     #endregion
@@ -477,6 +479,9 @@ public class OutputManagerService
             _notify.SendResult("Failed to clear handler", res.Msg);
         }
 
+        _indicatorSources.Clear();
+        SetProcessingIndicator(false, string.Empty);
+
         _logger.Verbose("Sent {handlerCount} handlers a clear command", _activeHandlers.Count);
     }
     #endregion
@@ -590,29 +595,44 @@ public class OutputManagerService
 
     #region Handlers => Processing Indicator
     private System.Timers.Timer? _indicatorResetTimer = null;
-    public void SetProcessingIndicator(bool isProcessing)
+    private readonly HashSet<string> _indicatorSources = [];
+    public void SetProcessingIndicator(bool isProcessing, string id)
     {
-        if (_indicatorResetTimer is not null)
+        if(isProcessing)
         {
-            _indicatorResetTimer.Stop();
-            if (isProcessing)
-                _indicatorResetTimer.Start();
+            if (!string.IsNullOrWhiteSpace(id))
+            {
+                _indicatorSources.Add(id.ToLower());
+            }
+            _indicatorResetTimer?.Start();
+        }
+        else
+        {
+            _indicatorSources.Remove(id.ToLower());
+            if (_indicatorSources.Count > 0)
+            {
+                _logger.Verbose("Skipped sending {handlerCount} handlers command to turn off processing from {id}, still enabled from {enabledIds}",
+                _activeHandlers.Count, isProcessing, id, string.Join(", ", _indicatorSources));
+                return;
+            }
+            _indicatorResetTimer?.Stop();
         }
         
-        _logger.Verbose("Sending {handlerCount} handlers command to set processing indicator to {indicatorState}",
-            _activeHandlers.Count, isProcessing);
+        _logger.Verbose("Sending {handlerCount} handlers command to set processing indicator to {indicatorState} from {id}",
+            _activeHandlers.Count, isProcessing, id);
 
         var res = DoBulkSafe(_activeHandlers, x => x.SetProcessingIndicator(isProcessing),
-            $"Failed to set processing indicator to {isProcessing}");
+            $"Failed to set processing indicator to {isProcessing} from {id}");
         OnProcessingIndicatorSet(this, isProcessing);
         if (!res.IsOk)
         {
-            _logger.Warning("Failed to set processing indicator to {isProcessing} ({res})", isProcessing, res);
+            _logger.Warning("Failed to set processing indicator to {isProcessing} from {id} ({res})",
+                isProcessing, id, res);
             _notify.SendResult("Failed to set processing indicator", res.Msg);
         }
 
-        _logger.Verbose("Sent {handlerCount} handlers command to set processing indicator to {indicatorState}",
-            _activeHandlers.Count, isProcessing);
+        _logger.Verbose("Sent {handlerCount} handlers command to set processing indicator to {indicatorState} from {id}",
+            _activeHandlers.Count, isProcessing, id);
     }
 
     private System.Timers.Timer CreateIndicatorResetTimer()
@@ -642,7 +662,8 @@ public class OutputManagerService
     private void OnIndicatorResetTimerElapsed(object? sender, ElapsedEventArgs e)
     {
         _logger.Verbose("Indicator automatically reset");
-        SetProcessingIndicator(false);
+        _indicatorSources.Clear();
+        SetProcessingIndicator(false, string.Empty);
     }
     #endregion
 

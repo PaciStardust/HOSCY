@@ -191,7 +191,7 @@ public class RecognitionManagerService
     private void HandleOnSpeechActivity(bool state)
     {
         _logger.Verbose("Forwarding speech activity state {state} to output", state);
-        _output.SetProcessingIndicator(state);
+        _output.SetProcessingIndicator(state, "Recognition");
     }
 
     private void HandleOnInternalListeningStatusChange()
