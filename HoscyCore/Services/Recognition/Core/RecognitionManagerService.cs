@@ -10,7 +10,7 @@ using Serilog;
 namespace HoscyCore.Services.Recognition.Core;
 
 [PrototypeLoadIntoDiContainer(typeof(IRecognitionManagerService), Lifetime.Singleton)]
-public class RecognitionManagerService //todo: [TEST] create test for this
+public class RecognitionManagerService
 (
     IBackToFrontNotifyService notify,
     ILogger logger,
@@ -58,12 +58,14 @@ public class RecognitionManagerService //todo: [TEST] create test for this
     protected override Res OnModulePreStop(IRecognitionModule module)
     {
         var res = SetListeningInternal(module, false); // Internal to not notify of change yet
+        return res.IsOk ? ResC.Ok() : ResC.Fail(res.Msg);
+    }
 
+    protected override void UnsubscribeFromModuleEventsInternal(IRecognitionModule module)
+    {
         module.OnSpeechActivity -= HandleOnSpeechActivity;
         module.OnSpeechRecognized -= HandleOnSpeechRecognized;
         module.OnInternalListeningStatusChange -= HandleOnInternalListeningStatusChange;
-
-        return res.IsOk ? ResC.Ok() : ResC.Fail(res.Msg);
     }
 
     protected override void OnModulePostStop()
@@ -139,7 +141,7 @@ public class RecognitionManagerService //todo: [TEST] create test for this
             flags |= OutputSettingsFlags.AllowOtherOutput;
         if (_config.Recognition_Send_DoTranslate)
             flags |= OutputSettingsFlags.DoTranslate;
-        if (_config.Preprocessing_DoReplacementsPartial)
+        if (_config.Recognition_Send_DoPreprocessPartial)
             flags |= OutputSettingsFlags.DoPreprocessPartial;
         if (_config.Recognition_Send_DoPreprocessFull)
             flags |= OutputSettingsFlags.DoPreprocessFull;
@@ -151,7 +153,7 @@ public class RecognitionManagerService //todo: [TEST] create test for this
     private bool CleanMessage(ref string message)
     {
         message = _config.Recognition_Fixup_RemoveEndPeriod
-            ? message.TrimStart().TrimEnd(' ', '.', '。')
+            ? message.TrimStart().TrimEnd(' ', '.', '。', ',')
             : message.Trim();
 
         var denoiseMatch = _inputDenoiseFilter.Match(message);
@@ -168,9 +170,9 @@ public class RecognitionManagerService //todo: [TEST] create test for this
 
     public Res UpdateSettings()
     {
-        var filterWords = _config.Recognition_Fixup_NoiseFilter.Select(x => $"(?:{Regex.Escape(x)})");
+        var filterWords = _config.Recognition_Fixup_NoiseFilter.Select(x => Regex.Escape(x));
         var filterCombined = string.Join('|', filterWords);
-        var regString = $"^(?:(?<=^| |\\b)(?:{filterCombined})(?=$| |\\b))?(.*?)(?:(?<=^| |\\b)(?:{filterCombined})(?=$| |\\b))?$";
+        var regString = $"^(?: *(?:{filterCombined}) *)*(.*?)(?: *(?:{filterCombined}) *)*$";
 
         _logger.Information("Setting recognition denoiser to {regString}", regString);
         try
