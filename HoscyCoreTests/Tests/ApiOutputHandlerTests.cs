@@ -5,7 +5,7 @@ using HoscyCoreTests.Mocks.Impl;
 using HoscyCoreTests.Utils;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure
-namespace HoscyCoreTests.Tests.ApiClientTests;
+namespace HoscyCoreTests.Tests.ApiOutputHandlerTests;
 #pragma warning restore IDE0130 // Namespace does not match folder structure
 
 public class ApiOutputHandlerTests : TestBase<ApiOutputHandlerTests>
