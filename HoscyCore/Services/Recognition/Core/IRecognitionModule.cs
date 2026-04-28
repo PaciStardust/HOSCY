@@ -16,7 +16,8 @@ public enum RecognitionModuleConfigFlags
     Windows     = 0b10,
     AnyApi      = 0b100,
     Whisper     = 0b1000,
-    Vosk        = 0b10000
+    Vosk        = 0b10000,
+    Azure       = 0b100000
 }
 
 public interface IRecognitionModule : IStartStopModule

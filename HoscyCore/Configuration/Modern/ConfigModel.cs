@@ -126,7 +126,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Region of Azure Services
     /// </summary>
-    public string AzureServices_Region //todo: [IMPL] To be implemented
+    public string AzureServices_Region
     {
         get => _azureServices_Region;
         set => SetProperty(ref _azureServices_Region, value);
@@ -136,7 +136,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// API Key to use with Azure
     /// </summary>
-    public string AzureServices_ApiKey //todo: [IMPL] To be implemented
+    public string AzureServices_ApiKey
     {
         get => _azureServices_ApiKey;
         set => SetProperty(ref _azureServices_ApiKey, value);
@@ -1140,7 +1140,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Should recognition be muted when the game is muted
     /// </summary>
-    public bool Recognition_Mute_OnGameMute //todo: [IMPL] To be implemented
+    public bool Recognition_Mute_OnGameMute
     {
         get => _recognition_Mute_OnGameMute;
         set => SetProperty(ref _recognition_Mute_OnGameMute, value);
@@ -1202,7 +1202,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// API Preset for API Speech Recognition
     /// </summary>
-    public string Recognition_Api_Preset //todo: [IMPL] To be implemented
+    public string Recognition_Api_Preset
     {
         get => _recognition_Api_Preset;
         set => SetProperty(ref _recognition_Api_Preset, value);
@@ -1212,7 +1212,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Maximum recording time for API Speech Recognition in seconds 
     /// </summary>
-    public int Recognition_Api_MaxRecordingTime //todo: [IMPL] To be implemented
+    public int Recognition_Api_MaxRecordingTime
     {
         get => _recognition_Api_MaxRecordingTime;
         set => SetProperty(ref _recognition_Api_MaxRecordingTime, value.MinMax( 1, 300));
@@ -1224,7 +1224,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Custom endpoint for Azure Speech Recognition
     /// </summary>
-    public string Recognition_Azure_CustomEndpoint //todo: [IMPL] To be implemented
+    public string Recognition_Azure_CustomEndpoint
     {
         get => _recognition_Azure_CustomEndpoint;
         set => SetProperty(ref _recognition_Azure_CustomEndpoint, value);
@@ -1234,7 +1234,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Preset phrases for Azure Speech Recognition
     /// </summary>
-    public HashSet<string> Recognition_Azure_PresetPhrases //todo: [IMPL] To be implemented
+    public HashSet<string> Recognition_Azure_PresetPhrases
     {
         get => _recognition_Azure_Phrases;
         set => SetProperty(ref _recognition_Azure_Phrases, value);
@@ -1244,12 +1244,22 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// List of Languages for Azure Speech Recognition
     /// </summary>
-    public HashSet<string> Recognition_Azure_Languages //todo: [IMPL] To be implemented
+    public HashSet<string> Recognition_Azure_Languages
     {
         get => _recognition_Azure_Languages;
         set => SetProperty(ref _recognition_Azure_Languages, value);
     }
     private HashSet<string> _recognition_Azure_Languages = [];
+
+    /// <summary>
+    /// Should profanity be censored
+    /// </summary>
+    public bool Recognition_Azure_CensorProfanity
+    {
+        get => _recognition_Azure_CensorProfanity;
+        set => SetProperty(ref _recognition_Azure_CensorProfanity, value);
+    }
+    private bool _recognition_Azure_CensorProfanity = false;
     #endregion
 
     #region Recognition - Vosk
