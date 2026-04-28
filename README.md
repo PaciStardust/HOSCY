@@ -30,11 +30,11 @@ For the following reasons this project is currently being rewritten from the gro
     - ❌ Display
   - ✅ Translation
   - ✅ Textbox Control
-  - ❌ STT
+  - ✅ STT
     - ✅ Voice Commands
-    - 🆗 API Recognition
-    - ❌ Azure Recognition
-    - ❌ Vosk Recognition
+    - ✅ API Recognition
+    - ✅ Azure Recognition
+    - ✅ Vosk Recognition
     - ✅ Whisper Recognition
     - ✅ Windows Recognition (V1 & V2)
   - ❌ TTS
