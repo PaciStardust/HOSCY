@@ -128,11 +128,20 @@ public static class LaunchUtils
             foreach (var type in allTypesResult.Value)
             {
                 if (!type.IsAssignableTo(searchType)) continue;
-                var diType = type.GetCustomAttribute<LoadIntoDiContainerAttribute>()?.AsType ?? type;
 
+                var loadAttribute = type.GetCustomAttribute<LoadIntoDiContainerAttribute>();
+                if (loadAttribute is not null && !OtherUtils.IsPlatformCompatible(loadAttribute.SupportedPlatforms))
+                {
+                    logger.Verbose("Skipped looking for instance of \"{baseType}\" \"{serviceType}\", it is not supported on this platform",
+                        searchType.FullName, type.FullName);
+                    continue;
+                }
+
+                var diType = loadAttribute?.AsType ?? type;
                 if (container.GetService(diType) is not T instance)
                 {
-                    logger.Debug("Could not locate instance of \"{baseType}\" \"{serviceType}\"", searchType.FullName, type.FullName);
+                    logger.Debug("Could not locate instance of \"{baseType}\" \"{serviceType}\"",
+                        searchType.FullName, type.FullName);
                     continue;
                 }
                 logger.Verbose("Located instance of \"{baseType}\" \"{serviceType}\"", searchType.FullName, type.FullName);

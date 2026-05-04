@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using HoscyCore.Services.Dependency;
 using Serilog;
 
 namespace HoscyCore.Utility;
@@ -69,6 +70,17 @@ public static class OtherUtils
         {
             return ResC.TFailLog<string>($"Failed to extract with key \"{name}\" from json \"{json}\"", logger, ex);
         }
+    }
+
+    /// <summary>
+    /// Returns if the current platform is supported by a service
+    /// </summary>
+    public static bool IsPlatformCompatible(SupportedPlatformFlags flags)
+    {
+        return flags == SupportedPlatformFlags.All
+            || (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && flags.HasFlag(SupportedPlatformFlags.Linux))
+            || (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && flags.HasFlag(SupportedPlatformFlags.Windows))
+            || (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && flags.HasFlag(SupportedPlatformFlags.OSX));
     }
 
     public static void ThrowOnInvalidPlatform(OSPlatform[] platforms)
