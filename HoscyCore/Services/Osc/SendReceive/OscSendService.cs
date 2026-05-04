@@ -89,7 +89,7 @@ public class OscSendService(ILogger logger, ConfigModel config, IBackToFrontNoti
 
     private Res SendSync(OscSender sender, string ipForLog, ushort portForLog, string address, params object?[] args)
     {
-        Res func() => SendAsync(sender, ipForLog, portForLog, address, args).GetAwaiter().GetResult();
+        Res func() => SendAsync(sender, ipForLog, portForLog, address, args).AsSync();
         return ResC.Wrap(func, "SendSync failed", _logger);
     }
 

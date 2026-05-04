@@ -9,6 +9,23 @@ public static class CommonExtensions
     public static void RunWithoutAwait(this Task task)
         => Task.Run(async () => await task).ConfigureAwait(false);
 
+    public static void AsSync(this Task task)
+    {
+        Task.Run(async () => await task).GetAwaiter().GetResult();
+    }
+    public static T AsSync<T>(this Task<T> task)
+    {
+        return Task.Run(async () => await task).GetAwaiter().GetResult();
+    }
+    public static void AsSync(this ValueTask task)
+    {
+        Task.Run(async () => await task).GetAwaiter().GetResult();
+    }
+    public static T AsSync<T>(this ValueTask<T> task)
+    {
+        return Task.Run(async () => await task).GetAwaiter().GetResult();
+    }
+
     /// <summary>
     /// Makes the first character of a string into an uppercase char
     /// </summary>

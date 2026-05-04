@@ -38,5 +38,5 @@ public class RecAzureCommandModule(ReflectPropEditCommandModule reflectCm)
     public Res CmdCensorProfanity()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Azure_CensorProfanity));
-    } //todo: [IMPL] To be implemented
+    }
 }

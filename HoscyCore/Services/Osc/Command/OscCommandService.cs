@@ -105,7 +105,7 @@ public class OscCommandService
                 while (timeToWait > 0) //this loop ensures that we can exit within 50ms of the token being cancelled
                 {
                     var waitCycle = Math.Min(timeToWait, OSC_COMMAND_MAX_UNINTERRUPTED_WAIT);
-                    Task.Delay(waitCycle).GetAwaiter().GetResult();
+                    Task.Delay(waitCycle).AsSync();
                     if (_cts.IsCancellationRequested) return Task.CompletedTask;
                     timeToWait -= waitCycle;
                 }

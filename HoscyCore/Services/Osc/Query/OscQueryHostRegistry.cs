@@ -49,7 +49,7 @@ public class OscQueryHostRegistry(ILogger logger)
     {
         return ResC.TWrap(() =>
         {
-            var host = Vrc.Extensions.GetHostInfo(profile.address, profile.port).GetAwaiter().GetResult();
+            var host = Vrc.Extensions.GetHostInfo(profile.address, profile.port).AsSync();
             return ResC.TOk(host);
         }, $"Failed to grab HostInfo for ServiceProfile \"{profile.name}\"", _logger);
     }

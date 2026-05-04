@@ -178,7 +178,7 @@ public static class LaunchUtils
         try
         {
             using var timer = CreateTimerToThrowException(exceptionToThrow, msToWaitFor);
-            task?.GetAwaiter().GetResult();
+            task?.AsSync();
             timer.Stop();
             return ResC.Ok();
         }

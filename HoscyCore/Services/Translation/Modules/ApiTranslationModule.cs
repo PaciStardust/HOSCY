@@ -66,7 +66,7 @@ public class ApiTranslationModule(ILogger logger, ConfigModel config, IApiClient
             return ResC.TFail<string>("Provided input to translate is empty");
 
         _logger.Verbose("Requesting translation of text \"{input}\"", input);
-        var result = ResC.TWrap(() => _client.SendTextAsync(input).GetAwaiter().GetResult(),
+        var result = ResC.TWrap(() => _client.SendTextAsync(input).AsSync(),
             "Failed translation of text \"{input}\" via exception", _logger);
 
         if (!result.IsOk)
