@@ -1,6 +1,11 @@
 using System.Buffers.Binary;
 using System.Runtime.InteropServices;
+using HoscyCore.Configuration.Modern;
+using HoscyCore.Utility;
 using Serilog;
+using SoundFlow.Abstracts.Devices;
+using SoundFlow.Extensions.WebRtc.Apm;
+using SoundFlow.Extensions.WebRtc.Apm.Modifiers;
 using SoundFlow.Structs;
 
 namespace HoscyCore.Services.Audio;
@@ -45,6 +50,43 @@ public static class AudioUtils
             }
             return defaultMatches[0];
         }
+    }
+
+    public static WebRtcApmModifier AddWebRtcModifier(AudioDevice device, bool echoCancellation, int ecLatencyMs, bool noiseSuppression, NoiseSuppressionLevel nsLevel,
+        bool gainControl, bool highPass, bool preAmp, float preAmpGain)
+    {
+        var apmModifier = new WebRtcApmModifier(
+            device,
+            aecEnabled: echoCancellation,
+            aecMobileMode: false,
+            aecLatencyMs: ecLatencyMs.MinMax(0, 1000),
+            nsEnabled: noiseSuppression,
+            nsLevel: nsLevel,
+            agc1Enabled: false,
+            agc2Enabled: gainControl,
+            hpfEnabled: highPass,
+            preAmpEnabled: preAmp,
+            preAmpGain: preAmpGain,
+            useMultichannelCapture: false,
+            useMultichannelRender: false,
+            downmixMethod: DownmixMethod.AverageChannels
+        );
+        return apmModifier; //todo: [TEST] Does this apply like this or is additional config needed?
+    }
+    public static WebRtcApmModifier AddWebRtcModifier(AudioDevice device, ConfigModel config)
+    {
+        return AddWebRtcModifier
+        (
+            device,
+            config.Audio_WebRtc_UseEchoCancellation,
+            config.Audio_WebRtc_EchoCancellationDelayMs,
+            config.Audio_WebRtc_UseNoiseSuppression,
+            config.Audio_WebRtc_NoiseSuppressionLevel,
+            config.Audio_WebRtc_UseAutomaticGainControl,
+            config.Audio_WebRtc_UseHighPassFilter,
+            config.Audio_WebRtc_UsePreAmplifier,
+            config.Audio_WebRtc_PreAmplifierGainFactor
+        );
     }
 
     public static void ConvertLinearFloatsToPcmBytes(Span<float> samplesIn, Span<byte> bytesOut)

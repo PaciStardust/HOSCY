@@ -4,11 +4,13 @@ using HoscyCore.Services.Recognition.Extra;
 using HoscyCore.Utility;
 using Serilog.Core;
 using Serilog.Events;
+using SoundFlow.Extensions.WebRtc.Apm;
 
 namespace HoscyCore.Configuration.Modern;
 
 public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is usable from the CLI
 {
+    //todo: [FEAT] Description Attribute
     public int ConfigVersion { get; set; } = 0;
 
     #region AFK
@@ -120,6 +122,74 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
         set => SetProperty(ref _audio_CurrentSpeakerSystemName, value);
     }
     private string _audio_CurrentSpeakerSystemName = string.Empty;
+    #endregion
+
+    #region Audio - WebRtc
+    /// <summary>
+    /// Enables the WebRtc stack for supported audio devices
+    /// </summary>
+    public bool Audio_WebRtc_Enabled //todo: [IMPL] To be implemented
+    {
+        get => _audio_WebRtc_Enabled;
+        set => SetProperty(ref _audio_WebRtc_Enabled, value);
+    }
+    private bool _audio_WebRtc_Enabled = true;
+
+    public bool Audio_WebRtc_UseEchoCancellation //todo: [IMPL] To be implemented
+    {
+        get => _audio_WebRtc_UseEchoCancellation;
+        set => SetProperty(ref _audio_WebRtc_UseEchoCancellation, value);
+    }
+    private bool _audio_WebRtc_UseEchoCancellation = true;
+
+    public int Audio_WebRtc_EchoCancellationDelayMs //todo: [IMPL] To be implemented
+    {
+        get => _audio_WebRtc_EchoCancellationDelayMs;
+        set => SetProperty(ref _audio_WebRtc_EchoCancellationDelayMs, value);
+    }
+    private int _audio_WebRtc_EchoCancellationDelayMs = 40;
+
+    public bool Audio_WebRtc_UseNoiseSuppression //todo: [IMPL] To be implemented
+    {
+        get => _audio_WebRtc_UseNoiseSuppression;
+        set => SetProperty(ref _audio_WebRtc_UseNoiseSuppression, value);
+    }
+    private bool _audio_WebRtc_UseNoiseSuppression = true;
+
+    public NoiseSuppressionLevel Audio_WebRtc_NoiseSuppressionLevel //todo: [IMPL] To be implemented
+    {
+        get => _audio_WebRtc_NoiseSuppressionLevel;
+        set => SetProperty(ref _audio_WebRtc_NoiseSuppressionLevel, value);
+    }
+    private NoiseSuppressionLevel _audio_WebRtc_NoiseSuppressionLevel = NoiseSuppressionLevel.Moderate;
+
+    public bool Audio_WebRtc_UseAutomaticGainControl //todo: [IMPL] To be implemented
+    {
+        get => _audio_WebRtc_UseAutomaticGainControl;
+        set => SetProperty(ref _audio_WebRtc_UseAutomaticGainControl, value);
+    }
+    private bool _audio_WebRtc_UseAutomaticGainControl = false;
+
+    public bool Audio_WebRtc_UseHighPassFilter //todo: [IMPL] To be implemented
+    {
+        get => _audio_WebRtc_UseHighPassFilter;
+        set => SetProperty(ref _audio_WebRtc_UseHighPassFilter, value);
+    }
+    private bool _audio_WebRtc_UseHighPassFilter = false;
+
+    public bool Audio_WebRtc_UsePreAmplifier //todo: [IMPL] To be implemented
+    {
+        get => _audio_WebRtc_UsePreAmplifier;
+        set => SetProperty(ref _audio_WebRtc_UsePreAmplifier, value);
+    }
+    private bool _audio_WebRtc_UsePreAmplifier = false;
+
+    public float Audio_WebRtc_PreAmplifierGainFactor //todo: [IMPL] To be implemented
+    {
+        get => _audio_WebRtc_PreAmplifierGainFactor;
+        set => SetProperty(ref _audio_WebRtc_PreAmplifierGainFactor, value);
+    }
+    private float _audio_WebRtc_PreAmplifierGainFactor = 1;
     #endregion
 
     #region Azure
