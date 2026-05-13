@@ -32,7 +32,7 @@ public class RecognitionComponentFactory(WhisperIpcConfig config)
         return engine;
     }
 
-    public AudioCaptureDeviceProxy CreateCaptureDevice(AudioEngine engine, ILogger logger)
+    public AudioCaptureDeviceProxy CreateCaptureDevice(AudioEngine engine, ILogger logger, WhisperIpcConfig cfg)
     {
         logger.Debug("Creating audio device");
 
@@ -48,7 +48,16 @@ public class RecognitionComponentFactory(WhisperIpcConfig config)
         };
 
         var rawDevice = engine.InitializeCaptureDevice(devInfo, format);
-        return new(rawDevice, logger);
+        var wrappedDevice = new AudioCaptureDeviceProxy(rawDevice, logger);
+
+        if (cfg.WebRtc_Enabled)
+        {
+            wrappedDevice.AddApmModifier(cfg.WebRtc_UseEchoCancellation, cfg.WebRtc_EchoCancellationDelayMs,
+                cfg.WebRtc_UseNoiseSuppression, cfg.WebRtc_NoiseSuppressionLevel, cfg.WebRtc_UseAutomaticGainControl,
+                cfg.WebRtc_UseHighPassFilter, cfg.WebRtc_UsePreAmplifier, cfg.WebRtc_PreAmplifierGainFactor);
+        }
+
+        return wrappedDevice;
     }
 
     public WebRtcVad CreateVad(ILogger logger)

@@ -65,6 +65,11 @@ public class WindowsV2RecognitionModule : WindowsRecognitionModuleBase
         if (!micResult.IsOk) return ResC.Fail(micResult.Msg);
         _mic = micResult.Value;
 
+        if (_config.Audio_WebRtc_Enabled)
+        {
+            _mic.AddApmModifier(_config);
+        }
+
         _mic.OnAudioProcessed += HandleAudioProcessed;
         var micStartRes = _mic.Start();
         if (!micStartRes.IsOk) return micStartRes;

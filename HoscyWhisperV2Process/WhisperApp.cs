@@ -32,7 +32,7 @@ public class WhisperApp : IDisposable
         InitIpcClassesIfNeeded();
 
         using var audioEngine = _factory.CreateAudioEngine(_logger);
-        using var capture = _factory.CreateCaptureDevice(audioEngine, _logger);
+        using var capture = _factory.CreateCaptureDevice(audioEngine, _logger, _config);
         _ipcDataHandler?.OnMute += (x) =>
         {
             capture.SetListening(x.State);

@@ -1,5 +1,6 @@
 using HoscyCore.Utility;
 using Serilog.Events;
+using SoundFlow.Extensions.WebRtc.Apm;
 
 namespace HoscyCore.Services.Recognition.Extra;
 
@@ -39,6 +40,16 @@ public record WhisperIpcConfig
     public bool Whisper_UseGpu { get; init; } = true;
     public int Whisper_GpuId { get; init => value.MinMax(0, int.MaxValue); } = 0;
 
+    public bool WebRtc_Enabled { get; init; } = true;
+    public bool WebRtc_UseEchoCancellation { get; init; } = true;
+    public int WebRtc_EchoCancellationDelayMs { get; init => value.MinMax(0, 1000); } = 40;
+    public bool WebRtc_UseNoiseSuppression { get; init; } = true;
+    public NoiseSuppressionLevel WebRtc_NoiseSuppressionLevel { get; init; } = NoiseSuppressionLevel.Moderate;
+    public bool WebRtc_UseAutomaticGainControl { get; init; } = false;
+    public bool WebRtc_UseHighPassFilter { get; init; } = false;
+    public bool WebRtc_UsePreAmplifier { get; init; } = false;
+    public float WebRtc_PreAmplifierGainFactor { get; init; } = 1;
+    
     public bool Debug_LogVerboseExtra { get; init; } = false;
 }
 
