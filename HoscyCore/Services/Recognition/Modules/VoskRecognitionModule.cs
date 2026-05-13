@@ -19,7 +19,7 @@ public class VoskRecognitionModuleStartInfo : IRecognitionModuleStartInfo
     public Type ModuleType => typeof(VoskRecognitionModule);
 
     public RecognitionModuleConfigFlags ConfigFlags 
-        => RecognitionModuleConfigFlags.Microphone | RecognitionModuleConfigFlags.Vosk;
+        => RecognitionModuleConfigFlags.MicRtc | RecognitionModuleConfigFlags.Vosk;
 }
 
 [PrototypeLoadIntoDiContainer(typeof(VoskRecognitionModule), Lifetime.Transient)]

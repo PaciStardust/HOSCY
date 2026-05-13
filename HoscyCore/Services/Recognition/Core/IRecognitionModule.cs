@@ -17,7 +17,9 @@ public enum RecognitionModuleConfigFlags
     AnyApi      = 0b100,
     Whisper     = 0b1000,
     Vosk        = 0b10000,
-    Azure       = 0b100000
+    Azure       = 0b100000,
+    WebRtc      = 0b1000000,
+    MicRtc      = Microphone | WebRtc
 }
 
 public interface IRecognitionModule : IStartStopModule

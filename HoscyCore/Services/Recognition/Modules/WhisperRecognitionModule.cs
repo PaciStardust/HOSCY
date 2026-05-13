@@ -22,7 +22,7 @@ public class WhisperRecognitionModuleStartInfo : IRecognitionModuleStartInfo
     public Type ModuleType => typeof(WhisperRecognitionModule);
 
     public RecognitionModuleConfigFlags ConfigFlags 
-        => RecognitionModuleConfigFlags.Microphone | RecognitionModuleConfigFlags.Whisper;
+        => RecognitionModuleConfigFlags.MicRtc | RecognitionModuleConfigFlags.Whisper;
 }
 
 [PrototypeLoadIntoDiContainer(typeof(WhisperRecognitionModule), Lifetime.Transient)]

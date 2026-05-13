@@ -27,7 +27,7 @@ public class WindowsV2RecognitionModuleStartInfo : IRecognitionModuleStartInfo
     public Type ModuleType => typeof(WindowsV2RecognitionModule);
 
     public RecognitionModuleConfigFlags ConfigFlags 
-        => RecognitionModuleConfigFlags.Microphone | RecognitionModuleConfigFlags.Windows;
+        => RecognitionModuleConfigFlags.MicRtc | RecognitionModuleConfigFlags.Windows;
 }
 
 [SupportedOSPlatform("windows")]

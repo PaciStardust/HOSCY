@@ -17,7 +17,7 @@ public class ApiRecognitionModuleStartInfo : IRecognitionModuleStartInfo
     public Type ModuleType => typeof(ApiRecognitionModule);
 
     public RecognitionModuleConfigFlags ConfigFlags 
-        => RecognitionModuleConfigFlags.Microphone | RecognitionModuleConfigFlags.AnyApi;
+        => RecognitionModuleConfigFlags.MicRtc | RecognitionModuleConfigFlags.AnyApi;
 }
 
 [PrototypeLoadIntoDiContainer(typeof(ApiRecognitionModule), Lifetime.Transient)]
