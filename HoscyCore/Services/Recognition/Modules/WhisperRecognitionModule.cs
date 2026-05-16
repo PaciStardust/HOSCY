@@ -169,7 +169,17 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
             Whisper_UseBeamSearchSampling = _config.Recognition_Whisper_CfgAdv_UseBeamSearchSampling,
             Whisper_UseGreedySampling = _config.Recognition_Whisper_CfgAdv_UseGreedySampling,
 
-            Debug_LogVerboseExtra = _config.Debug_LogVerboseExtra
+            Debug_LogVerboseExtra = _config.Debug_LogVerboseExtra,
+
+            WebRtc_Enabled = _config.Audio_WebRtc_Enabled,
+            WebRtc_UseEchoCancellation = _config.Audio_WebRtc_UseEchoCancellation,
+            WebRtc_EchoCancellationDelayMs = _config.Audio_WebRtc_EchoCancellationDelayMs,
+            WebRtc_UseNoiseSuppression = _config.Audio_WebRtc_UseNoiseSuppression,
+            WebRtc_NoiseSuppressionLevel = _config.Audio_WebRtc_NoiseSuppressionLevel,
+            WebRtc_UsePreAmplifier = _config.Audio_WebRtc_UsePreAmplifier,
+            WebRtc_PreAmplifierGainFactor = _config.Audio_WebRtc_PreAmplifierGainFactor,
+            WebRtc_UseAutomaticGainControl = _config.Audio_WebRtc_UseAutomaticGainControl,
+            WebRtc_UseHighPassFilter = _config.Audio_WebRtc_UseHighPassFilter
         };
 
         try
