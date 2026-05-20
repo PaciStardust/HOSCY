@@ -1,5 +1,6 @@
-using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
+#if WINDOWS
+#pragma warning disable CA1416 // Validate platform compatibility
+
 using System.Speech.Recognition;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
@@ -10,15 +11,9 @@ using Serilog;
 
 namespace HoscyCore.Services.Recognition.Modules;
 
-[SupportedOSPlatform("windows")]
-[PrototypeLoadIntoDiContainer(typeof(WindowsRecognitionModuleStartInfo), Lifetime.Singleton, SupportedPlatformFlags.Windows)]
+[PrototypeLoadIntoDiContainer(typeof(WindowsRecognitionModuleStartInfo), Lifetime.Singleton)]
 public class WindowsRecognitionModuleStartInfo : IRecognitionModuleStartInfo
 {
-    public WindowsRecognitionModuleStartInfo()
-    {
-        OtherUtils.ThrowOnInvalidPlatform([OSPlatform.Windows]);
-    }
-
     public string Name => "Windows Recognizer";
     public string Description => "Recognizer using Windows Recognition, low quality, please avoid";
     public Type ModuleType => typeof(WindowsRecognitionModule);
@@ -27,17 +22,11 @@ public class WindowsRecognitionModuleStartInfo : IRecognitionModuleStartInfo
         => RecognitionModuleConfigFlags.Windows;
 }
 
-[SupportedOSPlatform("windows")]
-[PrototypeLoadIntoDiContainer(typeof(WindowsRecognitionModule), Lifetime.Transient, SupportedPlatformFlags.Windows)]
-public class WindowsRecognitionModule : WindowsRecognitionModuleBase
+[PrototypeLoadIntoDiContainer(typeof(WindowsRecognitionModule), Lifetime.Transient)]
+public class WindowsRecognitionModule(ILogger logger, ConfigModel config, IRecognitionModelProviderService modelProvider) 
+    : WindowsRecognitionModuleBase(logger.ForContext<WindowsRecognitionModule>(), config, modelProvider)
 {
     #region Vars
-    public WindowsRecognitionModule(ILogger logger, ConfigModel config, IRecognitionModelProviderService modelProvider)
-        : base(logger.ForContext<WindowsRecognitionModule>(), config, modelProvider)
-    {
-        OtherUtils.ThrowOnInvalidPlatform([OSPlatform.Windows]);
-    }
-
     private SpeechRecognitionEngine? _engine = null!;
     #endregion
 
@@ -45,7 +34,7 @@ public class WindowsRecognitionModule : WindowsRecognitionModuleBase
     protected override Res StartForService()
     {
         var engineResult = CreateEngine();
-        if (!engineResult.IsOk) return ResC.Fail(engineResult.Msg); 
+        if (!engineResult.IsOk) return ResC.Fail(engineResult.Msg);
 
         _engine = engineResult.Value;
         _engine.LoadGrammar(new DictationGrammar());
@@ -118,3 +107,6 @@ public class WindowsRecognitionModule : WindowsRecognitionModuleBase
     protected override bool UseOnlySetListeningWhenStartedProtection => true;
     #endregion
 }
+
+#pragma warning restore CA1416 // Validate platform compatibility
+#endif

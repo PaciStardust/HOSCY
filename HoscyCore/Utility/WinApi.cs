@@ -1,16 +1,12 @@
+#if WINDOWS
+
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 
 namespace HoscyCore.Utility;
 
-[SupportedOSPlatform("windows")]
 public static class WinApi
 {
-    static WinApi() {
-        OtherUtils.ThrowOnInvalidPlatform([OSPlatform.Windows]);
-    }
-
-
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     private static extern int MessageBoxW(IntPtr hWnd, string text, string caption, uint type);
 
@@ -21,10 +17,7 @@ public static class WinApi
     /// </summary>
     public static void ShowErrorBoxOnWindows(string message, string title = "HOSCY - Error")
     {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            _ = MessageBoxW(IntPtr.Zero, message, title, 0x10);
-        }
+        _ = MessageBoxW(IntPtr.Zero, message, title, 0x10);
     }
 
     [DllImport("Kernel32")]
@@ -35,9 +28,8 @@ public static class WinApi
     /// </summary>
     public static void OpenConsole()
     {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            AllocConsole();
-        }
+        AllocConsole();
     }
 }
+
+#endif

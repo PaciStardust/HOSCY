@@ -1,5 +1,7 @@
-using System.Runtime.InteropServices;
+#if WINDOWS
 using System.Speech.Recognition;
+#endif
+
 using HoscyCore.Services.Dependency;
 using HoscyCore.Utility;
 using Serilog;
@@ -13,11 +15,10 @@ public class RecognitionModelProviderService(ILogger logger) : IRecognitionModel
 
     Res<List<WindowsRecognizerInfo>> IRecognitionModelProviderService.GetWindowsRecognizers()
     {
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
+        #if !WINDOWS
             var message = "Windows recognition engines are only available on Windows";
             return ResC.TFailLog<List<WindowsRecognizerInfo>>(message, _logger);
-        }
+        #else
         try
         {
             #pragma warning disable CA1416 // Validate platform compatibility
@@ -30,5 +31,6 @@ public class RecognitionModelProviderService(ILogger logger) : IRecognitionModel
         {
             return ResC.TFailLog<List<WindowsRecognizerInfo>>("Failed to retrieve installed recognizers", _logger, ex);
         }
+        #endif
     }
 }

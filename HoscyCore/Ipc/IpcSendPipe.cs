@@ -1,6 +1,5 @@
 using System.Collections.Concurrent;
 using System.IO.Pipes;
-using System.Runtime.InteropServices;
 using HoscyCore.Utility;
 using Newtonsoft.Json;
 using Serilog;
@@ -82,10 +81,12 @@ public class IpcSendPipe(ILogger logger, bool logVerboseExtra) : IpcPipeBase<Ano
                     _logger.Verbose("Sending \"{queueItem}\" via IPC", messageToSend);
                 }
                 sw.WriteLine(messageToSend);
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    _ipcPipe.WaitForPipeDrain();
-                }
+
+                #if WINDOWS
+                #pragma warning disable CA1416 // Validate platform compatibility
+                _ipcPipe.WaitForPipeDrain();
+                #pragma warning restore CA1416 // Validate platform compatibility
+                #endif
             }
             catch (Exception ex)
             {

@@ -1,3 +1,5 @@
+#if WINDOWS
+
 using HoscyCli.Commands.Core;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
@@ -40,3 +42,5 @@ public class RecWindowsCommandModule
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Windows_ModelId));
     }
 }
+
+#endif

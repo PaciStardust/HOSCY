@@ -1,3 +1,5 @@
+#if LINUX
+
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
@@ -11,34 +13,20 @@ using Tmds.DBus;
 
 namespace HoscyCore.Services.Media.Backends;
 
-[SupportedOSPlatform("linux")]
-[PrototypeLoadIntoDiContainer(typeof(LinuxMprisMediaBackendStartInfo), Lifetime.Singleton, SupportedPlatformFlags.Linux)]
+[PrototypeLoadIntoDiContainer(typeof(LinuxMprisMediaBackendStartInfo), Lifetime.Singleton)]
 public class LinuxMprisMediaBackendStartInfo : IMediaBackendStartInfo
 {
-    public LinuxMprisMediaBackendStartInfo()
-    {
-        OtherUtils.ThrowOnInvalidPlatform([OSPlatform.Linux]);
-    }
-
     public MediaBackendConfigFlags ConfigFlags => MediaBackendConfigFlags.LinuxMpris;
     public string Name => "Linux Mpris";
     public string Description => "Linux Backend using the MPRIS D-Bus specification";
     public Type ModuleType => typeof(LinuxMprisMediaBackend);
 }
 
-[SupportedOSPlatform("linux")]
-[PrototypeLoadIntoDiContainer(typeof(LinuxMprisMediaBackend), Lifetime.Transient, SupportedPlatformFlags.Linux)]
-public class LinuxMprisMediaBackend : MediaBackendBase
+[PrototypeLoadIntoDiContainer(typeof(LinuxMprisMediaBackend), Lifetime.Transient)]
+public class LinuxMprisMediaBackend(ILogger logger, ConfigModel config) : MediaBackendBase(logger.ForContext<LinuxMprisMediaBackend>())
 {
-    public LinuxMprisMediaBackend(ILogger logger, ConfigModel config) : base(logger.ForContext<LinuxMprisMediaBackend>())
-    {
-        OtherUtils.ThrowOnInvalidPlatform([OSPlatform.Linux]);
-
-        _config = config;
-    }
-
     #region Injected
-    private readonly ConfigModel _config;
+    private readonly ConfigModel _config = config;
     #endregion
 
     #region Vars
@@ -394,3 +382,5 @@ public class LinuxMprisMediaBackend : MediaBackendBase
     }
     #endregion
 }
+
+#endif

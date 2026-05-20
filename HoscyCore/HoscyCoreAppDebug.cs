@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Utility;
 using Serilog;
@@ -23,7 +22,8 @@ internal class HoscyCoreAppDebug(ILogger logger)
 
         if (!startParameters.ShouldOpenConsoleIfRequested) return ResC.Ok();
 
-        if (config.Debug_LogViaCmdOnWindows && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        #if WINDOWS
+        if (config.Debug_LogViaCmdOnWindows)
         {
             _logger.Information("Starting windows console logger");
             var winConsoleRes = ResC.WrapR(WinApi.OpenConsole, "Failed opening console on windows", _logger);
@@ -33,6 +33,7 @@ internal class HoscyCoreAppDebug(ILogger logger)
             }
             return winConsoleRes;
         }
+        #endif
 
         if (config.Debug_LogViaFileFollow)
         {

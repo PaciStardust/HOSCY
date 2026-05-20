@@ -120,7 +120,7 @@ public class DiContainer
         foreach (var type in compatibleTypes.Value)
         {
             var attribute = type.GetCustomAttribute<LoadIntoDiContainerAttribute>();
-            if (attribute != null && OtherUtils.IsPlatformCompatible(attribute.SupportedPlatforms))
+            if (attribute is not null)
             {
                 loadedTypes.Add((type, attribute));
             }

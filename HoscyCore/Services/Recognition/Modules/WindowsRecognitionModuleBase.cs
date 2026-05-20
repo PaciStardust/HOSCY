@@ -1,4 +1,6 @@
-using System.Runtime.Versioning;
+#if WINDOWS
+#pragma warning disable CA1416 // Validate platform compatibility
+
 using System.Speech.Recognition;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Recognition.Core;
@@ -8,7 +10,6 @@ using Serilog;
 
 namespace HoscyCore.Services.Recognition.Modules;
 
-[SupportedOSPlatform("windows")]
 public abstract class WindowsRecognitionModuleBase(ILogger logger, ConfigModel config, IRecognitionModelProviderService modelProvider) 
     : RecognitionModuleBase(logger)
 {
@@ -39,6 +40,7 @@ public abstract class WindowsRecognitionModuleBase(ILogger logger, ConfigModel c
             _logger.Warning("Multiple matching infos found for model id {modelId}, picking first", _config.Recognition_Windows_ModelId);
         }
 
+
         return ResC.TWrapR(() => new SpeechRecognitionEngine(recognizerInfo[0].Id),
             $"Failed to create speech recognition engine for info {recognizerInfo[0].Name}", _logger);
     }
@@ -57,3 +59,6 @@ public abstract class WindowsRecognitionModuleBase(ILogger logger, ConfigModel c
     }
     #endregion
 }
+
+#pragma warning restore CA1416 // Validate platform compatibility
+#endif

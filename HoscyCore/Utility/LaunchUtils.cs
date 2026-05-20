@@ -131,13 +131,6 @@ public static class LaunchUtils
                 if (!type.IsAssignableTo(searchType)) continue;
 
                 var loadAttribute = type.GetCustomAttribute<LoadIntoDiContainerAttribute>();
-                if (loadAttribute is not null && !OtherUtils.IsPlatformCompatible(loadAttribute.SupportedPlatforms))
-                {
-                    logger.Verbose("Skipped looking for instance of \"{baseType}\" \"{serviceType}\", it is not supported on this platform",
-                        searchType.FullName, type.FullName);
-                    continue;
-                }
-
                 var diType = loadAttribute?.AsType ?? type;
                 if (container.GetService(diType) is not T instance)
                 {

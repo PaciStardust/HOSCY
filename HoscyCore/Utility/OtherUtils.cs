@@ -73,27 +73,6 @@ public static class OtherUtils
     }
 
     /// <summary>
-    /// Returns if the current platform is supported by a service
-    /// </summary>
-    public static bool IsPlatformCompatible(SupportedPlatformFlags flags)
-    {
-        return flags == SupportedPlatformFlags.All
-            || (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && flags.HasFlag(SupportedPlatformFlags.Linux))
-            || (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && flags.HasFlag(SupportedPlatformFlags.Windows))
-            || (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && flags.HasFlag(SupportedPlatformFlags.OSX));
-    }
-
-    public static void ThrowOnInvalidPlatform(OSPlatform[] platforms)
-    {
-        var isCompatible = platforms.Any(RuntimeInformation.IsOSPlatform);
-        if (!isCompatible)
-        {
-            var platformString = string.Join(", ", platforms.Select(x => x.ToString()));
-            throw new PlatformNotSupportedException($"Feature not supported on this platform, only available on: {platformString}");
-        }
-    }
-
-    /// <summary>
     /// Waits until something is no longer true
     /// </summary>
     /// <param name="waitIfTrue">Check</param>

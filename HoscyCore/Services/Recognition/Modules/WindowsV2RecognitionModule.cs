@@ -1,5 +1,6 @@
-using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
+#if WINDOWS
+#pragma warning disable CA1416 // Validate platform compatibility
+
 using System.Speech.AudioFormat;
 using System.Speech.Recognition;
 using HoscyCore.Configuration.Modern;
@@ -13,15 +14,9 @@ using SoundFlow.Enums;
 
 namespace HoscyCore.Services.Recognition.Modules;
 
-[SupportedOSPlatform("windows")]
-[PrototypeLoadIntoDiContainer(typeof(WindowsV2RecognitionModuleStartInfo), Lifetime.Singleton, SupportedPlatformFlags.Windows)]
+[PrototypeLoadIntoDiContainer(typeof(WindowsV2RecognitionModuleStartInfo), Lifetime.Singleton)]
 public class WindowsV2RecognitionModuleStartInfo : IRecognitionModuleStartInfo
 {
-    public WindowsV2RecognitionModuleStartInfo()
-    {
-        OtherUtils.ThrowOnInvalidPlatform([OSPlatform.Windows]);
-    }
-
     public string Name => "Windows Recognizer V2";
     public string Description => "Recognizer using Windows Recognition, low quality, please avoid";
     public Type ModuleType => typeof(WindowsV2RecognitionModule);
@@ -30,26 +25,12 @@ public class WindowsV2RecognitionModuleStartInfo : IRecognitionModuleStartInfo
         => RecognitionModuleConfigFlags.MicRtc | RecognitionModuleConfigFlags.Windows;
 }
 
-[SupportedOSPlatform("windows")]
-[PrototypeLoadIntoDiContainer(typeof(WindowsV2RecognitionModule), Lifetime.Transient, SupportedPlatformFlags.Windows)]
-public class WindowsV2RecognitionModule : WindowsRecognitionModuleBase
+[PrototypeLoadIntoDiContainer(typeof(WindowsV2RecognitionModule), Lifetime.Transient)]
+public class WindowsV2RecognitionModule(ILogger logger, ConfigModel config, IRecognitionModelProviderService modelProvider, IAudioService audio) 
+    : WindowsRecognitionModuleBase(logger.ForContext<WindowsV2RecognitionModule>(), config, modelProvider)
 {
     #region Vars
-    public WindowsV2RecognitionModule
-    (
-        ILogger logger, 
-        ConfigModel config, 
-        IRecognitionModelProviderService modelProvider,
-        IAudioService audio
-    )
-        : base(logger.ForContext<WindowsV2RecognitionModule>(), config, modelProvider)
-    {
-        OtherUtils.ThrowOnInvalidPlatform([OSPlatform.Windows]);
-
-        _audio = audio;
-    }
-
-    private readonly IAudioService _audio;
+    private readonly IAudioService _audio = audio;
 
     private SpeechRecognitionEngine? _engine = null;
     private SpeechStreamer? _stream = null;
@@ -75,7 +56,8 @@ public class WindowsV2RecognitionModule : WindowsRecognitionModuleBase
         if (!micStartRes.IsOk) return micStartRes;
 
         var engineResult = CreateEngine();
-        if (!engineResult.IsOk) return ResC.Fail(engineResult.Msg); 
+
+        if (!engineResult.IsOk) return ResC.Fail(engineResult.Msg);
 
         _engine = engineResult.Value;
         _engine.LoadGrammar(new DictationGrammar());
@@ -149,3 +131,6 @@ public class WindowsV2RecognitionModule : WindowsRecognitionModuleBase
     protected override bool UseOnlySetListeningWhenStartedProtection => true;
     #endregion
 }
+
+#pragma warning restore CA1416 // Validate platform compatibility
+#endif
