@@ -5,7 +5,7 @@ using Tmds.DBus;
 
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 
-namespace HoscyCore.Services.Media.Mpris;
+namespace HoscyCore.Services.Media.Backends;
 
 [DBusInterface("org.mpris.MediaPlayer2")]
 public interface IMprisMediaPlayer2 : IDBusObject

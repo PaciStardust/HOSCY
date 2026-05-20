@@ -7,6 +7,13 @@ namespace HoscyCore.Services.Media.Core;
 public abstract class MediaBackendBase(ILogger logger) : StartStopModuleBase(logger), IMediaBackend
 {
     public event Action<MediaUpdateInfo> OnMediaUpdate = delegate { };
+    protected void InvokeMediaUpdate(MediaUpdateInfo info)
+    {
+        if (!(info.Playing is not null || info.Track is not null)) return;
+
+        _logger.Debug("Invoking media update ({info})", info);
+        OnMediaUpdate.Invoke(info);
+    }
 
     public abstract bool CanGetEndpoints { get; }
     public abstract Task<Res<string[]>> GetEndpointNames();

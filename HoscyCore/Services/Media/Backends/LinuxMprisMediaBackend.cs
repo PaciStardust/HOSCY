@@ -1,29 +1,53 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
+using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
+using HoscyCore.Services.Media.Core;
 using HoscyCore.Utility;
 using Serilog;
 using Tmds.DBus;
 
-namespace HoscyCore.Services.Media.Mpris;
+namespace HoscyCore.Services.Media.Backends;
 
-[PrototypeLoadIntoDiContainer(typeof(LinuxMprisMediaControlService))]
-public class LinuxMprisMediaControlService(ILogger logger) 
-    : StartStopServiceBase(logger.ForContext<LinuxMprisMediaControlService>()), IAutoStartStopService
+[SupportedOSPlatform("linux")]
+[PrototypeLoadIntoDiContainer(typeof(LinuxMprisMediaBackendStartInfo), Lifetime.Singleton, SupportedPlatformFlags.Linux)]
+public class LinuxMprisMediaBackendStartInfo : IMediaBackendStartInfo
 {
+    public LinuxMprisMediaBackendStartInfo()
+    {
+        OtherUtils.ThrowOnInvalidPlatform([OSPlatform.Linux]);
+    }
+
+    public MediaBackendConfigFlags ConfigFlags => MediaBackendConfigFlags.LinuxMpris;
+    public string Name => "Linux Mpris";
+    public string Description => "Linux Backend using the MPRIS D-Bus specification";
+    public Type ModuleType => typeof(LinuxMprisMediaBackend);
+}
+
+[SupportedOSPlatform("linux")]
+[PrototypeLoadIntoDiContainer(typeof(LinuxMprisMediaBackend), Lifetime.Transient, SupportedPlatformFlags.Linux)]
+public class LinuxMprisMediaBackend : MediaBackendBase
+{
+    public LinuxMprisMediaBackend(ILogger logger, ConfigModel config) : base(logger.ForContext<LinuxMprisMediaBackend>())
+    {
+        OtherUtils.ThrowOnInvalidPlatform([OSPlatform.Linux]);
+
+        _config = config;
+    }
+
+    #region Injected
+    private readonly ConfigModel _config;
+    #endregion
+
     #region Vars
     private Connection? _connection = null;
-
-    private readonly string[] _moveToConfig_preferredMprisEndpoints = [ "spotify" ];
-    private readonly string[] _moveToConfig_ignoredMprisEndpoints = [];
-    private readonly int _moveToConfig_mprisEndpointUpdateIntervalMs = 1000;
 
     private EndpointCache? _currentEndpoint = null;
 
     private Task? _refreshTask = null;
     private bool _stopRefreshTask = false;
-
-    public event Action<MediaUpdateInfo> OnMediaUpdate = delegate { };
     #endregion
 
     #region Start / Stop
@@ -50,7 +74,7 @@ public class LinuxMprisMediaControlService(ILogger logger)
 
     protected override bool UseAlreadyStartedProtection => true;
 
-    protected override Res StopForService()
+    protected override Res StopForModule()
     {
         _connection?.StateChanged -= OnStateChanged;
 
@@ -84,7 +108,7 @@ public class LinuxMprisMediaControlService(ILogger logger)
 
     #region Endpoint Update
     private const string MPRIS_ID = "org.mpris.MediaPlayer2.";
-    public async Task<Res<string[]>> GetEndpointNames()
+    public override async Task<Res<string[]>> GetEndpointNames()
     {
         if (!IsProcessing())
             return ResC.TFailLog<string[]>(message: "Failed to grab MPRIS endpoints, not connected", _logger);
@@ -96,6 +120,7 @@ public class LinuxMprisMediaControlService(ILogger logger)
 
         return ResC.TOk(endpoints.ToArray());
     }
+    public override bool CanGetEndpoints => true;
 
     private async Task<Res<string>> GetBestEndpointName()
     {
@@ -103,14 +128,14 @@ public class LinuxMprisMediaControlService(ILogger logger)
         if (!allEndpoints.IsOk) return ResC.TFail<string>(allEndpoints.Msg);
 
         var filteredEndpoints = allEndpoints.Value.Where(
-            x => !_moveToConfig_ignoredMprisEndpoints.Any(y => y.Contains(x, StringComparison.OrdinalIgnoreCase))
+            x => !_config.Media_Mpris_IgnoredEndpoints.Any(y => y.Contains(x, StringComparison.OrdinalIgnoreCase))
         ).ToArray();
 
         if (filteredEndpoints.Length == 0)
             return ResC.TOk(string.Empty);
 
         var bestOption = filteredEndpoints.FirstOrDefault(
-            x => _moveToConfig_preferredMprisEndpoints.Any(y => x.Contains(y, StringComparison.OrdinalIgnoreCase))
+            x => _config.Media_Mpris_PreferredEndpoints.Any(y => x.Contains(y, StringComparison.OrdinalIgnoreCase))
         );
 
         return ResC.TOk(string.IsNullOrWhiteSpace(bestOption) ? filteredEndpoints[0] : bestOption);
@@ -208,15 +233,15 @@ public class LinuxMprisMediaControlService(ILogger logger)
         }
     }
 
-    public async Task<Res> PlayAsync()
+    public override async Task<Res> PlayAsync()
         => await DoActionAsync(x => x.CanPlay, x => x.PlayAsync(), "play");
-    public async Task<Res> PauseAsync()
+    public override async Task<Res> PauseAsync()
         => await DoActionAsync(x => x.CanPause, x => x.PauseAsync(), "pause");
-    public async Task<Res> NextAsync()
+    public override async Task<Res> NextAsync()
         => await DoActionAsync(x => x.CanGoNext, x => x.NextAsync(), "next");
-    public async Task<Res> PreviousAsync()
+    public override async Task<Res> PreviousAsync()
         => await DoActionAsync(x => x.CanGoPrevious, x => x.PreviousAsync(), "play");
-    public async Task<Res> PlayPauseAsync()
+    public override async Task<Res> PlayPauseAsync()
         => await DoActionAsync(x => x.CanControl, x => x.PlayPauseAsync(), "toggle");
     #endregion
 
@@ -328,14 +353,6 @@ public class LinuxMprisMediaControlService(ILogger logger)
 
         return track;
     }
-
-    private void InvokeMediaUpdate(MediaUpdateInfo info)
-    {
-        if (!(info.Playing is not null || info.Track is not null)) return;
-
-        _logger.Debug("Invoking media update ({info})", info);
-        OnMediaUpdate.Invoke(info);
-    }
     #endregion
 
     #region Refresh
@@ -348,7 +365,7 @@ public class LinuxMprisMediaControlService(ILogger logger)
         {
             await Task.Delay(10);
 
-            if (DateTimeOffset.UtcNow < lastRefresh.AddMilliseconds(_moveToConfig_mprisEndpointUpdateIntervalMs))
+            if (DateTimeOffset.UtcNow < lastRefresh.AddMilliseconds(_config.Media_Mpris_EndpointUpdateIntervalMs))
                 continue;
             
             await UpdateCurrentEndpoint();

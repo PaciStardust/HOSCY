@@ -468,7 +468,6 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
         get => _media_Backend;
         set => SetProperty(ref _media_Backend, value);
     }
-
     private string _media_Backend = string.Empty;
 
     /// <summary>
@@ -553,6 +552,38 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
         set => SetProperty(ref _media_Filters, value);
     }
     private List<FilterModel> _media_Filters = [];
+    #endregion
+
+    #region Media - Linux Mpris
+    /// <summary>
+    /// Preferred Mpris endpoints
+    /// </summary>
+    public List<string> Media_Mpris_PreferredEndpoints //todo: [IMPL] To be implemented
+    {
+        get => _media_Mpris_PreferredEndpoints;
+        set => SetProperty(ref _media_Mpris_PreferredEndpoints, value);
+    }
+    private List<string> _media_Mpris_PreferredEndpoints = [];
+
+    /// <summary>
+    /// Ignored Mpris endpoints
+    /// </summary>
+    public List<string> Media_Mpris_IgnoredEndpoints //todo: [IMPL] To be implemented
+    {
+        get => _media_Mpris_IgnoredEndpoints;
+        set => SetProperty(ref _media_Mpris_IgnoredEndpoints, value);
+    }
+    private List<string> _media_Mpris_IgnoredEndpoints = [];
+
+    /// <summary>
+    /// How often should endpoints be updated in the background
+    /// </summary>
+    public int Media_Mpris_EndpointUpdateIntervalMs //todo: [IMPL] To be implemented
+    {
+        get => _media_Mpris_EndpointUpdateIntervalMs;
+        set => SetProperty(ref _media_Mpris_EndpointUpdateIntervalMs, value.MinMax(250, 60_000));
+    }
+    private int _media_Mpris_EndpointUpdateIntervalMs = 1000;
     #endregion
 
     #region OSC - General
