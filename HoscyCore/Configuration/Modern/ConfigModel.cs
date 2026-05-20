@@ -461,6 +461,17 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
 
     #region Media
     /// <summary>
+    /// Selected media backend
+    /// </summary>
+    public string Media_Backend //todo: [IMPL] To be implemented
+    {
+        get => _media_Backend;
+        set => SetProperty(ref _media_Backend, value);
+    }
+
+    private string _media_Backend = string.Empty;
+
+    /// <summary>
     /// Show media status as notification
     /// </summary>
     public bool Media_ShowStatus //todo: [IMPL] To be implemented
