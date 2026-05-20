@@ -97,6 +97,7 @@ public static class LaunchUtils
         try
         {
             var types = AppDomain.CurrentDomain.GetAssemblies()
+                .Where(x => !x.IsDynamic)
                 .SelectMany(x => x.GetTypes())
                 .Distinct()
                 .Where(x => !(x.IsAbstract || x.IsInterface));
