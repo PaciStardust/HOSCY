@@ -5,7 +5,7 @@ using HoscyCore.Services.Interfacing;
 using HoscyCore.Utility;
 using Serilog;
 
-namespace HoscyCore.Services.Media;
+namespace HoscyCore.Services.Media.Core;
 
 [PrototypeLoadIntoDiContainer(typeof(IMediaControlService))]
 public class MediaControlService

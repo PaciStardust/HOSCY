@@ -1,7 +1,7 @@
 using HoscyCore.Services.Core;
 using HoscyCore.Utility;
 
-namespace HoscyCore.Services.Media;
+namespace HoscyCore.Services.Media.Core;
 
 public interface IMediaControlService : ISoloModuleManager<IMediaBackendStartInfo>
 {

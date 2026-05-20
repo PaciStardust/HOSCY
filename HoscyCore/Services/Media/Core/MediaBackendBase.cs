@@ -2,7 +2,7 @@ using HoscyCore.Services.Core;
 using HoscyCore.Utility;
 using Serilog;
 
-namespace HoscyCore.Services.Media;
+namespace HoscyCore.Services.Media.Core;
 
 public abstract class MediaBackendBase(ILogger logger) : StartStopModuleBase(logger), IMediaBackend
 {
