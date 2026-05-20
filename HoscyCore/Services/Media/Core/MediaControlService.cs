@@ -73,37 +73,40 @@ public class MediaControlService
     public async Task<Res> PlayAsync()
     {
         if (_currentModule is null)
-            return ResC.FailLog("No Media backend is available to send play command to", _logger, lvl: ResMsgLvl.Warning);
+            return CommandError("Play");
         return await _currentModule.PlayAsync();
     }
 
     public async Task<Res> PauseAsync()
     {
         if (_currentModule is null)
-            return ResC.FailLog("No Media backend is available to send pause command to", _logger, lvl: ResMsgLvl.Warning);
+            return CommandError("Pause");
         return await _currentModule.PauseAsync();
     }
 
     public async Task<Res> NextAsync()
     {
         if (_currentModule is null)
-            return ResC.FailLog("No Media backend is available to send next command to", _logger, lvl: ResMsgLvl.Warning);
+            return CommandError("Next");
         return await _currentModule.NextAsync();
     }
 
     public async Task<Res> PreviousAsync()
     {
         if (_currentModule is null)
-            return ResC.FailLog("No Media backend is available to send previous command to", _logger, lvl: ResMsgLvl.Warning);
+            return CommandError("Previous");
         return await _currentModule.PreviousAsync();
     }
 
     public async Task<Res> PlayPauseAsync()
     {
         if (_currentModule is null)
-            return ResC.FailLog("No Media backend is available to send toggle command to", _logger, lvl: ResMsgLvl.Warning);
+            return CommandError("Toggle");
         return await _currentModule.PlayPauseAsync();
     }
+
+    private Res CommandError(string action)
+        => ResC.FailLog($"Unable to execute media command \"{action}\", no backend available", _logger, lvl: ResMsgLvl.Warning);
 
     #endregion
 }
