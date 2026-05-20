@@ -1,6 +1,7 @@
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Input;
+using HoscyCore.Services.Osc.MessageHandling.Core;
 using LucHeart.CoreOSC;
 using Serilog;
 

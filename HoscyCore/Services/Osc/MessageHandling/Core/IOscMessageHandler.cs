@@ -1,7 +1,7 @@
 using HoscyCore.Services.Core;
 using LucHeart.CoreOSC;
 
-namespace HoscyCore.Services.Osc.MessageHandling;
+namespace HoscyCore.Services.Osc.MessageHandling.Core;
 
 /// <summary>
 /// Represents a Message Handler for OSC Messages

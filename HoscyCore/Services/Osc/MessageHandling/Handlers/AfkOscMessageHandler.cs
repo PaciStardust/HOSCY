@@ -3,6 +3,7 @@ using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Afk;
 using LucHeart.CoreOSC;
 using Serilog;
+using HoscyCore.Services.Osc.MessageHandling.Core;
 
 namespace HoscyCore.Services.Osc.MessageHandling.Handlers;
 

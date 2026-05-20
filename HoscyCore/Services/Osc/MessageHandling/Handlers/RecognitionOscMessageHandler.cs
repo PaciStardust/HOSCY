@@ -1,5 +1,7 @@
 using HoscyCore.Configuration.Modern;
+using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
+using HoscyCore.Services.Osc.MessageHandling.Core;
 using HoscyCore.Services.Recognition.Core;
 using LucHeart.CoreOSC;
 using Serilog;
@@ -26,7 +28,7 @@ public class RecognitionOscMessageHandler(ILogger logger, IRecognitionManagerSer
                 return true;
             }
 
-            if (_recognition.GetCurrentModuleStatus() != Core.ServiceStatus.Stopped)
+            if (_recognition.GetCurrentModuleStatus() != ServiceStatus.Stopped)
             {
                 _recognition.SetListening(!state);
             }
