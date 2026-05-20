@@ -93,6 +93,53 @@ public static class ResC
             return TOk(unsafeFunc());
         }, message, logger, lvl);
     }
+
+    public static async Task<Res> WrapAsync<T>(Task<Res> unsafeTask, string message, ILogger? logger, ResMsgLvl lvl = ResMsgLvl.Error)
+    {
+        try
+        {
+            return await unsafeTask;
+        }
+        catch (Exception ex)
+        {
+            return FailLog(message, logger, ex, lvl);
+        }
+    }
+    public static async Task<Res> WrapRAsync(Task unsafeTask, string message, ILogger? logger, ResMsgLvl lvl = ResMsgLvl.Error)
+    {
+        try
+        {
+            await unsafeTask;
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return FailLog(message, logger, ex, lvl);
+        }
+    }
+    
+    public static async Task<Res<T>> TWrapAsync<T>(Task<Res<T>> unsafeTask, string message, ILogger? logger, ResMsgLvl lvl = ResMsgLvl.Error) where T : notnull
+    {
+        try
+        {
+            return await unsafeTask;
+        }
+        catch (Exception ex)
+        {
+            return TFailLog<T>(message, logger, ex, lvl);
+        }
+    }
+    public static async Task<Res<T>> TWrapRAsync<T>(Task<T> unsafeTask, string message, ILogger? logger, ResMsgLvl lvl = ResMsgLvl.Error) where T : notnull
+    {
+        try
+        {
+            return TOk(await unsafeTask);
+        }
+        catch (Exception ex)
+        {
+            return TFailLog<T>(message, logger, ex, lvl);
+        }
+    }
 }
 
 public abstract record ResBase
