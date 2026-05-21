@@ -186,11 +186,11 @@ public class LinuxMprisMediaBackend(ILogger logger, ConfigModel config) : MediaB
     #region Control
     private async Task<Res> DoActionAsync(Func<MprisPlayerProperties, bool> check, Func<IMprisPlayer, Task> action, string logAction)
     {
-        _logger.Information("Performing media action {action}", logAction);
+        _logger.Debug("Performing media action {action}", logAction);
         var endpointRes = await UpdateAndGetCurrentEndpoint();
         if (endpointRes is null)
         {
-            _logger.Information("Media action {action} skipped, no endpoint found", logAction);
+            _logger.Debug("Media action {action} skipped, no endpoint found", logAction);
             return ResC.Ok();
         }
         if (!endpointRes.IsOk)
@@ -204,7 +204,7 @@ public class LinuxMprisMediaBackend(ILogger logger, ConfigModel config) : MediaB
 
         if (res.IsOk)
         {
-            _logger.Information("Performed media action {action}", logAction);
+            _logger.Debug("Performed media action {action}", logAction);
         }
 
         return res;
