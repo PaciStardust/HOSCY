@@ -481,6 +481,16 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private bool _media_ShowStatus;
 
     /// <summary>
+    /// Text to show on pause
+    /// </summary>
+    public string Media_PauseText //todo: [IMPL] To be implemented
+    {
+        get => _media_PauseText;
+        set => SetProperty(ref _media_PauseText, value);
+    }
+    private string _media_PauseText = "⏸️ Paused";
+
+    /// <summary>
     /// Additionally show album text
     /// </summary>
     public bool Media_AddAlbumToText //todo: [IMPL] To be implemented
@@ -489,6 +499,16 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
         set => SetProperty(ref _media_AddAlbumToText, value);
     }
     private bool _media_AddAlbumToText;
+
+    /// <summary>
+    /// Filter same name albums
+    /// </summary>
+    public bool Media_FilterSameNameAlbum //todo: [IMPL] To be implemented
+    {
+        get => _media_FilterSameNameAlbum;
+        set => SetProperty(ref _media_FilterSameNameAlbum, value);
+    }
+    private bool _media_FilterSameNameAlbum = true;
 
     /// <summary>
     /// Swap artist name and song name
