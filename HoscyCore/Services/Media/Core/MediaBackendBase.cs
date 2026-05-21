@@ -7,7 +7,7 @@ namespace HoscyCore.Services.Media.Core;
 public abstract class MediaBackendBase(ILogger logger) : StartStopModuleBase(logger), IMediaBackend
 {
     public event Action<MediaUpdateInfo> OnMediaUpdate = delegate { };
-
+    private string _lastSent = string.Empty;
     private readonly Lock _lock = new();
     protected void InvokeMediaUpdate(MediaUpdateInfo info)
     {
@@ -15,7 +15,11 @@ public abstract class MediaBackendBase(ILogger logger) : StartStopModuleBase(log
 
         lock (_lock)
         {
-            _logger.Debug("Invoking media update ({info})", info);
+            var infoStr = info.ToString();
+            if (infoStr == _lastSent) return;
+
+            _lastSent = infoStr;
+            _logger.Debug("Invoking media update ({info})", infoStr);
             OnMediaUpdate.Invoke(info);
         }
     }

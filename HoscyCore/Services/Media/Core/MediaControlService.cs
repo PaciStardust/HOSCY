@@ -32,7 +32,7 @@ public class MediaControlService
     protected override bool ShouldStartModelOnStartup()
         => true;
 
-    protected override string GetSelectedModuleName() //todo: [FEAT] Empty Media Backend
+    protected override string GetSelectedModuleName()
     {
         var preferredBackend = _config.Media_Backend;
 
