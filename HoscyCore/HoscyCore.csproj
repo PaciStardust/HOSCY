@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
@@ -23,8 +22,13 @@
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(IsWindows)'=='true'">
+    <TargetFramework>net10.0-windows10.0.17763.0</TargetFramework>
     <DefineConstants>WINDOWS</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(IsWindows)'!='true'">
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(IsOSX)'=='true'">
     <DefineConstants>OSX</DefineConstants>
   </PropertyGroup>
@@ -46,9 +50,12 @@
     <PackageReference Include="SoundFlow" Version="1.4.0" />
     <PackageReference Include="SoundFlow.Extensions.WebRtc.Apm" Version="1.4.0" />
     <PackageReference Include="System.Speech" Version="10.0.5" />
-    <PackageReference Include="Tmds.DBus" Version="0.93.0" />
     <PackageReference Include="Vosk" Version="0.3.38" />
     <PackageReference Include="VRChat.OSCQuery" Version="0.0.7" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(IsLinux)'=='true'">
+    <PackageReference Include="Tmds.DBus" Version="0.93.0" />
   </ItemGroup>
 
 </Project>
