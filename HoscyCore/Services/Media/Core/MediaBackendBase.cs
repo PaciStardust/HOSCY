@@ -25,7 +25,7 @@ public abstract class MediaBackendBase(ILogger logger) : StartStopModuleBase(log
     }
 
     public abstract bool CanGetEndpoints { get; }
-    public abstract Task<Res<string[]>> GetEndpointNames();
+    public abstract Task<Res<string[]>> GetEndpointNamesAsync();
 
     public abstract Task<Res> NextAsync();
     public abstract Task<Res> PauseAsync();

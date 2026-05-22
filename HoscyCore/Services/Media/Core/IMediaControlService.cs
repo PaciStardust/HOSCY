@@ -8,7 +8,7 @@ public interface IMediaControlService : ISoloModuleManager<IMediaBackendStartInf
     public event Action<MediaUpdateInfo> OnMediaUpdate;
 
     public bool CanGetEndpoints { get; }
-    public Task<Res<string[]>> GetEndpointNames(); 
+    public Task<Res<string[]>> GetEndpointNamesAsync(); 
 
     public Task<Res> PlayAsync();
     public Task<Res> PauseAsync();

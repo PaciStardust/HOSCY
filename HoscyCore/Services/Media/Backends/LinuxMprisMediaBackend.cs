@@ -96,7 +96,7 @@ public class LinuxMprisMediaBackend(ILogger logger, ConfigModel config) : MediaB
 
     #region Endpoint Update
     private const string MPRIS_ID = "org.mpris.MediaPlayer2.";
-    public override async Task<Res<string[]>> GetEndpointNames()
+    public override async Task<Res<string[]>> GetEndpointNamesAsync()
     {
         if (!IsProcessing())
             return ResC.TFailLog<string[]>(message: "Failed to grab MPRIS endpoints, not connected", _logger);
@@ -112,7 +112,7 @@ public class LinuxMprisMediaBackend(ILogger logger, ConfigModel config) : MediaB
 
     private async Task<Res<string>> GetBestEndpointName()
     {
-        var allEndpoints = await GetEndpointNames();
+        var allEndpoints = await GetEndpointNamesAsync();
         if (!allEndpoints.IsOk) return ResC.TFail<string>(allEndpoints.Msg);
 
         var filteredEndpoints = allEndpoints.Value.Where(

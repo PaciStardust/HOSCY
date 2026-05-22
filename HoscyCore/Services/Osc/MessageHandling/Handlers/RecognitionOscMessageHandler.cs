@@ -11,7 +11,6 @@ namespace HoscyCore.Services.Osc.MessageHandling.Handlers;
 [PrototypeLoadIntoDiContainer(typeof(RecognitionOscMessageHandler), Lifetime.Transient)]
 public class RecognitionOscMessageHandler(ILogger logger, IRecognitionManagerService recognition, ConfigModel config) : IOscMessageHandler
 {
-    //todo: Notify???
     private readonly ILogger _logger = logger.ForContext<RecognitionOscMessageHandler>();
     private readonly IRecognitionManagerService _recognition = recognition;
     private readonly ConfigModel _config = config;

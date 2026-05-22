@@ -63,50 +63,79 @@ public class MediaControlService
     #region Control
     public bool CanGetEndpoints 
         => _currentModule?.CanGetEndpoints ?? false;
-    public async Task<Res<string[]>> GetEndpointNames()
+    public async Task<Res<string[]>> GetEndpointNamesAsync()
     {
         if (_currentModule is null)
             return ResC.TFailLog<string[]>("No Media backend is available to retrieve endpoints from", _logger, lvl: ResMsgLvl.Warning);
-        return await _currentModule.GetEndpointNames();
+        return await _currentModule.GetEndpointNamesAsync();
     }
 
     public async Task<Res> PlayAsync()
     {
         if (_currentModule is null)
-            return CommandError("Play");
-        return await _currentModule.PlayAsync();
+            return CommandErrorNoBackend("Play");
+
+        var res = await _currentModule.PlayAsync();
+        if (!res.IsOk) MediaCommandFailNotify(res.Msg, "Pause");
+        else ClearFault();
+        return res;
     }
 
     public async Task<Res> PauseAsync()
     {
         if (_currentModule is null)
-            return CommandError("Pause");
-        return await _currentModule.PauseAsync();
+            return CommandErrorNoBackend("Pause");
+
+        var res = await _currentModule.PauseAsync();
+        if (!res.IsOk) MediaCommandFailNotify(res.Msg, "Pause");
+        else ClearFault();
+        return res;
     }
 
     public async Task<Res> NextAsync()
     {
         if (_currentModule is null)
-            return CommandError("Next");
-        return await _currentModule.NextAsync();
+            return CommandErrorNoBackend("Next");
+
+        var res = await _currentModule.NextAsync();
+        if (!res.IsOk) MediaCommandFailNotify(res.Msg, "Next");
+        else ClearFault();
+        return res;
     }
 
     public async Task<Res> PreviousAsync()
     {
         if (_currentModule is null)
-            return CommandError("Previous");
-        return await _currentModule.PreviousAsync();
+            return CommandErrorNoBackend("Previous");
+
+        var res = await _currentModule.PreviousAsync();
+        if (!res.IsOk) MediaCommandFailNotify(res.Msg, "Previous");
+        else ClearFault();
+        return res;
     }
 
     public async Task<Res> PlayPauseAsync()
     {
         if (_currentModule is null)
-            return CommandError("Toggle");
-        return await _currentModule.PlayPauseAsync();
+            return CommandErrorNoBackend("Toggle");
+
+        var res = await _currentModule.PlayPauseAsync();
+        if (!res.IsOk) MediaCommandFailNotify(res.Msg, "Toggle");
+        else ClearFault();
+        return res;
     }
 
-    private Res CommandError(string action)
-        => ResC.FailLog($"Unable to execute media command \"{action}\", no backend available", _logger, lvl: ResMsgLvl.Warning);
+    private Res CommandErrorNoBackend(string action)
+    {
+        var err = ResC.FailLog($"Unable to execute media command \"{action}\", no backend available", _logger, lvl: ResMsgLvl.Warning);
+        MediaCommandFailNotify(err.Msg!, action);
+        return err;
+    }
+
+    private void MediaCommandFailNotify(ResMsg msg, string action)
+    {
+        SetFaultLogNotify(msg, $"Media command \"{action}\" failed", _notify, null);
+    }
 
     #endregion
 }

@@ -1,6 +1,5 @@
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
-using HoscyCore.Services.Interfacing;
 using HoscyCore.Services.Media.Core;
 using HoscyCore.Services.Osc.MessageHandling.Core;
 using HoscyCore.Utility;
@@ -14,63 +13,51 @@ public class MediaOscMessageHandler
 (
     ConfigModel config,
     IMediaControlService media,
-    IBackToFrontNotifyService notify,
     ILogger logger
 ) 
     : IOscMessageHandler
 {
     private readonly ConfigModel _config = config;
     private readonly IMediaControlService _media = media;
-    private readonly IBackToFrontNotifyService _notify = notify;
     private readonly ILogger _logger = logger.ForContext<MediaOscMessageHandler>();
 
     public bool HandleMessage(OscMessage message)
     {
         if (message.Address.Equals(_config.Osc_Address_Media_Pause, StringComparison.OrdinalIgnoreCase))
         {
-            _media.PauseAsync().ContinueWith((x, _) => OnMediaTaskComplete(x, "Pause"), TaskContinuationOptions.None)
-                .RunWithoutAwait();
+            LogCommand("Pause");
+            _media.PauseAsync().RunWithoutAwait();
             return true;
         }
         else if (message.Address.Equals(_config.Osc_Address_Media_Rewind, StringComparison.OrdinalIgnoreCase))
         {
-            _media.PreviousAsync().ContinueWith((x, _) => OnMediaTaskComplete(x, "Previous"), TaskContinuationOptions.None)
-                .RunWithoutAwait();
+            LogCommand("Previous");
+            _media.PreviousAsync().RunWithoutAwait();
             return true;
         }
         else if (message.Address.Equals(_config.Osc_Address_Media_Skip, StringComparison.OrdinalIgnoreCase))
         {
-            _media.NextAsync().ContinueWith((x, _) => OnMediaTaskComplete(x, "Next"), TaskContinuationOptions.None)
-                .RunWithoutAwait();
+            LogCommand("Next");
+            _media.NextAsync().RunWithoutAwait();
             return true;
         }
         else if (message.Address.Equals(_config.Osc_Address_Media_Toggle, StringComparison.OrdinalIgnoreCase))
         {
-            _media.PlayPauseAsync().ContinueWith((x, _) => OnMediaTaskComplete(x, "Toggle"), TaskContinuationOptions.None)
-                .RunWithoutAwait();
+            LogCommand("PlayPause");
+            _media.PlayPauseAsync().RunWithoutAwait();
             return true;
         }
         else if (message.Address.Equals(_config.Osc_Address_Media_Unpause, StringComparison.OrdinalIgnoreCase))
         {
-            _media.PlayAsync().ContinueWith((x, _) => OnMediaTaskComplete(x, "Play"), TaskContinuationOptions.None)
-                .RunWithoutAwait();
+            LogCommand("Play");
+            _media.PlayAsync().RunWithoutAwait();
             return true;
         }
         return false;
     }
 
-    private Task OnMediaTaskComplete(Task<Res> task, string actionForLog)
+    private void LogCommand(string action)
     {
-        if (task.IsFaulted)
-        {
-            var msg = ResC.FailLog($"Failed to execute media command \"{actionForLog}\" for unknown reason", _logger, task.Exception);
-            _notify.SendResult($"Media command \"{actionForLog}\" failed", msg.Msg!);
-        }
-        else if (task.IsCompletedSuccessfully && task.Result is not null && !task.Result.IsOk)
-        {
-            _logger.Warning($"Failed to execute media command \"{actionForLog}\" with result: {task.Result.Msg}");
-            _notify.SendResult($"Media command \"{actionForLog}\" failed", task.Result.Msg);
-        } 
-        return Task.CompletedTask;
+            _logger.Debug("Received media command {command}", action);
     }
 }

@@ -20,7 +20,7 @@ public class DisabledMediaBackend(ILogger logger) : MediaBackendBase(logger.ForC
     protected override bool UseAlreadyStartedProtection => true;
 
     public override bool CanGetEndpoints => false;
-    public override Task<Res<string[]>> GetEndpointNames()
+    public override Task<Res<string[]>> GetEndpointNamesAsync()
         => Task.FromResult(ResC.TOk<string[]>([]));
 
     public override Task<Res> NextAsync()
