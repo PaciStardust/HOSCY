@@ -8,7 +8,7 @@ using Serilog;
 
 namespace HoscyCore.Services.Media.Core;
 
-[PrototypeLoadIntoDiContainer(typeof(MediaOutputService))]
+[PrototypeLoadIntoDiContainer(typeof(MediaOutputService))] //todo: [TEST]
 public class MediaOutputService(IMediaControlService control, IOutputManagerService output, ConfigModel config, ILogger logger)
     : StartStopServiceBase(logger.ForContext<MediaOutputService>()), IAutoStartStopService
 {
