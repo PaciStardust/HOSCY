@@ -463,7 +463,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Selected media backend
     /// </summary>
-    public string Media_Backend //todo: [IMPL] To be implemented
+    public string Media_Backend
     {
         get => _media_Backend;
         set => SetProperty(ref _media_Backend, value);
@@ -473,7 +473,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Show media status as notification
     /// </summary>
-    public bool Media_ShowStatus //todo: [IMPL] To be implemented
+    public bool Media_ShowStatus
     {
         get => _media_ShowStatus;
         set => SetProperty(ref _media_ShowStatus, value);
@@ -483,7 +483,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Text to show on pause
     /// </summary>
-    public string Media_PauseText //todo: [IMPL] To be implemented
+    public string Media_PauseText
     {
         get => _media_PauseText;
         set => SetProperty(ref _media_PauseText, value);
@@ -493,7 +493,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Additionally show album text
     /// </summary>
-    public bool Media_AddAlbumToText //todo: [IMPL] To be implemented
+    public bool Media_AddAlbumToText
     {
         get => _media_AddAlbumToText;
         set => SetProperty(ref _media_AddAlbumToText, value);
@@ -503,7 +503,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Filter same name albums
     /// </summary>
-    public bool Media_FilterSameNameAlbum //todo: [IMPL] To be implemented
+    public bool Media_FilterSameNameAlbum
     {
         get => _media_FilterSameNameAlbum;
         set => SetProperty(ref _media_FilterSameNameAlbum, value);
@@ -513,7 +513,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Swap artist name and song name
     /// </summary>
-    public bool Media_SwapArtistAndSongInText //todo: [IMPL] To be implemented
+    public bool Media_SwapArtistAndSongInText
     {
         get => _media_SwapArtistAndSongInText;
         set => SetProperty(ref _media_SwapArtistAndSongInText, value);
@@ -523,7 +523,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Verb used at the start of notification
     /// </summary>
-    public string Media_PlayingVerb //todo: [IMPL] To be implemented
+    public string Media_PlayingVerb
     {
         get => _media_PlayingVerb;
         set => SetProperty(ref _media_PlayingVerb, value.Length > 0 ? value : NO_MEDIA_PLAYINGVERB);
@@ -534,7 +534,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Word used between artist and song name
     /// </summary>
-    public string Media_IntermediateWord //todo: [IMPL] To be implemented
+    public string Media_IntermediateWord
     {
         get => _media_IntermediateWord;
         set => SetProperty(ref _media_IntermediateWord, value.Length > 0 ? value : NO_MEDIA_INTERMEDIATEWORD);
@@ -545,7 +545,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Word used in front of album
     /// </summary>
-    public string Media_AlbumWord //todo: [IMPL] To be implemented
+    public string Media_AlbumWord
     {
         get => _media_AlbumWord;
         set => SetProperty(ref _media_AlbumWord, value.Length > 0 ? value : NO_MEDIA_ALBUMWORD);
@@ -556,7 +556,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Extra text at the end
     /// </summary>
-    public string Media_ExtraText //todo: [IMPL] To be implemented
+    public string Media_ExtraText
     {
         get => _media_ExtraText;
         set => SetProperty(ref _media_ExtraText, value);
@@ -566,7 +566,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Filtered out words
     /// </summary>
-    public List<FilterModel> Media_Filters //todo: [IMPL] To be implemented
+    public List<FilterModel> Media_Filters
     {
         get => _media_Filters;
         set => SetProperty(ref _media_Filters, value);
@@ -578,7 +578,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Preferred Mpris endpoints
     /// </summary>
-    public List<string> Media_Mpris_PreferredEndpoints //todo: [IMPL] To be implemented
+    public List<string> Media_Mpris_PreferredEndpoints
     {
         get => _media_Mpris_PreferredEndpoints;
         set => SetProperty(ref _media_Mpris_PreferredEndpoints, value);
@@ -588,7 +588,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Ignored Mpris endpoints
     /// </summary>
-    public List<string> Media_Mpris_IgnoredEndpoints //todo: [IMPL] To be implemented
+    public List<string> Media_Mpris_IgnoredEndpoints
     {
         get => _media_Mpris_IgnoredEndpoints;
         set => SetProperty(ref _media_Mpris_IgnoredEndpoints, value);
@@ -598,7 +598,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// How often should endpoints be updated in the background
     /// </summary>
-    public int Media_Mpris_EndpointUpdateIntervalMs //todo: [IMPL] To be implemented
+    public int Media_Mpris_EndpointUpdateIntervalMs 
     {
         get => _media_Mpris_EndpointUpdateIntervalMs;
         set => SetProperty(ref _media_Mpris_EndpointUpdateIntervalMs, value.MinMax(250, 60_000));
