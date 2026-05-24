@@ -187,6 +187,22 @@ public static class ConfigModelLoader
                     { "Sighing", "sigh" },
                     { "Humming", "hum" }
                 };
+            }},
+            {10, () => {
+                ReplacementDataModel[] mediaKeywords = [
+                    new("media (?:pause|stop|cancel)", "[media] pause") { IgnoreCase = true, UseRegex = true },
+                    new("media (?:resume|start|play)", "[media] play") { IgnoreCase = true, UseRegex = true },
+                    new("media (?:toggle|play ?pause)", "[media] toggle") { IgnoreCase = true, UseRegex = true },
+                    new("media (?:next|skip|forward)", "[media] next") { IgnoreCase = true, UseRegex = true },
+                    new("media (?:previous|last)", "[media] previous") { IgnoreCase = true, UseRegex = true },
+                ];
+                foreach(var kwd in mediaKeywords)
+                {
+                    if (config.Preprocessing_ReplacementsFull
+                        .Any(x => x.Text.Equals(kwd.Text, StringComparison.OrdinalIgnoreCase)))
+                        continue;
+                    config.Preprocessing_ReplacementsFull.Add(kwd);
+                }
             }}
         };
 
