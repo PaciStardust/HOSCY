@@ -29,13 +29,13 @@ public class MediaOscMessageHandler
             _media.PauseAsync().RunWithoutAwait();
             return true;
         }
-        else if (message.Address.Equals(_config.Osc_Address_Media_Rewind, StringComparison.OrdinalIgnoreCase))
+        else if (message.Address.Equals(_config.Osc_Address_Media_Previous, StringComparison.OrdinalIgnoreCase))
         {
             LogCommand("Previous");
             _media.PreviousAsync().RunWithoutAwait();
             return true;
         }
-        else if (message.Address.Equals(_config.Osc_Address_Media_Skip, StringComparison.OrdinalIgnoreCase))
+        else if (message.Address.Equals(_config.Osc_Address_Media_Next, StringComparison.OrdinalIgnoreCase))
         {
             LogCommand("Next");
             _media.NextAsync().RunWithoutAwait();
@@ -47,7 +47,7 @@ public class MediaOscMessageHandler
             _media.PlayPauseAsync().RunWithoutAwait();
             return true;
         }
-        else if (message.Address.Equals(_config.Osc_Address_Media_Unpause, StringComparison.OrdinalIgnoreCase))
+        else if (message.Address.Equals(_config.Osc_Address_Media_Play, StringComparison.OrdinalIgnoreCase))
         {
             LogCommand("Play");
             _media.PlayAsync().RunWithoutAwait();

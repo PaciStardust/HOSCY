@@ -244,10 +244,9 @@ public static class LegacyConfigModelLoader
             Osc_Address_Input_TextNotification = oldConfig.Osc.AddressAddNotification,
 
             Osc_Address_Media_Pause = oldConfig.Osc.AddressMediaPause,
-            Osc_Address_Media_Unpause = oldConfig.Osc.AddressMediaUnpause,
-            Osc_Address_Media_Rewind = oldConfig.Osc.AddressMediaRewind,
-            Osc_Address_Media_Skip = oldConfig.Osc.AddressMediaSkip,
-            Osc_Address_Media_Info = oldConfig.Osc.AddressMediaInfo,
+            Osc_Address_Media_Play = oldConfig.Osc.AddressMediaUnpause,
+            Osc_Address_Media_Previous = oldConfig.Osc.AddressMediaRewind,
+            Osc_Address_Media_Next = oldConfig.Osc.AddressMediaSkip,
             Osc_Address_Media_Toggle = oldConfig.Osc.AddressMediaToggle,
 
             Counters_ShowNotification = oldConfig.Osc.ShowCounterNotifications,

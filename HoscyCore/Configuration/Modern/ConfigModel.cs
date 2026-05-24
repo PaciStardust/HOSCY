@@ -832,7 +832,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// OSC Address to send to tool to pause media
     /// </summary>
-    public string Osc_Address_Media_Pause //todo: [IMPL] To be implemented
+    public string Osc_Address_Media_Pause
     {
         get => _osc_Address_Media_Pause;
         set => SetProperty(ref _osc_Address_Media_Pause, value);
@@ -842,47 +842,37 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// OSC Address to send to tool to unpause media
     /// </summary>
-    public string Osc_Address_Media_Unpause //todo: [IMPL] To be implemented
+    public string Osc_Address_Media_Play
     {
-        get => _osc_Address_Media_Unpause;
-        set => SetProperty(ref _osc_Address_Media_Unpause, value);
+        get => _osc_Address_Media_Play;
+        set => SetProperty(ref _osc_Address_Media_Play, value);
     }
-    private string _osc_Address_Media_Unpause = "/avatar/parameters/MediaUnpause";
+    private string _osc_Address_Media_Play = "/avatar/parameters/MediaUnpause";
 
     /// <summary>
     /// OSC Address to send to tool to rewind media
     /// </summary>
-    public string Osc_Address_Media_Rewind //todo: [IMPL] To be implemented
+    public string Osc_Address_Media_Previous
     {
-        get => _osc_Address_Media_Rewind;
-        set => SetProperty(ref _osc_Address_Media_Rewind, value);
+        get => _osc_Address_Media_Previous;
+        set => SetProperty(ref _osc_Address_Media_Previous, value);
     }
-    private string _osc_Address_Media_Rewind = "/avatar/parameters/MediaRewind";
+    private string _osc_Address_Media_Previous = "/avatar/parameters/MediaRewind";
 
     /// <summary>
     /// OSC Address to send to tool to skip media
     /// </summary>
-    public string Osc_Address_Media_Skip //todo: [IMPL] To be implemented
+    public string Osc_Address_Media_Next
     {
-        get => _osc_Address_Media_Skip;
-        set => SetProperty(ref _osc_Address_Media_Skip, value);
+        get => _osc_Address_Media_Next;
+        set => SetProperty(ref _osc_Address_Media_Next, value);
     }
-    private string _osc_Address_Media_Skip = "/avatar/parameters/MediaSkip";
-
-    /// <summary>
-    /// OSC Address to send to tool to display media info
-    /// </summary>
-    public string Osc_Address_Media_Info //todo: [IMPL] To be implemented
-    {
-        get => _osc_Address_Media_Info;
-        set => SetProperty(ref _osc_Address_Media_Info, value);
-    }
-    private string _osc_Address_Media_Info = "/avatar/parameters/MediaInfo";
+    private string _osc_Address_Media_Next = "/avatar/parameters/MediaSkip";
 
     /// <summary>
     /// OSC Address to send to tool to toggle media playback
     /// </summary>
-    public string Osc_Address_Media_Toggle //todo: [IMPL] To be implemented
+    public string Osc_Address_Media_Toggle
     {
         get => _osc_Address_Media_Toggle;
         set => SetProperty(ref _osc_Address_Media_Toggle, value);

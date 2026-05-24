@@ -73,4 +73,34 @@ public class AddressCommandModule(ReflectPropEditCommandModule _reflectCm) : Att
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Mute_OnGameMute));
     }
+
+    [SubCommandModule(["media-pause"], "Set HOSCY media pause address")] 
+    public Res CmdMediaPause()
+    {
+        return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Media_Pause));
+    }
+
+    [SubCommandModule(["media-play"], "Set HOSCY media play address")] 
+    public Res CmdMediaPlay()
+    {
+        return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Media_Play));
+    }
+
+    [SubCommandModule(["media-previous"], "Set HOSCY media previous address")] 
+    public Res CmdMediaPrevious()
+    {
+        return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Media_Previous));
+    }
+
+    [SubCommandModule(["media-next"], "Set HOSCY media next address")] 
+    public Res CmdMediaNext()
+    {
+        return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Media_Next));
+    }
+
+    [SubCommandModule(["media-toggle"], "Set HOSCY media toggle address")] 
+    public Res CmdMediaToggle()
+    {
+        return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Media_Toggle));
+    }
 }
