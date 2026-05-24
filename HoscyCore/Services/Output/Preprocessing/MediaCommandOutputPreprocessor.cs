@@ -24,6 +24,7 @@ public class MediaCommandOutputPreprocessor(IMediaControlService media, ILogger 
             return OutputPreprocessorResult.NotProcessed;
 
         var command = contents.ToLower().Replace(COMMAND_KEYWORD, string.Empty).Trim();
+        _logger.Debug("Detected media command \"{cmd}\"", command);
 
         Task<Res>? task = command switch
         {
@@ -35,7 +36,16 @@ public class MediaCommandOutputPreprocessor(IMediaControlService media, ILogger 
             _ => null
         };
 
-        task?.RunWithoutAwait();
+        if (task is null)
+        {
+            _logger.Warning("No match found for media command \"{cmd}\"", command);
+        }
+        else
+        {
+            _logger.Debug("Executing media command \"{cmd}\"", command);
+            task.RunWithoutAwait();
+        }
+
         return OutputPreprocessorResult.ProcessedStop;
     }
 }
