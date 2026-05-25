@@ -85,7 +85,7 @@ public class AudioService(ILogger logger, ConfigModel config)
             var device = _audioEngine!.InitializeCaptureDevice(deviceInfo.Value, format);
             _logger.Debug("Created capture device for device {devName}", deviceInfo.Value.Name);
             return ResC.TOk(device);
-        }, $"Failed initializing audio device {deviceInfo.Value.Name}", _logger);
+        }, $"Failed initializing capture device {deviceInfo.Value.Name}", _logger);
     }
 
     public Res<AudioCaptureDeviceProxy> CreateCaptureDeviceProxy()
@@ -104,6 +104,30 @@ public class AudioService(ILogger logger, ConfigModel config)
         return refRes.IsOk
             ? ResC.TOk(_audioEngine!.PlaybackDevices)
             : ResC.TFail<DeviceInfo[]>(refRes.Msg);
+    }
+
+    public Res<AudioPlaybackDevice> CreatePlaybackDevice(string name)
+    {
+        var deviceInfos = GetPlaybackDevices();
+        if (!deviceInfos.IsOk) return ResC.TFail<AudioPlaybackDevice>(deviceInfos.Msg);
+
+        var deviceInfo = FindDeviceWithChecks(deviceInfos.Value, name, "playback");
+        if (!deviceInfo.IsOk) return ResC.TFail<AudioPlaybackDevice>(deviceInfo.Msg);
+
+        var format = new AudioFormat
+        {
+            SampleRate = 16000,
+            Channels = 1,
+            Format = SampleFormat.S16
+        };
+
+        _logger.Debug("Creating playback device for device {devName}", deviceInfo.Value.Name);
+        return ResC.TWrap(() =>
+        {
+            var device = _audioEngine!.InitializePlaybackDevice(deviceInfo.Value, format);
+            _logger.Debug("Created playback device for device {devName}", deviceInfo.Value.Name);
+            return ResC.TOk(device);
+        }, $"Failed initializing playback device {deviceInfo.Value.Name}", _logger);
     }
     #endregion
 
