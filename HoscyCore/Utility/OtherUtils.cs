@@ -107,4 +107,23 @@ public static class OtherUtils
         }
         return !waitIfTrue();
     }
+
+    private static readonly char[] _filterChars = ['\n', '\t', '\r', ' '];
+    public static string TrimBySpace(string input, int maxLen)
+    {
+        var spaceIndex = -1;
+        for (var i = maxLen - 1; i > -1; i--)
+        {
+            if (_filterChars.Contains(input[i]))
+            {
+                spaceIndex = i;
+                break;
+            }
+        }
+        
+        return(spaceIndex > -1
+            ? input[..spaceIndex]
+            : input[..maxLen])
+            .TrimEnd();
+    }
 }

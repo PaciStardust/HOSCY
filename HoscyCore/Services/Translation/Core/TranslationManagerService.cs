@@ -29,8 +29,6 @@ public class TranslationManagerService
     protected override string GetSelectedModuleName()
         => _config.Translation_SelectedModuleName;
 
-    private readonly char[] _filterChars = ['\n', '\t', '\r', ' '];
-
     public TranslationResult TryTranslate(string input, out string? output)
     {
         if (_currentModule is null || _currentModule.GetCurrentStatus() == ServiceStatus.Stopped)
@@ -54,19 +52,7 @@ public class TranslationManagerService
                     : TranslationResult.Failed;
             }
 
-            var spaceIndex = -1;
-            for (var i = _config.Translation_MaxTextLength - 1; i > -1; i--)
-            {
-                if (_filterChars.Contains(input[i]))
-                {
-                    spaceIndex = i;
-                    break;
-                }
-            }
-            input = (spaceIndex > -1
-                ? input[..spaceIndex]
-                : input[.._config.Translation_MaxTextLength])
-                .TrimEnd();
+            input = OtherUtils.TrimBySpace(input, _config.Translation_MaxTextLength);
         }
 
         var result = ResC.TWrap(() => _currentModule.Translate(input), 
