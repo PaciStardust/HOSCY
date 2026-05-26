@@ -46,15 +46,9 @@ public class AudioCommandModule(IAudioService audio, ReflectPropEditCommandModul
         return _reflectCm.SetProperty(nameof(ConfigModel.Audio_CurrentMicrophoneName));
     }
 
-    [SubCommandModule(["system-speaker-id"], "Set the speaker to use for system audio")]
-    public Res CmdSystemSpeaker()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Audio_CurrentSpeakerSystemName));
-    }
-
     [SubCommandModule(["system-output-id"], "Set the speaker to use for output audio")]
     public Res CmdOutputSpeaker()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Audio_CurrentSpeakerOutputName));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Voice_CurrentSpeakerName));
     }
 }

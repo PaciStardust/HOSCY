@@ -1,8 +1,6 @@
 #if LINUX
 
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;

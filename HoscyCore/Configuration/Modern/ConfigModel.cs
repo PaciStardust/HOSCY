@@ -104,16 +104,6 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private string _audio_CurrentMicrophoneName = string.Empty;
 
     /// <summary>
-    /// ID of speaker for output audio
-    /// </summary>
-    public string Audio_CurrentSpeakerOutputName
-    {
-        get => _audio_CurrentSpeakerOutputName;
-        set => SetProperty(ref _audio_CurrentSpeakerOutputName, value);
-    }
-    private string _audio_CurrentSpeakerOutputName = string.Empty;
-
-    /// <summary>
     /// ID of speaker for system audio
     /// </summary>
     public string Audio_CurrentSpeakerSystemName
@@ -1835,6 +1825,16 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion
 
     #region Voice - General
+    /// <summary>
+    /// ID of speaker for output audio
+    /// </summary>
+    public string Voice_CurrentSpeakerName //todo: [IMPL] To be implemented
+    {
+        get => _voice_CurrentSpeakerName;
+        set => SetProperty(ref _voice_CurrentSpeakerName, value);
+    }
+    private string _voice_CurrentSpeakerName = string.Empty;
+
     /// <summary>
     /// Volume of Voice Audio
     /// </summary>
