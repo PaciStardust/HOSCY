@@ -85,16 +85,27 @@ public class WebClient(ILogger logger)
         return ResC.Ok();
     }
 
-    public async Task<Res<string>> SendAsync(HttpRequestMessage requestMessage, int timeoutMs = 5000)
+    public async Task<Res<string>> SendAsyncString(HttpRequestMessage requestMessage, int timeoutMs = 5000)
+    {
+        return await SendAsync(requestMessage, (con, ct) => con.ReadAsStringAsync(ct), timeoutMs);
+    }
+
+    public async Task<Res<byte[]>> SendAsyncBytes(HttpRequestMessage requestMessage, int timeoutMs = 5000)
+    {
+        return await SendAsync(requestMessage, (con, ct) => con.ReadAsByteArrayAsync(ct), timeoutMs);
+    }
+
+    private async Task<Res<T>> SendAsync<T>(HttpRequestMessage requestMessage, Func<HttpContent, CancellationToken, Task<T>> retrieveTask, int timeoutMs = 5000) where T : notnull
     {
         var identifier = IWebClient.GetRequestIdentifier();
-        _logger.Verbose("{identifier} => Sending \"{requestMethod}\" request to \"{requestUri}\"",
-            identifier, requestMessage.Method, requestMessage.RequestUri);
+        var logType = typeof(T).Name;
+        _logger.Verbose("{identifier} => Sending {T} \"{requestMethod}\" request to \"{requestUri}\"",
+            identifier, logType, requestMessage.Method, requestMessage.RequestUri);
 
         if (_client is null)
         {
             _logger.Error("{identifier}: Failed sending, HttpClient is not initialized", identifier);
-            return ResC.TFail<string>(ResMsg.Err("Failed downloading, HttpClient is not initialized"));
+            return ResC.TFail<T>(ResMsg.Err("Failed sending, HttpClient is not initialized"));
         }
 
         var sw = Stopwatch.StartNew();
@@ -102,18 +113,20 @@ public class WebClient(ILogger logger)
         {
             var cts = new CancellationTokenSource(timeoutMs);
             var response = await _client.SendAsync(requestMessage, cts.Token);
-            var jsonIn = await response.Content.ReadAsStringAsync(cts.Token);
+
+            var result = await retrieveTask(response.Content, cts.Token);
 
             if (!response.IsSuccessStatusCode)
             {
+                var jsonRes = await response.Content.ReadAsStringAsync(cts.Token);
                 _logger.Error("{identifier}: Request has received status code \"{responseStatusCode}\" ({intResponseStatusCode}) \"{responseJson}\"",
-                    identifier, response.StatusCode, (int)response.StatusCode, string.IsNullOrWhiteSpace(jsonIn) ? "" : $" ({jsonIn})");
-                return ResC.TFail<string>(ResMsg.Err($"Request failed with status code {response.StatusCode}"));
+                    identifier, response.StatusCode, (int)response.StatusCode, string.IsNullOrWhiteSpace(jsonRes) ? "" : $" ({jsonRes})");
+                return ResC.TFail<T>(ResMsg.Err($"Request failed with status code {response.StatusCode}"));
             }
 
             _logger.Verbose("{identifier}: Received data from request in {timePassed}ms => {jsonIn}",
-                identifier, sw.ElapsedMilliseconds, jsonIn);
-            return ResC.TOk(jsonIn);
+                identifier, sw.ElapsedMilliseconds, result.ToString());
+            return ResC.TOk(result);
         }
         catch (Exception ex)
         {
@@ -121,13 +134,13 @@ public class WebClient(ILogger logger)
             {
                 _logger.Warning("{identifier}: Request to \"{requestUri}\" timed out after {timeout}ms",
                     identifier, requestMessage.RequestUri, timeoutMs);
-                return ResC.TFail<string>(ResMsg.Err($"Request to \"{requestMessage.RequestUri}\" timed out after {timeoutMs}ms"));
+                return ResC.TFail<T>(ResMsg.Err($"Request to \"{requestMessage.RequestUri}\" timed out after {timeoutMs}ms"));
             }
             else
             {
                 _logger.Error(ex, "{identifier}: Request to \"{requestUri}\" failed",
                     identifier, requestMessage.RequestUri);
-                return ResC.TFail<string>(ResMsg.Err(ResMsg.FmtEx(ex, $"Request to \"{requestMessage.RequestUri}\" failed")));
+                return ResC.TFail<T>(ResMsg.Err(ResMsg.FmtEx(ex, $"Request to \"{requestMessage.RequestUri}\" failed")));
             }
         }
     }

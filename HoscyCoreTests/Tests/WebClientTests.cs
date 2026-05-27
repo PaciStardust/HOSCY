@@ -53,7 +53,7 @@ public class WebClientFunctionTests : TestBase<WebClientFunctionTests>
     public async Task TestPostAsync()
     {
         var requestMessage = new HttpRequestMessage(HttpMethod.Get, "https://paci.dev/");
-        var result = await _client.SendAsync(requestMessage, 10000);
+        var result = await _client.SendAsyncString(requestMessage, 10000);
 
         result.AssertOk();
         Assert.That(result.Value, Is.Not.Empty, "Result was empty");

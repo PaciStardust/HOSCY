@@ -70,7 +70,7 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient
 
         AddHeaders(requestMessage);
 
-        var jsonIn = await _client.SendAsync(requestMessage, preset.ConnectionTimeout);
+        var jsonIn = await _client.SendAsyncString(requestMessage, preset.ConnectionTimeout);
         if (!jsonIn.IsOk)
         {
             _logger.Warning("{id}: Received response for request, but json is null ({res})", _identifier, jsonIn);

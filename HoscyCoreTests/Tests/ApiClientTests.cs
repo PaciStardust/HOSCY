@@ -81,7 +81,7 @@ public class ApiClientFunctionTests : TestBase<ApiClientFunctionTests>
             Assert.That(_apiClient.IsPresetValid(), Is.True, "Preset should be valid");
         }
 
-        _webClient.SendResult = USG_TEST_CONTENT_VALUE_FULL;
+        _webClient.SendResultString = USG_TEST_CONTENT_VALUE_FULL;
         byte[] dataToSend = Encoding.UTF8.GetBytes(USG_TEST_SEND_VALUE);
         var res = await _apiClient.SendBytesAsync(dataToSend);
         res.AssertOk();
@@ -110,7 +110,7 @@ public class ApiClientFunctionTests : TestBase<ApiClientFunctionTests>
             Assert.That(_apiClient.IsPresetValid(), Is.True, "Preset should be valid");
         }
 
-        _webClient.SendResult = USG_TEST_CONTENT_VALUE_FULL;
+        _webClient.SendResultString = USG_TEST_CONTENT_VALUE_FULL;
         var res = await _apiClient.SendTextAsync(USG_TEST_SEND_VALUE);
         res.AssertOk();
         using (Assert.EnterMultipleScope())
@@ -130,7 +130,7 @@ public class ApiClientFunctionTests : TestBase<ApiClientFunctionTests>
     [Test]
     public async Task NotStartTest()
     {
-        _webClient.SendResult = USG_TEST_CONTENT_VALUE_FULL;
+        _webClient.SendResultString = USG_TEST_CONTENT_VALUE_FULL;
         _webClient.Stop().AssertOk();
 
         //No preset
@@ -168,7 +168,7 @@ public class ApiClientFunctionTests : TestBase<ApiClientFunctionTests>
     {
         var preset = GetValidApiPreset();
         preset.ConnectionTimeout = 25;
-        _webClient.SendResult = USG_TEST_CONTENT_VALUE_FULL;
+        _webClient.SendResultString = USG_TEST_CONTENT_VALUE_FULL;
         _apiClient.LoadPreset(preset).AssertOk();
 
         _webClient.ArtificialDelayMs = 30;

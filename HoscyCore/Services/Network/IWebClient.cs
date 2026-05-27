@@ -11,7 +11,15 @@ public interface IWebClient : IAutoStartStopService
     /// <param name="requestMessage">Message to send</param>
     /// <param name="timeoutMs">Timeout before cancellation</param>
     /// <returns>Result</returns>
-    public Task<Res<string>> SendAsync(HttpRequestMessage requestMessage, int timeoutMs = 5000);
+    public Task<Res<string>> SendAsyncString(HttpRequestMessage requestMessage, int timeoutMs = 5000);
+
+    /// <summary>
+    /// Sends a message and returns a response
+    /// </summary>
+    /// <param name="requestMessage">Message to send</param>
+    /// <param name="timeoutMs">Timeout before cancellation</param>
+    /// <returns>Result</returns>
+    public Task<Res<byte[]>> SendAsyncBytes(HttpRequestMessage requestMessage, int timeoutMs = 5000);
 
     /// <summary>
     /// Downloads a file
