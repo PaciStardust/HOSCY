@@ -19,6 +19,9 @@ public class AudioPlaybackDeviceProxy : IDisposable
         _playback = playback;
 
         Stream = new();
+        var header = AudioUtils.BaseWavHeader;
+        AudioUtils.WriteRestOfWavHeader(header.AsSpan());
+        Stream.Write(header);
 
         _provider = new(_playback.Engine, _playback.Format, Stream);
 
