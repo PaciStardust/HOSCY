@@ -25,7 +25,7 @@ public class ApiOutputHandler(ILogger logger, IApiClient client, ConfigModel con
     private readonly IApiClient _client = client;
     private readonly ConfigModel _config = config;
 
-    public override string Name => "API Output Module";
+    public override string Name => "API Output";
     public override OutputsAsMediaFlags OutputTypeFlags => OutputsAsMediaFlags.OutputsAsOther;
 
     #region Start / Stop

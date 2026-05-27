@@ -923,7 +923,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion
 
     #region Output - API
-    public bool ApiOut_Enabled
+    public bool ApiOut_Enabled //todo: fix naming
     {
         get => _apiOut_Enabled;
         set => SetProperty(ref _apiOut_Enabled, value);
@@ -985,6 +985,22 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
         set => SetProperty(ref _apiOut_PrependNotificationPriority, value);
     }
     private bool _apiOut_PrependNotificationPriority = false;
+    #endregion
+
+    #region Output - Voice
+    public bool Output_Voice_Enabled //todo: impl
+    {
+        get => _output_Voice_Enabled;
+        set => SetProperty(ref _output_Voice_Enabled, value);
+    }
+    private bool _output_Voice_Enabled = false;
+
+    public bool Output_Voice_SendTranslated //todo: impl
+    {
+        get => _output_Voice_SendTranslated;
+        set => SetProperty(ref _output_Voice_SendTranslated, value);
+    }
+    private bool _output_Voice_SendTranslated = false;
     #endregion
 
     #region Output - VRC Textbox
