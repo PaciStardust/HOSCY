@@ -1836,14 +1836,34 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private string _voice_CurrentSpeakerName = string.Empty;
 
     /// <summary>
+    /// Name of module to use
+    /// </summary>
+    public string Voice_SelectedModuleName //todo: [IMPL] To be implemented
+    {
+        get => _voice_SelectedModuleName;
+        set => SetProperty(ref _voice_SelectedModuleName, value);
+    }
+    private string _voice_SelectedModuleName = string.Empty;
+
+    /// <summary>
+    /// Should module be automatically started
+    /// </summary>
+    public bool Voice_AutoStart //todo: [IMPL] To be implemented
+    {
+        get => _voice_AutoStart;
+        set => SetProperty(ref _voice_AutoStart, value);
+    }
+    private bool _voice_AutoStart;
+
+    /// <summary>
     /// Volume of Voice Audio
     /// </summary>
-    public int Voice_AudioVolumePercent //todo: [IMPL] To be implemented
+    public float Voice_AudioVolumePercent //todo: [IMPL] To be implemented
     {
         get => _voice_AudioVolumePercent;
         set => SetProperty(ref _voice_AudioVolumePercent, value);
     }
-    private int _voice_AudioVolumePercent = 50;
+    private float _voice_AudioVolumePercent = 0.5f;
 
     /// <summary>
     /// Maximum length of text to be converted to voice

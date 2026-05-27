@@ -274,7 +274,7 @@ public static class LegacyConfigModelLoader
             Recognition_SelectedModuleName = oldConfig.Speech.ModelName,
 
             Voice_Microsoft_ModelId = oldConfig.Speech.TtsId,
-            Voice_AudioVolumePercent = oldConfig.Speech.SpeakerVolumeInt,
+            Voice_AudioVolumePercent = oldConfig.Speech.SpeakerVolumeInt / 100f,
             Voice_MaximumTextLength = oldConfig.Speech.MaxLenTtsString,
             Voice_SkipLongerText = oldConfig.Speech.SkipLongerMessages,
 

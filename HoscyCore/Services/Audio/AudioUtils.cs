@@ -55,7 +55,7 @@ public static class AudioUtils
     public static WebRtcApmModifier AddWebRtcModifier(AudioDevice device, bool echoCancellation, int ecLatencyMs, bool noiseSuppression, NoiseSuppressionLevel nsLevel,
         bool gainControl, bool highPass, bool preAmp, float preAmpGain)
     {
-        var apmModifier = new WebRtcApmModifier(
+        var apmModifier = new WebRtcApmModifier( //todo: does this actually work?
             device,
             aecEnabled: echoCancellation,
             aecMobileMode: false,
