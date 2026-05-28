@@ -46,7 +46,7 @@ public class WebClient(ILogger logger)
     #endregion
 
     #region Functionality
-    public async Task<Res> DownloadAsync(string sourceUrl, string fileLocation, int timeoutMs = 5000)
+    public async Task<Res> DownloadAsync(string sourceUrl, string fileLocation, int timeoutMs = 5000, CancellationToken? ctsExternal = null)
     {
         var identifier = IWebClient.GetRequestIdentifier();
         _logger.Debug("{identifier}: Downloading file from \"{url}\"", identifier);
@@ -60,8 +60,10 @@ public class WebClient(ILogger logger)
         var sw = Stopwatch.StartNew();
         try
         {
-            var cts = new CancellationTokenSource(timeoutMs);
-            using var stream = await _client.GetStreamAsync(sourceUrl, cts.Token);
+            using var cts = new CancellationTokenSource(timeoutMs);
+            var comboCts = ctsExternal is null ? cts : CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsExternal.Value);
+
+            using var stream = await _client.GetStreamAsync(sourceUrl, comboCts.Token);
             using var fStream = new FileStream(fileLocation, FileMode.OpenOrCreate);
             await stream.CopyToAsync(fStream);
             _logger.Debug("{identifier}: Received file at path \"{fileLocation}\" from \"{sourceUrl}\" in {timePassed}ms",
@@ -85,17 +87,17 @@ public class WebClient(ILogger logger)
         return ResC.Ok();
     }
 
-    public async Task<Res<string>> SendAsyncString(HttpRequestMessage requestMessage, int timeoutMs = 5000)
+    public async Task<Res<string>> SendAsyncString(HttpRequestMessage requestMessage, int timeoutMs = 5000, CancellationToken? ctsExternal = null)
     {
-        return await SendAsync(requestMessage, (con, ct) => con.ReadAsStringAsync(ct), timeoutMs);
+        return await SendAsync(requestMessage, (con, ct) => con.ReadAsStringAsync(ct), timeoutMs, ctsExternal);
     }
 
-    public async Task<Res<byte[]>> SendAsyncBytes(HttpRequestMessage requestMessage, int timeoutMs = 5000)
+    public async Task<Res<byte[]>> SendAsyncBytes(HttpRequestMessage requestMessage, int timeoutMs = 5000, CancellationToken? ctsExternal = null)
     {
-        return await SendAsync(requestMessage, (con, ct) => con.ReadAsByteArrayAsync(ct), timeoutMs);
+        return await SendAsync(requestMessage, (con, ct) => con.ReadAsByteArrayAsync(ct), timeoutMs, ctsExternal);
     }
 
-    private async Task<Res<T>> SendAsync<T>(HttpRequestMessage requestMessage, Func<HttpContent, CancellationToken, Task<T>> retrieveTask, int timeoutMs = 5000) where T : notnull
+    private async Task<Res<T>> SendAsync<T>(HttpRequestMessage requestMessage, Func<HttpContent, CancellationToken, Task<T>> retrieveTask, int timeoutMs = 5000, CancellationToken? ctsExternal = null) where T : notnull
     {
         var identifier = IWebClient.GetRequestIdentifier();
         var logType = typeof(T).Name;
@@ -111,8 +113,10 @@ public class WebClient(ILogger logger)
         var sw = Stopwatch.StartNew();
         try
         {
-            var cts = new CancellationTokenSource(timeoutMs);
-            var response = await _client.SendAsync(requestMessage, cts.Token);
+            using var cts = new CancellationTokenSource(timeoutMs);
+            var comboCts = ctsExternal is null ? cts : CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsExternal.Value);
+
+            var response = await _client.SendAsync(requestMessage, comboCts.Token);
 
             var result = await retrieveTask(response.Content, cts.Token);
 

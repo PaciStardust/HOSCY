@@ -11,7 +11,7 @@ public interface IWebClient : IAutoStartStopService
     /// <param name="requestMessage">Message to send</param>
     /// <param name="timeoutMs">Timeout before cancellation</param>
     /// <returns>Result</returns>
-    public Task<Res<string>> SendAsyncString(HttpRequestMessage requestMessage, int timeoutMs = 5000);
+    public Task<Res<string>> SendAsyncString(HttpRequestMessage requestMessage, int timeoutMs = 5000, CancellationToken? ctsExternal = null);
 
     /// <summary>
     /// Sends a message and returns a response
@@ -19,7 +19,7 @@ public interface IWebClient : IAutoStartStopService
     /// <param name="requestMessage">Message to send</param>
     /// <param name="timeoutMs">Timeout before cancellation</param>
     /// <returns>Result</returns>
-    public Task<Res<byte[]>> SendAsyncBytes(HttpRequestMessage requestMessage, int timeoutMs = 5000);
+    public Task<Res<byte[]>> SendAsyncBytes(HttpRequestMessage requestMessage, int timeoutMs = 5000, CancellationToken? ctsExternal = null);
 
     /// <summary>
     /// Downloads a file
@@ -27,7 +27,7 @@ public interface IWebClient : IAutoStartStopService
     /// <param name="sourceUrl">Url of file to download</param>
     /// <param name="fileLocation">Location to save file to</param>
     /// <param name="timeoutMs">Timeout before cancellation</param>
-    public Task<Res> DownloadAsync(string sourceUrl, string fileLocation, int timeoutMs = 5000);
+    public Task<Res> DownloadAsync(string sourceUrl, string fileLocation, int timeoutMs = 5000, CancellationToken? ctsExternal = null);
 
     /// <summary>
     /// Gets a unique identifier for a request
