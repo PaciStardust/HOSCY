@@ -106,7 +106,7 @@ public class AudioService(ILogger logger, ConfigModel config)
             : ResC.TFail<DeviceInfo[]>(refRes.Msg);
     }
 
-    public Res<AudioPlaybackDeviceProxy> CreatePlaybackDeviceProxy(string name)
+    public Res<AudioPlaybackDeviceProxy> CreatePlaybackDeviceProxy(string name, ILogger deviceLogger)
     {
         var deviceInfos = GetPlaybackDevices();
         if (!deviceInfos.IsOk) return ResC.TFail<AudioPlaybackDeviceProxy>(deviceInfos.Msg);
@@ -126,7 +126,7 @@ public class AudioService(ILogger logger, ConfigModel config)
         {
             var device = _audioEngine!.InitializePlaybackDevice(deviceInfo.Value, format);
             _logger.Debug("Created playback device for device {devName}", deviceInfo.Value.Name);
-            return ResC.TOk(new AudioPlaybackDeviceProxy(device));
+            return ResC.TOk(new AudioPlaybackDeviceProxy(device, deviceLogger));
         }, $"Failed initializing playback device {deviceInfo.Value.Name}", _logger);
     }
     #endregion

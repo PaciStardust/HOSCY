@@ -6,63 +6,70 @@ using SoundFlow.Providers;
 
 namespace HoscyCore.Services.Audio;
 
-public class AudioPlaybackDeviceProxy : IDisposable
+public class AudioPlaybackDeviceProxy(AudioPlaybackDevice playback, ILogger logger) : IDisposable
 {
-    private readonly AudioPlaybackDevice _playback;
-    private readonly SoundPlayer _player;
-    private readonly StreamDataProvider _provider;
+    private readonly AudioPlaybackDevice _playback = playback;
+    private readonly ILogger _logger = logger;
+    
+    public MemoryStream Stream { get; private init; } = new();
 
-    public MemoryStream Stream { get; private init; }
-
-    public AudioPlaybackDeviceProxy(AudioPlaybackDevice playback)
+    public Res Start()
     {
-        _playback = playback;
-
-        Stream = new();
-
-        var header = AudioUtils.BaseWavHeader;
-        AudioUtils.WriteRestOfWavHeader(header.AsSpan());
-        Stream.Write(header);
-
-        _provider = new(_playback.Engine, _playback.Format, Stream);
-
-        _player = new(_playback.Engine, _playback.Format, _provider);
+        return ResC.WrapR(_playback.Start, "Failed to start playback device", _logger);
     }
 
-    public Res Start(ILogger logger)
+    public Res Stop()
     {
-        return ResC.WrapR(() =>
-        {
-            _playback.MasterMixer.AddComponent(_player);
-            _playback.Start();
-            //todo: does player start need to be called here?
-        }, "Failed to start playback device", logger);
-    }
-
-    public Res Stop(ILogger logger)
-    {
-        return ResC.WrapR(() =>
-        {
-            _playback.Stop();
-            _playback.MasterMixer.RemoveComponent(_player);
-        }, "Failed to stop playback device", logger);
-    }
-
-    public void SetVolume(float volume)
-    {
-        _player.Volume = volume.MinMax(0, 1);
+        return ResC.WrapR(_playback.Stop, "Failed to stop playback device", _logger);
     }
 
     public bool IsRunning => _playback.IsRunning;
 
     public void Dispose()
     {
-        if (!_player.IsDisposed)
-            _player.Dispose();
-        if (!_provider.IsDisposed)
-            _provider.Dispose();
         Stream.Dispose();
         if (!_playback.IsDisposed)
             _playback.Dispose();
+    }
+
+    public async Task<Res> PlayAsync(CancellationToken ct, float volume) //todo: logging
+    {
+        StreamDataProvider? provider = null;
+        SoundPlayer? player = null;
+        try
+        {
+            _logger.Verbose("Initializing components to play audio");
+            provider = new StreamDataProvider(_playback.Engine, _playback.Format, Stream);
+            player = new SoundPlayer(_playback.Engine, _playback.Format, provider)
+            {
+                Volume = volume,
+            };
+            _playback.MasterMixer.AddComponent(player);
+
+            _logger.Verbose("Starting playback, awaiting end");
+            player.Play();
+            while (player.State == SoundFlow.Enums.PlaybackState.Playing && !ct.IsCancellationRequested)
+            {
+                await Task.Delay(10);
+            }
+            _logger.Verbose("Playback complete");
+            player.Stop();
+        }
+        catch (Exception ex)
+        {
+            return ResC.FailLog("Failed to play audio", _logger, ex);
+        }
+        finally
+        {
+            _logger.Verbose("Cleaning up components for playback");
+            if (player is not null)
+            {
+                _playback.MasterMixer.RemoveComponent(player);
+                _playback.Dispose();
+            }
+            provider?.Dispose();
+        }
+
+        return ResC.Ok();
     }
 }

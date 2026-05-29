@@ -1,7 +1,7 @@
 using HoscyCore.Services.Core;
 using HoscyCore.Utility;
 
-namespace HoscyCore.Services.Voice.Core;
+namespace HoscyCore.Services.Voice.Core; //todo: mystery translation error?
 
 public interface IVoiceModuleStartInfo : ISoloModuleStartInfo
 {
@@ -11,10 +11,11 @@ public interface IVoiceModuleStartInfo : ISoloModuleStartInfo
 [Flags]
 public enum VoiceModuleConfigFlags
 {
-    None = 0
+    None = 0,
+    PiperWeb = 1
 }
 
 public interface IVoiceModule : IStartStopModule
 {
-    public Task<Res> CreateAudio(Stream stream);
+    public Task<Res> CreateAudio(string message, Stream stream, CancellationToken ct);
 }
