@@ -94,7 +94,7 @@ public static class ResC
         }, message, logger, lvl);
     }
 
-    public static async Task<Res> WrapAsync<T>(Task<Res> unsafeTask, string message, ILogger? logger, ResMsgLvl lvl = ResMsgLvl.Error)
+    public static async Task<Res> WrapAsync(Task<Res> unsafeTask, string message, ILogger? logger, ResMsgLvl lvl = ResMsgLvl.Error)
     {
         try
         {
