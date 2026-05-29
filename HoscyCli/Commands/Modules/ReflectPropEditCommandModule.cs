@@ -6,7 +6,6 @@ using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Utility;
 using Serilog;
-using Serilog.Events;
 
 namespace HoscyCli.Commands.Modules;
 

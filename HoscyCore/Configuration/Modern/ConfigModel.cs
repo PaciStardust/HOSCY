@@ -1877,7 +1877,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     public float Voice_AudioVolumePercent //todo: [IMPL] To be implemented
     {
         get => _voice_AudioVolumePercent;
-        set => SetProperty(ref _voice_AudioVolumePercent, value);
+        set => SetProperty(ref _voice_AudioVolumePercent, value.MinMax(0,1));
     }
     private float _voice_AudioVolumePercent = 0.5f;
 
