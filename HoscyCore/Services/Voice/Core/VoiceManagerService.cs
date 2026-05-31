@@ -201,12 +201,12 @@ public class VoiceManagerService
             }
 
             _isPlaying = true;
-            _playback.Stream.SetLength(0);
+            _playback.ClearStream();
             var voiceRes = await ResC.WrapAsync(_currentModule.CreateAudio(voiceString, _playback.Stream, _cts.Token), 
                 "Failed to create audio", _logger);
             if (!voiceRes.IsOk)
             {
-                _playback.Stream.SetLength(0);
+                _playback.ClearStream();
                 _isPlaying = false;
                 SetFaultLogNotify(voiceRes.Msg, "Failed to play audio", _notify, _logger);
                 await Task.Delay(10000);
@@ -214,7 +214,7 @@ public class VoiceManagerService
             }
 
             var playbackRes = await _playback.PlayAsync(_cts.Token, _config.Voice_AudioVolumePercent);
-            _playback.Stream.SetLength(0);
+            _playback.ClearStream();
             _isPlaying = false;
                 
             if (!playbackRes.IsOk)

@@ -2,7 +2,6 @@ using HoscyCore.Utility;
 using Serilog;
 using SoundFlow.Abstracts.Devices;
 using SoundFlow.Components;
-using SoundFlow.Providers;
 
 namespace HoscyCore.Services.Audio;
 
@@ -11,7 +10,7 @@ public class AudioPlaybackDeviceProxy(AudioPlaybackDevice playback, ILogger logg
     private readonly AudioPlaybackDevice _playback = playback;
     private readonly ILogger _logger = logger;
     
-    public MemoryStream Stream { get; private init; } = new();
+    public MemoryStream Stream { get; private init; } = new(); //todo:[REFACTOR] Optimize this to only use a singular component
 
     public Res Start()
     {
@@ -34,12 +33,12 @@ public class AudioPlaybackDeviceProxy(AudioPlaybackDevice playback, ILogger logg
 
     public async Task<Res> PlayAsync(CancellationToken ct, float volume) //todo: logging
     {
-        StreamDataProvider? provider = null;
+        FixedStreamDataProvider? provider = null;
         SoundPlayer? player = null;
         try
         {
             _logger.Verbose("Initializing components to play audio");
-            provider = new StreamDataProvider(_playback.Engine, _playback.Format, Stream);
+            provider = new FixedStreamDataProvider(_playback.Engine, _playback.Format, Stream);
             player = new SoundPlayer(_playback.Engine, _playback.Format, provider)
             {
                 Volume = volume,
@@ -65,11 +64,18 @@ public class AudioPlaybackDeviceProxy(AudioPlaybackDevice playback, ILogger logg
             if (player is not null)
             {
                 _playback.MasterMixer.RemoveComponent(player);
-                _playback.Dispose();
+                player.Dispose();
             }
             provider?.Dispose();
         }
 
         return ResC.Ok();
+    }
+
+    public void ClearStream()
+    {
+        Stream.Position = 0;
+        Stream.SetLength(0);
+        Stream.Capacity = 0;
     }
 }
