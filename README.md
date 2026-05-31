@@ -25,9 +25,9 @@ For the following reasons this project is currently being rewritten from the gro
     - ✅ Routing
     - ✅ OscQuery
   - ❌ Hotkeys
-  - ❌ Media
-    - ❌ Control
-    - ❌ Display
+  - ✅ Media
+    - ✅ Control
+    - ✅ Display
   - ✅ Translation
   - ✅ Textbox Control
   - ✅ STT
@@ -42,7 +42,7 @@ For the following reasons this project is currently being rewritten from the gro
     - ❌ Windows TTS
 ### Future Updates
 - ❌ UI Themes
-- ❌ Updating Whisper
+- ✅ Updating Whisper
 - ❌ Improved TTS with Piper
 
 # HOSCY (Old version)
