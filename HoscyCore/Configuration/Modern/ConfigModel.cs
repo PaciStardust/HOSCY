@@ -1957,4 +1957,69 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _voice_Microsoft_TtsId = string.Empty;
     #endregion
+
+    #region Voice - Piper
+    public bool Voice_Piper_Process_Enabled //todo: [IMPL] To be implemented
+    {
+        get => _voice_Piper_Process_Enabled;
+        set => SetProperty(ref _voice_Piper_Process_Enabled, value);
+    }
+    private bool _voice_Piper_Process_Enabled = false;
+
+    public string Voice_Piper_Process_Terminal //todo: [IMPL] To be implemented
+    {
+        get => _voice_Piper_Process_Terminal;
+        set => SetProperty(ref _voice_Piper_Process_Terminal, value);
+    }
+    private string _voice_Piper_Process_Terminal = string.Empty;
+
+    public string Voice_Piper_Process_VenvDir //todo: [IMPL] To be implemented
+    {
+        get => _voice_Piper_Process_VenvDir;
+        set => SetProperty(ref _voice_Piper_Process_VenvDir, value);
+    }
+    private string _voice_Piper_Process_VenvDir = string.Empty;
+
+    public string Voice_Piper_Process_Voice //todo: [IMPL] To be implemented
+    {
+        get => _voice_Piper_Process_Voice;
+        set => SetProperty(ref _voice_Piper_Process_Voice, value);
+    }
+    private string _voice_Piper_Process_Voice = string.Empty;
+
+    public string Voice_Piper_Ip //todo: [IMPL] To be implemented
+    {
+        get => _voice_Piper_Ip;
+        set => SetProperty(ref _voice_Piper_Ip, string.IsNullOrWhiteSpace(value) ? "127.0.0.1" : value);
+    }
+    private string _voice_Piper_Ip = "127.0.0.1";
+
+    public ushort Voice_Piper_Port //todo: [IMPL] To be implemented
+    {
+        get => _voice_Piper_Port;
+        set => SetProperty(ref _voice_Piper_Port, value);
+    }
+    private ushort _voice_Piper_Port = 9101;
+
+    public string Voice_Piper_Request_Voice //todo: [IMPL] To be implemented
+    {
+        get => _voice_Piper_Request_Voice;
+        set => SetProperty(ref _voice_Piper_Request_Voice, value);
+    }
+    private string _voice_Piper_Request_Voice = string.Empty;
+
+    public float Voice_Piper_Request_NoiseScale //todo: [IMPL] To be implemented
+    {
+        get => _voice_Piper_Request_NoiseScale;
+        set => SetProperty(ref _voice_Piper_Request_NoiseScale, value.MinMax(-1, 1));
+    }
+    private float _voice_Piper_Request_NoiseScale = -1;
+
+    public float Voice_Piper_Request_NoiseWScale //todo: [IMPL] To be implemented
+    {
+        get => _voice_Piper_Request_NoiseWScale;
+        set => SetProperty(ref _voice_Piper_Request_NoiseWScale, value.MinMax(-1, 1));
+    }
+    private float _voice_Piper_Request_NoiseWScale = -1;
+    #endregion
 }
