@@ -1007,181 +1007,181 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Should the Textbox be enabled
     /// </summary>
-    public bool VrcTextbox_Enabled //todo: fix naming
+    public bool Output_VrcTxt_Enabled
     {
-        get => _vrcTextbox_Enabled;
-        set => SetProperty(ref _vrcTextbox_Enabled, value);
+        get => __output_VrcTxt_Enabled;
+        set => SetProperty(ref __output_VrcTxt_Enabled, value);
     }
-    private bool _vrcTextbox_Enabled = false;
+    private bool __output_VrcTxt_Enabled = false;
 
     /// <summary>
     /// Should translated content be sent to the VRC Textbox?
     /// </summary>
-    public bool VrcTextbox_Output_ShowTranslation
+    public bool Output_VrcTxt_Send_ShowTranslation
     {
-        get => _vrcTextbox_Output_ShowTranslation;
-        set => SetProperty(ref _vrcTextbox_Output_ShowTranslation, value);
+        get => _output_VrcTxt_Send_ShowTranslation;
+        set => SetProperty(ref _output_VrcTxt_Send_ShowTranslation, value);
     }
-    private bool _vrcTextbox_Output_ShowTranslation;
+    private bool _output_VrcTxt_Send_ShowTranslation;
 
     /// <summary>
     /// Should original be added after translation?
     /// </summary>
-    public bool VrcTextbox_Output_AddOriginalToTranslation
+    public bool Output_VrcTxt_Send_AddOriginalToTranslation
     {
-        get => _vrcTextbox_Output_AddOriginalToTranslation;
-        set => SetProperty(ref _vrcTextbox_Output_AddOriginalToTranslation, value);
+        get => _output_VrcTxt_Send_AddOriginalToTranslation;
+        set => SetProperty(ref _output_VrcTxt_Send_AddOriginalToTranslation, value);
     }
-    private bool _vrcTextbox_Output_AddOriginalToTranslation = true;
+    private bool _output_VrcTxt_Send_AddOriginalToTranslation = true;
 
     /// <summary>
     /// Maximum of characters displayed
     /// </summary>
-    public int VrcTextbox_Output_MaxDisplayedCharacters
+    public int Output_VrcTxt_Send_MaxDisplayedCharacters
     {
-        get => _vrcTextbox_Output_MaxDisplayedCharacters;
-        set => SetProperty(ref _vrcTextbox_Output_MaxDisplayedCharacters, value.MinMax(10, 130));
+        get => _output_VrcTxt_Send_MaxDisplayedCharacters;
+        set => SetProperty(ref _output_VrcTxt_Send_MaxDisplayedCharacters, value.MinMax(10, 130));
     }
-    private int _vrcTextbox_Output_MaxDisplayedCharacters = 130;
+    private int _output_VrcTxt_Send_MaxDisplayedCharacters = 130;
 
     /// <summary>
     /// Actuall output text (disable to only have processing indicator)
     /// </summary>
-    public bool VrcTextbox_Do_Output
+    public bool Output_VrcTxt_Do_Send
     {
-        get => _vrcTextbox_Do_Output; 
-        set => SetProperty(ref _vrcTextbox_Do_Output, value);
+        get => _output_VrcTxt_Do_Output; 
+        set => SetProperty(ref _output_VrcTxt_Do_Output, value);
     }
-    private bool _vrcTextbox_Do_Output = true;
+    private bool _output_VrcTxt_Do_Output = true;
 
     /// <summary>
     /// Show indicator while processing
     /// </summary>
-    public bool VrcTextbox_Do_Indicator
+    public bool Output_VrcTxt_Do_Indicator
     {
-        get => _vrcTextbox_Do_Indicator;
-        set => SetProperty(ref _vrcTextbox_Do_Indicator, value);
+        get => _output_VrcTxt_Do_Indicator;
+        set => SetProperty(ref _output_VrcTxt_Do_Indicator, value);
     }
-    private bool _vrcTextbox_Do_Indicator = true;
+    private bool _output_VrcTxt_Do_Indicator = true;
 
     /// <summary>
     /// Ms of timeout per 20 characters displayed at same time
     /// </summary>
-    public int VrcTextbox_Timeout_DynamicPer20CharactersDisplayedMs
+    public int Output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs
     {
-        get => _vrcTextbox_Timeout_DynamicPer20CharactersDisplayedMs;
-        set => SetProperty(ref _vrcTextbox_Timeout_DynamicPer20CharactersDisplayedMs, value.MinMax(250, 10000));
+        get => _output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs;
+        set => SetProperty(ref _output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs, value.MinMax(250, 10000));
     }
-    private int _vrcTextbox_Timeout_DynamicPer20CharactersDisplayedMs = 1250;
+    private int _output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs = 1250;
 
     /// <summary>
     /// Minimum timeout in ms when using dynamic timeout
     /// </summary>
-    public int VrcTextbox_Timeout_DynamicMinimumMs
+    public int Output_VrcTxt_Timeout_DynamicMinimumMs
     {
-        get => _vrcTextbox_Timeout_DynamicMinimumMs;
-        set => SetProperty(ref _vrcTextbox_Timeout_DynamicMinimumMs, value.MinMax(1250, 30000));
+        get => _output_VrcTxt_Timeout_DynamicMinimumMs;
+        set => SetProperty(ref _output_VrcTxt_Timeout_DynamicMinimumMs, value.MinMax(1250, 30000));
     }
-    private int _vrcTextbox_Timeout_DynamicMinimumMs = 3000;
+    private int _output_VrcTxt_Timeout_DynamicMinimumMs = 3000;
 
     /// <summary>
     /// Timeout in ms when using static timeout
     /// </summary>
-    public int VrcTextbox_Timeout_StaticMs
+    public int Output_VrcTxt_Timeout_StaticMs
     {
-        get => _vrcTextbox_Timeout_StaticMs;
-        set => SetProperty(ref _vrcTextbox_Timeout_StaticMs, value.MinMax(1250, 30000));
+        get => _output_VrcTxt_Timeout_StaticMs;
+        set => SetProperty(ref _output_VrcTxt_Timeout_StaticMs, value.MinMax(1250, 30000));
     }
-    private int _vrcTextbox_Timeout_StaticMs = 5000;
+    private int _output_VrcTxt_Timeout_StaticMs = 5000;
 
     /// <summary>
     /// Use dynamic display timeout
     /// </summary>
-    public bool VrcTextbox_Timeout_UseDynamic
+    public bool Output_VrcTxt_Timeout_UseDynamic
     {
-        get => _vrcTextbox_Timeout_UseDynamic;
-        set => SetProperty(ref _vrcTextbox_Timeout_UseDynamic, value);
+        get => _output_VrcTxt_Timeout_UseDynamic;
+        set => SetProperty(ref _output_VrcTxt_Timeout_UseDynamic, value);
     }
-    private bool _vrcTextbox_Timeout_UseDynamic = true;
+    private bool _output_VrcTxt_Timeout_UseDynamic = true;
 
     /// <summary>
     /// Automatically clear after notifications
     /// </summary>
-    public bool VrcTextbox_Timeout_AutomaticallyClearNotification
+    public bool Output_VrcTxt_Timeout_AutomaticallyClearNotification
     {
-        get => _vrcTextbox_Timeout_AutomaticallyClearNotification;
-        set => SetProperty(ref _vrcTextbox_Timeout_AutomaticallyClearNotification, value);
+        get => _output_VrcTxt_Timeout_AutomaticallyClearNotification;
+        set => SetProperty(ref _output_VrcTxt_Timeout_AutomaticallyClearNotification, value);
     }
-    private bool _vrcTextbox_Timeout_AutomaticallyClearNotification = true;
+    private bool _output_VrcTxt_Timeout_AutomaticallyClearNotification = true;
 
     /// <summary>
     /// Automatically clear after message
     /// </summary>
-    public bool VrcTextbox_Timeout_AutomaticallyClearMessage
+    public bool Output_VrcTxt_Timeout_AutomaticallyClearMessage
     {
-        get => _vrcTextbox_Timeout_AutomaticallyClearMessage;
-        set => SetProperty(ref _vrcTextbox_Timeout_AutomaticallyClearMessage, value);
+        get => _output_VrcTxt_Timeout_AutomaticallyClearMessage;
+        set => SetProperty(ref _output_VrcTxt_Timeout_AutomaticallyClearMessage, value);
     }
-    private bool _vrcTextbox_Timeout_AutomaticallyClearMessage;
+    private bool _output_VrcTxt_Timeout_AutomaticallyClearMessage;
 
     /// <summary>
     /// Text to the left of a notification
     /// </summary>
-    public string VrcTextbox_Notification_IndicatorTextStart
+    public string Output_VrcTxt_Notification_IndicatorTextStart
     {
-        get => _vrcTextbox_Notification_IndicatorTextStart;
-        set => SetProperty(ref _vrcTextbox_Notification_IndicatorTextStart, value.Length < 4 ? value : value[..3]);
+        get => _output_VrcTxt_Notification_IndicatorTextStart;
+        set => SetProperty(ref _output_VrcTxt_Notification_IndicatorTextStart, value.Length < 4 ? value : value[..3]);
     }
     /// <summary>
     /// Text to the right of a notification
     /// </summary>
-    public string VrcTextbox_Notification_IndicatorTextEnd
+    public string Output_VrcTxt_Notification_IndicatorTextEnd
     {
-        get => _vrcTextbox_Notification_IndicatorTextEnd;
-        set => SetProperty(ref _vrcTextbox_Notification_IndicatorTextEnd, value.Length < 4 ? value : value[..3]);
+        get => _output_VrcTxt_Notification_IndicatorTextEnd;
+        set => SetProperty(ref _output_VrcTxt_Notification_IndicatorTextEnd, value.Length < 4 ? value : value[..3]);
     }
-    private string _vrcTextbox_Notification_IndicatorTextStart = "〈";
-    private string _vrcTextbox_Notification_IndicatorTextEnd = "〉";
+    private string _output_VrcTxt_Notification_IndicatorTextStart = "〈";
+    private string _output_VrcTxt_Notification_IndicatorTextEnd = "〉";
 
     /// <summary>
     /// Use notification priority system
     /// </summary>
-    public bool VrcTextbox_Notification_UsePrioritySystem
+    public bool Output_VrcTxt_Notification_UsePrioritySystem
     {
-        get => _vrcTextbox_Notification_UsePrioritySystem;
-        set => SetProperty(ref _vrcTextbox_Notification_UsePrioritySystem, value);
+        get => _output_VrcTxt_Notification_UsePrioritySystem;
+        set => SetProperty(ref _output_VrcTxt_Notification_UsePrioritySystem, value);
     }
-    private bool _vrcTextbox_Notification_UsePrioritySystem = true;
+    private bool _output_VrcTxt_Notification_UsePrioritySystem = true;
 
     /// <summary>
     /// Skip notifications when there is an available message
     /// </summary>
-    public bool VrcTextbox_Notification_SkipWhenMessageAvailable
+    public bool Output_VrcTxt_Notification_SkipWhenMessageAvailable
     {
-        get => _vrcTextbox_Notification_SkipWhenMessageAvailable;
-        set => SetProperty(ref _vrcTextbox_Notification_SkipWhenMessageAvailable, value);
+        get => _output_VrcTxt_Notification_SkipWhenMessageAvailable;
+        set => SetProperty(ref _output_VrcTxt_Notification_SkipWhenMessageAvailable, value);
     }
-    private bool _vrcTextbox_Notification_SkipWhenMessageAvailable = true;
+    private bool _output_VrcTxt_Notification_SkipWhenMessageAvailable = true;
 
     /// <summary>
     /// Play sound on message
     /// </summary>
-    public bool VrcTextbox_Sound_OnMessage
+    public bool Output_VrcTxt_Sound_OnMessage
     {
-        get => _vrcTextbox_Sound_OnMessage;
-        set => SetProperty(ref _vrcTextbox_Sound_OnMessage, value);
+        get => _output_VrcTxt_Sound_OnMessage;
+        set => SetProperty(ref _output_VrcTxt_Sound_OnMessage, value);
     }
-    private bool _vrcTextbox_Sound_OnMessage = true;
+    private bool _output_VrcTxt_Sound_OnMessage = true;
 
     /// <summary>
     /// Play sound on notification
     /// </summary>
-    public bool VrcTextbox_Sound_OnNotification
+    public bool Output_VrcTxt_Sound_OnNotification
     {
-        get => _vrcTextbox_Sound_OnNotification;
-        set => SetProperty(ref _vrcTextbox_Sound_OnNotification, value);
+        get => _output_VrcTxt_Sound_OnNotification;
+        set => SetProperty(ref _output_VrcTxt_Sound_OnNotification, value);
     }
-    private bool _vrcTextbox_Sound_OnNotification;
+    private bool _output_VrcTxt_Sound_OnNotification;
     #endregion
 
     #region Recognition - General

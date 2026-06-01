@@ -18,7 +18,7 @@ public class VrcTextboxOutputHandlerStartInfo(ConfigModel config) : IOutputHandl
         => typeof(VrcTextboxOutputHandler);
 
     public bool ShouldBeEnabled()
-        => _config.VrcTextbox_Enabled;
+        => _config.Output_VrcTxt_Enabled;
 }
 
 [LoadIntoDiContainer(typeof(VrcTextboxOutputHandler), Lifetime.Transient)]
@@ -59,8 +59,8 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
 
     public override OutputTranslationFormat GetTranslationOutputMode()
     {
-        return _config.VrcTextbox_Output_ShowTranslation
-            ? _config.VrcTextbox_Output_AddOriginalToTranslation
+        return _config.Output_VrcTxt_Send_ShowTranslation
+            ? _config.Output_VrcTxt_Send_AddOriginalToTranslation
                 ? OutputTranslationFormat.Both
                 : OutputTranslationFormat.Translation
             : OutputTranslationFormat.Untranslated; 
@@ -96,7 +96,7 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
         //Only sends once timeout has passed OR the last sent was a notification and skip is enabled
         if (_currentMessages.Count > 0)
         {
-            var timeoutBypass = _lastSentNotificationPriority is not null && _config.VrcTextbox_Notification_SkipWhenMessageAvailable;
+            var timeoutBypass = _lastSentNotificationPriority is not null && _config.Output_VrcTxt_Notification_SkipWhenMessageAvailable;
             
             if (now >= _intendedTimeoutUntil || timeoutBypass)
             {
@@ -112,9 +112,9 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
                     return;
                 }
 
-                playTextboxSound = _config.VrcTextbox_Sound_OnMessage;
+                playTextboxSound = _config.Output_VrcTxt_Sound_OnMessage;
                 _lastSentNotificationPriority = null;
-                _isClearPending = _config.VrcTextbox_Timeout_AutomaticallyClearMessage;
+                _isClearPending = _config.Output_VrcTxt_Timeout_AutomaticallyClearMessage;
             }
         }
 
@@ -123,7 +123,7 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
         else if (_currentNotification is not null)
         {
             var timeoutBypass = _lastSentNotificationPriority is not null
-                && _config.VrcTextbox_Notification_UsePrioritySystem
+                && _config.Output_VrcTxt_Notification_UsePrioritySystem
                 && _currentNotification.Value.Priority >= _lastSentNotificationPriority;
 
             if (now >= _intendedTimeoutUntil || timeoutBypass)
@@ -136,9 +136,9 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
                 textToSend = _currentNotification.Value.Text;
                 var prio = _currentNotification.Value.Priority;
                 ClearNotification();
-                playTextboxSound = _config.VrcTextbox_Sound_OnNotification;
+                playTextboxSound = _config.Output_VrcTxt_Sound_OnNotification;
                 _lastSentNotificationPriority = prio;
-                _isClearPending = _config.VrcTextbox_Timeout_AutomaticallyClearNotification;
+                _isClearPending = _config.Output_VrcTxt_Timeout_AutomaticallyClearNotification;
             }
         }
 
@@ -173,7 +173,7 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
     public const int VRC_TEXTBOX_LIMIT = 140;
     private void SendMessage(string message, bool playSound)
     {
-        if (!_config.VrcTextbox_Do_Output) return;
+        if (!_config.Output_VrcTxt_Do_Send) return;
 
         if (message.Length > VRC_TEXTBOX_LIMIT) //Clamp for VRC
             message = message[..VRC_TEXTBOX_LIMIT];
@@ -186,11 +186,11 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
         if (string.IsNullOrWhiteSpace(message))
             return TIMEOUT_MINIMUM_MS; //to avoid hitting ratelimit
 
-        if (!_config.VrcTextbox_Timeout_UseDynamic)
-            return _config.VrcTextbox_Timeout_StaticMs;
+        if (!_config.Output_VrcTxt_Timeout_UseDynamic)
+            return _config.Output_VrcTxt_Timeout_StaticMs;
 
-        var timeout = (int)(Math.Ceiling(message.Length / 20f) * _config.VrcTextbox_Timeout_DynamicPer20CharactersDisplayedMs);
-        return Math.Max(timeout, _config.VrcTextbox_Timeout_DynamicMinimumMs);
+        var timeout = (int)(Math.Ceiling(message.Length / 20f) * _config.Output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs);
+        return Math.Max(timeout, _config.Output_VrcTxt_Timeout_DynamicMinimumMs);
     }
     #endregion
 
@@ -216,7 +216,7 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
     public const int INDICATOR_COOLDOWN_S = 3;
     private bool CanSetProcessingIndicator()
     {
-        return _config.VrcTextbox_Do_Indicator &&
+        return _config.Output_VrcTxt_Do_Indicator &&
             _lastSentTypingIndicator.AddSeconds(INDICATOR_COOLDOWN_S) < DateTimeOffset.UtcNow;
     }
     #endregion
@@ -224,7 +224,7 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
     #region Input Processing
     public override Task HandleNotification(string contents, OutputNotificationPriority priority)
     {
-        if (!_config.VrcTextbox_Do_Output) return Task.CompletedTask;
+        if (!_config.Output_VrcTxt_Do_Send) return Task.CompletedTask;
 
         if (string.IsNullOrWhiteSpace(contents))
         {
@@ -233,18 +233,18 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
             return Task.CompletedTask;
         }
 
-        if (_config.VrcTextbox_Notification_UsePrioritySystem && _currentNotification.HasValue && priority < _currentNotification.Value.Priority)
+        if (_config.Output_VrcTxt_Notification_UsePrioritySystem && _currentNotification.HasValue && priority < _currentNotification.Value.Priority)
         {
             _logger.Verbose("Did not override notification with contents \"{notificationContents}\" and priority {notificationPriority} => priority lower than current {currentPriority}",
                 contents, priority, _currentNotification.Value.Priority);
             return Task.CompletedTask;
         }
 
-        if (contents.Length > _config.VrcTextbox_Output_MaxDisplayedCharacters)
+        if (contents.Length > _config.Output_VrcTxt_Send_MaxDisplayedCharacters)
         {
-            contents = contents[..(_config.VrcTextbox_Output_MaxDisplayedCharacters - 1)] + "-";
+            contents = contents[..(_config.Output_VrcTxt_Send_MaxDisplayedCharacters - 1)] + "-";
         }
-        contents = $"{_config.VrcTextbox_Notification_IndicatorTextStart}{contents}{_config.VrcTextbox_Notification_IndicatorTextEnd}";
+        contents = $"{_config.Output_VrcTxt_Notification_IndicatorTextStart}{contents}{_config.Output_VrcTxt_Notification_IndicatorTextEnd}";
 
         _logger.Debug("Setting notification to \"{contents}\" with priority {priority}", contents, priority);
         _currentNotification = (contents, priority);
@@ -253,7 +253,7 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
 
     public override Task HandleMessage(string contents)  
     {
-        if (!_config.VrcTextbox_Do_Output) return Task.CompletedTask;
+        if (!_config.Output_VrcTxt_Do_Send) return Task.CompletedTask;
 
         if (string.IsNullOrWhiteSpace(contents)) return Task.CompletedTask;
 
@@ -278,7 +278,7 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
         var currentSegmentStart = -1;
         var currentWordStart = -1;
         var currentSegmentPotentialEnd = -1;
-        var maxLength = _config.VrcTextbox_Output_MaxDisplayedCharacters;
+        var maxLength = _config.Output_VrcTxt_Send_MaxDisplayedCharacters;
         for (var charIndex = 0; charIndex <= message.Length; charIndex++)
         {
             var isWordSeparator = charIndex == message.Length || message[charIndex] == ' ' || message[charIndex] == '\r' || message[charIndex] == '\n' || message[charIndex] == '\t';

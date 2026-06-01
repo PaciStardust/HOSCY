@@ -39,7 +39,7 @@ public class TextboxCommandModule
     [SubCommandModule(["enabled"], "Enable VRC Textbox")] 
     public Res CmdSetEnable()
     {
-        var res = _reflectCm.SetProperty(nameof(ConfigModel.VrcTextbox_Enabled));
+        var res = _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Enabled));
         if (!res.IsOk) return res;
 
         return _output.RefreshHandlers();
@@ -48,102 +48,102 @@ public class TextboxCommandModule
     [SubCommandModule(["trans-show"], "Show translation")] 
     public Res CmdTransShow()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.VrcTextbox_Output_ShowTranslation));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Send_ShowTranslation));
     }
 
     [SubCommandModule(["trans-add-original"], "Show both translation and original")] 
     public Res CmdTransAddOriginal()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.VrcTextbox_Output_AddOriginalToTranslation));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Send_AddOriginalToTranslation));
     }
 
     [SubCommandModule(["char-limit"], "Set content character limit")] 
     public Res CmdCharLimit()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.VrcTextbox_Output_MaxDisplayedCharacters));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Send_MaxDisplayedCharacters));
     }
 
     [SubCommandModule(["do-output"], "Actually output text")] 
     public Res CmdDoOutput()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.VrcTextbox_Do_Output));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Do_Send));
     }
 
     [SubCommandModule(["do-indicator"], "Actually show typing indicator")] 
     public Res CmdDoIncidator()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.VrcTextbox_Do_Indicator));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Do_Indicator));
     }
 
     [SubCommandModule(["timeout-dyn-per20chars"], "Dynamic timeout in ms per 20 characters displayed")] 
     public Res CmdTimeoutDynamic20Chars()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.VrcTextbox_Timeout_DynamicPer20CharactersDisplayedMs));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs));
     }
 
     [SubCommandModule(["timeout-dyn-min"], "Dynamic timeout minimum in ms")] 
     public Res CmdTimeoutDynamicMin()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.VrcTextbox_Timeout_DynamicMinimumMs));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Timeout_DynamicMinimumMs));
     }
 
     [SubCommandModule(["timeout-dyn-use"], "Use dynamic timeout")] 
     public Res CmdTimeoutDynamicUse()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.VrcTextbox_Timeout_UseDynamic));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Timeout_UseDynamic));
     }
 
     [SubCommandModule(["timeout-static"], "Dynamic timeout in ms")] 
     public Res CmdTimeoutStatic()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.VrcTextbox_Timeout_StaticMs));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Timeout_StaticMs));
     }
 
     [SubCommandModule(["clear-notif"], "Automatic clearing after notification")] 
     public Res CmdClearNotification()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.VrcTextbox_Timeout_AutomaticallyClearNotification));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Timeout_AutomaticallyClearNotification));
     }
 
     [SubCommandModule(["clear-message"], "Automatic clearing after message")] 
     public Res CmdClearMessage()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.VrcTextbox_Timeout_AutomaticallyClearMessage));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Timeout_AutomaticallyClearMessage));
     }
 
     [SubCommandModule(["notif-text-start"], "Text at start of notification")] 
     public Res CmdNotifTextStart()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.VrcTextbox_Notification_IndicatorTextStart));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Notification_IndicatorTextStart));
     }
 
     [SubCommandModule(["notif-text-end"], "Text at end of notification")] 
     public Res CmdNotifTextEnd()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.VrcTextbox_Notification_IndicatorTextEnd));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Notification_IndicatorTextEnd));
     }
 
     [SubCommandModule(["notif-priority"], "Use notification priority")] 
     public Res CmdNotifPriority()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.VrcTextbox_Notification_UsePrioritySystem));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Notification_UsePrioritySystem));
     }
 
     [SubCommandModule(["notif-skip-on-message"], "Skip notification on message")] 
     public Res CmdNotifSkipOnMessage()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.VrcTextbox_Notification_SkipWhenMessageAvailable));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Notification_SkipWhenMessageAvailable));
     }
 
     [SubCommandModule(["sound-message"], "Play sound on message")] 
     public Res CmdSoundMessage()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.VrcTextbox_Sound_OnMessage));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Sound_OnMessage));
     }
 
     [SubCommandModule(["sound-notif"], "Play sound on notification")] 
     public Res CmdSoundNotif()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.VrcTextbox_Sound_OnNotification));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Sound_OnNotification));
     }
 }
