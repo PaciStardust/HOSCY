@@ -1844,7 +1844,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// ID of speaker for output audio
     /// </summary>
-    public string Voice_CurrentSpeakerName //todo: [IMPL] To be implemented
+    public string Voice_CurrentSpeakerName
     {
         get => _voice_CurrentSpeakerName;
         set => SetProperty(ref _voice_CurrentSpeakerName, value);
@@ -1854,7 +1854,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Name of module to use
     /// </summary>
-    public string Voice_SelectedModuleName //todo: [IMPL] To be implemented
+    public string Voice_SelectedModuleName
     {
         get => _voice_SelectedModuleName;
         set => SetProperty(ref _voice_SelectedModuleName, value);
@@ -1864,7 +1864,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Should module be automatically started
     /// </summary>
-    public bool Voice_AutoStart //todo: [IMPL] To be implemented
+    public bool Voice_AutoStart
     {
         get => _voice_AutoStart;
         set => SetProperty(ref _voice_AutoStart, value);
@@ -1874,7 +1874,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Volume of Voice Audio
     /// </summary>
-    public float Voice_AudioVolumePercent //todo: [IMPL] To be implemented
+    public float Voice_AudioVolumePercent
     {
         get => _voice_AudioVolumePercent;
         set => SetProperty(ref _voice_AudioVolumePercent, value.MinMax(0,1));
@@ -1884,7 +1884,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Maximum length of text to be converted to voice
     /// </summary>
-    public int Voice_MaximumTextLength //todo: [IMPL] To be implemented
+    public int Voice_MaximumTextLength
     {
         get => _voice_MaximumTextLength;
         set => SetProperty(ref _voice_MaximumTextLength, value.MinMax(1, short.MaxValue));
@@ -1894,7 +1894,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Should longer text be skipped? Will be cut otherwise
     /// </summary>
-    public bool Voice_SkipLongerText //todo: [IMPL] To be implemented
+    public bool Voice_SkipLongerText
     {
         get => _voice_SkipLongerText;
         set => SetProperty(ref _voice_SkipLongerText, value);

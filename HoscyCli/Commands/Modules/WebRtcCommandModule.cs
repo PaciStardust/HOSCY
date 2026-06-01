@@ -8,11 +8,11 @@ namespace HoscyCli.Commands.Modules;
 [PrototypeLoadIntoDiContainer(typeof(WebRtcCommandModule))]
 public class WebRtcCommandModule
 (   
-    ReflectPropEditCommandModule _reflectCm
+    ReflectPropEditCommandModule reflectCm
 ) 
 : AttributeCommandModule, ICoreCommandModule
 {
-    private readonly ReflectPropEditCommandModule _reflectCm = _reflectCm;
+    private readonly ReflectPropEditCommandModule _reflectCm = reflectCm;
 
     public string ModuleName => "WebRtc";
     public string ModuleDescription => "Configure WebRtc for supported microphones";
