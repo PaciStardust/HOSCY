@@ -24,10 +24,10 @@ public class ApiOutputHandlerTests : TestBase<ApiOutputHandlerTests>
         _handler.ClearFault();
 
         _config.Api_Presets.Clear();
-        _config.ApiOut_Preset_Clear = string.Empty;
-        _config.ApiOut_Preset_Message = string.Empty;
+        _config.Output_Api_Preset_Clear = string.Empty;
+        _config.Output_Api_Preset_Message = string.Empty;
         _config.ApiOut_Preset_Notification = string.Empty;
-        _config.ApiOut_Preset_Processing = string.Empty;
+        _config.Output_Api_Preset_Processing = string.Empty;
 
         _api.ClearReceived();
         _api.ClearPreset();
@@ -107,13 +107,13 @@ public class ApiOutputHandlerTests : TestBase<ApiOutputHandlerTests>
     [Test]
     public void ClearTest()
     {
-        SendTest(x => x.Clear(), x => _config.ApiOut_Preset_Clear = x);
+        SendTest(x => x.Clear(), x => _config.Output_Api_Preset_Clear = x);
     }
 
     [Test]
     public void MessageTest()
     {
-        SendTest(x => x.HandleMessage("Hii"), x => _config.ApiOut_Preset_Message = x);
+        SendTest(x => x.HandleMessage("Hii"), x => _config.Output_Api_Preset_Message = x);
     }
 
     [Test]
@@ -125,39 +125,39 @@ public class ApiOutputHandlerTests : TestBase<ApiOutputHandlerTests>
     [Test]
     public void ProcessingTest()
     {
-        SendTest(x => x.SetProcessingIndicator(true), x => _config.ApiOut_Preset_Processing = x);
+        SendTest(x => x.SetProcessingIndicator(true), x => _config.Output_Api_Preset_Processing = x);
     }
 
     [Test]
     public void TrueFalseTest()
     {
-        _config.ApiOut_Value_True = "Trueeeeee";
-        _config.ApiOut_Value_False = "Faaaaalse";
+        _config.Output_Api_Value_True = "Trueeeeee";
+        _config.Output_Api_Value_False = "Faaaaalse";
 
-        _config.ApiOut_Preset_Processing = "Preset";
+        _config.Output_Api_Preset_Processing = "Preset";
         _config.Api_Presets.Add(new() { Name = "Preset" });
 
         _handler.SetProcessingIndicator(true);
         Assert.That(_api.ReceivedStrings, Has.Count.EqualTo(1));
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(_api.ReceivedStrings[0], Does.Contain(_config.ApiOut_Value_True));
-            Assert.That(_api.ReceivedStrings[0], Does.Not.Contain(_config.ApiOut_Value_False));
+            Assert.That(_api.ReceivedStrings[0], Does.Contain(_config.Output_Api_Value_True));
+            Assert.That(_api.ReceivedStrings[0], Does.Not.Contain(_config.Output_Api_Value_False));
         }
 
         _handler.SetProcessingIndicator(false);
         Assert.That(_api.ReceivedStrings, Has.Count.EqualTo(2));
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(_api.ReceivedStrings[1], Does.Not.Contain(_config.ApiOut_Value_True));
-            Assert.That(_api.ReceivedStrings[1], Does.Contain(_config.ApiOut_Value_False));
+            Assert.That(_api.ReceivedStrings[1], Does.Not.Contain(_config.Output_Api_Value_True));
+            Assert.That(_api.ReceivedStrings[1], Does.Contain(_config.Output_Api_Value_False));
         }
     }
 
     [Test]
     public void PrependPriorityTest()
     {
-        _config.ApiOut_PrependNotificationPriority = false;
+        _config.Output_Api_PrependNotificationPriority = false;
 
         _config.ApiOut_Preset_Notification = "Preset";
         _config.Api_Presets.Add(new() { Name = "Preset" });
@@ -172,7 +172,7 @@ public class ApiOutputHandlerTests : TestBase<ApiOutputHandlerTests>
             Assert.That(_api.ReceivedStrings[0], Does.Not.Contain(OutputNotificationPriority.Medium.ToString()));
         }
 
-        _config.ApiOut_PrependNotificationPriority = true;
+        _config.Output_Api_PrependNotificationPriority = true;
 
         _handler.HandleNotification(baseMsg, OutputNotificationPriority.Medium);
         Assert.That(_api.ReceivedStrings, Has.Count.EqualTo(2));

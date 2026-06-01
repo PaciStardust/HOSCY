@@ -38,7 +38,7 @@ public class OutApiCommandModule
     [SubCommandModule(["enabled"], "Enable API Output")] 
     public Res CmdSetEnable()
     {
-        var res = _reflectCm.SetProperty(nameof(ConfigModel.ApiOut_Enabled));
+        var res = _reflectCm.SetProperty(nameof(ConfigModel.Output_Api_Enabled));
         if (!res.IsOk) return res;
 
         return _output.RefreshHandlers();
@@ -47,7 +47,7 @@ public class OutApiCommandModule
     [SubCommandModule(["preset-message"], "Set API preset for message")] 
     public Res CmdPresetMessage()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.ApiOut_Preset_Message));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Output_Api_Preset_Message));
     }
 
     [SubCommandModule(["preset-notification"], "Set API preset for notification")] 
@@ -59,36 +59,36 @@ public class OutApiCommandModule
     [SubCommandModule(["preset-clear"], "Set API preset for clearing")] 
     public Res CmdPresetClear()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.ApiOut_Preset_Clear));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Output_Api_Preset_Clear));
     }
 
     [SubCommandModule(["preset-processing"], "Set API preset for processing indicator")] 
     public Res CmdPresetProcessing()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.ApiOut_Preset_Processing));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Output_Api_Preset_Processing));
     }
 
     [SubCommandModule(["value-true"], "Set API value for TRUE")] 
     public Res CmdValueTrue()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.ApiOut_Value_True));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Output_Api_Value_True));
     }
 
     [SubCommandModule(["value-false"], "Set API value for FALSE")] 
     public Res CmdValueFalse()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.ApiOut_Value_False));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Output_Api_Value_False));
     }
 
     [SubCommandModule(["trans-format"], "Set translation format")] 
     public Res CmdTransFormat()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.ApiOut_TranslationFormat));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Output_Api_TranslationFormat));
     }
 
     [SubCommandModule(["prepend-priority"], "Prepend notification priority")] 
     public Res CmdPrependPrio()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.ApiOut_PrependNotificationPriority));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Output_Api_PrependNotificationPriority));
     }
 }

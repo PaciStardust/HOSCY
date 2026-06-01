@@ -923,68 +923,68 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion
 
     #region Output - API
-    public bool ApiOut_Enabled //todo: fix naming
+    public bool Output_Api_Enabled
     {
-        get => _apiOut_Enabled;
-        set => SetProperty(ref _apiOut_Enabled, value);
+        get => _output_Api_Enabled;
+        set => SetProperty(ref _output_Api_Enabled, value);
     }
-    private bool _apiOut_Enabled = false;
+    private bool _output_Api_Enabled = false;
 
-    public string ApiOut_Preset_Message
+    public string Output_Api_Preset_Message
     {
-        get => _apiOut_Preset_Message;
-        set => SetProperty(ref _apiOut_Preset_Message, value);
+        get => _output_Api_Preset_Message;
+        set => SetProperty(ref _output_Api_Preset_Message, value);
     }
-    private string _apiOut_Preset_Message = string.Empty;
+    private string _output_Api_Preset_Message = string.Empty;
 
-    public string ApiOut_Preset_Notification
+    public string Output_Api_Preset_Notification
     {
-        get => _apiOut_Preset_Notification;
-        set => SetProperty(ref _apiOut_Preset_Notification, value);
+        get => _output_Api_Preset_Notification;
+        set => SetProperty(ref _output_Api_Preset_Notification, value);
     }
-    private string _apiOut_Preset_Notification = string.Empty;
+    private string _output_Api_Preset_Notification = string.Empty;
 
-    public string ApiOut_Preset_Clear
+    public string Output_Api_Preset_Clear
     {
-        get => _apiOut_Preset_Clear;
-        set => SetProperty(ref _apiOut_Preset_Clear, value);
+        get => _output_Api_Preset_Clear;
+        set => SetProperty(ref _output_Api_Preset_Clear, value);
     }
-    private string _apiOut_Preset_Clear = string.Empty;
+    private string _output_Api_Preset_Clear = string.Empty;
 
-    public string ApiOut_Preset_Processing
+    public string Output_Api_Preset_Processing
     {
-        get => _apiOut_Preset_Processing;
-        set => SetProperty(ref _apiOut_Preset_Processing, value);
+        get => _output_Api_Preset_Processing;
+        set => SetProperty(ref _output_Api_Preset_Processing, value);
     }
-    private string _apiOut_Preset_Processing = string.Empty;
+    private string _output_Api_Preset_Processing = string.Empty;
 
-    public string ApiOut_Value_True
+    public string Output_Api_Value_True
     {
-        get => _apiOut_Value_True;
-        set => SetProperty(ref _apiOut_Value_True, value);
+        get => _output_Api_Value_True;
+        set => SetProperty(ref _output_Api_Value_True, value);
     }
-    private string _apiOut_Value_True = string.Empty;
+    private string _output_Api_Value_True = string.Empty;
 
-    public string ApiOut_Value_False
+    public string Output_Api_Value_False
     {
-        get => _apiOut_Value_False;
-        set => SetProperty(ref _apiOut_Value_False, value);
+        get => _output_Api_Value_False;
+        set => SetProperty(ref _output_Api_Value_False, value);
     }
-    private string _apiOut_Value_False = string.Empty;
+    private string _output_Api_Value_False = string.Empty;
 
-    public OutputTranslationFormat ApiOut_TranslationFormat
+    public OutputTranslationFormat Output_Api_TranslationFormat
     {
-        get => _apiOut_TranslationFormat;
-        set => SetProperty(ref _apiOut_TranslationFormat, value);
+        get => _output_Api_TranslationFormat;
+        set => SetProperty(ref _output_Api_TranslationFormat, value);
     }
-    private OutputTranslationFormat _apiOut_TranslationFormat = OutputTranslationFormat.Both;
+    private OutputTranslationFormat _output_Api_TranslationFormat = OutputTranslationFormat.Both;
     
-    public bool ApiOut_PrependNotificationPriority
+    public bool Output_Api_PrependNotificationPriority
     {
-        get => _apiOut_PrependNotificationPriority;
-        set => SetProperty(ref _apiOut_PrependNotificationPriority, value);
+        get => _output_Api_PrependNotificationPriority;
+        set => SetProperty(ref _output_Api_PrependNotificationPriority, value);
     }
-    private bool _apiOut_PrependNotificationPriority = false;
+    private bool _output_Api_PrependNotificationPriority = false;
     #endregion
 
     #region Output - Voice
@@ -1007,7 +1007,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     /// <summary>
     /// Should the Textbox be enabled
     /// </summary>
-    public bool VrcTextbox_Enabled
+    public bool VrcTextbox_Enabled //todo: fix naming
     {
         get => _vrcTextbox_Enabled;
         set => SetProperty(ref _vrcTextbox_Enabled, value);

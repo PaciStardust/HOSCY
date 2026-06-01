@@ -16,7 +16,7 @@ public class ApiOutputHandlerStartInfo(ConfigModel config) : IOutputHandlerStart
         => typeof(ApiOutputHandler);
 
     public bool ShouldBeEnabled()
-        => _config.ApiOut_Enabled;
+        => _config.Output_Api_Enabled;
 }
 
 [LoadIntoDiContainer(typeof(ApiOutputHandler), Lifetime.Transient)]
@@ -49,30 +49,30 @@ public class ApiOutputHandler(ILogger logger, IApiClient client, ConfigModel con
 
     #region Sending
     public override OutputTranslationFormat GetTranslationOutputMode()
-        => _config.ApiOut_TranslationFormat;
+        => _config.Output_Api_TranslationFormat;
 
     public override void Clear()
     {
-        SendInternal(_config.ApiOut_Preset_Clear, "Clear", string.Empty);
+        SendInternal(_config.Output_Api_Preset_Clear, "Clear", string.Empty);
     }
 
     public override Task HandleMessage(string contents)
     {
-        SendInternal(_config.ApiOut_Preset_Message, "Message", contents);
+        SendInternal(_config.Output_Api_Preset_Message, "Message", contents);
         return Task.CompletedTask;
     }
 
     public override Task HandleNotification(string contents, OutputNotificationPriority priority)
     {
         SendInternal(_config.ApiOut_Preset_Notification, "Notification",
-            _config.ApiOut_PrependNotificationPriority ? $"{priority} > {contents}" : contents);
+            _config.Output_Api_PrependNotificationPriority ? $"{priority} > {contents}" : contents);
         return Task.CompletedTask;
     }
 
     public override void SetProcessingIndicator(bool isProcessing)
     {
-        SendInternal(_config.ApiOut_Preset_Processing, "Notification",
-            isProcessing ? _config.ApiOut_Value_True : _config.ApiOut_Value_False);
+        SendInternal(_config.Output_Api_Preset_Processing, "Notification",
+            isProcessing ? _config.Output_Api_Value_True : _config.Output_Api_Value_False);
     }
 
     private void SendInternal(string presetName, string actionForLog, string contents)
