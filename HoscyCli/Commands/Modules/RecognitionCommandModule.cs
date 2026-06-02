@@ -101,6 +101,12 @@ public class RecognitionCommandModule
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Fixup_CapitalizeFirstLetter));
     }
+
+    [SubCommandModule(["microphone-id"], "Set the microphone to use")]
+    public Res CmdMicrophone()
+    {
+        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_MicrophoneName));
+    }
     #endregion
     
     #region Start / Stop

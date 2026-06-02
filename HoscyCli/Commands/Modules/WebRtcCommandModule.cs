@@ -21,54 +21,54 @@ public class WebRtcCommandModule
     [SubCommandModule(["enabled"], "Should WebRtc be used on supported microphones")]
     public Res CmdEnabled()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Audio_WebRtc_Enabled));
+        return _reflectCm.SetProperty(nameof(ConfigModel.WebRtc_Enabled));
     }
 
     [SubCommandModule(["use-echo-cancellation"], "Enable Echo Cancellation")]
     public Res CmdUseEchoCancellation()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Audio_WebRtc_UseEchoCancellation));
+        return _reflectCm.SetProperty(nameof(ConfigModel.WebRtc_UseEchoCancellation));
     }
 
     [SubCommandModule(["echo-cancellation-delay-ms"], "Delay with echo cancellation in MS")]
     public Res CmdEchoCancellationDelayMs()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Audio_WebRtc_EchoCancellationDelayMs));
+        return _reflectCm.SetProperty(nameof(ConfigModel.WebRtc_EchoCancellationDelayMs));
     }
 
     [SubCommandModule(["use-noise-suppression"], "Enable Noise Suppression")]
     public Res CmdUseNoiseSuppression()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Audio_WebRtc_UseNoiseSuppression));
+        return _reflectCm.SetProperty(nameof(ConfigModel.WebRtc_UseNoiseSuppression));
     }
 
     [SubCommandModule(["noise-suppression-level"], "Noise Suppression level")]
     public Res CmdNoiseSuppressionLevel()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Audio_WebRtc_NoiseSuppressionLevel));
+        return _reflectCm.SetProperty(nameof(ConfigModel.WebRtc_NoiseSuppressionLevel));
     }
 
     [SubCommandModule(["use-automatic-gain"], "Enable Automatic Gain")]
     public Res CmdUseAutomaticGain()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Audio_WebRtc_UseAutomaticGainControl));
+        return _reflectCm.SetProperty(nameof(ConfigModel.WebRtc_UseAutomaticGainControl));
     }
 
     [SubCommandModule(["use-highpass"], "Enable Highpass Filter")]
     public Res CmdUseHighpass()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Audio_WebRtc_UseHighPassFilter));
+        return _reflectCm.SetProperty(nameof(ConfigModel.WebRtc_UseHighPassFilter));
     }
 
     [SubCommandModule(["use-preamp"], "Enable Preamplifier")]
     public Res CmdUsePreamp()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Audio_WebRtc_UsePreAmplifier));
+        return _reflectCm.SetProperty(nameof(ConfigModel.WebRtc_UsePreAmplifier));
     }
 
     [SubCommandModule(["preamp-gain-factor"], "Preamp gain factor")]
     public Res CmdPreampGainFactor()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Audio_WebRtc_PreAmplifierGainFactor));
+        return _reflectCm.SetProperty(nameof(ConfigModel.WebRtc_PreAmplifierGainFactor));
     }
 }

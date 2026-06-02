@@ -208,7 +208,6 @@ public static class LegacyConfigModelLoader
             Voice_Azure_VoiceList = ConvertAzureTtsVoiceModel(oldConfig.Api.AzureTtsVoices),
             Recognition_Azure_PresetPhrases = new(oldConfig.Api.AzurePhrases),
             Recognition_Azure_Languages = new(oldConfig.Api.AzureRecognitionLanguages),
-            Voice_Azure_OverrideNormal = oldConfig.Api.UseAzureTts,
 
             ManualInput_SendViaAudio = oldConfig.Input.UseTts,
             ManualInput_SendViaText = oldConfig.Input.UseTextbox,
@@ -268,7 +267,7 @@ public static class LegacyConfigModelLoader
             Recognition_Mute_PlaySound = oldConfig.Speech.PlayMuteSound,
             Recognition_Mute_OnGameMute = oldConfig.Speech.MuteOnVrcMute,
 
-            Audio_CurrentMicrophoneName = oldConfig.Speech.MicId,
+            Recognition_MicrophoneName = oldConfig.Speech.MicId,
             Voice_CurrentSpeakerName = oldConfig.Speech.SpeakerId,
 
             Recognition_SelectedModuleName = oldConfig.Speech.ModelName,

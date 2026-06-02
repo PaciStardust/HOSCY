@@ -95,7 +95,7 @@ public class VoskRecognitionModule(ILogger logger, ConfigModel config, IAudioSer
         if (!mic.IsOk) return ResC.Fail(mic.Msg);
         _mic = mic.Value;
 
-        if (_config.Audio_WebRtc_Enabled)
+        if (_config.WebRtc_Enabled)
         {
             _mic.AddApmModifier(_config);
         }

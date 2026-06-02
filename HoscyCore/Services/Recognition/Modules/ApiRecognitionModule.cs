@@ -72,7 +72,7 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
         if (!micResult.IsOk) return ResC.Fail(micResult.Msg);
 
         _mic = micResult.Value;
-        if (_config.Audio_WebRtc_Enabled)
+        if (_config.WebRtc_Enabled)
         {
             _mic.AddApmModifier(_config);
         }

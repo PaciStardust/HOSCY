@@ -10,13 +10,13 @@ namespace HoscyCore.Configuration.Modern;
 
 public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is usable from the CLI
 {
-    //todo: [FEAT] Description Attribute
+    #region !Meta
+    public const string DESC_ConfigVersion = "Version of current config";
     public int ConfigVersion { get; set; } = 0;
+    #endregion
 
     #region AFK
-    /// <summary>
-    /// Show how long afk has been ongoing
-    /// </summary>
+    public const string DESC_Afk_ShowDuration = "Periodically display how long the AFK status has been in effect";
     public bool Afk_ShowDuration
     {
         get => _afk_ShowDuration;
@@ -24,9 +24,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _afk_ShowDuration = false;
 
-    /// <summary>
-    /// The base amount of time (in seconds) between displaying afk updates
-    /// </summary>
+    public const string DESC_Afk_BaseDurationDisplayIntervalSeconds = "The base amount of time (in seconds) between displaying the elapsed AFK duration";
     public float Afk_BaseDurationDisplayIntervalSeconds
     {
         get => _afk_BaseDurationDisplayIntervalSeconds;
@@ -34,9 +32,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private float _afk_BaseDurationDisplayIntervalSeconds = 15f;
 
-    /// <summary>
-    /// How often should the afk update be displayed before doubling the time between updates?
-    /// </summary>
+    public const string DESC_Afk_TimesDisplayedBeforeDoublingInterval = "How often should the AFK duration be displayed before doubling the time between updates?";
     public int Afk_TimesDisplayedBeforeDoublingInterval
     {
         get => _afk_TimesDisplayedBeforeDoublingInterval;
@@ -44,9 +40,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private int _afk_TimesDisplayedBeforeDoublingInterval = 12;
 
-    /// <summary>
-    /// Text to display when starting AFK
-    /// </summary>
+    public const string DESC_Afk_StartText = "Text to display when starting AFK";
     public string Afk_StartText
     {
         get => _afk_StartText;
@@ -55,9 +49,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private const string AFK_NO_STARTTEXT = "Now AFK";
     private string _afk_StartText = AFK_NO_STARTTEXT;
 
-    /// <summary>
-    /// Text to display when stopping AFK
-    /// </summary>
+    public const string DESC_Afk_StopText = "Text to display when stopping AFK";
     public string Afk_StopText
     {
         get => _afk_EndText;
@@ -66,9 +58,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private const string AFK_NO_ENDTEXT = "No longer AFK";
     private string _afk_EndText = AFK_NO_ENDTEXT;
 
-    /// <summary>
-    /// Text to display as AFK update
-    /// </summary>
+    public const string DESC_Afk_StatusText = "Text to display as AFK update";
     public string Afk_StatusText
     {
         get => _afk_StatusText;
@@ -79,9 +69,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion
 
     #region API
-    /// <summary>
-    /// List of all API Presets that are used in various locations
-    /// </summary>
+    public const string DESC_Api_Presets = "List of all API presets to be used in various locations";
     public List<ApiPresetModel> Api_Presets
     {
         get => _api_Presets;
@@ -92,100 +80,8 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
         => Api_Presets.GetListIndex(x => x.Name == name);
     #endregion
 
-    #region Audio
-    /// <summary>
-    /// ID of microphone
-    /// </summary>
-    public string Audio_CurrentMicrophoneName
-    {
-        get => _audio_CurrentMicrophoneName;
-        set => SetProperty(ref _audio_CurrentMicrophoneName, value);
-    }
-    private string _audio_CurrentMicrophoneName = string.Empty;
-
-    /// <summary>
-    /// ID of speaker for system audio
-    /// </summary>
-    public string Audio_CurrentSpeakerSystemName
-    {
-        get => _audio_CurrentSpeakerSystemName;
-        set => SetProperty(ref _audio_CurrentSpeakerSystemName, value);
-    }
-    private string _audio_CurrentSpeakerSystemName = string.Empty;
-    #endregion
-
-    #region Audio - WebRtc
-    /// <summary>
-    /// Enables the WebRtc stack for supported audio devices
-    /// </summary>
-    public bool Audio_WebRtc_Enabled
-    {
-        get => _audio_WebRtc_Enabled;
-        set => SetProperty(ref _audio_WebRtc_Enabled, value);
-    }
-    private bool _audio_WebRtc_Enabled = true;
-
-    public bool Audio_WebRtc_UseEchoCancellation
-    {
-        get => _audio_WebRtc_UseEchoCancellation;
-        set => SetProperty(ref _audio_WebRtc_UseEchoCancellation, value);
-    }
-    private bool _audio_WebRtc_UseEchoCancellation = true;
-
-    public int Audio_WebRtc_EchoCancellationDelayMs
-    {
-        get => _audio_WebRtc_EchoCancellationDelayMs;
-        set => SetProperty(ref _audio_WebRtc_EchoCancellationDelayMs, value);
-    }
-    private int _audio_WebRtc_EchoCancellationDelayMs = 40;
-
-    public bool Audio_WebRtc_UseNoiseSuppression
-    {
-        get => _audio_WebRtc_UseNoiseSuppression;
-        set => SetProperty(ref _audio_WebRtc_UseNoiseSuppression, value);
-    }
-    private bool _audio_WebRtc_UseNoiseSuppression = true;
-
-    public NoiseSuppressionLevel Audio_WebRtc_NoiseSuppressionLevel
-    {
-        get => _audio_WebRtc_NoiseSuppressionLevel;
-        set => SetProperty(ref _audio_WebRtc_NoiseSuppressionLevel, value);
-    }
-    private NoiseSuppressionLevel _audio_WebRtc_NoiseSuppressionLevel = NoiseSuppressionLevel.Moderate;
-
-    public bool Audio_WebRtc_UseAutomaticGainControl
-    {
-        get => _audio_WebRtc_UseAutomaticGainControl;
-        set => SetProperty(ref _audio_WebRtc_UseAutomaticGainControl, value);
-    }
-    private bool _audio_WebRtc_UseAutomaticGainControl = false;
-
-    public bool Audio_WebRtc_UseHighPassFilter
-    {
-        get => _audio_WebRtc_UseHighPassFilter;
-        set => SetProperty(ref _audio_WebRtc_UseHighPassFilter, value);
-    }
-    private bool _audio_WebRtc_UseHighPassFilter = false;
-
-    public bool Audio_WebRtc_UsePreAmplifier
-    {
-        get => _audio_WebRtc_UsePreAmplifier;
-        set => SetProperty(ref _audio_WebRtc_UsePreAmplifier, value);
-    }
-    private bool _audio_WebRtc_UsePreAmplifier = false;
-
-    public float Audio_WebRtc_PreAmplifierGainFactor
-    {
-        get => _audio_WebRtc_PreAmplifierGainFactor;
-        set => SetProperty(ref _audio_WebRtc_PreAmplifierGainFactor, value);
-    }
-    private float _audio_WebRtc_PreAmplifierGainFactor = 1;
-    #endregion
-
     #region Azure
-    /// <summary>
-    /// Region of Azure Services
-    /// </summary>
+    public const string DESC_AzureServices_Region = "Azure region to be used";
     public string AzureServices_Region
     {
         get => _azureServices_Region;
@@ -193,9 +89,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _azureServices_Region = string.Empty;
 
-    /// <summary>
-    /// API Key to use with Azure
-    /// </summary>
+    public const string DESC_AzureServices_ApiKey = "API Key used to connect to Azure services";
     public string AzureServices_ApiKey
     {
         get => _azureServices_ApiKey;
@@ -205,9 +99,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion
 
     #region Counters
-    /// <summary>
-    /// Display counter notifications
-    /// </summary>
+    public const string DESC_Counters_ShowNotification = "Enables notifications to be sent for counter changes";
     public bool Counters_ShowNotification
     {
         get => _counters_ShowNotification;
@@ -215,9 +107,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _counters_ShowNotification;
 
-    /// <summary>
-    /// How long (in seconds) should a recently triggered counter appear in notifications
-    /// </summary>
+    public const string DESC_Counters_DisplayDurationSeconds = "Duration (in seconds) that a recently triggered counter appears in update notifications";
     public float Counters_DisplayDurationSeconds
     {
         get => _counters_DisplayDurationSeconds;
@@ -225,9 +115,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private float _counters_DisplayDurationSeconds = 10f;
 
-    /// <summary>
-    /// How long (in seconds) should the timer notification be on cooldown
-    /// </summary>
+    public const string DESC_Counters_DisplayCooldownSeconds = "Duration (in seconds) that notifications are paused after the last send";
     public float Counters_DisplayCooldownSeconds
     {
         get => _counters_DisplayCooldownSeconds;
@@ -235,8 +123,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private float _counters_DisplayCooldownSeconds = 0f;
 
-    /// <summary>
-    /// List of all counters
+    public const string DESC_Counters_List = "List of all counters";
     /// </summary>
     public List<CounterModel> Counters_List
     {
@@ -247,9 +134,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion
 
     #region Debug
-    /// <summary>
-    /// Check for updates on startup?
-    /// </summary>
+    public const string DESC_Debug_CheckForUpdatesOnStartup = "Enables update checking and notications";
     public bool Debug_CheckForUpdatesOnStartup //todo: [IMPL] To be implemented
     {
         get => _debug_CheckForUpdatesOnStartup;
@@ -257,9 +142,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _debug_CheckForUpdatesOnStartup = true;
 
-    /// <summary>
-    /// Open a Windows Debug Window on startup?
-    /// </summary>
+    public const string DESC_Debug_LogViaCmdOnWindows = "[WINDOWS ONLY] Opens up CMD/Terminal on launch for logging";
     public bool Debug_LogViaCmdOnWindows
     {
         get => _debug_LogViaCmdOnWindows;
@@ -267,9 +150,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _debug_LogViaCmdOnWindows;
 
-    /// <summary>
-    /// Log to terminal when launched in one?
-    /// </summary>
+    public const string DESC_Debug_LogViaTerminal = "Writes logs to terminal if started in one";
     public bool Debug_LogViaTerminal
     {
         get => _debug_LogViaTerminal;
@@ -277,9 +158,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _debug_LogViaTerminal;
 
-    /// <summary>
-    /// Log to a separate terminal by following the log file
-    /// </summary>
+    public const string DESC_Debug_LogViaFileFollow = "Opens a terminal to follow the log file in";
     public bool Debug_LogViaFileFollow
     {
         get => _debug_LogViaFileFollow;
@@ -287,9 +166,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _debug_LogViaFileFollow;
 
-    /// <summary>
-    /// Process to use for following the log file
-    /// </summary>
+    public const string DESC_Debug_LogFileFollowProcess = "Terminal process (ex. \"foot\") to start for following the log file";
     public string Debug_LogFileFollowProcess
     {
         get => _debug_LogFileFollowProcess;
@@ -297,9 +174,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _debug_LogFileFollowProcess = "foot";
 
-    /// <summary>
-    /// Command to use for following the log file
-    /// </summary>
+    public const string DESC_Debug_LogFileFollowCommand = "Command to execute (ex. \"-e tail -f [LOGFILE]\") to run in terminal process to following the log file";
     public string Debug_LogFileFollowCommand
     {
         get => _debug_LogFileFollowCommand;
@@ -307,9 +182,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _debug_LogFileFollowCommand = "-e tail -f [LOGFILE]";
 
-    /// <summary>
-    /// Minimum log severity to display
-    /// </summary>
+    public const string DESC_Debug_LogMinimumSeverity = "Minimum log severity to be included in the logs";
     public LogEventLevel Debug_LogMinimumSeverity
     {
         get => _debug_LogMinimumSeverity;
@@ -324,9 +197,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     public LoggingLevelSwitch Debug_LogMinimumSeverityGetSwitch()
         => _debug_LogMinimumSeveritySwitch;
 
-    /// <summary>
-    /// Log filters to apply
-    /// </summary>
+    public const string DESC_Debug_LogFilters = "Filters to apply to logs (for spam avoidance)";
     public List<FilterModel> Debug_LogFilters
     {
         get => _debug_LogFilters;
@@ -334,9 +205,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private List<FilterModel> _debug_LogFilters = [];
 
-    /// <summary>
-    /// Adds extra verbose logging in case it is needed
-    /// </summary>
+    public const string DESC_Debug_LogVerboseExtra = "Include extra verbose logs for debug purposes";
     public bool Debug_LogVerboseExtra
     {
         get => _debug_LogeVerboseExtra;
@@ -346,9 +215,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion
 
     #region External Input
-    /// <summary>
-    /// Can external input trigger commands?
-    /// </summary>
+    public const string DESC_ExternalInput_DoPreprocessFull = "Do full preprocessing on external input";
     public bool ExternalInput_DoPreprocessFull 
     {
         get => _externalInput_DoPreprocessFull;
@@ -356,9 +223,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _externalInput_DoPreprocessFull = true;
 
-    /// <summary>
-    /// Can external input trigger replacements?
-    /// </summary>
+    public const string DESC_ExternalInput_DoPreprocessPartial = "Do partial preprocessing on external input";
     public bool ExternalInput_DoPreprocessPartial
     {
         get => _externalInput_DoPreprocessPartial;
@@ -366,9 +231,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _externalInput_DoPreprocessPartial = true;
 
-    /// <summary>
-    /// Should input from external sources be translated
-    /// </summary>
+    public const string DESC_ExternalInput_DoTranslate = "Translate external input";
     public bool ExternalInput_DoTranslate
     {
         get => _externalInput_DoTranslate;
@@ -378,9 +241,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion
 
     #region Manual Input
-    /// <summary>
-    /// Should manual input be sent to audio processors
-    /// </summary>
+    public const string DESC_ManualInput_SendViaAudio = "Send manual input as audio";
     public bool ManualInput_SendViaAudio
     {
         get => _manualInput_SendViaAudio;
@@ -388,9 +249,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _manualInput_SendViaAudio;
 
-    /// <summary>
-    /// Should manual input be sent to text processors
-    /// </summary>
+    public const string DESC_ManualInput_SendViaText = "Send manual input as text";
     public bool ManualInput_SendViaText
     {
         get => _manualInput_SendViaText;
@@ -398,9 +257,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _manualInput_SendViaText = true;
 
-    /// <summary>
-    /// Should manual input be sent to other processors
-    /// </summary>
+    public const string DESC_ManualInput_SendViaOther = "Send manual input as other";
     public bool ManualInput_SendViaOther
     {
         get => _manualInput_SendViaOther;
@@ -408,9 +265,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _manualInput_SendViaOther = true;
 
-    /// <summary>
-    /// Can manual input trigger commands?
-    /// </summary>
+    public const string DESC_ManualInput_DoPreprocessFull = "Do full preprocessing for manual input";
     public bool ManualInput_DoPreprocessFull
     {
         get => _manualInput_DoPreprocessFull;
@@ -418,9 +273,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _manualInput_DoPreprocessFull = true;
 
-    /// <summary>
-    /// Can manual input trigger replacements?
-    /// </summary>
+    public const string DESC_ManualInput_DoPreprocessPartial = "Do partial preprocessing for manual input";
     public bool ManualInput_DoPreprocessPartial
     {
         get => _manualInput_DoPreprocessPartial;
@@ -428,9 +281,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _manualInput_DoPreprocessPartial = true;
 
-    /// <summary>
-    /// Can manual input trigger translation?
-    /// </summary>
+    public const string DESC_ManualInput_DoTranslate = "Translate manual input";
     public bool ManualInput_DoTranslate
     {
         get => _manualInput_DoTranslate;
@@ -438,9 +289,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _manualInput_DoTranslate = true;
 
-    /// <summary>
-    /// Text presets for manual input
-    /// </summary>
+    public const string DESC_ManualInput_TextPresets = "Presets for manual input";
     public Dictionary<string, string> ManualInput_TextPresets
     {
         get => _manualInput_TextPresets;
@@ -450,9 +299,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion
 
     #region Media
-    /// <summary>
-    /// Selected media backend
-    /// </summary>
+    public const string DESC_Media_Backend = "Media backend to use for playback control and updates";
     public string Media_Backend
     {
         get => _media_Backend;
@@ -460,9 +307,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _media_Backend = string.Empty;
 
-    /// <summary>
-    /// Show media status as notification
-    /// </summary>
+    public const string DESC_Media_ShowStatus = "Send changes in media as notifications";
     public bool Media_ShowStatus
     {
         get => _media_ShowStatus;
@@ -470,9 +315,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _media_ShowStatus;
 
-    /// <summary>
-    /// Text to show on pause
-    /// </summary>
+    public const string DESC_Media_PauseText = "Text to display on media pause";
     public string Media_PauseText
     {
         get => _media_PauseText;
@@ -480,9 +323,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _media_PauseText = "⏸️ Paused";
 
-    /// <summary>
-    /// Additionally show album text
-    /// </summary>
+    public const string DESC_Media_AddAlbumToText = "Add album to media text";
     public bool Media_AddAlbumToText
     {
         get => _media_AddAlbumToText;
@@ -490,9 +331,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _media_AddAlbumToText;
 
-    /// <summary>
-    /// Filter same name albums
-    /// </summary>
+    public const string DESC_Media_FilterSameNameAlbum = "Filter out album from media text if it is similar to the song title";
     public bool Media_FilterSameNameAlbum
     {
         get => _media_FilterSameNameAlbum;
@@ -500,9 +339,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _media_FilterSameNameAlbum = true;
 
-    /// <summary>
-    /// Swap artist name and song name
-    /// </summary>
+    public const string DESC_Media_SwapArtistAndSongInText = "Swap order of artist name and track title";
     public bool Media_SwapArtistAndSongInText
     {
         get => _media_SwapArtistAndSongInText;
@@ -510,9 +347,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _media_SwapArtistAndSongInText;
 
-    /// <summary>
-    /// Verb used at the start of notification
-    /// </summary>
+    public const string DESC_Media_PlayingVerb = "Text put in front of media text (ex. \"Playing\")";
     public string Media_PlayingVerb
     {
         get => _media_PlayingVerb;
@@ -521,9 +356,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private const string NO_MEDIA_PLAYINGVERB = "Playing";
     private string _media_PlayingVerb = NO_MEDIA_PLAYINGVERB;
 
-    /// <summary>
-    /// Word used between artist and song name
-    /// </summary>
+    public const string DESC_Media_IntermediateWord = "Text put between track title and artist name in media text (ex. \"by\")";
     public string Media_IntermediateWord
     {
         get => _media_IntermediateWord;
@@ -532,9 +365,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private const string NO_MEDIA_INTERMEDIATEWORD = "by";
     private string _media_IntermediateWord = NO_MEDIA_INTERMEDIATEWORD;
 
-    /// <summary>
-    /// Word used in front of album
-    /// </summary>
+    public const string DESC_Media_AlbumWord = "Text put before album name in media text (ex. \"on\")";
     public string Media_AlbumWord
     {
         get => _media_AlbumWord;
@@ -543,9 +374,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private const string NO_MEDIA_ALBUMWORD = "on";
     private string _media_AlbumWord = NO_MEDIA_ALBUMWORD;
 
-    /// <summary>
-    /// Extra text at the end
-    /// </summary>
+    public const string DESC_Media_ExtraText = "Text put after media text";
     public string Media_ExtraText
     {
         get => _media_ExtraText;
@@ -553,9 +382,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _media_ExtraText = string.Empty;
 
-    /// <summary>
-    /// Filtered out words
-    /// </summary>
+    public const string DESC_Media_Filters = "List of words and phrases that will cause media update to not be displayed";
     public List<FilterModel> Media_Filters
     {
         get => _media_Filters;
@@ -565,9 +392,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion
 
     #region Media - Linux Mpris
-    /// <summary>
-    /// Preferred Mpris endpoints
-    /// </summary>
+    public const string DESC_Media_Mpris_PreferredEndpoints = "List of preferred MPRIS endpoints";
     public List<string> Media_Mpris_PreferredEndpoints
     {
         get => _media_Mpris_PreferredEndpoints;
@@ -575,9 +400,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private List<string> _media_Mpris_PreferredEndpoints = [];
 
-    /// <summary>
-    /// Ignored Mpris endpoints
-    /// </summary>
+    public const string DESC_Media_Mpris_IgnoredEndpoints = "List of ignored MPRIS endpoints";
     public List<string> Media_Mpris_IgnoredEndpoints
     {
         get => _media_Mpris_IgnoredEndpoints;
@@ -585,9 +408,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private List<string> _media_Mpris_IgnoredEndpoints = [];
 
-    /// <summary>
-    /// How often should endpoints be updated in the background
-    /// </summary>
+    public const string DESC_Media_Mpris_EndpointUpdateIntervalMs = "Interval (in ms) in which MPRIS endpoint changes are checked";
     public int Media_Mpris_EndpointUpdateIntervalMs 
     {
         get => _media_Mpris_EndpointUpdateIntervalMs;
@@ -597,9 +418,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion
 
     #region OSC - General
-    /// <summary>
-    /// Default IP to send OSC to
-    /// </summary>
+    public const string DESC_Osc_Routing_TargetIp = "Target IP for outbound OSC messages";
     public string Osc_Routing_TargetIp
     {
         get => _osc_Routing_TargetIp;
@@ -607,9 +426,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _osc_Routing_TargetIp = "127.0.0.1";
 
-    /// <summary>
-    /// Default Port to send OSC to
-    /// </summary>
+    public const string DESC_Osc_Routing_TargetPort = "Target port for outbound OSC messages";
     public ushort Osc_Routing_TargetPort
     {
         get => _osc_Routing_TargetPort;
@@ -617,9 +434,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private ushort _osc_Routing_TargetPort = 9000;
 
-    /// <summary>
-    /// Port to listen for OSC on
-    /// </summary>
+    public const string DESC_Osc_Routing_ListenPort = "Port to listen for inbound OSC messages on";
     public int Osc_Routing_ListenPort
     {
         get => _osc_Routing_ListenPort;
@@ -627,9 +442,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private int _osc_Routing_ListenPort = 9001;
 
-    /// <summary>
-    /// List of places to relay OSC to
-    /// </summary>
+    public const string DESC_Osc_Relay_Filters = "List of filters for OSC relay";
     public List<OscRelayFilterModel> Osc_Relay_Filters
     {
         get => _osc_Relay_Filters;
@@ -637,9 +450,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private List<OscRelayFilterModel> _osc_Relay_Filters = [];
 
-    /// <summary>
-    /// Should incoming OSC still be relayed if handled by HOSCY (ex: counters & afk)
-    /// </summary>
+    public const string DESC_Relay_IgnoreIfHandled = "Enable OSC message relay for already handled OSC messages";
     public bool Osc_Relay_IgnoreIfHandled
     {
         get => _osc_Relay_IgnoreIfHandled;
@@ -649,9 +460,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion
 
     #region OSC - Addresses
-    /// <summary>
-    /// OSC Address to (un)mute recognition when received
-    /// </summary>
+    public const string DESC_Osc_Address_Tool_ToggleMute = "OSC address to (un)mute recognition when received";
     public string Osc_Address_Tool_ToggleMute
     {
         get => _osc_Address_Tool_ToggleMute;
@@ -659,9 +468,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _osc_Address_Tool_ToggleMute = "/avatar/parameters/ToolMute";
 
-    /// <summary>
-    /// OSC Address to skip audio when received
-    /// </summary>
+    public const string DESC_Osc_Address_Tool_SkipAudio = "OSC address to skip audio when received";
     public string Osc_Address_Tool_SkipAudio //todo: [IMPL] To be implemented
     {
         get => _osc_Address_Tool_SkipAudio;
@@ -669,9 +476,15 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _osc_Address_Tool_SkipAudio = "/avatar/parameters/ToolSkipSpeech";
 
-    /// <summary>
-    /// OSC Address to skip text when received
-    /// </summary>
+    public const string DESC_Osc_Address_Tool_SkipOther = "OSC address to skip other when received";
+    public string Osc_Address_Tool_SkipOther //todo: [IMPL] To be implemented
+    {
+        get => _osc_Address_Tool_SkipOther;
+        set => SetProperty(ref _osc_Address_Tool_SkipOther, value);
+    }
+    private string _osc_Address_Tool_SkipOther = "/avatar/parameters/ToolSkipOther";
+
+    public const string DESC_Osc_Address_Tool_SkipText = "OSC address to skip text when received";
     public string Osc_Address_Tool_SkipText //todo: [IMPL] To be implemented
     {
         get => _osc_Address_Tool_SkipText;
@@ -679,9 +492,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _osc_Address_Tool_SkipText = "/avatar/parameters/ToolSkipBox";
 
-    /// <summary>
-    /// OSC Address to toggle replacements
-    /// </summary>
+    public const string DESC_Osc_Address_Tool_ToggleReplacements = "OSC address to enable or disable replacements";
     public string Osc_Address_Tool_ToggleReplacements //todo: [IMPL] To be implemented or changed
     {
         get => _osc_Address_Tool_ToggleReplacements;
@@ -689,9 +500,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _osc_Address_Tool_ToggleReplacements = "/avatar/parameters/ToolEnableReplacements";
 
-    /// <summary>
-    /// OSC Address to toggle to output to text
-    /// </summary>
+    public const string DESC_Osc_Address_Tool_ToogleOutputToText = "OSC address to toggle to output to text";
     public string Osc_Address_Tool_ToogleOutputToText //todo: [IMPL] To be implemented
     {
         get => _osc_Address_Tool_ToggleOutputToText;
@@ -699,19 +508,15 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _osc_Address_Tool_ToggleOutputToText = "/avatar/parameters/ToolEnableBox";
 
-    /// <summary>
-    /// OSC Address to toggle to output to other
-    /// </summary>
-    public string Osc_Address_Tool_ToogleSpeechToOther //todo: [IMPL] To be implemented
+    public const string DESC_Osc_Address_Tool_ToogleOutputToOther = "OSC address to toggle to output to other";
+    public string Osc_Address_Tool_ToogleOutputToOther //todo: [IMPL] To be implemented
     {
         get => _osc_Address_Tool_ToggleOutputToOther;
         set => SetProperty(ref _osc_Address_Tool_ToggleOutputToOther, value);
     }
     private string _osc_Address_Tool_ToggleOutputToOther = "/avatar/parameters/ToolEnableOther";
 
-    /// <summary>
-    /// OSC Address to toggle to output to audio
-    /// </summary>
+    public const string DESC_Osc_Address_Tool_ToggleOutputToAudio = "OSC address to toggle to output to audio";
     public string Osc_Address_Tool_ToggleOutputToAudio //todo: [IMPL] To be implemented
     {
         get => _osc_Address_Tool_ToggleOutputToAudio;
@@ -719,9 +524,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _osc_Address_Tool_ToggleOutputToAudio = "/avatar/parameters/ToolEnableTts";
 
-    /// <summary>
-    /// OSC Address to toggle recognition auto mute
-    /// </summary>
+    public const string DESC_Osc_Address_Tool_ToggleRecognitionAutoMute = "OSC address to toggle recognition auto mute";
     public string Osc_Address_Tool_ToggleRecognitionAutoMute
     {
         get => _osc_Address_Tool_ToggleRecognitionAutoMute;
@@ -729,9 +532,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _osc_Address_Tool_ToggleRecognitionAutoMute = "/avatar/parameters/ToolEnableAutoMute";
 
-    /// <summary>
-    /// OSC Address sent out when recognition status changes
-    /// </summary>
+    public const string DESC_Osc_Address_Tool_NotificationForRecognitionListening = "OSC address sent out when recognition status changes";
     public string Osc_Address_Tool_NotificationForRecognitionListening //todo: [IMPL] To be implemented
     {
         get => _osc_Address_Tool_NotificationForRecognitionListening;
@@ -739,9 +540,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _osc_Address_Tool_NotificationForRecognitionListening = "/avatar/parameters/MicListening";
 
-    /// <summary>
-    /// OSC Address the game sends out when muted
-    /// </summary>
+    public const string DESC_Osc_Address_Game_Mute = "OSC address the game sends out when muted";
     public string Osc_Address_Game_Mute
     {
         get => _osc_Address_Game_Mute;
@@ -749,9 +548,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _osc_Address_Game_Mute = "/avatar/parameters/MuteSelf";
 
-    /// <summary>
-    /// OSC Address the game sends out when afk
-    /// </summary>
+    public const string DESC_Osc_Address_Game_Afk = "OSC address the game sends out when AFK";
     public string Osc_Address_Game_Afk
     {
         get => _osc_Address_Game_Afk;
@@ -759,9 +556,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _osc_Address_Game_Afk = "/avatar/parameters/AFK";
 
-    /// <summary>
-    /// OSC Address the game listens to for textbox usage
-    /// </summary>
+    public const string DESC_Osc_Address_Game_Textbox = "OSC address the game listens to for textbox usage";
     public string Osc_Address_Game_Textbox
     {
         get => _osc_Address_Game_Textbox;
@@ -769,9 +564,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _osc_Address_Game_Textbox = "/chatbox/input";
 
-    /// <summary>
-    /// OSC Address the game listens to for typing indicator
-    /// </summary>
+    public const string DESC_Osc_Address_Game_Typing = "OSC address the game listens to for typing indicator";
     public string Osc_Address_Game_Typing
     {
         get => _osc_Address_Game_Typing;
@@ -779,9 +572,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _osc_Address_Game_Typing = "/chatbox/typing";
 
-    /// <summary>
-    /// OSC Address to send to tool for external messages to be sent as text
-    /// </summary>
+    public const string DESC_Osc_Address_Input_TextMessage = "OSC address to handle as external message to be sent as text message";
     public string Osc_Address_Input_TextMessage
     {
         get => _osc_Address_Input_TextMessage;
@@ -789,9 +580,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _osc_Address_Input_TextMessage = "/hoscy/message";
 
-    /// <summary>
-    /// OSC Address to send to tool for external notifications to be sent as text
-    /// </summary>
+    public const string DESC_Osc_Address_Input_TextNotification = "OSC address to handle as external message to be sent as text notification";
     public string Osc_Address_Input_TextNotification
     {
         get => _osc_Address_Input_TextNotification;
@@ -799,9 +588,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _osc_Address_Input_TextNotification = "/hoscy/notification";
 
-    /// <summary>
-    /// OSC Address to send to tool for external text to be sent as audio
-    /// </summary>
+    public const string DESC_Osc_Address_Input_AudioMessage = "OSC address to handle as external message to be sent as audio message";
     public string Osc_Address_Input_AudioMessage
     {
         get => _osc_Address_Input_AudioMessage;
@@ -809,9 +596,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _osc_Address_Input_AudioMessage = "/hoscy/tts";
 
-    /// <summary>
-    /// OSC Address to send to tool for external text to be sent as other
-    /// </summary>
+    public const string DESC_Osc_Address_Input_OtherMessage = "OSC address to handle as external message to be sent as other message";
     public string Osc_Address_Input_OtherMessage
     {
         get => _osc_Address_Input_OtherMessage;
@@ -819,9 +604,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _osc_Address_Input_OtherMessage = "/hoscy/other";
 
-    /// <summary>
-    /// OSC Address to send to tool to pause media
-    /// </summary>
+    public const string DESC_Osc_Address_Media_Pause = "OSC address to handle to pause media";
     public string Osc_Address_Media_Pause
     {
         get => _osc_Address_Media_Pause;
@@ -829,9 +612,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _osc_Address_Media_Pause = "/avatar/parameters/MediaPause";
 
-    /// <summary>
-    /// OSC Address to send to tool to unpause media
-    /// </summary>
+    public const string DESC_Osc_Address_Media_Play = "OSC address to handle to resume media";
     public string Osc_Address_Media_Play
     {
         get => _osc_Address_Media_Play;
@@ -839,9 +620,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _osc_Address_Media_Play = "/avatar/parameters/MediaUnpause";
 
-    /// <summary>
-    /// OSC Address to send to tool to rewind media
-    /// </summary>
+    public const string DESC_Osc_Address_Media_Previous = "OSC address to handle to rewind media";
     public string Osc_Address_Media_Previous
     {
         get => _osc_Address_Media_Previous;
@@ -849,9 +628,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _osc_Address_Media_Previous = "/avatar/parameters/MediaRewind";
 
-    /// <summary>
-    /// OSC Address to send to tool to skip media
-    /// </summary>
+    public const string DESC_Osc_Address_Media_Next = "OSC address to handle to skip media";
     public string Osc_Address_Media_Next
     {
         get => _osc_Address_Media_Next;
@@ -859,9 +636,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _osc_Address_Media_Next = "/avatar/parameters/MediaSkip";
 
-    /// <summary>
-    /// OSC Address to send to tool to toggle media playback
-    /// </summary>
+    public const string DESC_Osc_Address_Media_Toggle = "OSC address to handle to toggle media playback";
     public string Osc_Address_Media_Toggle
     {
         get => _osc_Address_Media_Toggle;
@@ -871,9 +646,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion
 
     #region Preprocessing
-    /// <summary>
-    /// Enables/Disables partial replacements entirely
-    /// </summary>
+    public const string DESC_Preprocessing_DoReplacementsPartial = "Enables/Disables partial replacements entirely";
     public bool Preprocessing_DoReplacementsPartial
     {
         get => _preprocessing_DoReplacementsPartial;
@@ -881,9 +654,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _preprocessing_DoReplacementsPartial = true;
 
-    /// <summary>
-    /// Enables/Disables full replacements entirely
-    /// </summary>
+    public const string DESC_Preprocessing_DoReplacementsFull = "Enables/Disables full replacements entirely";
     public bool Preprocessing_DoReplacementsFull
     {
         get => _preprocessing_DoReplacementsFull;
@@ -891,9 +662,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _preprocessing_DoReplacementsFull = true;
 
-    /// <summary>
-    /// List of full replacements to use
-    /// </summary>
+    public const string DESC_Preprocessing_ReplacementsFull = "List of full replacements to apply";
     public List<ReplacementDataModel> Preprocessing_ReplacementsFull
     {
         get => _preprocessing_ReplacementsFull;
@@ -901,9 +670,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private List<ReplacementDataModel> _preprocessing_ReplacementsFull = [];
 
-    /// <summary>
-    /// List of partial replacements to use
-    /// </summary>
+    public const string DESC_Preprocessing_ReplacementsPartial = "List of partial replacements to apply";
     public List<ReplacementDataModel> Preprocessing_ReplacementsPartial
     {
         get => _preprocessing_ReplacementsPartial;
@@ -911,9 +678,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private List<ReplacementDataModel> _preprocessing_ReplacementsPartial = [];
 
-    /// <summary>
-    /// Characters that get ignored for full replacements
-    /// </summary>
+    public const string DESC_Preprocessing_ReplacementFullIgnoredCharacters = "Characters that get ignored for full replacements";
     public string Preprocessing_ReplacementFullIgnoredCharacters
     {
         get => _preprocessing_ReplacementFullIgnoredCharacters;
@@ -923,6 +688,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion
 
     #region Output - API
+    public const string DESC_Output_Api_Enabled = "Enable API output module";
     public bool Output_Api_Enabled
     {
         get => _output_Api_Enabled;
@@ -930,6 +696,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _output_Api_Enabled = false;
 
+    public const string DESC_Output_Api_Preset_Message = "API preset for sending messages";
     public string Output_Api_Preset_Message
     {
         get => _output_Api_Preset_Message;
@@ -937,6 +704,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _output_Api_Preset_Message = string.Empty;
 
+    public const string DESC_Output_Api_Preset_Notification = "API preset for sending notifications";
     public string Output_Api_Preset_Notification
     {
         get => _output_Api_Preset_Notification;
@@ -944,6 +712,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _output_Api_Preset_Notification = string.Empty;
 
+    public const string DESC_Output_Api_Preset_Clear = "API preset for sending clears";
     public string Output_Api_Preset_Clear
     {
         get => _output_Api_Preset_Clear;
@@ -951,6 +720,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _output_Api_Preset_Clear = string.Empty;
 
+    public const string DESC_Output_Api_Preset_Processing = "API preset for sending processing indicator";
     public string Output_Api_Preset_Processing
     {
         get => _output_Api_Preset_Processing;
@@ -958,6 +728,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _output_Api_Preset_Processing = string.Empty;
 
+    public const string DESC_Output_Api_Value_True = "Value sent to API as TRUE";
     public string Output_Api_Value_True
     {
         get => _output_Api_Value_True;
@@ -965,6 +736,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _output_Api_Value_True = string.Empty;
 
+    public const string DESC_Output_Api_Value_False = "Value sent to API as FALSE";
     public string Output_Api_Value_False
     {
         get => _output_Api_Value_False;
@@ -972,6 +744,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _output_Api_Value_False = string.Empty;
 
+    public const string DESC_Output_Api_TranslationFormat = "Format to use for translations sent to the API";
     public OutputTranslationFormat Output_Api_TranslationFormat
     {
         get => _output_Api_TranslationFormat;
@@ -979,6 +752,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private OutputTranslationFormat _output_Api_TranslationFormat = OutputTranslationFormat.Both;
     
+    public const string DESC_Output_Api_PrependNotificationPriority = "Prepend notification priority to sent notifications";
     public bool Output_Api_PrependNotificationPriority
     {
         get => _output_Api_PrependNotificationPriority;
@@ -988,6 +762,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion
 
     #region Output - Voice
+    public const string DESC_Output_Voice_Enabled = "Enable voice output module";
     public bool Output_Voice_Enabled //todo: impl
     {
         get => _output_Voice_Enabled;
@@ -995,6 +770,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _output_Voice_Enabled = false;
 
+    public const string DESC_Output_Voice_SendTranslated = "Send translationt to voice";
     public bool Output_Voice_SendTranslated //todo: impl
     {
         get => _output_Voice_SendTranslated;
@@ -1004,9 +780,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion
 
     #region Output - VRC Textbox
-    /// <summary>
-    /// Should the Textbox be enabled
-    /// </summary>
+    public const string DESC_Output_VrcTxt_Enabled = "Enable VRC Textbox output module";
     public bool Output_VrcTxt_Enabled
     {
         get => __output_VrcTxt_Enabled;
@@ -1014,9 +788,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool __output_VrcTxt_Enabled = false;
 
-    /// <summary>
-    /// Should translated content be sent to the VRC Textbox?
-    /// </summary>
+    public const string DESC_Output_VrcTxt_Send_ShowTranslation = "Send translated content to the Textbox";
     public bool Output_VrcTxt_Send_ShowTranslation
     {
         get => _output_VrcTxt_Send_ShowTranslation;
@@ -1024,9 +796,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _output_VrcTxt_Send_ShowTranslation;
 
-    /// <summary>
-    /// Should original be added after translation?
-    /// </summary>
+    public const string DESC_Output_VrcTxt_Send_AddOriginalToTranslation = "Adds original text after translation";
     public bool Output_VrcTxt_Send_AddOriginalToTranslation
     {
         get => _output_VrcTxt_Send_AddOriginalToTranslation;
@@ -1034,9 +804,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _output_VrcTxt_Send_AddOriginalToTranslation = true;
 
-    /// <summary>
-    /// Maximum of characters displayed
-    /// </summary>
+    public const string DESC_Output_VrcTxt_Send_MaxDisplayedCharacters = "Maximum characters to be displayed in Textbox at once";
     public int Output_VrcTxt_Send_MaxDisplayedCharacters
     {
         get => _output_VrcTxt_Send_MaxDisplayedCharacters;
@@ -1044,9 +812,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private int _output_VrcTxt_Send_MaxDisplayedCharacters = 130;
 
-    /// <summary>
-    /// Actuall output text (disable to only have processing indicator)
-    /// </summary>
+    public const string DESC_Output_VrcTxt_Do_Send = "Enable output of text (disable to only have processing indicator)";
     public bool Output_VrcTxt_Do_Send
     {
         get => _output_VrcTxt_Do_Output; 
@@ -1054,9 +820,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _output_VrcTxt_Do_Output = true;
 
-    /// <summary>
-    /// Show indicator while processing
-    /// </summary>
+    public const string DESC_Output_VrcTxt_Do_Indicator = "Use the processing indicator of the Textbox";
     public bool Output_VrcTxt_Do_Indicator
     {
         get => _output_VrcTxt_Do_Indicator;
@@ -1064,9 +828,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _output_VrcTxt_Do_Indicator = true;
 
-    /// <summary>
-    /// Ms of timeout per 20 characters displayed at same time
-    /// </summary>
+    public const string DESC_Output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs = "Timeout (in ms) per 20 characters to be displayed at once";
     public int Output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs
     {
         get => _output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs;
@@ -1074,9 +836,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private int _output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs = 1250;
 
-    /// <summary>
-    /// Minimum timeout in ms when using dynamic timeout
-    /// </summary>
+    public const string DESC_Output_VrcTxt_Timeout_DynamicMinimumMs = "Minimum timeout (in ms) when computing timeout per 20 characters";
     public int Output_VrcTxt_Timeout_DynamicMinimumMs
     {
         get => _output_VrcTxt_Timeout_DynamicMinimumMs;
@@ -1084,9 +844,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private int _output_VrcTxt_Timeout_DynamicMinimumMs = 3000;
 
-    /// <summary>
-    /// Timeout in ms when using static timeout
-    /// </summary>
+    public const string DESC_Output_VrcTxt_Timeout_StaticMs = "Static timeout (in ms) for sent text";
     public int Output_VrcTxt_Timeout_StaticMs
     {
         get => _output_VrcTxt_Timeout_StaticMs;
@@ -1094,9 +852,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private int _output_VrcTxt_Timeout_StaticMs = 5000;
 
-    /// <summary>
-    /// Use dynamic display timeout
-    /// </summary>
+    public const string DESC_Output_VrcTxt_Timeout_UseDynamic = "Use dynamically calculated timeout for sent text";
     public bool Output_VrcTxt_Timeout_UseDynamic
     {
         get => _output_VrcTxt_Timeout_UseDynamic;
@@ -1104,9 +860,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _output_VrcTxt_Timeout_UseDynamic = true;
 
-    /// <summary>
-    /// Automatically clear after notifications
-    /// </summary>
+    public const string DESC_Output_VrcTxt_Timeout_AutomaticallyClearNotification = "Perform an automatic clear after notification timeout";
     public bool Output_VrcTxt_Timeout_AutomaticallyClearNotification
     {
         get => _output_VrcTxt_Timeout_AutomaticallyClearNotification;
@@ -1114,9 +868,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _output_VrcTxt_Timeout_AutomaticallyClearNotification = true;
 
-    /// <summary>
-    /// Automatically clear after message
-    /// </summary>
+    public const string DESC_Output_VrcTxt_Timeout_AutomaticallyClearMessage = "Perform an automatic clear after message timeout";
     public bool Output_VrcTxt_Timeout_AutomaticallyClearMessage
     {
         get => _output_VrcTxt_Timeout_AutomaticallyClearMessage;
@@ -1124,28 +876,23 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _output_VrcTxt_Timeout_AutomaticallyClearMessage;
 
-    /// <summary>
-    /// Text to the left of a notification
-    /// </summary>
+    public const string DESC_Output_VrcTxt_Notification_IndicatorTextStart = "Text to add at the start of the sent notification";
     public string Output_VrcTxt_Notification_IndicatorTextStart
     {
         get => _output_VrcTxt_Notification_IndicatorTextStart;
         set => SetProperty(ref _output_VrcTxt_Notification_IndicatorTextStart, value.Length < 4 ? value : value[..3]);
     }
-    /// <summary>
-    /// Text to the right of a notification
-    /// </summary>
+    private string _output_VrcTxt_Notification_IndicatorTextStart = "〈";
+    
+    public const string DESC_Output_VrcTxt_Notification_IndicatorTextEnd = "Text to add at the end of the sent notification";
     public string Output_VrcTxt_Notification_IndicatorTextEnd
     {
         get => _output_VrcTxt_Notification_IndicatorTextEnd;
         set => SetProperty(ref _output_VrcTxt_Notification_IndicatorTextEnd, value.Length < 4 ? value : value[..3]);
     }
-    private string _output_VrcTxt_Notification_IndicatorTextStart = "〈";
     private string _output_VrcTxt_Notification_IndicatorTextEnd = "〉";
 
-    /// <summary>
-    /// Use notification priority system
-    /// </summary>
+    public const string DESC_Output_VrcTxt_Notification_UsePrioritySystem = "Use priority system for notifications";
     public bool Output_VrcTxt_Notification_UsePrioritySystem
     {
         get => _output_VrcTxt_Notification_UsePrioritySystem;
@@ -1153,9 +900,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _output_VrcTxt_Notification_UsePrioritySystem = true;
 
-    /// <summary>
-    /// Skip notifications when there is an available message
-    /// </summary>
+    public const string DESC_Output_VrcTxt_Notification_SkipWhenMessageAvailable = "Skip notifications when there is an available message";
     public bool Output_VrcTxt_Notification_SkipWhenMessageAvailable
     {
         get => _output_VrcTxt_Notification_SkipWhenMessageAvailable;
@@ -1163,9 +908,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _output_VrcTxt_Notification_SkipWhenMessageAvailable = true;
 
-    /// <summary>
-    /// Play sound on message
-    /// </summary>
+    public const string DESC_Output_VrcTxt_Sound_OnMessage = "Play textbox sound on message";
     public bool Output_VrcTxt_Sound_OnMessage
     {
         get => _output_VrcTxt_Sound_OnMessage;
@@ -1173,9 +916,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _output_VrcTxt_Sound_OnMessage = true;
 
-    /// <summary>
-    /// Play sound on notification
-    /// </summary>
+    public const string DESC_Output_VrcTxt_Sound_OnNotification = "Play textbox sound on notification";
     public bool Output_VrcTxt_Sound_OnNotification
     {
         get => _output_VrcTxt_Sound_OnNotification;
@@ -1185,9 +926,15 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion
 
     #region Recognition - General
-    /// <summary>
-    /// Allow sending recognition result over text
-    /// </summary>
+    public const string DESC_Recognition_MicrophoneName = "Microphone to use for recognition";
+    public string Recognition_MicrophoneName
+    {
+        get => _recognition_MicrophoneName;
+        set => SetProperty(ref _recognition_MicrophoneName, value);
+    }
+    private string _recognition_MicrophoneName = string.Empty;
+
+    public const string DESC_Recognition_Send_ViaText = "Send recognition result over text";
     public bool Recognition_Send_ViaText
     {
         get => _recognition_Send_ViaText;
@@ -1195,9 +942,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _recognition_Send_ViaText = true;
 
-    /// <summary>
-    /// Allow sending recognition result over audio
-    /// </summary>
+    public const string DESC_Recognition_Send_ViaAudio = "Send recognition result over audio";
     public bool Recognition_Send_ViaAudio
     {
         get => _recognition_Send_ViaAudio;
@@ -1205,9 +950,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _recognition_Send_ViaAudio = false;
 
-    /// <summary>
-    /// Allow sending recognition result over other
-    /// </summary>
+    public const string DESC_Recognition_Send_ViaOther = "Send recognition result over other";
     public bool Recognition_Send_ViaOther
     {
         get => _recognition_Send_ViaOther;
@@ -1215,9 +958,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _recognition_Send_ViaOther = false;
 
-    /// <summary>
-    /// Allow translation of recognition result
-    /// </summary>
+    public const string DESC_Recognition_Send_DoTranslate = "Translate recognition result";
     public bool Recognition_Send_DoTranslate
     {
         get => _recognition_Send_DoTranslate;
@@ -1225,9 +966,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _recognition_Send_DoTranslate = false;
 
-    /// <summary>
-    /// Allow partial preprocessing of recognition result
-    /// </summary>
+    public const string DESC_Recognition_Send_DoPreprocessPartial = "Apply partial preprocessing of recognition result";
     public bool Recognition_Send_DoPreprocessPartial
     {
         get => _recognition_Send_DoPreprocessPartial;
@@ -1235,9 +974,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _recognition_Send_DoPreprocessPartial = true;
 
-    /// <summary>
-    /// Allow full preprocessing of recognition result
-    /// </summary>
+    public const string DESC_Recognition_Send_DoPreprocessFull = "Apply full preprocessing of recognition result";
     public bool Recognition_Send_DoPreprocessFull
     {
         get => _recognition_Send_DoPreprocessFull;
@@ -1245,9 +982,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _recognition_Send_DoPreprocessFull = true;
 
-    /// <summary>
-    /// Should recognition be unmuted when started
-    /// </summary>
+    public const string DESC_Recognition_Mute_StartUnmuted = "Unmute recognition on startup";
     public bool Recognition_Mute_StartUnmuted
     {
         get => _recognition_Mute_StartUnmuted;
@@ -1255,19 +990,15 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _recognition_Mute_StartUnmuted = true;
 
-    /// <summary>
-    /// Should a sound be played on (un)mute
-    /// </summary>
+    public const string DESC_Recognition_Mute_PlaySound = "Play a sound on mute/unmute";
     public bool Recognition_Mute_PlaySound //todo: [IMPL] To be implemented
     {
         get => _recognition_Mute_PlaySound;
         set => SetProperty(ref _recognition_Mute_PlaySound, value);
     }
-    private bool _recognition_Mute_PlaySound = false;
+    private bool _recognition_Mute_PlaySound = true;
 
-    /// <summary>
-    /// Should recognition be muted when the game is muted
-    /// </summary>
+    public const string DESC_Recognition_Mute_OnGameMute = "Mute and unmute recognition when receiving mute signal via OSC";
     public bool Recognition_Mute_OnGameMute
     {
         get => _recognition_Mute_OnGameMute;
@@ -1275,9 +1006,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _recognition_Mute_OnGameMute = true;
 
-    /// <summary>
-    /// Module to use for recognition
-    /// </summary>
+    public const string DESC_Recognition_SelectedModuleName = "Module used for recognition";
     public string Recognition_SelectedModuleName
     {
         get => _recognition_SelectedModuleName;
@@ -1285,9 +1014,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _recognition_SelectedModuleName = string.Empty;
 
-    /// <summary>
-    /// Should recognition start automatically
-    /// </summary>
+    public const string DESC_Recognition_AutoStart = "Start recognition on launch";
     public bool Recognition_AutoStart
     {
         get => _recognition_AutoStart;
@@ -1295,9 +1022,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _recognition_AutoStart = false;
 
-    /// <summary>
-    /// Noise filtered out by recognizers
-    /// </summary>
+    public const string DESC_Recognition_Fixup_NoiseFilter = "List of noises to be removed from output";
     public HashSet<string> Recognition_Fixup_NoiseFilter
     {
         get => _recognition_Fixup_NoiseFilter;
@@ -1305,9 +1030,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private HashSet<string> _recognition_Fixup_NoiseFilter = [];
 
-    /// <summary>
-    /// Remove the period at the end of a message
-    /// </summary>
+    public const string DESC_Recognition_Fixup_RemoveEndPeriod = "Remove the period at the end of a message";
     public bool Recognition_Fixup_RemoveEndPeriod
     {
         get => _recognition_Fixup_RemoveEndPeriod;
@@ -1315,9 +1038,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _recognition_Fixup_RemoveEndPeriod = true;
 
-    /// <summary>
-    /// Capitalizes the first character of the message
-    /// </summary>
+    public const string DESC_Recognition_Fixup_CapitalizeFirstLetter = "Capitalizes the first character of the message";
     public bool Recognition_Fixup_CapitalizeFirstLetter
     {
         get => _recognition_Fixup_CapitalizeFirstLetter;
@@ -1327,9 +1048,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion
 
     #region Recognition - API
-    /// <summary>
-    /// API Preset for API Speech Recognition
-    /// </summary>
+    public const string DESC_Recognition_Api_Preset = "API preset for API speech recognition";
     public string Recognition_Api_Preset
     {
         get => _recognition_Api_Preset;
@@ -1337,9 +1056,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _recognition_Api_Preset = string.Empty;
 
-    /// <summary>
-    /// Maximum recording time for API Speech Recognition in seconds 
-    /// </summary>
+    public const string DESC_Recognition_Api_MaxRecordingTime = "Maximum recording time (in seconds) at a time";
     public int Recognition_Api_MaxRecordingTime
     {
         get => _recognition_Api_MaxRecordingTime;
@@ -1349,9 +1066,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion
 
     #region Recognition - Azure
-    /// <summary>
-    /// Custom endpoint for Azure Speech Recognition
-    /// </summary>
+    public const string DESC_Recognition_Azure_CustomEndpoint = "Custom endpoint for Azure speech recognition";
     public string Recognition_Azure_CustomEndpoint
     {
         get => _recognition_Azure_CustomEndpoint;
@@ -1359,9 +1074,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _recognition_Azure_CustomEndpoint = string.Empty;
 
-    /// <summary>
-    /// Preset phrases for Azure Speech Recognition
-    /// </summary>
+    public const string DESC_Recognition_Azure_PresetPhrases = "Preset phrases to use";
     public HashSet<string> Recognition_Azure_PresetPhrases
     {
         get => _recognition_Azure_Phrases;
@@ -1369,9 +1082,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private HashSet<string> _recognition_Azure_Phrases = [];
 
-    /// <summary>
-    /// List of Languages for Azure Speech Recognition
-    /// </summary>
+    public const string DESC_Recognition_Azure_Languages = "Valid languages for speech recognition";
     public HashSet<string> Recognition_Azure_Languages
     {
         get => _recognition_Azure_Languages;
@@ -1379,9 +1090,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private HashSet<string> _recognition_Azure_Languages = [];
 
-    /// <summary>
-    /// Should profanity be censored
-    /// </summary>
+    public const string DESC_Recognition_Azure_CensorProfanity = "Censor profanity from result";
     public bool Recognition_Azure_CensorProfanity
     {
         get => _recognition_Azure_CensorProfanity;
@@ -1391,9 +1100,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion
 
     #region Recognition - Vosk
-    /// <summary>
-    /// List of available vosk models with file path
-    /// </summary>
+    public const string DESC_Recognition_Vosk_Models = "List of available vosk models with file path";
     public Dictionary<string, string> Recognition_Vosk_Models
     {
         get => _recognition_Vosk_Models;
@@ -1401,9 +1108,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private Dictionary<string, string> _recognition_Vosk_Models = [];
 
-    /// <summary>
-    /// Currently used vosk model
-    /// </summary>
+    public const string DESC_Recognition_Vosk_CurrentModel = "Vosk model from list to use";
     public string Recognition_Vosk_CurrentModel
     {
         get => _recognition_Vosk_CurrentModel;
@@ -1411,9 +1116,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _recognition_Vosk_CurrentModel = string.Empty;
 
-    /// <summary>
-    /// Time to wait in MS for new word before stopping sentence
-    /// </summary>
+    public const string DESC_Recognition_Vosk_NewWordWaitTimeMs = "Time to wait (in ms) for new word before stopping sentence";
     public int Recognition_Vosk_NewWordWaitTimeMs
     {
         get => _recognition_Vosk_NewWordWaitTimeMs;
@@ -1423,9 +1126,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion
 
     #region Recognition - Whisper
-    /// <summary>
-    /// List of whisper models with file path
-    /// </summary>
+    public const string DESC_Recognition_Whisper_Models = "List of whisper models with file path";
     public Dictionary<string, string> Recognition_Whisper_Models
     {
         get => _recognition_Whisper_Models;
@@ -1433,9 +1134,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private Dictionary<string, string> _recognition_Whisper_Models = [];
 
-    /// <summary>
-    /// Currently in use whisper model
-    /// </summary>
+    public const string DESC_Recognition_Whisper_SelectedModel = "Whisper model to use";
     public string Recognition_Whisper_SelectedModel
     {
         get => _recognition_Whisper_SelectedModel;
@@ -1443,9 +1142,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _recognition_Whisper_SelectedModel = string.Empty;
 
-    /// <summary>
-    /// Fixes random brackets in the output "('( ( (')"
-    /// </summary>
+    public const string DESC_Recognition_Whisper_Fix_RemoveRandomBrackets = "Fix random brackets in the output \"('( ( (')\"";
     public bool Recognition_Whisper_Fix_RemoveRandomBrackets
     {
         get => _recognition_Whisper_Fix_RemoveRandomBrackets;
@@ -1453,9 +1150,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _recognition_Whisper_Fix_RemoveRandomBrackets = true;
 
-    /// <summary>
-    /// Write noises that have been filtered out to the logs
-    /// </summary>
+    public const string DESC_Recognition_Whisper_Dbg_LogFilteredNoises = "Write noises that have been filtered out to the logs";
     public bool Recognition_Whisper_Dbg_LogFilteredNoises
     {
         get => _recognition_Whisper_Dbg_LogFilteredNoises;
@@ -1463,9 +1158,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _recognition_Whisper_Dbg_LogFilteredNoises = false;
 
-    /// <summary>
-    /// List of allowed whisper noises
-    /// </summary>
+    public const string DESC_Recognition_Whisper_Cfg_NoiseFilter = "List of allowed whisper noises";
     public Dictionary<string, string> Recognition_Whisper_Cfg_NoiseFilter
     {
         get => _recognition_Whisper_Cfg_NoiseFilter;
@@ -1473,9 +1166,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private Dictionary<string, string> _recognition_Whisper_Cfg_NoiseFilter = [];
 
-    /// <summary>
-    /// Enable single segment mode for higher accuracy but reduced functionality
-    /// </summary>
+    public const string DESC_Recognition_Whisper_Cfg_UseSingleSegmentMode = "Use single segment mode for higher accuracy but reduced functionality";
     public bool Recognition_Whisper_Cfg_UseSingleSegmentMode
     {
         get => _recognition_Whisper_Cfg_UseSingleSegmentMode;
@@ -1483,9 +1174,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _recognition_Whisper_Cfg_UseSingleSegmentMode = true;
 
-    /// <summary>
-    /// Translate to English if the detected language is not English
-    /// </summary>
+    public const string DESC_Recognition_Whisper_Cfg_TranslateToEnglish = "Translate to English if the detected language is not English";
     public bool Recognition_Whisper_Cfg_TranslateToEnglish
     {
         get => _recognition_Whisper_Cfg_TranslateToEnglish;
@@ -1493,9 +1182,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _recognition_Whisper_Cfg_TranslateToEnglish = false;
 
-    /// <summary>
-    /// Translate to English if the detected language is not English
-    /// </summary>
+    public const string DESC_Recognition_Whisper_Cfg_UseGpu = "Use the GPU for whisper";
     public bool Recognition_Whisper_Cfg_UseGpu
     {
         get => _recognition_Whisper_Cfg_UseGpu;
@@ -1503,9 +1190,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _recognition_Whisper_Cfg_UseGpu = true;
 
-    /// <summary>
-    /// Should language automatically be detected?
-    /// </summary>
+    public const string DESC_Recognition_Whisper_Cfg_DetectLanguage = "Detect language automatically";
     public bool Recognition_Whisper_Cfg_DetectLanguage
     {
         get => _recognition_Whisper_Cfg_DetectLanguage;
@@ -1513,9 +1198,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _recognition_Whisper_Cfg_DetectLanguage = false;
 
-    /// <summary>
-    /// Shortcode for language
-    /// </summary>
+    public const string DESC_Recognition_Whisper_Cfg_Language = "Shortcode for used language (empty = auto)";
     public string Recognition_Whisper_Cfg_Language
     {
         get => _recognition_Whisper_Cfg_Language;
@@ -1523,9 +1206,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _recognition_Whisper_Cfg_Language = string.Empty;
 
-    /// <summary>
-    /// Cutoff time for a sentence in MS
-    /// </summary>
+    public const string DESC_Recognition_Whisper_Cfg_MaxSentenceDurationMs = "Rough maximum cutoff time (in ms) for sentences";
     public int Recognition_Whisper_Cfg_MaxSentenceDurationMs
     {
         get => _recognition_Whisper_Cfg_MaxSentenceDurationMs;
@@ -1533,9 +1214,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private int _recognition_Whisper_Cfg_MaxSentenceDurationMs = 16_000;
 
-    /// <summary>
-    /// Minimum time for a sentence in MS
-    /// </summary>
+    public const string DESC_Recognition_Whisper_Cfg_MinSentenceDurationMs = "Minimum time (in ms) for sentences";
     public int Recognition_Whisper_Cfg_MinSentenceDurationMs
     {
         get => _recognition_Whisper_Cfg_MinSentenceDurationMs;
@@ -1543,9 +1222,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private int _recognition_Whisper_Cfg_MinSentenceDurationMs = 250;
 
-    /// <summary>
-    /// Duration to recognize a pause in MS
-    /// </summary>
+    public const string DESC_Recognition_Whisper_Cfg_DetectPauseDurationMs = "Duration (in ms) of a pause for cutoff in";
     public int Recognition_Whisper_Cfg_DetectPauseDurationMs
     {
         get => _recognition_Whisper_Cfg_DetectPauseDurationMs;
@@ -1553,9 +1230,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private int _recognition_Whisper_Cfg_DetectPauseDurationMs = 500;
 
-    /// <summary>
-    /// Duration to recognize a silence in outer segments in MS
-    /// </summary>
+    public const string DESC_Recognition_Whisper_Cfg_DetectOuterSilenceDurationMs = "Duration (in ms) to recognize a silence in outer segments";
     public int Recognition_Whisper_Cfg_DetectOuterSilenceDurationMs
     {
         get => _recognition_Whisper_Cfg_DetectOuterSilenceDurationMs;
@@ -1563,9 +1238,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private int _recognition_Whisper_Cfg_DetectOuterSilenceDurationMs = 250;
 
-    /// <summary>
-    /// How often in MS should recognition be updated in between? Lower means more processing
-    /// </summary>
+    public const string DESC_Recognition_Whisper_Cfg_RecognitionUpdateIntervalMs = "Update rate (in ms) for intermediate processing (lower = more intensive)";
     public int Recognition_Whisper_Cfg_RecognitionUpdateIntervalMs
     {
         get => _recognition_Whisper_Cfg_RecognitionUpdateIntervalMs;
@@ -1573,9 +1246,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private int _recognition_Whisper_Cfg_RecognitionUpdateIntervalMs = 500;
 
-    /// <summary>
-    /// Operating mode for voice activity detection
-    /// </summary>
+    public const string DESC_Recognition_Whisper_Cfg_VadOperatingMode = "Operating mode for voice activity detection";
     public WhisperIpcVadOperatingMode Recognition_Whisper_Cfg_VadOperatingMode
     {
         get => _recognition_Whisper_Cfg_VadOperatingMode;
@@ -1583,9 +1254,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private WhisperIpcVadOperatingMode _recognition_Whisper_Cfg_VadOperatingMode = WhisperIpcVadOperatingMode.Aggressive;
 
-    /// <summary>
-    /// Beam size for beam search sampling strategy
-    /// </summary>
+    public const string DESC_Recognition_Whisper_CfgAdv_BeamSize = "Beam size for beam search sampling strategy";
     public int Recognition_Whisper_CfgAdv_BeamSize
     {
         get => _recognition_Whisper_CfgAdv_BeamSize;
@@ -1593,9 +1262,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private int _recognition_Whisper_CfgAdv_BeamSize = 0;
 
-    /// <summary>
-    /// Best of for greedy sampling strategy
-    /// </summary>
+    public const string DESC_Recognition_Whisper_CfgAdv_GreedyBestOf = "Best of for greedy sampling strategy";
     public int Recognition_Whisper_CfgAdv_GreedyBestOf
     {
         get => _recognition_Whisper_CfgAdv_GreedyBestOf;
@@ -1603,9 +1270,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private int _recognition_Whisper_CfgAdv_GreedyBestOf = 0;
 
-    /// <summary>
-    /// GPU to use
-    /// </summary>
+    public const string DESC_Recognition_Whisper_CfgAdv_GraphicsAdapterId = "Id of GPU to use";
     public int Recognition_Whisper_CfgAdv_GraphicsAdapterId
     {
         get => _recognition_Whisper_CfgAdv_GraphicsAdapterId;
@@ -1613,9 +1278,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private int _recognition_Whisper_CfgAdv_GraphicsAdapterId = 0;
 
-    /// <summary>
-    /// MaxInitialT for Whisper
-    /// </summary>
+    public const string DESC_Recognition_Whisper_CfgAdv_MaxInitialT = "MaxInitialT for Whisper";
     public float Recognition_Whisper_CfgAdv_MaxInitialT
     {
         get => _recognition_Whisper_CfgAdv_MaxInitialT;
@@ -1623,9 +1286,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private float _recognition_Whisper_CfgAdv_MaxInitialT = -1;
 
-    /// <summary>
-    /// No speech threshold for Whisper
-    /// </summary>
+    public const string DESC_Recognition_Whisper_CfgAdv_NoSpeechThreshold = "No speech threshold for Whisper";
     public float Recognition_Whisper_CfgAdv_NoSpeechThreshold
     {
         get => _recognition_Whisper_CfgAdv_NoSpeechThreshold;
@@ -1633,9 +1294,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private float _recognition_Whisper_CfgAdv_NoSpeechThreshold = -1;
 
-    /// <summary>
-    /// Temperature for Whisper
-    /// </summary>
+    public const string DESC_Recognition_Whisper_CfgAdv_Temperature = "Temperature for Whisper";
     public float Recognition_Whisper_CfgAdv_Temperature
     {
         get => _recognition_Whisper_CfgAdv_Temperature;
@@ -1643,9 +1302,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private float _recognition_Whisper_CfgAdv_Temperature = -1;
 
-    /// <summary>
-    /// TemperatureInc for Whisper
-    /// </summary>
+    public const string DESC_Recognition_Whisper_CfgAdv_TemperatureInc = "TemperatureInc for Whisper";
     public float Recognition_Whisper_CfgAdv_TemperatureInc
     {
         get => _recognition_Whisper_CfgAdv_TemperatureInc;
@@ -1653,9 +1310,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private float _recognition_Whisper_CfgAdv_TemperatureInc = -1;
 
-    /// <summary>
-    /// Maximum segment length
-    /// </summary>
+    public const string DESC_Recognition_Whisper_CfgAdv_MaxSegmentLength = "Maximum segment length";
     public int Recognition_Whisper_CfgAdv_MaxSegmentLength
     {
         get => _recognition_Whisper_CfgAdv_MaxSegmentLength;
@@ -1663,9 +1318,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private int _recognition_Whisper_CfgAdv_MaxSegmentLength = 0;
 
-    /// <summary>
-    /// Maxiumum amount of tokens per segment
-    /// </summary>
+    public const string DESC_Recognition_Whisper_CfgAdv_MaxTokensPerSegment = "Maxiumum amount of tokens per segment";
     public int Recognition_Whisper_CfgAdv_MaxTokensPerSegment
     {
         get => _recognition_Whisper_CfgAdv_MaxTokensPerSegment;
@@ -1673,9 +1326,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private int _recognition_Whisper_CfgAdv_MaxTokensPerSegment = 0;
 
-    /// <summary>
-    /// Initial prompt
-    /// </summary>
+    public const string DESC_Recognition_Whisper_CfgAdv_Prompt = "Initial prompt for whisper";
     public string Recognition_Whisper_CfgAdv_Prompt
     {
         get => _recognition_Whisper_CfgAdv_Prompt;
@@ -1683,9 +1334,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _recognition_Whisper_CfgAdv_Prompt = string.Empty;
 
-    /// <summary>
-    /// Should thread count be set
-    /// </summary>
+    public const string DESC_Recognition_Whisper_CfgAdv_SetThreads = "Enable setting thread count";
     public bool Recognition_Whisper_CfgAdv_SetThreads
     {
         get => _recognition_Whisper_CfgAdv_SetThreads;
@@ -1693,9 +1342,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _recognition_Whisper_CfgAdv_SetThreads = false;
 
-    /// <summary>
-    /// Use beam search sampling strategy
-    /// </summary>
+    public const string DESC_Recognition_Whisper_CfgAdv_UseBeamSearchSampling = "Enable beam search sampling strategy";
     public bool Recognition_Whisper_CfgAdv_UseBeamSearchSampling
     {
         get => _recognition_Whisper_CfgAdv_UseBeamSearchSampling;
@@ -1703,9 +1350,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _recognition_Whisper_CfgAdv_UseBeamSearchSampling = false;
 
-    /// <summary>
-    /// Use greedy sampling strategy
-    /// </summary>
+    public const string DESC_Recognition_Whisper_CfgAdv_UseGreedySampling = "Enable greedy sampling strategy";
     public bool Recognition_Whisper_CfgAdv_UseGreedySampling
     {
         get => _recognition_Whisper_CfgAdv_UseGreedySampling;
@@ -1713,9 +1358,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _recognition_Whisper_CfgAdv_UseGreedySampling = false;
 
-    /// <summary>
-    /// Amount of threads used by whisper. 0 = All, -n = All but n threads
-    /// </summary>
+    public const string DESC_Recognition_Whisper_CfgAdv_ThreadsUsed = "Amount of threads used by whisper (0 = all, -n = all but n threads)";
     public int Recognition_Whisper_CfgAdv_ThreadsUsed
     {
         get => _recognition_Whisper_CfgAdv_ThreadsUsed;
@@ -1725,9 +1368,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion
 
     #region Recognition - Windows
-    /// <summary>
-    /// Model Id for Windows Recognition
-    /// </summary>
+    public const string DESC_Recognition_Windows_ModelId = "Model Id for Windows recognition";
     public string Recognition_Windows_ModelId
     {
         get => _recognition_Windows_ModelId;
@@ -1737,9 +1378,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion
 
     #region Translation - General
-    /// <summary>
-    /// Current module selected for translation
-    /// </summary>
+    public const string DESC_Translation_SelectedModuleName = "Current module selected for translation";
     public string Translation_SelectedModuleName
     {
         get => _translation_SelectedModuleName;
@@ -1747,9 +1386,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _translation_SelectedModuleName = string.Empty;
 
-    /// <summary>
-    /// Autostart for Translation
-    /// </summary>
+    public const string DESC_Translation_AutoStart = "Start translation module on launch";
     public bool Translation_AutoStart
     {
         get => _translation_AutoStart;
@@ -1757,9 +1394,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _translation_AutoStart = false;
 
-    /// <summary>
-    /// Skip longer messages for API Translation, will be cropped otherwise
-    /// </summary>
+    public const string DESC_Translation_SkipLongerMessages = "Skip longer messages for API Translation, will be cropped otherwise";
     public bool Translation_SkipLongerMessages
     {
         get => _translation_SkipLongerMessages;
@@ -1767,9 +1402,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _translation_SkipLongerMessages = true;
 
-    /// <summary>
-    /// Max Text Length for Translation 
-    /// </summary>
+    public const string DESC_Translation_MaxTextLength = "Maximum text length for translation";
     public int Translation_MaxTextLength
     {
         get => _translation_MaxTextLength;
@@ -1777,9 +1410,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private int _translation_MaxTextLength = 2000;
 
-    /// <summary>
-    /// Allow audio output to be translated
-    /// </summary>
+    public const string DESC_Translation_OfAudioOutput = "Allow audio output to be translated";
     public bool Translation_OfAudioOutput //todo: [IMPL] To be implemented
     {
         get => _translation_OfAudioOutput;
@@ -1787,9 +1418,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _translation_OfAudioOutput = true;
 
-    /// <summary>
-    /// Allow text output to be translated
-    /// </summary>
+    public const string DESC_Translation_OfTextOutput = "Allow text output to be translated";
     public bool Translation_OfTextOutput //todo: [IMPL] To be implemented
     {
         get => _translation_OfTextOutput;
@@ -1797,9 +1426,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _translation_OfTextOutput = true;
 
-    /// <summary>
-    /// Allow other output to be translated
-    /// </summary>
+    public const string DESC_Translation_OfOtherOutput = "Allow other output to be translated";
     public bool Translation_OfOtherOutput //todo: [IMPL] To be implemented
     {
         get => _translation_OfOtherOutput;
@@ -1807,9 +1434,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _translation_OfOtherOutput = true;
 
-    /// <summary>
-    /// Send untranslated text if nothing can output translation
-    /// </summary>
+    public const string DESC_Translation_SendUntranslatedIfUnavailable = "Send untranslated text if nothing can output translation";
     public bool Translation_SendUntranslatedIfUnavailable
     {
         get => _translation_SendUntranslatedIfUnavailable;
@@ -1817,9 +1442,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _translation_SendUntranslatedIfUnavailable = true;
 
-    /// <summary>
-    /// Send untranslated if translation fails
-    /// </summary>
+    public const string DESC_Translation_SendUntranslatedIfFailed = "Send untranslated if translation fails";
     public bool Translation_SendUntranslatedIfFailed
     {
         get => _translation_SendUntranslatedIfFailed;
@@ -1829,9 +1452,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion
 
     #region Translation - Api
-    /// <summary>
-    /// API Preset for API Translation 
-    /// </summary>
+    public const string DESC_Translation_Api_Preset = "API Preset for API Translation";
     public string Translation_Api_Preset
     {
         get => _translation_Api_Preset;
@@ -1841,9 +1462,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion
 
     #region Voice - General
-    /// <summary>
-    /// ID of speaker for output audio
-    /// </summary>
+    public const string DESC_Voice_CurrentSpeakerName = "Name of speaker for voice audio";
     public string Voice_CurrentSpeakerName
     {
         get => _voice_CurrentSpeakerName;
@@ -1851,9 +1470,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _voice_CurrentSpeakerName = string.Empty;
 
-    /// <summary>
-    /// Name of module to use
-    /// </summary>
+    public const string DESC_Voice_SelectedModuleName = "Name of voice module";
     public string Voice_SelectedModuleName
     {
         get => _voice_SelectedModuleName;
@@ -1861,9 +1478,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _voice_SelectedModuleName = string.Empty;
 
-    /// <summary>
-    /// Should module be automatically started
-    /// </summary>
+    public const string DESC_Voice_AutoStart = "Automatically start voice module on launch";
     public bool Voice_AutoStart
     {
         get => _voice_AutoStart;
@@ -1871,9 +1486,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _voice_AutoStart;
 
-    /// <summary>
-    /// Volume of Voice Audio
-    /// </summary>
+    public const string DESC_Voice_AudioVolumePercent = "Volume of voice audio";
     public float Voice_AudioVolumePercent
     {
         get => _voice_AudioVolumePercent;
@@ -1881,9 +1494,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private float _voice_AudioVolumePercent = 0.5f;
 
-    /// <summary>
-    /// Maximum length of text to be converted to voice
-    /// </summary>
+    public const string DESC_Voice_MaximumTextLength = "Maximum length of text to be converted to voice";
     public int Voice_MaximumTextLength
     {
         get => _voice_MaximumTextLength;
@@ -1891,9 +1502,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private int _voice_MaximumTextLength = 500;
 
-    /// <summary>
-    /// Should longer text be skipped? Will be cut otherwise
-    /// </summary>
+    public const string DESC_Voice_SkipLongerText = "Skips longer text for voice instead of trimming it";
     public bool Voice_SkipLongerText
     {
         get => _voice_SkipLongerText;
@@ -1903,9 +1512,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion 
 
     #region Voice - Azure
-    /// <summary>
-    /// List of voices to use with Azure TTS
-    /// </summary>
+    public const string DESC_Voice_Azure_VoiceList = "List of voices to use with Azure TTS";
     public List<AzureTtsVoiceModel> Voice_Azure_VoiceList //todo: [IMPL] To be implemented
     {
         get => _voice_Azure_Voices;
@@ -1915,9 +1522,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     public int Voice_Azure_GetVoiceIndex(string name)
             => Voice_Azure_VoiceList.GetListIndex(x => x.Name == name);
 
-    /// <summary>
-    /// Currently selected voice from list
-    /// </summary>
+    public const string DESC_Voice_Azure_CurrentVoice = "Currently selected voice from list";
     public string Voice_Azure_CurrentVoice //todo: [IMPL] To be implemented
     {
         get => _voice_Azure_CurrentVoice;
@@ -1925,31 +1530,17 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _voice_Azure_CurrentVoice = string.Empty;
 
-    /// <summary>
-    /// Custom endpoint for Azure Voices
-    /// </summary>
+    public const string DESC_Voice_Azure_CustomEndpoint = "Custom endpoint for Azure voices";
     public string Voice_Azure_CustomEndpoint //todo: [IMPL] To be implemented
     {
         get => _voice_Azure_CustomEndpoint;
         set => SetProperty(ref _voice_Azure_CustomEndpoint, value);
     }
     private string _voice_Azure_CustomEndpoint = string.Empty;
-
-    /// <summary>
-    /// Override Normal Voice with Azure
-    /// </summary>
-    public bool Voice_Azure_OverrideNormal //todo: [REFACTOR] Is this needed? Should this not be a module name?
-    {
-        get => _voice_Azure_OverrideNormal;
-        set => SetProperty(ref _voice_Azure_OverrideNormal, value);
-    }
-    private bool _voice_Azure_OverrideNormal;
     #endregion
 
     #region Voice - Microsoft
-    /// <summary>
-    /// ID of Microsoft TTS model
-    /// </summary>
+    public const string DESC_Voice_Microsoft_ModelId = "ID of Microsoft TTS model";
     public string Voice_Microsoft_ModelId //todo: [IMPL] To be implemented
     {
         get => _voice_Microsoft_TtsId;
@@ -1959,6 +1550,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion
 
     #region Voice - Piper
+    public const string DESC_Voice_Piper_Process_Enabled = "Should a Piper process be started on module start";
     public bool Voice_Piper_Process_Enabled //todo: [IMPL] To be implemented
     {
         get => _voice_Piper_Process_Enabled;
@@ -1966,6 +1558,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private bool _voice_Piper_Process_Enabled = false;
 
+    public const string DESC_Voice_Piper_Process_Terminal = "Terminal application to launch Piper process in";
     public string Voice_Piper_Process_Terminal //todo: [IMPL] To be implemented
     {
         get => _voice_Piper_Process_Terminal;
@@ -1973,13 +1566,15 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _voice_Piper_Process_Terminal = string.Empty;
 
-    public string Voice_Piper_Process_VenvDir //todo: [IMPL] To be implemented
+    public const string DESC_Voice_Piper_Process_VenvDir = "Path of Python VEnv";
+    public string Voice_Piper_Process_VenvDir //todo: [IMPL] To be implevmented
     {
         get => _voice_Piper_Process_VenvDir;
         set => SetProperty(ref _voice_Piper_Process_VenvDir, value);
     }
     private string _voice_Piper_Process_VenvDir = string.Empty;
 
+    public const string DESC_Voice_Piper_Process_Voice = "Voice to be set for process";
     public string Voice_Piper_Process_Voice //todo: [IMPL] To be implemented
     {
         get => _voice_Piper_Process_Voice;
@@ -1987,6 +1582,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _voice_Piper_Process_Voice = string.Empty;
 
+    public const string DESC_Voice_Piper_Ip = "Piper webservice IP";
     public string Voice_Piper_Ip //todo: [IMPL] To be implemented
     {
         get => _voice_Piper_Ip;
@@ -1994,6 +1590,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _voice_Piper_Ip = "127.0.0.1";
 
+    public const string DESC_Voice_Piper_Port = "Piper webservice port";
     public ushort Voice_Piper_Port //todo: [IMPL] To be implemented
     {
         get => _voice_Piper_Port;
@@ -2001,6 +1598,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private ushort _voice_Piper_Port = 9101;
 
+    public const string DESC_Voice_Piper_Request_Voice = "Requested voice";
     public string Voice_Piper_Request_Voice //todo: [IMPL] To be implemented
     {
         get => _voice_Piper_Request_Voice;
@@ -2008,6 +1606,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _voice_Piper_Request_Voice = string.Empty;
 
+    public const string DESC_Voice_Piper_Request_NoiseScale = "Piper noise scale";
     public float Voice_Piper_Request_NoiseScale //todo: [IMPL] To be implemented
     {
         get => _voice_Piper_Request_NoiseScale;
@@ -2015,11 +1614,86 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private float _voice_Piper_Request_NoiseScale = -1;
 
+    public const string DESC_Voice_Piper_Request_NoiseWScale = "Piper noise w scale";
     public float Voice_Piper_Request_NoiseWScale //todo: [IMPL] To be implemented
     {
         get => _voice_Piper_Request_NoiseWScale;
         set => SetProperty(ref _voice_Piper_Request_NoiseWScale, value.MinMax(-1, 1));
     }
     private float _voice_Piper_Request_NoiseWScale = -1;
+    #endregion
+
+    #region WebRtc
+    public const string DESC_WebRtc_Enabled = "Enables the usage of WebRTC for all compatible microphone inputs";
+    public bool WebRtc_Enabled
+    {
+        get => _webRtc_Enabled;
+        set => SetProperty(ref _webRtc_Enabled, value);
+    }
+    private bool _webRtc_Enabled = true;
+
+    public const string DESC_WebRtc_UseEchoCancellation = "Use WebRTC's echo cancellation";
+    public bool WebRtc_UseEchoCancellation
+    {
+        get => _webRtc_UseEchoCancellation;
+        set => SetProperty(ref _webRtc_UseEchoCancellation, value);
+    }
+    private bool _webRtc_UseEchoCancellation = true;
+
+    public const string DESC_WebRtc_EchoCancellationDelayMs = "Delay (in ms) to use for echo cancellation";
+    public int WebRtc_EchoCancellationDelayMs
+    {
+        get => _webRtc_EchoCancellationDelayMs;
+        set => SetProperty(ref _webRtc_EchoCancellationDelayMs, value);
+    }
+    private int _webRtc_EchoCancellationDelayMs = 40;
+
+    public const string DESC_WebRtc_UseNoiseSuppression = "Use WebRTC's noise suppression";
+    public bool WebRtc_UseNoiseSuppression
+    {
+        get => _webRtc_UseNoiseSuppression;
+        set => SetProperty(ref _webRtc_UseNoiseSuppression, value);
+    }
+    private bool _webRtc_UseNoiseSuppression = true;
+
+    public const string DESC_WebRtc_NoiseSuppressionLevel = "Level of noise suppression strength to use";
+    public NoiseSuppressionLevel WebRtc_NoiseSuppressionLevel
+    {
+        get => _webRtc_NoiseSuppressionLevel;
+        set => SetProperty(ref _webRtc_NoiseSuppressionLevel, value);
+    }
+    private NoiseSuppressionLevel _webRtc_NoiseSuppressionLevel = NoiseSuppressionLevel.Moderate;
+
+    public const string DESC_WebRtc_UseAutomaticGainControl = "Should WebRTC's automatic gain control be used";
+    public bool WebRtc_UseAutomaticGainControl
+    {
+        get => _webRtc_UseAutomaticGainControl;
+        set => SetProperty(ref _webRtc_UseAutomaticGainControl, value);
+    }
+    private bool _webRtc_UseAutomaticGainControl = false;
+
+    public const string DESC_WebRtc_UseHighPassFilter = "Should WebRTC's high pass filter be used";
+    public bool WebRtc_UseHighPassFilter
+    {
+        get => _webRtc_UseHighPassFilter;
+        set => SetProperty(ref _webRtc_UseHighPassFilter, value);
+    }
+    private bool _webRtc_UseHighPassFilter = false;
+
+    public const string DESC_WebRtc_UsePreAmplifier = "Should WebRTC's preamplifier be used";
+    public bool WebRtc_UsePreAmplifier
+    {
+        get => _webRtc_UsePreAmplifier;
+        set => SetProperty(ref _webRtc_UsePreAmplifier, value);
+    }
+    private bool _webRtc_UsePreAmplifier = false;
+
+    public const string DESC_WebRtc_PreAmplifierGainFactor = "Automatic gain factor to use for preamplifier";
+    public float WebRtc_PreAmplifierGainFactor
+    {
+        get => _webRtc_PreAmplifierGainFactor;
+        set => SetProperty(ref _webRtc_PreAmplifierGainFactor, value);
+    }
+    private float _webRtc_PreAmplifierGainFactor = 1;
     #endregion
 }

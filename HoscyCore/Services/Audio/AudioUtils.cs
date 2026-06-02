@@ -78,14 +78,14 @@ public static class AudioUtils
         return AddWebRtcModifier
         (
             device,
-            config.Audio_WebRtc_UseEchoCancellation,
-            config.Audio_WebRtc_EchoCancellationDelayMs,
-            config.Audio_WebRtc_UseNoiseSuppression,
-            config.Audio_WebRtc_NoiseSuppressionLevel,
-            config.Audio_WebRtc_UseAutomaticGainControl,
-            config.Audio_WebRtc_UseHighPassFilter,
-            config.Audio_WebRtc_UsePreAmplifier,
-            config.Audio_WebRtc_PreAmplifierGainFactor
+            config.WebRtc_UseEchoCancellation,
+            config.WebRtc_EchoCancellationDelayMs,
+            config.WebRtc_UseNoiseSuppression,
+            config.WebRtc_NoiseSuppressionLevel,
+            config.WebRtc_UseAutomaticGainControl,
+            config.WebRtc_UseHighPassFilter,
+            config.WebRtc_UsePreAmplifier,
+            config.WebRtc_PreAmplifierGainFactor
         );
     }
 

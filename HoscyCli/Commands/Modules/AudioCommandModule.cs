@@ -1,5 +1,4 @@
 using HoscyCli.Commands.Core;
-using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Audio;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Utility;
@@ -16,7 +15,7 @@ public class AudioCommandModule(IAudioService audio, ReflectPropEditCommandModul
     public string ModuleDescription => "Configure audio devices";
     public string[] ModuleCommands => ["audio"];
 
-    [SubCommandModule(["devices"], "List all devices")]
+    [SubCommandModule(["devices"], "Devices")]
     public Res CmdDevices()
     {
         var micResult = _audio.GetCaptureDevices();
@@ -38,17 +37,5 @@ public class AudioCommandModule(IAudioService audio, ReflectPropEditCommandModul
 
         Console.WriteLine($"Microphones:\n{micString}\n\nSpeakers:\n{speakerString}");
         return ResC.Ok();
-    }
-
-    [SubCommandModule(["microphone-id"], "Set the microphone to use")]
-    public Res CmdMicrophone()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Audio_CurrentMicrophoneName));
-    }
-
-    [SubCommandModule(["system-output-id"], "Set the speaker to use for output audio")]
-    public Res CmdOutputSpeaker()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Voice_CurrentSpeakerName));
     }
 }

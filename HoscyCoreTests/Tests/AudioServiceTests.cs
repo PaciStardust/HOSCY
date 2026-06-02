@@ -62,7 +62,7 @@ public class AudioServiceFunctionTests : TestBase<AudioServiceFunctionTests>
 
         if (setDevName)
         {
-            _config.Audio_CurrentMicrophoneName = devices[0].Name;
+            _config.Recognition_MicrophoneName = devices[0].Name;
         }
 
         var captureResult = _audioService.CreateCaptureDevice();
@@ -98,7 +98,7 @@ public class AudioServiceFunctionTests : TestBase<AudioServiceFunctionTests>
 
         if (setDevName)
         {
-            _config.Audio_CurrentMicrophoneName = devices[0].Name;
+            _config.Recognition_MicrophoneName = devices[0].Name;
         }
 
         var captureResult = _audioService.CreateCaptureDeviceProxy();

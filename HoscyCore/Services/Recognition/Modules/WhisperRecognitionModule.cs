@@ -144,7 +144,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
             ParentProcessId = Process.GetCurrentProcess().Id,
             ParentSendingPipe = pipeHandleSend,
 
-            CaptureDeviceName = _config.Audio_CurrentMicrophoneName,
+            CaptureDeviceName = _config.Recognition_MicrophoneName,
             VadOperatingMode = _config.Recognition_Whisper_Cfg_VadOperatingMode,
 
             Whisper_DetectLanguage = _config.Recognition_Whisper_Cfg_DetectLanguage,
@@ -171,15 +171,15 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
 
             Debug_LogVerboseExtra = _config.Debug_LogVerboseExtra,
 
-            WebRtc_Enabled = _config.Audio_WebRtc_Enabled,
-            WebRtc_UseEchoCancellation = _config.Audio_WebRtc_UseEchoCancellation,
-            WebRtc_EchoCancellationDelayMs = _config.Audio_WebRtc_EchoCancellationDelayMs,
-            WebRtc_UseNoiseSuppression = _config.Audio_WebRtc_UseNoiseSuppression,
-            WebRtc_NoiseSuppressionLevel = _config.Audio_WebRtc_NoiseSuppressionLevel,
-            WebRtc_UsePreAmplifier = _config.Audio_WebRtc_UsePreAmplifier,
-            WebRtc_PreAmplifierGainFactor = _config.Audio_WebRtc_PreAmplifierGainFactor,
-            WebRtc_UseAutomaticGainControl = _config.Audio_WebRtc_UseAutomaticGainControl,
-            WebRtc_UseHighPassFilter = _config.Audio_WebRtc_UseHighPassFilter
+            WebRtc_Enabled = _config.WebRtc_Enabled,
+            WebRtc_UseEchoCancellation = _config.WebRtc_UseEchoCancellation,
+            WebRtc_EchoCancellationDelayMs = _config.WebRtc_EchoCancellationDelayMs,
+            WebRtc_UseNoiseSuppression = _config.WebRtc_UseNoiseSuppression,
+            WebRtc_NoiseSuppressionLevel = _config.WebRtc_NoiseSuppressionLevel,
+            WebRtc_UsePreAmplifier = _config.WebRtc_UsePreAmplifier,
+            WebRtc_PreAmplifierGainFactor = _config.WebRtc_PreAmplifierGainFactor,
+            WebRtc_UseAutomaticGainControl = _config.WebRtc_UseAutomaticGainControl,
+            WebRtc_UseHighPassFilter = _config.WebRtc_UseHighPassFilter
         };
 
         try

@@ -69,7 +69,7 @@ public class AudioService(ILogger logger, ConfigModel config)
         var deviceInfos = GetCaptureDevices();
         if (!deviceInfos.IsOk) return ResC.TFail<AudioCaptureDevice>(deviceInfos.Msg);
 
-        var deviceInfo = FindDeviceWithChecks(deviceInfos.Value, _config.Audio_CurrentMicrophoneName, "capture");
+        var deviceInfo = FindDeviceWithChecks(deviceInfos.Value, _config.Recognition_MicrophoneName, "capture");
         if (!deviceInfo.IsOk) return ResC.TFail<AudioCaptureDevice>(deviceInfo.Msg);
 
         var format = new AudioFormat

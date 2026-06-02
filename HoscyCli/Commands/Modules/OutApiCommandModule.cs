@@ -53,7 +53,7 @@ public class OutApiCommandModule
     [SubCommandModule(["preset-notification"], "Set API preset for notification")] 
     public Res CmdPresetNotification()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.ApiOut_Preset_Notification));
+        return _reflectCm.SetProperty(nameof(ConfigModel.Output_Api_Preset_Notification));
     }
 
     [SubCommandModule(["preset-clear"], "Set API preset for clearing")] 
