@@ -22,16 +22,19 @@ public class PreprocessingCommandModule
     public string ModuleDescription => "Configure preprocessing";
     public string[] ModuleCommands => ["preprocessing"];
 
-    [SubCommandModule(["do-replace-partial"], "Do partial replacements")]
-    public Res CmdDoReplacePartial()
+    protected override Res AddExtrasSubcommands(List<(SubCommandModuleAttribute Attribute, Func<string?, Res> Func)> list)
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Preprocessing_DoReplacementsPartial));
+        _reflectCm.GenerateQuickConfigCommands(ModuleName, list, GetQuickCommands());
+        return base.AddExtrasSubcommands(list);
     }
 
-    [SubCommandModule(["do-replace-full"], "Do full replacements")]
-    public Res CmdDoReplaceFull()
+    private QuickConfigCommandInfo[] GetQuickCommands()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Preprocessing_DoReplacementsFull));
+        return [
+            new(["do-replace-partial"], nameof(ConfigModel.Preprocessing_DoReplacementsPartial), ConfigModel.DESC_Preprocessing_DoReplacementsPartial),
+            new(["do-replace-full"], nameof(ConfigModel.Preprocessing_DoReplacementsFull), ConfigModel.DESC_Preprocessing_DoReplacementsFull),
+            new(["ignorechars-replace-full"], nameof(ConfigModel.Preprocessing_ReplacementFullIgnoredCharacters), ConfigModel.DESC_Preprocessing_ReplacementFullIgnoredCharacters)
+        ];
     }
 
     [SubCommandModule(["edit-replace-partial"], "Edit partial replacements")]
@@ -48,11 +51,5 @@ public class PreprocessingCommandModule
         var res = _reflectCm.SetProperty(nameof(ConfigModel.Preprocessing_ReplacementsFull));
         _preprocessFull.ReloadReplacements();
         return res;
-    }
-
-    [SubCommandModule(["ignorechars-replace-full"], "Edit ignored characters for full replacements")]
-    public Res CmdIgnorecharsReplaceFull()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Preprocessing_ReplacementFullIgnoredCharacters));
     }
 } 

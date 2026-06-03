@@ -14,7 +14,7 @@ public class ApiCommandModule(ReflectPropEditCommandModule reflectCm) : Attribut
     public string ModuleDescription => "Configure API settings";
     public string[] ModuleCommands => ["api"];
 
-    [SubCommandModule(["presets"], "Configure API presets")] 
+    [SubCommandModule(["presets"], ConfigModel.DESC_Api_Presets)] 
     public Res CmdPresets()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Api_Presets));

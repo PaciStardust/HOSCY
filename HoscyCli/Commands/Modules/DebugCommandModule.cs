@@ -14,51 +14,23 @@ public class DebugCommandModule(ReflectPropEditCommandModule _reflectCm) : Attri
     public string ModuleDescription => "Configure debugging options";
     public string[] ModuleCommands => [ "debug", "dbg" ];
 
-    [SubCommandModule(["out-windows-cmd"], "Log on CMD on windows")]
-    public Res CmdOutWindowsCmd()
+    protected override Res AddExtrasSubcommands(List<(SubCommandModuleAttribute Attribute, Func<string?, Res> Func)> list)
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Debug_LogViaCmdOnWindows));
+        _reflectCm.GenerateQuickConfigCommands(ModuleName, list, GetQuickCommands());
+        return base.AddExtrasSubcommands(list);
     }
 
-    [SubCommandModule(["out-terminal"], "Log to terminal if executed there (Not in CLI)")]
-    public Res CmdOutTerminal()
+    private QuickConfigCommandInfo[] GetQuickCommands()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Debug_LogViaTerminal));
-    }
-
-    [SubCommandModule(["out-follow-enabled"], "Log via file follow process in separate terminal (ex: tail)")]
-    public Res CmdOutFollowEnabled()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Debug_LogViaTerminal));
-    }
-
-    [SubCommandModule(["out-follow-process"], "Process to start file follow command in (ex: kitty)")]
-    public Res CmdOutFollowProcess()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Debug_LogFileFollowProcess));
-    }
-
-    [SubCommandModule(["out-follow-command"], "Command to run in the opened process (ex: \"-e tail -f [LOGFILE]\")")]
-    public Res CmdOutFollowCommand()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Debug_LogFileFollowCommand));
-    }
-
-    [SubCommandModule(["log-severity"], "Minimum log level to log")]
-    public Res CmdLogSeverity()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Debug_LogMinimumSeverity));
-    }
-
-    [SubCommandModule(["log-fiters"], "Filters for logging")]
-    public Res CmdLogFilters()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Debug_LogFilters));
-    }
-
-    [SubCommandModule(["log-verbose-extra"], "Enable extra verbose logging")]
-    public Res CmdLogVerboseExtra()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Debug_LogVerboseExtra));
+        return [
+            new(["out-windows-cmd"], nameof(ConfigModel.Debug_LogViaCmdOnWindows), ConfigModel.DESC_Debug_LogViaCmdOnWindows),
+            new(["out-terminal"], nameof(ConfigModel.Debug_LogViaTerminal), ConfigModel.DESC_Debug_LogViaTerminal),
+            new(["out-follow-enabled"], nameof(ConfigModel.Debug_LogViaTerminal), ConfigModel.DESC_Debug_LogViaTerminal),
+            new(["out-follow-process"], nameof(ConfigModel.Debug_LogFileFollowProcess), ConfigModel.DESC_Debug_LogFileFollowProcess),
+            new(["out-follow-command"], nameof(ConfigModel.Debug_LogFileFollowCommand), ConfigModel.DESC_Debug_LogFileFollowCommand),
+            new(["log-severity"], nameof(ConfigModel.Debug_LogMinimumSeverity), ConfigModel.DESC_Debug_LogMinimumSeverity),
+            new(["log-fiters"], nameof(ConfigModel.Debug_LogFilters), ConfigModel.DESC_Debug_LogFilters),
+            new(["log-verbose-extra"], nameof(ConfigModel.Debug_LogVerboseExtra), ConfigModel.DESC_Debug_LogVerboseExtra)
+        ];
     }
 }

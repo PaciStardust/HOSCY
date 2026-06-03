@@ -16,15 +16,17 @@ public abstract class AzureCommandModuleBase
     public abstract string ModuleDescription { get; }
     public abstract string[] ModuleCommands { get; }
 
-    [SubCommandModule(["service-region"], "Set the Azure region")]
-    public Res CmdServiceRegion()
+    protected override Res AddExtrasSubcommands(List<(SubCommandModuleAttribute Attribute, Func<string?, Res> Func)> list)
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.AzureServices_Region));
+        _reflectCm.GenerateQuickConfigCommands(ModuleName, list, GetQuickCommands());
+        return base.AddExtrasSubcommands(list);
     }
 
-    [SubCommandModule(["service-key"], "Set the Azure API key")]
-    public Res CmdServiceKey()
+    private QuickConfigCommandInfo[] GetQuickCommands()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.AzureServices_ApiKey));
+        return [
+            new(["service-region"], nameof(ConfigModel.AzureServices_Region), ConfigModel.DESC_AzureServices_Region),
+            new(["service-key"], nameof(ConfigModel.AzureServices_ApiKey), ConfigModel.DESC_AzureServices_ApiKey)
+        ];
     }
 }

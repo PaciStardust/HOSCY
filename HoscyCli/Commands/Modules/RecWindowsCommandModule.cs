@@ -36,7 +36,7 @@ public class RecWindowsCommandModule
         return ResC.Ok();
     }
 
-    [SubCommandModule(["selected-model"], "Recognition model to use")]
+    [SubCommandModule(["selected-model"], ConfigModel.DESC_Recognition_Windows_ModelId)]
     public Res CmdSelectedModel()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Windows_ModelId));

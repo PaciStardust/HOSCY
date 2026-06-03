@@ -14,93 +14,30 @@ public class AddressCommandModule(ReflectPropEditCommandModule _reflectCm) : Att
     public string ModuleDescription => "Configure osc addresses";
     public string[] ModuleCommands => [ "address", "osc-address" ];
 
-    [SubCommandModule(["game-afk", "afk"], "Set games AFK address")] 
-    public Res CmdGameAfk()
+    protected override Res AddExtrasSubcommands(List<(SubCommandModuleAttribute Attribute, Func<string?, Res> Func)> list)
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Game_Afk));
+        _reflectCm.GenerateQuickConfigCommands(ModuleName, list, GetQuickCommands());
+        return base.AddExtrasSubcommands(list);
     }
 
-    [SubCommandModule(["game-textbox", "textbox"], "Set games textbox address")] 
-    public Res CmdGameTextbox()
+    private QuickConfigCommandInfo[] GetQuickCommands()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Game_Textbox));
-    }
-
-    [SubCommandModule(["game-typing", "typing"], "Set games typing address")] 
-    public Res CmdGameTyping()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Game_Typing));
-    }
-
-    [SubCommandModule(["game-mute", "mute"], "Set games mute address")] 
-    public Res CmdGameMute()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Game_Mute));
-    }
-
-    [SubCommandModule(["in-message-text", "message-text"], "Set HOSCY text message input address")] 
-    public Res CmdInMessageText()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Input_TextMessage));
-    }
-
-    [SubCommandModule(["in-message-audio", "message-audio"], "Set HOSCY audio message input address")] 
-    public Res CmdInMessageAudio()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Input_AudioMessage));
-    }
-
-    [SubCommandModule(["in-message-other", "message-other"], "Set HOSCY other message input address")] 
-    public Res CmdInMessageOther()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Input_OtherMessage));
-    }
-
-    [SubCommandModule(["in-notification", "notification"], "Set HOSCY notification input address")] 
-    public Res CmdInNotification()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Input_TextNotification));
-    }
-
-    [SubCommandModule(["rec-toggle-mute", "toggle-mute"], "Set HOSCY recognition mute toggle address")] 
-    public Res CmdRecToggleMute()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Tool_ToggleMute));
-    }
-
-    [SubCommandModule(["rec-toggle-auto-mute", "toggle-auto-mute"], "Set HOSCY recognition automatic mute toggle address")] 
-    public Res CmdRecToggleAutoMute()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Mute_OnGameMute));
-    }
-
-    [SubCommandModule(["media-pause"], "Set HOSCY media pause address")] 
-    public Res CmdMediaPause()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Media_Pause));
-    }
-
-    [SubCommandModule(["media-play"], "Set HOSCY media play address")] 
-    public Res CmdMediaPlay()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Media_Play));
-    }
-
-    [SubCommandModule(["media-previous"], "Set HOSCY media previous address")] 
-    public Res CmdMediaPrevious()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Media_Previous));
-    }
-
-    [SubCommandModule(["media-next"], "Set HOSCY media next address")] 
-    public Res CmdMediaNext()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Media_Next));
-    }
-
-    [SubCommandModule(["media-toggle"], "Set HOSCY media toggle address")] 
-    public Res CmdMediaToggle()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Address_Media_Toggle));
+        return [
+            new(["game-afk", "afk"], nameof(ConfigModel.Osc_Address_Game_Afk), ConfigModel.DESC_Osc_Address_Game_Afk),
+            new(["game-textbox", "textbox"], nameof(ConfigModel.Osc_Address_Game_Textbox), ConfigModel.DESC_Osc_Address_Game_Textbox),
+            new(["game-typing", "typing"], nameof(ConfigModel.Osc_Address_Game_Typing), ConfigModel.DESC_Osc_Address_Game_Typing),
+            new(["game-mute", "mute"], nameof(ConfigModel.Osc_Address_Game_Mute), ConfigModel.DESC_Osc_Address_Game_Mute),
+            new(["in-message-text", "message-text"], nameof(ConfigModel.Osc_Address_Input_TextMessage), ConfigModel.DESC_Osc_Address_Input_TextMessage),
+            new(["in-message-audio", "message-audio"], nameof(ConfigModel.Osc_Address_Input_AudioMessage), ConfigModel.DESC_Osc_Address_Input_AudioMessage),
+            new(["in-message-other", "message-other"], nameof(ConfigModel.Osc_Address_Input_OtherMessage), ConfigModel.DESC_Osc_Address_Input_OtherMessage),
+            new(["in-notification", "notification"], nameof(ConfigModel.Osc_Address_Input_TextNotification), ConfigModel.DESC_Osc_Address_Input_TextNotification),
+            new(["rec-toggle-mute", "toggle-mute"], nameof(ConfigModel.Osc_Address_Tool_ToggleMute), ConfigModel.DESC_Osc_Address_Tool_ToggleMute),
+            new(["rec-toggle-auto-mute", "toggle-auto-mute"], nameof(ConfigModel.Recognition_Mute_OnGameMute), ConfigModel.DESC_Recognition_Mute_OnGameMute),
+            new(["media-pause"], nameof(ConfigModel.Osc_Address_Media_Pause), ConfigModel.DESC_Osc_Address_Media_Pause),
+            new(["media-play"], nameof(ConfigModel.Osc_Address_Media_Play), ConfigModel.DESC_Osc_Address_Media_Play),
+            new(["media-previous"], nameof(ConfigModel.Osc_Address_Media_Previous), ConfigModel.DESC_Osc_Address_Media_Previous),
+            new(["media-next"], nameof(ConfigModel.Osc_Address_Media_Next), ConfigModel.DESC_Osc_Address_Media_Next),
+            new(["media-toggle"],nameof(ConfigModel.Osc_Address_Media_Toggle), ConfigModel.DESC_Osc_Address_Media_Toggle)
+        ];
     }
 }

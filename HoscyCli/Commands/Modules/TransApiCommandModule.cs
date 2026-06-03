@@ -14,7 +14,7 @@ public class TransApiCommandModule(ReflectPropEditCommandModule _reflectCm) : At
     public string ModuleDescription => "Configure the API translation module";
     public string[] ModuleCommands => [ "trans-api" ];
 
-    [SubCommandModule(["preset"], "Selected API preset for module")]
+    [SubCommandModule(["preset"], ConfigModel.DESC_Translation_Api_Preset)]
     public Res CmdPreset()
     {
         return _reflectCm.SetProperty(nameof(ConfigModel.Translation_Api_Preset));

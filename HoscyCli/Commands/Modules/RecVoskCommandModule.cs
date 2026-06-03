@@ -19,21 +19,18 @@ public class RecVoskCommandModule
     public string ModuleDescription => "Configure the Vosk Recognition module";
     public string[] ModuleCommands => ["rec-vosk"];
 
-    [SubCommandModule(["models"], "Edit vosk model list")]
-    public Res CmdModels()
+    protected override Res AddExtrasSubcommands(List<(SubCommandModuleAttribute Attribute, Func<string?, Res> Func)> list)
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Vosk_Models));
+        _reflectCm.GenerateQuickConfigCommands(ModuleName, list, GetQuickCommands());
+        return base.AddExtrasSubcommands(list);
     }
 
-    [SubCommandModule(["selected-model"], "Vosk model to use")]
-    public Res CmdSelectedModel()
+    private QuickConfigCommandInfo[] GetQuickCommands()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Vosk_CurrentModel));
-    }
-
-    [SubCommandModule(["new-word-wait-ms"], "Time to wait in MS for new word")]
-    public Res CmdNewWordWait()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Vosk_NewWordWaitTimeMs));
+        return [
+            new(["models"], nameof(ConfigModel.Recognition_Vosk_Models), ConfigModel.DESC_Recognition_Vosk_Models),
+            new(["selected-model"], nameof(ConfigModel.Recognition_Vosk_CurrentModel), ConfigModel.DESC_Recognition_Vosk_CurrentModel),
+            new(["new-word-wait-ms"], nameof(ConfigModel.Recognition_Vosk_NewWordWaitTimeMs), ConfigModel.DESC_Recognition_Vosk_NewWordWaitTimeMs),
+        ];
     }
 }

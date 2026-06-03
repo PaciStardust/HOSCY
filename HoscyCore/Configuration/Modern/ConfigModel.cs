@@ -450,7 +450,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private List<OscRelayFilterModel> _osc_Relay_Filters = [];
 
-    public const string DESC_Relay_IgnoreIfHandled = "Enable OSC message relay for already handled OSC messages";
+    public const string DESC_Osc_Relay_IgnoreIfHandled = "Enable OSC message relay for already handled OSC messages";
     public bool Osc_Relay_IgnoreIfHandled
     {
         get => _osc_Relay_IgnoreIfHandled;

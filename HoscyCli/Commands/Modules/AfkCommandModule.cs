@@ -18,6 +18,24 @@ public class AfkCommandModule(IAfkService afkService, ILogger logger, ReflectPro
     public string ModuleDescription => "Configure AFK detection and status";
     public string[] ModuleCommands => ["afk"];
 
+    protected override Res AddExtrasSubcommands(List<(SubCommandModuleAttribute Attribute, Func<string?, Res> Func)> list)
+    {
+        _reflectCm.GenerateQuickConfigCommands(ModuleName, list, GetQuickCommands());
+        return base.AddExtrasSubcommands(list);
+    }
+
+    private QuickConfigCommandInfo[] GetQuickCommands()
+    {
+        return [
+            new(["enabled"], nameof(ConfigModel.Afk_ShowDuration), ConfigModel.DESC_Afk_ShowDuration),
+            new(["interval"], nameof(ConfigModel.Afk_BaseDurationDisplayIntervalSeconds), ConfigModel.DESC_Afk_BaseDurationDisplayIntervalSeconds),
+            new(["double-time"], nameof(ConfigModel.Afk_TimesDisplayedBeforeDoublingInterval), ConfigModel.DESC_Afk_TimesDisplayedBeforeDoublingInterval),
+            new(["txt-start"], nameof(ConfigModel.Afk_StartText), ConfigModel.DESC_Afk_StartText),
+            new(["txt-status"], nameof(ConfigModel.Afk_StatusText), ConfigModel.DESC_Afk_StatusText),
+            new(["txt-stop"], nameof(ConfigModel.Afk_StopText), ConfigModel.DESC_Afk_StopText)
+        ];
+    }
+
     [SubCommandModule(["status"], "Get service status")]
     public Res CmdStatus()
     {
@@ -41,41 +59,5 @@ public class AfkCommandModule(IAfkService afkService, ILogger logger, ReflectPro
         _afkService.StopAfk();
         Console.WriteLine("Stopped AFK");
         return ResC.Ok();
-    }
-
-    [SubCommandModule(["enabled"], "Enable AFK status")] 
-    public Res CmdSetEnable()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Afk_ShowDuration));
-    }
-
-    [SubCommandModule(["interval"], "Set base AFK display interval (in seconds)")] 
-    public Res CmdSetInterval()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Afk_BaseDurationDisplayIntervalSeconds));
-    }
-
-    [SubCommandModule(["double-time"], "Set times AFK is displayed before it is doubled")] 
-    public Res CmdSetDoubleTime()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Afk_TimesDisplayedBeforeDoublingInterval));
-    }
-
-    [SubCommandModule(["txt-start"], "Set text to display when starting AFK")] 
-    public Res CmdSetTextStart()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Afk_StartText));
-    }
-
-    [SubCommandModule(["txt-status"], "Set text to display during AFK")] 
-    public Res CmdSetTextStatus()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Afk_StatusText));
-    }
-
-    [SubCommandModule(["txt-stop"], "Set text to display when stopping AFK")] 
-    public Res CmdSetTextStop()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Afk_StopText));
     }
 }

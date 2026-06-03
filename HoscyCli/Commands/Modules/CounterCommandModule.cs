@@ -14,27 +14,19 @@ public class CounterCommandModule(ReflectPropEditCommandModule _reflectCm) : Att
     public string ModuleDescription => "Configure counters";
     public string[] ModuleCommands => ["counters"];
 
-    [SubCommandModule(["show"], "Show counter notifications")]
-    public Res CmdShow()
+    protected override Res AddExtrasSubcommands(List<(SubCommandModuleAttribute Attribute, Func<string?, Res> Func)> list)
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Counters_ShowNotification));
+        _reflectCm.GenerateQuickConfigCommands(ModuleName, list, GetQuickCommands());
+        return base.AddExtrasSubcommands(list);
     }
 
-    [SubCommandModule(["edit", "list"], "Edit counters")]
-    public Res CmdEdit()
+    private QuickConfigCommandInfo[] GetQuickCommands()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Counters_List));
-    }
-
-    [SubCommandModule(["dsp-duration"], "How long counters should be displayed after change (in seconds)")]
-    public Res CmdDspDuration()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Counters_DisplayDurationSeconds));
-    }
-
-    [SubCommandModule(["dsp-cooldown"], "How long between counter notifications (in seconds)")]
-    public Res CmdDspCooldown()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Counters_DisplayCooldownSeconds));
+        return [
+            new(["show"], nameof(ConfigModel.Counters_ShowNotification), ConfigModel.DESC_Counters_ShowNotification),
+            new(["edit", "list"], nameof(ConfigModel.Counters_List), ConfigModel.DESC_Counters_List),
+            new(["dsp-duration"], nameof(ConfigModel.Counters_DisplayDurationSeconds), ConfigModel.DESC_Counters_DisplayDurationSeconds),
+            new(["dsp-cooldown"], nameof(ConfigModel.Counters_DisplayCooldownSeconds), ConfigModel.DESC_Counters_DisplayCooldownSeconds)
+        ];
     }
 }

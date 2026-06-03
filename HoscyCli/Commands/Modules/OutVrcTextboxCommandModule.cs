@@ -1,7 +1,6 @@
 using HoscyCli.Commands.Core;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
-using HoscyCore.Services.Interfacing;
 using HoscyCore.Services.Output.Core;
 using HoscyCore.Services.Output.Handlers;
 using HoscyCore.Utility;
@@ -28,6 +27,35 @@ public class TextboxCommandModule
     public string[] ModuleCommands 
         => ["out-textbox"];
 
+    protected override Res AddExtrasSubcommands(List<(SubCommandModuleAttribute Attribute, Func<string?, Res> Func)> list)
+    {
+        _reflectCm.GenerateQuickConfigCommands(ModuleName, list, GetQuickCommands());
+        return base.AddExtrasSubcommands(list);
+    }
+
+    private QuickConfigCommandInfo[] GetQuickCommands()
+    {
+        return [
+            new(["trans-show"], nameof(ConfigModel.Output_VrcTxt_Send_ShowTranslation), ConfigModel.DESC_Output_VrcTxt_Send_ShowTranslation),
+            new(["trans-add-original"], nameof(ConfigModel.Output_VrcTxt_Send_AddOriginalToTranslation), ConfigModel.DESC_Output_VrcTxt_Send_AddOriginalToTranslation),
+            new(["char-limit"], nameof(ConfigModel.Output_VrcTxt_Send_MaxDisplayedCharacters), ConfigModel.DESC_Output_VrcTxt_Send_MaxDisplayedCharacters),
+            new(["do-output"], nameof(ConfigModel.Output_VrcTxt_Do_Send), ConfigModel.DESC_Output_VrcTxt_Do_Send),
+            new(["do-indicator"], nameof(ConfigModel.Output_VrcTxt_Do_Indicator), ConfigModel.DESC_Output_VrcTxt_Do_Indicator),
+            new(["timeout-dyn-per20chars"], nameof(ConfigModel.Output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs), ConfigModel.DESC_Output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs),
+            new(["timeout-dyn-min"], nameof(ConfigModel.Output_VrcTxt_Timeout_DynamicMinimumMs), ConfigModel.DESC_Output_VrcTxt_Timeout_DynamicMinimumMs),
+            new(["timeout-dyn-use"], nameof(ConfigModel.Output_VrcTxt_Timeout_UseDynamic), ConfigModel.DESC_Output_VrcTxt_Timeout_UseDynamic),
+            new(["timeout-static"], nameof(ConfigModel.Output_VrcTxt_Timeout_StaticMs), ConfigModel.DESC_Output_VrcTxt_Timeout_StaticMs),
+            new(["clear-notif"], nameof(ConfigModel.Output_VrcTxt_Timeout_AutomaticallyClearNotification), ConfigModel.DESC_Output_VrcTxt_Timeout_AutomaticallyClearNotification),
+            new(["clear-message"], nameof(ConfigModel.Output_VrcTxt_Timeout_AutomaticallyClearMessage), ConfigModel.DESC_Output_VrcTxt_Timeout_AutomaticallyClearMessage),
+            new(["notif-text-start"], nameof(ConfigModel.Output_VrcTxt_Notification_IndicatorTextStart), ConfigModel.DESC_Output_VrcTxt_Notification_IndicatorTextStart),
+            new(["notif-text-end"], nameof(ConfigModel.Output_VrcTxt_Notification_IndicatorTextEnd), ConfigModel.DESC_Output_VrcTxt_Notification_IndicatorTextEnd),
+            new(["notif-priority"], nameof(ConfigModel.Output_VrcTxt_Notification_UsePrioritySystem), ConfigModel.DESC_Output_VrcTxt_Notification_UsePrioritySystem),
+            new(["notif-skip-on-message"], nameof(ConfigModel.Output_VrcTxt_Notification_SkipWhenMessageAvailable), ConfigModel.DESC_Output_VrcTxt_Notification_SkipWhenMessageAvailable),
+            new(["sound-message"], nameof(ConfigModel.Output_VrcTxt_Sound_OnMessage), ConfigModel.DESC_Output_VrcTxt_Sound_OnMessage),
+            new(["sound-notif"], nameof(ConfigModel.Output_VrcTxt_Sound_OnNotification), ConfigModel.DESC_Output_VrcTxt_Sound_OnNotification),
+        ];
+    }
+
     [SubCommandModule(["status"], "Get output module status")]
     public Res CmdStatus()
     {
@@ -43,107 +71,5 @@ public class TextboxCommandModule
         if (!res.IsOk) return res;
 
         return _output.RefreshHandlers();
-    }
-
-    [SubCommandModule(["trans-show"], "Show translation")] 
-    public Res CmdTransShow()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Send_ShowTranslation));
-    }
-
-    [SubCommandModule(["trans-add-original"], "Show both translation and original")] 
-    public Res CmdTransAddOriginal()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Send_AddOriginalToTranslation));
-    }
-
-    [SubCommandModule(["char-limit"], "Set content character limit")] 
-    public Res CmdCharLimit()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Send_MaxDisplayedCharacters));
-    }
-
-    [SubCommandModule(["do-output"], "Actually output text")] 
-    public Res CmdDoOutput()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Do_Send));
-    }
-
-    [SubCommandModule(["do-indicator"], "Actually show typing indicator")] 
-    public Res CmdDoIncidator()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Do_Indicator));
-    }
-
-    [SubCommandModule(["timeout-dyn-per20chars"], "Dynamic timeout in ms per 20 characters displayed")] 
-    public Res CmdTimeoutDynamic20Chars()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs));
-    }
-
-    [SubCommandModule(["timeout-dyn-min"], "Dynamic timeout minimum in ms")] 
-    public Res CmdTimeoutDynamicMin()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Timeout_DynamicMinimumMs));
-    }
-
-    [SubCommandModule(["timeout-dyn-use"], "Use dynamic timeout")] 
-    public Res CmdTimeoutDynamicUse()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Timeout_UseDynamic));
-    }
-
-    [SubCommandModule(["timeout-static"], "Dynamic timeout in ms")] 
-    public Res CmdTimeoutStatic()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Timeout_StaticMs));
-    }
-
-    [SubCommandModule(["clear-notif"], "Automatic clearing after notification")] 
-    public Res CmdClearNotification()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Timeout_AutomaticallyClearNotification));
-    }
-
-    [SubCommandModule(["clear-message"], "Automatic clearing after message")] 
-    public Res CmdClearMessage()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Timeout_AutomaticallyClearMessage));
-    }
-
-    [SubCommandModule(["notif-text-start"], "Text at start of notification")] 
-    public Res CmdNotifTextStart()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Notification_IndicatorTextStart));
-    }
-
-    [SubCommandModule(["notif-text-end"], "Text at end of notification")] 
-    public Res CmdNotifTextEnd()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Notification_IndicatorTextEnd));
-    }
-
-    [SubCommandModule(["notif-priority"], "Use notification priority")] 
-    public Res CmdNotifPriority()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Notification_UsePrioritySystem));
-    }
-
-    [SubCommandModule(["notif-skip-on-message"], "Skip notification on message")] 
-    public Res CmdNotifSkipOnMessage()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Notification_SkipWhenMessageAvailable));
-    }
-
-    [SubCommandModule(["sound-message"], "Play sound on message")] 
-    public Res CmdSoundMessage()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Sound_OnMessage));
-    }
-
-    [SubCommandModule(["sound-notif"], "Play sound on notification")] 
-    public Res CmdSoundNotif()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Sound_OnNotification));
     }
 }

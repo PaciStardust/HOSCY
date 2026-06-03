@@ -17,6 +17,29 @@ public class InputCommandModule(IInputService input, ReflectPropEditCommandModul
     public string ModuleDescription => "Configure and send manual/external input";
     public string[] ModuleCommands => ["input"];
 
+    protected override Res AddExtrasSubcommands(List<(SubCommandModuleAttribute Attribute, Func<string?, Res> Func)> list)
+    {
+        _reflectCm.GenerateQuickConfigCommands(ModuleName, list, GetQuickCommands());
+        return base.AddExtrasSubcommands(list);
+    }
+
+    private QuickConfigCommandInfo[] GetQuickCommands()
+    {
+        return [
+            new(["e-preprocess-full"], nameof(ConfigModel.ExternalInput_DoPreprocessFull), ConfigModel.DESC_ExternalInput_DoPreprocessFull),
+            new(["e-preprocess-partial"], nameof(ConfigModel.ExternalInput_DoPreprocessPartial), ConfigModel.DESC_ExternalInput_DoPreprocessPartial),
+            new(["e-translate"], nameof(ConfigModel.ExternalInput_DoTranslate), ConfigModel.DESC_ExternalInput_DoTranslate),
+
+            new(["m-preprocess-full"], nameof(ConfigModel.ManualInput_DoPreprocessFull), ConfigModel.DESC_ManualInput_DoPreprocessFull),
+            new(["m-preprocess-partial"], nameof(ConfigModel.ManualInput_DoPreprocessPartial), ConfigModel.DESC_ManualInput_DoPreprocessPartial),
+            new(["m-translate"], nameof(ConfigModel.ManualInput_DoTranslate), ConfigModel.DESC_ManualInput_DoTranslate),
+            new(["m-audio"], nameof(ConfigModel.ManualInput_SendViaAudio), ConfigModel.DESC_ManualInput_SendViaAudio),
+            new(["m-other"], nameof(ConfigModel.ManualInput_SendViaOther), ConfigModel.DESC_ManualInput_SendViaOther),
+            new(["m-text"], nameof(ConfigModel.ManualInput_SendViaText), ConfigModel.DESC_ManualInput_SendViaText),
+            new(["m-p-edit", "m-p-list"], nameof(ConfigModel.ManualInput_TextPresets), ConfigModel.DESC_ManualInput_TextPresets)
+        ];
+    }
+
     #region External
     [SubCommandModule(["e-send-t"], "Send an external text message")]
     public Res CmdExSendText(string? args)
@@ -53,24 +76,6 @@ public class InputCommandModule(IInputService input, ReflectPropEditCommandModul
         Console.WriteLine($"Sent external text notification: {args}");
         return ResC.Ok();   
     }
-
-    [SubCommandModule(["e-preprocess-full"], "Edit external DoPreprocessFull Flag")]
-    public Res CmdExPreprocessFull()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.ExternalInput_DoPreprocessFull));
-    }
-
-    [SubCommandModule(["e-preprocess-partial"], "Edit external DoPreprocessPartial Flag")]
-    public Res CmdExPreprocessPartial()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.ExternalInput_DoPreprocessPartial));
-    }
-
-    [SubCommandModule(["e-translate"], "Edit external DoTranslate Flag")]
-    public Res CmdExTranslate()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.ExternalInput_DoTranslate));
-    }
     #endregion
 
     #region External
@@ -81,48 +86,6 @@ public class InputCommandModule(IInputService input, ReflectPropEditCommandModul
         _input.SendManualMessage(args);
         Console.WriteLine($"Sent manual message: {args}");
         return ResC.Ok();   
-    }
-
-    [SubCommandModule(["m-preprocess-full"], "Edit manual DoPreprocessFull Flag")]
-    public Res CmdMaPreprocessFull()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.ManualInput_DoPreprocessFull));
-    }
-
-    [SubCommandModule(["m-preprocess-partial"], "Edit manual DoPreprocessPartial Flag")]
-    public Res CmdMaPreprocessPartial()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.ManualInput_DoPreprocessPartial));
-    }
-
-    [SubCommandModule(["m-translate"], "Edit manual DoTranslate Flag")]
-    public Res CmdMaTranslate()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.ManualInput_DoTranslate));
-    }
-
-    [SubCommandModule(["m-audio"], "Edit manual SendViaAudio Flag")]
-    public Res CmdMaSendViaAudio()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.ManualInput_SendViaAudio));
-    }
-
-    [SubCommandModule(["m-other"], "Edit manual SendViaOther Flag")]
-    public Res CmdMaSendViaOther()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.ManualInput_SendViaOther));
-    }
-
-    [SubCommandModule(["m-text"], "Edit manual SendViaText Flag")]
-    public Res CmdMaSendViaText()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.ManualInput_SendViaText));
-    }
-
-    [SubCommandModule(["m-p-edit", "m-p-list"], "Edit manual presets")]
-    public Res CmdMaPresetEdit()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.ManualInput_TextPresets));
     }
 
     [SubCommandModule(["m-p-send"], "Send a manual preset")] 

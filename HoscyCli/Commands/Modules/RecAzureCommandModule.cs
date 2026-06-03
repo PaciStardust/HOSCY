@@ -16,27 +16,19 @@ public class RecAzureCommandModule(ReflectPropEditCommandModule reflectCm)
     public override string[] ModuleCommands
         => ["rec-azure"];
 
-    [SubCommandModule(["custom-endpoint"], "Custom endpoint to use")]
-    public Res CmdCustomEndpoint()
+    protected override Res AddExtrasSubcommands(List<(SubCommandModuleAttribute Attribute, Func<string?, Res> Func)> list)
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Voice_Azure_CustomEndpoint));
+        _reflectCm.GenerateQuickConfigCommands(ModuleName, list, GetQuickCommands());
+        return base.AddExtrasSubcommands(list);
     }
 
-    [SubCommandModule(["preset-phrases"], "Phrases to add")]
-    public Res CmdPresetPhrases()
+    private QuickConfigCommandInfo[] GetQuickCommands()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Azure_PresetPhrases));
-    }
-
-    [SubCommandModule(["languages"], "Languages to detect")]
-    public Res CmdLanguages()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Azure_Languages));
-    }
-
-    [SubCommandModule(["censor-profanity"], "Should profanity be censored")]
-    public Res CmdCensorProfanity()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Azure_CensorProfanity));
+        return [
+            new(["custom-endpoint"], nameof(ConfigModel.Voice_Azure_CustomEndpoint), ConfigModel.DESC_Voice_Azure_CustomEndpoint),
+            new(["preset-phrases"], nameof(ConfigModel.Recognition_Azure_PresetPhrases), ConfigModel.DESC_Recognition_Azure_PresetPhrases),
+            new(["languages"], nameof(ConfigModel.Recognition_Azure_Languages), ConfigModel.DESC_Recognition_Azure_Languages),
+            new(["censor-profanity"], nameof(ConfigModel.Recognition_Azure_CensorProfanity), ConfigModel.DESC_Recognition_Azure_CensorProfanity)
+        ];
     }
 }

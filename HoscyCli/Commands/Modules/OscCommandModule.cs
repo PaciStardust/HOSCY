@@ -21,6 +21,21 @@ public class OscCommandModule(IOscRelayService oscRelay, IOscListenService oscLi
     public string ModuleDescription => "Configure OSC";
     public string[] ModuleCommands => ["osc"];
 
+    protected override Res AddExtrasSubcommands(List<(SubCommandModuleAttribute Attribute, Func<string?, Res> Func)> list)
+    {
+        _reflectCm.GenerateQuickConfigCommands(ModuleName, list, GetQuickCommands());
+        return base.AddExtrasSubcommands(list);
+    }
+
+    private QuickConfigCommandInfo[] GetQuickCommands()
+    {
+        return [
+            new(["relay-ignore-if-handled"], nameof(ConfigModel.Osc_Relay_IgnoreIfHandled), ConfigModel.DESC_Osc_Relay_IgnoreIfHandled),
+            new(["ip-out"], nameof(ConfigModel.Osc_Routing_TargetIp), ConfigModel.DESC_Osc_Routing_TargetIp),
+            new(["port-out"], nameof(ConfigModel.Osc_Routing_TargetPort), ConfigModel.DESC_Osc_Routing_TargetPort)
+        ];
+    }
+
     [SubCommandModule(["status"], "Display overall OSC status")]
     public Res CmdDisplayStatus()
     {
@@ -42,24 +57,6 @@ public class OscCommandModule(IOscRelayService oscRelay, IOscListenService oscLi
         var res = _reflectCm.SetProperty(nameof(ConfigModel.Osc_Relay_Filters));
         if (!res.IsOk) return res;
         return _oscRelay.Restart();
-    }
-
-    [SubCommandModule(["relay-ignore-if-handled"], "Edit relay ignore if handled")]
-    public Res CmdEditRelayIgnoreIfHandled()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Relay_IgnoreIfHandled));
-    }
-
-    [SubCommandModule(["ip-out"], "Edit the outbound ip")]
-    public Res CmdEditIpOut()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Routing_TargetIp));
-    }
-
-    [SubCommandModule(["port-out"], "Edit the outbound port")]
-    public Res CmdEditPortOut()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Osc_Routing_TargetPort));
     }
 
     [SubCommandModule(["port-in"], "Edit the inbound port")]

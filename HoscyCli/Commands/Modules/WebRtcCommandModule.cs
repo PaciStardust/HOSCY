@@ -18,57 +18,24 @@ public class WebRtcCommandModule
     public string ModuleDescription => "Configure WebRtc for supported microphones";
     public string[] ModuleCommands => [ "webrtc" ];
 
-    [SubCommandModule(["enabled"], "Should WebRtc be used on supported microphones")]
-    public Res CmdEnabled()
+    protected override Res AddExtrasSubcommands(List<(SubCommandModuleAttribute Attribute, Func<string?, Res> Func)> list)
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.WebRtc_Enabled));
+        _reflectCm.GenerateQuickConfigCommands(ModuleName, list, GetQuickCommands());
+        return base.AddExtrasSubcommands(list);
     }
 
-    [SubCommandModule(["use-echo-cancellation"], "Enable Echo Cancellation")]
-    public Res CmdUseEchoCancellation()
+    private QuickConfigCommandInfo[] GetQuickCommands()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.WebRtc_UseEchoCancellation));
-    }
-
-    [SubCommandModule(["echo-cancellation-delay-ms"], "Delay with echo cancellation in MS")]
-    public Res CmdEchoCancellationDelayMs()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.WebRtc_EchoCancellationDelayMs));
-    }
-
-    [SubCommandModule(["use-noise-suppression"], "Enable Noise Suppression")]
-    public Res CmdUseNoiseSuppression()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.WebRtc_UseNoiseSuppression));
-    }
-
-    [SubCommandModule(["noise-suppression-level"], "Noise Suppression level")]
-    public Res CmdNoiseSuppressionLevel()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.WebRtc_NoiseSuppressionLevel));
-    }
-
-    [SubCommandModule(["use-automatic-gain"], "Enable Automatic Gain")]
-    public Res CmdUseAutomaticGain()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.WebRtc_UseAutomaticGainControl));
-    }
-
-    [SubCommandModule(["use-highpass"], "Enable Highpass Filter")]
-    public Res CmdUseHighpass()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.WebRtc_UseHighPassFilter));
-    }
-
-    [SubCommandModule(["use-preamp"], "Enable Preamplifier")]
-    public Res CmdUsePreamp()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.WebRtc_UsePreAmplifier));
-    }
-
-    [SubCommandModule(["preamp-gain-factor"], "Preamp gain factor")]
-    public Res CmdPreampGainFactor()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.WebRtc_PreAmplifierGainFactor));
+        return [
+            new(["enabled"], nameof(ConfigModel.WebRtc_Enabled), ConfigModel.DESC_WebRtc_Enabled),
+            new(["use-echo-cancellation"], nameof(ConfigModel.WebRtc_UseEchoCancellation), ConfigModel.DESC_WebRtc_UseEchoCancellation),
+            new(["echo-cancellation-delay-ms"], nameof(ConfigModel.WebRtc_EchoCancellationDelayMs), ConfigModel.DESC_WebRtc_EchoCancellationDelayMs),
+            new(["use-noise-suppression"], nameof(ConfigModel.WebRtc_UseNoiseSuppression), ConfigModel.DESC_WebRtc_UseNoiseSuppression),
+            new(["noise-suppression-level"], nameof(ConfigModel.WebRtc_NoiseSuppressionLevel), ConfigModel.DESC_WebRtc_NoiseSuppressionLevel),
+            new(["use-automatic-gain"], nameof(ConfigModel.WebRtc_UseAutomaticGainControl), ConfigModel.DESC_WebRtc_UseAutomaticGainControl),
+            new(["use-highpass"], nameof(ConfigModel.WebRtc_UseHighPassFilter), ConfigModel.DESC_WebRtc_UseHighPassFilter),
+            new(["use-preamp"], nameof(ConfigModel.WebRtc_UsePreAmplifier), ConfigModel.DESC_WebRtc_UsePreAmplifier),
+            new(["preamp-gain-factor"], nameof(ConfigModel.WebRtc_PreAmplifierGainFactor), ConfigModel.DESC_WebRtc_PreAmplifierGainFactor)
+        ];
     }
 }

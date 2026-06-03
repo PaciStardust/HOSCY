@@ -21,193 +21,49 @@ public class RecWhisperCommandModule
     public string ModuleDescription => "Configure the Whisper Recognition modules";
     public string[] ModuleCommands => ["rec-whisper"];
 
-    #region Model
-    [SubCommandModule(["models"], "Edit list of Whisper Models")]
-    public Res CmdModels()
+    protected override Res AddExtrasSubcommands(List<(SubCommandModuleAttribute Attribute, Func<string?, Res> Func)> list)
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_Models));
+        _reflectCm.GenerateQuickConfigCommands(ModuleName, list, GetQuickCommands());
+        return base.AddExtrasSubcommands(list);
     }
 
-    [SubCommandModule(["selected-model"], "Set selected Whisper model")]
-    public Res CmdSelectedModel()
+    private QuickConfigCommandInfo[] GetQuickCommands()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_SelectedModel));
-    }
-    #endregion
+        return [
+            new(["models"], nameof(ConfigModel.Recognition_Whisper_Models), ConfigModel.DESC_Recognition_Whisper_Models),
+            new(["selected-model"], nameof(ConfigModel.Recognition_Whisper_SelectedModel), ConfigModel.DESC_Recognition_Whisper_SelectedModel),
 
-    #region Debug
-    [SubCommandModule(["dbg-log-filtered-noises"], "Write filtered noises into logs")]
-    public Res CmdDbgLogFilteredNoises()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_Dbg_LogFilteredNoises));
-    }
-    #endregion
+            new(["dbg-log-filtered-noises"], nameof(ConfigModel.Recognition_Whisper_Dbg_LogFilteredNoises), ConfigModel.DESC_Recognition_Whisper_Dbg_LogFilteredNoises),
 
-    #region Fix
-    [SubCommandModule(["fix-random-brackets"], "Should random brackets be removed?")]
-    public Res CmdFixRandomBrackets()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_Fix_RemoveRandomBrackets));
-    }
-    #endregion
+            new(["fix-random-brackets"], nameof(ConfigModel.Recognition_Whisper_Fix_RemoveRandomBrackets), ConfigModel.DESC_Recognition_Whisper_Fix_RemoveRandomBrackets),
+            
+            new(["cfg-single-segment"], nameof(ConfigModel.Recognition_Whisper_Cfg_UseSingleSegmentMode), ConfigModel.DESC_Recognition_Whisper_Cfg_UseSingleSegmentMode),
+            new(["cfg-translate-english"], nameof(ConfigModel.Recognition_Whisper_Cfg_TranslateToEnglish), ConfigModel.DESC_Recognition_Whisper_Cfg_TranslateToEnglish),
+            new(["cfg-noise-filter"], nameof(ConfigModel.Recognition_Whisper_Cfg_NoiseFilter), ConfigModel.DESC_Recognition_Whisper_Cfg_NoiseFilter),
+            new(["cfg-use-gpu"], nameof(ConfigModel.Recognition_Whisper_Cfg_UseGpu), ConfigModel.DESC_Recognition_Whisper_Cfg_UseGpu),
+            new(["cfg-detect-language"], nameof(ConfigModel.Recognition_Whisper_Cfg_DetectLanguage), ConfigModel.DESC_Recognition_Whisper_Cfg_DetectLanguage),
+            new(["cfg-language"], nameof(ConfigModel.Recognition_Whisper_Cfg_Language), ConfigModel.DESC_Recognition_Whisper_Cfg_Language),
+            new(["cfg-max-sentence-duration-ms"], nameof(ConfigModel.Recognition_Whisper_Cfg_MaxSentenceDurationMs), ConfigModel.DESC_Recognition_Whisper_Cfg_MaxSentenceDurationMs),
+            new(["cfg-min-sentence-duration-ms"], nameof(ConfigModel.Recognition_Whisper_Cfg_MinSentenceDurationMs), ConfigModel.DESC_Recognition_Whisper_Cfg_MinSentenceDurationMs),
+            new(["cfg-detect-pause-duration-ms"], nameof(ConfigModel.Recognition_Whisper_Cfg_DetectPauseDurationMs), ConfigModel.DESC_Recognition_Whisper_Cfg_DetectPauseDurationMs),
+            new(["cfg-detect-outer-silence-duration-ms"], nameof(ConfigModel.Recognition_Whisper_Cfg_DetectOuterSilenceDurationMs), ConfigModel.DESC_Recognition_Whisper_Cfg_DetectOuterSilenceDurationMs),
+            new(["cfg-recognition-update-interval-ms"], nameof(ConfigModel.Recognition_Whisper_Cfg_RecognitionUpdateIntervalMs), ConfigModel.DESC_Recognition_Whisper_Cfg_RecognitionUpdateIntervalMs),
+            new(["cfg-vad-operating-mode"], nameof(ConfigModel.Recognition_Whisper_Cfg_VadOperatingMode), ConfigModel.DESC_Recognition_Whisper_Cfg_VadOperatingMode),
 
-    #region Cfg
-    [SubCommandModule(["cfg-single-segment"], "Should single segment mode be used?")]
-    public Res CmdCfgSingleSegmentMode()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_Cfg_UseSingleSegmentMode));
+            new(["cfg-adv-thread-count"], nameof(ConfigModel.Recognition_Whisper_CfgAdv_ThreadsUsed), ConfigModel.DESC_Recognition_Whisper_CfgAdv_ThreadsUsed),
+            new(["cfg-adv-max-segment-length"], nameof(ConfigModel.Recognition_Whisper_CfgAdv_MaxSegmentLength), ConfigModel.DESC_Recognition_Whisper_CfgAdv_MaxSegmentLength),
+            new(["cfg-adv-beam-size"], nameof(ConfigModel.Recognition_Whisper_CfgAdv_BeamSize), ConfigModel.DESC_Recognition_Whisper_CfgAdv_BeamSize),
+            new(["cfg-adv-greedy-best-of"], nameof(ConfigModel.Recognition_Whisper_CfgAdv_GreedyBestOf), ConfigModel.DESC_Recognition_Whisper_CfgAdv_GreedyBestOf),
+            new(["cfg-adv-gpu-id"], nameof(ConfigModel.Recognition_Whisper_CfgAdv_GraphicsAdapterId), ConfigModel.DESC_Recognition_Whisper_CfgAdv_GraphicsAdapterId),
+            new(["cfg-adv-max-initial-t"], nameof(ConfigModel.Recognition_Whisper_CfgAdv_MaxInitialT), ConfigModel.DESC_Recognition_Whisper_CfgAdv_MaxInitialT),
+            new(["cfg-adv-no-speech-threshold"], nameof(ConfigModel.Recognition_Whisper_CfgAdv_NoSpeechThreshold), ConfigModel.DESC_Recognition_Whisper_CfgAdv_NoSpeechThreshold),
+            new(["cfg-adv-temperature"], nameof(ConfigModel.Recognition_Whisper_CfgAdv_Temperature), ConfigModel.DESC_Recognition_Whisper_CfgAdv_Temperature),
+            new(["cfg-adv-temperature-inc"], nameof(ConfigModel.Recognition_Whisper_CfgAdv_TemperatureInc), ConfigModel.DESC_Recognition_Whisper_CfgAdv_TemperatureInc),
+            new(["cfg-adv-max-tokens-per-segment"], nameof(ConfigModel.Recognition_Whisper_CfgAdv_MaxTokensPerSegment), ConfigModel.DESC_Recognition_Whisper_CfgAdv_MaxTokensPerSegment),
+            new(["cfg-adv-prompt"], nameof(ConfigModel.Recognition_Whisper_CfgAdv_Prompt), ConfigModel.DESC_Recognition_Whisper_CfgAdv_Prompt),
+            new(["cfg-adv-set-threads"], nameof(ConfigModel.Recognition_Whisper_CfgAdv_SetThreads), ConfigModel.DESC_Recognition_Whisper_CfgAdv_SetThreads),
+            new(["cfg-adv-use-beam-search-sampling"], nameof(ConfigModel.Recognition_Whisper_CfgAdv_UseBeamSearchSampling), ConfigModel.DESC_Recognition_Whisper_CfgAdv_UseBeamSearchSampling),
+            new(["cfg-adv-use-greedy-sampling"], nameof(ConfigModel.Recognition_Whisper_CfgAdv_UseGreedySampling), ConfigModel.DESC_Recognition_Whisper_CfgAdv_UseGreedySampling),
+        ];
     }
-
-    [SubCommandModule(["cfg-translate-english"], "Should output be translated to English")]
-    public Res CmdCfgTranslateEnglish()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_Cfg_TranslateToEnglish));
-    }
-
-    [SubCommandModule(["cfg-noise-filter"], "Edit noises to be filtered")]
-    public Res CmdCfgFilteredNoises()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_Cfg_NoiseFilter));
-    }
-
-    [SubCommandModule(["cfg-use-gpu"], "Use the GPU for recognition")]
-    public Res CmdCfgUseGpu()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_Cfg_UseGpu));
-    }
-
-    [SubCommandModule(["cfg-detect-language"], "Automatically detect spoken language")]
-    public Res CmdCfgDetectLanguage()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_Cfg_DetectLanguage));
-    }
-
-    [SubCommandModule(["cfg-language"], "Language code for recognition")]
-    public Res CmdCfgLanguage()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_Cfg_Language));
-    }
-
-    [SubCommandModule(["cfg-max-sentence-duration-ms"], "Maximum duration of a sentence in MS")]
-    public Res CmdCfgMaxSentenceDurationMs()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_Cfg_MaxSentenceDurationMs));
-    }
-
-    [SubCommandModule(["cfg-min-sentence-duration-ms"], "Minimum duration of a sentence in MS")]
-    public Res CmdCfgMinSentenceDurationMs()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_Cfg_MinSentenceDurationMs));
-    }
-
-    [SubCommandModule(["cfg-detect-pause-duration-ms"], "Duration of a pause in MS")]
-    public Res CmdCfgDetectPauseDurationMs()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_Cfg_DetectPauseDurationMs));
-    }
-
-    [SubCommandModule(["cfg-detect-outer-silence-duration-ms"], "Duration of outer silence in MS")]
-    public Res CmdCfgDetectOuterSilenceDurationMs()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_Cfg_DetectOuterSilenceDurationMs));
-    }
-
-    [SubCommandModule(["cfg-recognition-update-interval-ms"], "How often should speech be sent to recognition?")]
-    public Res CmdCfgRecognitionUpdateIntervalMs()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_Cfg_RecognitionUpdateIntervalMs));
-    }
-
-    [SubCommandModule(["cfg-vad-operating-mode"], "Operating mode for Voice Activity Detection")]
-    public Res CmdCfgVadOperatingMode()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_Cfg_VadOperatingMode));
-    }
-    #endregion
-
-    #region Cfg-Adv
-    [SubCommandModule(["cfg-adv-thread-count"], "Number of threads to be used by process (0 = All, -N = All - N)")]
-    public Res CmdCfgAdvThreadCount()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_CfgAdv_ThreadsUsed));
-    }
-
-    [SubCommandModule(["cfg-adv-max-segment-length"], "Maximum length of segments")]
-    public Res CmdCfgAdvMaxSegmentLength()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_CfgAdv_MaxSegmentLength));
-    }
-
-    [SubCommandModule(["cfg-adv-beam-size"], "Beam size for beam search sampling strategy")]
-    public Res CmdCfgAdvBeamSize()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_CfgAdv_BeamSize));
-    }
-
-    [SubCommandModule(["cfg-adv-greedy-best-of"], "Best of for greedy sampling strategy")]
-    public Res CmdCfgAdvGreedyBestOf()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_CfgAdv_GreedyBestOf));
-    }
-
-    [SubCommandModule(["cfg-adv-gpu-id"], "ID of GPU to use")]
-    public Res CmdCfgAdvGpuId()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_CfgAdv_GraphicsAdapterId));
-    }
-
-    [SubCommandModule(["cfg-adv-max-initial-t"], "MaxInitialT for Whisper")]
-    public Res CmdCfgAdvMaxInitialT()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_CfgAdv_MaxInitialT));
-    }
-
-    [SubCommandModule(["cfg-adv-no-speech-threshold"], "No speech threshold for Whisper")]
-    public Res CmdCfgAdvNoSpeechThreshold()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_CfgAdv_NoSpeechThreshold));
-    }
-
-    [SubCommandModule(["cfg-adv-temperature"], "Temperature for Whisper")]
-    public Res CmdCfgAdvTemperature()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_CfgAdv_Temperature));
-    }
-
-    [SubCommandModule(["cfg-adv-temperature-inc"], "TemperatureInc for Whisper")]
-    public Res CmdCfgAdvTemperatureInc()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_CfgAdv_TemperatureInc));
-    }
-
-    [SubCommandModule(["cfg-adv-max-tokens-per-segment"], "Max tokens per segment")]
-    public Res CmdCfgAdvMaxTokensPerSegment()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_CfgAdv_MaxTokensPerSegment));
-    }
-
-    [SubCommandModule(["cfg-adv-prompt"], "Prompt for Whisper")]
-    public Res CmdCfgAdvPrompt()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_CfgAdv_Prompt));
-    }
-
-    [SubCommandModule(["cfg-adv-set-threads"], "Should thread count be set")]
-    public Res CmdCfgAdvSetThreads()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_CfgAdv_SetThreads));
-    }
-
-    [SubCommandModule(["cfg-adv-use-beam-search-sampling"], "Use beam search sampling strategy")]
-    public Res CmdCfgAdvUseBeamSearchSampling()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_CfgAdv_UseBeamSearchSampling));
-    }
-
-    [SubCommandModule(["cfg-adv-use-greedy-sampling"], "Use greedy sampling strategy")]
-    public Res CmdCfgAdvUseGreedySampling()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Whisper_CfgAdv_UseGreedySampling));
-    }
-    #endregion
 }

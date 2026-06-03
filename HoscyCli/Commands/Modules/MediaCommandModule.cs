@@ -18,6 +18,37 @@ public class MediaCommmandModule(ReflectPropEditCommandModule reflectCm, IMediaC
     public string ModuleDescription => "Configure and control media";
     public string[] ModuleCommands => ["media"];
     #endregion
+
+    #region Override
+    protected override Res AddExtrasSubcommands(List<(SubCommandModuleAttribute Attribute, Func<string?, Res> Func)> list)
+    {
+        _reflectCm.GenerateQuickConfigCommands(ModuleName, list, GetQuickCommands());
+        return base.AddExtrasSubcommands(list);
+    }
+
+    private QuickConfigCommandInfo[] GetQuickCommands()
+    {
+        return [
+            new(["selected-backend"], nameof(ConfigModel.Media_Backend), ConfigModel.DESC_Media_Backend),
+            
+            new(["dsp-enabled"], nameof(ConfigModel.Media_ShowStatus), ConfigModel.DESC_Media_ShowStatus),
+            new(["dsp-text-pause"], nameof(ConfigModel.Media_PauseText), ConfigModel.DESC_Media_PauseText),
+            new(["dsp-add-album"], nameof(ConfigModel.Media_AddAlbumToText), ConfigModel.DESC_Media_AddAlbumToText),
+            new(["dsp-filter-album"], nameof(ConfigModel.Media_FilterSameNameAlbum), ConfigModel.DESC_Media_FilterSameNameAlbum),
+            new(["dsp-swap-order"], nameof(ConfigModel.Media_SwapArtistAndSongInText), ConfigModel.DESC_Media_SwapArtistAndSongInText),
+            new(["dsp-text-playing"], nameof(ConfigModel.Media_PlayingVerb), ConfigModel.DESC_Media_PlayingVerb),
+            new(["dsp-text-intermediate"], nameof(ConfigModel.Media_IntermediateWord), ConfigModel.DESC_Media_IntermediateWord),
+            new(["dsp-text-album"], nameof(ConfigModel.Media_AlbumWord), ConfigModel.DESC_Media_AlbumWord),
+            new(["dsp-text-extra"], nameof(ConfigModel.Media_ExtraText), ConfigModel.DESC_Media_ExtraText),
+            
+            new(["dsp-filters"], nameof(ConfigModel.Media_Filters), ConfigModel.DESC_Media_Filters),
+            
+            new(["mpris-pref-endpoints"], nameof(ConfigModel.Media_Mpris_PreferredEndpoints), ConfigModel.DESC_Media_Mpris_PreferredEndpoints),
+            new(["mpris-ign-endpoints"], nameof(ConfigModel.Media_Mpris_IgnoredEndpoints), ConfigModel.DESC_Media_Mpris_IgnoredEndpoints),
+            new(["mpris-update-interval"], nameof(ConfigModel.Media_Mpris_EndpointUpdateIntervalMs), ConfigModel.DESC_Media_Mpris_EndpointUpdateIntervalMs),
+        ];
+    }
+    #endregion
     
     #region CTL
     [SubCommandModule(["ctl-play"], "Control Play")] 
@@ -72,76 +103,6 @@ public class MediaCommmandModule(ReflectPropEditCommandModule reflectCm, IMediaC
         Console.WriteLine($"All available media backends:\n{backendText}");
         return ResC.Ok();
     }
-
-    [SubCommandModule(["selected-backend"], "Media backend to use")]
-    public Res CmdSelectedBackend()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Media_Backend));
-    }
-    #endregion
-
-    #region Display
-    [SubCommandModule(["dsp-enabled"], "Should media changes be displayed")]
-    public Res CmdDspEnabled()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Media_ShowStatus));
-    }
-
-    [SubCommandModule(["dsp-text-pause"], "Text to display on pause")]
-    public Res CmdDspTextPause()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Media_PauseText));
-    }
-
-    [SubCommandModule(["dsp-add-album"], "Add album to text")]
-    public Res CmdDspAlbum()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Media_AddAlbumToText));
-    }
-
-    [SubCommandModule(["dsp-filter-album"], "Filter out album name if title is similar")]
-    public Res CmdDspFilterAlbum()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Media_FilterSameNameAlbum));
-    }
-
-    [SubCommandModule(["dsp-swap-order"], "Swap order of artist and title")]
-    public Res CmdDspSwapOrder()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Media_SwapArtistAndSongInText));
-    }
-
-    [SubCommandModule(["dsp-text-playing"], "Text to display before artist and title")]
-    public Res CmdDspTextPlaying()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Media_PlayingVerb));
-    }
-
-    [SubCommandModule(["dsp-text-intermediate"], "Text to display between artist and title")]
-    public Res CmdDspTextIntermediate()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Media_IntermediateWord));
-    }
-
-    [SubCommandModule(["dsp-text-album"], "Text to display before album")]
-    public Res CmdDspTextAlbum()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Media_AlbumWord));
-    }
-
-    [SubCommandModule(["dsp-text-extra"], "Text to display at end")]
-    public Res CmdDspTextExtra()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Media_ExtraText));
-    }
-    #endregion
-
-    #region Filtering
-    [SubCommandModule(["dsp-filters"], "Text to filter out")]
-    public Res CmdDspFilters()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Media_Filters));
-    }
     #endregion
 
     #region Endpoints
@@ -173,26 +134,6 @@ public class MediaCommmandModule(ReflectPropEditCommandModule reflectCm, IMediaC
             Console.WriteLine("Current media backend does not provide endpoints");
         }
         return ResC.Ok();
-    }
-    #endregion
-
-    #region Linux-Mpris
-    [SubCommandModule(["mpris-pref-endpoints"], "Linux Mpris - Endpoints to prefer")]
-    public Res CmdMprisPrefEndpoints()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Media_Mpris_PreferredEndpoints));
-    }
-
-    [SubCommandModule(["mpris-ign-endpoints"], "Linux Mpris - Endpoints to ignore")]
-    public Res CmdMprisIgnEndpoints()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Media_Mpris_IgnoredEndpoints));
-    }
-
-    [SubCommandModule(["mpris-update-interval"], "Linux Mpris - Endpoints update interval (ms)")]
-    public Res CmdMprisUpdateInterval()
-    {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Media_Mpris_EndpointUpdateIntervalMs));
     }
     #endregion
 }

@@ -18,15 +18,17 @@ public class RecApiCommandModule
     public string ModuleDescription => "Configure the API Recognition module";
     public string[] ModuleCommands => ["rec-api"];
 
-    [SubCommandModule(["selected-preset"], "Preset to use")]
-    public Res CmdSelectedPreset()
+    protected override Res AddExtrasSubcommands(List<(SubCommandModuleAttribute Attribute, Func<string?, Res> Func)> list)
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Api_Preset));
+        _reflectCm.GenerateQuickConfigCommands(ModuleName, list, GetQuickCommands());
+        return base.AddExtrasSubcommands(list);
     }
 
-    [SubCommandModule(["max-recording-time"], "Maximum recording time")]
-    public Res CmdMaxRecordingTime()
+    private QuickConfigCommandInfo[] GetQuickCommands()
     {
-        return _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Api_MaxRecordingTime));
+        return [
+            new(["selected-preset"], nameof(ConfigModel.Recognition_Api_Preset), ConfigModel.DESC_Recognition_Api_Preset),
+            new(["max-recording-time"], nameof(ConfigModel.Recognition_Api_MaxRecordingTime), ConfigModel.DESC_Recognition_Api_MaxRecordingTime),
+        ];
     }
 }
