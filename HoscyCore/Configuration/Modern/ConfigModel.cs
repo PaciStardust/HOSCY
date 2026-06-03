@@ -1075,7 +1075,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
 
     #region Recognition - Azure
     public const string DESC_Recognition_Azure_CustomEndpoint = "Custom endpoint for Azure speech recognition";
-    public string Recognition_Azure_CustomEndpoint
+    public string Recognition_Azure_CustomEndpoint //todo: missing in CLI, check for other missings
     {
         get => _recognition_Azure_CustomEndpoint;
         set => SetProperty(ref _recognition_Azure_CustomEndpoint, value);
@@ -1513,7 +1513,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
 
     #region Voice - Azure
     public const string DESC_Voice_Azure_VoiceList = "List of voices to use with Azure TTS";
-    public List<AzureTtsVoiceModel> Voice_Azure_VoiceList //todo: [IMPL] To be implemented
+    public List<AzureTtsVoiceModel> Voice_Azure_VoiceList
     {
         get => _voice_Azure_Voices;
         set => SetProperty(ref _voice_Azure_Voices, value);
@@ -1523,7 +1523,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
             => Voice_Azure_VoiceList.GetListIndex(x => x.Name == name);
 
     public const string DESC_Voice_Azure_CurrentVoice = "Currently selected voice from list";
-    public string Voice_Azure_CurrentVoice //todo: [IMPL] To be implemented
+    public string Voice_Azure_CurrentVoice
     {
         get => _voice_Azure_CurrentVoice;
         set => SetProperty(ref _voice_Azure_CurrentVoice, value);
@@ -1531,7 +1531,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private string _voice_Azure_CurrentVoice = string.Empty;
 
     public const string DESC_Voice_Azure_CustomEndpoint = "Custom endpoint for Azure voices";
-    public string Voice_Azure_CustomEndpoint //todo: [IMPL] To be implemented
+    public string Voice_Azure_CustomEndpoint
     {
         get => _voice_Azure_CustomEndpoint;
         set => SetProperty(ref _voice_Azure_CustomEndpoint, value);
