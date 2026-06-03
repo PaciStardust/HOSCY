@@ -540,4 +540,24 @@ public class ReflectPropEditCommandModule(ConfigModel config, ILogger logger) : 
         return props?.Select(x => x.Name).ToArray() ?? [];
     }
     #endregion
+
+    #region Generator
+    public void GenerateQuickConfigCommands
+    (
+        string nameForLog,
+        List<(SubCommandModuleAttribute Attribute, Func<string?, Res> Func)> infos,
+        QuickConfigCommandInfo[] configs
+    )
+    {
+        _logger.Debug("Generating {count} QuickConfigs for {name}", configs.Length, nameForLog);
+        foreach(var config in configs)
+        {
+            var attr = new SubCommandModuleAttribute(config.Commands, config.Description);
+            Func<string?, Res> func = new((_) => SetProperty(config.ConfigName));
+            infos.Add((attr, func));
+        }
+    }
+    #endregion
 }
+
+public record QuickConfigCommandInfo(string[] Commands, string ConfigName, string Description);
