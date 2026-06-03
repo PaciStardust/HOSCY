@@ -96,6 +96,14 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
         set => SetProperty(ref _azureServices_ApiKey, value);
     }
     private string _azureServices_ApiKey = string.Empty;
+
+    public const string DESC_AzureServices_CensorProfanity = "Censor profanity from result";
+    public bool AzureServices_CensorProfanity
+    {
+        get => _azureServices_CensorProfanity;
+        set => SetProperty(ref _azureServices_CensorProfanity, value);
+    }
+    private bool _azureServices_CensorProfanity = false;
     #endregion
 
     #region Counters
@@ -1089,14 +1097,6 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
         set => SetProperty(ref _recognition_Azure_Languages, value);
     }
     private HashSet<string> _recognition_Azure_Languages = [];
-
-    public const string DESC_Recognition_Azure_CensorProfanity = "Censor profanity from result";
-    public bool Recognition_Azure_CensorProfanity
-    {
-        get => _recognition_Azure_CensorProfanity;
-        set => SetProperty(ref _recognition_Azure_CensorProfanity, value);
-    }
-    private bool _recognition_Azure_CensorProfanity = false;
     #endregion
 
     #region Recognition - Vosk

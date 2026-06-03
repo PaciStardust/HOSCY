@@ -48,7 +48,7 @@ public class AzureRecognitionModule(ILogger logger, ConfigModel config, IAudioSe
         if (!speechConfigResult.IsOk) return ResC.Fail(speechConfigResult.Msg);
         var speechConfig = speechConfigResult.Value;
 
-        speechConfig.SetProfanity(_config.Recognition_Azure_CensorProfanity ? ProfanityOption.Masked : ProfanityOption.Raw);
+        speechConfig.SetProfanity(_config.AzureServices_CensorProfanity ? ProfanityOption.Masked : ProfanityOption.Raw);
 
         if (!string.IsNullOrWhiteSpace(_config.Recognition_Azure_CustomEndpoint))
             speechConfig.EndpointId = _config.Recognition_Azure_CustomEndpoint;

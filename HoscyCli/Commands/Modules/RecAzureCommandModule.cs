@@ -28,7 +28,6 @@ public class RecAzureCommandModule(ReflectPropEditCommandModule reflectCm)
             new(["custom-endpoint"], nameof(ConfigModel.Voice_Azure_CustomEndpoint), ConfigModel.DESC_Voice_Azure_CustomEndpoint),
             new(["preset-phrases"], nameof(ConfigModel.Recognition_Azure_PresetPhrases), ConfigModel.DESC_Recognition_Azure_PresetPhrases),
             new(["languages"], nameof(ConfigModel.Recognition_Azure_Languages), ConfigModel.DESC_Recognition_Azure_Languages),
-            new(["censor-profanity"], nameof(ConfigModel.Recognition_Azure_CensorProfanity), ConfigModel.DESC_Recognition_Azure_CensorProfanity)
         ];
     }
 }

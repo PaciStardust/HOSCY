@@ -26,7 +26,8 @@ public abstract class AzureCommandModuleBase
     {
         return [
             new(["service-region"], nameof(ConfigModel.AzureServices_Region), ConfigModel.DESC_AzureServices_Region),
-            new(["service-key"], nameof(ConfigModel.AzureServices_ApiKey), ConfigModel.DESC_AzureServices_ApiKey)
+            new(["service-key"], nameof(ConfigModel.AzureServices_ApiKey), ConfigModel.DESC_AzureServices_ApiKey),
+            new(["censor-profanity"], nameof(ConfigModel.AzureServices_CensorProfanity), ConfigModel.DESC_AzureServices_CensorProfanity)
         ];
     }
 }
