@@ -26,7 +26,7 @@ public class ApiOutputHandlerTests : TestBase<ApiOutputHandlerTests>
         _config.Api_Presets.Clear();
         _config.Output_Api_Preset_Clear = string.Empty;
         _config.Output_Api_Preset_Message = string.Empty;
-        _config.ApiOut_Preset_Notification = string.Empty;
+        _config.Output_Api_Preset_Notification = string.Empty;
         _config.Output_Api_Preset_Processing = string.Empty;
 
         _api.ClearReceived();
@@ -119,7 +119,7 @@ public class ApiOutputHandlerTests : TestBase<ApiOutputHandlerTests>
     [Test]
     public void NotificationTest()
     {
-        SendTest(x => x.HandleNotification("Waaa", OutputNotificationPriority.Critical), x => _config.ApiOut_Preset_Notification = x);
+        SendTest(x => x.HandleNotification("Waaa", OutputNotificationPriority.Critical), x => _config.Output_Api_Preset_Notification = x);
     }
 
     [Test]
@@ -159,7 +159,7 @@ public class ApiOutputHandlerTests : TestBase<ApiOutputHandlerTests>
     {
         _config.Output_Api_PrependNotificationPriority = false;
 
-        _config.ApiOut_Preset_Notification = "Preset";
+        _config.Output_Api_Preset_Notification = "Preset";
         _config.Api_Presets.Add(new() { Name = "Preset" });
 
         var baseMsg = "ThisIs A Test";

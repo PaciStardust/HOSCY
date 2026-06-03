@@ -12,7 +12,7 @@ public class MockWebClient : MockStartStopServiceBase, IWebClient
     public readonly List<HttpRequestMessage> Requests = [];
     public int ArtificialDelayMs { get; set; } = 0;
 
-    public async Task<Res> DownloadAsync(string _, string fileLocation, int timeoutMs = 5000)
+    public async Task<Res> DownloadAsync(string _, string fileLocation, int timeoutMs = 5000, CancellationToken? ct = null)
     {
         if (ArtificialDelayMs > timeoutMs)
         {
@@ -24,7 +24,7 @@ public class MockWebClient : MockStartStopServiceBase, IWebClient
         return ResC.Ok();
     }
 
-    public async Task<Res<string>> SendAsyncString(HttpRequestMessage requestMessage, int timeoutMs = 5000)
+    public async Task<Res<string>> SendAsyncString(HttpRequestMessage requestMessage, int timeoutMs = 5000, CancellationToken? ct = null)
     {
         Requests.Add(requestMessage);
         if (ArtificialDelayMs > timeoutMs)
@@ -36,7 +36,7 @@ public class MockWebClient : MockStartStopServiceBase, IWebClient
         return ResC.TOk(SendResultString);
     }
 
-    public async Task<Res<byte[]>> SendAsyncBytes(HttpRequestMessage requestMessage, int timeoutMs = 5000)
+    public async Task<Res<byte[]>> SendAsyncBytes(HttpRequestMessage requestMessage, int timeoutMs = 5000, CancellationToken? ct = null)
     {
         Requests.Add(requestMessage);
         if (ArtificialDelayMs > timeoutMs)
