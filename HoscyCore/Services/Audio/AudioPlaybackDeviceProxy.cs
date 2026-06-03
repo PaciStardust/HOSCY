@@ -31,7 +31,7 @@ public class AudioPlaybackDeviceProxy(AudioPlaybackDevice playback, ILogger logg
             _playback.Dispose();
     }
 
-    public async Task<Res> PlayAsync(CancellationToken ct, float volume)
+    public async Task<Res> PlayAsync(float volume, CancellationToken ct)
     {
         FixedStreamDataProvider? provider = null;
         SoundPlayer? player = null;

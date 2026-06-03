@@ -82,7 +82,7 @@ public class AzureVoiceModule //todo: [TEST] When azure keys available
     #endregion
 
     #region Control
-    public override async Task<Res> CreateAudio(string message, Stream stream, CancellationToken ct) //todo: add cancel
+    public override async Task<Res> CreateAudio(string message, Stream stream, CancellationToken _) // Microslop does not offer any API to cancel
     {
         if (_synth == null) 
             return ResC.FailLog("Unable to create audio, synth is not set up", _logger, lvl: ResMsgLvl.Warning);

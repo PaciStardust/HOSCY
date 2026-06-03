@@ -14,6 +14,7 @@ public enum VoiceModuleConfigFlags
     None = 0b0,
     PiperWeb = 0b1,
     Azure = 0b10,
+    Windows = 0b100
 }
 
 public interface IVoiceModule : IStartStopModule

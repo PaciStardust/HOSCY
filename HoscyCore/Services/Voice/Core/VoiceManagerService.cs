@@ -213,7 +213,7 @@ public class VoiceManagerService
                 continue;
             }
 
-            var playbackRes = await _playback.PlayAsync(_cts.Token, _config.Voice_AudioVolumePercent);
+            var playbackRes = await _playback.PlayAsync(_config.Voice_AudioVolumePercent, _cts.Token);
             _playback.ClearStream();
             _isPlaying = false;
                 
