@@ -4,18 +4,16 @@
 using System.Speech.Recognition;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Recognition.Core;
-using HoscyCore.Services.Recognition.Extra;
 using HoscyCore.Utility;
 using Serilog;
 
 namespace HoscyCore.Services.Recognition.Modules;
 
-public abstract class WindowsRecognitionModuleBase(ILogger logger, ConfigModel config, IRecognitionModelProviderService modelProvider) 
+public abstract class WindowsRecognitionModuleBase(ILogger logger, ConfigModel config) 
     : RecognitionModuleBase(logger)
 {
     #region Vars
     protected readonly ConfigModel _config = config;
-    private readonly IRecognitionModelProviderService _modelProvider = modelProvider;
     #endregion
 
     #region Functionality
@@ -23,7 +21,7 @@ public abstract class WindowsRecognitionModuleBase(ILogger logger, ConfigModel c
     {
         _logger.Debug("Creating new windows speech recognition engine");
 
-        var recognizers = _modelProvider.GetWindowsRecognizers();
+        var recognizers = WinApi.GetWindowsRecognizers(_logger);
         if (!recognizers.IsOk) return ResC.TFail<SpeechRecognitionEngine>(recognizers.Msg);
 
         var recognizerInfo = recognizers.Value

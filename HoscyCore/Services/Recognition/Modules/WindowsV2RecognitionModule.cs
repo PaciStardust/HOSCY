@@ -26,8 +26,8 @@ public class WindowsV2RecognitionModuleStartInfo : IRecognitionModuleStartInfo
 }
 
 [PrototypeLoadIntoDiContainer(typeof(WindowsV2RecognitionModule), Lifetime.Transient)]
-public class WindowsV2RecognitionModule(ILogger logger, ConfigModel config, IRecognitionModelProviderService modelProvider, IAudioService audio) 
-    : WindowsRecognitionModuleBase(logger.ForContext<WindowsV2RecognitionModule>(), config, modelProvider)
+public class WindowsV2RecognitionModule(ILogger logger, ConfigModel config, IAudioService audio) 
+    : WindowsRecognitionModuleBase(logger.ForContext<WindowsV2RecognitionModule>(), config)
 {
     #region Vars
     private readonly IAudioService _audio = audio;
@@ -46,7 +46,7 @@ public class WindowsV2RecognitionModule(ILogger logger, ConfigModel config, IRec
         if (!micResult.IsOk) return ResC.Fail(micResult.Msg);
         _mic = micResult.Value;
 
-        if (_config.Audio_WebRtc_Enabled)
+        if (_config.WebRtc_Enabled)
         {
             _mic.AddApmModifier(_config);
         }

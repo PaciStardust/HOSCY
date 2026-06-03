@@ -23,8 +23,8 @@ public class WindowsRecognitionModuleStartInfo : IRecognitionModuleStartInfo
 }
 
 [PrototypeLoadIntoDiContainer(typeof(WindowsRecognitionModule), Lifetime.Transient)]
-public class WindowsRecognitionModule(ILogger logger, ConfigModel config, IRecognitionModelProviderService modelProvider) 
-    : WindowsRecognitionModuleBase(logger.ForContext<WindowsRecognitionModule>(), config, modelProvider)
+public class WindowsRecognitionModule(ILogger logger, ConfigModel config) 
+    : WindowsRecognitionModuleBase(logger.ForContext<WindowsRecognitionModule>(), config)
 {
     #region Vars
     private SpeechRecognitionEngine? _engine = null!;

@@ -145,7 +145,7 @@ public class WindowsMediaBackend(ILogger logger) : MediaBackendBase(logger.ForCo
 
     #region Control
     public override bool CanGetEndpoints => false;
-    public override Task<Res<string[]>> GetEndpointNames() 
+    public override Task<Res<string[]>> GetEndpointNamesAsync()
         => Task.FromResult(ResC.TOk<string[]>([]));
 
     private async Task<Res> PerformCommandInternalAsync(Func<GlobalSystemMediaTransportControlsSession, IAsyncOperation<bool>> action, string logAction)

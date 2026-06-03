@@ -3,8 +3,8 @@
 using HoscyCli.Commands.Core;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
-using HoscyCore.Services.Recognition.Extra;
 using HoscyCore.Utility;
+using Serilog;
 
 namespace HoscyCli.Commands.Modules;
 
@@ -12,12 +12,12 @@ namespace HoscyCli.Commands.Modules;
 public class RecWindowsCommandModule
 (
     ReflectPropEditCommandModule reflectCm,
-    IRecognitionModelProviderService modelProvider
+    ILogger logger
 )
 : AttributeCommandModule, ICoreCommandModule
 {
     private readonly ReflectPropEditCommandModule _reflectCm = reflectCm;
-    private readonly IRecognitionModelProviderService _modelProvider = modelProvider;
+    private readonly ILogger _logger = logger.ForContext<RecWindowsCommandModule>();
 
     public string ModuleName => "Recognition: Windows";
     public string ModuleDescription => "Configure the Windows Recognition modules";
@@ -26,7 +26,7 @@ public class RecWindowsCommandModule
     [SubCommandModule(["models"], "List available windows recognizer models")]
     public Res CmdModels()
     {
-        var models = _modelProvider.GetWindowsRecognizers();
+        var models = WinApi.GetWindowsRecognizers(_logger);
         if (!models.IsOk) return ResC.Fail(models.Msg);
 
         var modelText = models.Value.Count > 0

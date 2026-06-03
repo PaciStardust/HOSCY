@@ -1,7 +1,10 @@
 #if WINDOWS
+#pragma warning disable CA1416 // Validate platform compatibility
 
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
+using System.Speech.Recognition;
+using System.Speech.Synthesis;
+using Serilog;
 
 namespace HoscyCore.Utility;
 
@@ -30,6 +33,43 @@ public static class WinApi
     {
         AllocConsole();
     }
+
+    public static Res<List<WindowsRecognizerInfo>> GetWindowsRecognizers(ILogger logger)
+    {
+        try
+        {
+            var res = SpeechRecognitionEngine.InstalledRecognizers()
+                .Select(x => new WindowsRecognizerInfo(x.Name, x.Description, x.Id)).ToList();
+            return ResC.TOk(res);
+        }
+        catch (Exception ex)
+        {
+            return ResC.TFailLog<List<WindowsRecognizerInfo>>("Failed to retrieve installed recognizers", logger, ex);
+        }
+    }
+    public record WindowsRecognizerInfo(string Name, string Desc, string Id);
+
+    public static Res<List<VoiceInfo>> GetWindowsVoices(ILogger logger)
+    {
+        try
+        {
+            using var synth = new SpeechSynthesizer();
+            var infos = GetWindowsVoices(synth);
+            return ResC.TOk(infos);
+        }
+        catch (Exception ex)
+        {
+            return ResC.TFailLog<List<VoiceInfo>>("Failed to retrieve installed voices", logger, ex);
+        }
+    }
+    public static List<VoiceInfo> GetWindowsVoices(SpeechSynthesizer synth)
+    {
+        return synth.GetInstalledVoices()
+            .Where(x => x.Enabled)
+            .Select(x => x.VoiceInfo)
+            .ToList();
+    }
 }
 
+#pragma warning restore CA1416 // Validate platform compatibility
 #endif

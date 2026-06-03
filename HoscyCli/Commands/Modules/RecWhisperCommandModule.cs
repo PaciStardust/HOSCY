@@ -1,7 +1,6 @@
 using HoscyCli.Commands.Core;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
-using HoscyCore.Services.Recognition.Extra;
 using HoscyCore.Utility;
 
 namespace HoscyCli.Commands.Modules;
@@ -9,13 +8,11 @@ namespace HoscyCli.Commands.Modules;
 [PrototypeLoadIntoDiContainer(typeof(RecWhisperCommandModule))]
 public class RecWhisperCommandModule
 (
-    ReflectPropEditCommandModule reflectCm,
-    IRecognitionModelProviderService modelProvider
+    ReflectPropEditCommandModule reflectCm
 )
 : AttributeCommandModule, ICoreCommandModule
 {
     private readonly ReflectPropEditCommandModule _reflectCm = reflectCm;
-    private readonly IRecognitionModelProviderService _modelProvider = modelProvider;
 
     public string ModuleName => "Recognition: Whisper";
     public string ModuleDescription => "Configure the Whisper Recognition modules";
