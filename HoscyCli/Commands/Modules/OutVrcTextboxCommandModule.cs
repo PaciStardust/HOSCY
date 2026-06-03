@@ -64,7 +64,7 @@ public class TextboxCommandModule
         return ResC.Ok();
     }
 
-    [SubCommandModule(["enabled"], "Enable VRC Textbox")] 
+    [SubCommandModule(["enabled"], ConfigModel.DESC_Output_VrcTxt_Enabled)] 
     public Res CmdSetEnable()
     {
         var res = _reflectCm.SetProperty(nameof(ConfigModel.Output_VrcTxt_Enabled));

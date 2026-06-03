@@ -37,12 +37,13 @@ public class RecognitionCommandModule
             new(["selected-module"], nameof(ConfigModel.Recognition_SelectedModuleName), ConfigModel.DESC_Recognition_SelectedModuleName),
             new(["fix-remove-end-period"], nameof(ConfigModel.Recognition_Fixup_RemoveEndPeriod), ConfigModel.DESC_Recognition_Fixup_RemoveEndPeriod),
             new(["fix-capitalize-first-letter"], nameof(ConfigModel.Recognition_Fixup_CapitalizeFirstLetter), ConfigModel.DESC_Recognition_Fixup_CapitalizeFirstLetter),
-            new(["microphone"], nameof(ConfigModel.Recognition_MicrophoneName), ConfigModel.DESC_Recognition_MicrophoneName)
+            new(["microphone"], nameof(ConfigModel.Recognition_MicrophoneName), ConfigModel.DESC_Recognition_MicrophoneName),
+            new(["autostart"], nameof(ConfigModel.Recognition_AutoStart), ConfigModel.DESC_Recognition_AutoStart)
         ];
     }
     
     #region Control
-    [SubCommandModule(["fix-noise-filter"], "Manage noise filtering")]
+    [SubCommandModule(["fix-noise-filter"], ConfigModel.DESC_Recognition_Fixup_NoiseFilter)]
     public Res CmdFixNoiseFilter()
     {
         var res = _reflectCm.SetProperty(nameof(ConfigModel.Recognition_Fixup_NoiseFilter));

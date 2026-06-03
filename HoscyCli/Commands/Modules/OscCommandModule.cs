@@ -51,7 +51,7 @@ public class OscCommandModule(IOscRelayService oscRelay, IOscListenService oscLi
         return ResC.Ok();
     }
 
-    [SubCommandModule(["relay-filters"], "Edit relay filters")]
+    [SubCommandModule(["relay-filters"], ConfigModel.DESC_Osc_Relay_Filters)]
     public Res CmdEditRelayFilters()
     {
         var res = _reflectCm.SetProperty(nameof(ConfigModel.Osc_Relay_Filters));
@@ -59,7 +59,7 @@ public class OscCommandModule(IOscRelayService oscRelay, IOscListenService oscLi
         return _oscRelay.Restart();
     }
 
-    [SubCommandModule(["port-in"], "Edit the inbound port")]
+    [SubCommandModule(["port-in"], ConfigModel.DESC_Osc_Routing_ListenPort)]
     public Res CmdEditPortIn()
     {
         _reflectCm.SetProperty(nameof(ConfigModel.Osc_Routing_ListenPort));

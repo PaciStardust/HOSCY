@@ -11,7 +11,6 @@ namespace HoscyCore.Configuration.Modern;
 public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is usable from the CLI
 {
     #region !Meta
-    public const string DESC_ConfigVersion = "Version of current config";
     public int ConfigVersion { get; set; } = 0;
     #endregion
 
@@ -1075,7 +1074,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
 
     #region Recognition - Azure
     public const string DESC_Recognition_Azure_CustomEndpoint = "Custom endpoint for Azure speech recognition";
-    public string Recognition_Azure_CustomEndpoint //todo: missing in CLI, check for other missings
+    public string Recognition_Azure_CustomEndpoint
     {
         get => _recognition_Azure_CustomEndpoint;
         set => SetProperty(ref _recognition_Azure_CustomEndpoint, value);
@@ -1519,8 +1518,6 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
         set => SetProperty(ref _voice_Azure_Voices, value);
     }
     private List<AzureTtsVoiceModel> _voice_Azure_Voices = [];
-    public int Voice_Azure_GetVoiceIndex(string name)
-            => Voice_Azure_VoiceList.GetListIndex(x => x.Name == name);
 
     public const string DESC_Voice_Azure_CurrentVoice = "Currently selected voice from list";
     public string Voice_Azure_CurrentVoice

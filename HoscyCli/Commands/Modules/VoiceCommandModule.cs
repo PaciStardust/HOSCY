@@ -31,7 +31,7 @@ public class VoiceCommandModule
             new(["speaker"], nameof(ConfigModel.Voice_CurrentSpeakerName), ConfigModel.DESC_Voice_CurrentSpeakerName),
             new(["autostart"], nameof(ConfigModel.Voice_AutoStart), ConfigModel.DESC_Voice_AutoStart),
             new(["volume"], nameof(ConfigModel.Voice_AudioVolumePercent), ConfigModel.DESC_Voice_AudioVolumePercent),
-            new(["maximum-text-length"], nameof(ConfigModel.Translation_MaxTextLength), ConfigModel.DESC_Translation_MaxTextLength),
+            new(["maximum-text-length"], nameof(ConfigModel.Voice_MaximumTextLength), ConfigModel.DESC_Voice_MaximumTextLength),
             new(["skip-longer-text"], nameof(ConfigModel.Voice_SkipLongerText), ConfigModel.DESC_Voice_SkipLongerText)
         ];
     }

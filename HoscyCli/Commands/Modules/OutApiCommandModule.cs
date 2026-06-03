@@ -55,7 +55,7 @@ public class OutApiCommandModule
         return ResC.Ok();
     }
 
-    [SubCommandModule(["enabled"], "Enable API Output")] 
+    [SubCommandModule(["enabled"], ConfigModel.DESC_Output_Api_Enabled)] 
     public Res CmdSetEnable()
     {
         var res = _reflectCm.SetProperty(nameof(ConfigModel.Output_Api_Enabled));

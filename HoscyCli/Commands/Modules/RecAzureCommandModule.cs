@@ -25,7 +25,7 @@ public class RecAzureCommandModule(ReflectPropEditCommandModule reflectCm)
     private QuickConfigCommandInfo[] GetQuickCommands()
     {
         return [
-            new(["custom-endpoint"], nameof(ConfigModel.Voice_Azure_CustomEndpoint), ConfigModel.DESC_Voice_Azure_CustomEndpoint),
+            new(["custom-endpoint"], nameof(ConfigModel.Recognition_Azure_CustomEndpoint), ConfigModel.DESC_Recognition_Azure_CustomEndpoint),
             new(["preset-phrases"], nameof(ConfigModel.Recognition_Azure_PresetPhrases), ConfigModel.DESC_Recognition_Azure_PresetPhrases),
             new(["languages"], nameof(ConfigModel.Recognition_Azure_Languages), ConfigModel.DESC_Recognition_Azure_Languages),
         ];

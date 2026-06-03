@@ -37,7 +37,7 @@ public class PreprocessingCommandModule
         ];
     }
 
-    [SubCommandModule(["edit-replace-partial"], "Edit partial replacements")]
+    [SubCommandModule(["edit-replace-partial"], ConfigModel.DESC_Preprocessing_ReplacementsPartial)]
     public Res CmdEditReplacePartial()
     {
         var res = _reflectCm.SetProperty(nameof(ConfigModel.Preprocessing_ReplacementsPartial));
@@ -45,7 +45,7 @@ public class PreprocessingCommandModule
         return res;
     }
 
-    [SubCommandModule(["edit-replace-full"], "Edit full replacements")]
+    [SubCommandModule(["edit-replace-full"], ConfigModel.DESC_Preprocessing_ReplacementsFull)]
     public Res CmdEditReplaceFull()
     {
         var res = _reflectCm.SetProperty(nameof(ConfigModel.Preprocessing_ReplacementsFull));

@@ -25,7 +25,7 @@ public class DebugCommandModule(ReflectPropEditCommandModule _reflectCm) : Attri
         return [
             new(["out-windows-cmd"], nameof(ConfigModel.Debug_LogViaCmdOnWindows), ConfigModel.DESC_Debug_LogViaCmdOnWindows),
             new(["out-terminal"], nameof(ConfigModel.Debug_LogViaTerminal), ConfigModel.DESC_Debug_LogViaTerminal),
-            new(["out-follow-enabled"], nameof(ConfigModel.Debug_LogViaTerminal), ConfigModel.DESC_Debug_LogViaTerminal),
+            new(["out-follow-enabled"], nameof(ConfigModel.Debug_LogViaFileFollow), ConfigModel.DESC_Debug_LogViaFileFollow),
             new(["out-follow-process"], nameof(ConfigModel.Debug_LogFileFollowProcess), ConfigModel.DESC_Debug_LogFileFollowProcess),
             new(["out-follow-command"], nameof(ConfigModel.Debug_LogFileFollowCommand), ConfigModel.DESC_Debug_LogFileFollowCommand),
             new(["log-severity"], nameof(ConfigModel.Debug_LogMinimumSeverity), ConfigModel.DESC_Debug_LogMinimumSeverity),
