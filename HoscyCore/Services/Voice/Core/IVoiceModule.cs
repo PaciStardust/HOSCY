@@ -11,8 +11,9 @@ public interface IVoiceModuleStartInfo : ISoloModuleStartInfo
 [Flags]
 public enum VoiceModuleConfigFlags
 {
-    None = 0,
-    PiperWeb = 1
+    None = 0b0,
+    PiperWeb = 0b1,
+    Azure = 0b10,
 }
 
 public interface IVoiceModule : IStartStopModule
