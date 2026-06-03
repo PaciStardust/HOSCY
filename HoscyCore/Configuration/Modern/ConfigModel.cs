@@ -1551,7 +1551,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
 
     #region Voice - Piper
     public const string DESC_Voice_Piper_Process_Enabled = "Should a Piper process be started on module start";
-    public bool Voice_Piper_Process_Enabled //todo: [IMPL] To be implemented
+    public bool Voice_Piper_Process_Enabled
     {
         get => _voice_Piper_Process_Enabled;
         set => SetProperty(ref _voice_Piper_Process_Enabled, value);
@@ -1559,7 +1559,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private bool _voice_Piper_Process_Enabled = false;
 
     public const string DESC_Voice_Piper_Process_Terminal = "Terminal application to launch Piper process in";
-    public string Voice_Piper_Process_Terminal //todo: [IMPL] To be implemented
+    public string Voice_Piper_Process_Terminal
     {
         get => _voice_Piper_Process_Terminal;
         set => SetProperty(ref _voice_Piper_Process_Terminal, value);
@@ -1567,7 +1567,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private string _voice_Piper_Process_Terminal = string.Empty;
 
     public const string DESC_Voice_Piper_Process_VenvDir = "Path of Python VEnv";
-    public string Voice_Piper_Process_VenvDir //todo: [IMPL] To be implevmented
+    public string Voice_Piper_Process_VenvDir
     {
         get => _voice_Piper_Process_VenvDir;
         set => SetProperty(ref _voice_Piper_Process_VenvDir, value);
@@ -1575,7 +1575,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private string _voice_Piper_Process_VenvDir = string.Empty;
 
     public const string DESC_Voice_Piper_Process_Voice = "Voice to be set for process";
-    public string Voice_Piper_Process_Voice //todo: [IMPL] To be implemented
+    public string Voice_Piper_Process_Voice
     {
         get => _voice_Piper_Process_Voice;
         set => SetProperty(ref _voice_Piper_Process_Voice, value);
@@ -1583,7 +1583,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private string _voice_Piper_Process_Voice = string.Empty;
 
     public const string DESC_Voice_Piper_Ip = "Piper webservice IP";
-    public string Voice_Piper_Ip //todo: [IMPL] To be implemented
+    public string Voice_Piper_Ip
     {
         get => _voice_Piper_Ip;
         set => SetProperty(ref _voice_Piper_Ip, string.IsNullOrWhiteSpace(value) ? "127.0.0.1" : value);
@@ -1591,7 +1591,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private string _voice_Piper_Ip = "127.0.0.1";
 
     public const string DESC_Voice_Piper_Port = "Piper webservice port";
-    public ushort Voice_Piper_Port //todo: [IMPL] To be implemented
+    public ushort Voice_Piper_Port
     {
         get => _voice_Piper_Port;
         set => SetProperty(ref _voice_Piper_Port, value);
@@ -1599,7 +1599,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private ushort _voice_Piper_Port = 9101;
 
     public const string DESC_Voice_Piper_Request_Voice = "Requested voice";
-    public string Voice_Piper_Request_Voice //todo: [IMPL] To be implemented
+    public string Voice_Piper_Request_Voice
     {
         get => _voice_Piper_Request_Voice;
         set => SetProperty(ref _voice_Piper_Request_Voice, value);
@@ -1607,7 +1607,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private string _voice_Piper_Request_Voice = string.Empty;
 
     public const string DESC_Voice_Piper_Request_NoiseScale = "Piper noise scale";
-    public float Voice_Piper_Request_NoiseScale //todo: [IMPL] To be implemented
+    public float Voice_Piper_Request_NoiseScale
     {
         get => _voice_Piper_Request_NoiseScale;
         set => SetProperty(ref _voice_Piper_Request_NoiseScale, value.MinMax(-1, 1));
@@ -1615,7 +1615,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private float _voice_Piper_Request_NoiseScale = -1;
 
     public const string DESC_Voice_Piper_Request_NoiseWScale = "Piper noise w scale";
-    public float Voice_Piper_Request_NoiseWScale //todo: [IMPL] To be implemented
+    public float Voice_Piper_Request_NoiseWScale
     {
         get => _voice_Piper_Request_NoiseWScale;
         set => SetProperty(ref _voice_Piper_Request_NoiseWScale, value.MinMax(-1, 1));
