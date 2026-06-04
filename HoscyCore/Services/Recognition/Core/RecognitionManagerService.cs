@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using HoscyCore.Configuration.Modern;
+using HoscyCore.Services.Audio;
 using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Interfacing;
@@ -17,7 +18,8 @@ public class RecognitionManagerService
     IContainerBulkLoader<IRecognitionModuleStartInfo> infoLoader,
     IContainerBulkLoader<IRecognitionModule> moduleLoader,
     ConfigModel config,
-    IOutputManagerService output
+    IOutputManagerService output,
+    IContainerBulkLoader<IApplicationSound> soundLoader
 ) 
     : SoloModuleManagerBase<IRecognitionModuleStartInfo, IRecognitionModule>
         (notify, logger.ForContext<RecognitionManagerService>(), infoLoader, moduleLoader),
@@ -26,6 +28,7 @@ public class RecognitionManagerService
     #region Injected
     private readonly ConfigModel _config = config;
     private readonly IOutputManagerService _output = output;
+    private readonly IApplicationSound? _sound = soundLoader.GetInstances().Value?.FirstOrDefault();
     #endregion
 
     #region Module => Start / Stop
@@ -77,7 +80,7 @@ public class RecognitionManagerService
     #region Module => Control
     public bool IsListening
         => _currentModule?.IsListening ?? false;
-
+    private bool _lastListeningState = false;
     public event EventHandler<RecognitionStatusChangedEventArgs> OnModuleStatusChanged = delegate {};
     private void InvokeModuleStatusChanged()
     {
@@ -85,6 +88,15 @@ public class RecognitionManagerService
         _logger.Verbose("Triggering event for module status update started={started} listening={listening}",
             status, IsListening);
         OnModuleStatusChanged.Invoke(this, new(IsListening, status));
+
+        if (_lastListeningState != IsListening)
+        {
+            if (_config.Recognition_Mute_PlaySound)
+            {
+                _sound?.PlayMuteSound();
+            }
+            _lastListeningState = IsListening;
+        }
     }
 
     protected override string GetSelectedModuleName()
