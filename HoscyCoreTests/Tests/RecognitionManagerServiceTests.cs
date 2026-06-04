@@ -1,11 +1,11 @@
 using HoscyCore.Configuration.Modern;
+using HoscyCore.Services.Audio;
 using HoscyCore.Services.Core;
 using HoscyCore.Services.Output.Core;
 using HoscyCore.Services.Recognition.Core;
 using HoscyCore.Utility;
 using HoscyCoreTests.Mocks.Impl;
 using HoscyCoreTests.Utils;
-using SoundFlow.Interfaces;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace HoscyCoreTests.Tests.RecognitionManagerServiceTests;
@@ -24,11 +24,11 @@ public abstract class RecognitionManagerServiceTestBase<T> : SoloModuleManagerTe
 {
     protected ConfigModel _config = null!;
     protected MockOutputManagerService _output = null!;
-    protected MockContainerBulkLoader<ISoundPlayer> _soundLoader = new(() => []);
+    protected MockContainerBulkLoader<IApplicationSound> _soundLoader = new(() => []);
 
     protected override RecognitionManagerService CreateController()
     {
-        return new RecognitionManagerService(_notify, _logger, _infoLoader, _moduleLoader, _config, _output, );
+        return new RecognitionManagerService(_notify, _logger, _infoLoader, _moduleLoader, _config, _output, _soundLoader);
     }
 
     protected override void SetupSharedClassesExtra()
