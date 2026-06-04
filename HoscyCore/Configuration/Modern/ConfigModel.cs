@@ -696,7 +696,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
 
     #region Output - Voice
     public const string DESC_Output_Voice_Enabled = "Enable voice output module";
-    public bool Output_Voice_Enabled //todo: impl
+    public bool Output_Voice_Enabled
     {
         get => _output_Voice_Enabled;
         set => SetProperty(ref _output_Voice_Enabled, value);
@@ -704,7 +704,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private bool _output_Voice_Enabled = false;
 
     public const string DESC_Output_Voice_SendTranslated = "Send translationt to voice";
-    public bool Output_Voice_SendTranslated //todo: impl
+    public bool Output_Voice_SendTranslated
     {
         get => _output_Voice_SendTranslated;
         set => SetProperty(ref _output_Voice_SendTranslated, value);
