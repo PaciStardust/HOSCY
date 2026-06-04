@@ -476,7 +476,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private string _osc_Address_Tool_ToggleMute = "/avatar/parameters/ToolMute";
 
     public const string DESC_Osc_Address_Tool_ToggleReplacementsPartial = "OSC address to enable or disable partial replacements";
-    public string Osc_Address_Tool_ToggleReplacementsPartial //todo: [IMPL] To be implemented or changed
+    public string Osc_Address_Tool_ToggleReplacementsPartial
     {
         get => _osc_Address_Tool_ToggleReplacementsPartial;
         set => SetProperty(ref _osc_Address_Tool_ToggleReplacementsPartial, value);
@@ -484,7 +484,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private string _osc_Address_Tool_ToggleReplacementsPartial = "/avatar/parameters/ToolToggleReplacementsPartial";
 
     public const string DESC_Osc_Address_Tool_ToggleReplacementsFull = "OSC address to enable or disable full replacements";
-    public string Osc_Address_Tool_ToggleReplacementsFull //todo: [IMPL] To be implemented or changed
+    public string Osc_Address_Tool_ToggleReplacementsFull
     {
         get => _osc_Address_Tool_ToggleReplacementsFull;
         set => SetProperty(ref _osc_Address_Tool_ToggleReplacementsFull, value);
@@ -612,7 +612,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private string _osc_Address_Media_Toggle = "/avatar/parameters/MediaToggle";
 
     public const string DESC_Osc_Address_Tool_Clear = "OSC address to perform a clear";
-    public string Osc_Address_Tool_Clear //todo: [IMPL] To be implemented
+    public string Osc_Address_Tool_Clear
     {
         get => _osc_Address_Tool_Clear;
         set => SetProperty(ref _osc_Address_Tool_Clear, value);
@@ -622,7 +622,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
 
     #region Output - API
     public const string DESC_Output_Api_Enabled = "Enable API output module";
-    public bool Output_Api_Enabled //todo: impl
+    public bool Output_Api_Enabled
     {
         get => _output_Api_Enabled;
         set => SetProperty(ref _output_Api_Enabled, value);
@@ -630,7 +630,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private bool _output_Api_Enabled = false;
 
     public const string DESC_Output_Api_Preset_Message = "API preset for sending messages";
-    public string Output_Api_Preset_Message //todo: impl
+    public string Output_Api_Preset_Message
     {
         get => _output_Api_Preset_Message;
         set => SetProperty(ref _output_Api_Preset_Message, value);
@@ -638,7 +638,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private string _output_Api_Preset_Message = string.Empty;
 
     public const string DESC_Output_Api_Preset_Notification = "API preset for sending notifications";
-    public string Output_Api_Preset_Notification //todo: impl
+    public string Output_Api_Preset_Notification
     {
         get => _output_Api_Preset_Notification;
         set => SetProperty(ref _output_Api_Preset_Notification, value);
