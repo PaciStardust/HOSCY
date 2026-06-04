@@ -1537,13 +1537,13 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     #endregion
 
     #region Voice - Microsoft
-    public const string DESC_Voice_Microsoft_ModelId = "ID of Microsoft TTS model";
-    public string Voice_Microsoft_ModelId //todo: [IMPL] To be implemented
+    public const string DESC_Voice_Microsoft_ModelName = "ID of Microsoft TTS model";
+    public string Voice_Microsoft_ModelName
     {
-        get => _voice_Microsoft_TtsId;
-        set => SetProperty(ref _voice_Microsoft_TtsId, value);
+        get => _voice_Microsoft_ModelName;
+        set => SetProperty(ref _voice_Microsoft_ModelName, value);
     }
-    private string _voice_Microsoft_TtsId = string.Empty;
+    private string _voice_Microsoft_ModelName = string.Empty;
     #endregion
 
     #region Voice - Piper
