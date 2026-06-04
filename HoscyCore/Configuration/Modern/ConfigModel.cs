@@ -475,61 +475,21 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     }
     private string _osc_Address_Tool_ToggleMute = "/avatar/parameters/ToolMute";
 
-    public const string DESC_Osc_Address_Tool_SkipAudio = "OSC address to skip audio when received";
-    public string Osc_Address_Tool_SkipAudio //todo: [IMPL] To be implemented
+    public const string DESC_Osc_Address_Tool_ToggleReplacementsPartial = "OSC address to enable or disable partial replacements";
+    public string Osc_Address_Tool_ToggleReplacementsPartial //todo: [IMPL] To be implemented or changed
     {
-        get => _osc_Address_Tool_SkipAudio;
-        set => SetProperty(ref _osc_Address_Tool_SkipAudio, value);
+        get => _osc_Address_Tool_ToggleReplacementsPartial;
+        set => SetProperty(ref _osc_Address_Tool_ToggleReplacementsPartial, value);
     }
-    private string _osc_Address_Tool_SkipAudio = "/avatar/parameters/ToolSkipSpeech";
+    private string _osc_Address_Tool_ToggleReplacementsPartial = "/avatar/parameters/ToolToggleReplacementsPartial";
 
-    public const string DESC_Osc_Address_Tool_SkipOther = "OSC address to skip other when received";
-    public string Osc_Address_Tool_SkipOther //todo: [IMPL] To be implemented
+    public const string DESC_Osc_Address_Tool_ToggleReplacementsFull = "OSC address to enable or disable full replacements";
+    public string Osc_Address_Tool_ToggleReplacementsFull //todo: [IMPL] To be implemented or changed
     {
-        get => _osc_Address_Tool_SkipOther;
-        set => SetProperty(ref _osc_Address_Tool_SkipOther, value);
+        get => _osc_Address_Tool_ToggleReplacementsFull;
+        set => SetProperty(ref _osc_Address_Tool_ToggleReplacementsFull, value);
     }
-    private string _osc_Address_Tool_SkipOther = "/avatar/parameters/ToolSkipOther";
-
-    public const string DESC_Osc_Address_Tool_SkipText = "OSC address to skip text when received";
-    public string Osc_Address_Tool_SkipText //todo: [IMPL] To be implemented
-    {
-        get => _osc_Address_Tool_SkipText;
-        set => SetProperty(ref _osc_Address_Tool_SkipText, value);
-    }
-    private string _osc_Address_Tool_SkipText = "/avatar/parameters/ToolSkipBox";
-
-    public const string DESC_Osc_Address_Tool_ToggleReplacements = "OSC address to enable or disable replacements";
-    public string Osc_Address_Tool_ToggleReplacements //todo: [IMPL] To be implemented or changed
-    {
-        get => _osc_Address_Tool_ToggleReplacements;
-        set => SetProperty(ref _osc_Address_Tool_ToggleReplacements, value);
-    }
-    private string _osc_Address_Tool_ToggleReplacements = "/avatar/parameters/ToolEnableReplacements";
-
-    public const string DESC_Osc_Address_Tool_ToogleOutputToText = "OSC address to toggle to output to text";
-    public string Osc_Address_Tool_ToogleOutputToText //todo: [IMPL] To be implemented
-    {
-        get => _osc_Address_Tool_ToggleOutputToText;
-        set => SetProperty(ref _osc_Address_Tool_ToggleOutputToText, value);
-    }
-    private string _osc_Address_Tool_ToggleOutputToText = "/avatar/parameters/ToolEnableBox";
-
-    public const string DESC_Osc_Address_Tool_ToogleOutputToOther = "OSC address to toggle to output to other";
-    public string Osc_Address_Tool_ToogleOutputToOther //todo: [IMPL] To be implemented
-    {
-        get => _osc_Address_Tool_ToggleOutputToOther;
-        set => SetProperty(ref _osc_Address_Tool_ToggleOutputToOther, value);
-    }
-    private string _osc_Address_Tool_ToggleOutputToOther = "/avatar/parameters/ToolEnableOther";
-
-    public const string DESC_Osc_Address_Tool_ToggleOutputToAudio = "OSC address to toggle to output to audio";
-    public string Osc_Address_Tool_ToggleOutputToAudio //todo: [IMPL] To be implemented
-    {
-        get => _osc_Address_Tool_ToggleOutputToAudio;
-        set => SetProperty(ref _osc_Address_Tool_ToggleOutputToAudio, value);
-    }
-    private string _osc_Address_Tool_ToggleOutputToAudio = "/avatar/parameters/ToolEnableTts";
+    private string _osc_Address_Tool_ToggleReplacementsFull = "/avatar/parameters/ToolEnableReplacementsFull";
 
     public const string DESC_Osc_Address_Tool_ToggleRecognitionAutoMute = "OSC address to toggle recognition auto mute";
     public string Osc_Address_Tool_ToggleRecognitionAutoMute
@@ -650,53 +610,19 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
         set => SetProperty(ref _osc_Address_Media_Toggle, value);
     }
     private string _osc_Address_Media_Toggle = "/avatar/parameters/MediaToggle";
-    #endregion
 
-    #region Preprocessing
-    public const string DESC_Preprocessing_DoReplacementsPartial = "Enables/Disables partial replacements entirely";
-    public bool Preprocessing_DoReplacementsPartial
+    public const string DESC_Osc_Address_Tool_Clear = "OSC address to perform a clear";
+    public string Osc_Address_Tool_Clear //todo: [IMPL] To be implemented
     {
-        get => _preprocessing_DoReplacementsPartial;
-        set => SetProperty(ref _preprocessing_DoReplacementsPartial, value);
+        get => _osc_Address_Tool_Clear;
+        set => SetProperty(ref _osc_Address_Tool_Clear, value);
     }
-    private bool _preprocessing_DoReplacementsPartial = true;
-
-    public const string DESC_Preprocessing_DoReplacementsFull = "Enables/Disables full replacements entirely";
-    public bool Preprocessing_DoReplacementsFull
-    {
-        get => _preprocessing_DoReplacementsFull;
-        set => SetProperty(ref _preprocessing_DoReplacementsFull, value);
-    }
-    private bool _preprocessing_DoReplacementsFull = true;
-
-    public const string DESC_Preprocessing_ReplacementsFull = "List of full replacements to apply";
-    public List<ReplacementDataModel> Preprocessing_ReplacementsFull
-    {
-        get => _preprocessing_ReplacementsFull;
-        set => SetProperty(ref _preprocessing_ReplacementsFull, value);
-    }
-    private List<ReplacementDataModel> _preprocessing_ReplacementsFull = [];
-
-    public const string DESC_Preprocessing_ReplacementsPartial = "List of partial replacements to apply";
-    public List<ReplacementDataModel> Preprocessing_ReplacementsPartial
-    {
-        get => _preprocessing_ReplacementsPartial;
-        set => SetProperty(ref _preprocessing_ReplacementsPartial, value);
-    }
-    private List<ReplacementDataModel> _preprocessing_ReplacementsPartial = [];
-
-    public const string DESC_Preprocessing_ReplacementFullIgnoredCharacters = "Characters that get ignored for full replacements";
-    public string Preprocessing_ReplacementFullIgnoredCharacters
-    {
-        get => _preprocessing_ReplacementFullIgnoredCharacters;
-        set => SetProperty(ref _preprocessing_ReplacementFullIgnoredCharacters, value);
-    }
-    private string _preprocessing_ReplacementFullIgnoredCharacters = ".?!,。、！？";
+    private string _osc_Address_Tool_Clear = "/avatar/parameters/ToolClear";
     #endregion
 
     #region Output - API
     public const string DESC_Output_Api_Enabled = "Enable API output module";
-    public bool Output_Api_Enabled
+    public bool Output_Api_Enabled //todo: impl
     {
         get => _output_Api_Enabled;
         set => SetProperty(ref _output_Api_Enabled, value);
@@ -704,7 +630,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private bool _output_Api_Enabled = false;
 
     public const string DESC_Output_Api_Preset_Message = "API preset for sending messages";
-    public string Output_Api_Preset_Message
+    public string Output_Api_Preset_Message //todo: impl
     {
         get => _output_Api_Preset_Message;
         set => SetProperty(ref _output_Api_Preset_Message, value);
@@ -712,7 +638,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private string _output_Api_Preset_Message = string.Empty;
 
     public const string DESC_Output_Api_Preset_Notification = "API preset for sending notifications";
-    public string Output_Api_Preset_Notification
+    public string Output_Api_Preset_Notification //todo: impl
     {
         get => _output_Api_Preset_Notification;
         set => SetProperty(ref _output_Api_Preset_Notification, value);
@@ -930,6 +856,48 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
         set => SetProperty(ref _output_VrcTxt_Sound_OnNotification, value);
     }
     private bool _output_VrcTxt_Sound_OnNotification;
+    #endregion
+
+    #region Preprocessing
+    public const string DESC_Preprocessing_DoReplacementsPartial = "Enables/Disables partial replacements entirely";
+    public bool Preprocessing_DoReplacementsPartial
+    {
+        get => _preprocessing_DoReplacementsPartial;
+        set => SetProperty(ref _preprocessing_DoReplacementsPartial, value);
+    }
+    private bool _preprocessing_DoReplacementsPartial = true;
+
+    public const string DESC_Preprocessing_DoReplacementsFull = "Enables/Disables full replacements entirely";
+    public bool Preprocessing_DoReplacementsFull
+    {
+        get => _preprocessing_DoReplacementsFull;
+        set => SetProperty(ref _preprocessing_DoReplacementsFull, value);
+    }
+    private bool _preprocessing_DoReplacementsFull = true;
+
+    public const string DESC_Preprocessing_ReplacementsFull = "List of full replacements to apply";
+    public List<ReplacementDataModel> Preprocessing_ReplacementsFull
+    {
+        get => _preprocessing_ReplacementsFull;
+        set => SetProperty(ref _preprocessing_ReplacementsFull, value);
+    }
+    private List<ReplacementDataModel> _preprocessing_ReplacementsFull = [];
+
+    public const string DESC_Preprocessing_ReplacementsPartial = "List of partial replacements to apply";
+    public List<ReplacementDataModel> Preprocessing_ReplacementsPartial
+    {
+        get => _preprocessing_ReplacementsPartial;
+        set => SetProperty(ref _preprocessing_ReplacementsPartial, value);
+    }
+    private List<ReplacementDataModel> _preprocessing_ReplacementsPartial = [];
+
+    public const string DESC_Preprocessing_ReplacementFullIgnoredCharacters = "Characters that get ignored for full replacements";
+    public string Preprocessing_ReplacementFullIgnoredCharacters
+    {
+        get => _preprocessing_ReplacementFullIgnoredCharacters;
+        set => SetProperty(ref _preprocessing_ReplacementFullIgnoredCharacters, value);
+    }
+    private string _preprocessing_ReplacementFullIgnoredCharacters = ".?!,。、！？";
     #endregion
 
     #region Recognition - General

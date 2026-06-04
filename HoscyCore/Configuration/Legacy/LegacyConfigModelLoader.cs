@@ -227,11 +227,7 @@ public static class LegacyConfigModelLoader
             Osc_Relay_Filters = ConvertOscRoutingFilterModel(oldConfig.Osc.RoutingFilters),
 
             Osc_Address_Tool_ToggleMute = oldConfig.Osc.AddressManualMute,
-            Osc_Address_Tool_SkipAudio = oldConfig.Osc.AddressManualSkipSpeech,
-            Osc_Address_Tool_SkipText = oldConfig.Osc.AddressManualSkipBox,
-            Osc_Address_Tool_ToggleReplacements = oldConfig.Osc.AddressEnableReplacements,
-            Osc_Address_Tool_ToogleOutputToText = oldConfig.Osc.AddressEnableTextbox,
-            Osc_Address_Tool_ToggleOutputToAudio = oldConfig.Osc.AddressEnableTts,
+            Osc_Address_Tool_ToggleReplacementsFull = oldConfig.Osc.AddressEnableReplacements,
             Osc_Address_Tool_ToggleRecognitionAutoMute = oldConfig.Osc.AddressEnableAutoMute,
             Osc_Address_Tool_NotificationForRecognitionListening = oldConfig.Osc.AddressListeningIndicator,
 
