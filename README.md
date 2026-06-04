@@ -37,13 +37,13 @@ For the following reasons this project is currently being rewritten from the gro
     - ✅ Vosk Recognition
     - ✅ Whisper Recognition
     - ✅ Windows Recognition (V1 & V2)
-  - ❌ TTS
-    - ❌ Azure TTS
-    - ❌ Windows TTS
+  - ✅ TTS
+    - ✅ Azure TTS
+    - ✅ Windows TTS
 ### Future Updates
 - ❌ UI Themes
 - ✅ Updating Whisper
-- ❌ Improved TTS with Piper
+- ✅ Improved TTS with Piper
 
 # HOSCY (Old version)
 HOSCY is a free and Open-Source tool with many utilities for communication and OSC aimed at making communication and use of OSC easier
