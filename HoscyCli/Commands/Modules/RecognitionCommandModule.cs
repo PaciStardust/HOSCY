@@ -39,7 +39,8 @@ public class RecognitionCommandModule
             new(["fix-capitalize-first-letter"], nameof(ConfigModel.Recognition_Fixup_CapitalizeFirstLetter), ConfigModel.DESC_Recognition_Fixup_CapitalizeFirstLetter),
             new(["microphone"], nameof(ConfigModel.Recognition_MicrophoneName), ConfigModel.DESC_Recognition_MicrophoneName),
             new(["autostart"], nameof(ConfigModel.Recognition_AutoStart), ConfigModel.DESC_Recognition_AutoStart),
-            new(["sound-on-mute"], nameof(ConfigModel.Recognition_Mute_PlaySound), ConfigModel.DESC_Recognition_Mute_PlaySound)
+            new(["sound-on-mute"], nameof(ConfigModel.Recognition_Mute_PlaySound), ConfigModel.DESC_Recognition_Mute_PlaySound),
+            new(["send-listening-via-osc"], nameof(ConfigModel.Recognition_SendListeningStatusViaOsc), ConfigModel.DESC_Recognition_SendListeningStatusViaOsc)
         ];
     }
     

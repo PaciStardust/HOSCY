@@ -500,7 +500,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private string _osc_Address_Tool_ToggleRecognitionAutoMute = "/avatar/parameters/ToolEnableAutoMute";
 
     public const string DESC_Osc_Address_Tool_NotificationForRecognitionListening = "OSC address sent out when recognition status changes";
-    public string Osc_Address_Tool_NotificationForRecognitionListening //todo: [IMPL] To be implemented
+    public string Osc_Address_Tool_NotificationForRecognitionListening
     {
         get => _osc_Address_Tool_NotificationForRecognitionListening;
         set => SetProperty(ref _osc_Address_Tool_NotificationForRecognitionListening, value);
@@ -956,6 +956,14 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
         set => SetProperty(ref _recognition_Send_DoPreprocessFull, value);
     }
     private bool _recognition_Send_DoPreprocessFull = true;
+
+    public const string DESC_Recognition_SendListeningStatusViaOsc = "Send out listening status via OSC";
+    public bool Recognition_SendListeningStatusViaOsc
+    {
+        get => _recognition_SendListeningStatusViaOsc;
+        set => SetProperty(ref _recognition_SendListeningStatusViaOsc, value);
+    }
+    private bool _recognition_SendListeningStatusViaOsc = false;
 
     public const string DESC_Recognition_Mute_StartUnmuted = "Unmute recognition on startup";
     public bool Recognition_Mute_StartUnmuted

@@ -4,6 +4,7 @@ using HoscyCore.Services.Audio;
 using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Interfacing;
+using HoscyCore.Services.Osc.SendReceive;
 using HoscyCore.Services.Output.Core;
 using HoscyCore.Utility;
 using Serilog;
@@ -19,7 +20,8 @@ public class RecognitionManagerService
     IContainerBulkLoader<IRecognitionModule> moduleLoader,
     ConfigModel config,
     IOutputManagerService output,
-    IContainerBulkLoader<IApplicationSound> soundLoader
+    IContainerBulkLoader<IApplicationSound> soundLoader,
+    IOscSendService sender
 ) 
     : SoloModuleManagerBase<IRecognitionModuleStartInfo, IRecognitionModule>
         (notify, logger.ForContext<RecognitionManagerService>(), infoLoader, moduleLoader),
@@ -29,6 +31,7 @@ public class RecognitionManagerService
     private readonly ConfigModel _config = config;
     private readonly IOutputManagerService _output = output;
     private readonly IApplicationSound? _sound = soundLoader.GetInstances().Value?.FirstOrDefault();
+    private readonly IOscSendService _sender = sender;
     #endregion
 
     #region Module => Start / Stop
@@ -96,6 +99,11 @@ public class RecognitionManagerService
                 _sound?.PlayMuteSound();
             }
             _lastListeningState = IsListening;
+        }
+
+        if (_config.Recognition_SendListeningStatusViaOsc)
+        {
+            _sender.SendToDefaultSyncFireAndForget(_config.Osc_Address_Tool_NotificationForRecognitionListening, IsListening);
         }
     }
 

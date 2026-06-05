@@ -40,7 +40,8 @@ public class AddressCommandModule(ReflectPropEditCommandModule _reflectCm) : Att
             new(["media-toggle"],nameof(ConfigModel.Osc_Address_Media_Toggle), ConfigModel.DESC_Osc_Address_Media_Toggle),
             new(["toggle-replace-partial"],nameof(ConfigModel.Osc_Address_Tool_ToggleReplacementsPartial), ConfigModel.DESC_Osc_Address_Tool_ToggleReplacementsPartial),
             new(["toggle-replace-full"],nameof(ConfigModel.Osc_Address_Tool_ToggleReplacementsFull), ConfigModel.DESC_Osc_Address_Tool_ToggleReplacementsFull),
-            new(["output-clear"],nameof(ConfigModel.Osc_Address_Tool_Clear), ConfigModel.DESC_Osc_Address_Tool_Clear)
+            new(["output-clear"],nameof(ConfigModel.Osc_Address_Tool_Clear), ConfigModel.DESC_Osc_Address_Tool_Clear),
+            new(["listening-status"],nameof(ConfigModel.Osc_Address_Tool_NotificationForRecognitionListening), ConfigModel.DESC_Osc_Address_Tool_NotificationForRecognitionListening)
         ];
     }
 }
