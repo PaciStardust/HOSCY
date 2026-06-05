@@ -966,7 +966,7 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
     private bool _recognition_Mute_StartUnmuted = true;
 
     public const string DESC_Recognition_Mute_PlaySound = "Play a sound on mute/unmute";
-    public bool Recognition_Mute_PlaySound //todo: [IMPL] To be implemented
+    public bool Recognition_Mute_PlaySound
     {
         get => _recognition_Mute_PlaySound;
         set => SetProperty(ref _recognition_Mute_PlaySound, value);
