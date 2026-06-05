@@ -195,7 +195,6 @@ public static class LegacyConfigModelLoader
             Translation_Api_Preset = oldConfig.Api.TranslationPreset,
             Translation_SkipLongerMessages = oldConfig.Api.TranslationSkipLongerMessages,
             Translation_MaxTextLength = oldConfig.Api.TranslationMaxTextLength,
-            Translation_OfAudioOutput = oldConfig.Api.TranslateTts,
             Output_VrcTxt_Send_ShowTranslation = oldConfig.Api.TranslateTextbox,
             ExternalInput_DoTranslate = oldConfig.Api.TranslationAllowExternal,
             Output_VrcTxt_Send_AddOriginalToTranslation = oldConfig.Api.AddOriginalAfterTranslate,

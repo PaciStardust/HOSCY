@@ -8,7 +8,7 @@ using SoundFlow.Extensions.WebRtc.Apm;
 
 namespace HoscyCore.Configuration.Modern;
 
-public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is usable from the CLI
+public class ConfigModel : ObservableObject
 {
     #region !Meta
     public int ConfigVersion { get; set; } = 0;
@@ -1384,30 +1384,6 @@ public class ConfigModel : ObservableObject //todo: [FEAT] Ensure all of this is
         set => SetProperty(ref _translation_MaxTextLength, value.MinMax(1, short.MaxValue));
     }
     private int _translation_MaxTextLength = 2000;
-
-    public const string DESC_Translation_OfAudioOutput = "Allow audio output to be translated";
-    public bool Translation_OfAudioOutput //todo: [IMPL] To be implemented
-    {
-        get => _translation_OfAudioOutput;
-        set => SetProperty(ref _translation_OfAudioOutput, value);
-    }
-    private bool _translation_OfAudioOutput = true;
-
-    public const string DESC_Translation_OfTextOutput = "Allow text output to be translated";
-    public bool Translation_OfTextOutput //todo: [IMPL] To be implemented
-    {
-        get => _translation_OfTextOutput;
-        set => SetProperty(ref _translation_OfTextOutput, value);
-    }
-    private bool _translation_OfTextOutput = true;
-
-    public const string DESC_Translation_OfOtherOutput = "Allow other output to be translated";
-    public bool Translation_OfOtherOutput //todo: [IMPL] To be implemented
-    {
-        get => _translation_OfOtherOutput;
-        set => SetProperty(ref _translation_OfOtherOutput, value);
-    }
-    private bool _translation_OfOtherOutput = true;
 
     public const string DESC_Translation_SendUntranslatedIfUnavailable = "Send untranslated text if nothing can output translation";
     public bool Translation_SendUntranslatedIfUnavailable
