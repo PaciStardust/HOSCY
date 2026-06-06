@@ -17,7 +17,7 @@ public class AzureVoiceModuleStartInfo : IVoiceModuleStartInfo
 }
 
 [PrototypeLoadIntoDiContainer(typeof(AzureVoiceModule), Lifetime.Transient)]
-public class AzureVoiceModule //todo: [TEST] When azure keys available
+public class AzureVoiceModule //todo: [TEST++] When azure keys available
 (
     ILogger logger,
     ConfigModel config

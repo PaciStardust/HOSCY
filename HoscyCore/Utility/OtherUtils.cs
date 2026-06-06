@@ -1,36 +1,11 @@
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using HoscyCore.Services.Dependency;
 using Serilog;
 
 namespace HoscyCore.Utility;
 
 public static class OtherUtils
 {
-    /// <summary>
-    /// Starts a process
-    /// </summary>
-    public static Res<Process> StartProcess(string path, ILogger logger)
-    {
-        try
-        {
-            var proc = Process.Start(new ProcessStartInfo()
-            {
-                FileName = path,
-                UseShellExecute = true
-            });
-
-            return proc is null || proc.HasExited
-                ? ResC.TFailLog<Process>($"Process \"{path}\" could not be created for unknown reason", logger)
-                : ResC.TOk(proc);
-        }
-        catch (Exception ex)
-        {
-            return ResC.TFailLog<Process>($"Failed to start process \"{path}\"", logger, ex);
-        }
-    }
-
     /// <summary>
     /// Tries to safely check if a process has exited, because for some reason HasExited can throw an exception
     /// </summary>

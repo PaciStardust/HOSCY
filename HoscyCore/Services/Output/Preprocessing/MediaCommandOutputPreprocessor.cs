@@ -14,7 +14,7 @@ public class MediaCommandOutputPreprocessor(IMediaControlService media, ILogger 
 
     public OutputPreprocessorHandlingStage GetHandlingStage()
         => OutputPreprocessorHandlingStage.Final;
-    public bool IsEnabled() => true; //todo: [FIX] Should not be methods?
+    public bool IsEnabled() => true;
     public bool IsFullReplace() => true;
 
     private const string COMMAND_KEYWORD = "[media]";

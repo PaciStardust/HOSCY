@@ -3,7 +3,6 @@ using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Interfacing;
-using HoscyCore.Services.Osc.MessageHandling;
 using HoscyCore.Services.Osc.MessageHandling.Core;
 using HoscyCore.Services.Osc.Relay;
 using HoscyCore.Utility;

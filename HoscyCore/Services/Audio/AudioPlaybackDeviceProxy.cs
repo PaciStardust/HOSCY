@@ -10,7 +10,7 @@ public class AudioPlaybackDeviceProxy(AudioPlaybackDevice playback, ILogger logg
     private readonly AudioPlaybackDevice _playback = playback;
     private readonly ILogger _logger = logger;
     
-    public MemoryStream Stream { get; private init; } = new(); //todo:[REFACTOR] Optimize this to only use a singular component
+    public MemoryStream Stream { get; private init; } = new();
 
     public Res Start()
     {

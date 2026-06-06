@@ -1,5 +1,4 @@
 using HoscyCli.Commands.Core;
-using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Utility;
 
