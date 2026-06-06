@@ -13,4 +13,5 @@ public interface IApiClient : IService
     public Res LoadPreset(ApiPresetModel preset);
     public Task<Res<string>> SendBytesAsync(byte[] bytes);
     public Task<Res<string>> SendTextAsync(string text);
+    public Task<Res<byte[]>> SendTextForBytesAsync(string text);
 }

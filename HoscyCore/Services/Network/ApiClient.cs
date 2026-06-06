@@ -121,6 +121,41 @@ public class ApiClient(IWebClient webClient, ILogger logger) : IApiClient
 
         return await SendAsync(new StringContent(jsonOut, Encoding.UTF8, _currentPreset.ContentType), _currentPreset);
     }
+
+    public async Task<Res<byte[]>> SendTextForBytesAsync(string text)
+    {
+        _logger.Verbose("{id}: Sending text to bytes request via ApiPreset \"{presetName}\"", _identifier, _currentPreset?.Name ?? "NULL");
+        var health = PresetHealthCheck();
+        if (!health.IsOk) return ResC.TFail<byte[]>(health.Msg);
+
+        var jsonOut = ReplaceToken(_currentPreset!.SentData, "[T]", text);
+        if (_currentPreset.SentData == jsonOut)
+        {
+            _logger.Warning("{id}: Unable to send data to API as JSON contains no token to replace, have you made sure the JSON option contains \"[T]\"?", _identifier);
+            var message = $"Unable to send data to API as JSON contains no token to replace, have you made sure the JSON option contains \"[T]\"?";
+            return ResC.TFail<byte[]>(ResMsg.Err(message));
+        }
+
+        health = ClientHealthCheck();
+        if (!health.IsOk) return ResC.TFail<byte[]>(health.Msg);
+        
+        var requestMessage = new HttpRequestMessage(HttpMethod.Post, _currentPreset.TargetUrl)
+        {
+            Content = new StringContent(jsonOut, Encoding.UTF8, _currentPreset.ContentType)
+        };
+
+        AddHeaders(requestMessage);
+
+        var bytes = await _client.SendAsyncBytes(requestMessage, _currentPreset.ConnectionTimeout);
+        if (!bytes.IsOk)
+        {
+            _logger.Warning("{id}: Received response for request, but json is null ({res})", _identifier, bytes);
+            return bytes;
+        }
+
+        _logger.Verbose("{id}: Received byte content with length {length}", _identifier, bytes.Value.Length);
+        return bytes;
+    }
     #endregion
 
     #region Health Check
