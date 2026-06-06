@@ -32,12 +32,12 @@ public static class OtherUtils
     {
         try
         {
-            string regstring = name + @""" *: *""(?<value>([^""\\]|\\.)*)""";
+            string regstring = $@"""{name}"" *: *""(?<value>([^""\\]|\\.)*)""";
             var regex = new Regex(regstring, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
             var resultMatch = regex.Match(json);
             if (!resultMatch.Success) 
-                ResC.TFailLog<string>($"Unable to locate value for key \"{name}\" in json: {json}", logger, lvl: ResMsgLvl.Warning);
+                return ResC.TFailLog<string>($"Unable to locate value for key \"{name}\" in json: {json}", logger, lvl: ResMsgLvl.Warning);
 
             return ResC.TOk(Regex.Unescape(resultMatch.Groups["value"].Value));
         }

@@ -29,7 +29,11 @@ public static class PathUtils
         try
         {
             var subDirs = Directory.GetDirectories(folderName);
+            var files = Directory.GetFiles(folderName).Length;
             var countSub = subDirs.Length;
+
+            if (files != 0)
+                return ResC.TOk(folderName);
 
             if (countSub == 0)
                 return ResC.TFailLog<string>($"Failed to locate content folder in \"{folderName}\"", logger);

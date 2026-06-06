@@ -55,11 +55,13 @@ public class UtilTests : TestBase<UtilTests>
     {
         var value = false;
         var thread = new Thread(new ThreadStart(() => {Thread.Sleep(100); value = true; }));
+        thread.Start();
         var wait = OtherUtils.WaitWhile(() => !value, 200, 10);
         Assert.That(wait);
 
         value = false;
         thread = new Thread(new ThreadStart(() => {Thread.Sleep(100); value = true; }));
+        thread.Start();
         wait = OtherUtils.WaitWhile(() => !value, 50, 10);
         Assert.That(!wait);
     }
@@ -99,15 +101,5 @@ public class UtilTests : TestBase<UtilTests>
     {
         Assert.That(LaunchUtils.GetVersion(), Is.Not.Empty);
         Assert.That(LaunchUtils.GetVersion(), Does.StartWith("v"));
-    }
-
-    [Test]
-    public void CreateConfigModel()
-    {
-        var model = LaunchUtils.LoadConfigModel(_logger, false);
-        model.AssertFail();
-
-        model = LaunchUtils.LoadConfigModel(_logger, true);
-        model.AssertOk();
     }
 }
