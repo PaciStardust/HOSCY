@@ -24,17 +24,20 @@ public abstract class RecognitionManagerServiceTestBase<T> : SoloModuleManagerTe
 {
     protected ConfigModel _config = null!;
     protected MockOutputManagerService _output = null!;
-    protected MockContainerBulkLoader<IApplicationSound> _soundLoader = new(() => []);
+    protected MockContainerBulkLoader<IApplicationSound> _soundLoader = null!;
+    protected MockOscSendService _sender = null!;
 
     protected override RecognitionManagerService CreateController()
     {
-        return new RecognitionManagerService(_notify, _logger, _infoLoader, _moduleLoader, _config, _output, _soundLoader);
+        return new RecognitionManagerService(_notify, _logger, _infoLoader, _moduleLoader, _config, _output, _soundLoader, _sender);
     }
 
     protected override void SetupSharedClassesExtra()
     {
         _config = new();
         _output = new();
+        _soundLoader = new(() => []);
+        _sender = new(_config);
     }
 
     protected override void SetModule(string name)
