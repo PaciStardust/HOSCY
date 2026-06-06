@@ -12,6 +12,7 @@ class Program
         if (!startRes.IsOk)
         {
             SendConfirmationMessage(startRes.Msg.WithContext("Error during startup").ToString());
+            return;
         }
         else if (startRes.Value.Length > 0)
         {
