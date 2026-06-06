@@ -1462,6 +1462,16 @@ public class ConfigModel : ObservableObject
     private bool _voice_SkipLongerText = true;
     #endregion 
 
+    #region Voice - API
+    public const string DESC_Voice_Api_Preset = "API Preset for API Voice";
+    public string Voice_Api_Preset
+    {
+        get => _voice_Api_Preset;
+        set => SetProperty(ref _voice_Api_Preset, value);
+    }
+    private string _voice_Api_Preset = string.Empty;
+    #endregion
+
     #region Voice - Azure
     public const string DESC_Voice_Azure_VoiceList = "List of voices to use with Azure TTS";
     public List<AzureTtsVoiceModel> Voice_Azure_VoiceList
