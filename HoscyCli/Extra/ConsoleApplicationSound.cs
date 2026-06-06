@@ -3,7 +3,7 @@ using HoscyCore.Services.Dependency;
 
 namespace HoscyCli.Extra;
 
-[PrototypeLoadIntoDiContainer(typeof(IApplicationSound))]
+[PrototypeLoadIntoDiContainer(typeof(ConsoleApplicationSound))]
 public class ConsoleApplicationSound : IApplicationSound
 {
     public void PlayMuteSound()
