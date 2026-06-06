@@ -65,5 +65,12 @@ public class MockApiClient : IApiClient
         ReceivedStrings.Clear();
     }
 
+    public byte[] SendTextForBytesResult = [];
+    public Task<Res<byte[]>> SendTextForBytesAsync(string text)
+    {
+        ReceivedStrings.Add(text);
+        return Task.FromResult(ErrorOnSend ? ResC.TFail<byte[]>(ResMsg.Err("err")) : ResC.TOk(SendTextForBytesResult));
+    }
+
     public bool ErrorOnSend { get; set; } = false; 
 }

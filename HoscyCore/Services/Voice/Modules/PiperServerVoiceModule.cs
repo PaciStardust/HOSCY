@@ -20,7 +20,7 @@ public class PiperServerVoiceModuleStartInfo : IVoiceModuleStartInfo
 }
 
 [PrototypeLoadIntoDiContainer(typeof(PiperServerVoiceModule), Lifetime.Transient)]
-public class PiperServerVoiceModule //todo: [FEAT] Add generic API client later?
+public class PiperServerVoiceModule
 (
     ILogger logger, 
     ConfigModel config,
