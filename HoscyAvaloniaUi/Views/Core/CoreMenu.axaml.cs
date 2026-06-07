@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace HoscyAvaloniaUi.Views.Core;
 
-public partial class MainMenu : UserControl
+public partial class CoreMenu : UserControl
 {
-    public MainMenu()
+    public CoreMenu()
     {
         InitializeComponent();
     }

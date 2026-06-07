@@ -127,9 +127,9 @@ public partial class App : Application
             //todo: [FEAT] Display of startup errors
             Dispatcher.UIThread.Invoke(() =>
             {
-                mainWindowModel.CurrentView = new MainMenu()
+                mainWindowModel.CurrentView = new CoreMenu()
                 {
-                    DataContext = new MainMenuViewModel()
+                    DataContext = new CoreMenuViewModel()
                 };
             });
 

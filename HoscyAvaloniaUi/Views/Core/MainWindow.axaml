@@ -10,12 +10,12 @@
         Title="HOSCY - OSC and Communication Companion"
         WindowStartupLocation="CenterScreen"
         MinHeight="450" Height="450" MinWidth="450" Width="800" 
-        CanResize="True" SystemDecorations="Full" WindowState="Normal"
+        CanResize="True" WindowDecorations="Full" WindowState="Normal"
         Background="{StaticResource BackgroundDarkBrush}">
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+            to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 

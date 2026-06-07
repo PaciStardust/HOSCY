@@ -2,7 +2,7 @@
 
 namespace HoscyAvaloniaUi.ViewModels.Core;
 
-public class MainMenuViewModel : ViewModelBase
+public class CoreMenuViewModel : ViewModelBase
 {
     private UserControl _currentSubmenu = null!;
     public UserControl CurrentSubmenu
