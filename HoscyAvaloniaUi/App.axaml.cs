@@ -1,9 +1,7 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using HoscyCore.Utility;
@@ -13,6 +11,8 @@ using Serilog;
 using HoscyCore;
 using Avalonia.Logging;
 using HoscyAvaloniaUi.Utility;
+using HoscyAvaloniaUi.Views.SubMenus;
+using HoscyAvaloniaUi.ViewModels.SubMenus;
 
 namespace HoscyAvaloniaUi;
 
@@ -130,6 +130,12 @@ public partial class App : Application
                 mainWindowModel.CurrentView = new CoreMenu()
                 {
                     DataContext = new CoreMenuViewModel()
+                    {
+                        CurrentSubmenu = new SubMenuTest()
+                        {
+                            DataContext = new SubMenuTestViewModel()
+                        }
+                    }
                 };
             });
 

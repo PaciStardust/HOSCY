@@ -22,7 +22,7 @@
         </ListBox>
 
         <Border x:Name="navBorder" Grid.Column="1" CornerRadius="8,4,4,8" Background="{StaticResource BackgroundBrush}">
-            <ContentControl x:Name="navFrame" /> 
+            <ContentControl Content="{Binding CurrentSubmenu}"/>
         </Border>
     </Grid>
 </UserControl>
