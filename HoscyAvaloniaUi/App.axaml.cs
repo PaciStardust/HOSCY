@@ -13,6 +13,8 @@ using Avalonia.Logging;
 using HoscyAvaloniaUi.Utility;
 using HoscyAvaloniaUi.Views.SubMenus;
 using HoscyAvaloniaUi.ViewModels.SubMenus;
+using HoscyAvaloniaUi.Components;
+using Avalonia.Media;
 
 namespace HoscyAvaloniaUi;
 
@@ -127,7 +129,7 @@ public partial class App : Application
             //todo: [FEAT] Display of startup errors
             Dispatcher.UIThread.Invoke(() =>
             {
-                mainWindowModel.CurrentView = new CoreMenu()
+                var coreMenu = new CoreMenu()
                 {
                     DataContext = new CoreMenuViewModel()
                     {
@@ -137,6 +139,29 @@ public partial class App : Application
                         }
                     }
                 };
+                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
+                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
+                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
+                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
+                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
+                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
+                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
+                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
+                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
+                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
+                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
+                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
+                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
+                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
+                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
+                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
+                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
+                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
+                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
+                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
+                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
+                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
+                mainWindowModel.CurrentView = coreMenu;
             });
 
             return;

@@ -1,20 +1,25 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-xmlns:conv="clr-namespace:HoscyAvaloniaUi.Converters;assembly=HoscyAvaloniaUi">
+xmlns:conv="clr-namespace:HoscyAvaloniaUi.Converters;assembly=HoscyAvaloniaUi"
+xmlns:comp="using:HoscyAvaloniaUi.Components">
     <Design.PreviewWith>
         <Border Padding="20" Background="{StaticResource BackgroundBaseBrush}" Width="600">
             <StackPanel Theme="{StaticResource HStackLarge}">
+                <Border Padding="8" Background="{StaticResource BackgroundDarkBrush}">
+                    <comp:NavigationButton Title="Mowww" Color="{StaticResource ValidBrush}" />
+                </Border>
+                <Border Padding="4"/>
                 <TextBlock Theme="{StaticResource HTextBlock}" Text="Waaaa" />
                 <Border Padding="4"/>
-                <TextBox Theme="{StaticResource HTextBox}" Watermark="Wtrmrk" Text="Waaaa2" />
+                <TextBox Theme="{StaticResource HTextBox}" PlaceholderText="Wtrmrk" Text="Waaaa2" />
                 <Border Padding="4"/>
-                <TextBox Theme="{StaticResource HTextBoxLarge}" Watermark="Wtrmrkkkkkkk" Text="Waaaa22222222222222222222222222222222222222222" />
+                <TextBox Theme="{StaticResource HTextBoxLarge}" PlaceholderText="Wtrmrkkkkkkk" Text="Waaaa22222222222222222222222222222222222222222" />
                 <Border Padding="4"/>
-                <TextBox Theme="{StaticResource HTextBoxShort}" Watermark="Wtrmrkkkkkkk" Text="Waaaa22222222222222222222222222222222222222222" />
+                <TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Wtrmrkkkkkkk" Text="Waaaa22222222222222222222222222222222222222222" />
                 <Border Padding="4"/>
-                <TextBox Theme="{StaticResource HTextBoxTiny}" Watermark="Wtrmrkkkkkkk" Text="Waaaa22222222222222222222222222222222222222222" />
+                <TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="Wtrmrkkkkkkk" Text="Waaaa22222222222222222222222222222222222222222" />
                 <Border Padding="4"/>
-                <TextBox Theme="{StaticResource HTextBoxLong}" Watermark="Wtrmrkkkkkkk" Text="Waaaa22222222222222222222222222222222222222222" />
+                <TextBox Theme="{StaticResource HTextBoxLong}" PlaceholderText="Wtrmrkkkkkkk" Text="Waaaa22222222222222222222222222222222222222222" />
                 <Border Padding="4"/>
                 <Button Theme="{StaticResource HButton}" Content="Mwow" />
                 <Border Padding="4"/>
@@ -123,8 +128,8 @@ xmlns:conv="clr-namespace:HoscyAvaloniaUi.Converters;assembly=HoscyAvaloniaUi">
                         FontFamily="{TemplateBinding FontFamily}"
                         Foreground="{StaticResource FrontDarkBrush}"
                         IsVisible="{Binding Text,
-                               RelativeSource={RelativeSource TemplatedParent},
-                               Converter={StaticResource StringNullOrEmptyToBool}}"/>
+                            RelativeSource={RelativeSource TemplatedParent},
+                            Converter={StaticResource StringNullOrEmptyToBool}}"/>
                     </Grid>
                 </Border>
             </ControlTemplate>
@@ -247,6 +252,7 @@ xmlns:conv="clr-namespace:HoscyAvaloniaUi.Converters;assembly=HoscyAvaloniaUi">
                 BorderBrush="{TemplateBinding BorderBrush}"
                 BorderThickness="{TemplateBinding BorderThickness}">
                     <ScrollViewer x:Name="PART_ScrollViewer" 
+                    Background="Transparent"
                     HorizontalScrollBarVisibility="Auto" 
                     VerticalScrollBarVisibility="Auto"
                     Margin="0" Focusable="false"
@@ -356,14 +362,14 @@ xmlns:conv="clr-namespace:HoscyAvaloniaUi.Converters;assembly=HoscyAvaloniaUi">
                         </TextBlock>
                     </Border>
                     <ContentPresenter x:Name="PART_ContentPresenter"
-                          ContentTemplate="{TemplateBinding ContentTemplate}"
-                          Content="{TemplateBinding Content}"
-                          TextWrapping="NoWrap"
-                          Grid.Column="1" 
-                          Margin="6,1,0,0"
-                          VerticalAlignment="Center"
-                          HorizontalAlignment="Left"
-                          RecognizesAccessKey="True"/>
+                        ContentTemplate="{TemplateBinding ContentTemplate}"
+                        Content="{TemplateBinding Content}"
+                        TextWrapping="NoWrap"
+                        Grid.Column="1" 
+                        Margin="6,1,0,0"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Left"
+                        RecognizesAccessKey="True"/>
                 </Grid>
             </ControlTemplate>
         </Setter>
@@ -629,15 +635,21 @@ xmlns:conv="clr-namespace:HoscyAvaloniaUi.Converters;assembly=HoscyAvaloniaUi">
 
         <Setter Property="Template">
             <ControlTemplate>
-                <Border x:Name="border"
-                CornerRadius="2"
-                Background="{TemplateBinding Background}"
-                BorderBrush="{TemplateBinding BorderBrush}"
-                BorderThickness="1"/>
+                <Border BorderThickness="0">
+                    <Border x:Name="border"
+                    Margin="3" 
+                    BorderThickness="1"
+                    CornerRadius="2"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"/>
+                </Border>
             </ControlTemplate>
         </Setter>
 
         <Style Selector="^:pointerover">
+            <Setter Property="Background" Value="{StaticResource BackgroundLightBrush}"/>
+        </Style>
+        <Style Selector="^:pressed">
             <Setter Property="Background" Value="{StaticResource BackgroundLightBrush}"/>
         </Style>
 
@@ -653,7 +665,7 @@ xmlns:conv="clr-namespace:HoscyAvaloniaUi.Converters;assembly=HoscyAvaloniaUi">
 
             <Setter Property="Template">
                 <ControlTemplate>
-                    <Grid Background="Transparent">
+                    <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="18"/>
                             <RowDefinition Height="*"/>
@@ -682,23 +694,19 @@ xmlns:conv="clr-namespace:HoscyAvaloniaUi.Converters;assembly=HoscyAvaloniaUi">
                         IsDirectionReversed="true">
                             <Track.DecreaseButton>
                                 <RepeatButton x:Name="PART_PageUpButton"
-                                Focusable="False" 
-                                Theme="{StaticResource HScrollBarPageButton}"/>
+                                    Focusable="False" 
+                                    Theme="{StaticResource HScrollBarPageButton}"/>
                             </Track.DecreaseButton>
-
-                            <Track.Thumb>
-                                <Thumb Theme="{StaticResource HScrollBarThumb}"
-                                Margin="3"
-                                BorderThickness="0"
-                                MinHeight="10"
-                                MinWidth="10"
-                                Background="{StaticResource BackgroundBaseBrush}"/>
-                            </Track.Thumb>
                             
+                            <Thumb Theme="{StaticResource HScrollBarThumb}"
+                                Width="{DynamicResource ScrollBarSize}"
+                                MinHeight="{DynamicResource ScrollBarSize}"
+                                Background="{StaticResource BackgroundBaseBrush}"/>
+
                             <Track.IncreaseButton>
                                 <RepeatButton x:Name="PART_PageDownButton"
-                                Theme="{StaticResource HScrollBarPageButton}"
-                                Focusable="False"/>
+                                    Theme="{StaticResource HScrollBarPageButton}"
+                                    Focusable="False"/>
                             </Track.IncreaseButton>
                         </Track>
 
@@ -750,14 +758,10 @@ xmlns:conv="clr-namespace:HoscyAvaloniaUi.Converters;assembly=HoscyAvaloniaUi">
                                 Theme="{StaticResource HScrollBarPageButton}"/>
                             </Track.DecreaseButton>
                             
-                            <Track.Thumb>
-                                <Thumb Theme="{StaticResource HScrollBarThumb}"
-                                Margin="3" 
-                                BorderThickness="0"
-                                MinHeight="10"
-                                MinWidth="10"
+                            <Thumb Theme="{StaticResource HScrollBarThumb}"
+                                Width="{DynamicResource ScrollBarSize}"
+                                MinHeight="{DynamicResource ScrollBarSize}"
                                 Background="{StaticResource BackgroundBaseBrush}"/>
-                            </Track.Thumb>
                             
                             <Track.IncreaseButton>
                                 <RepeatButton x:Name="PART_PageDownButton"
@@ -780,6 +784,7 @@ xmlns:conv="clr-namespace:HoscyAvaloniaUi.Converters;assembly=HoscyAvaloniaUi">
         <Style Selector="^:disabled">
             <Setter Property="Opacity" Value="0.65"/>
         </Style>
+
     </ControlTheme>
 
     <!-- Scrollviewer -->
@@ -817,7 +822,8 @@ xmlns:conv="clr-namespace:HoscyAvaloniaUi.Converters;assembly=HoscyAvaloniaUi">
                     Grid.Row="1" 
                     Grid.Column="0"
                     Theme="{StaticResource HScrollBar}"/>
-                    <!-- Ported correctly? -->
+
+                    <!--
                     <Rectangle x:Name="PART_ScrollBarsSeparator" 
                     Grid.Row="1" 
                     Grid.Column="1" 
@@ -825,6 +831,11 @@ xmlns:conv="clr-namespace:HoscyAvaloniaUi.Converters;assembly=HoscyAvaloniaUi">
                     RadiusY="2" 
                     Fill="{StaticResource AccentBrush}"
                     Margin="2"/>
+                    -->
+                    <Rectangle x:Name="PART_ScrollBarsSeparator" 
+                    Grid.Row="1" 
+                    Grid.Column="1" 
+                    Opacity="0"/>
                 </Grid>
             </ControlTemplate>
         </Setter>
@@ -981,7 +992,7 @@ xmlns:conv="clr-namespace:HoscyAvaloniaUi.Converters;assembly=HoscyAvaloniaUi">
                     Padding="{TemplateBinding Padding}"
                     Foreground="{TemplateBinding Foreground}"
                     Text="{TemplateBinding TextBox.Text, Mode=TwoWay}"
-                    Watermark="{TemplateBinding PlaceholderText}"/>
+                    PlaceholderText="{TemplateBinding PlaceholderText}"/>
 
                     <Popup x:Name="PART_Popup"
                     WindowManagerAddShadowHint="False"
@@ -1041,6 +1052,39 @@ xmlns:conv="clr-namespace:HoscyAvaloniaUi.Converters;assembly=HoscyAvaloniaUi">
 
         <Style Selector="^:editable /template/ ContentControl#ContentSite">
             <Setter Property="IsVisible" Value="False"/>
+        </Style>
+
+    </ControlTheme>
+
+    <!-- Navigation -->
+
+    <ControlTheme x:Key="{x:Type comp:NavigationButton}" TargetType="comp:NavigationButton">
+        <Setter Property="Margin" Value="3,3,3,3" />
+        <Setter Property="Background" Value="{StaticResource BackgroundBaseBrush}"/>
+
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border x:Name="border"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="8,8,8,8">
+
+                    <Grid Margin="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Rectangle Fill="{TemplateBinding Color}" RadiusX="2" RadiusY="2"/>
+                        <TextBlock Theme="{StaticResource HTextBlock}" Grid.Column="1" Text="{TemplateBinding Title}" Foreground="{StaticResource FrontColor}" FontWeight="Bold" FontSize="16" Margin="4,0,0,0"/>
+                    </Grid>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^:pointerover /template/ Border">
+            <Setter Property="Background" Value="{StaticResource BackgroundLightBrush}"/>
         </Style>
     </ControlTheme>
 </ResourceDictionary>

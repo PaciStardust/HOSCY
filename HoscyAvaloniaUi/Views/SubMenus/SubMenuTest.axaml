@@ -5,5 +5,14 @@
   mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
   x:Class="HoscyAvaloniaUi.Views.SubMenus.SubMenuTest">
   
-  Welcome to Avalonia!
+  <StackPanel Theme="{StaticResource HStackLarge}">
+      <ScrollBar
+                Orientation="Horizontal"
+                Minimum="0"
+                Maximum="100"
+                Value="50"
+                ViewportSize="10"
+                Width="200"
+                Theme="{StaticResource HScrollBar}"/>
+  </StackPanel>
 </UserControl>

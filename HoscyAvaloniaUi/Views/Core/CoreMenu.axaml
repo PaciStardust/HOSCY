@@ -15,10 +15,8 @@
     </Design.DataContext>
 
     <Grid x:Name="MainGrid" Margin="4,6,6,6" ColumnDefinitions="auto,*">
-        <ListBox Theme="{StaticResource HListBox}" x:Name="listBox" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,4,0" BorderThickness="0">
-            <Border Width="200" Background="{StaticResource ValidBrush}">
-                <TextBlock Theme="{StaticResource HTextBox}" FontSize="60" TextWrapping="Wrap">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</TextBlock>
-            </Border> <!-- Placeholder -->
+        <ListBox Theme="{StaticResource HListBox}" x:Name="MenuList" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,4,0" BorderThickness="0">
+            
         </ListBox>
 
         <Border x:Name="navBorder" Grid.Column="1" CornerRadius="8,4,4,8" Background="{StaticResource BackgroundBrush}">
