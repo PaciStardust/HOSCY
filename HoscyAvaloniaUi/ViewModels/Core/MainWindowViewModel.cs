@@ -1,13 +1,10 @@
 ﻿using Avalonia.Controls;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace HoscyAvaloniaUi.ViewModels.Core;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
-    private UserControl _currentView = null!;
-    public UserControl CurrentView
-    {
-        get => _currentView;
-        set => SetProperty(ref _currentView, value);
-    }
+    [ObservableProperty] 
+    public partial UserControl CurrentView { get; set; }
 }

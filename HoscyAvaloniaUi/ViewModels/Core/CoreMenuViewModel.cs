@@ -1,13 +1,10 @@
 ﻿using Avalonia.Controls;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace HoscyAvaloniaUi.ViewModels.Core;
 
-public class CoreMenuViewModel : ViewModelBase
+public partial class CoreMenuViewModel : ViewModelBase
 {
-    private UserControl _currentSubmenu = null!;
-    public UserControl CurrentSubmenu
-    {
-        get => _currentSubmenu;
-        set => SetProperty(ref _currentSubmenu, value);
-    }
+    [ObservableProperty]
+    public partial UserControl CurrentSubmenu { get; set; }
 }
