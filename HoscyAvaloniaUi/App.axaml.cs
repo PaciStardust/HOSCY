@@ -11,10 +11,6 @@ using Serilog;
 using HoscyCore;
 using Avalonia.Logging;
 using HoscyAvaloniaUi.Utility;
-using HoscyAvaloniaUi.Views.SubMenus;
-using HoscyAvaloniaUi.ViewModels.SubMenus;
-using HoscyAvaloniaUi.Components;
-using Avalonia.Media;
 
 namespace HoscyAvaloniaUi;
 
@@ -122,53 +118,36 @@ public partial class App : Application
         };
 
         var startRes = ResC.TWrap(() => _coreApp.Start(startParams), "Failed to start core app", _startLogger, ResMsgLvl.Fatal);
-        if (startRes.IsOk)
+        if (!startRes.IsOk)
         {
-            onProgressAction.Invoke("Switching to main UI");
-
-            //todo: [FEAT] Display of startup errors
-            Dispatcher.UIThread.Invoke(() =>
-            {
-                var coreMenu = new CoreMenu()
-                {
-                    DataContext = new CoreMenuViewModel()
-                    {
-                        CurrentSubmenu = new SubMenuTest()
-                        {
-                            DataContext = new SubMenuTestViewModel()
-                        }
-                    }
-                };
-                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
-                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
-                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
-                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
-                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
-                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
-                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
-                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
-                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
-                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
-                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
-                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
-                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
-                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
-                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
-                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
-                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
-                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
-                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
-                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
-                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
-                coreMenu.MenuList.Items.Add(new NavigationButton() { Title = "waaa", Color = new(Colors.Blue)});
-                mainWindowModel.CurrentView = coreMenu;
-            });
-
+            _startLogger.Fatal("Failed starting Services in background ({result})", startRes);
+            onProgressAction.Invoke($"Unable to load (SERVICE):\n{startRes.Msg}");
+            return;
+        }
+            
+        var containerRes = _coreApp.GetContainer();
+        if (!containerRes.IsOk)
+        {
+            _startLogger.Fatal("Failed getting container ({result})", containerRes);
+            onProgressAction.Invoke($"Unable to load (CONTAIN):\n{containerRes.Msg}");
             return;
         }
 
-        _startLogger.Fatal("Failed starting Services in background ({result})", startRes);
-        onProgressAction.Invoke($"Unable to load: {startRes}");
+        //todo: [FEAT] Display of startup errors
+        Dispatcher.UIThread.Invoke(() =>
+        {
+            var menuRes = containerRes.Value.GetRequiredService<CoreMenuViewModelBase>();
+            if (!menuRes.IsOk)
+            {
+                _startLogger.Fatal("Failed loading core menu ({result})", menuRes);
+                onProgressAction.Invoke($"Unable to load (NOMENU):\n{menuRes.Msg}");
+                return;
+            }
+
+            onProgressAction.Invoke("Switching to main UI");
+
+            mainWindowModel.CurrentView = new CoreMenu() { DataContext = menuRes.Value };
+        });
     }
 
     private void OnShutdownRequested(object? sender, ShutdownRequestedEventArgs e)

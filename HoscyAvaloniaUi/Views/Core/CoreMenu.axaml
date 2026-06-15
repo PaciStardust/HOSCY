@@ -4,20 +4,24 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:HoscyAvaloniaUi.ViewModels.Core"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-    x:DataType="vm:CoreMenuViewModel"
+    x:DataType="vm:CoreMenuViewModelBase"
     x:Class="HoscyAvaloniaUi.Views.Core.CoreMenu"
     Background="{StaticResource BackgroundDarkBrush}">
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:CoreMenuViewModel/>
+        <vm:CoreMenuViewModelPreview/>
     </Design.DataContext>
 
     <Grid x:Name="MainGrid" Margin="4,6,6,6" ColumnDefinitions="auto,*">
-        <ListBox Theme="{StaticResource HListBox}" x:Name="MenuList" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,4,0" BorderThickness="0">
-            
-        </ListBox>
+        <ListBox Theme="{StaticResource HListBox}" 
+            x:Name="MenuList" 
+            Grid.Column="0" 
+            VerticalAlignment="Center" 
+            Margin="0,0,4,0" 
+            BorderThickness="0"
+            ItemsSource="{Binding NavButtons}"/>
 
         <Border x:Name="navBorder" Grid.Column="1" CornerRadius="8,4,4,8" Background="{StaticResource BackgroundBrush}">
             <ContentControl Content="{Binding CurrentSubmenu}"/>
