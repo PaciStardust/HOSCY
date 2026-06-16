@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using HoscyAvaloniaUi.Components;
+using HoscyAvaloniaUi.Utility;
+using HoscyAvaloniaUi.ViewModels.SubMenus;
 using HoscyAvaloniaUi.Views.SubMenus;
+using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
+using HoscyCore.Utility;
 using Serilog;
 
 namespace HoscyAvaloniaUi.ViewModels.Core;
@@ -19,26 +23,27 @@ public abstract partial class CoreMenuViewModelBase : ViewModelBase
     [ObservableProperty]
     public partial UserControl CurrentSubmenu { get; set; } = new();
 
-    [RelayCommand]
-    protected abstract void OnNavigationSelected();
+    public abstract void OnMenuSelected(ListBox listBox);
 }
 
 
 [LoadIntoDiContainer(typeof(CoreMenuViewModelBase), Lifetime.Transient)]
 public partial class CoreMenuViewModel : CoreMenuViewModelBase
 {
-    private record NavButtonInfo(Color Color, Type ControlType);
+    private record NavButtonInfo(Color Color, Func<UserControl> ControlGenerator, Type ControlType);
     private static readonly Dictionary<string, NavButtonInfo> _buttonInfos = new() {
-        { "T1", new(Colors.Red, typeof(SubMenuTest)) }
+        { "T1", new(Colors.Red, () => new SubMenuTest(), typeof(SubMenuTestViewModel)) }
     };
 
     private readonly ILogger _logger;
-    private readonly IContainerBulkLoader<UserControl> _controlLoader;
+    private readonly IContainerBulkLoader<ViewModelBase> _vmLoader;
+    private readonly ConfigModel _config;
 
-    public CoreMenuViewModel(ILogger logger, IContainerBulkLoader<UserControl> controlLoader)
+    public CoreMenuViewModel(ILogger logger, IContainerBulkLoader<ViewModelBase> vmLoader, ConfigModel config)
     {
         _logger = logger.ForContext<CoreMenuViewModel>();
-        _controlLoader = controlLoader;
+        _vmLoader = vmLoader;
+        _config = config;
 
         _logger.Information("Loading buttons...");
         foreach(var buttonInfo in _buttonInfos)
@@ -52,9 +57,52 @@ public partial class CoreMenuViewModel : CoreMenuViewModelBase
         }
     }
 
-    protected override void OnNavigationSelected()
+    private bool _firstLoad = true;
+    public override void OnMenuSelected(ListBox listBox)
     {
-        
+        if (NavButtons.Count != listBox.Items.Count)
+        {
+            _logger.Warning("List of items does not align with NavButtons");
+            return;
+        }
+
+        var selectedIndex = listBox.SelectedIndex;
+
+        var baseColor = AvaloniaColorHelper.GetBrush(listBox, "BackgroundBaseBrush");
+        for(var i = 0; i < NavButtons.Count; i++)
+        {
+            if (i != selectedIndex)
+            {
+                NavButtons[i].Background = baseColor;
+            }
+        }
+
+        NavButtons[selectedIndex].Background = AvaloniaColorHelper.GetBrush(listBox, "BackgroundLightBrush");
+
+        if (_firstLoad)
+        {
+            _firstLoad = false;
+        }
+        else
+        {
+            ConfigModelLoader.TrySave(_config, PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
+        }
+
+        var title = NavButtons[selectedIndex].Title;
+        if (!_buttonInfos.TryGetValue(title, out var info))
+        {
+            _logger.Error("Failed to locate page infos for title {title}", title);
+            return;
+        }
+
+        var viewModel = _vmLoader.GetInstance(info.ControlType);
+        if (!viewModel.IsOk) return;
+
+        var control = info.ControlGenerator();
+        control.DataContext = viewModel.Value;
+        CurrentSubmenu = control;
+
+        Application.Current!.Resources["AccentBrush"] = info.Color;
     }
 }
 
@@ -71,7 +119,7 @@ public class CoreMenuViewModelPreview : CoreMenuViewModelBase
         ];
     }
     
-    protected override void OnNavigationSelected()
+    public override void OnMenuSelected(ListBox listBox)
     {
         
     }
