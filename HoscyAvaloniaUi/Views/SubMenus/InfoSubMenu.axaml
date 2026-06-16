@@ -1,0 +1,46 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:HoscyAvaloniaUi.ViewModels.SubMenus"
+	mc:Ignorable="d" d:DesignHeight="420" d:DesignWidth="689"
+	x:DataType="vm:InfoSubMenuViewModelBase"
+	x:Class="HoscyAvaloniaUi.Views.SubMenus.InfoSubMenu">
+
+	<Design.DataContext>
+		<vm:InfoSubMenuViewModelPreview/>
+	</Design.DataContext>
+
+	<Grid Margin="16" ColumnDefinitions="5*,1*">
+		<Border Grid.Column="0" 
+			Margin="0,0,16,0" 
+			Background="{StaticResource BackgroundDarkBrush}"
+			Padding="4"
+			CornerRadius="8">
+
+			<Grid Margin="16,4,16,4" RowDefinitions="auto,auto,*,auto,auto">
+				<TextBlock Theme="{StaticResource HTextBlock}" Grid.Row="0" TextAlignment="Center" Text="{Binding SentViaText}" Opacity="0.65"/>
+				<Rectangle Grid.Row="1" Height="4" Fill="{DynamicResource AccentBrush}" RadiusY="2" RadiusX="4" Margin="4" Opacity="0.65"/>
+				<TextBlock Grid.Row="2" Theme="{StaticResource HTextBlock}" x:Name="message" TextAlignment="Center" Text="{Binding MessageText}" VerticalAlignment="Center" FontSize="24"/>
+				<Rectangle Grid.Row="3" Height="4" Fill="{DynamicResource AccentBrush}" RadiusY="2" RadiusX="4" Margin="4" Opacity="0.65"/>
+				<TextBlock Theme="{StaticResource HTextBlock}" x:Name="notification" Grid.Row="4" TextAlignment="Center" Text="{Binding NotificationText}" Opacity="0.65"/>
+			</Grid>
+		</Border>
+
+		<StackPanel Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+			<!-- TODO Output Via recognition, functionality -->
+            <Button Theme="{StaticResource HButton}"
+				x:Name="muteButton" 
+				Content="{Binding ListeningStatusText}" 
+				Foreground="{Binding ListeningStatusBrush}"
+				Height="76"/>
+            <Button Theme="{StaticResource HButton}" Content="Clear" Margin="0,16,0,0" Height="76"/>
+            <Button Theme="{StaticResource HButton}"
+				x:Name="startButton"
+				Margin="0,16,0,0"
+				Content="{Binding ActiveStatusText}"
+				Foreground="{Binding ActiveStatusBrush}"
+				Height="76"/>
+        </StackPanel>
+	</Grid>
+</UserControl>

@@ -1,11 +1,12 @@
+using Avalonia;
 using Avalonia.Controls;
-using HoscyCore.Services.Dependency;
+using Avalonia.Markup.Xaml;
 
 namespace HoscyAvaloniaUi.Views.SubMenus;
 
-public partial class SubMenuTest : UserControl
+public partial class InfoSubMenu : UserControl
 {
-    public SubMenuTest()
+    public InfoSubMenu()
     {
         InitializeComponent();
     }

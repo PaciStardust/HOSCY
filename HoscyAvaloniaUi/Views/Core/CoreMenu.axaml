@@ -24,7 +24,7 @@
             ItemsSource="{Binding NavButtons}"
             SelectionChanged="OnMenuSelected"/>
 
-        <Border x:Name="navBorder" Grid.Column="1" CornerRadius="8,4,4,8" Background="{StaticResource BackgroundBrush}">
+        <Border x:Name="navBorder" Grid.Column="1" CornerRadius="8,4,4,8" Background="{StaticResource BackgroundBaseBrush}">
             <ContentControl Content="{Binding CurrentSubmenu}"/>
         </Border>
     </Grid>

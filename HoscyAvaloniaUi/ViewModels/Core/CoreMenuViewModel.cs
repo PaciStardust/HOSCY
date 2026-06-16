@@ -28,20 +28,20 @@ public abstract partial class CoreMenuViewModelBase : ViewModelBase
 
 
 [LoadIntoDiContainer(typeof(CoreMenuViewModelBase), Lifetime.Transient)]
-public partial class CoreMenuViewModel : CoreMenuViewModelBase
+public partial class CoreMenuViewModelImpl : CoreMenuViewModelBase
 {
     private record NavButtonInfo(Color Color, Func<UserControl> ControlGenerator, Type ControlType);
     private static readonly Dictionary<string, NavButtonInfo> _buttonInfos = new() {
-        { "T1", new(Colors.Red, () => new SubMenuTest(), typeof(SubMenuTestViewModel)) }
+        { "Info", new(Color.FromUInt32(0x_FFC6FFFF), () => new InfoSubMenu(), typeof(InfoSubMenuViewModelBase)) }
     };
 
     private readonly ILogger _logger;
     private readonly IContainerBulkLoader<ViewModelBase> _vmLoader;
     private readonly ConfigModel _config;
 
-    public CoreMenuViewModel(ILogger logger, IContainerBulkLoader<ViewModelBase> vmLoader, ConfigModel config)
+    public CoreMenuViewModelImpl(ILogger logger, IContainerBulkLoader<ViewModelBase> vmLoader, ConfigModel config)
     {
-        _logger = logger.ForContext<CoreMenuViewModel>();
+        _logger = logger.ForContext<CoreMenuViewModelImpl>();
         _vmLoader = vmLoader;
         _config = config;
 
