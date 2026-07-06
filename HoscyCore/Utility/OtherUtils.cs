@@ -101,4 +101,23 @@ public static class OtherUtils
             : input[..maxLen])
             .TrimEnd();
     }
+
+    public static void OpenGithub(ILogger logger)
+    {
+        logger.Debug("Opening Github");
+        try
+        {
+            Process.Start(new ProcessStartInfo()
+            {
+                FileName = "https://github.com/PaciStardust/HOSCY",
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            logger.Warning(ex, "Failed to open Github");
+            return;
+        }
+        logger.Debug("Opened Github");
+    }
 }

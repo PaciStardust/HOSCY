@@ -53,7 +53,7 @@ public partial class CoreMenuViewModelImpl : CoreMenuViewModelBase
                 Title = buttonInfo.Key,
                 Color = new(buttonInfo.Value.Color),
             };
-            NavButtons.Add(navButton);
+            NavButtons!.Add(navButton);
         }
     }
 

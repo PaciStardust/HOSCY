@@ -10,4 +10,9 @@ public class ConsoleApplicationSound : IApplicationSound
     {
         Console.Beep();
     }
+
+    public void PlayNotificationSound()
+    {
+        Console.Beep();
+    }
 }
