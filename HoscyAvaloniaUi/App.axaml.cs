@@ -14,6 +14,8 @@ using HoscyAvaloniaUi.Utility;
 using Avalonia.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using HoscyAvaloniaUi.Services;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace HoscyAvaloniaUi;
 
@@ -137,9 +139,9 @@ public partial class App : Application
             return;
         }
 
-        //todo: [FEAT] Display of startup errors
         Dispatcher.UIThread.Invoke(() =>
         {
+
             var menuRes = containerRes.Value.GetRequiredService<CoreMenuViewModelBase>();
             if (!menuRes.IsOk)
             {
@@ -147,10 +149,21 @@ public partial class App : Application
                 onProgressAction.Invoke($"Unable to load (NOMENU):\n{menuRes.Msg}");
                 return;
             }
+            var menu = menuRes.Value;
+
+            if (startRes.Value.Length > 0)
+            {
+                var start = startRes.Value;
+                var messages = string.Join("\n", start.Select(x => $" - {x}"));
+
+                menu.BannerColorAccent = start.Max(x => x.Level) > ResMsgLvl.Info;
+                menu.BannerVisible = true;
+                menu.BannerMessage = $"Following warnings were sent during startup:\n{messages}";
+            }
 
             onProgressAction.Invoke("Switching to main UI");
 
-            mainWindowModel.CurrentView = new CoreMenu() { DataContext = menuRes.Value };
+            mainWindowModel.CurrentView = new CoreMenu() { DataContext = menu };
         });
     }
 
