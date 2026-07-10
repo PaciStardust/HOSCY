@@ -23,7 +23,7 @@
       </StackPanel>
       <TextBlock Foreground="White" FontSize="16">Companion for OSC</TextBlock>
       <TextBlock Foreground="White" FontSize="16">and Communication</TextBlock>
-      <TextBlock Foreground="White" FontSize="20" Margin="0,16,0,0" Text="{Binding Progress}"/>
+      <TextBlock Foreground="White" FontSize="20" Margin="0,16,0,0" Text="{Binding Progress}" TextWrapping="Wrap"/>
     </StackPanel>
   </Grid>
 </UserControl>

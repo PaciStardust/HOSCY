@@ -71,7 +71,7 @@ public partial class App : Application
     //     }
     // }
 
-    private void StartApplication(IClassicDesktopStyleApplicationLifetime desktop) //todo: notification handling, 
+    private void StartApplication(IClassicDesktopStyleApplicationLifetime desktop)
     {
         desktop.ShutdownRequested += OnShutdownRequested;
 
@@ -137,7 +137,7 @@ public partial class App : Application
             return;
         }
 
-        //todo: [FEAT] Display of startup errors, result display bad
+        //todo: [FEAT] Display of startup errors
         Dispatcher.UIThread.Invoke(() =>
         {
             var menuRes = containerRes.Value.GetRequiredService<CoreMenuViewModelBase>();
