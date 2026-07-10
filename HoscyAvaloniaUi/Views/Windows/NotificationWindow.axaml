@@ -33,7 +33,7 @@
             </ScrollViewer>
         </Border>
 
-        <TextBlock Grid.Row="0" Theme="{StaticResource HTextBlock}" FontSize="14" TextAlignment="Center" Text="{Binding Subtitle}"/>
+        <TextBlock Grid.Row="0" Theme="{StaticResource HTextBlock}" FontSize="14" TextAlignment="Center" Text="{Binding WindowTitle}"/>
 
         <WrapPanel Grid.Row="2" HorizontalAlignment="Center" Margin="0,8,0,0">
             <Button x:Name="buttonOpenGithub" Content="Open Github" Theme="{StaticResource HButtonSmall}" Click="OnGithubClick"/>

@@ -11,6 +11,9 @@ using Serilog;
 using HoscyCore;
 using Avalonia.Logging;
 using HoscyAvaloniaUi.Utility;
+using Avalonia.Controls;
+using Microsoft.Extensions.DependencyInjection;
+using HoscyAvaloniaUi.Services;
 
 namespace HoscyAvaloniaUi;
 
@@ -68,7 +71,7 @@ public partial class App : Application
     //     }
     // }
 
-    private void StartApplication(IClassicDesktopStyleApplicationLifetime desktop)
+    private void StartApplication(IClassicDesktopStyleApplicationLifetime desktop) //todo: notification handling, 
     {
         desktop.ShutdownRequested += OnShutdownRequested;
 
@@ -91,10 +94,10 @@ public partial class App : Application
             DataContext = mainWindowModel
         };
 
-        Task.Run(() => StartApplicationBackgroundTask(mainWindowModel, splashModel));
+        Task.Run(() => StartApplicationBackgroundTask(desktop.MainWindow, mainWindowModel, splashModel));
     }
 
-    private void StartApplicationBackgroundTask(MainWindowViewModel mainWindowModel, SplashScreenViewModel splashModel)
+    private void StartApplicationBackgroundTask(Window mainWindow, MainWindowViewModel mainWindowModel, SplashScreenViewModel splashModel)
     {
         Action<string> onProgressAction = new((text) =>
         {
@@ -114,7 +117,8 @@ public partial class App : Application
         var startParams = new HoscyCoreAppStartParameters()
         {
             OnProgress = onProgressAction,
-            OnNewLoggerCreated = onNewLoggerLoaded
+            OnNewLoggerCreated = onNewLoggerLoaded,
+            AdditionalContainerInserts = x => { x.AddSingleton(new UiHelperService(mainWindow)); }
         };
 
         var startRes = ResC.TWrap(() => _coreApp.Start(startParams), "Failed to start core app", _startLogger, ResMsgLvl.Fatal);
@@ -133,7 +137,7 @@ public partial class App : Application
             return;
         }
 
-        //todo: [FEAT] Display of startup errors
+        //todo: [FEAT] Display of startup errors, result display bad
         Dispatcher.UIThread.Invoke(() =>
         {
             var menuRes = containerRes.Value.GetRequiredService<CoreMenuViewModelBase>();

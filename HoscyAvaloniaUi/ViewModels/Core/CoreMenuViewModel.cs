@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using HoscyAvaloniaUi.Components;
-using HoscyAvaloniaUi.Utility;
+using HoscyAvaloniaUi.Services;
 using HoscyAvaloniaUi.ViewModels.SubMenus;
 using HoscyAvaloniaUi.Views.SubMenus;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
+using HoscyCore.Services.Interfacing;
 using HoscyCore.Utility;
 using Serilog;
 
@@ -22,8 +24,22 @@ public abstract partial class CoreMenuViewModelBase : ViewModelBase
 
     [ObservableProperty]
     public partial UserControl CurrentSubmenu { get; set; } = new();
+    
+    [ObservableProperty]
+    public partial bool BannerVisible { get; set; } = false;
+
+    [ObservableProperty]
+    public partial string BannerMessage { get; set; } = "Banner Message";
+
+    [ObservableProperty]
+    public partial bool BannerColorAccent { get; set; } = false;
 
     public abstract void OnMenuSelected(ListBox listBox);
+    public void HideBanner()
+    {
+        BannerVisible = false;
+        BannerMessage = string.Empty;
+    }
 }
 
 
@@ -32,18 +48,30 @@ public partial class CoreMenuViewModelImpl : CoreMenuViewModelBase
 {
     private record NavButtonInfo(Color Color, Func<UserControl> ControlGenerator, Type ControlType);
     private static readonly Dictionary<string, NavButtonInfo> _buttonInfos = new() {
-        { "Info", new(Color.FromUInt32(0x_FFC6FFFF), () => new InfoSubMenu(), typeof(InfoSubMenuViewModelBase)) }
+        { "Info", new(Color.FromUInt32(0x_FFC6FFFF), () => new InfoSubMenu(), typeof(InfoSubMenuViewModelBase)) },
+        { "Info2", new(Color.FromUInt32(0x_FFFFC6FF), () => new InfoSubMenu(), typeof(InfoSubMenuViewModelBase)) }
     };
 
     private readonly ILogger _logger;
     private readonly IContainerBulkLoader<ViewModelBase> _vmLoader;
     private readonly ConfigModel _config;
+    private readonly NotificationWindowFactory _notificationFactory;
+    private readonly IBackToFrontNotifyService _notify;
 
-    public CoreMenuViewModelImpl(ILogger logger, IContainerBulkLoader<ViewModelBase> vmLoader, ConfigModel config)
+    public CoreMenuViewModelImpl
+    (
+        ILogger logger,
+        IContainerBulkLoader<ViewModelBase> vmLoader, 
+        ConfigModel config,
+        NotificationWindowFactory notificationFactory,
+        IBackToFrontNotifyService notify
+    )
     {
         _logger = logger.ForContext<CoreMenuViewModelImpl>();
         _vmLoader = vmLoader;
         _config = config;
+        _notificationFactory = notificationFactory;
+        _notify = notify;
 
         _logger.Information("Loading buttons...");
         foreach(var buttonInfo in _buttonInfos)
@@ -53,10 +81,29 @@ public partial class CoreMenuViewModelImpl : CoreMenuViewModelBase
                 Title = buttonInfo.Key,
                 Color = new(buttonInfo.Value.Color),
             };
-            NavButtons!.Add(navButton);
+            NavButtons.Add(navButton);
         }
+
+        _notify.OnNotificationSent += HandleNotification;
     }
 
+    #region Notifications
+    private void HandleNotification(object? _, BackToFrontNotifyEventArgs e)
+    {
+        if (e.Level >= BackToFrontNotifyLevel.Error)
+        {
+            _notificationFactory.CreateAndOpen(e.Title, e.Content, true, true);
+        } 
+        else
+        {
+            BannerMessage = $"{e.Title}: {e.Content}";
+            BannerColorAccent = e.Level > BackToFrontNotifyLevel.Info;
+            BannerVisible = true;
+        }
+    }
+    #endregion
+
+    #region Menu
     private bool _firstLoad = true;
     public override void OnMenuSelected(ListBox listBox)
     {
@@ -68,16 +115,10 @@ public partial class CoreMenuViewModelImpl : CoreMenuViewModelBase
 
         var selectedIndex = listBox.SelectedIndex;
 
-        var baseColor = AvaloniaColorHelper.GetBrush(listBox, "BackgroundBaseBrush");
         for(var i = 0; i < NavButtons.Count; i++)
         {
-            if (i != selectedIndex)
-            {
-                NavButtons[i].Background = baseColor;
-            }
+            NavButtons[i].Selected = i == selectedIndex;
         }
-
-        NavButtons[selectedIndex].Background = AvaloniaColorHelper.GetBrush(listBox, "BackgroundLightBrush");
 
         if (_firstLoad)
         {
@@ -104,10 +145,10 @@ public partial class CoreMenuViewModelImpl : CoreMenuViewModelBase
 
         Application.Current!.Resources["AccentBrush"] = info.Color;
     }
+    #endregion
 }
 
 #if DEBUG
-
 public class CoreMenuViewModelPreview : CoreMenuViewModelBase
 {
     public CoreMenuViewModelPreview()
@@ -117,6 +158,7 @@ public class CoreMenuViewModelPreview : CoreMenuViewModelBase
             new() { Title = "Test2", Color = new(Colors.Green)},
             new() { Title = "Test3", Color = new(Colors.Blue)}
         ];
+        BannerVisible = true;
     }
     
     public override void OnMenuSelected(ListBox listBox)
@@ -124,5 +166,4 @@ public class CoreMenuViewModelPreview : CoreMenuViewModelBase
         
     }
 }
-
 #endif

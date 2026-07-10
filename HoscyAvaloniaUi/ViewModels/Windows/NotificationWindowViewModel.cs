@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Avalonia.Input.Platform;
 using CommunityToolkit.Mvvm.ComponentModel;
 using HoscyAvaloniaUi.ViewModels.Core;
@@ -11,13 +10,10 @@ namespace HoscyAvaloniaUi.ViewModels.Windows;
 public abstract partial class NotificationWindowViewModelBase : ViewModelBase
 {
     [ObservableProperty]
-    public partial string? WindowTitle { get; set; } = "Notification Window";
+    public partial string? WindowTitle { get; set; } = "Notification Title";
 
     [ObservableProperty]
     public partial string Notification { get; set; } = "Notification Text";
-
-    [ObservableProperty]
-    public partial string Subtitle { get; set; } = "Notification Subtitle";
 
     [ObservableProperty]
     public partial bool CopyClipboardVisible { get; set; } = true;
@@ -53,8 +49,10 @@ public class NotificationWindowViewModelImpl(ILogger logger) : NotificationWindo
     }
 }
 
+#if DEBUG
 public class NotificationWindowViewModelPreview : NotificationWindowViewModelBase
 {
     public override void OnClipboardClick(IClipboard? clipboard, string text) { }
     public override void OnGithubClick() { }
 }
+#endif

@@ -1065,9 +1065,10 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
         <Setter Property="Template">
             <ControlTemplate>
                 <Border x:Name="border"
-                    Background="{TemplateBinding Background}"
+                    Classes.selected="{TemplateBinding Selected}"
                     BorderBrush="{TemplateBinding BorderBrush}"
                     BorderThickness="{TemplateBinding BorderThickness}"
+                    Background="{StaticResource BackgroundBaseBrush}"
                     CornerRadius="8,8,8,8">
 
                     <Grid Margin="8">
@@ -1084,6 +1085,9 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
         </Setter>
 
         <Style Selector="^:pointerover /template/ Border">
+            <Setter Property="Background" Value="{StaticResource BackgroundLightBrush}"/>
+        </Style>
+        <Style Selector="^ /template/ Border.selected">
             <Setter Property="Background" Value="{StaticResource BackgroundLightBrush}"/>
         </Style>
     </ControlTheme>

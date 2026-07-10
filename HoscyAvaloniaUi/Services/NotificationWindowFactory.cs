@@ -15,25 +15,26 @@ public class NotificationWindowFactory
 (
     ILogger logger,
     IContainerBulkLoader<IApplicationSound> soundLoader,
-    IContainerBulkLoader<NotificationWindowViewModelBase> vmLoader
+    IContainerBulkLoader<NotificationWindowViewModelBase> vmLoader,
+    UiHelperService windowWrapper
 ) 
     : IService
 {
     private readonly ILogger _logger = logger.ForContext<NotificationWindowFactory>();
     private readonly IApplicationSound? _sound = soundLoader.GetInstances().Value?.FirstOrDefault();
     private readonly IContainerBulkLoader<NotificationWindowViewModelBase> _vmLoader = vmLoader;
+    private readonly UiHelperService _windowWrapper = windowWrapper;
 
-    public void CreateAndOpen(string title, string message, string subtitle, bool copyVisible, Window? windowForDialog)
+    public void CreateAndOpen(string title, string message, bool copyVisible, bool doDialog, Window? windowForDialog = null)
     {
-        _logger.Debug("Creating notif window (Title=\"{title}\", Msg=\"{msg}\", Sub=\"{sub}\", CopyV={copyV})",
-            title, message, subtitle, copyVisible);
+        _logger.Debug("Creating notif window (Title=\"{title}\", Msg=\"{msg}\", CopyV={copyV})",
+            title, message, copyVisible);
         
         var vmRes = _vmLoader.GetInstance(typeof(NotificationWindowViewModelBase));
         if (!vmRes.IsOk) return;
 
         var vm = vmRes.Value;
         vm.WindowTitle = title;
-        vm.Subtitle = subtitle;
         vm.Notification = message;
         vm.CopyClipboardVisible = copyVisible;
 
@@ -41,13 +42,20 @@ public class NotificationWindowFactory
         Dispatcher.UIThread.Invoke(() =>
         {
             var window = new NotificationWindow() { DataContext = vm };
-            if (windowForDialog is not null)
+            if (!doDialog)
             {
-                window.ShowDialog(windowForDialog);
+                window.Show();
             }
             else
             {
-                window.Show();
+                if (windowForDialog is not null)
+                {
+                    window.ShowDialog(windowForDialog);
+                }
+                else
+                {
+                    _windowWrapper.ShowDialog(window);
+                }
             }
         });
     }

@@ -21,4 +21,12 @@ public class NavigationButton : ListBoxItem
         get { return GetValue(ColorProperty); }
         set { SetValue(ColorProperty, value); }
     }
+
+    public static readonly StyledProperty<bool> SelectedProperty =
+        AvaloniaProperty.Register<NavigationButton, bool>(nameof(Selected), false);
+    public bool Selected
+    {
+        get { return GetValue(SelectedProperty); }
+        set { SetValue(SelectedProperty, value); }
+    }
 }

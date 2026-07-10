@@ -14,18 +14,50 @@
         <vm:CoreMenuViewModelPreview/>
     </Design.DataContext>
 
-    <Grid x:Name="MainGrid" Margin="4,6,6,6" ColumnDefinitions="auto,*">
+    <Grid x:Name="MainGrid" Margin="4,6,6,6" ColumnDefinitions="auto,*" RowDefinitions="auto,*">
         <ListBox Theme="{StaticResource HListBox}" 
             x:Name="MenuList" 
             Grid.Column="0" 
+            Grid.Row="0"
+            Grid.RowSpan="2"
             VerticalAlignment="Center" 
             Margin="0,0,4,0" 
             BorderThickness="0"
             ItemsSource="{Binding NavButtons}"
             SelectionChanged="OnMenuSelected"/>
 
-        <Border x:Name="navBorder" Grid.Column="1" CornerRadius="8,4,4,8" Background="{StaticResource BackgroundBaseBrush}">
+        <Border Grid.Column="1"
+            Grid.Row="0"
+            CornerRadius="8,4,4,8"
+            Margin="0,0,0,8"
+            Background="{StaticResource BackgroundBaseBrush}"
+            BorderThickness="4"
+            IsVisible="{Binding BannerVisible}"
+            Classes.accented="{Binding BannerColorAccent}"
+            Classes.not-accented="{Binding !BannerColorAccent}">
+
+            <Grid ColumnDefinitions="*,auto" Margin="8">
+                <TextBlock Grid.Column="0" Theme="{StaticResource HTextBlock}" FontSize="16" Text="{Binding BannerMessage}" MaxLines="3" VerticalAlignment="Center"/> 
+                <Button Grid.Column="1" Theme="{StaticResource HButton}" Content="X" Margin="8,0,0,0" Width="40" Click="HideBanner"/>
+            </Grid>
+        </Border>
+
+        <Border x:Name="navBorder" 
+            Grid.Column="1" 
+            Grid.Row="1"
+            CornerRadius="8,4,4,8"
+            Background="{StaticResource BackgroundBaseBrush}">
+
             <ContentControl Content="{Binding CurrentSubmenu}"/>
         </Border>
+
+        <Grid.Styles>
+            <Style Selector="Border.accented">
+                <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+            </Style>
+            <Style Selector="Border.not-accented">
+                <Setter Property="BorderBrush" Value="{StaticResource BackgroundLightBrush}" />
+            </Style>
+        </Grid.Styles>
     </Grid>
 </UserControl>
