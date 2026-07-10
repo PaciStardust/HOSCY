@@ -37,7 +37,9 @@
             Classes.not-accented="{Binding !BannerColorAccent}">
 
             <Grid ColumnDefinitions="*,auto" Margin="8">
-                <TextBlock Grid.Column="0" Theme="{StaticResource HTextBlock}" FontSize="16" Text="{Binding BannerMessage}" MaxLines="3" VerticalAlignment="Center"/> 
+                <ScrollViewer Theme="{StaticResource HScrollViewer}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MaxHeight="80">
+                    <TextBlock Grid.Column="0" Theme="{StaticResource HTextBlock}" FontSize="16" Text="{Binding BannerMessage}" VerticalAlignment="Center" Background="Transparent"/> 
+                </ScrollViewer>
                 <Button Grid.Column="1" Theme="{StaticResource HButton}" Content="X" Margin="8,0,0,0" Width="40" Click="HideBanner"/>
             </Grid>
         </Border>

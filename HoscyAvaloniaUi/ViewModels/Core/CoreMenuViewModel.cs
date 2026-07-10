@@ -29,7 +29,7 @@ public abstract partial class CoreMenuViewModelBase : ViewModelBase
     public partial bool BannerVisible { get; set; } = false;
 
     [ObservableProperty]
-    public partial string BannerMessage { get; set; } = "Banner Message";
+    public partial string BannerMessage { get; set; } = "Banner Message\n1\n2\n3\n4";
 
     [ObservableProperty]
     public partial bool BannerColorAccent { get; set; } = false;
@@ -49,7 +49,6 @@ public partial class CoreMenuViewModelImpl : CoreMenuViewModelBase
     private record NavButtonInfo(Color Color, Func<UserControl> ControlGenerator, Type ControlType);
     private static readonly Dictionary<string, NavButtonInfo> _buttonInfos = new() {
         { "Info", new(Color.FromUInt32(0x_FFC6FFFF), () => new InfoSubMenu(), typeof(InfoSubMenuViewModelBase)) },
-        { "Info2", new(Color.FromUInt32(0x_FFFFC6FF), () => new InfoSubMenu(), typeof(InfoSubMenuViewModelBase)) }
     };
 
     private readonly ILogger _logger;
