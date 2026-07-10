@@ -48,7 +48,15 @@ public partial class CoreMenuViewModelImpl : CoreMenuViewModelBase
 {
     private record NavButtonInfo(Color Color, Func<UserControl> ControlGenerator, Type ControlType);
     private static readonly Dictionary<string, NavButtonInfo> _buttonInfos = new() {
-        { "Info", new(Color.FromUInt32(0x_FFC6FFFF), () => new InfoSubMenu(), typeof(InfoSubMenuViewModelBase)) },
+        { "Info",   new(Color.FromUInt32(0x_FFFFADAD), () => new InfoSubMenu(),     typeof(InfoSubMenuViewModelBase)) },
+        { "Input",  new(Color.FromUInt32(0x_FFFFD6A5), () => new InputSubMenu(),    typeof(InputSubMenuViewModelBase)) },
+        { "Output", new(Color.FromUInt32(0x_FFFDFFB6), () => new OutputSubMenu(),   typeof(OutputSubMenuViewModelBase)) },
+        { "Recog",  new(Color.FromUInt32(0x_FFCAFFBF), () => new RecogSubMenu(),    typeof(RecogSubMenuViewModelBase)) },
+        { "Voice",  new(Color.FromUInt32(0x_FF9BF6FF), () => new VoiceSubMenu(),    typeof(VoiceSubMenuViewModelBase)) },
+        { "Trans",  new(Color.FromUInt32(0x_FFA0C4FF), () => new TransSubMenu(),    typeof(TransSubMenuViewModelBase)) },
+        { "OSC",    new(Color.FromUInt32(0x_FFDBB2FF), () => new OscSubMenu(),      typeof(OscSubMenuViewModelBase)) },
+        { "Extras", new(Color.FromUInt32(0x_FFFFC6FF), () => new ExtrasSubMenu(),   typeof(ExtrasSubMenuViewModelBase)) },
+        { "Debug",  new(Color.FromUInt32(0x_FFFFFFFC), () => new DebugSubMenu(),    typeof(DebugSubMenuViewModelBase)) },
     };
 
     private readonly ILogger _logger;

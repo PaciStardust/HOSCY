@@ -47,7 +47,7 @@
         <Border x:Name="navBorder" 
             Grid.Column="1" 
             Grid.Row="1"
-            CornerRadius="8,4,4,8"
+            CornerRadius="8"
             Background="{StaticResource BackgroundBaseBrush}">
 
             <ContentControl Content="{Binding CurrentSubmenu}"/>

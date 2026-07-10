@@ -1,0 +1,18 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:HoscyAvaloniaUi.ViewModels.SubMenus"
+	mc:Ignorable="d" d:DesignHeight="420" d:DesignWidth="689"
+	x:DataType="vm:OscSubMenuViewModelBase"
+	x:Class="HoscyAvaloniaUi.Views.SubMenus.OscSubMenu">
+
+	<Design.DataContext>
+		<vm:OscSubMenuViewModelPreview/>
+	</Design.DataContext>
+
+	<ScrollViewer Margin="16,8,8,8" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="0,0,32,0">
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
