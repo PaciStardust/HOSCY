@@ -88,7 +88,7 @@ public partial class CoreMenuViewModelImpl : CoreMenuViewModelBase
                 Title = buttonInfo.Key,
                 Color = new(buttonInfo.Value.Color),
             };
-            NavButtons.Add(navButton);
+            NavButtons?.Add(navButton);
         }
 
         _notify.OnNotificationSent += HandleNotification;
@@ -148,6 +148,7 @@ public partial class CoreMenuViewModelImpl : CoreMenuViewModelBase
 
         var control = info.ControlGenerator();
         control.DataContext = viewModel.Value;
+        control.Background = new SolidColorBrush(Colors.Transparent);
         CurrentSubmenu = control;
 
         Application.Current!.Resources["AccentBrush"] = info.Color;

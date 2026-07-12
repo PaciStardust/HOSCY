@@ -3,9 +3,11 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="using:HoscyAvaloniaUi.ViewModels.SubMenus"
+	xmlns:cfg="using:HoscyCore.Configuration.Modern"
 	mc:Ignorable="d" d:DesignHeight="420" d:DesignWidth="689"
 	x:DataType="vm:ExtrasSubMenuViewModelBase"
-	x:Class="HoscyAvaloniaUi.Views.SubMenus.ExtrasSubMenu">
+	x:Class="HoscyAvaloniaUi.Views.SubMenus.ExtrasSubMenu"
+	Background="{StaticResource BackgroundBaseBrush}">
 
 	<Design.DataContext>
 		<vm:ExtrasSubMenuViewModelPreview/>
@@ -13,6 +15,28 @@
 
 	<ScrollViewer Margin="16,8,8,8" VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="0,0,32,0">
+			<!-- Header for AFK-->
+			<WrapPanel>
+                <Label Content="AFK" Theme="{StaticResource HLabelL}"/>
+                <Button Content="Reset" Theme="{StaticResource HButton}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="AfkSkipClicked" ToolTip.Tip="Reset AFK status"/>
+            </WrapPanel>
+			
+			<!-- AFK Options -->
+			<StackPanel Theme="{StaticResource HStackIndent}">
+				<CheckBox Theme="{StaticResource HCheckBox}" Content="Show AFK status" IsChecked="{Binding Config.Afk_ShowDuration}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_ShowDuration}"/>
+
+				<!-- AFK Options (Disabled when feature disabled) -->
+				<StackPanel IsEnabled="{Binding Config.Afk_ShowDuration}">
+					<WrapPanel>
+						<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Duration..." Text="{Binding Config.Afk_BaseDurationDisplayIntervalSeconds}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_BaseDurationDisplayIntervalSeconds}"/>
+						<Label Theme="{StaticResource HLabel}" Content="Base display interval (s)" VerticalAlignment="Center"/>
+					</WrapPanel>
+					<WrapPanel>
+						<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Double..." Text="{Binding Config.Afk_TimesDisplayedBeforeDoublingInterval}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_TimesDisplayedBeforeDoublingInterval}"/>
+						<Label Theme="{StaticResource HLabel}" Content="Double interval after displaying ... times" VerticalAlignment="Center"/>
+					</WrapPanel>
+				</StackPanel>
+			</StackPanel>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

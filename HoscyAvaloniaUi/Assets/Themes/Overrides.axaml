@@ -65,6 +65,7 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
                 <Border Theme="{StaticResource HBorder}"> 
                     <TextBlock Theme="{StaticResource HTextBlock}" Text="Waaaa" />
                 </Border>
+                <ToolTip>Waaaaaa</ToolTip>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -375,7 +376,7 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
         </Setter>
 
         <Style Selector="^:checked">
-            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
             <Setter Property="Background" Value="{StaticResource BackgroundDarkBrush}"/>
         </Style> 
 
@@ -1089,6 +1090,31 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
         </Style>
         <Style Selector="^ /template/ Border.selected">
             <Setter Property="Background" Value="{StaticResource BackgroundLightBrush}"/>
+        </Style>
+    </ControlTheme>
+
+    <!-- TOOLTIP -->
+
+    <ControlTheme x:Key="{x:Type ToolTip}" TargetType="ToolTip">
+        <Setter Property="ShowDelay" Value="2"/>
+        <Setter Property="Opacity" Value="0" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Name="PART_LayoutRoot"
+                    Background="{StaticResource BackgroundDarkBrush}">
+
+                    <ContentPresenter Name="PART_ContentPresenter"
+                        Margin="4"
+                        MaxWidth="320"
+                        Content="{TemplateBinding Content}"
+                        ContentTemplate="{TemplateBinding ContentTemplate}"
+                        TextBlock.TextWrapping="Wrap"/>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^:open">
+            <Setter Property="Opacity" Value="1" />
         </Style>
     </ControlTheme>
 </ResourceDictionary>
