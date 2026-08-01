@@ -8,29 +8,19 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
                 <Border Padding="8" Background="{StaticResource BackgroundDarkBrush}">
                     <comp:NavigationButton Title="Mowww" Color="{StaticResource ValidBrush}" />
                 </Border>
-                <Border Padding="4"/>
                 <TextBlock Theme="{StaticResource HTextBlock}" Text="Waaaa" />
-                <Border Padding="4"/>
                 <TextBox Theme="{StaticResource HTextBox}" PlaceholderText="Wtrmrk" Text="Waaaa2" />
-                <Border Padding="4"/>
                 <TextBox Theme="{StaticResource HTextBoxLarge}" PlaceholderText="Wtrmrkkkkkkk" Text="Waaaa22222222222222222222222222222222222222222" />
-                <Border Padding="4"/>
                 <TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Wtrmrkkkkkkk" Text="Waaaa22222222222222222222222222222222222222222" />
-                <Border Padding="4"/>
                 <TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="Wtrmrkkkkkkk" Text="Waaaa22222222222222222222222222222222222222222" />
-                <Border Padding="4"/>
                 <TextBox Theme="{StaticResource HTextBoxLong}" PlaceholderText="Wtrmrkkkkkkk" Text="Waaaa22222222222222222222222222222222222222222" />
-                <Border Padding="4"/>
                 <Button Theme="{StaticResource HButton}" Content="Mwow" />
-                <Border Padding="4"/>
                 <Button Theme="{StaticResource HButtonSmall}" Content="Mwow2" />
-                <Border Padding="4"/>
                 <ComboBox Theme="{StaticResource HComboBox}">
                     <ComboBoxItem Theme="{StaticResource HComboBoxItem}" Content="123"/>
                     <ComboBoxItem Theme="{StaticResource HComboBoxItem}" Content="456"/>
                     <ComboBoxItem Theme="{StaticResource HComboBoxItem}" Content="789"/>
                 </ComboBox>
-                <Border Padding="4"/>
                 <Border Theme="{StaticResource HBorder}"> 
                     <ListBox Theme="{StaticResource HListBox}" Height="100">
                         <ListBoxItem Theme="{StaticResource HListBoxItem}" Content="11"/>
@@ -42,17 +32,11 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
                         <ListBoxItem Theme="{StaticResource HListBoxItem}" Content="55"/>
                     </ListBox>
                 </Border>
-                <Border Padding="4"/>
                 <Label Theme="{StaticResource HLabel}" Content="Mwow2" />
-                <Border Padding="4"/>
                 <Label Theme="{StaticResource HLabelM}" Content="Mwow2" />
-                <Border Padding="4"/>
                 <Label Theme="{StaticResource HLabelL}" Content="Mwow2" />
-                <Border Padding="4"/>
                 <CheckBox Theme="{StaticResource HCheckBox}" Content="Mwow2" />
-                <Border Padding="4"/>
                 <Slider Minimum="0" Maximum="10" Theme="{StaticResource HSlider}"/>
-                <Border Padding="4"/>
                 <ScrollBar
                 Orientation="Horizontal"
                 Minimum="0"
@@ -61,7 +45,6 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
                 ViewportSize="10"
                 Width="200"
                 Theme="{StaticResource HScrollBar}"/>
-                <Border Padding="4"/>
                 <Border Theme="{StaticResource HBorder}"> 
                     <TextBlock Theme="{StaticResource HTextBlock}" Text="Waaaa" />
                 </Border>
@@ -175,11 +158,19 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
 
     <!-- Stack Panel -->
 
-    <ControlTheme x:Key="HStackIndent" TargetType="StackPanel">
+    <ControlTheme x:Key="HStack" TargetType="StackPanel">
+        <Setter Property="Spacing" Value="6"/>
+    </ControlTheme>
+
+    <ControlTheme x:Key="HStackS" TargetType="StackPanel">
+        <Setter Property="Spacing" Value="2"/>
+    </ControlTheme>
+
+    <ControlTheme x:Key="HStackIndent" TargetType="StackPanel" BasedOn="{StaticResource HStack}">
         <Setter Property="Margin" Value="8,0,0,0"/>
     </ControlTheme>
 
-    <ControlTheme x:Key="HStackLarge" TargetType="StackPanel">
+    <ControlTheme x:Key="HStackLarge" TargetType="StackPanel" BasedOn="{StaticResource HStack}">
         <Setter Property="Margin" Value="0,0,32,0"/>
     </ControlTheme>
 
@@ -846,6 +837,11 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
         </Style>
     </ControlTheme>
 
+    <ControlTheme x:Key="HScrollViewerPage" TargetType="ScrollViewer" BasedOn="{StaticResource HScrollViewer}">
+        <Setter Property="Margin" Value="16,8,16,8"/>
+        <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+    </ControlTheme>
+
     <!-- ComboTextBox -->
 
     <ControlTheme x:Key="HComboBoxTextBox" TargetType="TextBox">
@@ -1116,5 +1112,10 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
         <Style Selector="^:open">
             <Setter Property="Opacity" Value="1" />
         </Style>
+    </ControlTheme>
+
+    <!-- WrapPanel -->
+    <ControlTheme x:Key="HWrap" TargetType="WrapPanel">
+        <Setter Property="ItemSpacing" Value="6"/>
     </ControlTheme>
 </ResourceDictionary>

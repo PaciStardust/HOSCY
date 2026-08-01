@@ -13,12 +13,12 @@
 		<vm:ExtrasSubMenuViewModelPreview/>
 	</Design.DataContext>
 
-	<ScrollViewer Margin="16,8,8,8" VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="0,0,32,0">
+	<ScrollViewer Theme="{StaticResource HScrollViewerPage}">
+        <StackPanel Theme="{StaticResource HStack}">
 			<!-- Header for AFK-->
-			<WrapPanel>
+			<WrapPanel Theme="{StaticResource HWrap}">
                 <Label Content="AFK" Theme="{StaticResource HLabelL}"/>
-                <Button Content="Reset" Theme="{StaticResource HButton}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="AfkSkipClicked" ToolTip.Tip="Reset AFK status"/>
+                <Button Content="Reset" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="AfkSkipClicked" ToolTip.Tip="Reset AFK status"/>
             </WrapPanel>
 			
 			<!-- AFK Options -->
@@ -26,15 +26,31 @@
 				<CheckBox Theme="{StaticResource HCheckBox}" Content="Show AFK status" IsChecked="{Binding Config.Afk_ShowDuration}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_ShowDuration}"/>
 
 				<!-- AFK Options (Disabled when feature disabled) -->
-				<StackPanel IsEnabled="{Binding Config.Afk_ShowDuration}">
-					<WrapPanel>
+				<StackPanel Theme="{StaticResource HStack}" IsEnabled="{Binding Config.Afk_ShowDuration}">
+					<WrapPanel Theme="{StaticResource HWrap}">
 						<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Duration..." Text="{Binding Config.Afk_BaseDurationDisplayIntervalSeconds}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_BaseDurationDisplayIntervalSeconds}"/>
 						<Label Theme="{StaticResource HLabel}" Content="Base display interval (s)" VerticalAlignment="Center"/>
 					</WrapPanel>
-					<WrapPanel>
+					
+					<WrapPanel Theme="{StaticResource HWrap}">
 						<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Double..." Text="{Binding Config.Afk_TimesDisplayedBeforeDoublingInterval}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_TimesDisplayedBeforeDoublingInterval}"/>
 						<Label Theme="{StaticResource HLabel}" Content="Double interval after displaying ... times" VerticalAlignment="Center"/>
 					</WrapPanel>
+
+					<StackPanel Theme="{StaticResource HWrap}">
+						<TextBlock Theme="{StaticResource HTextBlock}" Text="AFK start text"/>
+						<TextBox Text="{Binding Config.Afk_StartText}" Tag="AFK start text..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_StartText}"/>
+					</StackPanel>
+
+					<StackPanel Theme="{StaticResource HStackS}">
+						<TextBlock Theme="{StaticResource HTextBlock}" Text="AFK status text"/>
+						<TextBox Text="{Binding Config.Afk_StatusText}" Tag="AFK status text..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_StatusText}"/>
+					</StackPanel>
+
+					<StackPanel Theme="{StaticResource HStackS}">
+						<TextBlock Theme="{StaticResource HTextBlock}" Text="AFK stop text"/>
+						<TextBox Text="{Binding Config.Afk_StopText}" Tag="AFK stop text..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_StopText}"/>
+					</StackPanel>
 				</StackPanel>
 			</StackPanel>
         </StackPanel>
