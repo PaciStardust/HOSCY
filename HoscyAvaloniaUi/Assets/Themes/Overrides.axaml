@@ -1,6 +1,7 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 xmlns:conv="clr-namespace:HoscyAvaloniaUi.Converters;assembly=HoscyAvaloniaUi"
+xmlns:collections="clr-namespace:System.Collections;assembly=System.Runtime"
 xmlns:comp="using:HoscyAvaloniaUi.Components">
     <Design.PreviewWith>
         <Border Padding="20" Background="{StaticResource BackgroundBaseBrush}" Width="600">
@@ -56,6 +57,7 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
 
     <conv:StringNullOrEmptyToBoolConverter x:Key="StringNullOrEmptyToBool"/>
     <conv:IntRangeConverter x:Key="IntRange"/>
+    <conv:ErrorMessageConverter x:Key="ErrorMessage"/>
 
     <!-- TextBlock -->
 
@@ -87,39 +89,41 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
 
         <Setter Property="Template">
             <ControlTemplate>
-                <Border x:Name="border"
-                CornerRadius="4" 
-                Background="{TemplateBinding Background}" 
-                BorderBrush="{TemplateBinding BorderBrush}" 
-                BorderThickness="{TemplateBinding BorderThickness}">
-                    <Grid x:Name="container" Margin="4,4,4,0">
-                        <ScrollViewer x:Name="PART_ScrollViewer" 
-                        Focusable="false" 
-                        HorizontalScrollBarVisibility="Hidden" 
-                        VerticalScrollBarVisibility="Hidden">
-                            <TextPresenter x:Name="PART_TextPresenter" 
-                            CaretBrush="{TemplateBinding CaretBrush}"
-                            Background="Transparent"
-                            SelectionBrush="{TemplateBinding SelectionBrush}"
-                            Text="{TemplateBinding Text}"/>
-                        </ScrollViewer>
+                <DataValidationErrors>
+                    <Border x:Name="border"
+                    CornerRadius="4" 
+                    Background="{TemplateBinding Background}" 
+                    BorderBrush="{TemplateBinding BorderBrush}" 
+                    BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid x:Name="container" Margin="4,4,4,0">
+                            <ScrollViewer x:Name="PART_ScrollViewer" 
+                            Focusable="false" 
+                            HorizontalScrollBarVisibility="Hidden" 
+                            VerticalScrollBarVisibility="Hidden">
+                                <TextPresenter x:Name="PART_TextPresenter" 
+                                CaretBrush="{TemplateBinding CaretBrush}"
+                                Background="Transparent"
+                                SelectionBrush="{TemplateBinding SelectionBrush}"
+                                Text="{TemplateBinding Text}"/>
+                            </ScrollViewer>
 
-                        <TextBlock x:Name="PART_Watermark"
-                        Text="{TemplateBinding Watermark}"
-                        IsHitTestVisible="False"
-                        Margin="{TemplateBinding Padding}"
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Left"
-                        TextWrapping="{TemplateBinding TextWrapping}" 
-                        FontSize="{TemplateBinding FontSize}"
-                        FontFamily="{TemplateBinding FontFamily}"
-                        Foreground="{StaticResource FrontDarkBrush}"
-                        Background="Transparent"
-                        IsVisible="{Binding Text,
-                            RelativeSource={RelativeSource TemplatedParent},
-                            Converter={StaticResource StringNullOrEmptyToBool}}"/>
-                    </Grid>
-                </Border>
+                            <TextBlock x:Name="PART_Watermark"
+                            Text="{TemplateBinding Watermark}"
+                            IsHitTestVisible="False"
+                            Margin="{TemplateBinding Padding}"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Left"
+                            TextWrapping="{TemplateBinding TextWrapping}" 
+                            FontSize="{TemplateBinding FontSize}"
+                            FontFamily="{TemplateBinding FontFamily}"
+                            Foreground="{StaticResource FrontDarkBrush}"
+                            Background="Transparent"
+                            IsVisible="{Binding Text,
+                                RelativeSource={RelativeSource TemplatedParent},
+                                Converter={StaticResource StringNullOrEmptyToBool}}"/>
+                        </Grid>
+                    </Border>
+                </DataValidationErrors>
             </ControlTemplate>
         </Setter>
 
@@ -136,6 +140,10 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
         <Style Selector="^:pointerover:not(:focus)">
             <Setter Property="Background" Value="{StaticResource BackgroundBaseBrush}"/>
         </Style>
+
+        <!-- <Style Selector="^:error">
+            <Setter Property="BorderBrush" Value="Red"/>
+        </Style> -->
 
     </ControlTheme>
 
@@ -1118,5 +1126,43 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
     <!-- WrapPanel -->
     <ControlTheme x:Key="HWrap" TargetType="WrapPanel">
         <Setter Property="ItemSpacing" Value="6"/>
+    </ControlTheme>
+
+    <ControlTheme x:Key="{x:Type DataValidationErrors}"
+    TargetType="DataValidationErrors">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <DockPanel>
+                    <ContentControl DockPanel.Dock="Bottom"
+                                    ContentTemplate="{TemplateBinding ErrorTemplate}"
+                                    DataContext="{TemplateBinding Owner}"
+                                    Content="{Binding (DataValidationErrors.Errors)}"
+                                    IsVisible="{Binding (DataValidationErrors.HasErrors)}" />
+                    <ContentPresenter Name="PART_ContentPresenter"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    Padding="{TemplateBinding Padding}"
+                                    Content="{TemplateBinding Content}" />
+                </DockPanel>
+            </ControlTemplate>
+        </Setter>
+        <Setter Property="ErrorTemplate">
+            <DataTemplate>
+                <ItemsControl ItemsSource="{Binding}"
+                            Foreground="Red">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:CompileBindings="False">
+                            <TextBlock Theme="{StaticResource HTextBlock}" Text="{Binding Converter={StaticResource ErrorMessage}}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                    <ItemsControl.Template>
+                        <ControlTemplate>
+                            <ItemsPresenter />
+                        </ControlTemplate>
+                    </ItemsControl.Template>
+                </ItemsControl>
+            </DataTemplate>
+        </Setter>
     </ControlTheme>
 </ResourceDictionary>
