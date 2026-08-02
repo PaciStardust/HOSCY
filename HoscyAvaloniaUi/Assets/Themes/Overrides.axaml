@@ -10,6 +10,7 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
                 </Border>
                 <TextBlock Theme="{StaticResource HTextBlock}" Text="Waaaa" />
                 <TextBox Theme="{StaticResource HTextBox}" PlaceholderText="Wtrmrk" Text="Waaaa2" />
+                <TextBox Theme="{StaticResource HTextBox}" PlaceholderText="Wtrmrk" Text="Waaaa2 Err"/>
                 <TextBox Theme="{StaticResource HTextBoxLarge}" PlaceholderText="Wtrmrkkkkkkk" Text="Waaaa22222222222222222222222222222222222222222" />
                 <TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Wtrmrkkkkkkk" Text="Waaaa22222222222222222222222222222222222222222" />
                 <TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="Wtrmrkkkkkkk" Text="Waaaa22222222222222222222222222222222222222222" />
@@ -54,6 +55,7 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
     </Design.PreviewWith>
 
     <conv:StringNullOrEmptyToBoolConverter x:Key="StringNullOrEmptyToBool"/>
+    <conv:IntRangeConverter x:Key="IntRange"/>
 
     <!-- TextBlock -->
 
@@ -78,8 +80,8 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
         <Setter Property="TextWrapping" Value="NoWrap"/>
         <Setter Property="FontSize" Value="18"/>
         <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
-        <Setter Property="SelectionBrush" Value="{StaticResource AccentHalfOpaBrush}"/>
-        <Setter Property="CaretBrush" Value="{StaticResource AccentBrush}"/>
+        <Setter Property="SelectionBrush" Value="{DynamicResource AccentHalfOpaBrush}"/>
+        <Setter Property="CaretBrush" Value="{DynamicResource AccentBrush}"/>
 
         <Setter Property="Watermark" Value=""/>
 
@@ -97,6 +99,7 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
                         VerticalScrollBarVisibility="Hidden">
                             <TextPresenter x:Name="PART_TextPresenter" 
                             CaretBrush="{TemplateBinding CaretBrush}"
+                            Background="Transparent"
                             SelectionBrush="{TemplateBinding SelectionBrush}"
                             Text="{TemplateBinding Text}"/>
                         </ScrollViewer>
@@ -111,6 +114,7 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
                         FontSize="{TemplateBinding FontSize}"
                         FontFamily="{TemplateBinding FontFamily}"
                         Foreground="{StaticResource FrontDarkBrush}"
+                        Background="Transparent"
                         IsVisible="{Binding Text,
                             RelativeSource={RelativeSource TemplatedParent},
                             Converter={StaticResource StringNullOrEmptyToBool}}"/>
@@ -124,7 +128,7 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
         </Style>    
 
         <Style Selector="^:focus">
-            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
             <Setter Property="Background" Value="{StaticResource BackgroundDarkBrush}"/>
             <Setter Property="Foreground" Value="{StaticResource FrontBrush}"/>
         </Style>
@@ -133,9 +137,6 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
             <Setter Property="Background" Value="{StaticResource BackgroundBaseBrush}"/>
         </Style>
 
-        <Style Selector="^:invalid">
-            <Setter Property="BorderBrush" Value="{StaticResource InvalidBrush}"/>
-        </Style>
     </ControlTheme>
 
     <ControlTheme x:Key="HTextBoxLarge" TargetType="TextBox" BasedOn="{StaticResource HTextBox}">
@@ -294,7 +295,7 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
         </Style>
 
         <Style Selector="^:selected">
-            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
         </Style>
     </ControlTheme>
 
@@ -348,7 +349,7 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
                         HorizontalAlignment="Center"
                         FontWeight="Bold"
                         FontFamily="Segoe MDL2 Assets"
-                        Foreground="{StaticResource AccentBrush}"
+                        Foreground="{DynamicResource AccentBrush}"
                         IsHitTestVisible="False">
                             &#xE73E;
                         </TextBlock>
@@ -413,7 +414,7 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
                 Background="{TemplateBinding Background}"
                 BorderThickness="2"
                 CornerRadius="3" 
-                BorderBrush="{StaticResource AccentBrush}"/>
+                BorderBrush="{DynamicResource AccentBrush}"/>
             </ControlTemplate>
         </Setter>
 
@@ -590,13 +591,13 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
                 Margin="2"
                 CornerRadius="2"
                 BorderThickness="2"
-                BorderBrush="{StaticResource AccentBrush}"
+                BorderBrush="{DynamicResource AccentBrush}"
                 Background="{TemplateBinding Background}">
                     <Path x:Name="Arrow"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center" 
                     Data="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}"
-                    Fill="{StaticResource AccentBrush}"/>
+                    Fill="{DynamicResource AccentBrush}"/>
                 </Border>
             </ControlTemplate>
         </Setter>
@@ -845,8 +846,8 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
     <!-- ComboTextBox -->
 
     <ControlTheme x:Key="HComboBoxTextBox" TargetType="TextBox">
-        <Setter Property="SelectionBrush" Value="{StaticResource AccentHalfOpaBrush}"/>
-        <Setter Property="CaretBrush" Value="{StaticResource AccentBrush}"/>
+        <Setter Property="SelectionBrush" Value="{DynamicResource AccentHalfOpaBrush}"/>
+        <Setter Property="CaretBrush" Value="{DynamicResource AccentBrush}"/>
 
         <Setter Property="Template">
             <ControlTemplate>
@@ -899,7 +900,7 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
                         VerticalAlignment="Center" 
                         HorizontalAlignment="Right" 
                         Data="M 0 0 L 4 4 L 8 0 Z" 
-                        Fill="{StaticResource AccentBrush}" 
+                        Fill="{DynamicResource AccentBrush}" 
                         Margin="8,0,8,0">
                             <Path.RenderTransform>
                                 <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
@@ -942,7 +943,7 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
         </Style>
 
         <Style Selector="^:selected">
-            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
         </Style>
     </ControlTheme>
 
@@ -1040,7 +1041,7 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
 
         <Style Selector="^:dropdownopen /template/ ToggleButton#PART_Button">
             <Setter Property="Background" Value="{StaticResource BackgroundDarkBrush}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
         </Style>
 
         <Style Selector="^:editable /template/ TextBox#PART_EditableTextBox">
