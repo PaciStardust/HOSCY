@@ -24,18 +24,24 @@ public class ConfigModel : ObservableObject
     private bool _afk_ShowDuration = false;
 
     public const string DESC_Afk_BaseDurationDisplayIntervalSeconds = "The base amount of time (in seconds) between displaying the elapsed AFK duration";
+    public const float MIN_Afk_BaseDurationDisplayIntervalSeconds = 5f;
+    public const float MAX_Afk_BaseDurationDisplayIntervalSeconds = 300f;
     public float Afk_BaseDurationDisplayIntervalSeconds
     {
         get => _afk_BaseDurationDisplayIntervalSeconds;
-        set => SetProperty(ref _afk_BaseDurationDisplayIntervalSeconds, value.MinMax(5, 300));
+        set => SetProperty(ref _afk_BaseDurationDisplayIntervalSeconds, 
+            value.MinMax(MIN_Afk_BaseDurationDisplayIntervalSeconds,MAX_Afk_BaseDurationDisplayIntervalSeconds));
     }
     private float _afk_BaseDurationDisplayIntervalSeconds = 15f;
 
     public const string DESC_Afk_TimesDisplayedBeforeDoublingInterval = "How often should the AFK duration be displayed before doubling the time between updates?";
+    public const int MIN_Afk_TimesDisplayedBeforeDoublingInterval = 1;
+    public const int MAX_Afk_TimesDisplayedBeforeDoublingInterval = 60;
     public int Afk_TimesDisplayedBeforeDoublingInterval
     {
         get => _afk_TimesDisplayedBeforeDoublingInterval;
-        set => SetProperty(ref _afk_TimesDisplayedBeforeDoublingInterval, value.MinMax(1, 60));
+        set => SetProperty(ref _afk_TimesDisplayedBeforeDoublingInterval,
+            value.MinMax(MIN_Afk_TimesDisplayedBeforeDoublingInterval, MAX_Afk_TimesDisplayedBeforeDoublingInterval));
     }
     private int _afk_TimesDisplayedBeforeDoublingInterval = 12;
 

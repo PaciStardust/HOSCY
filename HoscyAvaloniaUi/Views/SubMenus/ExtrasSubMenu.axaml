@@ -28,12 +28,12 @@
 				<!-- AFK Options (Disabled when feature disabled) -->
 				<StackPanel Theme="{StaticResource HStack}" IsEnabled="{Binding Config.Afk_ShowDuration}">
 					<WrapPanel Theme="{StaticResource HWrap}">
-						<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Duration..." Text="{Binding Config.Afk_BaseDurationDisplayIntervalSeconds}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_BaseDurationDisplayIntervalSeconds}"/>
+						<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Duration..." Text="{Binding Config.Afk_BaseDurationDisplayIntervalSeconds, Converter={StaticResource FloatRange}, ConverterParameter=ConfigModel.Afk_BaseDurationDisplayIntervalSeconds}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_BaseDurationDisplayIntervalSeconds}"/>
 						<Label Theme="{StaticResource HLabel}" Content="Base display interval (s)" VerticalAlignment="Center"/>
 					</WrapPanel>
 					
 					<WrapPanel Theme="{StaticResource HWrap}">
-						<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Double..." Text="{Binding Config.Afk_TimesDisplayedBeforeDoublingInterval}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_TimesDisplayedBeforeDoublingInterval}"/>
+						<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Double..." Text="{Binding Config.Afk_TimesDisplayedBeforeDoublingInterval, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.Afk_TimesDisplayedBeforeDoublingInterval}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_TimesDisplayedBeforeDoublingInterval}"/>
 						<Label Theme="{StaticResource HLabel}" Content="Double interval after displaying ... times" VerticalAlignment="Center"/>
 					</WrapPanel>
 

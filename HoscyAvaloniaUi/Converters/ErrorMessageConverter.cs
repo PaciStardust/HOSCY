@@ -9,7 +9,7 @@ namespace HoscyAvaloniaUi.Converters;
 
 public class ErrorMessageConverter : IValueConverter
 {
-    private static readonly Regex _castExceptionExtractor = new(@"Could not convert '{Error: [^:]+: ([^}]+)?}'");
+    private static readonly Regex _castExceptionExtractor = new(@"Could not convert '{(?:[^:]+: )+([^}]+)?}'");
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is BindingNotification notification)
