@@ -29,11 +29,11 @@ public class IntRangeConverter : IValueConverter
         }
         if (!int.TryParse(strValue, out var intValue))
         {
-            return new BindingNotification(new Exception("Provided value is not an integer"), BindingErrorType.Error);
+            return new BindingNotification(new Exception("Input is not an integer"), BindingErrorType.Error);
         }
         if (intValue < min || intValue > max)
         {
-            return new BindingNotification(new Exception($"Provided value should be between {min} and {max}"), BindingErrorType.Error);
+            return new BindingNotification(new Exception($"Input should be between {min} and {max}"), BindingErrorType.Error);
         }
         return intValue;
     }
