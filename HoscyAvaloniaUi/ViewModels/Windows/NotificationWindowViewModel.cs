@@ -7,7 +7,7 @@ using Serilog;
 
 namespace HoscyAvaloniaUi.ViewModels.Windows;
 
-public abstract partial class NotificationWindowViewModelBase : ViewModelBase
+public abstract partial class NotificationWindowViewModelBase : ViewModelBase //todo: init here?
 {
     [ObservableProperty]
     public partial string? WindowTitle { get; set; } = "Notification Title";
