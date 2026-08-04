@@ -176,6 +176,10 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
         <Setter Property="Spacing" Value="2"/>
     </ControlTheme>
 
+    <ControlTheme x:Key="HStackL" TargetType="StackPanel">
+        <Setter Property="Spacing" Value="12"/>
+    </ControlTheme>
+
     <ControlTheme x:Key="HStackIndent" TargetType="StackPanel" BasedOn="{StaticResource HStack}">
         <Setter Property="Margin" Value="8,0,0,0"/>
     </ControlTheme>
@@ -273,6 +277,10 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
         <Style Selector="^:disabled">
             <Setter Property="Opacity" Value="0.65"/>
         </Style> 
+    </ControlTheme>
+
+    <ControlTheme x:Key="HListBoxF" TargetType="ListBox" BasedOn="{StaticResource HListBox}">
+        <Setter Property="ItemContainerTheme" Value="{StaticResource HListBoxItem}"/>
     </ControlTheme>
 
     <!-- ListBoxItem -->
