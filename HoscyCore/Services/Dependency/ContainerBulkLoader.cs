@@ -9,6 +9,11 @@ public class ContainerBulkLoader<T>(IServiceProvider serviceProvider, ILogger lo
     private readonly IServiceProvider _serviceProvider = serviceProvider;
     private readonly ILogger _logger = logger.ForContext(typeof(ContainerBulkLoader<>));
 
+    public Res<T> GetInstance()
+    {
+        return GetInstance(typeof(T));
+    }
+
     public Res<List<T>> GetInstances()
     {
         return LaunchUtils.GetImplementationsInContainerForClass<T>(_serviceProvider, _logger);

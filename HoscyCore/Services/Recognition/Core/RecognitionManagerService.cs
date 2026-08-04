@@ -30,7 +30,7 @@ public class RecognitionManagerService
     #region Injected
     private readonly ConfigModel _config = config;
     private readonly IOutputManagerService _output = output;
-    private readonly IApplicationSound? _sound = soundLoader.GetInstances().Value?.FirstOrDefault();
+    private readonly IApplicationSound? _sound = soundLoader.GetInstance().Value;
     private readonly IOscSendService _sender = sender;
     #endregion
 

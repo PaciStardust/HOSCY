@@ -21,7 +21,7 @@ public class NotificationWindowFactory
     : IService
 {
     private readonly ILogger _logger = logger.ForContext<NotificationWindowFactory>();
-    private readonly IApplicationSound? _sound = soundLoader.GetInstances().Value?.FirstOrDefault();
+    private readonly IApplicationSound? _sound = soundLoader.GetInstance().Value;
     private readonly IContainerBulkLoader<NotificationWindowViewModelBase> _vmLoader = vmLoader;
     private readonly UiHelperService _windowWrapper = windowWrapper;
 
@@ -30,7 +30,7 @@ public class NotificationWindowFactory
         _logger.Debug("Creating notif window (Title=\"{title}\", Msg=\"{msg}\", CopyV={copyV})",
             title, message, copyVisible);
         
-        var vmRes = _vmLoader.GetInstance(typeof(NotificationWindowViewModelBase));
+        var vmRes = _vmLoader.GetInstance();
         if (!vmRes.IsOk) return;
 
         var vm = vmRes.Value;
