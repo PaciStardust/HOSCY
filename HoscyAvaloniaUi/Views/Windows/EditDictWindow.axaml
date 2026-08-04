@@ -21,7 +21,7 @@
 	</Design.DataContext>
 
 	<Grid ColumnDefinitions="5*,3*" Margin="16">
-		<ListBox Theme="{StaticResource HListBoxF}" Grid.Column="0" Margin="0,0,8,0" SelectedIndex="{Binding SelectedIndex}" ItemsSource="{Binding DisplayedValues}"
+		<ListBox Theme="{StaticResource HListBoxF}" Grid.Column="0" Margin="0,0,8,0" SelectedIndex="{Binding IndexSelected}" ItemsSource="{Binding DataDisplayed}"
 			ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="SelectionChanged"/>
 
 		<Grid Grid.Column="1" RowDefinitions="Auto,1*">
@@ -32,15 +32,15 @@
 				</StackPanel>
 				
 				<StackPanel Theme="{StaticResource HStack}">
-					<TextBlock Theme="{StaticResource HTextBlock}" Text="{Binding KeyName}" HorizontalAlignment="Center"/>
-					<TextBox Theme="{StaticResource HTextBox}" Text="{Binding CurrentKey}" PlaceholderText="{Binding KeyWatermark}" KeyUp="KeyReleased"/>
+					<TextBlock Theme="{StaticResource HTextBlock}" Text="{Binding KeyHeader}" HorizontalAlignment="Center"/>
+					<TextBox Theme="{StaticResource HTextBox}" Text="{Binding KeySelected}" PlaceholderText="{Binding KeyPlaceholder}" KeyUp="KeyReleased"/>
 				</StackPanel>
 			</StackPanel>
 
 			<DockPanel Grid.Row="1" Margin="0,16,0,0">
 				<StackPanel Theme="{StaticResource HStack}" DockPanel.Dock="Top">
-					<TextBlock Theme="{StaticResource HTextBlock}" Text="{Binding ValueName}" HorizontalAlignment="Center"/>
-					<TextBox Theme="{StaticResource HTextBoxLarge}" Text="{Binding CurrentValue}" PlaceholderText="{Binding ValueWatermark}" KeyUp="KeyReleased"/>
+					<TextBlock Theme="{StaticResource HTextBlock}" Text="{Binding ValueHeader}" HorizontalAlignment="Center"/>
+					<TextBox Theme="{StaticResource HTextBoxLarge}" Text="{Binding ValueSelected}" PlaceholderText="{Binding ValuePlaceholder}" KeyUp="KeyReleased"/>
 				</StackPanel>
 			</DockPanel>
 		</Grid>

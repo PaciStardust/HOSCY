@@ -14,24 +14,25 @@ public abstract partial class EditDictWindowViewModelBase : ViewModelBase
     [ObservableProperty]
     public partial string Title { get; set; } = "Dictionary Editor";
     [ObservableProperty]
-    public partial string KeyName { get; set; } = "Key";
+    public partial string KeyHeader { get; set; } = "Key";
     [ObservableProperty]
-    public partial string KeyWatermark { get; set; } = "Key...";
+    public partial string KeyPlaceholder { get; set; } = "Key...";
     [ObservableProperty]
-    public partial string ValueName { get; set; } = "Value";
-    [ObservableProperty]
-    public partial string ValueWatermark { get; set; } = "Value...";
-    [ObservableProperty]
-    public partial List<string> DisplayedValues { get; set; } = [];
+    public partial string KeySelected { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial string CurrentKey { get; set; } = string.Empty;
+    public partial string ValueHeader { get; set; } = "Value";
     [ObservableProperty]
-    public partial string CurrentValue { get; set; } = string.Empty;
+    public partial string ValuePlaceholder { get; set; } = "Value...";
     [ObservableProperty]
-    public partial int SelectedIndex { get; set; } = 0;
+    public partial string ValueSelected { get; set; } = string.Empty;
 
-    public Dictionary<string, string> InternalValues { get; set; } = [];
+    [ObservableProperty]
+    public partial int IndexSelected { get; set; } = 0;
+
+    [ObservableProperty]
+    public partial List<string> DataDisplayed { get; set; } = [];
+    public Dictionary<string, string> DataInternal { get; set; } = [];
 
     public virtual void Init(string title, string keyName, string valyeName, Dictionary<string, string> dict) { }
     protected virtual void RefreshDiplayList(int index) { }
@@ -50,63 +51,63 @@ public class EditDictWindowViewModelImpl(ILogger logger) : EditDictWindowViewMod
     {
         _logger.Debug("Initializing dictionary editor with title {title}", title);
         Title = title;
-        KeyName = keyName;
-        KeyWatermark = keyName + "...";
-        ValueName = valueName;
-        ValueWatermark = valueName + "....";
-        InternalValues = dict;
+        KeyHeader = keyName;
+        KeyPlaceholder = keyName + "...";
+        ValueHeader = valueName;
+        ValuePlaceholder = valueName + "....";
+        DataInternal = dict;
         RefreshDiplayList(0);
     }
 
     protected override void RefreshDiplayList(int index)
     {
         List<string> newValues = [];
-        foreach (var x in InternalValues) {
+        foreach (var x in DataInternal) {
             newValues.Add($"{x.Key} : {x.Value}");
         }
-        DisplayedValues = newValues;
-        SelectedIndex = Math.Min(index, InternalValues.Count - 1);
+        DataDisplayed = newValues;
+        IndexSelected = Math.Min(index, DataInternal.Count - 1);
     }
 
     public override void SelectionChanged()
     {
-        if (SelectedIndex == -1)
+        if (IndexSelected == -1)
         {
-            CurrentKey = string.Empty;
-            CurrentValue = string.Empty;
+            KeySelected = string.Empty;
+            ValueSelected = string.Empty;
             return;
         }
 
-        SelectedIndex = Math.Min(SelectedIndex, InternalValues.Count - 1);
-        var curKey = InternalValues.Keys.ToArray()[SelectedIndex];
-        CurrentKey = curKey;
-        CurrentValue = InternalValues[curKey];
+        IndexSelected = Math.Min(IndexSelected, DataInternal.Count - 1);
+        var curKey = DataInternal.Keys.ToArray()[IndexSelected];
+        KeySelected = curKey;
+        ValueSelected = DataInternal[curKey];
     }
 
     public override void AddOrModifyEntry()
     {
-        var newIndex = SelectedIndex;
-        if (InternalValues.ContainsKey(CurrentKey))
+        var newIndex = IndexSelected;
+        if (DataInternal.ContainsKey(KeySelected))
         {
-            InternalValues[CurrentKey] = CurrentValue;
+            DataInternal[KeySelected] = ValueSelected;
         }
         else
         {
-            InternalValues.Add(CurrentKey, CurrentValue);
-            newIndex = InternalValues.Count - 1;
+            DataInternal.Add(KeySelected, ValueSelected);
+            newIndex = DataInternal.Count - 1;
         }
         RefreshDiplayList(newIndex);
     }
 
     public override void RemoveEntry()
     {
-        if (InternalValues.Count == 0 || SelectedIndex == 0)
+        if (DataInternal.Count == 0 || IndexSelected == 0)
         {
             return;
         }
-        SelectedIndex = Math.Min(SelectedIndex, InternalValues.Count - 1);
-        InternalValues.Remove(InternalValues.Keys.ToArray()[SelectedIndex]);
-        RefreshDiplayList(SelectedIndex - 1);
+        IndexSelected = Math.Min(IndexSelected, DataInternal.Count - 1);
+        DataInternal.Remove(DataInternal.Keys.ToArray()[IndexSelected]);
+        RefreshDiplayList(IndexSelected - 1);
     }
 
     public override void KeyPressed(KeyEventArgs args)
