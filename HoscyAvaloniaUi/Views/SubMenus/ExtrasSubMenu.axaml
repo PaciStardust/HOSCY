@@ -28,7 +28,7 @@
 				<!-- AFK Options (Disabled when feature disabled) -->
 				<StackPanel Theme="{StaticResource HStack}" IsEnabled="{Binding Config.Afk_ShowDuration}">
 					<WrapPanel Theme="{StaticResource HWrap}">
-						<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Duration..." Text="{Binding Config.Afk_BaseDurationDisplayIntervalSeconds, Converter={StaticResource FloatRange}, ConverterParameter=ConfigModel.Afk_BaseDurationDisplayIntervalSeconds}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_BaseDurationDisplayIntervalSeconds}"/>
+						<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Duration ..." Text="{Binding Config.Afk_BaseDurationDisplayIntervalSeconds, Converter={StaticResource FloatRange}, ConverterParameter=ConfigModel.Afk_BaseDurationDisplayIntervalSeconds}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_BaseDurationDisplayIntervalSeconds}"/>
 						<Label Theme="{StaticResource HLabel}" Content="Base display interval (s)" VerticalAlignment="Center"/>
 					</WrapPanel>
 					
@@ -37,19 +37,19 @@
 						<Label Theme="{StaticResource HLabel}" Content="Double interval after displaying ... times" VerticalAlignment="Center"/>
 					</WrapPanel>
 
-					<StackPanel Theme="{StaticResource HWrap}">
+					<StackPanel Theme="{StaticResource HStackS}">
 						<TextBlock Theme="{StaticResource HTextBlock}" Text="AFK start text"/>
-						<TextBox Text="{Binding Config.Afk_StartText}" Tag="AFK start text..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_StartText}"/>
+						<TextBox Text="{Binding Config.Afk_StartText}" Tag="AFK start text ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_StartText}"/>
 					</StackPanel>
 
 					<StackPanel Theme="{StaticResource HStackS}">
 						<TextBlock Theme="{StaticResource HTextBlock}" Text="AFK status text"/>
-						<TextBox Text="{Binding Config.Afk_StatusText}" Tag="AFK status text..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_StatusText}"/>
+						<TextBox Text="{Binding Config.Afk_StatusText}" Tag="AFK status text ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_StatusText}"/>
 					</StackPanel>
 
 					<StackPanel Theme="{StaticResource HStackS}">
 						<TextBlock Theme="{StaticResource HTextBlock}" Text="AFK stop text"/>
-						<TextBox Text="{Binding Config.Afk_StopText}" Tag="AFK stop text..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_StopText}"/>
+						<TextBox Text="{Binding Config.Afk_StopText}" Tag="AFK stop text ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_StopText}"/>
 					</StackPanel>
 				</StackPanel>
 			</StackPanel>

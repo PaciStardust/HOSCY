@@ -1,7 +1,6 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 xmlns:conv="clr-namespace:HoscyAvaloniaUi.Converters;assembly=HoscyAvaloniaUi"
-xmlns:collections="clr-namespace:System.Collections;assembly=System.Runtime"
 xmlns:comp="using:HoscyAvaloniaUi.Components">
     <Design.PreviewWith>
         <Border Padding="20" Background="{StaticResource BackgroundBaseBrush}" Width="600">
@@ -12,7 +11,12 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
                 <TextBlock Theme="{StaticResource HTextBlock}" Text="Waaaa" />
                 <TextBox Theme="{StaticResource HTextBox}" PlaceholderText="Wtrmrk" Text="Waaaa2" />
                 <TextBox Theme="{StaticResource HTextBox}" PlaceholderText="Wtrmrk" Text="Waaaa2 Err"/>
-                <TextBox Theme="{StaticResource HTextBoxLarge}" PlaceholderText="Wtrmrkkkkkkk" Text="Waaaa22222222222222222222222222222222222222222" />
+                <Grid Height="100">
+                    <TextBox Theme="{StaticResource HTextBoxLarge}" PlaceholderText="Wtrmrkkkkkkk" Text="Waaaa22222222222222222222222222222222222222222" />
+                </Grid>
+                <Grid Height="100">
+                    <TextBox Theme="{StaticResource HTextBoxLarge}" PlaceholderText="Wtrmrkkkkkkk" Text="" />
+                </Grid>
                 <TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Wtrmrkkkkkkk" Text="Waaaa22222222222222222222222222222222222222222" />
                 <TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="Wtrmrkkkkkkk" Text="Waaaa22222222222222222222222222222222222222222" />
                 <TextBox Theme="{StaticResource HTextBoxLong}" PlaceholderText="Wtrmrkkkkkkk" Text="Waaaa22222222222222222222222222222222222222222" />
@@ -112,7 +116,7 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
                             Text="{TemplateBinding Watermark}"
                             IsHitTestVisible="False"
                             Margin="{TemplateBinding Padding}"
-                            VerticalAlignment="Center"
+                            VerticalAlignment="Top"
                             HorizontalAlignment="Left"
                             TextWrapping="{TemplateBinding TextWrapping}" 
                             FontSize="{TemplateBinding FontSize}"
@@ -169,15 +173,15 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
     <!-- Stack Panel -->
 
     <ControlTheme x:Key="HStack" TargetType="StackPanel">
-        <Setter Property="Spacing" Value="6"/>
+        <Setter Property="Spacing" Value="8"/>
     </ControlTheme>
 
     <ControlTheme x:Key="HStackS" TargetType="StackPanel">
-        <Setter Property="Spacing" Value="2"/>
+        <Setter Property="Spacing" Value="4"/>
     </ControlTheme>
 
     <ControlTheme x:Key="HStackL" TargetType="StackPanel">
-        <Setter Property="Spacing" Value="12"/>
+        <Setter Property="Spacing" Value="16"/>
     </ControlTheme>
 
     <ControlTheme x:Key="HStackIndent" TargetType="StackPanel" BasedOn="{StaticResource HStack}">
@@ -1134,7 +1138,11 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
 
     <!-- WrapPanel -->
     <ControlTheme x:Key="HWrap" TargetType="WrapPanel">
-        <Setter Property="ItemSpacing" Value="6"/>
+        <Setter Property="ItemSpacing" Value="8"/>
+    </ControlTheme>
+
+    <ControlTheme x:Key="HWrapL" TargetType="WrapPanel">
+        <Setter Property="ItemSpacing" Value="16"/>
     </ControlTheme>
 
     <ControlTheme x:Key="{x:Type DataValidationErrors}"

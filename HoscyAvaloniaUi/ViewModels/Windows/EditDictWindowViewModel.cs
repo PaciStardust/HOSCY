@@ -32,7 +32,7 @@ public abstract partial class EditDictWindowViewModelBase : ViewModelBase
 
     [ObservableProperty]
     public partial List<string> DataDisplayed { get; set; } = [];
-    public Dictionary<string, string> DataInternal { get; set; } = [];
+    protected Dictionary<string, string> DataInternal { get; set; } = [];
 
     public virtual void Init(string title, string keyName, string valyeName, Dictionary<string, string> dict) { }
     protected virtual void RefreshDiplayList(int index) { }
@@ -52,9 +52,9 @@ public class EditDictWindowViewModelImpl(ILogger logger) : EditDictWindowViewMod
         _logger.Debug("Initializing dictionary editor with title {title}", title);
         Title = title;
         KeyHeader = keyName;
-        KeyPlaceholder = keyName + "...";
+        KeyPlaceholder = keyName + " ...";
         ValueHeader = valueName;
-        ValuePlaceholder = valueName + "....";
+        ValuePlaceholder = valueName + " ...";
         DataInternal = dict;
         RefreshDiplayList(0);
     }
