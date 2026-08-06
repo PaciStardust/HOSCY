@@ -32,7 +32,7 @@ public abstract partial class EditDictWindowViewModelBase : ViewModelBase
 
     [ObservableProperty]
     public partial List<string> DataDisplayed { get; set; } = [];
-    protected Dictionary<string, string> DataInternal { get; set; } = [];
+    protected Dictionary<string, string> _dataInternal = [];
 
     public virtual void Init(string title, string keyName, string valyeName, Dictionary<string, string> dict) { }
     protected virtual void RefreshDiplayList(int index) { }
@@ -55,22 +55,23 @@ public class EditDictWindowViewModelImpl(ILogger logger) : EditDictWindowViewMod
         KeyPlaceholder = keyName + " ...";
         ValueHeader = valueName;
         ValuePlaceholder = valueName + " ...";
-        DataInternal = dict;
+        _dataInternal = dict;
         RefreshDiplayList(0);
     }
 
     protected override void RefreshDiplayList(int index)
     {
         List<string> newValues = [];
-        foreach (var x in DataInternal) {
+        foreach (var x in _dataInternal) {
             newValues.Add($"{x.Key} : {x.Value}");
         }
         DataDisplayed = newValues;
-        IndexSelected = Math.Min(index, DataInternal.Count - 1);
+        IndexSelected = Math.Min(index, _dataInternal.Count - 1);
     }
 
     public override void SelectionChanged()
     {
+        IndexSelected = Math.Min(IndexSelected, _dataInternal.Count - 1);
         if (IndexSelected == -1)
         {
             KeySelected = string.Empty;
@@ -78,35 +79,38 @@ public class EditDictWindowViewModelImpl(ILogger logger) : EditDictWindowViewMod
             return;
         }
 
-        IndexSelected = Math.Min(IndexSelected, DataInternal.Count - 1);
-        var curKey = DataInternal.Keys.ToArray()[IndexSelected];
+        var curKey = _dataInternal.Keys.ToArray()[IndexSelected];
         KeySelected = curKey;
-        ValueSelected = DataInternal[curKey];
+        ValueSelected = _dataInternal[curKey];
     }
 
     public override void AddOrModifyEntry()
     {
         var newIndex = IndexSelected;
-        if (DataInternal.ContainsKey(KeySelected))
+        if (_dataInternal.ContainsKey(KeySelected))
         {
-            DataInternal[KeySelected] = ValueSelected;
+            _dataInternal[KeySelected] = ValueSelected;
         }
         else
         {
-            DataInternal.Add(KeySelected, ValueSelected);
-            newIndex = DataInternal.Count - 1;
+            _dataInternal.Add(KeySelected, ValueSelected);
+            newIndex = _dataInternal.Count - 1;
         }
+        _logger.Debug("Created or updated value for key {key} in dictionary editor {title}",
+            KeySelected, Title);
         RefreshDiplayList(newIndex);
     }
 
     public override void RemoveEntry()
     {
-        if (DataInternal.Count == 0 || IndexSelected == 0)
+        IndexSelected = Math.Min(IndexSelected, _dataInternal.Count - 1);
+        if (_dataInternal.Count == 0 || IndexSelected == -1)
         {
             return;
         }
-        IndexSelected = Math.Min(IndexSelected, DataInternal.Count - 1);
-        DataInternal.Remove(DataInternal.Keys.ToArray()[IndexSelected]);
+        _dataInternal.Remove(_dataInternal.Keys.ToArray()[IndexSelected]);
+        _logger.Debug("Removed value for key {key} in dictionary editor {title}",
+            KeySelected, Title);
         RefreshDiplayList(IndexSelected - 1);
     }
 
