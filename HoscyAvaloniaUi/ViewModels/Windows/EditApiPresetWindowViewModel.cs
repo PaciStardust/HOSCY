@@ -51,14 +51,12 @@ public abstract partial class EditApiPresetWindowViewModelBase : ViewModelBase
 public class EditApiPresetWindowViewModelImpl
 (
     ILogger logger,
-    IContainerBulkLoader<EditDictWindowViewModelBase> editDictLoader,
-    NotificationWindowFactory notifyFactory
+    PopupWindowFactory popupFactory
 ) 
 : EditApiPresetWindowViewModelBase
 {
     private readonly ILogger _logger = logger.ForContext<EditApiPresetWindowViewModelImpl>();
-    private readonly IContainerBulkLoader<EditDictWindowViewModelBase> _editDictLoader = editDictLoader;
-    private readonly NotificationWindowFactory _notifyFactory = notifyFactory;
+    private readonly PopupWindowFactory _popupFactory = popupFactory;
 
     public override void Init(List<ApiPresetModel> data)
     {
@@ -144,17 +142,8 @@ public class EditApiPresetWindowViewModelImpl
             return;
         }
 
-        var res = _editDictLoader.GetInstance();
-        if (!res.IsOk)
-        {
-            _notifyFactory.CreateAndOpen("Failed to open header editor", res.Msg.Message, true, true, window);
-            return;
-        }
-
         var data = _dataInternal[IndexSelected];
-        res.Value.Init($"Editing headers for API preset {data.Name}", "Header Name", "Header Value", data.HeaderValues);
-        var dialog = new EditDictWindow() { DataContext = res.Value };
-        dialog.ShowDialog(window); //todo: awaitable? also clean this
+        _popupFactory.OpenEditDict($"Editing headers for API preset {data.Name}", "Header Name", "Header Value", data.HeaderValues, window);
     }
 
     public override void KeyPressed(KeyEventArgs args)

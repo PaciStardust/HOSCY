@@ -62,7 +62,7 @@ public partial class CoreMenuViewModelImpl : CoreMenuViewModelBase
     private readonly ILogger _logger;
     private readonly IContainerBulkLoader<ViewModelBase> _vmLoader;
     private readonly ConfigModel _config;
-    private readonly NotificationWindowFactory _notificationFactory;
+    private readonly PopupWindowFactory _popup;
     private readonly IBackToFrontNotifyService _notify;
 
     public CoreMenuViewModelImpl
@@ -70,14 +70,14 @@ public partial class CoreMenuViewModelImpl : CoreMenuViewModelBase
         ILogger logger,
         IContainerBulkLoader<ViewModelBase> vmLoader, 
         ConfigModel config,
-        NotificationWindowFactory notificationFactory,
+        PopupWindowFactory popup,
         IBackToFrontNotifyService notify
     )
     {
         _logger = logger.ForContext<CoreMenuViewModelImpl>();
         _vmLoader = vmLoader;
         _config = config;
-        _notificationFactory = notificationFactory;
+        _popup = popup;
         _notify = notify;
 
         _logger.Information("Loading buttons...");
@@ -99,7 +99,7 @@ public partial class CoreMenuViewModelImpl : CoreMenuViewModelBase
     {
         if (e.Level >= BackToFrontNotifyLevel.Error)
         {
-            _notificationFactory.CreateAndOpen(e.Title, e.Content, true, true);
+            _popup.OpenNotification(e.Title, e.Content, true, true);
         } 
         else
         {
