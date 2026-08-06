@@ -1,0 +1,82 @@
+<Window xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:HoscyAvaloniaUi.ViewModels.Windows"
+	mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="400"
+	x:DataType="vm:EditApiPresetWindowViewModelBase"
+	x:Class="HoscyAvaloniaUi.Views.Windows.EditApiPresetWindow"
+
+	Title="Edit API Presets"
+	MinHeight="400"
+	MinWidth="700"
+	Height="400"
+	Width="700"
+	CanResize="True"
+	Background="{StaticResource BackgroundBaseBrush}" 
+	WindowStartupLocation="CenterOwner">
+
+	<Design.DataContext>
+		<vm:EditApiPresetWindowViewModelPreview/>
+	</Design.DataContext>
+
+	<Grid Margin="16" ColumnDefinitions="4*,5*">
+		<ListBox Grid.Column="0" Theme="{StaticResource HListBoxF}" Margin="0,0,8,0" SelectedIndex="{Binding IndexSelected}" ItemsSource="{Binding DataDisplayed}"
+			ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="SelectionChanged"/>
+
+		<Grid Grid.Column="1" RowDefinitions="Auto,1*" Margin="8,0,0,0">
+			<StackPanel Grid.Row="0" Theme="{StaticResource HStack}">
+				<WrapPanel Theme="{StaticResource HWrap}" HorizontalAlignment="Center">
+					<Button Theme="{StaticResource HButton}" Content="Add New" Click="AddEntry"/>
+					<Button Theme="{StaticResource HButton}" Content="Remove" Click="RemoveEntry"/>
+				</WrapPanel>
+
+				<WrapPanel Theme="{StaticResource HWrap}" HorizontalAlignment="Center">
+					<Button Theme="{StaticResource HButton}" Content="Modify" Click="ModifyEntry"/>
+					<Button Theme="{StaticResource HButton}" Content="Headers" Click="EditHeaders"/>
+				</WrapPanel>
+			</StackPanel>
+
+			<ScrollViewer Grid.Row="1" Theme="{StaticResource HScrollViewer}" Margin="0,16,0,0">
+				<StackPanel Theme="{StaticResource HStack}" Margin="0,0,8,0">
+					<StackPanel Theme="{StaticResource HStackS}">
+						<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Preset Name"/>
+						<TextBox Theme="{StaticResource HTextBox}" Text="{Binding PresetNameSelected}" PlaceholderText="Preset Name ..." KeyUp="KeyPressed"/>
+					</StackPanel>
+
+					<StackPanel Theme="{StaticResource HStackS}">
+						<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Target URL"/>
+						<TextBox Theme="{StaticResource HTextBoxLarge}" Text="{Binding TargetUrlSelected}" PlaceholderText="Target URL ..." KeyUp="KeyPressed"/>
+					</StackPanel>
+
+					<Grid ColumnDefinitions="*,*">
+						<StackPanel Theme="{StaticResource HStackS}" Grid.Column="0" Margin="0,0,8,0">
+							<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Result Field"/>
+							<TextBox Theme="{StaticResource HTextBox}" Text="{Binding ResultFieldSelected}" PlaceholderText="Result Field ..." KeyUp="KeyPressed"/>
+						</StackPanel>
+
+						<StackPanel Theme="{StaticResource HStackS}" Grid.Column="1" Margin="8,0,0,0">
+							<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Timeout (ms)"/>
+							<TextBox Theme="{StaticResource HTextBox}" Text="{Binding TimeoutMsSelected, Converter={StaticResource IntRange}, ConverterParameter=ApiPresetModel.ConnectionTimeout}" PlaceholderText="Timeout ..." KeyUp="KeyPressed"/>
+						</StackPanel>
+					</Grid>
+
+					<StackPanel Theme="{StaticResource HStackS}">
+						<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Content Type"/>
+						<TextBox Theme="{StaticResource HTextBox}" Text="{Binding ContentTypeSelected}" PlaceholderText="Content Type ..." KeyUp="KeyPressed"/>
+					</StackPanel>
+
+					<StackPanel Theme="{StaticResource HStackS}">
+						<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Content (Translation, [T] gets replaced)"/>
+						<TextBox Theme="{StaticResource HTextBoxLarge}" Text="{Binding ContentToSendSelected}" PlaceholderText="Content ..." KeyUp="KeyPressed"/>
+					</StackPanel>
+
+					<StackPanel Theme="{StaticResource HStackS}">
+						<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Authorization Header (Optional)"/>
+						<TextBox Theme="{StaticResource HTextBox}" Text="{Binding AuthHeaderSelected}" PlaceholderText="Auth Header ..." KeyUp="KeyPressed"/>
+					</StackPanel>
+				</StackPanel>
+			</ScrollViewer>
+		</Grid>
+	</Grid>
+</Window>

@@ -83,11 +83,14 @@ public class ApiPresetModel : ObservableObject
     }
     internal AuthenticationHeaderValue? AuthenticationHeader() => _authenticationHeader;
 
+    public const int MIN_ConnectionTimeout = 25;
+    public const int MAX_ConnectionTimeout = 60000;
     private int _connectionTimeout = 3000;
     public int ConnectionTimeout
     {
         get => _connectionTimeout;
-        set => SetProperty(ref _connectionTimeout, value.MinMax(25, 60000));
+        set => SetProperty(ref _connectionTimeout, 
+            value.MinMax(MIN_ConnectionTimeout, MAX_ConnectionTimeout));
     }
 
     internal bool IsValid()
