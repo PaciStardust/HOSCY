@@ -804,6 +804,8 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
     <!-- Scrollviewer -->
 
     <ControlTheme x:Key="HScrollViewer" TargetType="ScrollViewer">
+        <Setter Property="Background" Value="Transparent"/>
+        
         <Setter Property="Template">
             <ControlTemplate>
                 <Grid>
