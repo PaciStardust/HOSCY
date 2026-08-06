@@ -9,7 +9,6 @@ using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Audio;
 using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
-using HoscyCore.Utility;
 using Serilog;
 
 namespace HoscyAvaloniaUi.Services;
@@ -22,7 +21,7 @@ public class PopupWindowFactory
     IContainerBulkLoader<IApplicationSound> soundLoader,
     IContainerBulkLoader<NotificationWindowViewModelBase> notificationWvmLoader,
     IContainerBulkLoader<EditDictWindowViewModelBase> editDictWvmLoader,
-    IContainerBulkLoader<EditApiPresetWindowViewModelBase> editApiPresetWvmLoader
+    IContainerBulkLoader<EditApiPresetsWindowViewModelBase> EditApiPresetsWvmLoader
 )
     : IService
 {
@@ -32,7 +31,7 @@ public class PopupWindowFactory
 
     private readonly IContainerBulkLoader<NotificationWindowViewModelBase> _notificationWvmLoader = notificationWvmLoader;
     private readonly IContainerBulkLoader<EditDictWindowViewModelBase> _editDictWvmLoader = editDictWvmLoader;
-    private readonly IContainerBulkLoader<EditApiPresetWindowViewModelBase> _editApiPresetWvmLoader = editApiPresetWvmLoader;
+    private readonly IContainerBulkLoader<EditApiPresetsWindowViewModelBase> _EditApiPresetsWvmLoader = EditApiPresetsWvmLoader;
 
     private void Open(Func<Window> windowCreate, ViewModelBase vm, bool dialog, Window? parent)
     {
@@ -97,14 +96,14 @@ public class PopupWindowFactory
         Open(() => new EditDictWindow(), vmRes.Value, true, parentWindow);
     }
 
-    public void OpenEditApiPreset(List<ApiPresetModel> list, Window? parentWindow)
+    public void OpenEditApiPresets(List<ApiPresetModel> list, Window? parentWindow)
     {
         _logger.Debug("Creating api preset editor");
 
-        var vmRes = _editApiPresetWvmLoader.GetInstance();
+        var vmRes = _EditApiPresetsWvmLoader.GetInstance();
         if (!vmRes.IsOk) return;
         vmRes.Value.Init(list);
 
-        Open(() => new EditApiPresetWindow(), vmRes.Value, true, parentWindow);
+        Open(() => new EditApiPresetsWindow(), vmRes.Value, true, parentWindow);
     }
 }

@@ -75,7 +75,7 @@ public class ConfigModel : ObservableObject
 
     #region API
     public const string DESC_Api_Presets = "List of all API presets to be used in various locations";
-    public List<ApiPresetModel> Api_Presets
+    public List<ApiPresetModel> Api_Presets //todo: impl
     {
         get => _api_Presets;
         set => SetProperty(ref _api_Presets, value);
@@ -86,7 +86,7 @@ public class ConfigModel : ObservableObject
     #endregion
 
     #region Azure
-    public const string DESC_AzureServices_Region = "Azure region to be used";
+    public const string DESC_AzureServices_Region = "Azure region to be used"; //todo: impl
     public string AzureServices_Region
     {
         get => _azureServices_Region;
@@ -94,7 +94,7 @@ public class ConfigModel : ObservableObject
     }
     private string _azureServices_Region = string.Empty;
 
-    public const string DESC_AzureServices_ApiKey = "API Key used to connect to Azure services";
+    public const string DESC_AzureServices_ApiKey = "API Key used to connect to Azure services"; //todo: impl
     public string AzureServices_ApiKey
     {
         get => _azureServices_ApiKey;
@@ -102,7 +102,7 @@ public class ConfigModel : ObservableObject
     }
     private string _azureServices_ApiKey = string.Empty;
 
-    public const string DESC_AzureServices_CensorProfanity = "Censor profanity from result";
+    public const string DESC_AzureServices_CensorProfanity = "Censor profanity from result"; //todo: impl
     public bool AzureServices_CensorProfanity
     {
         get => _azureServices_CensorProfanity;

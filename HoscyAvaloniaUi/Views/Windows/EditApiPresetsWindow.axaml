@@ -4,8 +4,8 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="using:HoscyAvaloniaUi.ViewModels.Windows"
 	mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="400"
-	x:DataType="vm:EditApiPresetWindowViewModelBase"
-	x:Class="HoscyAvaloniaUi.Views.Windows.EditApiPresetWindow"
+	x:DataType="vm:EditApiPresetsWindowViewModelBase"
+	x:Class="HoscyAvaloniaUi.Views.Windows.EditApiPresetsWindow"
 
 	Title="Edit API Presets"
 	MinHeight="400"
@@ -17,7 +17,7 @@
 	WindowStartupLocation="CenterOwner">
 
 	<Design.DataContext>
-		<vm:EditApiPresetWindowViewModelPreview/>
+		<vm:EditApiPresetsWindowViewModelPreview/>
 	</Design.DataContext>
 
 	<Grid Margin="16" ColumnDefinitions="4*,5*">

@@ -6,14 +6,13 @@ using Avalonia.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using HoscyAvaloniaUi.Services;
 using HoscyAvaloniaUi.ViewModels.Core;
-using HoscyAvaloniaUi.Views.Windows;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
 using Serilog;
 
 namespace HoscyAvaloniaUi.ViewModels.Windows;
 
-public abstract partial class EditApiPresetWindowViewModelBase : ViewModelBase
+public abstract partial class EditApiPresetsWindowViewModelBase : ViewModelBase
 {
     [ObservableProperty]
     public partial string PresetNameSelected { get; set; } = string.Empty;
@@ -47,15 +46,15 @@ public abstract partial class EditApiPresetWindowViewModelBase : ViewModelBase
     public virtual void SelectionChanged() { }
 }
 
-[LoadIntoDiContainer(typeof(EditApiPresetWindowViewModelBase), Lifetime.Transient)]
-public class EditApiPresetWindowViewModelImpl
+[LoadIntoDiContainer(typeof(EditApiPresetsWindowViewModelBase), Lifetime.Transient)]
+public class EditApiPresetsWindowViewModelImpl
 (
     ILogger logger,
     PopupWindowFactory popupFactory
 ) 
-: EditApiPresetWindowViewModelBase
+: EditApiPresetsWindowViewModelBase
 {
-    private readonly ILogger _logger = logger.ForContext<EditApiPresetWindowViewModelImpl>();
+    private readonly ILogger _logger = logger.ForContext<EditApiPresetsWindowViewModelImpl>();
     private readonly PopupWindowFactory _popupFactory = popupFactory;
 
     public override void Init(List<ApiPresetModel> data)
@@ -196,7 +195,7 @@ public class EditApiPresetWindowViewModelImpl
 }
 
 #if DEBUG
-public class EditApiPresetWindowViewModelPreview : EditApiPresetWindowViewModelBase
+public class EditApiPresetsWindowViewModelPreview : EditApiPresetsWindowViewModelBase
 {
     
 }

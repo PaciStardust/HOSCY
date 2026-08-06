@@ -3,46 +3,46 @@ using HoscyAvaloniaUi.ViewModels.Windows;
 
 namespace HoscyAvaloniaUi.Views.Windows;
 
-public partial class EditApiPresetWindow : Window
+public partial class EditApiPresetsWindow : Window
 {
-    public EditApiPresetWindow()
+    public EditApiPresetsWindow()
     {
         InitializeComponent();
     }
 
     private void SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        (DataContext as EditApiPresetWindowViewModelBase)?.SelectionChanged();
+        (DataContext as EditApiPresetsWindowViewModelBase)?.SelectionChanged();
         e.Handled = true;
     }
 
     private void AddEntry(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        (DataContext as EditApiPresetWindowViewModelBase)?.AddEntry();
+        (DataContext as EditApiPresetsWindowViewModelBase)?.AddEntry();
         e.Handled = true;
     }
 
     private void RemoveEntry(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        (DataContext as EditApiPresetWindowViewModelBase)?.RemoveEntry();
+        (DataContext as EditApiPresetsWindowViewModelBase)?.RemoveEntry();
         e.Handled = true;
     }
 
     private void ModifyEntry(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        (DataContext as EditApiPresetWindowViewModelBase)?.ModifyEntry();
+        (DataContext as EditApiPresetsWindowViewModelBase)?.ModifyEntry();
         e.Handled = true;
     }
 
     private void EditHeaders(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        (DataContext as EditApiPresetWindowViewModelBase)?.EditHeaders(this);
+        (DataContext as EditApiPresetsWindowViewModelBase)?.EditHeaders(this);
         e.Handled = true;
     }
 
     private void KeyPressed(object? sender, Avalonia.Input.KeyEventArgs e)
     {
-        (DataContext as EditApiPresetWindowViewModelBase)?.KeyPressed(e);
+        (DataContext as EditApiPresetsWindowViewModelBase)?.KeyPressed(e);
         e.Handled = true;
     }
 }
