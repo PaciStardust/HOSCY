@@ -12,38 +12,24 @@ using Serilog;
 
 namespace HoscyAvaloniaUi.ViewModels.Windows;
 
-public abstract partial class EditApiPresetsWindowViewModelBase : ViewModelBase
+public abstract partial class EditApiPresetsWindowViewModelBase : EditComplexListWindowViewModelBase<ApiPresetModel>
 {
     [ObservableProperty]
-    public partial string PresetNameSelected { get; set; } = string.Empty;
+    public partial string SelectedPresetName { get; set; } = string.Empty;
     [ObservableProperty]
-    public partial string TargetUrlSelected { get; set; } = string.Empty;
+    public partial string SelectedTargetUrl { get; set; } = string.Empty;
     [ObservableProperty]
-    public partial string ResultFieldSelected { get; set; } = string.Empty;
+    public partial string SelectedResultField { get; set; } = string.Empty;
     [ObservableProperty]
-    public partial int TimeoutMsSelected { get; set; } = 0;
+    public partial int SelectedTimeoutMs { get; set; } = 0;
     [ObservableProperty]
-    public partial string ContentTypeSelected { get; set; } = string.Empty;
+    public partial string SelectedContentType { get; set; } = string.Empty;
     [ObservableProperty]
-    public partial string ContentToSendSelected { get; set; } = string.Empty;
+    public partial string SelectedContentToSend { get; set; } = string.Empty;
     [ObservableProperty]
-    public partial string AuthHeaderSelected { get; set; } = string.Empty;
+    public partial string SelectedAuthHeader { get; set; } = string.Empty;
 
-    [ObservableProperty]
-    public partial int IndexSelected { get; set; } = 0;
-
-    [ObservableProperty]
-    public partial List<string> DataDisplayed { get; set; } = [];
-    protected List<ApiPresetModel> _dataInternal = [];
-
-    public virtual void Init(List<ApiPresetModel> data) { }
-    protected virtual void RefreshDiplayList(int index) { }
-    public virtual void AddEntry() { }
-    public virtual void KeyPressed(KeyEventArgs args) { }
-    public virtual void ModifyEntry() { }
-    public virtual void RemoveEntry() { }
     public virtual void EditHeaders(Window window) { }
-    public virtual void SelectionChanged() { }
 }
 
 [LoadIntoDiContainer(typeof(EditApiPresetsWindowViewModelBase), Lifetime.Transient)]
@@ -57,138 +43,96 @@ public class EditApiPresetsWindowViewModelImpl
     private readonly ILogger _logger = logger.ForContext<EditApiPresetsWindowViewModelImpl>();
     private readonly PopupWindowFactory _popupFactory = popupFactory;
 
-    public override void Init(List<ApiPresetModel> data)
+    protected override string GetItemDisplayText(ApiPresetModel item)
     {
-        _dataInternal = data;
-        RefreshDiplayList(0);
+        return item.Name;
     }
 
-    protected override void RefreshDiplayList(int index)
+    protected override string GetModelIdentifier(ApiPresetModel model)
     {
-        List<string> newValues = [];
-        foreach (var x in _dataInternal) {
-            newValues.Add(x.Name);
-        }
-        DataDisplayed = newValues;
-        IndexSelected = Math.Min(index, _dataInternal.Count - 1);
+        return base.GetModelIdentifier(model);
     }
 
-    public override void SelectionChanged()
+    protected override string GetSelectedModelIdentifier()
     {
-        IndexSelected = Math.Min(IndexSelected, _dataInternal.Count - 1);
-        if (IndexSelected == -1)
-        {
-            PresetNameSelected = string.Empty;
-            TargetUrlSelected = string.Empty;
-            ResultFieldSelected = string.Empty;
-            TimeoutMsSelected = 3000;
-            ContentTypeSelected = string.Empty;
-            ContentToSendSelected = string.Empty;
-            AuthHeaderSelected = string.Empty;
-            return;
-        }
-
-        var selectedItem = _dataInternal[IndexSelected];
-        PresetNameSelected = selectedItem.Name;
-        TargetUrlSelected = selectedItem.TargetUrl;
-        ResultFieldSelected = selectedItem.ResultField;
-        TimeoutMsSelected = selectedItem.ConnectionTimeout;
-        ContentTypeSelected = selectedItem.ContentType;
-        ContentToSendSelected = selectedItem.SentData;
-        AuthHeaderSelected = selectedItem.Authorization;
+        return SelectedPresetName;
     }
 
-    public override void AddEntry()
+    protected override void LogModelAdded(ApiPresetModel model)
     {
-        if (string.IsNullOrWhiteSpace(PresetNameSelected))
-        {
-            return;
-        }
-        _dataInternal.Add(CreateModel());
-        RefreshDiplayList(_dataInternal.Count - 1);
+        _logger.Debug("Creating new API Preset entry {entry}", model.ToString());
     }
 
-    public override void RemoveEntry()
+    protected override void LogModelModified(ApiPresetModel oldModel, ApiPresetModel newMoldel)
     {
-        IndexSelected = Math.Min(IndexSelected, _dataInternal.Count - 1);
-        if (IndexSelected == -1)
-        {
-            return;
-        }
-
-        _dataInternal.RemoveAt(IndexSelected);
-        RefreshDiplayList(IndexSelected - 1);
+        _logger.Debug("Updating API Preset entry {entryOld} => {newEntry}", oldModel.ToString(), newMoldel.ToString());
     }
 
-    public override void ModifyEntry()
+    protected override void LogModelRemoved(ApiPresetModel model)
     {
-        IndexSelected = Math.Min(IndexSelected, _dataInternal.Count - 1);
-        if (IndexSelected == -1)
-        {
-            AddEntry();
-            return;
-        }
+        _logger.Debug("Removing API Preset entry {entry}", model.ToString());
+    }
 
-        _dataInternal[IndexSelected] = CreateModel();
-        RefreshDiplayList(IndexSelected);
+    protected override void SetSelectedDataNoItem()
+    {
+        var sample = new ApiPresetModel();
+        SelectedPresetName = sample.Name;
+        SelectedTargetUrl = sample.TargetUrl;
+        SelectedResultField = sample.ResultField;
+        SelectedTimeoutMs = sample.ConnectionTimeout;
+        SelectedContentType = sample.ContentType;
+        SelectedContentToSend = sample.SentData;
+        SelectedAuthHeader = sample.Authorization;
+    }
+
+    protected override void SetSelectedDataWithItem(ApiPresetModel item)
+    {
+        SelectedPresetName = item.Name;
+        SelectedTargetUrl = item.TargetUrl;
+        SelectedResultField = item.ResultField;
+        SelectedTimeoutMs = item.ConnectionTimeout;
+        SelectedContentType = item.ContentType;
+        SelectedContentToSend = item.SentData;
+        SelectedAuthHeader = item.Authorization;
     }
 
     public override void EditHeaders(Window window)
     {
-        IndexSelected = Math.Min(IndexSelected, _dataInternal.Count - 1);
-        if (IndexSelected == -1)
+        var selectedModel = GetSelectedModel();
+        if (selectedModel is null)
         {
             return;
         }
-
-        var data = _dataInternal[IndexSelected];
-        _popupFactory.OpenEditDict($"Editing headers for API preset {data.Name}", "Header Name", "Header Value", data.HeaderValues, window);
+        _popupFactory.OpenEditDict($"Editing headers for API preset {selectedModel.Name}", "Header Name", "Header Value", selectedModel.HeaderValues, window);
     }
 
-    public override void KeyPressed(KeyEventArgs args)
+    protected override ApiPresetModel CreateModelInternal(ApiPresetModel? selectedModel)
     {
-        if (args.Key != Key.Enter) return;
-
-        IndexSelected = Math.Min(IndexSelected, _dataInternal.Count - 1);
-        if (IndexSelected != -1 && PresetNameSelected == _dataInternal[IndexSelected].Name)
-        {
-            ModifyEntry();
-        }
-        else
-        {
-            AddEntry();
-        }
-    }
-
-    private ApiPresetModel CreateModel()
-    {
-        IndexSelected = Math.Min(IndexSelected, _dataInternal.Count - 1);
-
         var model = new ApiPresetModel();
 
-        if (!string.IsNullOrWhiteSpace(PresetNameSelected))
-            model.Name = PresetNameSelected;
+        if (!string.IsNullOrWhiteSpace(SelectedPresetName))
+            model.Name = SelectedPresetName;
 
-        if (!string.IsNullOrWhiteSpace(TargetUrlSelected))
-            model.TargetUrl = TargetUrlSelected;
+        if (!string.IsNullOrWhiteSpace(SelectedTargetUrl))
+            model.TargetUrl = SelectedTargetUrl;
 
-        if (!string.IsNullOrWhiteSpace(ResultFieldSelected))
-            model.ResultField = ResultFieldSelected;
+        if (!string.IsNullOrWhiteSpace(SelectedResultField))
+            model.ResultField = SelectedResultField;
 
-        model.ConnectionTimeout = TimeoutMsSelected;
+        model.ConnectionTimeout = SelectedTimeoutMs;
 
-        if (!string.IsNullOrWhiteSpace(ContentToSendSelected))
-            model.SentData = ContentToSendSelected;
+        if (!string.IsNullOrWhiteSpace(SelectedContentToSend))
+            model.SentData = SelectedContentToSend;
 
-        if (!string.IsNullOrWhiteSpace(ContentTypeSelected))
-            model.ContentType = ContentTypeSelected;
+        if (!string.IsNullOrWhiteSpace(SelectedContentType))
+            model.ContentType = SelectedContentType;
 
-        if (IndexSelected != -1)
-            model.HeaderValues = _dataInternal[IndexSelected].HeaderValues
+        if (selectedModel is not null)
+            model.HeaderValues = selectedModel.HeaderValues
                 .ToDictionary(x => x.Key, x => x.Value);
 
-        if (!string.IsNullOrWhiteSpace(AuthHeaderSelected))
-            model.Authorization = AuthHeaderSelected;
+        if (!string.IsNullOrWhiteSpace(SelectedAuthHeader))
+            model.Authorization = SelectedAuthHeader;
 
         return model;
     }
@@ -197,6 +141,9 @@ public class EditApiPresetsWindowViewModelImpl
 #if DEBUG
 public class EditApiPresetsWindowViewModelPreview : EditApiPresetsWindowViewModelBase
 {
-    
+    protected override ApiPresetModel CreateModelInternal(ApiPresetModel? selectedModel)
+    {
+        return new();
+    }
 }
 #endif

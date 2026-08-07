@@ -9,11 +9,11 @@ namespace HoscyAvaloniaUi.ViewModels.Windows;
 public abstract partial class EditComplexListWindowViewModelBase<Tdata> : ViewModelBase where Tdata : class
 {
     [ObservableProperty]
-    public partial int IndexSelected { get; set; } = 0;
+    public partial int SelectedIndex { get; set; } = 0;
 
     [ObservableProperty]
     public partial List<string> DataDisplayed { get; set; } = [];
-    protected List<Tdata> _dataInternal = [];
+    private List<Tdata> _dataInternal = [];
 
     public void Init(List<Tdata> data)
     {
@@ -25,23 +25,23 @@ public abstract partial class EditComplexListWindowViewModelBase<Tdata> : ViewMo
     {
         List<string> newValues = [];
         foreach (var x in _dataInternal) {
-            newValues.Add(GetItemName(x));
+            newValues.Add(GetItemDisplayText(x));
         }
         DataDisplayed = newValues;
-        IndexSelected = Math.Min(index, _dataInternal.Count - 1);
+        SelectedIndex = Math.Min(index, _dataInternal.Count - 1);
     }
-    protected virtual string GetItemName(Tdata item) { return item.ToString() ?? "Unnamed Item"; }
+    protected virtual string GetItemDisplayText(Tdata item) { return item.ToString() ?? "Unnamed Item"; }
 
     public void SelectionChanged()
     {
-        IndexSelected = Math.Min(IndexSelected, _dataInternal.Count - 1);
-        if (IndexSelected == -1)
+        SelectedIndex = Math.Min(SelectedIndex, _dataInternal.Count - 1);
+        if (SelectedIndex == -1)
         {
             SetSelectedDataNoItem();
             return;
         }
 
-        var selectedItem = _dataInternal[IndexSelected];
+        var selectedItem = _dataInternal[SelectedIndex];
         SetSelectedDataWithItem(selectedItem);
     }
     protected virtual void SetSelectedDataNoItem() { }
@@ -54,39 +54,39 @@ public abstract partial class EditComplexListWindowViewModelBase<Tdata> : ViewMo
             return;
         }
         var model = CreateModel();
-        LogModelCreated(model);
+        LogModelAdded(model);
         _dataInternal.Add(model);
         RefreshDiplayList(_dataInternal.Count - 1);
     }
-    protected virtual void LogModelCreated(Tdata model) { }
+    protected virtual void LogModelAdded(Tdata model) { }
 
     public void RemoveEntry()
     {
-        IndexSelected = Math.Min(IndexSelected, _dataInternal.Count - 1);
-        if (IndexSelected == -1)
+        SelectedIndex = Math.Min(SelectedIndex, _dataInternal.Count - 1);
+        if (SelectedIndex == -1)
         {
             return;
         }
 
-        LogModelRemoved(_dataInternal[IndexSelected]);
-        _dataInternal.RemoveAt(IndexSelected);
-        RefreshDiplayList(IndexSelected - 1);
+        LogModelRemoved(_dataInternal[SelectedIndex]);
+        _dataInternal.RemoveAt(SelectedIndex);
+        RefreshDiplayList(SelectedIndex - 1);
     }
     protected virtual void LogModelRemoved(Tdata model) { }
 
     public void ModifyEntry()
     {
-        IndexSelected = Math.Min(IndexSelected, _dataInternal.Count - 1);
-        if (IndexSelected == -1)
+        SelectedIndex = Math.Min(SelectedIndex, _dataInternal.Count - 1);
+        if (SelectedIndex == -1)
         {
             AddEntry();
             return;
         }
 
         var model = CreateModel();
-        LogModelModified(_dataInternal[IndexSelected], model);
-        _dataInternal[IndexSelected] = model;
-        RefreshDiplayList(IndexSelected);
+        LogModelModified(_dataInternal[SelectedIndex], model);
+        _dataInternal[SelectedIndex] = model;
+        RefreshDiplayList(SelectedIndex);
     }
     protected virtual void LogModelModified(Tdata oldModel, Tdata newMoldel) { }
 
@@ -94,8 +94,8 @@ public abstract partial class EditComplexListWindowViewModelBase<Tdata> : ViewMo
     {
         if (args.Key != Key.Enter) return;
 
-        IndexSelected = Math.Min(IndexSelected, _dataInternal.Count - 1);
-        if (IndexSelected != -1 && GetSelectedModelIdentifier() == GetModelIdentifier(_dataInternal[IndexSelected]))
+        SelectedIndex = Math.Min(SelectedIndex, _dataInternal.Count - 1);
+        if (SelectedIndex != -1 && GetSelectedModelIdentifier() == GetModelIdentifier(_dataInternal[SelectedIndex]))
         {
             ModifyEntry();
         }
@@ -107,10 +107,16 @@ public abstract partial class EditComplexListWindowViewModelBase<Tdata> : ViewMo
 
     protected Tdata CreateModel()
     {
-        IndexSelected = Math.Min(IndexSelected, _dataInternal.Count - 1);
-        return CreateModelInternal(IndexSelected);
+        SelectedIndex = Math.Min(SelectedIndex, _dataInternal.Count - 1);
+        return CreateModelInternal(SelectedIndex == -1 ? null : _dataInternal[SelectedIndex]);
     }
-    protected abstract Tdata CreateModelInternal(int index);
-    protected virtual string GetSelectedModelIdentifier() { return CreateModelInternal(-1).ToString() ?? "Unknown Identifier"; }
-    protected virtual string GetModelIdentifier(Tdata model) { return GetSelectedModelIdentifier(); }
+    protected abstract Tdata CreateModelInternal(Tdata? model);
+    protected virtual string GetSelectedModelIdentifier() { return CreateModelInternal(null).ToString() ?? "Unknown Identifier"; }
+    protected virtual string GetModelIdentifier(Tdata selectedModel) { return GetSelectedModelIdentifier(); }
+
+    protected Tdata? GetSelectedModel()
+    {
+        SelectedIndex = Math.Min(SelectedIndex, _dataInternal.Count - 1);
+        return SelectedIndex == -1 ? null : _dataInternal[SelectedIndex];
+    }
 }
