@@ -19,6 +19,7 @@ public abstract partial class EditComplexListWindowViewModelBase<Tdata> : ViewMo
     {
         _dataInternal = data;
         RefreshDiplayList(0);
+        SelectionChanged();
     }
 
     protected void RefreshDiplayList(int index)
