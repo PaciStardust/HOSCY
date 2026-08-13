@@ -50,13 +50,13 @@
 						<TextBox Theme="{StaticResource HTextBoxLarge}" Text="{Binding SelectedTargetUrl}" PlaceholderText="Target URL ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:ApiPresetModel.DESC_TargetUrl}"/>
 					</StackPanel>
 
-					<Grid ColumnDefinitions="*,*">
-						<StackPanel Theme="{StaticResource HStackS}" Grid.Column="0" Margin="0,0,8,0">
+					<Grid ColumnDefinitions="*,16,*">
+						<StackPanel Theme="{StaticResource HStackS}" Grid.Column="0">
 							<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Result Field"/>
 							<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedResultField}" PlaceholderText="Result Field ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:ApiPresetModel.DESC_Result}"/>
 						</StackPanel>
 
-						<StackPanel Theme="{StaticResource HStackS}" Grid.Column="1" Margin="8,0,0,0">
+						<StackPanel Theme="{StaticResource HStackS}" Grid.Column="2">
 							<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Timeout (ms)"/>
 							<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedTimeoutMs, Converter={StaticResource IntRange}, ConverterParameter=ApiPresetModel.ConnectionTimeout}" PlaceholderText="Timeout ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:ApiPresetModel.DESC_ConnectionTimeout}"/>
 						</StackPanel>
