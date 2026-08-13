@@ -81,6 +81,6 @@ public class CounterModel : ObservableObject
 
     public override string ToString()
     {
-        return $"{(Enabled ? "" : "[x] ")}{Name}: {Count:N0}";
+        return $"{(Enabled ? DoDisplay ? "" : "[h]" : "[x] ")}{Name}: {Count:N0}";
     }
 }
