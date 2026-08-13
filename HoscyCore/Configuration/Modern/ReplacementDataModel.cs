@@ -12,6 +12,7 @@ public class ReplacementDataModel : ObservableObject
     }
     public ReplacementDataModel() { }
 
+    public const string DESC_Text = "Text that is being searched for replacing";
     private string _text = "New Text";
     public string Text
     {
@@ -19,6 +20,7 @@ public class ReplacementDataModel : ObservableObject
         set => SetProperty(ref _text, string.IsNullOrWhiteSpace(value) ? "New Text" : value);
     }
 
+    public const string DESC_Replacement = "Text that the original text will be replaced with";
     private string _replacement = "Example";
     public string Replacement
     {
@@ -26,6 +28,7 @@ public class ReplacementDataModel : ObservableObject
         set => SetProperty(ref _replacement, value);
     }
 
+    public const string DESC_Enabled = "Sets if replacement will trigger";
     private bool _enabled = true;
     public bool Enabled
     {
@@ -33,6 +36,7 @@ public class ReplacementDataModel : ObservableObject
         set => SetProperty(ref _enabled, value);
     }
 
+    public const string DESC_UseRegex = "Set search text to be a regular expression";
     private bool _useRegex;
     public bool UseRegex
     {
@@ -40,6 +44,7 @@ public class ReplacementDataModel : ObservableObject
         set => SetProperty(ref _useRegex, value);
     }
 
+    public const string DESC_IgnoreCase = "Set search text to be case insensitive";
     private bool _ignoreCase = true;
     public bool IgnoreCase
     {

@@ -12,6 +12,7 @@ public class FilterModel : ObservableObject
     }
     public FilterModel() { }
 
+    public const string DESC_Name = "Name of filter to be displayed on logs";
     private const string NO_FILTER_NAME = "Unnamed Filter";
     private string _name = NO_FILTER_NAME;
     public string Name
@@ -20,6 +21,7 @@ public class FilterModel : ObservableObject
         set => SetProperty(ref _name, string.IsNullOrWhiteSpace(value) ? NO_FILTER_NAME : value);
     }
 
+    public const string DESC_FilterString = "Text to look out for when filtering";
     private const string FILTER_TEXT_PLACEHOLDER = "Filter Text";
     private string _filterString = FILTER_TEXT_PLACEHOLDER;
     public string FilterString
@@ -32,6 +34,7 @@ public class FilterModel : ObservableObject
         }
     }
 
+    public const string DESC_Enabled = "Toggle filter being enabled";
     private bool _enabled = true;
     public bool Enabled
     {
@@ -43,6 +46,7 @@ public class FilterModel : ObservableObject
         }
     }
 
+    public const string DESC_IgnoreCase = "Toggle case sensitivity for the filter";
     private bool _ignoreCase = true;
     public bool IgnoreCase
     {
@@ -54,6 +58,7 @@ public class FilterModel : ObservableObject
         }
     }
 
+    public const string DESC_UseRegex = "Toggle regular expression checks for the filter";
     private bool _useRegex = false;
     public bool UseRegex
     {

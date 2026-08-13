@@ -121,18 +121,24 @@ public class ConfigModel : ObservableObject
     private bool _counters_ShowNotification;
 
     public const string DESC_Counters_DisplayDurationSeconds = "Duration (in seconds) that a recently triggered counter appears in update notifications";
+    public const float MIN_Counters_DisplayDurationSeconds = 0.01f;
+    public const float MAX_Counters_DisplayDurationSeconds = 30f;
     public float Counters_DisplayDurationSeconds
     {
         get => _counters_DisplayDurationSeconds;
-        set => SetProperty(ref _counters_DisplayDurationSeconds, value.MinMax(0.01f, 30));
+        set => SetProperty(ref _counters_DisplayDurationSeconds,
+            value.MinMax(MIN_Counters_DisplayDurationSeconds, MAX_Counters_DisplayDurationSeconds));
     }
     private float _counters_DisplayDurationSeconds = 10f;
 
     public const string DESC_Counters_DisplayCooldownSeconds = "Duration (in seconds) that notifications are paused after the last send";
+    public const float MIN_Counters_DisplayCooldownSeconds = 0f;
+    public const float MAX_Counters_DisplayCooldownSeconds = 300f;
     public float Counters_DisplayCooldownSeconds
     {
         get => _counters_DisplayCooldownSeconds;
-        set => SetProperty(ref _counters_DisplayCooldownSeconds, value.MinMax(0, 300));
+        set => SetProperty(ref _counters_DisplayCooldownSeconds,
+            value.MinMax(MIN_Counters_DisplayCooldownSeconds, MAX_Counters_DisplayCooldownSeconds));
     }
     private float _counters_DisplayCooldownSeconds = 0f;
 
@@ -422,10 +428,13 @@ public class ConfigModel : ObservableObject
     private List<string> _media_Mpris_IgnoredEndpoints = [];
 
     public const string DESC_Media_Mpris_EndpointUpdateIntervalMs = "Interval (in ms) in which MPRIS endpoint changes are checked";
+    public const int MIN_Media_Mpris_EndpointUpdateIntervalMs = 250;
+    public const int MAX_Media_Mpris_EndpointUpdateIntervalMs = 60_000;
     public int Media_Mpris_EndpointUpdateIntervalMs 
     {
         get => _media_Mpris_EndpointUpdateIntervalMs;
-        set => SetProperty(ref _media_Mpris_EndpointUpdateIntervalMs, value.MinMax(250, 60_000));
+        set => SetProperty(ref _media_Mpris_EndpointUpdateIntervalMs,
+            value.MinMax(MIN_Media_Mpris_EndpointUpdateIntervalMs, MAX_Media_Mpris_EndpointUpdateIntervalMs));
     }
     private int _media_Mpris_EndpointUpdateIntervalMs = 1000;
     #endregion
@@ -440,18 +449,24 @@ public class ConfigModel : ObservableObject
     private string _osc_Routing_TargetIp = "127.0.0.1";
 
     public const string DESC_Osc_Routing_TargetPort = "Target port for outbound OSC messages";
+    public const ushort MIN_Osc_Routing_TargetPort = ushort.MinValue;
+    public const ushort MAX_Osc_Routing_TargetPort = ushort.MaxValue;
     public ushort Osc_Routing_TargetPort
     {
         get => _osc_Routing_TargetPort;
-        set => SetProperty(ref _osc_Routing_TargetPort, value.MinMax(ushort.MinValue, ushort.MaxValue));
+        set => SetProperty(ref _osc_Routing_TargetPort,
+            value.MinMax(MIN_Osc_Routing_TargetPort, MAX_Osc_Routing_TargetPort));
     }
     private ushort _osc_Routing_TargetPort = 9000;
 
     public const string DESC_Osc_Routing_ListenPort = "Port to listen for inbound OSC messages on";
+    public const int MIN_Osc_Routing_ListenPort = -1;
+    public const int MAX_Osc_Routing_ListenPort = 65535;
     public int Osc_Routing_ListenPort
     {
         get => _osc_Routing_ListenPort;
-        set => SetProperty(ref _osc_Routing_ListenPort, value.MinMax(-1, 65535));
+        set => SetProperty(ref _osc_Routing_ListenPort, value.MinMax(
+            MIN_Osc_Routing_ListenPort, MAX_Osc_Routing_ListenPort));
     }
     private int _osc_Routing_ListenPort = 9001;
 
@@ -744,10 +759,13 @@ public class ConfigModel : ObservableObject
     private bool _output_VrcTxt_Send_AddOriginalToTranslation = true;
 
     public const string DESC_Output_VrcTxt_Send_MaxDisplayedCharacters = "Maximum characters to be displayed in Textbox at once";
+    public const int MIN_Output_VrcTxt_Send_MaxDisplayedCharacters = 10;
+    public const int MAX_Output_VrcTxt_Send_MaxDisplayedCharacters = 130;
     public int Output_VrcTxt_Send_MaxDisplayedCharacters
     {
         get => _output_VrcTxt_Send_MaxDisplayedCharacters;
-        set => SetProperty(ref _output_VrcTxt_Send_MaxDisplayedCharacters, value.MinMax(10, 130));
+        set => SetProperty(ref _output_VrcTxt_Send_MaxDisplayedCharacters, 
+            value.MinMax(MIN_Output_VrcTxt_Send_MaxDisplayedCharacters, MAX_Output_VrcTxt_Send_MaxDisplayedCharacters));
     }
     private int _output_VrcTxt_Send_MaxDisplayedCharacters = 130;
 
@@ -768,26 +786,35 @@ public class ConfigModel : ObservableObject
     private bool _output_VrcTxt_Do_Indicator = true;
 
     public const string DESC_Output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs = "Timeout (in ms) per 20 characters to be displayed at once";
+    public const int MIN_Output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs = 250;
+    public const int MAX_Output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs = 10_000;
     public int Output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs
     {
         get => _output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs;
-        set => SetProperty(ref _output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs, value.MinMax(250, 10000));
+        set => SetProperty(ref _output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs, 
+            value.MinMax(MIN_Output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs, MAX_Output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs));
     }
     private int _output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs = 1250;
 
     public const string DESC_Output_VrcTxt_Timeout_DynamicMinimumMs = "Minimum timeout (in ms) when computing timeout per 20 characters";
+    public const int MIN_Output_VrcTxt_Timeout_DynamicMinimumMs = 1_250;
+    public const int MAX_Output_VrcTxt_Timeout_DynamicMinimumMs = 30_000;
     public int Output_VrcTxt_Timeout_DynamicMinimumMs
     {
         get => _output_VrcTxt_Timeout_DynamicMinimumMs;
-        set => SetProperty(ref _output_VrcTxt_Timeout_DynamicMinimumMs, value.MinMax(1250, 30000));
+        set => SetProperty(ref _output_VrcTxt_Timeout_DynamicMinimumMs,
+            value.MinMax(MIN_Output_VrcTxt_Timeout_DynamicMinimumMs, MAX_Output_VrcTxt_Timeout_DynamicMinimumMs));
     }
     private int _output_VrcTxt_Timeout_DynamicMinimumMs = 3000;
 
     public const string DESC_Output_VrcTxt_Timeout_StaticMs = "Static timeout (in ms) for sent text";
+    public const int MIN_Output_VrcTxt_Timeout_StaticMs = 1_250;
+    public const int MAX_Output_VrcTxt_Timeout_StaticMs = 30_000;
     public int Output_VrcTxt_Timeout_StaticMs
     {
         get => _output_VrcTxt_Timeout_StaticMs;
-        set => SetProperty(ref _output_VrcTxt_Timeout_StaticMs, value.MinMax(1250, 30000));
+        set => SetProperty(ref _output_VrcTxt_Timeout_StaticMs,
+            value.MinMax(MIN_Output_VrcTxt_Timeout_StaticMs, MAX_Output_VrcTxt_Timeout_StaticMs));
     }
     private int _output_VrcTxt_Timeout_StaticMs = 5000;
 
@@ -1046,10 +1073,13 @@ public class ConfigModel : ObservableObject
     private string _recognition_Api_Preset = string.Empty;
 
     public const string DESC_Recognition_Api_MaxRecordingTime = "Maximum recording time (in seconds) at a time";
+    public const int MIN_Recognition_Api_MaxRecordingTime = 1;
+    public const int MAX_Recognition_Api_MaxRecordingTime = 300;
     public int Recognition_Api_MaxRecordingTime
     {
         get => _recognition_Api_MaxRecordingTime;
-        set => SetProperty(ref _recognition_Api_MaxRecordingTime, value.MinMax( 1, 300));
+        set => SetProperty(ref _recognition_Api_MaxRecordingTime, 
+            value.MinMax(MIN_Recognition_Api_MaxRecordingTime, MAX_Recognition_Api_MaxRecordingTime));
     }
     private int _recognition_Api_MaxRecordingTime = 30;
     #endregion
@@ -1098,10 +1128,13 @@ public class ConfigModel : ObservableObject
     private string _recognition_Vosk_CurrentModel = string.Empty;
 
     public const string DESC_Recognition_Vosk_NewWordWaitTimeMs = "Time to wait (in ms) for new word before stopping sentence";
+    public const int MIN_Recognition_Vosk_NewWordWaitTimeMs = 500;
+    public const int MAX_Recognition_Vosk_NewWordWaitTimeMs = 30_000;
     public int Recognition_Vosk_NewWordWaitTimeMs
     {
         get => _recognition_Vosk_NewWordWaitTimeMs;
-        set => SetProperty(ref _recognition_Vosk_NewWordWaitTimeMs,value.MinMax(500, 30000));
+        set => SetProperty(ref _recognition_Vosk_NewWordWaitTimeMs,
+            value.MinMax(MIN_Recognition_Vosk_NewWordWaitTimeMs, MAX_Recognition_Vosk_NewWordWaitTimeMs));
     }
     private int _recognition_Vosk_NewWordWaitTimeMs = 2500;
     #endregion
@@ -1188,42 +1221,57 @@ public class ConfigModel : ObservableObject
     private string _recognition_Whisper_Cfg_Language = string.Empty;
 
     public const string DESC_Recognition_Whisper_Cfg_MaxSentenceDurationMs = "Rough maximum cutoff time (in ms) for sentences";
+    public const int MIN_Recognition_Whisper_Cfg_MaxSentenceDurationMs = 4_000;
+    public const int MAX_Recognition_Whisper_Cfg_MaxSentenceDurationMs = int.MaxValue;
     public int Recognition_Whisper_Cfg_MaxSentenceDurationMs
     {
         get => _recognition_Whisper_Cfg_MaxSentenceDurationMs;
-        set => SetProperty(ref _recognition_Whisper_Cfg_MaxSentenceDurationMs, value.MinMax(4_000, int.MaxValue));
+        set => SetProperty(ref _recognition_Whisper_Cfg_MaxSentenceDurationMs,
+            value.MinMax(MIN_Recognition_Whisper_Cfg_MaxSentenceDurationMs, MAX_Recognition_Whisper_Cfg_MaxSentenceDurationMs));
     }
     private int _recognition_Whisper_Cfg_MaxSentenceDurationMs = 16_000;
 
     public const string DESC_Recognition_Whisper_Cfg_MinSentenceDurationMs = "Minimum time (in ms) for sentences";
+    public const int MIN_Recognition_Whisper_Cfg_MinSentenceDurationMs = 100;
+    public const int MAX_Recognition_Whisper_Cfg_MinSentenceDurationMs = 2_000;
     public int Recognition_Whisper_Cfg_MinSentenceDurationMs
     {
         get => _recognition_Whisper_Cfg_MinSentenceDurationMs;
-        set => SetProperty(ref _recognition_Whisper_Cfg_MinSentenceDurationMs, value.MinMax(100, 2_000));
+        set => SetProperty(ref _recognition_Whisper_Cfg_MinSentenceDurationMs,
+            value.MinMax(MIN_Recognition_Whisper_Cfg_MinSentenceDurationMs, MAX_Recognition_Whisper_Cfg_MinSentenceDurationMs));
     }
     private int _recognition_Whisper_Cfg_MinSentenceDurationMs = 250;
 
     public const string DESC_Recognition_Whisper_Cfg_DetectPauseDurationMs = "Duration (in ms) of a pause for cutoff in";
+    public const int MIN_Recognition_Whisper_Cfg_DetectPauseDurationMs = 250;
+    public const int MAX_Recognition_Whisper_Cfg_DetectPauseDurationMs = 2_000;
     public int Recognition_Whisper_Cfg_DetectPauseDurationMs
     {
         get => _recognition_Whisper_Cfg_DetectPauseDurationMs;
-        set => SetProperty(ref _recognition_Whisper_Cfg_DetectPauseDurationMs, value.MinMax(250, 2_000));
+        set => SetProperty(ref _recognition_Whisper_Cfg_DetectPauseDurationMs,
+            value.MinMax(MIN_Recognition_Whisper_Cfg_DetectPauseDurationMs, MAX_Recognition_Whisper_Cfg_DetectPauseDurationMs));
     }
     private int _recognition_Whisper_Cfg_DetectPauseDurationMs = 500;
 
     public const string DESC_Recognition_Whisper_Cfg_DetectOuterSilenceDurationMs = "Duration (in ms) to recognize a silence in outer segments";
+    public const int MIN_Recognition_Whisper_Cfg_DetectOuterSilenceDurationMs = 100;
+    public const int MAX_Recognition_Whisper_Cfg_DetectOuterSilenceDurationMs = 1_000;
     public int Recognition_Whisper_Cfg_DetectOuterSilenceDurationMs
     {
         get => _recognition_Whisper_Cfg_DetectOuterSilenceDurationMs;
-        set => SetProperty(ref _recognition_Whisper_Cfg_DetectOuterSilenceDurationMs, value.MinMax(100, 1000));
+        set => SetProperty(ref _recognition_Whisper_Cfg_DetectOuterSilenceDurationMs,
+            value.MinMax(MIN_Recognition_Whisper_Cfg_DetectOuterSilenceDurationMs, MAX_Recognition_Whisper_Cfg_DetectOuterSilenceDurationMs));
     }
     private int _recognition_Whisper_Cfg_DetectOuterSilenceDurationMs = 250;
 
     public const string DESC_Recognition_Whisper_Cfg_RecognitionUpdateIntervalMs = "Update rate (in ms) for intermediate processing (lower = more intensive)";
+    public const int MIN_Recognition_Whisper_Cfg_RecognitionUpdateIntervalMs = 250;
+    public const int MAX_Recognition_Whisper_Cfg_RecognitionUpdateIntervalMs = 4_000;
     public int Recognition_Whisper_Cfg_RecognitionUpdateIntervalMs
     {
         get => _recognition_Whisper_Cfg_RecognitionUpdateIntervalMs;
-        set => SetProperty(ref _recognition_Whisper_Cfg_RecognitionUpdateIntervalMs, value.MinMax(250, 4_000));
+        set => SetProperty(ref _recognition_Whisper_Cfg_RecognitionUpdateIntervalMs,
+            value.MinMax(MIN_Recognition_Whisper_Cfg_RecognitionUpdateIntervalMs, MAX_Recognition_Whisper_Cfg_RecognitionUpdateIntervalMs));
     }
     private int _recognition_Whisper_Cfg_RecognitionUpdateIntervalMs = 500;
 
@@ -1236,74 +1284,99 @@ public class ConfigModel : ObservableObject
     private WhisperIpcVadOperatingMode _recognition_Whisper_Cfg_VadOperatingMode = WhisperIpcVadOperatingMode.Aggressive;
 
     public const string DESC_Recognition_Whisper_CfgAdv_BeamSize = "Beam size for beam search sampling strategy";
+    public const int MIN_Recognition_Whisper_CfgAdv_BeamSize = 0;
+    public const int MAX_Recognition_Whisper_CfgAdv_BeamSize = 10;
     public int Recognition_Whisper_CfgAdv_BeamSize
     {
         get => _recognition_Whisper_CfgAdv_BeamSize;
-        set => SetProperty(ref _recognition_Whisper_CfgAdv_BeamSize, value.MinMax(0, 10));
+        set => SetProperty(ref _recognition_Whisper_CfgAdv_BeamSize,
+            value.MinMax(MIN_Recognition_Whisper_CfgAdv_BeamSize, MAX_Recognition_Whisper_CfgAdv_BeamSize));
     }
     private int _recognition_Whisper_CfgAdv_BeamSize = 0;
 
     public const string DESC_Recognition_Whisper_CfgAdv_GreedyBestOf = "Best of for greedy sampling strategy";
+    public const int MIN_Recognition_Whisper_CfgAdv_GreedyBestOf = 0;
+    public const int MAX_Recognition_Whisper_CfgAdv_GreedyBestOf = 10;
     public int Recognition_Whisper_CfgAdv_GreedyBestOf
     {
         get => _recognition_Whisper_CfgAdv_GreedyBestOf;
-        set => SetProperty(ref _recognition_Whisper_CfgAdv_GreedyBestOf, value.MinMax(0, 10));
+        set => SetProperty(ref _recognition_Whisper_CfgAdv_GreedyBestOf,
+            value.MinMax(MIN_Recognition_Whisper_CfgAdv_GreedyBestOf, MAX_Recognition_Whisper_CfgAdv_GreedyBestOf));
     }
     private int _recognition_Whisper_CfgAdv_GreedyBestOf = 0;
 
     public const string DESC_Recognition_Whisper_CfgAdv_GraphicsAdapterId = "Id of GPU to use";
+    public const int MIN_Recognition_Whisper_CfgAdv_GraphicsAdapterId = 0;
+    public const int MAX_Recognition_Whisper_CfgAdv_GraphicsAdapterId = int.MaxValue;
     public int Recognition_Whisper_CfgAdv_GraphicsAdapterId
     {
         get => _recognition_Whisper_CfgAdv_GraphicsAdapterId;
-        set => SetProperty(ref _recognition_Whisper_CfgAdv_GraphicsAdapterId, value.MinMax(0, int.MaxValue));
+        set => SetProperty(ref _recognition_Whisper_CfgAdv_GraphicsAdapterId,
+            value.MinMax(MIN_Recognition_Whisper_CfgAdv_GraphicsAdapterId, MAX_Recognition_Whisper_CfgAdv_GraphicsAdapterId));
     }
     private int _recognition_Whisper_CfgAdv_GraphicsAdapterId = 0;
 
     public const string DESC_Recognition_Whisper_CfgAdv_MaxInitialT = "MaxInitialT for Whisper";
+    public const float MIN_Recognition_Whisper_CfgAdv_MaxInitialT = -1;
+    public const float MAX_Recognition_Whisper_CfgAdv_MaxInitialT = 1;
     public float Recognition_Whisper_CfgAdv_MaxInitialT
     {
         get => _recognition_Whisper_CfgAdv_MaxInitialT;
-        set => SetProperty(ref _recognition_Whisper_CfgAdv_MaxInitialT, value.MinMax(-1, 1));
+        set => SetProperty(ref _recognition_Whisper_CfgAdv_MaxInitialT, value.MinMax(MIN_Recognition_Whisper_CfgAdv_MaxInitialT, MAX_Recognition_Whisper_CfgAdv_MaxInitialT));
     }
     private float _recognition_Whisper_CfgAdv_MaxInitialT = -1;
 
     public const string DESC_Recognition_Whisper_CfgAdv_NoSpeechThreshold = "No speech threshold for Whisper";
+    public const float MIN_Recognition_Whisper_CfgAdv_NoSpeechThreshold = -1;
+    public const float MAX_Recognition_Whisper_CfgAdv_NoSpeechThreshold = 1;
     public float Recognition_Whisper_CfgAdv_NoSpeechThreshold
     {
         get => _recognition_Whisper_CfgAdv_NoSpeechThreshold;
-        set => SetProperty(ref _recognition_Whisper_CfgAdv_NoSpeechThreshold, value.MinMax(-1, 1));
+        set => SetProperty(ref _recognition_Whisper_CfgAdv_NoSpeechThreshold,
+            value.MinMax(MIN_Recognition_Whisper_CfgAdv_NoSpeechThreshold, MAX_Recognition_Whisper_CfgAdv_NoSpeechThreshold));
     }
     private float _recognition_Whisper_CfgAdv_NoSpeechThreshold = -1;
 
     public const string DESC_Recognition_Whisper_CfgAdv_Temperature = "Temperature for Whisper";
+    public const float MIN_Recognition_Whisper_CfgAdv_Temperature = -1;
+    public const float MAX_Recognition_Whisper_CfgAdv_Temperature = 1;
     public float Recognition_Whisper_CfgAdv_Temperature
     {
         get => _recognition_Whisper_CfgAdv_Temperature;
-        set => SetProperty(ref _recognition_Whisper_CfgAdv_Temperature, value.MinMax(-1, 1));
+        set => SetProperty(ref _recognition_Whisper_CfgAdv_Temperature, 
+            value.MinMax(MIN_Recognition_Whisper_CfgAdv_Temperature, MAX_Recognition_Whisper_CfgAdv_Temperature));
     }
     private float _recognition_Whisper_CfgAdv_Temperature = -1;
 
     public const string DESC_Recognition_Whisper_CfgAdv_TemperatureInc = "TemperatureInc for Whisper";
+    public const float MIN_Recognition_Whisper_CfgAdv_TemperatureInc = -1;
+    public const float MAX_Recognition_Whisper_CfgAdv_TemperatureInc = 1;
     public float Recognition_Whisper_CfgAdv_TemperatureInc
     {
         get => _recognition_Whisper_CfgAdv_TemperatureInc;
-        set => SetProperty(ref _recognition_Whisper_CfgAdv_TemperatureInc, value.MinMax(-1, 1));
+        set => SetProperty(ref _recognition_Whisper_CfgAdv_TemperatureInc,
+            value.MinMax(MIN_Recognition_Whisper_CfgAdv_TemperatureInc, MAX_Recognition_Whisper_CfgAdv_TemperatureInc));
     }
     private float _recognition_Whisper_CfgAdv_TemperatureInc = -1;
 
     public const string DESC_Recognition_Whisper_CfgAdv_MaxSegmentLength = "Maximum segment length";
+    public const int MIN_Recognition_Whisper_CfgAdv_MaxSegmentLength = 0;
+    public const int MAX_Recognition_Whisper_CfgAdv_MaxSegmentLength = int.MaxValue;
     public int Recognition_Whisper_CfgAdv_MaxSegmentLength
     {
         get => _recognition_Whisper_CfgAdv_MaxSegmentLength;
-        set => SetProperty(ref _recognition_Whisper_CfgAdv_MaxSegmentLength, value.MinMax(0, int.MaxValue));
+        set => SetProperty(ref _recognition_Whisper_CfgAdv_MaxSegmentLength,
+            value.MinMax(MIN_Recognition_Whisper_CfgAdv_MaxSegmentLength, MAX_Recognition_Whisper_CfgAdv_MaxSegmentLength));
     }
     private int _recognition_Whisper_CfgAdv_MaxSegmentLength = 0;
 
     public const string DESC_Recognition_Whisper_CfgAdv_MaxTokensPerSegment = "Maxiumum amount of tokens per segment";
+    public const int MIN_Recognition_Whisper_CfgAdv_MaxTokensPerSegment = 0;
+    public const int MAX_Recognition_Whisper_CfgAdv_MaxTokensPerSegment = int.MaxValue;
     public int Recognition_Whisper_CfgAdv_MaxTokensPerSegment
     {
         get => _recognition_Whisper_CfgAdv_MaxTokensPerSegment;
-        set => SetProperty(ref _recognition_Whisper_CfgAdv_MaxTokensPerSegment, value.MinMax(0, int.MaxValue));
+        set => SetProperty(ref _recognition_Whisper_CfgAdv_MaxTokensPerSegment, value.MinMax(MIN_Recognition_Whisper_CfgAdv_MaxTokensPerSegment, MAX_Recognition_Whisper_CfgAdv_MaxTokensPerSegment));
     }
     private int _recognition_Whisper_CfgAdv_MaxTokensPerSegment = 0;
 
@@ -1340,10 +1413,13 @@ public class ConfigModel : ObservableObject
     private bool _recognition_Whisper_CfgAdv_UseGreedySampling = false;
 
     public const string DESC_Recognition_Whisper_CfgAdv_ThreadsUsed = "Amount of threads used by whisper (0 = all, -n = all but n threads)";
+    public const int MIN_Recognition_Whisper_CfgAdv_ThreadsUsed = int.MinValue;
+    public const int MAX_Recognition_Whisper_CfgAdv_ThreadsUsed = int.MaxValue;
     public int Recognition_Whisper_CfgAdv_ThreadsUsed
     {
         get => _recognition_Whisper_CfgAdv_ThreadsUsed;
-        set => SetProperty(ref _recognition_Whisper_CfgAdv_ThreadsUsed, value.MinMax(int.MinValue, int.MaxValue));
+        set => SetProperty(ref _recognition_Whisper_CfgAdv_ThreadsUsed, 
+            value.MinMax(MIN_Recognition_Whisper_CfgAdv_ThreadsUsed, MAX_Recognition_Whisper_CfgAdv_ThreadsUsed));
     }
     private int _recognition_Whisper_CfgAdv_ThreadsUsed = -4;
     #endregion
@@ -1384,10 +1460,13 @@ public class ConfigModel : ObservableObject
     private bool _translation_SkipLongerMessages = true;
 
     public const string DESC_Translation_MaxTextLength = "Maximum text length for translation";
+    public const int MIN_Translation_MaxTextLength = 1;
+    public const int MAX_Translation_MaxTextLength = short.MaxValue;
     public int Translation_MaxTextLength
     {
         get => _translation_MaxTextLength;
-        set => SetProperty(ref _translation_MaxTextLength, value.MinMax(1, short.MaxValue));
+        set => SetProperty(ref _translation_MaxTextLength,
+            value.MinMax(MIN_Translation_MaxTextLength, MAX_Translation_MaxTextLength));
     }
     private int _translation_MaxTextLength = 2000;
 
@@ -1444,18 +1523,24 @@ public class ConfigModel : ObservableObject
     private bool _voice_AutoStart;
 
     public const string DESC_Voice_AudioVolumePercent = "Volume of voice audio";
+    public const float MIN_Voice_AudioVolumePercent = 0;
+    public const float MAX_Voice_AudioVolumePercent = 1;
     public float Voice_AudioVolumePercent
     {
         get => _voice_AudioVolumePercent;
-        set => SetProperty(ref _voice_AudioVolumePercent, value.MinMax(0,1));
+        set => SetProperty(ref _voice_AudioVolumePercent, 
+            value.MinMax(MIN_Voice_AudioVolumePercent, MAX_Voice_AudioVolumePercent));
     }
     private float _voice_AudioVolumePercent = 0.5f;
 
     public const string DESC_Voice_MaximumTextLength = "Maximum length of text to be converted to voice";
+    public const int MIN_Voice_MaximumTextLength = 1;
+    public const int MAX_Voice_MaximumTextLength = short.MaxValue;
     public int Voice_MaximumTextLength
     {
         get => _voice_MaximumTextLength;
-        set => SetProperty(ref _voice_MaximumTextLength, value.MinMax(1, short.MaxValue));
+        set => SetProperty(ref _voice_MaximumTextLength,
+            value.MinMax(MIN_Voice_MaximumTextLength, MAX_Voice_MaximumTextLength));
     }
     private int _voice_MaximumTextLength = 500;
 
@@ -1556,6 +1641,8 @@ public class ConfigModel : ObservableObject
     private string _voice_Piper_Ip = "127.0.0.1";
 
     public const string DESC_Voice_Piper_Port = "Piper webservice port";
+    public const ushort MIN_Voice_Piper_Port = ushort.MinValue;
+    public const ushort MAX_Voice_Piper_Port = ushort.MaxValue;
     public ushort Voice_Piper_Port
     {
         get => _voice_Piper_Port;
@@ -1572,18 +1659,24 @@ public class ConfigModel : ObservableObject
     private string _voice_Piper_Request_Voice = string.Empty;
 
     public const string DESC_Voice_Piper_Request_NoiseScale = "Piper noise scale";
+    public const float MIN_Voice_Piper_Request_NoiseScale = -1;
+    public const float MAX_Voice_Piper_Request_NoiseScale = 1;
     public float Voice_Piper_Request_NoiseScale
     {
         get => _voice_Piper_Request_NoiseScale;
-        set => SetProperty(ref _voice_Piper_Request_NoiseScale, value.MinMax(-1, 1));
+        set => SetProperty(ref _voice_Piper_Request_NoiseScale,
+            value.MinMax(MIN_Voice_Piper_Request_NoiseScale, MAX_Voice_Piper_Request_NoiseScale));
     }
     private float _voice_Piper_Request_NoiseScale = -1;
 
     public const string DESC_Voice_Piper_Request_NoiseWScale = "Piper noise w scale";
+    public const float MIN_Voice_Piper_Request_NoiseWScale = -1;
+    public const float MAX_Voice_Piper_Request_NoiseWScale = 1;
     public float Voice_Piper_Request_NoiseWScale
     {
         get => _voice_Piper_Request_NoiseWScale;
-        set => SetProperty(ref _voice_Piper_Request_NoiseWScale, value.MinMax(-1, 1));
+        set => SetProperty(ref _voice_Piper_Request_NoiseWScale, 
+            value.MinMax(MIN_Voice_Piper_Request_NoiseWScale, MAX_Voice_Piper_Request_NoiseWScale));
     }
     private float _voice_Piper_Request_NoiseWScale = -1;
     #endregion
@@ -1606,10 +1699,13 @@ public class ConfigModel : ObservableObject
     private bool _webRtc_UseEchoCancellation = true;
 
     public const string DESC_WebRtc_EchoCancellationDelayMs = "Delay (in ms) to use for echo cancellation";
+    public const int MIN_WebRtc_EchoCancellationDelayMs = 0;
+    public const int MAX_WebRtc_EchoCancellationDelayMs = 60_000;
     public int WebRtc_EchoCancellationDelayMs
     {
         get => _webRtc_EchoCancellationDelayMs;
-        set => SetProperty(ref _webRtc_EchoCancellationDelayMs, value);
+        set => SetProperty(ref _webRtc_EchoCancellationDelayMs, 
+            value.MinMax(MIN_WebRtc_EchoCancellationDelayMs, MAX_WebRtc_EchoCancellationDelayMs));
     }
     private int _webRtc_EchoCancellationDelayMs = 40;
 
@@ -1654,10 +1750,13 @@ public class ConfigModel : ObservableObject
     private bool _webRtc_UsePreAmplifier = false;
 
     public const string DESC_WebRtc_PreAmplifierGainFactor = "Automatic gain factor to use for preamplifier";
+    public const float MIN_WebRtc_PreAmplifierGainFactor = 0;
+    public const float MAX_WebRtc_PreAmplifierGainFactor = 2;
     public float WebRtc_PreAmplifierGainFactor
     {
         get => _webRtc_PreAmplifierGainFactor;
-        set => SetProperty(ref _webRtc_PreAmplifierGainFactor, value);
+        set => SetProperty(ref _webRtc_PreAmplifierGainFactor,
+            value.MinMax(MIN_WebRtc_PreAmplifierGainFactor, MAX_WebRtc_PreAmplifierGainFactor));
     }
     private float _webRtc_PreAmplifierGainFactor = 1;
     #endregion
