@@ -16,4 +16,10 @@ public partial class ExtrasSubMenu : UserControl
         (DataContext as ExtrasSubMenuViewModelBase)?.AfkSkipClicked();
         args.Handled = true;
     }
+
+    private void EditCountersClicked(object? sender, RoutedEventArgs args)
+    {
+        (DataContext as ExtrasSubMenuViewModelBase)?.EditCountersClicked();
+        args.Handled = true;
+    }
 }
