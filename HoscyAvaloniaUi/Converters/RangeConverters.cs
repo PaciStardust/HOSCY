@@ -42,6 +42,20 @@ public class FloatRangeConverter : BaseRangeConverter<float>
     protected override float Max => int.MaxValue;
 }
 
+public class UintRangeConverter : BaseRangeConverter<uint>
+{
+    protected override Func<string, (bool, uint)> Converter => (x) => uint.TryParse(x, out var y) ? (true, y) : (false, Min);
+    protected override uint Min => uint.MinValue;
+    protected override uint Max => uint.MaxValue;
+}
+
+public class UshortRangeConverter : BaseRangeConverter<ushort>
+{
+    protected override Func<string, (bool, ushort)> Converter => (x) => ushort.TryParse(x, out var y) ? (true, y) : (false, Min);
+    protected override ushort Min => ushort.MinValue;
+    protected override ushort Max => ushort.MaxValue;
+}
+
 public static class RangeConverterUtils
 {
     private static readonly Dictionary<string, Res<(object, object)>> _fieldLut = [];

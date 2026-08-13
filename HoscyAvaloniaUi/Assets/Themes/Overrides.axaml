@@ -62,6 +62,8 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
     <conv:StringNullOrEmptyToBoolConverter x:Key="StringNullOrEmptyToBool"/>
     <conv:IntRangeConverter x:Key="IntRange"/>
     <conv:FloatRangeConverter x:Key="FloatRange"/>
+    <conv:UintRangeConverter x:Key="UintRange"/>
+    <conv:UshortRangeConverter x:Key="UshortRange"/>
     <conv:ErrorMessageConverter x:Key="ErrorMessage"/>
 
     <!-- TextBlock -->
