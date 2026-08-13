@@ -1,0 +1,77 @@
+<Window xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:HoscyAvaloniaUi.ViewModels.Windows"
+	xmlns:cfg="using:HoscyCore.Configuration.Modern"
+	mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="400"
+	x:DataType="vm:EditCountersWindowViewModelBase"
+	x:Class="HoscyAvaloniaUi.Views.Windows.EditCountersWindow"
+
+	Title="Edit Counters"
+	MinHeight="400"
+	MinWidth="700"
+	Height="400"
+	Width="700"
+	CanResize="True"
+	Background="{StaticResource BackgroundBaseBrush}" 
+	WindowStartupLocation="CenterOwner">
+
+	<Design.DataContext>
+		<vm:EditCountersWindowViewModelPreview/>
+	</Design.DataContext>
+
+	<Grid Margin="16" ColumnDefinitions="5*,3*">
+		<ListBox Grid.Column="0" Theme="{StaticResource HListBoxF}" Margin="0,0,8,0" SelectedIndex="{Binding SelectedIndex}" ItemsSource="{Binding DataDisplayed}"
+			ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="SelectionChanged"/>
+
+		<Grid Grid.Column="1" RowDefinitions="Auto,1*" Margin="8,0,0,0">
+			<StackPanel Grid.Row="0" Theme="{StaticResource HStack}">
+				<WrapPanel Theme="{StaticResource HWrap}" HorizontalAlignment="Center">
+					<Button Theme="{StaticResource HButton}" Content="Add New" Click="AddEntry"/>
+					<Button Theme="{StaticResource HButton}" Content="Remove" Click="RemoveEntry"/>
+				</WrapPanel>
+
+				<WrapPanel Theme="{StaticResource HWrap}" HorizontalAlignment="Center">
+					<Button Theme="{StaticResource HButton}" Content="Modify" Click="ModifyEntry"/>
+				</WrapPanel>
+			</StackPanel>
+
+			<ScrollViewer Grid.Row="1" Theme="{StaticResource HScrollViewer}" Margin="0,16,0,0">
+				<StackPanel Theme="{StaticResource HStack}" Margin="0,0,8,0">
+					<WrapPanel Theme="{StaticResource HWrapL}" HorizontalAlignment="Center">
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Enabled" IsChecked="{Binding SelectedEnabled}" ToolTip.Tip="{x:Static cfg:CounterModel.DESC_Enabled}"/>
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Display" IsChecked="{Binding SelectedDoDisplay}" ToolTip.Tip="{x:Static cfg:CounterModel.DESC_DoDisplay}"/>
+					</WrapPanel>
+
+					<WrapPanel Theme="{StaticResource HWrap}" HorizontalAlignment="Center">
+						<TextBlock Theme="{StaticResource HTextBlock}" Text="Last Used:" ToolTip.Tip="{x:Static cfg:CounterModel.DESC_LastUsed}"/>
+						<TextBlock Theme="{StaticResource HTextBlock}" Text="{Binding SelectedLastUsed}"/>
+					</WrapPanel>
+
+					<StackPanel Theme="{StaticResource HStackS}">
+						<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Display Name"/>
+						<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedName}" PlaceholderText="Display Name ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:CounterModel.DESC_Name}"/>
+					</StackPanel>
+
+					<StackPanel Theme="{StaticResource HStackS}">
+						<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="OSC Parameter"/>
+						<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedParameter}" PlaceholderText="OSC Parameter ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:CounterModel.DESC_Parameter}"/>
+					</StackPanel>
+
+					<Grid ColumnDefinitions="*,16,*">
+						<StackPanel Grid.Column="0" Theme="{StaticResource HStackS}">
+							<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Count"/>
+							<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedCount, Converter={StaticResource UintRange}, ConverterParameter=CounterModel.Count}" PlaceholderText="Count ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:CounterModel.DESC_Count}"/>
+						</StackPanel>
+
+						<StackPanel Grid.Column="2" Theme="{StaticResource HStackS}">
+							<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Timeout (s)"/>
+							<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedCooldown, Converter={StaticResource FloatRange}, ConverterParameter=CounterModel.CooldownSeconds}" PlaceholderText="Timeout ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:CounterModel.DESC_CooldownSeconds}"/>
+						</StackPanel>
+					</Grid>
+				</StackPanel>
+			</ScrollViewer>
+		</Grid>
+	</Grid>
+</Window>

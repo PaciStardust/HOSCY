@@ -21,7 +21,8 @@ public class PopupWindowFactory
     IContainerBulkLoader<IApplicationSound> soundLoader,
     IContainerBulkLoader<NotificationWindowViewModelBase> notificationWvmLoader,
     IContainerBulkLoader<EditDictWindowViewModelBase> editDictWvmLoader,
-    IContainerBulkLoader<EditApiPresetsWindowViewModelBase> EditApiPresetsWvmLoader
+    IContainerBulkLoader<EditApiPresetsWindowViewModelBase> editApiPresetsWvmLoader,
+    IContainerBulkLoader<EditCountersWindowViewModelBase> editCountersWvmLoader
 )
     : IService
 {
@@ -31,7 +32,8 @@ public class PopupWindowFactory
 
     private readonly IContainerBulkLoader<NotificationWindowViewModelBase> _notificationWvmLoader = notificationWvmLoader;
     private readonly IContainerBulkLoader<EditDictWindowViewModelBase> _editDictWvmLoader = editDictWvmLoader;
-    private readonly IContainerBulkLoader<EditApiPresetsWindowViewModelBase> _EditApiPresetsWvmLoader = EditApiPresetsWvmLoader;
+    private readonly IContainerBulkLoader<EditApiPresetsWindowViewModelBase> _editApiPresetsWvmLoader = editApiPresetsWvmLoader;
+    private readonly IContainerBulkLoader<EditCountersWindowViewModelBase> _editCountersWvmLoader = editCountersWvmLoader;
 
     private void Open(Func<Window> windowCreate, ViewModelBase vm, bool dialog, Window? parent)
     {
@@ -100,10 +102,21 @@ public class PopupWindowFactory
     {
         _logger.Debug("Creating api preset editor");
 
-        var vmRes = _EditApiPresetsWvmLoader.GetInstance();
+        var vmRes = _editApiPresetsWvmLoader.GetInstance();
         if (!vmRes.IsOk) return;
         vmRes.Value.Init(list);
 
         Open(() => new EditApiPresetsWindow(), vmRes.Value, true, parentWindow);
+    }
+
+    public void OpenEditCounters(List<CounterModel> list, Window? parentWindow)
+    {
+        _logger.Debug("Creating counter editor");
+
+        var vmRes = _editCountersWvmLoader.GetInstance();
+        if (!vmRes.IsOk) return;
+        vmRes.Value.Init(list);
+
+        Open(() => new EditCountersWindow(), vmRes.Value, true, parentWindow);
     }
 }
