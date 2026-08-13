@@ -39,6 +39,7 @@ public class ApiPresetModel : ObservableObject
         set => SetProperty(ref _contentType, value);
     }
 
+    public const string DESC_Result = "Result field in the returned JSON";
     private string _resultField = "result";
     public string ResultField
     {
