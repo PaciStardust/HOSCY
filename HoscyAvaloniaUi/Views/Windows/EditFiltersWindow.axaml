@@ -51,8 +51,8 @@
 					</StackPanel>
 
 					<WrapPanel Theme="{StaticResource HWrapL}" HorizontalAlignment="Center">
-						<CheckBox Theme="{StaticResource HCheckBox}" Content="Enabled" IsChecked="{Binding SelectedUseRegex}" ToolTip.Tip="{x:Static cfg:FilterModel.DESC_UseRegex}"/>
-						<CheckBox Theme="{StaticResource HCheckBox}" Content="Display" IsChecked="{Binding SelectedIgnoreCase}" ToolTip.Tip="{x:Static cfg:FilterModel.DESC_UseRegex}"/>
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Regex" IsChecked="{Binding SelectedUseRegex}" ToolTip.Tip="{x:Static cfg:FilterModel.DESC_UseRegex}"/>
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Ignore Case" IsChecked="{Binding SelectedIgnoreCase}" ToolTip.Tip="{x:Static cfg:FilterModel.DESC_IgnoreCase}"/>
 					</WrapPanel>
 				</StackPanel>
 			</ScrollViewer>
