@@ -23,7 +23,8 @@ public class PopupWindowFactory
     IContainerBulkLoader<NotificationWindowViewModelBase> notificationWvmLoader,
     IContainerBulkLoader<EditDictWindowViewModelBase> editDictWvmLoader,
     IContainerBulkLoader<EditApiPresetsWindowViewModelBase> editApiPresetsWvmLoader,
-    IContainerBulkLoader<EditCountersWindowViewModelBase> editCountersWvmLoader
+    IContainerBulkLoader<EditCountersWindowViewModelBase> editCountersWvmLoader,
+    IContainerBulkLoader<EditFiltersWindowViewModelBase> editFiltersWvmLoader
 )
     : IService
 {
@@ -35,6 +36,7 @@ public class PopupWindowFactory
     private readonly IContainerBulkLoader<EditDictWindowViewModelBase> _editDictWvmLoader = editDictWvmLoader;
     private readonly IContainerBulkLoader<EditApiPresetsWindowViewModelBase> _editApiPresetsWvmLoader = editApiPresetsWvmLoader;
     private readonly IContainerBulkLoader<EditCountersWindowViewModelBase> _editCountersWvmLoader = editCountersWvmLoader;
+    private readonly IContainerBulkLoader<EditFiltersWindowViewModelBase> _editFiltersWvmLoader = editFiltersWvmLoader;
 
     private void Open(Func<Window> windowCreate, ViewModelBase vm, bool dialog, Window? parent)
     {
@@ -119,5 +121,16 @@ public class PopupWindowFactory
         vmRes.Value.Init(list);
 
         Open(() => new EditCountersWindow(), vmRes.Value, true, parentWindow);
+    }
+
+    public void OpenEditFilters(List<FilterModel> list, Window? parentWindow)
+    {
+        _logger.Debug("Creating filter editor");
+
+        var vmRes = _editFiltersWvmLoader.GetInstance();
+        if (!vmRes.IsOk) return;
+        vmRes.Value.Init(list);
+
+        Open(() => new EditFiltersWindow(), vmRes.Value, true, parentWindow);
     }
 }
