@@ -56,12 +56,12 @@ public class PopupWindowFactory
                     if (parent is not null)
                     {
                         _logger.Debug("Showing window {window} as dialog for window {parent}", window.GetType().Name, parent.GetType().Name);
-                        window.ShowDialog(parent).AsSync();
+                        window.ShowDialog(parent);
                     }
                     else
                     {
                         _logger.Debug("Showing window {window} as dialog for main window", window.GetType().Name);
-                        _uiHelper.ShowDialog(window).AsSync();
+                        _uiHelper.ShowDialog(window);
                     }
                 }
             });
