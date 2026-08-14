@@ -939,6 +939,7 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
 
     <ControlTheme x:Key="HComboBoxItem" TargetType="ComboBoxItem">
         <Setter Property="BorderBrush" Value="{x:Null}"/>
+        <Setter Property="Background" Value="Transparent"/>
 
         <Setter Property="Template">
             <ControlTemplate>
@@ -980,6 +981,8 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
         <Setter Property="Foreground" Value="{StaticResource FrontBrush}"/>
         <Setter Property="FontSize" Value="18"/>
         <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+        <Setter Property="ItemContainerTheme" Value="{StaticResource HComboBoxItem}"/>
+        <Setter Property="MaxDropDownHeight" Value="160"/>
 
         <Setter Property="Template">
             <ControlTemplate>
@@ -1021,6 +1024,7 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
                     WindowManagerAddShadowHint="False"
                     IsOpen="{TemplateBinding IsDropDownOpen, Mode=TwoWay}"
                     MaxHeight="{TemplateBinding MaxDropDownHeight}"
+                    MinWidth="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}"
                     Focusable="False"
                     Placement="Bottom"
                     IsLightDismissEnabled="True"
@@ -1029,11 +1033,9 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
                         BorderThickness="2" 
                         BorderBrush="{StaticResource BackgroundLightBrush}" 
                         Background="{StaticResource BackgroundDarkBrush}"
-                        CornerRadius="4"
-                        Margin="0,2,0,0"
                         Padding="0"
                         HorizontalAlignment="Stretch">
-                            <ScrollViewer Margin="6,6,2,2"
+                            <ScrollViewer Margin="2,2,2,2"
                             Theme="{StaticResource HScrollViewer}"
                             HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
                             VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
