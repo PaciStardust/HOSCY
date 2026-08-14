@@ -9,6 +9,7 @@ using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Audio;
 using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
+using HoscyCore.Utility;
 using Serilog;
 
 namespace HoscyAvaloniaUi.Services;
@@ -53,12 +54,12 @@ public class PopupWindowFactory
                     if (parent is not null)
                     {
                         _logger.Debug("Showing window {window} as dialog for window {parent}", window.GetType().Name, parent.GetType().Name);
-                        window.ShowDialog(parent).RunSynchronously();
+                        window.ShowDialog(parent).AsSync();
                     }
                     else
                     {
                         _logger.Debug("Showing window {window} as dialog for main window", window.GetType().Name);
-                        _uiHelper.ShowDialog(window).RunSynchronously();
+                        _uiHelper.ShowDialog(window).AsSync();
                     }
                 }
             });
