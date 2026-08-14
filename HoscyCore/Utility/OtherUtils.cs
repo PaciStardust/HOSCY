@@ -120,4 +120,41 @@ public static class OtherUtils
         }
         logger.Debug("Opened Github");
     }
+
+    public static void OpenFileOrFolder(string path, ILogger logger)
+    {
+        logger.Debug("Opening path {path}", path);
+        try
+        {
+            if (!Path.Exists(path))
+            {
+                logger.Warning("Failed to locate path {path}", path);
+                return;
+            }
+
+            #if WINDOWS
+            var basePath = "explorer";
+            #elif LINUX
+            var basePath = "xdg-open";
+            #elif OSX
+            var basePath = "open";
+            #else
+            logger.Error("Unknown OS, not opening file");
+            return;
+            #endif
+
+            Process.Start(new ProcessStartInfo()
+            {
+                Arguments = path,
+                FileName = basePath,
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            logger.Warning(ex, "Failed to open path {path}", path);
+            return;
+        }
+        logger.Debug("Opened path {path}", path);
+    }
 }

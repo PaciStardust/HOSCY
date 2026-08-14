@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using HoscyAvaloniaUi.Services;
 using HoscyAvaloniaUi.ViewModels.Core;
 using HoscyCore.Configuration.Modern;
+using HoscyCore.Services.Audio;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Utility;
 using Serilog;
@@ -19,6 +20,10 @@ public abstract partial class DebugSubMenuViewModelBase : ViewModelBase
     public int LogLevelIndex { get; set; }
     public virtual void LogLevelChanged() { }
     public virtual void LogFiltersClicked() { }
+    public virtual void UtilOpenGit() { }
+    public virtual void UtilOpenConfig() { }
+    public virtual void UtilSaveConfig() { }
+    public virtual void UtilReloadDevices() { }
 }
 
 [PrototypeLoadIntoDiContainer(typeof(DebugSubMenuViewModelBase), Lifetime.Transient)]
@@ -26,12 +31,14 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
 {
     private readonly PopupWindowFactory _popupFactory;
     private readonly ILogger _logger;
+    private readonly IAudioService _audio;
 
-    public DebugSubMenuViewModelImpl(ILogger logger, ConfigModel config, PopupWindowFactory popupFactory)
+    public DebugSubMenuViewModelImpl(ILogger logger, ConfigModel config, PopupWindowFactory popupFactory, IAudioService audio)
     {
         Config = config;
         _logger = logger.ForContext<DebugSubMenuViewModelImpl>();
         _popupFactory = popupFactory;
+        _audio = audio;
 
         LogLevels = Enum.GetNames<LogEventLevel>();
         LogLevelIndex = LogLevels.IndexOf(Enum.GetName(Config.Debug_LogMinimumSeverity)); //todo: log
@@ -55,6 +62,40 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
     {
         _popupFactory.OpenEditFilters(Config.Debug_LogFilters, null);
         Config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
+    }
+
+    public override void UtilOpenConfig()
+    {
+        _logger.Information("Manually opening config");
+        OtherUtils.OpenFileOrFolder(PathUtils.PathConfigFolder, _logger);
+    }
+    public override void UtilOpenGit()
+    {
+        _logger.Information("Manually opening git");
+        OtherUtils.OpenGithub(_logger);
+    }
+    public override void UtilSaveConfig()
+    {
+        _logger.Information("Manually saving config");
+        Config.TrySave(PathUtils.PathConfigFolder,ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
+    }
+    public override void UtilReloadDevices()
+    {
+        _logger.Information("Reloading audio devices");
+        var res1 = _audio.GetCaptureDevices();
+        if (!res1.IsOk)
+        {
+            _popupFactory.OpenNotification("Can not load capture devices", res1.Msg.Message, true, true);
+            return;
+        }
+
+        var res2 = _audio.GetPlaybackDevices();
+        if (!res2.IsOk)
+        {
+            _popupFactory.OpenNotification("Can not load playback devices", res2.Msg.Message, true, true);
+            return;
+        }
+        _logger.Information("Reloaded audio devices");
     }
 }
 

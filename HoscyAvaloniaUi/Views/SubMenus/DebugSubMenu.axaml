@@ -4,7 +4,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="using:HoscyAvaloniaUi.ViewModels.SubMenus"
 	xmlns:cfg="using:HoscyCore.Configuration.Modern"
-	mc:Ignorable="d" d:DesignHeight="420" d:DesignWidth="689"
+	mc:Ignorable="d" d:DesignHeight="800" d:DesignWidth="689"
 	x:DataType="vm:DebugSubMenuViewModelBase"
 	x:Class="HoscyAvaloniaUi.Views.SubMenus.DebugSubMenu"
 	Background="{StaticResource BackgroundBaseBrush}">
@@ -16,10 +16,10 @@
 	<ScrollViewer Theme="{StaticResource HScrollViewerPage}">
 		<StackPanel Theme="{StaticResource HStackL}">
 			<StackPanel Theme="{StaticResource HStack}">
-				<!-- Header for Logging-->
+				<!-- Header for Logging -->
 				<Label Content="Logging" Theme="{StaticResource HLabelL}"/>
 
-				<!-- Settings for Logging-->
+				<!-- Settings for Logging -->
 				<StackPanel Theme="{StaticResource HStackIndent}">
 					<CheckBox Theme="{StaticResource HCheckBox}" Content="Log via CMD/Terminal on Windows" IsChecked="{Binding Config.Debug_LogViaCmdOnWindows}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Debug_LogViaCmdOnWindows}"/>
 					
@@ -41,14 +41,30 @@
 
 					<StackPanel Theme="{StaticResource HStackS}">
 						<TextBlock Theme="{StaticResource HTextBlock}" Text="Logging Level"/>
-							<WrapPanel Theme="{StaticResource HWrap}">
-								<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding LogLevelIndex}" ItemsSource="{Binding LogLevels}" SelectionChanged="LogLevelChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Debug_LogMinimumSeverity}"/>
-								<Button Content="Edit Filters" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="LogFiltersClicked" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Debug_LogFilters}"/>
-							</WrapPanel>
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding LogLevelIndex}" ItemsSource="{Binding LogLevels}" SelectionChanged="LogLevelChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Debug_LogMinimumSeverity}"/>
+							<Button Content="Edit Filters" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="LogFiltersClicked" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Debug_LogFilters}"/>
+						</WrapPanel>
 					</StackPanel>
 
 					<CheckBox Theme="{StaticResource HCheckBox}" Content="Extra Verbose Logging" IsChecked="{Binding Config.Debug_LogVerboseExtra}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Debug_LogVerboseExtra}"/>
 					<CheckBox Theme="{StaticResource HCheckBox}" Content="Log External Services" IsChecked="{Binding Config.Debug_LogExternalServices}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Debug_LogExternalServices}"/>
+				</StackPanel>
+
+				<!-- Header for Tools -->
+				<Label Content="Tools" Theme="{StaticResource HLabelL}"/>
+
+				<!-- Settings for Tools -->
+				<StackPanel Theme="{StaticResource HStackIndent}">
+					<WrapPanel Theme="{StaticResource HWrap}">
+						<Button Content="Open Github" Theme="{StaticResource HButton}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="UtilOpenGit" ToolTip.Tip="Opens the projects repo"/>
+						<Button Content="Open Config" Theme="{StaticResource HButton}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="UtilOpenConfig" ToolTip.Tip="Opens the config folder"/>
+						<Button Content="Save Config" Theme="{StaticResource HButton}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="UtilSaveConfig" ToolTip.Tip="Saves the config"/>
+					</WrapPanel>
+
+					<WrapPanel Theme="{StaticResource HWrap}">
+						<Button Content="Reload Devices" Theme="{StaticResource HButton}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="UtilReloadDevices" ToolTip.Tip="Reloads all audio devices" BorderBrush="{StaticResource InvalidBrush}"/>
+					</WrapPanel>
 				</StackPanel>
 			</StackPanel>
 		</StackPanel>

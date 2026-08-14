@@ -21,4 +21,25 @@ public partial class DebugSubMenu : UserControl
         (DataContext as DebugSubMenuViewModelBase)?.LogFiltersClicked();
         e.Handled = true;
     }
+
+    private void UtilOpenGit(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        (DataContext as DebugSubMenuViewModelBase)?.UtilOpenGit();
+        e.Handled = true;
+    }
+    private void UtilOpenConfig(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        (DataContext as DebugSubMenuViewModelBase)?.UtilOpenConfig();
+        e.Handled = true;
+    }
+    private void UtilSaveConfig(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        (DataContext as DebugSubMenuViewModelBase)?.UtilSaveConfig();
+        e.Handled = true;
+    }
+    private void UtilReloadDevices(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        (DataContext as DebugSubMenuViewModelBase)?.UtilReloadDevices();
+        e.Handled = true;
+    }
 }
