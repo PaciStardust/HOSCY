@@ -12,6 +12,6 @@ public class HoscyCoreAppStartParameters()
     public bool ShouldOpenConsoleIfRequested { get; set; } = true;
     public bool DisableConsoleLog { get; set; } = false;
     public Action<IServiceCollection>? AdditionalContainerInserts { get; set; }
-    public Action<ILogger>? OnNewLoggerCreated { get; set; }
+    public Action<ILogger, bool>? OnNewLoggerCreated { get; set; }
     public ConfigModel? PreloadedConfig { get; set; } = null;
 }

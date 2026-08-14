@@ -48,6 +48,7 @@
 					</StackPanel>
 
 					<CheckBox Theme="{StaticResource HCheckBox}" Content="Extra Verbose Logging" IsChecked="{Binding Config.Debug_LogVerboseExtra}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Debug_LogVerboseExtra}"/>
+					<CheckBox Theme="{StaticResource HCheckBox}" Content="Log External Services" IsChecked="{Binding Config.Debug_LogExternalServices}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Debug_LogExternalServices}"/>
 				</StackPanel>
 			</StackPanel>
 		</StackPanel>

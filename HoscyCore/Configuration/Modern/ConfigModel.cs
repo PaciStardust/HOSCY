@@ -227,10 +227,18 @@ public class ConfigModel : ObservableObject
     public const string DESC_Debug_LogVerboseExtra = "Include extra verbose logs for debug purposes";
     public bool Debug_LogVerboseExtra
     {
-        get => _debug_LogeVerboseExtra;
-        set => SetProperty(ref _debug_LogeVerboseExtra, value);
+        get => _debug_LogVerboseExtra;
+        set => SetProperty(ref _debug_LogVerboseExtra, value);
     }
-    private bool _debug_LogeVerboseExtra = false;
+    private bool _debug_LogVerboseExtra = false;
+
+    public const string DESC_Debug_LogExternalServices = "Enables logging for external services like a UI framework";
+    public bool Debug_LogExternalServices
+    {
+        get => _debug_LogExternalServices;
+        set => SetProperty(ref _debug_LogExternalServices, value);
+    }
+    private bool _debug_LogExternalServices = false;
     #endregion
 
     #region External Input

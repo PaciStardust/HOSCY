@@ -109,11 +109,18 @@ public partial class App : Application
             });
         });
 
-        Action<ILogger> onNewLoggerLoaded = new((logger) =>
+        Action<ILogger, bool> onNewLoggerLoaded = new((logger, external) =>
         {
             _startLogger = logger.ForContext<App>();
             _startLogger.Debug("New logger received in startup");
-            Logger.Sink = new SerilogAvaloniaSink(_startLogger);
+            if (external)
+            {
+                Logger.Sink = new SerilogAvaloniaSink(_startLogger);
+            } 
+            else
+            {
+                Logger.Sink = null;
+            }
         });
 
         var startParams = new HoscyCoreAppStartParameters()
