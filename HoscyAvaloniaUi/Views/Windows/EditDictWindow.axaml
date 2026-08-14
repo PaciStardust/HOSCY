@@ -25,22 +25,24 @@
 			ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="SelectionChanged"/>
 
 		<Grid Grid.Column="1" RowDefinitions="Auto,1*" Margin="8,0,0,0">
-			<StackPanel Theme="{StaticResource HStackL}">
-				<StackPanel Theme="{StaticResource HStack}">
-					<Button Theme="{StaticResource HButton}" Content="Add New / Modify" HorizontalAlignment="Center" Click="AddNewOrModify"/>
-					<Button Theme="{StaticResource HButton}" Content="Remove" HorizontalAlignment="Center" Click="RemoveEntry"/>
-				</StackPanel>
-				
-				<StackPanel Theme="{StaticResource HStackS}">
-					<TextBlock Theme="{StaticResource HTextBlock}" Text="{Binding KeyHeader}" HorizontalAlignment="Center"/>
-					<TextBox Theme="{StaticResource HTextBox}" Text="{Binding KeySelected}" PlaceholderText="{Binding KeyPlaceholder}" KeyUp="KeyReleased"/>
-				</StackPanel>
+			<StackPanel Grid.Row="0" Theme="{StaticResource HStack}">
+				<Button Theme="{StaticResource HButton}" Content="Add New / Modify" HorizontalAlignment="Center" Click="AddNewOrModify"/>
+				<Button Theme="{StaticResource HButton}" Content="Remove" HorizontalAlignment="Center" Click="RemoveEntry"/>
 			</StackPanel>
 
-			<DockPanel Grid.Row="1" Margin="0,16,0,0">
-				<TextBlock Theme="{StaticResource HTextBlock}" Text="{Binding ValueHeader}" HorizontalAlignment="Center" DockPanel.Dock="Top"/>
-				<TextBox Theme="{StaticResource HTextBoxLarge}" Text="{Binding ValueSelected}" PlaceholderText="{Binding ValuePlaceholder}" KeyUp="KeyReleased" Margin="0,2,0,0"/>
-			</DockPanel>
+			<ScrollViewer Grid.Row="1" Theme="{StaticResource HScrollViewer}" Margin="0,16,0,0">
+				<StackPanel Theme="{StaticResource HStack}">
+					<StackPanel Theme="{StaticResource HStackS}">
+						<TextBlock Theme="{StaticResource HTextBlock}" Text="{Binding KeyHeader}" HorizontalAlignment="Center"/>
+						<TextBox Theme="{StaticResource HTextBox}" Text="{Binding KeySelected}" PlaceholderText="{Binding KeyPlaceholder}" KeyUp="KeyReleased"/>
+					</StackPanel>
+
+					<StackPanel Theme="{StaticResource HStackS}">
+						<TextBlock Theme="{StaticResource HTextBlock}" Text="{Binding ValueHeader}" HorizontalAlignment="Center" DockPanel.Dock="Top"/>
+						<TextBox Theme="{StaticResource HTextBoxLarge}" Text="{Binding ValueSelected}" PlaceholderText="{Binding ValuePlaceholder}" KeyUp="KeyReleased" Margin="0,2,0,0"/>
+					</StackPanel>
+				</StackPanel>
+			</ScrollViewer>
 		</Grid>
 	</Grid>
 </Window>
