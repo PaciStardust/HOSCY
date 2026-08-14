@@ -1078,7 +1078,11 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
         <Style Selector="^:editable /template/ ContentControl#ContentSite">
             <Setter Property="IsVisible" Value="False"/>
         </Style>
+    </ControlTheme>
 
+    <ControlTheme x:Key="HComboBoxSettings" TargetType="ComboBox" BasedOn="{StaticResource HComboBox}">
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="Width" Value="320"/>
     </ControlTheme>
 
     <!-- Navigation -->

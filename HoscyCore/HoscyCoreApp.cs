@@ -35,7 +35,7 @@ public class HoscyCoreApp(ILogger? initialLogger = null)
             _currentLogger.Information("Switching to new logger");
             onProgress?.Invoke("Switching to new logger");
             _currentLogger = LogUtils.CreateLoggerFromConfiguration(config, startParameters.DisableConsoleLog).ForContext<HoscyCoreApp>();
-            startParameters.OnNewLoggerCreated?.Invoke(_currentLogger);
+            startParameters.OnNewLoggerCreated?.Invoke(_currentLogger); //todo: Disable external logging
         }
 
         onProgress?.Invoke("Starting external logging");
