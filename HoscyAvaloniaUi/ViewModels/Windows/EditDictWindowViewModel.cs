@@ -5,6 +5,7 @@ using Avalonia.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using HoscyAvaloniaUi.ViewModels.Core;
 using HoscyCore.Services.Dependency;
+using HoscyCore.Utility;
 using Serilog;
 
 namespace HoscyAvaloniaUi.ViewModels.Windows;
@@ -66,12 +67,12 @@ public class EditDictWindowViewModelImpl(ILogger logger) : EditDictWindowViewMod
             newValues.Add($"{x.Key} : {x.Value}");
         }
         DataDisplayed = newValues;
-        IndexSelected = Math.Min(index, _dataInternal.Count - 1);
+        IndexSelected = index.MinMax(-1, _dataInternal.Count - 1);
     }
 
     public override void SelectionChanged()
     {
-        IndexSelected = Math.Min(IndexSelected, _dataInternal.Count - 1);
+        IndexSelected = IndexSelected.MinMax(-1, _dataInternal.Count - 1);
         if (IndexSelected == -1)
         {
             KeySelected = string.Empty;
@@ -103,7 +104,7 @@ public class EditDictWindowViewModelImpl(ILogger logger) : EditDictWindowViewMod
 
     public override void RemoveEntry()
     {
-        IndexSelected = Math.Min(IndexSelected, _dataInternal.Count - 1);
+        IndexSelected = IndexSelected.MinMax(-1, _dataInternal.Count - 1);
         if (_dataInternal.Count == 0 || IndexSelected == -1)
         {
             return;

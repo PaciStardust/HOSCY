@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Avalonia.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using HoscyAvaloniaUi.ViewModels.Core;
+using HoscyCore.Utility;
 
 namespace HoscyAvaloniaUi.ViewModels.Windows;
 
@@ -29,13 +30,13 @@ public abstract partial class EditComplexListWindowViewModelBase<Tdata> : ViewMo
             newValues.Add(GetItemDisplayText(x));
         }
         DataDisplayed = newValues;
-        SelectedIndex = Math.Min(index, _dataInternal.Count - 1);
+        SelectedIndex = index.MinMax(-1, _dataInternal.Count - 1);
     }
     protected virtual string GetItemDisplayText(Tdata item) { return item.ToString() ?? "Unnamed Item"; }
 
     public void SelectionChanged()
     {
-        SelectedIndex = Math.Min(SelectedIndex, _dataInternal.Count - 1);
+        SelectedIndex = SelectedIndex.MinMax(-1, _dataInternal.Count - 1);
         if (SelectedIndex == -1)
         {
             SetSelectedDataNoItem();
@@ -63,7 +64,7 @@ public abstract partial class EditComplexListWindowViewModelBase<Tdata> : ViewMo
 
     public void RemoveEntry()
     {
-        SelectedIndex = Math.Min(SelectedIndex, _dataInternal.Count - 1);
+        SelectedIndex = SelectedIndex.MinMax(-1, _dataInternal.Count - 1);
         if (SelectedIndex == -1)
         {
             return;
@@ -77,7 +78,7 @@ public abstract partial class EditComplexListWindowViewModelBase<Tdata> : ViewMo
 
     public void ModifyEntry()
     {
-        SelectedIndex = Math.Min(SelectedIndex, _dataInternal.Count - 1);
+        SelectedIndex = SelectedIndex.MinMax(-1, _dataInternal.Count - 1);
         if (SelectedIndex == -1)
         {
             AddEntry();
@@ -95,7 +96,7 @@ public abstract partial class EditComplexListWindowViewModelBase<Tdata> : ViewMo
     {
         if (args.Key != Key.Enter) return;
 
-        SelectedIndex = Math.Min(SelectedIndex, _dataInternal.Count - 1);
+        SelectedIndex = SelectedIndex.MinMax(-1, _dataInternal.Count - 1);
         if (SelectedIndex != -1 && GetSelectedModelIdentifier() == GetModelIdentifier(_dataInternal[SelectedIndex]))
         {
             ModifyEntry();
@@ -108,7 +109,7 @@ public abstract partial class EditComplexListWindowViewModelBase<Tdata> : ViewMo
 
     protected Tdata CreateModel()
     {
-        SelectedIndex = Math.Min(SelectedIndex, _dataInternal.Count - 1);
+        SelectedIndex = SelectedIndex.MinMax(-1, _dataInternal.Count - 1);
         return CreateModelInternal(SelectedIndex == -1 ? null : _dataInternal[SelectedIndex]);
     }
     protected abstract Tdata CreateModelInternal(Tdata? model);
