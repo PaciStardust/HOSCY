@@ -12,4 +12,5 @@ public interface ISoloModuleManager<TModuleStartInfo> : IAutoStartStopService
     public Res StartModule();
     public Res RestartModule();
     public Res StopModule();
+    public Res RefreshModule();
 }

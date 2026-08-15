@@ -260,6 +260,40 @@ SoloModuleManagerBase<TModuleStartInfo, TModule>
         return res;
     }
 
+    public Res RefreshModule()
+    {
+        _logger.Information("Performing module refresh");
+
+        if (_currentModule != null)
+        {
+            var stopRes = StopModule();
+            if (!stopRes.IsOk)
+            {
+                return stopRes;
+            }
+            if (_currentModule != null)
+            {
+                return ResC.FailLog("Stopped previously running module but it is still set as current module", _logger);
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(GetSelectedModuleName()))
+        {
+            var startRes = StartModule();
+            if (!startRes.IsOk)
+            {
+                return startRes;
+            }
+            if (_currentModule == null)
+            {
+                return ResC.FailLog("Started module but it is not set as current module", _logger);
+            }
+        }
+
+        _logger.Information("Performed module refresh");
+        return ResC.Ok();
+    }
+
     private Res CallModuleStateChangeSafe(Func<Res> stateChangeAction, string verb)
     {
         _moduleChangeErrorMessages.Clear();

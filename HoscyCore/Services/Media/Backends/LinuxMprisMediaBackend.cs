@@ -15,7 +15,7 @@ namespace HoscyCore.Services.Media.Backends;
 public class LinuxMprisMediaBackendStartInfo : IMediaBackendStartInfo
 {
     public MediaBackendConfigFlags ConfigFlags => MediaBackendConfigFlags.LinuxMpris;
-    public string Name => "Linux Mpris";
+    public string Name => "Linux MPRIS";
     public string Description => "Linux Backend using the MPRIS D-Bus specification";
     public Type ModuleType => typeof(LinuxMprisMediaBackend);
     public ModulePriority Priority => ModulePriority.High;
