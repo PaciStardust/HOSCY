@@ -1,5 +1,6 @@
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Audio;
+using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Recognition.Core;
 using HoscyCore.Utility;
@@ -15,6 +16,7 @@ public class AzureRecognitionModuleStartInfo : IRecognitionModuleStartInfo //tod
     public string Name => "Azure Recognizer";
     public string Description => "Remote recognition using Azure-API";
     public Type ModuleType => typeof(TestRecognitionModule);
+    public ModulePriority Priority => ModulePriority.Medium;
 
     public RecognitionModuleConfigFlags ConfigFlags 
         => RecognitionModuleConfigFlags.Azure | RecognitionModuleConfigFlags.Microphone;

@@ -1,3 +1,4 @@
+using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Media.Core;
 using HoscyCore.Utility;
@@ -12,6 +13,7 @@ public class DisabledMediaBackendStartInfo : IMediaBackendStartInfo
     public string Name => "Disabled";
     public string Description => "Disables the Media backend, use this if you do not want media controls or are having issues";
     public Type ModuleType => typeof(DisabledMediaBackend);
+    public ModulePriority Priority => ModulePriority.Default;
 }
 
 [LoadIntoDiContainer(typeof(DisabledMediaBackend), Lifetime.Transient)]

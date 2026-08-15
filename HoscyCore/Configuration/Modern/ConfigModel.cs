@@ -243,7 +243,7 @@ public class ConfigModel : ObservableObject
 
     #region External Input
     public const string DESC_ExternalInput_DoPreprocessFull = "Do full preprocessing on external input";
-    public bool ExternalInput_DoPreprocessFull 
+    public bool ExternalInput_DoPreprocessFull //todo: impl
     {
         get => _externalInput_DoPreprocessFull;
         set => SetProperty(ref _externalInput_DoPreprocessFull, value);
@@ -251,7 +251,7 @@ public class ConfigModel : ObservableObject
     private bool _externalInput_DoPreprocessFull = true;
 
     public const string DESC_ExternalInput_DoPreprocessPartial = "Do partial preprocessing on external input";
-    public bool ExternalInput_DoPreprocessPartial
+    public bool ExternalInput_DoPreprocessPartial//todo: impl
     {
         get => _externalInput_DoPreprocessPartial;
         set => SetProperty(ref _externalInput_DoPreprocessPartial, value);
@@ -259,7 +259,7 @@ public class ConfigModel : ObservableObject
     private bool _externalInput_DoPreprocessPartial = true;
 
     public const string DESC_ExternalInput_DoTranslate = "Translate external input";
-    public bool ExternalInput_DoTranslate
+    public bool ExternalInput_DoTranslate //todo: impl
     {
         get => _externalInput_DoTranslate;
         set => SetProperty(ref _externalInput_DoTranslate, value);
@@ -269,7 +269,7 @@ public class ConfigModel : ObservableObject
 
     #region Manual Input
     public const string DESC_ManualInput_SendViaAudio = "Send manual input as audio";
-    public bool ManualInput_SendViaAudio
+    public bool ManualInput_SendViaAudio //todo: impl
     {
         get => _manualInput_SendViaAudio;
         set => SetProperty(ref _manualInput_SendViaAudio, value);
@@ -277,7 +277,7 @@ public class ConfigModel : ObservableObject
     private bool _manualInput_SendViaAudio;
 
     public const string DESC_ManualInput_SendViaText = "Send manual input as text";
-    public bool ManualInput_SendViaText
+    public bool ManualInput_SendViaText //todo: impl
     {
         get => _manualInput_SendViaText;
         set => SetProperty(ref _manualInput_SendViaText, value);
@@ -285,7 +285,7 @@ public class ConfigModel : ObservableObject
     private bool _manualInput_SendViaText = true;
 
     public const string DESC_ManualInput_SendViaOther = "Send manual input as other";
-    public bool ManualInput_SendViaOther
+    public bool ManualInput_SendViaOther //todo: impl
     {
         get => _manualInput_SendViaOther;
         set => SetProperty(ref _manualInput_SendViaOther, value);
@@ -293,7 +293,7 @@ public class ConfigModel : ObservableObject
     private bool _manualInput_SendViaOther = true;
 
     public const string DESC_ManualInput_DoPreprocessFull = "Do full preprocessing for manual input";
-    public bool ManualInput_DoPreprocessFull
+    public bool ManualInput_DoPreprocessFull //todo: impl
     {
         get => _manualInput_DoPreprocessFull;
         set => SetProperty(ref _manualInput_DoPreprocessFull, value);
@@ -301,7 +301,7 @@ public class ConfigModel : ObservableObject
     private bool _manualInput_DoPreprocessFull = true;
 
     public const string DESC_ManualInput_DoPreprocessPartial = "Do partial preprocessing for manual input";
-    public bool ManualInput_DoPreprocessPartial
+    public bool ManualInput_DoPreprocessPartial //todo: impl
     {
         get => _manualInput_DoPreprocessPartial;
         set => SetProperty(ref _manualInput_DoPreprocessPartial, value);
@@ -309,7 +309,7 @@ public class ConfigModel : ObservableObject
     private bool _manualInput_DoPreprocessPartial = true;
 
     public const string DESC_ManualInput_DoTranslate = "Translate manual input";
-    public bool ManualInput_DoTranslate
+    public bool ManualInput_DoTranslate //todo: impl
     {
         get => _manualInput_DoTranslate;
         set => SetProperty(ref _manualInput_DoTranslate, value);
@@ -317,7 +317,7 @@ public class ConfigModel : ObservableObject
     private bool _manualInput_DoTranslate = true;
 
     public const string DESC_ManualInput_TextPresets = "Presets for manual input";
-    public Dictionary<string, string> ManualInput_TextPresets
+    public Dictionary<string, string> ManualInput_TextPresets //todo: impl
     {
         get => _manualInput_TextPresets;
         set => SetProperty(ref _manualInput_TextPresets, value);

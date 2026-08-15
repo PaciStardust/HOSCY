@@ -1,3 +1,6 @@
+#if DEBUG
+
+using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Translation.Core;
 using HoscyCore.Utility;
@@ -11,6 +14,7 @@ public class TestTranslationModuleStartInfo : ITranslationModuleStartInfo
     public string Name => "Test Translator";
     public string Description => "Translator for test purposes, only outputs random garbage";
     public Type ModuleType => typeof(TestTranslationModule);
+    public ModulePriority Priority => ModulePriority.Lowest;
 
     public TranslationModuleConfigFlags ConfigFlags 
         => TranslationModuleConfigFlags.None;
@@ -62,3 +66,5 @@ public class TestTranslationModule(ILogger logger)
     }
     protected override void DisposeCleanup() { }
 }
+
+#endif

@@ -3,6 +3,7 @@
 
 using System.Speech.Recognition;
 using HoscyCore.Configuration.Modern;
+using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Recognition.Core;
 using HoscyCore.Services.Recognition.Extra;
@@ -17,6 +18,7 @@ public class WindowsRecognitionModuleStartInfo : IRecognitionModuleStartInfo
     public string Name => "Windows Recognizer";
     public string Description => "Recognizer using Windows Recognition, low quality, please avoid";
     public Type ModuleType => typeof(WindowsRecognitionModule);
+    public ModulePriority Priority => ModulePriority.Lowest;
 
     public RecognitionModuleConfigFlags ConfigFlags 
         => RecognitionModuleConfigFlags.Windows;

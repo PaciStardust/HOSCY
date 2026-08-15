@@ -18,6 +18,7 @@ public class LinuxMprisMediaBackendStartInfo : IMediaBackendStartInfo
     public string Name => "Linux Mpris";
     public string Description => "Linux Backend using the MPRIS D-Bus specification";
     public Type ModuleType => typeof(LinuxMprisMediaBackend);
+    public ModulePriority Priority => ModulePriority.High;
 }
 
 [PrototypeLoadIntoDiContainer(typeof(LinuxMprisMediaBackend), Lifetime.Transient)]

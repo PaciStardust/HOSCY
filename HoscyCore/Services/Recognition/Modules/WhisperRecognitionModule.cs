@@ -20,6 +20,7 @@ public class WhisperRecognitionModuleStartInfo : IRecognitionModuleStartInfo
     public string Name => "Whisper Recognizer";
     public string Description => "Local AI, quality / RAM, VRAM usage varies, startup may take a while";
     public Type ModuleType => typeof(WhisperRecognitionModule);
+    public ModulePriority Priority => ModulePriority.High;
 
     public RecognitionModuleConfigFlags ConfigFlags 
         => RecognitionModuleConfigFlags.MicRtc | RecognitionModuleConfigFlags.Whisper;

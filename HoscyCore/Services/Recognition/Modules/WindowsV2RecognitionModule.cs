@@ -5,6 +5,7 @@ using System.Speech.AudioFormat;
 using System.Speech.Recognition;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Audio;
+using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Recognition.Core;
 using HoscyCore.Services.Recognition.Extra;
@@ -20,6 +21,7 @@ public class WindowsV2RecognitionModuleStartInfo : IRecognitionModuleStartInfo
     public string Name => "Windows Recognizer V2";
     public string Description => "Recognizer using Windows Recognition, low quality, please avoid";
     public Type ModuleType => typeof(WindowsV2RecognitionModule);
+    public ModulePriority Priority => ModulePriority.Low;
 
     public RecognitionModuleConfigFlags ConfigFlags 
         => RecognitionModuleConfigFlags.MicRtc | RecognitionModuleConfigFlags.Windows;

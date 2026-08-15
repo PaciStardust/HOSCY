@@ -12,6 +12,7 @@ public interface ISoloModuleStartInfo : IModuleStartInfo
 {
     public string Name { get; }
     public string Description { get; }
+    public ModulePriority Priority { get; }
 }
 
 /// <summary>

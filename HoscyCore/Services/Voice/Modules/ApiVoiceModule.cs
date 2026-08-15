@@ -1,4 +1,5 @@
 using HoscyCore.Configuration.Modern;
+using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Network;
 using HoscyCore.Services.Voice.Core;
@@ -14,6 +15,7 @@ public class ApiVoiceModuleStartInfo : IVoiceModuleStartInfo
     public string Name => "API";
     public string Description => "TTS using any API";
     public Type ModuleType => typeof(ApiVoiceModule);
+    public ModulePriority Priority => ModulePriority.Low;
 }
 
 [PrototypeLoadIntoDiContainer(typeof(ApiVoiceModule), Lifetime.Transient)]

@@ -1,4 +1,5 @@
 using HoscyCore.Configuration.Modern;
+using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Network;
 using HoscyCore.Services.Translation.Core;
@@ -13,6 +14,7 @@ public class ApiTranslationModuleStartInfo : ITranslationModuleStartInfo
     public string Name => "Api Translator";
     public string Description => "Translation using any provided API Info";
     public Type ModuleType => typeof(ApiTranslationModule);
+    public ModulePriority Priority => ModulePriority.High;
 
     public TranslationModuleConfigFlags ConfigFlags
         => TranslationModuleConfigFlags.Api;

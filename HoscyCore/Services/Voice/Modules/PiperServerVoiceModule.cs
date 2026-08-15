@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using HoscyCore.Configuration.Modern;
+using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Network;
 using HoscyCore.Services.Voice.Core;
@@ -17,6 +18,7 @@ public class PiperServerVoiceModuleStartInfo : IVoiceModuleStartInfo
     public string Name => "Piper Server";
     public string Description => "TTS using a Piper Webserver";
     public Type ModuleType => typeof(PiperServerVoiceModule);
+    public ModulePriority Priority => ModulePriority.High;
 }
 
 [PrototypeLoadIntoDiContainer(typeof(PiperServerVoiceModule), Lifetime.Transient)]

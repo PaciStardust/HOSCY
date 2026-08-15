@@ -4,6 +4,7 @@
 using System.Speech.AudioFormat;
 using System.Speech.Synthesis;
 using HoscyCore.Configuration.Modern;
+using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Voice.Core;
 using HoscyCore.Utility;
@@ -18,6 +19,7 @@ public class WindowsVoiceModuleStartInfo : IVoiceModuleStartInfo
     public string Name => "Windows";
     public string Description => "Voice synthesis using Windows";
     public Type ModuleType => typeof(WindowsVoiceModule);
+    public ModulePriority Priority => ModulePriority.Low;
 }
 
 [PrototypeLoadIntoDiContainer(typeof(WindowsVoiceModule), Lifetime.Transient)]

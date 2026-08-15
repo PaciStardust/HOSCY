@@ -1,5 +1,6 @@
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Audio;
+using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Network;
 using HoscyCore.Services.Recognition.Core;
@@ -15,6 +16,7 @@ public class ApiRecognitionModuleStartInfo : IRecognitionModuleStartInfo
     public string Name => "Any-Api Recognizer";
     public string Description => "Remote recognition using Any-API, not continuous";
     public Type ModuleType => typeof(ApiRecognitionModule);
+    public ModulePriority Priority => ModulePriority.Low;
 
     public RecognitionModuleConfigFlags ConfigFlags 
         => RecognitionModuleConfigFlags.MicRtc | RecognitionModuleConfigFlags.AnyApi;

@@ -1,4 +1,5 @@
 using HoscyCore.Configuration.Modern;
+using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Voice.Core;
 using HoscyCore.Utility;
@@ -14,6 +15,7 @@ public class AzureVoiceModuleStartInfo : IVoiceModuleStartInfo
     public string Name => "Azure Services";
     public string Description => "Voice synthesis using Azure";
     public Type ModuleType => typeof(AzureVoiceModule);
+    public ModulePriority Priority => ModulePriority.Medium;
 }
 
 [PrototypeLoadIntoDiContainer(typeof(AzureVoiceModule), Lifetime.Transient)]

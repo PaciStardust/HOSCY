@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Reflection;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Audio;
+using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Recognition.Core;
 using HoscyCore.Utility;
@@ -17,6 +18,7 @@ public class VoskRecognitionModuleStartInfo : IRecognitionModuleStartInfo
     public string Name => "Vosk Recognizer";
     public string Description => "Local AI, quality / RAM, VRAM usage varies, startup may take a while";
     public Type ModuleType => typeof(VoskRecognitionModule);
+    public ModulePriority Priority => ModulePriority.Medium;
 
     public RecognitionModuleConfigFlags ConfigFlags 
         => RecognitionModuleConfigFlags.MicRtc | RecognitionModuleConfigFlags.Vosk;

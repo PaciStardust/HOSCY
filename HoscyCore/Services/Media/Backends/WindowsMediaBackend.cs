@@ -1,5 +1,6 @@
 #if WINDOWS
 
+using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Media.Core;
 using HoscyCore.Utility;
@@ -17,6 +18,7 @@ public class WindowsMediaBackendStartInfo : IMediaBackendStartInfo
     public string Name => "Windows";
     public string Description => "Standard Windows backend";
     public Type ModuleType => typeof(WindowsMediaBackend);
+    public ModulePriority Priority => ModulePriority.High;
 }
 
 [PrototypeLoadIntoDiContainer(typeof(WindowsMediaBackend), Lifetime.Transient)]

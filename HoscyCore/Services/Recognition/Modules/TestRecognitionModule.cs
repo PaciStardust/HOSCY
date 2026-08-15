@@ -1,4 +1,7 @@
+#if DEBUG
+
 using HoscyCore.Services.Audio;
+using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Recognition.Core;
 using HoscyCore.Utility;
@@ -13,6 +16,7 @@ public class TestRecognitionModuleStartInfo : IRecognitionModuleStartInfo
     public string Name => "Test Recognizer";
     public string Description => "For testing only";
     public Type ModuleType => typeof(TestRecognitionModule);
+    public ModulePriority Priority => ModulePriority.Lowest;
 
     public RecognitionModuleConfigFlags ConfigFlags 
         => RecognitionModuleConfigFlags.Microphone;
@@ -102,3 +106,4 @@ public class TestRecognitionModule(ILogger logger, IAudioService audio)
     }
     #endregion
 }
+#endif
