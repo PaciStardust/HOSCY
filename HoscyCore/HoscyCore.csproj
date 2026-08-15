@@ -55,7 +55,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(IsLinux)'=='true'">
-    <PackageReference Include="Tmds.DBus" Version="0.93.0" />
+    <PackageReference Include="Tmds.DBus" Version="0.94.2" />
   </ItemGroup>
 
 </Project>

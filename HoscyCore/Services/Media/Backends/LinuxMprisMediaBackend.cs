@@ -77,7 +77,6 @@ public class LinuxMprisMediaBackend(ILogger logger, ConfigModel config) : MediaB
         _currentEndpoint?.OnChanged.Dispose();
         _currentEndpoint = null;
 
-        _connection?.Dispose();
         _connection = null;
     }
     #endregion
