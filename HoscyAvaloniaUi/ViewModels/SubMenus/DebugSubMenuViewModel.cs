@@ -1,6 +1,7 @@
 using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using HoscyAvaloniaUi.Services;
+using HoscyAvaloniaUi.Utility;
 using HoscyAvaloniaUi.ViewModels.Core;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Audio;
@@ -40,22 +41,23 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
         _popupFactory = popupFactory;
         _audio = audio;
 
-        LogLevels = Enum.GetNames<LogEventLevel>();
-        LogLevelIndex = LogLevels.IndexOf(Enum.GetName(Config.Debug_LogMinimumSeverity)); //todo: log
+        (LogLevels, LogLevelIndex) = AvaloniaUiUtils.ComboBoxLoad( Enum.GetNames<LogEventLevel>(), 
+            Enum.GetName(Config.Debug_LogMinimumSeverity), _logger, "LogLevel");
     }
 
-    public override void LogLevelChanged() //todo: log
+    public override void LogLevelChanged()
     {
+        (var selected, LogLevelIndex) = AvaloniaUiUtils.ComboBoxIsValid(LogLevels, LogLevelIndex, _logger, "LogLevel");
         LogLevelIndex = Math.Min(LogLevelIndex, LogLevels.Length - 1);
-        if (LogLevelIndex == -1)
+
+        if (selected is null) return;
+
+        if (!Enum.TryParse<LogEventLevel>(selected, out var parsed))
         {
+            _logger.Warning("Failed to parse drop down value {selected} to LogLevel", selected);
             return;
         }
-        var selected = LogLevels[LogLevelIndex];
-        if (Enum.TryParse<LogEventLevel>(selected, out var parsed))
-        {
-            Config.Debug_LogMinimumSeverity = parsed;
-        }
+        Config.Debug_LogMinimumSeverity = parsed;
     }
 
     public override void LogFiltersClicked()
