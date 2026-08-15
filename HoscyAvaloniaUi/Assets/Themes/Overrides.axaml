@@ -111,6 +111,8 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
                                 CaretBrush="{TemplateBinding CaretBrush}"
                                 Background="Transparent"
                                 SelectionBrush="{TemplateBinding SelectionBrush}"
+                                SelectionStart="{TemplateBinding SelectionStart}"
+                                SelectionEnd="{TemplateBinding SelectionEnd}"
                                 Text="{TemplateBinding Text}"/>
                             </ScrollViewer>
 
@@ -158,6 +160,10 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="TextWrapping" Value="Wrap"/>
         <Setter Property="VerticalAlignment" Value="Stretch"/>
+    </ControlTheme>
+
+    <ControlTheme x:Key="HTextBoxMedium" TargetType="TextBox" BasedOn="{StaticResource HTextBox}">
+        <Setter Property="Width" Value="200"/>
     </ControlTheme>
 
     <ControlTheme x:Key="HTextBoxShort" TargetType="TextBox" BasedOn="{StaticResource HTextBox}">
