@@ -4,7 +4,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="using:HoscyAvaloniaUi.ViewModels.SubMenus"
 	xmlns:cfg="using:HoscyCore.Configuration.Modern"
-	mc:Ignorable="d" d:DesignHeight="4200" d:DesignWidth="689"
+	mc:Ignorable="d" d:DesignHeight="1250" d:DesignWidth="689"
 	x:DataType="vm:ExtrasSubMenuViewModelBase"
 	x:Class="HoscyAvaloniaUi.Views.SubMenus.ExtrasSubMenu"
 	Background="{StaticResource BackgroundBaseBrush}">
@@ -26,32 +26,32 @@
 				<StackPanel Theme="{StaticResource HStackIndent}">
 					<CheckBox Theme="{StaticResource HCheckBox}" Content="Show AFK Status" IsChecked="{Binding Config.Afk_ShowDuration}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_ShowDuration}"/>
 
-					<!-- AFK Options (Disabled when feature disabled) -->
-					<StackPanel Theme="{StaticResource HStack}" IsEnabled="{Binding Config.Afk_ShowDuration}">
+					<!-- AFK Options -->
+					<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Afk_ShowDuration}">
 						<WrapPanel Theme="{StaticResource HWrap}">
-							<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Duration ..." Text="{Binding Config.Afk_BaseDurationDisplayIntervalSeconds, Converter={StaticResource FloatRange}, ConverterParameter=ConfigModel.Afk_BaseDurationDisplayIntervalSeconds}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_BaseDurationDisplayIntervalSeconds}"/>
+							<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Afk_BaseDurationDisplayIntervalSeconds, Converter={StaticResource FloatRange}, ConverterParameter=ConfigModel.Afk_BaseDurationDisplayIntervalSeconds}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_BaseDurationDisplayIntervalSeconds}"/>
 							<Label Theme="{StaticResource HLabel}" Content="Base Display Interval (s)" VerticalAlignment="Center"/>
 						</WrapPanel>
 						
 						<WrapPanel Theme="{StaticResource HWrap}">
-							<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Double ..." Text="{Binding Config.Afk_TimesDisplayedBeforeDoublingInterval, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.Afk_TimesDisplayedBeforeDoublingInterval}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_TimesDisplayedBeforeDoublingInterval}"/>
+							<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Afk_TimesDisplayedBeforeDoublingInterval, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.Afk_TimesDisplayedBeforeDoublingInterval}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_TimesDisplayedBeforeDoublingInterval}"/>
 							<Label Theme="{StaticResource HLabel}" Content="Double Interval After Displaying ... Times" VerticalAlignment="Center"/>
 						</WrapPanel>
 
-						<StackPanel Theme="{StaticResource HStackS}">
-							<TextBlock Theme="{StaticResource HTextBlock}" Text="AFK Start Text"/>
-							<TextBox Text="{Binding Config.Afk_StartText}" Tag="AFK Start Text ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_StartText}"/>
-						</StackPanel>
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<TextBox Theme="{StaticResource HTextBoxMedium}" PlaceholderText="Start ..." Text="{Binding Config.Afk_StartText}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_StartText}"/>
+							<Label Theme="{StaticResource HLabel}" Content="AFK Start Text" VerticalAlignment="Center"/>
+						</WrapPanel>
 
-						<StackPanel Theme="{StaticResource HStackS}">
-							<TextBlock Theme="{StaticResource HTextBlock}" Text="AFK Status Text"/>
-							<TextBox Text="{Binding Config.Afk_StatusText}" Tag="AFK Status Text ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_StatusText}"/>
-						</StackPanel>
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<TextBox Theme="{StaticResource HTextBoxMedium}" PlaceholderText="Status ..." Text="{Binding Config.Afk_StatusText}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_StatusText}"/>
+							<Label Theme="{StaticResource HLabel}" Content="AFK Status Text" VerticalAlignment="Center"/>
+						</WrapPanel>
 
-						<StackPanel Theme="{StaticResource HStackS}">
-							<TextBlock Theme="{StaticResource HTextBlock}" Text="AFK Stop Text"/>
-							<TextBox Text="{Binding Config.Afk_StopText}" Tag="AFK Stop Text ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_StopText}"/>
-						</StackPanel>
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<TextBox Theme="{StaticResource HTextBoxMedium}" PlaceholderText="Stop ..." Text="{Binding Config.Afk_StopText}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_StopText}"/>
+							<Label Theme="{StaticResource HLabel}" Content="AFK Stop Text" VerticalAlignment="Center"/>
+						</WrapPanel>
 					</StackPanel>
 				</StackPanel>
 			</StackPanel>
@@ -60,22 +60,109 @@
 				<!-- Header for Counters-->
 				<WrapPanel Theme="{StaticResource HWrap}">
 					<Label Content="Counters" Theme="{StaticResource HLabelL}"/>
-					<Button Content="Edit" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="EditCountersClicked" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Counters_List}"/>
+					<Button Content="Edit" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="CountersEditClicked" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Counters_List}"/>
 				</WrapPanel>
 
 				<!-- Counter Options -->
 				<StackPanel Theme="{StaticResource HStackIndent}">
 					<CheckBox Theme="{StaticResource HCheckBox}" Content="Show Counter Notifications" IsChecked="{Binding Config.Counters_ShowNotification}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Counters_ShowNotification}"/>
 
-					<WrapPanel Theme="{StaticResource HWrap}">
-						<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Cooldown Duration ..." Text="{Binding Config.Counters_DisplayCooldownSeconds, Converter={StaticResource FloatRange}, ConverterParameter=ConfigModel.Counters_DisplayCooldownSeconds}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Counters_DisplayCooldownSeconds}"/>
-						<Label Theme="{StaticResource HLabel}" Content="Counter Cooldown Duration (s)" VerticalAlignment="Center"/>
-					</WrapPanel>
+					<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Counters_ShowNotification}">
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Counters_DisplayCooldownSeconds, Converter={StaticResource FloatRange}, ConverterParameter=ConfigModel.Counters_DisplayCooldownSeconds}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Counters_DisplayCooldownSeconds}"/>
+							<Label Theme="{StaticResource HLabel}" Content="Counter Cooldown Duration (s)" VerticalAlignment="Center"/>
+						</WrapPanel>
 
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Counters_DisplayDurationSeconds, Converter={StaticResource FloatRange}, ConverterParameter=ConfigModel.Counters_DisplayDurationSeconds}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Counters_DisplayDurationSeconds}"/>
+							<Label Theme="{StaticResource HLabel}" Content="Counter Display Duration (s)" VerticalAlignment="Center"/>
+						</WrapPanel>
+					</StackPanel>
+				</StackPanel>
+			</StackPanel>
+
+			<StackPanel Theme="{StaticResource HStack}">
+				<!-- Header for Media -->
+				<Label Content="Media" Theme="{StaticResource HLabelL}"/>
+
+				<!-- Media Options -->
+				<StackPanel Theme="{StaticResource HStackIndent}">
+					<StackPanel Theme="{StaticResource HStackS}">
+						<TextBlock Theme="{StaticResource HTextBlock}" Text="Media Backend Module"/>
+
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding MediaBackendIndex}" ItemsSource="{Binding MediaBackendList}" SelectionChanged="MediaBackendChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_Backend}"/>
+							
+							<Button Content="Reload" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="MediaBackendReloadClicked" ToolTip.Tip="Reloads the media backend"/>
+
+							<Button Content="View Endpoints" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="MediaBackendEndpointsClicked" IsEnabled="{Binding MediaBackendHasEndpoints}" ToolTip.Tip="Views the endpoints for the currently running module"/>
+						</WrapPanel>
+
+						<TextBlock Theme="{StaticResource HTextBlock}" Text="Currently selected module is not loaded, please press 'Reload' to activate" FontSize="16" Foreground="{StaticResource InvalidBrush}" IsVisible="{Binding MediaBackendReloadNeeded}"/>
+
+						<TextBlock Theme="{StaticResource HTextBlock}" Text="{Binding MediaBackendDescription}" IsEnabled="False" FontSize="16"/>
+					</StackPanel>
+
+					<!-- Media (Notifications) Options -->
 					<WrapPanel Theme="{StaticResource HWrap}">
-						<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Display Duration ..." Text="{Binding Config.Counters_DisplayDurationSeconds, Converter={StaticResource FloatRange}, ConverterParameter=ConfigModel.Counters_DisplayDurationSeconds}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Counters_DisplayDurationSeconds}"/>
-						<Label Theme="{StaticResource HLabel}" Content="Counter Display Duration (s)" VerticalAlignment="Center"/>
+						<Label Content="Notifications" Theme="{StaticResource HLabelM}"/>
+						<Button Content="Filters" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="MediaFiltersClicked" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_Filters}"/>
 					</WrapPanel>
+					
+					<StackPanel Theme="{StaticResource HStackIndent}">
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Show Media Notifications" IsChecked="{Binding Config.Media_ShowStatus}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_ShowStatus}"/>
+
+						<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Media_ShowStatus}">
+							<WrapPanel Theme="{StaticResource HWrap}">
+								<TextBox Theme="{StaticResource HTextBoxMedium}" PlaceholderText="Paused ..." Text="{Binding Config.Media_PauseText}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_PauseText}"/>
+								<Label Theme="{StaticResource HLabel}" Content="Media Pause Text" VerticalAlignment="Center"/>
+							</WrapPanel>
+
+							<WrapPanel Theme="{StaticResource HWrap}">
+								<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Playing ..." Text="{Binding Config.Media_PlayingVerb}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_PlayingVerb}"/>
+								<Label Theme="{StaticResource HLabel}" Content="Media Playing Verb" VerticalAlignment="Center"/>
+							</WrapPanel>
+
+							<WrapPanel Theme="{StaticResource HWrap}">
+								<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Inter ..." Text="{Binding Config.Media_IntermediateWord}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_IntermediateWord}"/>
+								<Label Theme="{StaticResource HLabel}" Content="Media Intermediate Word" VerticalAlignment="Center"/>
+							</WrapPanel>
+
+							<WrapPanel Theme="{StaticResource HWrap}">
+								<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Extra ..." Text="{Binding Config.Media_ExtraText}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_ExtraText}"/>
+								<Label Theme="{StaticResource HLabel}" Content="Media Extra Text" VerticalAlignment="Center"/>
+							</WrapPanel>
+
+							<CheckBox Theme="{StaticResource HCheckBox}" Content="Swap Artist and Song" IsChecked="{Binding Config.Media_AddAlbumToText}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_AddAlbumToText}"/>
+
+							<CheckBox Theme="{StaticResource HCheckBox}" Content="Add Album to Text" IsChecked="{Binding Config.Media_AddAlbumToText}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_AddAlbumToText}"/>
+
+							<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Media_AddAlbumToText}">
+								<CheckBox Theme="{StaticResource HCheckBox}" Content="Filter Same Name Album" IsChecked="{Binding Config.Media_FilterSameNameAlbum}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_FilterSameNameAlbum}"/>
+
+								<WrapPanel Theme="{StaticResource HWrap}">
+									<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Album ..." Text="{Binding Config.Media_AlbumWord}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_AlbumWord}"/>
+									<Label Theme="{StaticResource HLabel}" Content="Media Album Word" VerticalAlignment="Center"/>
+								</WrapPanel>
+							</StackPanel>
+						</StackPanel>
+					</StackPanel>
+
+					<!-- Media (MPRIS) Options -->
+					<Label Content="Linux MRPIS" Theme="{StaticResource HLabelM}"/>
+
+					<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding MediaBackendIsLinuxMpris}">
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<Label Theme="{StaticResource HLabel}" Content="Endpoints:" VerticalAlignment="Center"/>
+							<Button Content="Edit Preferred" Theme="{StaticResource HButton}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="MediaMprisEndpointsPreferredClicked" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_Mpris_PreferredEndpoints}"/>
+							<Button Content="Edit Ignored" Theme="{StaticResource HButton}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="MediaMprisEndpointsIgnoredClicked" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_Mpris_IgnoredEndpoints}"/>
+						</WrapPanel>
+
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Media_Mpris_EndpointUpdateIntervalMs, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.Media_Mpris_EndpointUpdateIntervalMs}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_Mpris_EndpointUpdateIntervalMs}"/>
+							<Label Theme="{StaticResource HLabel}" Content="MPRIS Endpoint Update Interval (ms)" VerticalAlignment="Center"/>
+						</WrapPanel>
+					</StackPanel>
 				</StackPanel>
 			</StackPanel>
 		</StackPanel>

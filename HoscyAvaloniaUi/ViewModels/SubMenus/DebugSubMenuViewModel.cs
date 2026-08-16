@@ -17,8 +17,11 @@ public abstract partial class DebugSubMenuViewModelBase : ViewModelBase
     [ObservableProperty]
     public partial ConfigModel Config { get; set; }
 
-    public string[] LogLevels { get; protected set; } = [ "Test" ];
-    public int LogLevelIndex { get; set; }
+    [ObservableProperty]
+    public partial string[] LogLevels { get; protected set; } = [ "Test" ];
+    [ObservableProperty]
+    public partial int LogLevelIndex { get; set; }
+    
     public virtual void LogLevelChanged() { }
     public virtual void LogFiltersClicked() { }
     public virtual void UtilOpenGit() { }
@@ -41,7 +44,7 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
         _popupFactory = popupFactory;
         _audio = audio;
 
-        (LogLevels, LogLevelIndex) = AvaloniaUiUtils.ComboBoxLoad( Enum.GetNames<LogEventLevel>(), 
+        (LogLevels, LogLevelIndex) = AvaloniaUiUtils.ComboBoxLoad(Enum.GetNames<LogEventLevel>(), 
             Enum.GetName(Config.Debug_LogMinimumSeverity), _logger, "LogLevel");
     }
 
