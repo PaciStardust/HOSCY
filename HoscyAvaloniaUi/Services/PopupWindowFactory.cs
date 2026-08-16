@@ -25,7 +25,8 @@ public class PopupWindowFactory
     IContainerBulkLoader<EditApiPresetsWindowViewModelBase> editApiPresetsWvmLoader,
     IContainerBulkLoader<EditCountersWindowViewModelBase> editCountersWvmLoader,
     IContainerBulkLoader<EditFiltersWindowViewModelBase> editFiltersWvmLoader,
-    IContainerBulkLoader<DisplayListWindowViewModelBase> displayListWvmLoader
+    IContainerBulkLoader<DisplayListWindowViewModelBase> displayListWvmLoader,
+    IContainerBulkLoader<EditListWindowViewModelBase> editListWvmLoader
 )
     : IService
 {
@@ -39,6 +40,7 @@ public class PopupWindowFactory
     private readonly IContainerBulkLoader<EditCountersWindowViewModelBase> _editCountersWvmLoader = editCountersWvmLoader;
     private readonly IContainerBulkLoader<EditFiltersWindowViewModelBase> _editFiltersWvmLoader = editFiltersWvmLoader;
     private readonly IContainerBulkLoader<DisplayListWindowViewModelBase> _displayListWvmLoader = displayListWvmLoader;
+    private readonly IContainerBulkLoader<EditListWindowViewModelBase> _editListWvmLoader = editListWvmLoader;
 
     private void Open(Func<Window> windowCreate, ViewModelBase vm, bool dialog, Window? parent)
     {
@@ -145,5 +147,16 @@ public class PopupWindowFactory
         vmRes.Value.Init(list);
 
         Open(() => new EditFiltersWindow(), vmRes.Value, true, parentWindow);
+    }
+
+    public void OpenEditList(List<string> values, string title, string valueName, Window? parentWindow)
+    {
+        _logger.Debug("Creating list editor with title {title} and valueName {values}", title, valueName);
+
+        var vmRes = _editListWvmLoader.GetInstance();
+        if (!vmRes.IsOk) return;
+        vmRes.Value.InitExtra(values, title, valueName);
+
+        Open(() => new EditListWindow(), vmRes.Value, true, parentWindow);
     }
 }

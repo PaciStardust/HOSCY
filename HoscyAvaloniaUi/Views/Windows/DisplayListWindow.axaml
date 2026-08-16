@@ -26,7 +26,7 @@
 			ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="SelectionChanged"/>
 
 		<StackPanel Grid.Row="2" Theme="{StaticResource HStackS}">
-			<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="{Binding ValueName}"/>
+			<Label Theme="{StaticResource HLabel}" HorizontalAlignment="Center" Content="{Binding ValueName}"/>
 			<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedText}" PlaceholderText="{Binding ValuePlaceholder}" ToolTip.Tip="This field will not set a value and is only here to allow copying"/>
 		</StackPanel>
 	</Grid>
