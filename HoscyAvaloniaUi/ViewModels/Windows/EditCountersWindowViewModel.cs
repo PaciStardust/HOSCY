@@ -49,9 +49,9 @@ public class EditCountersWindowViewModelImpl(ILogger logger) : EditCountersWindo
         _logger.Debug("Creating new Counter entry {entry}", model.ToString());
     }
 
-    protected override void LogModelModified(CounterModel oldModel, CounterModel newMoldel)
+    protected override void LogModelModified(CounterModel oldModel, CounterModel newModel)
     {
-        _logger.Debug("Updating Counter entry {entryOld} => {newEntry}", oldModel.ToString(), newMoldel.ToString());
+        _logger.Debug("Updating Counter entry {entryOld} => {newEntry}", oldModel.ToString(), newModel.ToString());
     }
 
     protected override void LogModelRemoved(CounterModel model)

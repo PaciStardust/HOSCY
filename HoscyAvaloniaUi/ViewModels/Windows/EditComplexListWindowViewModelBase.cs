@@ -90,7 +90,7 @@ public abstract partial class EditComplexListWindowViewModelBase<Tdata> : ViewMo
         _dataInternal[SelectedIndex] = model;
         RefreshDiplayList(SelectedIndex);
     }
-    protected virtual void LogModelModified(Tdata oldModel, Tdata newMoldel) { }
+    protected virtual void LogModelModified(Tdata oldModel, Tdata newModel) { }
 
     public void KeyPressed(KeyEventArgs args)
     {

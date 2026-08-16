@@ -56,9 +56,9 @@ public class EditFiltersWindowViewModelImpl(ILogger logger) : EditFiltersWindowV
         _logger.Debug("Creating new Filter entry {entry}", model.ToString());
     }
 
-    protected override void LogModelModified(FilterModel oldModel, FilterModel newMoldel)
+    protected override void LogModelModified(FilterModel oldModel, FilterModel newModel)
     {
-        _logger.Debug("Updating Filter entry {entryOld} => {newEntry}", oldModel.ToString(), newMoldel.ToString());
+        _logger.Debug("Updating Filter entry {entryOld} => {newEntry}", oldModel.ToString(), newModel.ToString());
     }
 
     protected override void LogModelRemoved(FilterModel model)

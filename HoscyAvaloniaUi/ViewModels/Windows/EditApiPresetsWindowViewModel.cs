@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using Avalonia.Controls;
-using Avalonia.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using HoscyAvaloniaUi.Services;
-using HoscyAvaloniaUi.ViewModels.Core;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
 using Serilog;
@@ -63,9 +59,9 @@ public class EditApiPresetsWindowViewModelImpl
         _logger.Debug("Creating new API Preset entry {entry}", model.ToString());
     }
 
-    protected override void LogModelModified(ApiPresetModel oldModel, ApiPresetModel newMoldel)
+    protected override void LogModelModified(ApiPresetModel oldModel, ApiPresetModel newModel)
     {
-        _logger.Debug("Updating API Preset entry {entryOld} => {newEntry}", oldModel.ToString(), newMoldel.ToString());
+        _logger.Debug("Updating API Preset entry {entryOld} => {newEntry}", oldModel.ToString(), newModel.ToString());
     }
 
     protected override void LogModelRemoved(ApiPresetModel model)
