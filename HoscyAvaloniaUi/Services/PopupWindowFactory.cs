@@ -24,7 +24,8 @@ public class PopupWindowFactory
     IContainerBulkLoader<EditDictWindowViewModelBase> editDictWvmLoader,
     IContainerBulkLoader<EditApiPresetsWindowViewModelBase> editApiPresetsWvmLoader,
     IContainerBulkLoader<EditCountersWindowViewModelBase> editCountersWvmLoader,
-    IContainerBulkLoader<EditFiltersWindowViewModelBase> editFiltersWvmLoader
+    IContainerBulkLoader<EditFiltersWindowViewModelBase> editFiltersWvmLoader,
+    IContainerBulkLoader<DisplayListWindowViewModelBase> displayListWvmLoader
 )
     : IService
 {
@@ -37,6 +38,7 @@ public class PopupWindowFactory
     private readonly IContainerBulkLoader<EditApiPresetsWindowViewModelBase> _editApiPresetsWvmLoader = editApiPresetsWvmLoader;
     private readonly IContainerBulkLoader<EditCountersWindowViewModelBase> _editCountersWvmLoader = editCountersWvmLoader;
     private readonly IContainerBulkLoader<EditFiltersWindowViewModelBase> _editFiltersWvmLoader = editFiltersWvmLoader;
+    private readonly IContainerBulkLoader<DisplayListWindowViewModelBase> _displayListWvmLoader = displayListWvmLoader;
 
     private void Open(Func<Window> windowCreate, ViewModelBase vm, bool dialog, Window? parent)
     {
@@ -99,6 +101,17 @@ public class PopupWindowFactory
         vmRes.Value.Init(title, keyName, valueName, dict);
 
         Open(() => new EditDictWindow(), vmRes.Value, true, parentWindow);
+    }
+
+    public void OpenDisplayList(string title, string valueName, string[] values, Window? parentWindow)
+    {
+        _logger.Debug("Creating list display (Title=\"{title}\", ValueName=\"{key}\")", title, valueName);
+
+        var vmRes = _displayListWvmLoader.GetInstance();
+        if (!vmRes.IsOk) return;
+        vmRes.Value.Init(values, title, valueName);
+
+        Open(() => new DisplayListWindow(), vmRes.Value, true, parentWindow);
     }
 
     public void OpenEditApiPresets(List<ApiPresetModel> list, Window? parentWindow)

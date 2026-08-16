@@ -1,0 +1,33 @@
+<Window xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:HoscyAvaloniaUi.ViewModels.Windows"
+	xmlns:cfg="using:HoscyCore.Configuration.Modern"
+	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="500"
+	x:DataType="vm:DisplayListWindowViewModelBase"
+	x:Class="HoscyAvaloniaUi.Views.Windows.DisplayListWindow"
+
+	Title="{Binding Title}"
+	MinHeight="500"
+	MinWidth="500"
+	Height="500"
+	Width="500"
+	CanResize="True"
+	Background="{StaticResource BackgroundBaseBrush}" 
+	WindowStartupLocation="CenterOwner">
+
+	<Design.DataContext>
+		<vm:DisplayListWindowViewModelPreview/>
+	</Design.DataContext>
+
+	<Grid Margin="16" RowDefinitions="1*,16,Auto">
+		<ListBox Grid.Row="0" Theme="{StaticResource HListBoxF}" SelectedIndex="{Binding SelectedIndex}" ItemsSource="{Binding DisplayedList}"
+			ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="SelectionChanged"/>
+
+		<StackPanel Grid.Row="2" Theme="{StaticResource HStackS}">
+			<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="{Binding ValueName}"/>
+			<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedText}" PlaceholderText="{Binding ValuePlaceholder}" ToolTip.Tip="This field will not set a value and is only here to allow copying"/>
+		</StackPanel>
+	</Grid>
+</Window>
