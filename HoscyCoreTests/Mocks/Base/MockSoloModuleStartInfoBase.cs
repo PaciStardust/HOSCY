@@ -9,4 +9,6 @@ public abstract class MockSoloModuleStartInfoBase : ISoloModuleStartInfo
     public string Description { get; set; } = "Mock";
 
     public Type ModuleType { get; set; } = typeof(MockSoloModuleStartInfoBase);
+
+    public ModulePriority Priority => ModulePriority.Lowest;
 }

@@ -111,7 +111,7 @@ public class MediaCommmandModule(ReflectPropEditCommandModule reflectCm, IMediaC
     {
         if (_media.CanGetEndpoints)
         {
-            var endpoints = _media.GetEndpointNamesAsync().AsSync();
+            var endpoints = _media.GetEndpointNames();
             if (!endpoints.IsOk)
             {
                 return ResC.Fail(endpoints.Msg);

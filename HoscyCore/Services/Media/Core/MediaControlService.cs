@@ -63,11 +63,11 @@ public class MediaControlService
     #region Control
     public bool CanGetEndpoints 
         => _currentModule?.CanGetEndpoints ?? false;
-    public async Task<Res<string[]>> GetEndpointNamesAsync()
+    public Res<string[]> GetEndpointNames()
     {
         if (_currentModule is null)
             return ResC.TFailLog<string[]>("No Media backend is available to retrieve endpoints from", _logger, lvl: ResMsgLvl.Warning);
-        return await _currentModule.GetEndpointNamesAsync();
+        return _currentModule.GetEndpointNames();
     }
 
     public async Task<Res> PlayAsync()

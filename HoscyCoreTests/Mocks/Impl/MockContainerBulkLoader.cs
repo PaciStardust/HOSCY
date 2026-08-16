@@ -14,6 +14,16 @@ public class MockContainerBulkLoader<T>(Func<IEnumerable<T>> instanceGenerator) 
         return inst is null ? ResC.TFail<T>(ResMsg.Err("No instance found")) : ResC.TOk(inst);
     }
 
+    public Res<T> GetInstance()
+    {
+        var instances = GetInstances();
+        if (instances.IsOk)
+        {
+            return instances.Value.Count > 0 ? ResC.TOk(instances.Value[0]) : ResC.TFail<T>("Unable to retrieve instance");
+        }
+        return ResC.TFail<T>(instances.Msg);
+    }
+
     public Res<List<T>> GetInstances()
     {
         return ResC.TOk(InstanceGenerator().ToList());

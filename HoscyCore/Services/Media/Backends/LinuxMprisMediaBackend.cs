@@ -46,6 +46,7 @@ public class LinuxMprisMediaBackend(ILogger logger, ConfigModel config) : MediaB
 
     protected override Res StartForService()
     {
+        _endpointInfos = null;
         _connection = Connection.Session;
 
         var connectRes = ConnectDbus();
@@ -63,6 +64,7 @@ public class LinuxMprisMediaBackend(ILogger logger, ConfigModel config) : MediaB
 
     protected override Res StopForModule()
     {
+        _endpointInfos = null;
         _connection?.StateChanged -= OnStateChanged;
 
         _stopRefreshTask = true;
@@ -94,17 +96,32 @@ public class LinuxMprisMediaBackend(ILogger logger, ConfigModel config) : MediaB
 
     #region Endpoint Update
     private const string MPRIS_ID = "org.mpris.MediaPlayer2.";
-    public override async Task<Res<string[]>> GetEndpointNamesAsync()
+    public override Res<string[]> GetEndpointNames()
+    {
+        var infos = _endpointInfos ?? (ResMsg.Err("MRPIS endpoints unitialized"), []);
+        return infos.Item1 is not null ? ResC.TFail<string[]>(infos.Item1) : ResC.TOk(infos.Item2);
+    }
+    private (ResMsg?, string[])? _endpointInfos = null;
+
+    private async Task<Res<string[]>> GetEndpointNamesAsync()
     {
         if (!IsProcessing())
-            return ResC.TFailLog<string[]>(message: "Failed to grab MPRIS endpoints, not connected", _logger);
+        {
+            var msg = ResMsg.Err("Failed to grab MPRIS endpoints, not connected");
+            _endpointInfos = (msg, []);
+            return ResC.TFailLog<string[]>(msg.Message, _logger, lvl: msg.Level);
+        }
 
         var services = await ResC.TWrapRAsync(_connection.ListServicesAsync(), "Failed to grab MPRIS endpoints", _logger);
-        if (!services.IsOk) return services;
+        if (!services.IsOk) {
+            _endpointInfos = (services.Msg, []);
+            return services;
+        }
 
-        var endpoints = services.Value.Where(x => x.StartsWith(MPRIS_ID, StringComparison.OrdinalIgnoreCase));
+        var endpoints = services.Value.Where(x => x.StartsWith(MPRIS_ID, StringComparison.OrdinalIgnoreCase)).ToArray();
+        _endpointInfos = (null, endpoints);
 
-        return ResC.TOk(endpoints.ToArray());
+        return ResC.TOk(endpoints);
     }
     public override bool CanGetEndpoints => true;
 
