@@ -1,0 +1,66 @@
+<Window xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:HoscyAvaloniaUi.ViewModels.Windows"
+	xmlns:cfg="using:HoscyCore.Configuration.Modern"
+	mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="400"
+	x:DataType="vm:EditOscRelayFiltersWindowViewModelBase"
+	x:Class="HoscyAvaloniaUi.Views.Windows.EditOscRelayFiltersWindow"
+
+	Title="Edit OSC Relay Filters"
+	MinHeight="400"
+	MinWidth="700"
+	Height="400"
+	Width="700"
+	CanResize="True"
+	Background="{StaticResource BackgroundBaseBrush}" 
+	WindowStartupLocation="CenterOwner">
+
+	<Design.DataContext>
+		<vm:EditOscRelayFiltersWindowViewModelPreview/>
+	</Design.DataContext>
+
+	<Grid Margin="16" ColumnDefinitions="2*,16,1*">
+		<ListBox Grid.Column="0" Theme="{StaticResource HListBoxF}" SelectedIndex="{Binding SelectedIndex}" ItemsSource="{Binding DataDisplayed}"
+			ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="SelectionChanged"/>
+
+		<Grid Grid.Column="2" RowDefinitions="Auto,16,1*">
+			<StackPanel Grid.Row="0" Theme="{StaticResource HStack}">
+				<WrapPanel Theme="{StaticResource HWrap}" HorizontalAlignment="Center">
+					<Button Theme="{StaticResource HButton}" Content="Add New" Click="AddEntry"/>
+					<Button Theme="{StaticResource HButton}" Content="Remove" Click="RemoveEntry"/>
+				</WrapPanel>
+
+				<WrapPanel Theme="{StaticResource HWrap}" HorizontalAlignment="Center">
+					<Button Theme="{StaticResource HButton}" Content="Modify" Click="ModifyEntry"/>
+					<Button Theme="{StaticResource HButton}" Content="Filters" Click="FiltersClicked" ToolTip.Tip="{x:Static cfg:OscRelayFilterModel.DESC_Filters}"/>
+				</WrapPanel>
+			</StackPanel>
+				
+			<ScrollViewer Grid.Row="2" Theme="{StaticResource HScrollViewer}">
+				<StackPanel Theme="{StaticResource HStack}">
+					<StackPanel Theme="{StaticResource HStackS}">
+						<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Relay Name"/>
+						<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedName}" PlaceholderText="Relay Name ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:OscRelayFilterModel.DESC_Name}"/>
+					</StackPanel>
+
+					<StackPanel Theme="{StaticResource HStackS}">
+						<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Target IP"/>
+						<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedIp}" PlaceholderText="Target IP ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:OscRelayFilterModel.DESC_Ip}"/>
+					</StackPanel>
+
+					<StackPanel Theme="{StaticResource HStackS}">
+						<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Target Port"/>
+						<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedPort, Converter={StaticResource UshortRange}, ConverterParameter=OscRelayFilterModel.Port}" PlaceholderText="Port ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:OscRelayFilterModel.DESC_Port}"/>
+					</StackPanel>
+
+					<WrapPanel Theme="{StaticResource HWrap}" HorizontalAlignment="Center">
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Enabled" IsChecked="{Binding SelectedEnabled}" ToolTip.Tip="{x:Static cfg:OscRelayFilterModel.DESC_Enabled}"/>
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Blacklist" IsChecked="{Binding SelectedBlacklistMode}" ToolTip.Tip="{x:Static cfg:OscRelayFilterModel.DESC_BlacklistMode}"/>
+					</WrapPanel>
+				</StackPanel>
+			</ScrollViewer>
+		</Grid>
+	</Grid>
+</Window>

@@ -9,7 +9,6 @@ using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Audio;
 using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
-using HoscyCore.Utility;
 using Serilog;
 
 namespace HoscyAvaloniaUi.Services;
@@ -26,7 +25,8 @@ public class PopupWindowFactory
     IContainerBulkLoader<EditCountersWindowViewModelBase> editCountersWvmLoader,
     IContainerBulkLoader<EditFiltersWindowViewModelBase> editFiltersWvmLoader,
     IContainerBulkLoader<DisplayListWindowViewModelBase> displayListWvmLoader,
-    IContainerBulkLoader<EditListWindowViewModelBase> editListWvmLoader
+    IContainerBulkLoader<EditListWindowViewModelBase> editListWvmLoader,
+    IContainerBulkLoader<EditOscRelayFiltersWindowViewModelBase> editOscRelayFiltersWvmLoader
 )
     : IService
 {
@@ -41,6 +41,7 @@ public class PopupWindowFactory
     private readonly IContainerBulkLoader<EditFiltersWindowViewModelBase> _editFiltersWvmLoader = editFiltersWvmLoader;
     private readonly IContainerBulkLoader<DisplayListWindowViewModelBase> _displayListWvmLoader = displayListWvmLoader;
     private readonly IContainerBulkLoader<EditListWindowViewModelBase> _editListWvmLoader = editListWvmLoader;
+    private readonly IContainerBulkLoader<EditOscRelayFiltersWindowViewModelBase> _editOscRelayFiltersWvmLoader = editOscRelayFiltersWvmLoader;
 
     private void Open(Func<Window> windowCreate, ViewModelBase vm, bool dialog, Window? parent, Action? onClose)
     {
@@ -163,5 +164,16 @@ public class PopupWindowFactory
         vmRes.Value.InitExtra(values, title, valueName);
 
         Open(() => new EditListWindow(), vmRes.Value, true, parentWindow, onClose);
+    }
+
+    public void OpenEditOscRelayFilters(List<OscRelayFilterModel> values, Window? parentWindow, Action? onClose = null)
+    {
+        _logger.Debug("Creating OSC relay filter editor");
+
+        var vmRes = _editOscRelayFiltersWvmLoader.GetInstance();
+        if (!vmRes.IsOk) return;
+        vmRes.Value.Init(values);
+
+        Open(() => new EditOscRelayFiltersWindow(), vmRes.Value, true, parentWindow, onClose);
     }
 }
