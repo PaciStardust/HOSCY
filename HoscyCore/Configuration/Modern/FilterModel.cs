@@ -42,7 +42,10 @@ public class FilterModel : ObservableObject
         set
         {
             SetProperty(ref _enabled, value);
-            TryUpdateRegex();
+            if (value)
+            {
+                TryUpdateRegex();
+            }
         }
     }
 
@@ -89,7 +92,7 @@ public class FilterModel : ObservableObject
     }
     public string GetLastException()
         => _lastException;
-    public bool IsValid => _regex != null;
+    public bool IsValid => !_useRegex || _regex != null;
 
     public bool Matches(string compare)
     {
