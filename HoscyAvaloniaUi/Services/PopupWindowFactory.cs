@@ -42,13 +42,18 @@ public class PopupWindowFactory
     private readonly IContainerBulkLoader<DisplayListWindowViewModelBase> _displayListWvmLoader = displayListWvmLoader;
     private readonly IContainerBulkLoader<EditListWindowViewModelBase> _editListWvmLoader = editListWvmLoader;
 
-    private void Open(Func<Window> windowCreate, ViewModelBase vm, bool dialog, Window? parent)
+    private void Open(Func<Window> windowCreate, ViewModelBase vm, bool dialog, Window? parent, Action? onClose)
     {
         try
         {
             Dispatcher.UIThread.Invoke(() =>
             {
                 var window = windowCreate();
+                if (onClose != null)
+                {
+                    window.Closed += (_, __) => onClose();
+                }
+
                 window.DataContext = vm;
                 if (!dialog)
                 {
@@ -90,10 +95,10 @@ public class PopupWindowFactory
         vm.CopyClipboardVisible = copyVisible;
 
         _sound?.PlayNotificationSound();
-        Open(() => new NotificationWindow(), vm, doDialog, windowForDialog);
+        Open(() => new NotificationWindow(), vm, doDialog, windowForDialog, null);
     }
 
-    public void OpenEditDict(string title, string keyName, string valueName, Dictionary<string,string> dict, Window? parentWindow)
+    public void OpenEditDict(string title, string keyName, string valueName, Dictionary<string,string> dict, Window? parentWindow, Action? onClose = null)
     {
         _logger.Debug("Creating dictionary editor (Title=\"{title}\", Key=\"{key}\", Value={value})",
             title, keyName, valueName);
@@ -102,7 +107,7 @@ public class PopupWindowFactory
         if (!vmRes.IsOk) return;
         vmRes.Value.Init(title, keyName, valueName, dict);
 
-        Open(() => new EditDictWindow(), vmRes.Value, true, parentWindow);
+        Open(() => new EditDictWindow(), vmRes.Value, true, parentWindow, onClose);
     }
 
     public void OpenDisplayList(string title, string valueName, string[] values, Window? parentWindow)
@@ -113,10 +118,10 @@ public class PopupWindowFactory
         if (!vmRes.IsOk) return;
         vmRes.Value.Init(values, title, valueName);
 
-        Open(() => new DisplayListWindow(), vmRes.Value, true, parentWindow);
+        Open(() => new DisplayListWindow(), vmRes.Value, true, parentWindow, null);
     }
 
-    public void OpenEditApiPresets(List<ApiPresetModel> list, Window? parentWindow)
+    public void OpenEditApiPresets(List<ApiPresetModel> list, Window? parentWindow, Action? onClose = null)
     {
         _logger.Debug("Creating api preset editor");
 
@@ -124,10 +129,10 @@ public class PopupWindowFactory
         if (!vmRes.IsOk) return;
         vmRes.Value.Init(list);
 
-        Open(() => new EditApiPresetsWindow(), vmRes.Value, true, parentWindow);
+        Open(() => new EditApiPresetsWindow(), vmRes.Value, true, parentWindow, onClose);
     }
 
-    public void OpenEditCounters(List<CounterModel> list, Window? parentWindow)
+    public void OpenEditCounters(List<CounterModel> list, Window? parentWindow, Action? onClose = null)
     {
         _logger.Debug("Creating counter editor");
 
@@ -135,10 +140,10 @@ public class PopupWindowFactory
         if (!vmRes.IsOk) return;
         vmRes.Value.Init(list);
 
-        Open(() => new EditCountersWindow(), vmRes.Value, true, parentWindow);
+        Open(() => new EditCountersWindow(), vmRes.Value, true, parentWindow, onClose);
     }
 
-    public void OpenEditFilters(List<FilterModel> list, Window? parentWindow)
+    public void OpenEditFilters(List<FilterModel> list, Window? parentWindow, Action? onClose = null)
     {
         _logger.Debug("Creating filter editor");
 
@@ -146,10 +151,10 @@ public class PopupWindowFactory
         if (!vmRes.IsOk) return;
         vmRes.Value.Init(list);
 
-        Open(() => new EditFiltersWindow(), vmRes.Value, true, parentWindow);
+        Open(() => new EditFiltersWindow(), vmRes.Value, true, parentWindow, onClose);
     }
 
-    public void OpenEditList(List<string> values, string title, string valueName, Window? parentWindow)
+    public void OpenEditList(List<string> values, string title, string valueName, Window? parentWindow, Action? onClose = null)
     {
         _logger.Debug("Creating list editor with title {title} and valueName {values}", title, valueName);
 
@@ -157,6 +162,6 @@ public class PopupWindowFactory
         if (!vmRes.IsOk) return;
         vmRes.Value.InitExtra(values, title, valueName);
 
-        Open(() => new EditListWindow(), vmRes.Value, true, parentWindow);
+        Open(() => new EditListWindow(), vmRes.Value, true, parentWindow, onClose);
     }
 }
