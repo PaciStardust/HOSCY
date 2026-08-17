@@ -23,21 +23,23 @@
 	<Grid Margin="8">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="8"/>
             <RowDefinition/>
+            <RowDefinition Height="8"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Border Margin="0,8,0,0" Grid.Row="1" Background="{StaticResource BackgroundDarkBrush}" CornerRadius="4">
+        <TextBlock Grid.Row="0" Theme="{StaticResource HTextBlock}" TextAlignment="Center" Text="{Binding WindowTitle}"/>
+
+        <Border Grid.Row="2" Background="{StaticResource BackgroundDarkBrush}" CornerRadius="4">
             <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="4">
-                <TextBlock Theme="{StaticResource HTextBlock}" FontSize="14" Text="{Binding Notification}"/> 
+                <TextBlock Theme="{StaticResource HTextBlock}" Text="{Binding Notification}"/> 
             </ScrollViewer>
         </Border>
 
-        <TextBlock Grid.Row="0" Theme="{StaticResource HTextBlock}" FontSize="14" TextAlignment="Center" Text="{Binding WindowTitle}"/>
-
-        <WrapPanel Grid.Row="2" HorizontalAlignment="Center" Margin="0,8,0,0">
+        <WrapPanel Theme="{StaticResource HWrap}" Grid.Row="4" HorizontalAlignment="Center">
             <Button x:Name="buttonOpenGithub" Content="Open Github" Theme="{StaticResource HButtonSmall}" Click="OnGithubClick"/>
-            <Button x:Name="buttonCopyClipboard" Content="Copy Text" Margin="8,0,0,0" Theme="{StaticResource HButtonSmall}" Click="OnClipboardClick" IsVisible="{Binding CopyClipboardVisible}"/>
+            <Button x:Name="buttonCopyClipboard" Content="Copy Text" Theme="{StaticResource HButtonSmall}" Click="OnClipboardClick" IsVisible="{Binding CopyClipboardVisible}"/>
         </WrapPanel>
     </Grid>
 </Window>

@@ -21,11 +21,11 @@
 		<vm:EditCountersWindowViewModelPreview/>
 	</Design.DataContext>
 
-	<Grid Margin="16" ColumnDefinitions="5*,3*">
-		<ListBox Grid.Column="0" Theme="{StaticResource HListBoxF}" Margin="0,0,8,0" SelectedIndex="{Binding SelectedIndex}" ItemsSource="{Binding DataDisplayed}"
+	<Grid Margin="16" ColumnDefinitions="5*,16,3*">
+		<ListBox Grid.Column="0" Theme="{StaticResource HListBoxF}" SelectedIndex="{Binding SelectedIndex}" ItemsSource="{Binding DataDisplayed}"
 			ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="SelectionChanged"/>
 
-		<Grid Grid.Column="1" RowDefinitions="Auto,1*" Margin="8,0,0,0">
+		<Grid Grid.Column="2" RowDefinitions="Auto,16,1*">
 			<StackPanel Grid.Row="0" Theme="{StaticResource HStack}">
 				<WrapPanel Theme="{StaticResource HWrap}" HorizontalAlignment="Center">
 					<Button Theme="{StaticResource HButton}" Content="Add New" Click="AddEntry"/>
@@ -37,7 +37,7 @@
 				</WrapPanel>
 			</StackPanel>
 				
-			<ScrollViewer Grid.Row="1" Theme="{StaticResource HScrollViewer}" Margin="0,16,0,0">
+			<ScrollViewer Grid.Row="2" Theme="{StaticResource HScrollViewer}">
 				<StackPanel Theme="{StaticResource HStack}">
 					<WrapPanel Theme="{StaticResource HWrapL}" HorizontalAlignment="Center">
 						<CheckBox Theme="{StaticResource HCheckBox}" Content="Enabled" IsChecked="{Binding SelectedEnabled}" ToolTip.Tip="{x:Static cfg:CounterModel.DESC_Enabled}"/>
