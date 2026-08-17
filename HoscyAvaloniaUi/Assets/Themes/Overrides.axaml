@@ -79,6 +79,16 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
         </Style>
     </ControlTheme>
 
+    <ControlTheme x:Key="HTextBlockError" TargetType="TextBlock" BasedOn="{StaticResource HTextBlock}">
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="Foreground" Value="{StaticResource InvalidBrush}"/>
+    </ControlTheme>
+
+    <ControlTheme x:Key="HTextBlockNote" TargetType="TextBlock" BasedOn="{StaticResource HTextBlock}">
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="IsEnabled" Value="False"/>
+    </ControlTheme>
+
     <!-- TextBox -->
 
     <ControlTheme x:Key="HTextBox" TargetType="TextBox">
@@ -342,12 +352,10 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
 
     <ControlTheme x:Key="HLabelL" TargetType="Label" BasedOn="{StaticResource HLabel}">
         <Setter Property="FontSize" Value="30"/>
-        <Setter Property="Margin" Value="0,0,8,0"/>
     </ControlTheme>
 
     <ControlTheme x:Key="HLabelM" TargetType="Label" BasedOn="{StaticResource HLabel}">
         <Setter Property="FontSize" Value="24"/>
-        <Setter Property="Margin" Value="0,0,8,0"/>
     </ControlTheme>
 
     <!-- Checkbox -->
