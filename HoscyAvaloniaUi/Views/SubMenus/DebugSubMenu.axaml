@@ -44,6 +44,7 @@
 						<WrapPanel Theme="{StaticResource HWrap}">
 							<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding LogLevelIndex}" ItemsSource="{Binding LogLevels}" SelectionChanged="LogLevelChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Debug_LogMinimumSeverity}"/>
 							<Button Content="Edit Filters" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="LogFiltersClicked" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Debug_LogFilters}"/>
+							<TextBlock Theme="{StaticResource HTextBlockError}" Text="{Binding LogFiltersInvalid}" VerticalAlignment="Center"/>
 						</WrapPanel>
 					</StackPanel>
 

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using HoscyAvaloniaUi.Services;
 using HoscyAvaloniaUi.Utility;
@@ -21,6 +22,8 @@ public abstract partial class DebugSubMenuViewModelBase : ViewModelBase
     public partial string[] LogLevels { get; protected set; } = [ "Test" ];
     [ObservableProperty]
     public partial int LogLevelIndex { get; set; }
+    [ObservableProperty]
+    public partial string LogFiltersInvalid { get; set; } = string.Empty;
     
     public virtual void LogLevelChanged() { }
     public virtual void LogFiltersClicked() { }
@@ -46,6 +49,7 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
 
         (LogLevels, LogLevelIndex) = AvaloniaUiUtils.ComboBoxLoad(Enum.GetNames<LogEventLevel>(), 
             Enum.GetName(Config.Debug_LogMinimumSeverity), _logger, "LogLevel");
+        LogUpdateFilterValidity();
     }
 
     public override void LogLevelChanged()
@@ -65,8 +69,30 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
 
     public override void LogFiltersClicked()
     {
-        _popupFactory.OpenEditFilters(Config.Debug_LogFilters, null,
-            () => Config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger));
+        _popupFactory.OpenEditFilters(Config.Debug_LogFilters, null, LogFiltersClosed);
+    }
+    private void LogFiltersClosed()
+    {
+        var strings = LogUpdateFilterValidity();
+        if (strings.Length > 0)
+        {
+            var msg = $"Following filters are invalid:\n{string.Join("\n", strings.Select(x => $" - {x}"))}";
+            _popupFactory.OpenNotification("Invalid filters found", msg, false, true);
+        }
+        Config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
+    }
+    private string[] LogUpdateFilterValidity()
+    {
+        var invalidFilters = Config.Debug_LogFilters.Where(x => !x.IsValid);
+        if (!invalidFilters.Any())
+        {
+            LogFiltersInvalid = string.Empty;
+            return [];
+        }
+
+        var strings = invalidFilters.Select(x => x.Name).ToArray();
+        LogFiltersInvalid = $"({strings.Length} Filter{(strings.Length == 1 ? "" : "s")} Invalid)";
+        return strings;
     }
 
     public override void UtilOpenConfig()
@@ -110,6 +136,7 @@ public class DebugSubMenuViewModelPreview : DebugSubMenuViewModelBase
     public DebugSubMenuViewModelPreview()
     {
         Config = new();
+        LogFiltersInvalid = "(n filters invalid)";
     }
 }
 #endif
