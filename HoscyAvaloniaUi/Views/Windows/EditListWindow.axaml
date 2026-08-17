@@ -4,14 +4,14 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="using:HoscyAvaloniaUi.ViewModels.Windows"
 	xmlns:cfg="using:HoscyCore.Configuration.Modern"
-	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="500"
+	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="400"
 	x:DataType="vm:EditListWindowViewModelBase"
 	x:Class="HoscyAvaloniaUi.Views.Windows.EditListWindow"
 
 	Title="{Binding Title}"
-	MinHeight="500"
+	MinHeight="400"
 	MinWidth="500"
-	Height="500"
+	Height="400"
 	Width="500"
 	CanResize="True"
 	Background="{StaticResource BackgroundBaseBrush}" 
@@ -26,10 +26,10 @@
 			ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="SelectionChanged"/>
 
 		<StackPanel Grid.Row="2" Theme="{StaticResource HStackS}">
-			<Grid ColumnDefinitions="8,1*,16,Auto,8">
-				<Label Theme="{StaticResource HLabel}" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Content="{Binding ValueName}"/>
+			<Grid ColumnDefinitions="1*,16,Auto">
+				<Label Theme="{StaticResource HLabel}" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Content="{Binding ValueName}"/>
 
-				<WrapPanel Grid.Column="3" Theme="{StaticResource HWrap}">
+				<WrapPanel Grid.Column="2" Theme="{StaticResource HWrap}">
 					<Button Theme="{StaticResource HButtonSmall}" Content="Add New" Click="AddEntry"/>
 					<Button Theme="{StaticResource HButtonSmall}" Content="Remove" Click="RemoveEntry"/>
 					<Button Theme="{StaticResource HButtonSmall}" Content="Modify" Click="ModifyEntry"/>

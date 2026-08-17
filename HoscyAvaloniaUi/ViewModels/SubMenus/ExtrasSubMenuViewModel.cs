@@ -156,12 +156,12 @@ public class ExtrasSubMenuViewModelImpl : ExtrasSubMenuViewModelBase
     }
     public override void MediaMprisEndpointsPreferredClicked()
     {
-        _popup.OpenEditList(Config.Media_Mpris_PreferredEndpoints, "Editing preferred MPRIS endpoints", "Preferred MPRIS Endpoint", null,
+        _popup.OpenEditList(Config.Media_Mpris_PreferredEndpoints, "Editing preferred MPRIS endpoints", "Pref. Endpoint", null,
             () => Config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger));
     }
     public override void MediaMprisEndpointsIgnoredClicked()
     {
-        _popup.OpenEditList(Config.Media_Mpris_IgnoredEndpoints, "Editing ignored MPRIS endpoints", "Ignored MPRIS Endpoint", null,
+        _popup.OpenEditList(Config.Media_Mpris_IgnoredEndpoints, "Editing ignored MPRIS endpoints", "Ign. Endpoint", null,
             () => Config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger));
     }
     private void MediaBackendUpdateMenus()
