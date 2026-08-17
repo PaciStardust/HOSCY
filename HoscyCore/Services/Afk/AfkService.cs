@@ -20,6 +20,7 @@ public class AfkService(ConfigModel config, IOutputManagerService output, ILogge
     private uint _afkTimesChecked = 0;
     private static readonly OutputNotificationPriority _afkNotificationPriority = OutputNotificationPriority.Important;
     private static readonly OutputSettingsFlags _outputFlags = OutputSettingsFlags.AllowTextOutput;
+    public event Action<bool> OnAfkStatusChanged = delegate { };
 
     #region AFK
     public void StartAfk()
@@ -37,6 +38,7 @@ public class AfkService(ConfigModel config, IOutputManagerService output, ILogge
 
         _logger.Information("Starting AFK timer");
         _output.SendNotification(_config.Afk_StartText, _afkNotificationPriority, _outputFlags);
+        OnAfkStatusChanged.Invoke(true);
         _afkStarted = DateTime.Now;
         _afkTimesChecked = 0;
 
@@ -52,6 +54,7 @@ public class AfkService(ConfigModel config, IOutputManagerService output, ILogge
         if (_afkTimer is not null)
         {
             _output.SendNotification(_config.Afk_StopText, _afkNotificationPriority, _outputFlags);
+            OnAfkStatusChanged.Invoke(false);
             _afkTimer.Stop();
             _afkTimer.Dispose();
             _afkTimer = null;
@@ -75,13 +78,18 @@ public class AfkService(ConfigModel config, IOutputManagerService output, ILogge
         var message = $"{_config.Afk_StatusText} {time}";
         _output.SendNotification(message, _afkNotificationPriority, _outputFlags);
     }
+
+    public bool GetAfkStatus()
+    {
+        return _afkTimer is not null;
+    }
     #endregion
 
     #region Start/Stop
     protected override bool IsStarted()
         => true;
     protected override bool IsProcessing()
-        => _afkTimer is not null;
+        => GetAfkStatus();
 
     protected override Res StartForService()
     {

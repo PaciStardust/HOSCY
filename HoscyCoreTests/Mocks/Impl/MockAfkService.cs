@@ -7,6 +7,13 @@ namespace HoscyCoreTests.Mocks.Impl;
 public class MockAfkService : MockStartStopServiceBase, IAfkService
 {
     public bool AfkRunning { get; private set; } = false;
+
+    public event Action<bool> OnAfkStatusChanged = delegate { };
+    public bool GetAfkStatus()
+    {
+        return AfkRunning;
+    }
+
     public void StartAfk()
     {
         AfkRunning = true;
@@ -20,4 +27,6 @@ public class MockAfkService : MockStartStopServiceBase, IAfkService
     {
         AfkRunning = false;
     }
+
+    
 }
