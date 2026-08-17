@@ -65,8 +65,8 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
 
     public override void LogFiltersClicked()
     {
-        _popupFactory.OpenEditFilters(Config.Debug_LogFilters, null);
-        Config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
+        _popupFactory.OpenEditFilters(Config.Debug_LogFilters, null,
+            () => Config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger));
     }
 
     public override void UtilOpenConfig()
