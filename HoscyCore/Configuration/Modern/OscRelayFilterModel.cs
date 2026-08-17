@@ -35,8 +35,8 @@ public class OscRelayFilterModel : ObservableObject
     }
 
     public const string DESC_Filters = "Filters for what should be relayed or not be relayed (if blacklist)";
-    private ObservableCollection<string> _filters = [];
-    public ObservableCollection<string> Filters
+    private List<string> _filters = [];
+    public List<string> Filters
     {
         get => _filters;
         set => SetProperty(ref _filters, value);
