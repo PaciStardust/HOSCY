@@ -20,6 +20,7 @@
 				<WrapPanel Theme="{StaticResource HWrap}">
 					<Label Content="AFK" Theme="{StaticResource HLabelL}"/>
 					<Button Content="Reset" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="AfkSkipClicked" ToolTip.Tip="Reset AFK status"/>
+					<TextBlock Theme="{StaticResource HTextBlockError}" Text="(Currently AFK)" VerticalAlignment="Center" IsVisible="{Binding AfkActive}"/>
 				</WrapPanel>
 				
 				<!-- AFK Options -->
@@ -98,15 +99,16 @@
 							<Button Content="View Endpoints" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="MediaBackendEndpointsClicked" IsEnabled="{Binding MediaBackendHasEndpoints}" ToolTip.Tip="Views the endpoints for the currently running module"/>
 						</WrapPanel>
 
-						<TextBlock Theme="{StaticResource HTextBlock}" Text="Currently selected module is not loaded, please press 'Reload' to activate" FontSize="16" Foreground="{StaticResource InvalidBrush}" IsVisible="{Binding MediaBackendReloadNeeded}"/>
+						<TextBlock Theme="{StaticResource HTextBlockError}" Text="Currently selected module is not loaded, please press 'Reload' to activate" IsVisible="{Binding MediaBackendReloadNeeded}"/>
 
-						<TextBlock Theme="{StaticResource HTextBlock}" Text="{Binding MediaBackendDescription}" IsEnabled="False" FontSize="16"/>
+						<TextBlock Theme="{StaticResource HTextBlockNote}" Text="{Binding MediaBackendDescription}"/>
 					</StackPanel>
 
 					<!-- Media (Notifications) Options -->
 					<WrapPanel Theme="{StaticResource HWrap}">
 						<Label Content="Notifications" Theme="{StaticResource HLabelM}"/>
 						<Button Content="Filters" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="MediaFiltersClicked" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_Filters}"/>
+						<TextBlock Theme="{StaticResource HTextBlockError}" Text="{Binding MediaFiltersInvalid}" VerticalAlignment="Center"/>
 					</WrapPanel>
 					
 					<StackPanel Theme="{StaticResource HStackIndent}">

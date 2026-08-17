@@ -17,6 +17,8 @@ public abstract partial class ExtrasSubMenuViewModelBase : ViewModelBase
     [ObservableProperty]
     public partial ConfigModel Config { get; set; }
 
+    [ObservableProperty]
+    public partial bool AfkActive { get; protected set; }
     public virtual void AfkSkipClicked() { }
     public virtual void CountersEditClicked() { }
 
@@ -32,6 +34,8 @@ public abstract partial class ExtrasSubMenuViewModelBase : ViewModelBase
     public partial bool MediaBackendReloadNeeded { get; protected set; }
     [ObservableProperty]
     public partial bool MediaBackendIsLinuxMpris { get; protected set; }
+    [ObservableProperty]
+    public partial string MediaFiltersInvalid { get; protected set; }
     public virtual void MediaBackendChanged() { }
     public virtual void MediaBackendReloadClicked() { }
     public virtual void MediaBackendEndpointsClicked() { }
@@ -65,21 +69,28 @@ public class ExtrasSubMenuViewModelImpl : ExtrasSubMenuViewModelBase
         _logger = logger.ForContext<ExtrasSubMenuViewModelImpl>();
         _media = media;
 
+        _afk.OnAfkStatusChanged += AfkUpdateStatus;
+
         _mediaBackendInfos = [.. _media.GetModuleInfos().OrderByDescending(x => x.Priority)];
         var infoNames = _mediaBackendInfos.Select(x => x.Name);
         (MediaBackendList, MediaBackendIndex) = AvaloniaUiUtils.ComboBoxLoad([.. infoNames], Config.Media_Backend, _logger, "MediaBackend");
         MediaBackendUpdateMenus();
+        MediaUpdateFilterValidity();
     }
 
     public override void AfkSkipClicked()
     {
         _afk.StopAfk();
     }
+    private void AfkUpdateStatus(bool status)
+    {
+        AfkActive = status;
+    }
 
     public override void CountersEditClicked()
     {
-        _popup.OpenEditCounters(Config.Counters_List, null);
-        Config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
+        _popup.OpenEditCounters(Config.Counters_List, null, 
+            () => Config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger));
     }
 
     public override void MediaBackendChanged()
@@ -106,8 +117,30 @@ public class ExtrasSubMenuViewModelImpl : ExtrasSubMenuViewModelBase
     public override void MediaFiltersClicked()
     {
         _logger.Information("Editing media filters");
-        _popup.OpenEditFilters(Config.Media_Filters, null);
+        _popup.OpenEditFilters(Config.Media_Filters, null, MediaFiltersClosed);
+    }
+    private void MediaFiltersClosed()
+    {
+        var strings = MediaUpdateFilterValidity();
+        if (strings.Length > 0)
+        {
+            var msg = $"Following filters are invalid:\n{string.Join("\n", strings.Select(x => $" - {x}"))}";
+            _popup.OpenNotification("Invalid filters found", msg, false, true);
+        }
         Config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
+    }
+    private string[] MediaUpdateFilterValidity()
+    {
+        var invalidFilters = Config.Media_Filters.Where(x => !x.IsValid);
+        if (!invalidFilters.Any())
+        {
+            MediaFiltersInvalid = string.Empty;
+            return [];
+        }
+
+        var strings = invalidFilters.Select(x => x.Name).ToArray();
+        MediaFiltersInvalid = $"({strings.Length} Filter{(strings.Length == 1 ? "" : "s")} Invalid)";
+        return strings;
     }
     public override void MediaBackendReloadClicked()
     {
@@ -123,11 +156,13 @@ public class ExtrasSubMenuViewModelImpl : ExtrasSubMenuViewModelBase
     }
     public override void MediaMprisEndpointsPreferredClicked()
     {
-        _popup.OpenEditList(Config.Media_Mpris_PreferredEndpoints, "Editing preferred MPRIS endpoints", "Preferred MPRIS Endpoint", null);
+        _popup.OpenEditList(Config.Media_Mpris_PreferredEndpoints, "Editing preferred MPRIS endpoints", "Preferred MPRIS Endpoint", null,
+            () => Config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger));
     }
     public override void MediaMprisEndpointsIgnoredClicked()
     {
-        _popup.OpenEditList(Config.Media_Mpris_IgnoredEndpoints, "Editing ignored MPRIS endpoints", "Ignored MPRIS Endpoint", null);
+        _popup.OpenEditList(Config.Media_Mpris_IgnoredEndpoints, "Editing ignored MPRIS endpoints", "Ignored MPRIS Endpoint", null,
+            () => Config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger));
     }
     private void MediaBackendUpdateMenus()
     {
@@ -183,6 +218,8 @@ public class ExtrasSubMenuViewModelPreview : ExtrasSubMenuViewModelBase
         MediaBackendList = [ "Test Backend" ];
         MediaBackendDescription = "Description Placeholder";
         MediaBackendReloadNeeded = true;
+        AfkActive = true;
+        MediaFiltersInvalid = "Test invalid text";
     }
 }
 #endif
