@@ -26,14 +26,20 @@ public class EditFiltersWindowViewModelImpl(ILogger logger) : EditFiltersWindowV
 
     protected override FilterModel CreateModelInternal(FilterModel? model)
     {
-        return new()
+        var newModel = new FilterModel()
         {
             Enabled = SelectedEnabled,
             FilterString = SelectedFilterText,
             IgnoreCase = SelectedIgnoreCase,
-            Name = SelectedName,
             UseRegex = SelectedUseRegex
         };
+
+        if (!string.IsNullOrWhiteSpace(SelectedName))
+        {
+            newModel.Name = SelectedName;
+        }
+
+        return newModel;
     }
 
     protected override string GetItemDisplayText(FilterModel item)
