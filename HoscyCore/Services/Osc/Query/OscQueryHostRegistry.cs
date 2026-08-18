@@ -85,6 +85,11 @@ public class OscQueryHostRegistry(ILogger logger)
         return ResC.TOk((keyValue.oscIP, keyValue.oscPort));
     }
 
+    public string[] GetServiceNames()
+    {
+        return [.. _hosts.Select(x => x.Key)];
+    }
+
     public void Clear()
     {
         _logger.Debug("Clearing host registry");
