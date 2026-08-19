@@ -26,6 +26,7 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
     private OscListener? _listener = null;
     private CancellationTokenSource? _cts = null;
     private Task? _workerTask = null;
+    private int _currentPort = -1;
 
     #region Start Stop
     protected override bool IsStarted()
@@ -36,7 +37,7 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
     public Res<int> GetPort()
     {
         return IsStarted() 
-            ? ResC.TOk(_config.Osc_Routing_ListenPort) 
+            ? ResC.TOk(_currentPort)
             : ResC.TFail<int>(ResMsg.Err("Listen port not available, service not started"));
     }
 
@@ -44,8 +45,9 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
     {
         try
         {
-            _logger.Debug("Starting up listener on localhost:{port}", _config.Osc_Routing_ListenPort);
-            _listener = new(new(IPAddress.Loopback, _config.Osc_Routing_ListenPort))
+            _currentPort = _config.Osc_Routing_ListenPort;
+            _logger.Debug("Starting up listener on localhost:{port}", _currentPort);
+            _listener = new(new(IPAddress.Loopback, _currentPort))
             {
                 EnableTransparentBundleToMessageConversion = true
             };
@@ -57,6 +59,7 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
         }
         catch (Exception ex)
         {
+            _currentPort = -1;
             return ResC.FailLog("Failed starting OSC Listener", _logger, ex);
         }
     }
@@ -66,6 +69,7 @@ public class OscListenService(ConfigModel config, ILogger logger, IBackToFrontNo
     {
         _logger.Debug("Stopping listen loop...");
         _cts?.Cancel();
+        _currentPort = -1;
 
         return LaunchUtils.SafelyWaitForTaskWithTimeoutAndReturnException(_workerTask, 1000,
             new StartStopServiceException("Unable to stop listen loop"), _logger);
