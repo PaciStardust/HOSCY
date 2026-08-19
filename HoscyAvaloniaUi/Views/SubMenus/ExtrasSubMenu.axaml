@@ -99,7 +99,7 @@
 							<Button Content="View Endpoints" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="MediaBackendEndpointsClicked" IsEnabled="{Binding MediaBackendHasEndpoints}" ToolTip.Tip="Views the endpoints for the currently running module"/>
 						</WrapPanel>
 
-						<TextBlock Theme="{StaticResource HTextBlockError}" Text="Currently selected module is not loaded, please press 'Reload' to activate" IsVisible="{Binding MediaBackendReloadNeeded}"/>
+						<TextBlock Theme="{StaticResource HTextBlockError}" Text="Currently selected module is not loaded, please press 'Reload'" IsVisible="{Binding MediaBackendReloadNeeded}"/>
 
 						<TextBlock Theme="{StaticResource HTextBlockNote}" Text="{Binding MediaBackendDescription}"/>
 					</StackPanel>

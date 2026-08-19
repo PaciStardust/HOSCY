@@ -3,16 +3,176 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="using:HoscyAvaloniaUi.ViewModels.SubMenus"
-	mc:Ignorable="d" d:DesignHeight="420" d:DesignWidth="689"
+	xmlns:cfg="using:HoscyCore.Configuration.Modern"
+	mc:Ignorable="d" d:DesignHeight="1250" d:DesignWidth="689"
 	x:DataType="vm:OscSubMenuViewModelBase"
-	x:Class="HoscyAvaloniaUi.Views.SubMenus.OscSubMenu">
+	x:Class="HoscyAvaloniaUi.Views.SubMenus.OscSubMenu"
+	Background="{StaticResource BackgroundBaseBrush}">
 
 	<Design.DataContext>
 		<vm:OscSubMenuViewModelPreview/>
 	</Design.DataContext>
 
-	<ScrollViewer Margin="16,8,8,8" VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="0,0,32,0">
-        </StackPanel>
-    </ScrollViewer>
+	<ScrollViewer Theme="{StaticResource HScrollViewerPage}">
+		<StackPanel Theme="{StaticResource HStackL}">
+			<StackPanel Theme="{StaticResource HStack}">
+				<WrapPanel Theme="{StaticResource HWrap}">
+					<Label Content="Routing" Theme="{StaticResource HLabelL}"/>
+					<Button Content="Relay Filters" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="RelayFiltersClicked" ToolTip.Tip="{StaticResource cfg:ConfigModel.DESC_Osc_Relay_Filters}"/>
+					<TextBlock Theme="{StaticResource HTextBlockError}" Text="{Binding RelayFiltersInvalid}" VerticalAlignment="Center"/>
+				</WrapPanel>
+
+				<StackPanel Theme="{StaticResource HStackIndent}">
+					<WrapPanel Theme="{StaticResource HWrap}">
+						<TextBox Theme="{StaticResource HTextBoxMedium}" PlaceholderText="IP ..." Text="{Binding Config.Osc_Routing_TargetIp, UpdateSourceTrigger=LostFocus}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Routing_TargetIp}"/>
+						<Label Theme="{StaticResource HLabel}" Content="Target IP" VerticalAlignment="Center"/>
+					</WrapPanel>
+
+					<WrapPanel Theme="{StaticResource HWrap}">
+						<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="Port ..." Text="{Binding Config.Osc_Routing_TargetPort, UpdateSourceTrigger=LostFocus, Converter={StaticResource UshortRange}, ConverterParameter=ConfigModel.Osc_Routing_TargetPort}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Routing_TargetPort}"/>
+						<Label Theme="{StaticResource HLabel}" Content="Target Port" VerticalAlignment="Center"/>
+					</WrapPanel>
+
+					<StackPanel Theme="{StaticResource HStackS}">
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="Port ..." Text="{Binding Config.Osc_Routing_ListenPort, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.Osc_Routing_ListenPort}" KeyUp="ListeningPortChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Routing_ListenPort}"/>
+							<Label Theme="{StaticResource HLabel}" Content="Listening Port" VerticalAlignment="Center"/>
+							<Button Content="Reload Listener" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="ReloadListenerClicked" ToolTip.Tip="Reloads both OSC listener and query service"/>
+						</WrapPanel>
+						<TextBlock Theme="{StaticResource HTextBlockError}" Text="Listening Port not applied, please press 'Reload Listener'" VerticalAlignment="Center" IsVisible="{Binding ListeningPortUnapplied}"/>
+					</StackPanel>
+
+					<CheckBox Theme="{StaticResource HCheckBox}" Content="Ignore Handled Messages for Relay" IsChecked="{Binding Config.Osc_Relay_IgnoreIfHandled}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Relay_IgnoreIfHandled}"/>
+				</StackPanel>
+			</StackPanel>
+
+			<StackPanel Theme="{StaticResource HStack}">
+				<WrapPanel Theme="{StaticResource HWrap}">
+					<Label Content="Addresses" Theme="{StaticResource HLabelL}"/>
+					<Button Content="OSC Query Services" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="QueryServicesClicked" ToolTip.Tip="View located services for OSC Query"/>
+				</WrapPanel>
+
+				<StackPanel Theme="{StaticResource HStackIndent}">
+					<Label Content="Game Control" Theme="{StaticResource HLabelM}"/>
+
+					<StackPanel Theme="{StaticResource HStackIndent}">
+						<StackPanel Theme="{StaticResource HStackS}">
+							<TextBlock Theme="{StaticResource HTextBlock}" Text="Send Message"/>
+							<TextBox Text="{Binding Config.Osc_Address_Game_Textbox}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Game_Textbox}"/>
+						</StackPanel>
+
+						<StackPanel Theme="{StaticResource HStackS}">
+							<TextBlock Theme="{StaticResource HTextBlock}" Text="Trigger Typing Indicator"/>
+							<TextBox Text="{Binding Config.Osc_Address_Game_Typing}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Game_Typing}"/>
+						</StackPanel>
+					</StackPanel>
+
+					<Label Content="Game Status Out" Theme="{StaticResource HLabelM}"/>
+
+					<StackPanel Theme="{StaticResource HStackIndent}">
+						<StackPanel Theme="{StaticResource HStackS}">
+							<TextBlock Theme="{StaticResource HTextBlock}" Text="On Mute"/>
+							<TextBox Text="{Binding Config.Osc_Address_Game_Mute}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Game_Mute}"/>
+						</StackPanel>
+
+						<StackPanel Theme="{StaticResource HStackS}">
+							<TextBlock Theme="{StaticResource HTextBlock}" Text="On AFK"/>
+							<TextBox Text="{Binding Config.Osc_Address_Game_Afk}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Game_Afk}"/>
+						</StackPanel>
+					</StackPanel>
+
+					<Label Content="HOSCY Control (Media)" Theme="{StaticResource HLabelM}"/>
+
+					<StackPanel Theme="{StaticResource HStackIndent}">
+						<StackPanel Theme="{StaticResource HStackS}">
+							<TextBlock Theme="{StaticResource HTextBlock}" Text="Toggle Playback"/>
+							<TextBox Text="{Binding Config.Osc_Address_Media_Toggle}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Media_Toggle}"/>
+						</StackPanel>
+
+						<StackPanel Theme="{StaticResource HStackS}">
+							<TextBlock Theme="{StaticResource HTextBlock}" Text="Pause Playback"/>
+							<TextBox Text="{Binding Config.Osc_Address_Media_Pause}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Media_Pause}"/>
+						</StackPanel>
+
+						<StackPanel Theme="{StaticResource HStackS}">
+							<TextBlock Theme="{StaticResource HTextBlock}" Text="Resume Playback"/>
+							<TextBox Text="{Binding Config.Osc_Address_Media_Play}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Media_Play}"/>
+						</StackPanel>
+
+						<StackPanel Theme="{StaticResource HStackS}">
+							<TextBlock Theme="{StaticResource HTextBlock}" Text="Previous Track"/>
+							<TextBox Text="{Binding Config.Osc_Address_Media_Previous}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Media_Previous}"/>
+						</StackPanel>
+
+						<StackPanel Theme="{StaticResource HStackS}">
+							<TextBlock Theme="{StaticResource HTextBlock}" Text="Next Track"/>
+							<TextBox Text="{Binding Config.Osc_Address_Media_Next}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Media_Next}"/>
+						</StackPanel>
+					</StackPanel>
+
+					<Label Content="HOSCY Control (Settings)" Theme="{StaticResource HLabelM}"/>
+
+					<StackPanel Theme="{StaticResource HStackIndent}">
+						<StackPanel Theme="{StaticResource HStackS}">
+							<TextBlock Theme="{StaticResource HTextBlock}" Text="Clear Output"/>
+							<TextBox Text="{Binding Config.Osc_Address_Tool_Clear}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Tool_Clear}"/>
+						</StackPanel>
+
+						<StackPanel Theme="{StaticResource HStackS}">
+							<TextBlock Theme="{StaticResource HTextBlock}" Text="Toggle Speech Recognition"/>
+							<TextBox Text="{Binding Config.Osc_Address_Tool_ToggleMute}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Tool_ToggleMute}"/>
+						</StackPanel>
+
+						<StackPanel Theme="{StaticResource HStackS}">
+							<TextBlock Theme="{StaticResource HTextBlock}" Text="Toggle Partial Replacements"/>
+							<TextBox Text="{Binding Config.Osc_Address_Tool_ToggleReplacementsPartial}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Tool_ToggleReplacementsPartial}"/>
+						</StackPanel>
+
+						<StackPanel Theme="{StaticResource HStackS}">
+							<TextBlock Theme="{StaticResource HTextBlock}" Text="Toggle Full Replacements"/>
+							<TextBox Text="{Binding Config.Osc_Address_Tool_ToggleReplacementsFull}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Tool_ToggleReplacementsFull}"/>
+						</StackPanel>
+
+						<StackPanel Theme="{StaticResource HStackS}">
+							<TextBlock Theme="{StaticResource HTextBlock}" Text="Toggle Automatic Speech Recognition Toggle"/>
+							<TextBox Text="{Binding Config.Osc_Address_Tool_ToggleRecognitionAutoMute}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Tool_ToggleRecognitionAutoMute}"/>
+						</StackPanel>
+					</StackPanel>
+
+					<Label Content="HOSCY Control (External Input)" Theme="{StaticResource HLabelM}"/>
+
+					<StackPanel Theme="{StaticResource HStackIndent}">
+						<StackPanel Theme="{StaticResource HStackS}">
+							<TextBlock Theme="{StaticResource HTextBlock}" Text="Send Text Message via HOSCY"/>
+							<TextBox Text="{Binding Config.Osc_Address_Input_TextMessage}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Input_TextMessage}"/>
+						</StackPanel>
+
+						<StackPanel Theme="{StaticResource HStackS}">
+							<TextBlock Theme="{StaticResource HTextBlock}" Text="Send Text Notification via HOSCY"/>
+							<TextBox Text="{Binding Config.Osc_Address_Input_TextNotification}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Input_TextNotification}"/>
+						</StackPanel>
+
+						<StackPanel Theme="{StaticResource HStackS}">
+							<TextBlock Theme="{StaticResource HTextBlock}" Text="Send Audio Message via HOSCY"/>
+							<TextBox Text="{Binding Config.Osc_Address_Input_AudioMessage}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Input_AudioMessage}"/>
+						</StackPanel>
+
+						<StackPanel Theme="{StaticResource HStackS}">
+							<TextBlock Theme="{StaticResource HTextBlock}" Text="Send Other Message via HOSCY"/>
+							<TextBox Text="{Binding Config.Osc_Address_Input_OtherMessage}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Input_OtherMessage}"/>
+						</StackPanel>
+					</StackPanel>
+
+					<Label Content="HOSCY Status Out" Theme="{StaticResource HLabelM}"/>
+
+					<StackPanel Theme="{StaticResource HStackIndent}">
+						<StackPanel Theme="{StaticResource HStackS}">
+							<TextBlock Theme="{StaticResource HTextBlock}" Text="On Recognition Status Changed"/>
+							<TextBox Text="{Binding Config.Osc_Address_Tool_NotificationForRecognitionListening}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Tool_NotificationForRecognitionListening}"/>
+						</StackPanel>
+					</StackPanel>
+				</StackPanel>
+			</StackPanel>
+		</StackPanel>
+	</ScrollViewer>
 </UserControl>
