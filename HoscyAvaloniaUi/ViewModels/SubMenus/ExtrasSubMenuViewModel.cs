@@ -23,9 +23,7 @@ public abstract partial class ExtrasSubMenuViewModelBase : ViewModelBase
     public virtual void CountersEditClicked() { }
 
     [ObservableProperty]
-    public partial string[] MediaBackendList { get; protected set; } = [];
-    [ObservableProperty]
-    public partial int MediaBackendIndex { get; set; }
+    public partial ComboBoxData MediaBackends { get; protected set; }
     [ObservableProperty]
     public partial string MediaBackendDescription { get; protected set; } = string.Empty;
     [ObservableProperty]
@@ -73,7 +71,7 @@ public class ExtrasSubMenuViewModelImpl : ExtrasSubMenuViewModelBase
 
         _mediaBackendInfos = [.. _media.GetModuleInfos().OrderByDescending(x => x.Priority)];
         var infoNames = _mediaBackendInfos.Select(x => x.Name);
-        (MediaBackendList, MediaBackendIndex) = AvaloniaUiUtils.ComboBoxLoad([.. infoNames], Config.Media_Backend, _logger, "MediaBackend");
+        MediaBackends = new([.. infoNames], Config.Media_Backend, _logger, "MediaBackend");
         MediaBackendUpdateMenus();
         MediaUpdateFilterValidity();
     }
@@ -166,20 +164,18 @@ public class ExtrasSubMenuViewModelImpl : ExtrasSubMenuViewModelBase
     }
     private void MediaBackendUpdateMenus()
     {
-        MediaBackendIndex = MediaBackendIndex.MinMax(-1, MediaBackendList.Length - 1);
         var description = "Description: ";
-        var selected = string.Empty;
+        var selected = MediaBackends.GetSelected();
         MediaBackendIsLinuxMpris = false;
 
-        if (MediaBackendIndex == -1)
+        if (selected is null)
         {
             description += "No media backend is selected";
             Config.Media_Backend = string.Empty;
         } 
         else
         {
-            var selectedName = MediaBackendList[MediaBackendIndex];
-            var info = _mediaBackendInfos.FirstOrDefault(x => x.Name == selectedName);
+            var info = _mediaBackendInfos.FirstOrDefault(x => x.Name == selected);
             description += info?.Description ?? "Selected backend not found";
             Config.Media_Backend = info?.Name ?? string.Empty;
             MediaBackendIsLinuxMpris = info?.ConfigFlags.HasFlag(MediaBackendConfigFlags.LinuxMpris) ?? false;
@@ -215,7 +211,7 @@ public class ExtrasSubMenuViewModelPreview : ExtrasSubMenuViewModelBase
     public ExtrasSubMenuViewModelPreview()
     {
         Config = new();
-        MediaBackendList = [ "Test Backend" ];
+        MediaBackends = new(["Test Backend"], string.Empty, null, string.Empty);
         MediaBackendDescription = "Description Placeholder";
         MediaBackendReloadNeeded = true;
         AfkActive = true;

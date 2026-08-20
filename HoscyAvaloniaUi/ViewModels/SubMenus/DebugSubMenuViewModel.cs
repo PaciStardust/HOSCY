@@ -19,9 +19,8 @@ public abstract partial class DebugSubMenuViewModelBase : ViewModelBase
     public partial ConfigModel Config { get; set; }
 
     [ObservableProperty]
-    public partial string[] LogLevels { get; protected set; } = [ "Test" ];
-    [ObservableProperty]
-    public partial int LogLevelIndex { get; set; }
+    public partial ComboBoxData LogLevels { get; set; }
+
     [ObservableProperty]
     public partial string LogFiltersInvalid { get; set; } = string.Empty;
     
@@ -47,16 +46,13 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
         _popupFactory = popupFactory;
         _audio = audio;
 
-        (LogLevels, LogLevelIndex) = AvaloniaUiUtils.ComboBoxLoad(Enum.GetNames<LogEventLevel>(), 
-            Enum.GetName(Config.Debug_LogMinimumSeverity), _logger, "LogLevel");
+        LogLevels = new(Enum.GetNames<LogEventLevel>(), Enum.GetName(Config.Debug_LogMinimumSeverity) ?? string.Empty, _logger, "LogLevel");
         LogUpdateFilterValidity();
     }
 
     public override void LogLevelChanged()
     {
-        (var selected, LogLevelIndex) = AvaloniaUiUtils.ComboBoxIsValid(LogLevels, LogLevelIndex, _logger, "LogLevel");
-        LogLevelIndex = Math.Min(LogLevelIndex, LogLevels.Length - 1);
-
+        var selected = LogLevels.GetSelected();
         if (selected is null) return;
 
         if (!Enum.TryParse<LogEventLevel>(selected, out var parsed))
@@ -136,6 +132,7 @@ public class DebugSubMenuViewModelPreview : DebugSubMenuViewModelBase
     public DebugSubMenuViewModelPreview()
     {
         Config = new();
+        LogLevels = new(["Test"], string.Empty, null, string.Empty);
         LogFiltersInvalid = "(n filters invalid)";
     }
 }

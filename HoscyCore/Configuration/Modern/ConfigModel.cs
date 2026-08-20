@@ -732,7 +732,7 @@ public class ConfigModel : ObservableObject
     }
     private bool _output_Voice_Enabled = false;
 
-    public const string DESC_Output_Voice_SendTranslated = "Send translationt to voice";
+    public const string DESC_Output_Voice_SendTranslated = "Send translation to voice";
     public bool Output_Voice_SendTranslated
     {
         get => _output_Voice_SendTranslated;
