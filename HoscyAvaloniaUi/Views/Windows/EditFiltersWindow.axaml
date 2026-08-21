@@ -41,12 +41,12 @@
 			<ScrollViewer Grid.Row="2" Theme="{StaticResource HScrollViewer}">
 				<StackPanel Theme="{StaticResource HStack}">
 					<StackPanel Theme="{StaticResource HStackS}">
-						<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Display Name"/>
+						<Label Theme="{StaticResource HLabel}" HorizontalAlignment="Center" Content="Display Name"/>
 						<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedName}" PlaceholderText="Display Name ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:FilterModel.DESC_Name}"/>
 					</StackPanel>
 
 					<StackPanel Theme="{StaticResource HStackS}">
-						<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Filter Text"/>
+						<Label Theme="{StaticResource HLabel}" HorizontalAlignment="Center" Content="Filter Text"/>
 						<TextBox Theme="{StaticResource HTextBoxLarge}" Text="{Binding SelectedFilterText}" PlaceholderText="Filter Text ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:FilterModel.DESC_FilterString}"/>
 					</StackPanel>
 

@@ -41,17 +41,17 @@
 			<ScrollViewer Grid.Row="2" Theme="{StaticResource HScrollViewer}">
 				<StackPanel Theme="{StaticResource HStack}">
 					<StackPanel Theme="{StaticResource HStackS}">
-						<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Relay Name"/>
+						<Label Theme="{StaticResource HLabel}" HorizontalAlignment="Center" Content="Relay Name"/>
 						<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedName}" PlaceholderText="Relay Name ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:OscRelayFilterModel.DESC_Name}"/>
 					</StackPanel>
 
 					<StackPanel Theme="{StaticResource HStackS}">
-						<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Target IP"/>
+						<Label Theme="{StaticResource HLabel}" HorizontalAlignment="Center" Content="Target IP"/>
 						<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedIp}" PlaceholderText="Target IP ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:OscRelayFilterModel.DESC_Ip}"/>
 					</StackPanel>
 
 					<StackPanel Theme="{StaticResource HStackS}">
-						<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Target Port"/>
+						<Label Theme="{StaticResource HLabel}" HorizontalAlignment="Center" Content="Target Port"/>
 						<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedPort, Converter={StaticResource UshortRange}, ConverterParameter=OscRelayFilterModel.Port}" PlaceholderText="Port ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:OscRelayFilterModel.DESC_Port}"/>
 					</StackPanel>
 

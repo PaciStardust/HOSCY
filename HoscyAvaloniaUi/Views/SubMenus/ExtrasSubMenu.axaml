@@ -89,7 +89,7 @@
 				<!-- Media Options -->
 				<StackPanel Theme="{StaticResource HStackIndent}">
 					<StackPanel Theme="{StaticResource HStackS}">
-						<TextBlock Theme="{StaticResource HTextBlock}" Text="Media Backend Module"/>
+						<Label Theme="{StaticResource HLabel}" Content="Media Backend Module"/>
 
 						<WrapPanel Theme="{StaticResource HWrap}">
 							<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding MediaBackends.Index}" ItemsSource="{Binding MediaBackends.Options}" SelectionChanged="MediaBackendChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_Backend}"/>

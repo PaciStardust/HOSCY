@@ -33,12 +33,12 @@
 			<ScrollViewer Grid.Row="2" Theme="{StaticResource HScrollViewer}">
 				<StackPanel Theme="{StaticResource HStack}">
 					<StackPanel Theme="{StaticResource HStackS}">
-						<TextBlock Theme="{StaticResource HTextBlock}" Text="{Binding KeyHeader}" HorizontalAlignment="Center"/>
+						<Label Theme="{StaticResource HLabel}" Content="{Binding KeyHeader}" HorizontalAlignment="Center"/>
 						<TextBox Theme="{StaticResource HTextBox}" Text="{Binding KeySelected}" PlaceholderText="{Binding KeyPlaceholder}" KeyUp="KeyReleased"/>
 					</StackPanel>
 
 					<StackPanel Theme="{StaticResource HStackS}">
-						<TextBlock Theme="{StaticResource HTextBlock}" Text="{Binding ValueHeader}" HorizontalAlignment="Center" DockPanel.Dock="Top"/>
+						<Label Theme="{StaticResource HLabel}" Content="{Binding ValueHeader}" HorizontalAlignment="Center" DockPanel.Dock="Top"/>
 						<TextBox Theme="{StaticResource HTextBoxLarge}" Text="{Binding ValueSelected}" PlaceholderText="{Binding ValuePlaceholder}" KeyUp="KeyReleased" Margin="0,2,0,0"/>
 					</StackPanel>
 				</StackPanel>

@@ -41,39 +41,39 @@
 			<ScrollViewer Grid.Row="2" Theme="{StaticResource HScrollViewer}">
 				<StackPanel Theme="{StaticResource HStack}">
 					<StackPanel Theme="{StaticResource HStackS}">
-						<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Preset Name"/>
+						<Label Theme="{StaticResource HLabel}" HorizontalAlignment="Center" Content="Preset Name"/>
 						<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedPresetName}" PlaceholderText="Preset Name ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:ApiPresetModel.DESC_Name}"/>
 					</StackPanel>
 
 					<StackPanel Theme="{StaticResource HStackS}">
-						<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Target URL"/>
+						<Label Theme="{StaticResource HLabel}" HorizontalAlignment="Center" Content="Target URL"/>
 						<TextBox Theme="{StaticResource HTextBoxLarge}" Text="{Binding SelectedTargetUrl}" PlaceholderText="Target URL ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:ApiPresetModel.DESC_TargetUrl}"/>
 					</StackPanel>
 
 					<Grid ColumnDefinitions="*,16,*">
 						<StackPanel Theme="{StaticResource HStackS}" Grid.Column="0">
-							<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Result Field"/>
+							<Label Theme="{StaticResource HLabel}" HorizontalAlignment="Center" Content="Result Field"/>
 							<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedResultField}" PlaceholderText="Result Field ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:ApiPresetModel.DESC_Result}"/>
 						</StackPanel>
 
 						<StackPanel Theme="{StaticResource HStackS}" Grid.Column="2">
-							<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Timeout (ms)"/>
+							<Label Theme="{StaticResource HLabel}" HorizontalAlignment="Center" Content="Timeout (ms)"/>
 							<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedTimeoutMs, Converter={StaticResource IntRange}, ConverterParameter=ApiPresetModel.ConnectionTimeout}" PlaceholderText="Timeout ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:ApiPresetModel.DESC_ConnectionTimeout}"/>
 						</StackPanel>
 					</Grid>
 
 					<StackPanel Theme="{StaticResource HStackS}">
-						<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Content Type"/>
+						<Label Theme="{StaticResource HLabel}" HorizontalAlignment="Center" Content="Content Type"/>
 						<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedContentType}" PlaceholderText="Content Type ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:ApiPresetModel.DESC_ContentType}"/>
 					</StackPanel>
 
 					<StackPanel Theme="{StaticResource HStackS}">
-						<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Content (Translation, [T] gets replaced)"/>
+						<Label Theme="{StaticResource HLabel}" HorizontalAlignment="Center" Content="Content (Translation, [T] gets replaced)"/>
 						<TextBox Theme="{StaticResource HTextBoxLarge}" Text="{Binding SelectedContentToSend}" PlaceholderText="Content ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:ApiPresetModel.DESC_ContentType}"/>
 					</StackPanel>
 
 					<StackPanel Theme="{StaticResource HStackS}">
-						<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Authorization Header (Optional)"/>
+						<Label Theme="{StaticResource HLabel}" HorizontalAlignment="Center" Content="Authorization Header (Optional)"/>
 						<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedAuthHeader}" PlaceholderText="Auth Header ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:ApiPresetModel.DESC_Authorization}"/>
 					</StackPanel>
 				</StackPanel>

@@ -29,7 +29,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Theme="{StaticResource HTextBlock}" TextAlignment="Center" Text="{Binding WindowTitle}"/>
+        <Label Grid.Row="0" Theme="{StaticResource HLabel}" HorizontalContentAlignment="Center" Content="{Binding WindowTitle}"/>
 
         <Border Grid.Row="2" Background="{StaticResource BackgroundDarkBrush}" CornerRadius="4">
             <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="4">

@@ -29,18 +29,18 @@
 
 					<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Debug_LogViaFileFollow}">
 						<StackPanel Theme="{StaticResource HStackS}">
-							<TextBlock Theme="{StaticResource HTextBlock}" Text="File Follow Terminal Process"/>
+							<Label Theme="{StaticResource HLabel}" Content="File Follow Terminal Process"/>
 							<TextBox Text="{Binding Config.Debug_LogFileFollowProcess}" Tag="Process ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Debug_LogFileFollowProcess}"/>
 						</StackPanel>
 
 						<StackPanel Theme="{StaticResource HStackS}">
-							<TextBlock Theme="{StaticResource HTextBlock}" Text="File Follow Terminal Command"/>
+							<Label Theme="{StaticResource HLabel}" Content="File Follow Terminal Command"/>
 							<TextBox Text="{Binding Config.Debug_LogFileFollowCommand}" Tag="Command ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Debug_LogFileFollowCommand}"/>
 						</StackPanel>
 					</StackPanel>
 
 					<StackPanel Theme="{StaticResource HStackS}">
-						<TextBlock Theme="{StaticResource HTextBlock}" Text="Logging Level"/>
+						<Label Theme="{StaticResource HLabel}" Content="Logging Level"/>
 						<WrapPanel Theme="{StaticResource HWrap}">
 							<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding LogLevels.Index}" ItemsSource="{Binding LogLevels.Options}" SelectionChanged="LogLevelChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Debug_LogMinimumSeverity}"/>
 							<Button Content="Edit Filters" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="LogFiltersClicked" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Debug_LogFilters}"/>

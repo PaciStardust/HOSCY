@@ -50,23 +50,23 @@
 					</WrapPanel>
 
 					<StackPanel Theme="{StaticResource HStackS}">
-						<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Display Name"/>
+						<Label Theme="{StaticResource HLabel}" HorizontalAlignment="Center" Content="Display Name"/>
 						<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedName}" PlaceholderText="Display Name ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:CounterModel.DESC_Name}"/>
 					</StackPanel>
 
 					<StackPanel Theme="{StaticResource HStackS}">
-						<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="OSC Parameter"/>
+						<Label Theme="{StaticResource HLabel}" HorizontalAlignment="Center" Content="OSC Parameter"/>
 						<TextBox Theme="{StaticResource HTextBoxLarge}" Text="{Binding SelectedParameter}" PlaceholderText="OSC Parameter ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:CounterModel.DESC_Parameter}"/>
 					</StackPanel>
 
 					<Grid ColumnDefinitions="*,16,*">
 						<StackPanel Grid.Column="0" Theme="{StaticResource HStackS}">
-							<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Count"/>
+							<Label Theme="{StaticResource HLabel}" HorizontalAlignment="Center" Content="Count"/>
 							<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedCount, Converter={StaticResource UintRange}, ConverterParameter=CounterModel.Count}" PlaceholderText="Count ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:CounterModel.DESC_Count}"/>
 						</StackPanel>
 
 						<StackPanel Grid.Column="2" Theme="{StaticResource HStackS}">
-							<TextBlock Theme="{StaticResource HTextBlock}" HorizontalAlignment="Center" Text="Timeout (s)"/>
+							<Label Theme="{StaticResource HLabel}" HorizontalAlignment="Center" Content="Timeout (s)"/>
 							<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedCooldown, Converter={StaticResource FloatRange}, ConverterParameter=CounterModel.CooldownSeconds}" PlaceholderText="Timeout ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:CounterModel.DESC_CooldownSeconds}"/>
 						</StackPanel>
 					</Grid>
