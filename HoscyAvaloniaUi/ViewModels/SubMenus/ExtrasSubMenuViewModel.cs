@@ -87,6 +87,7 @@ public class ExtrasSubMenuViewModelImpl : ExtrasSubMenuViewModelBase
 
     public override void CountersEditClicked()
     {
+        _logger.Information("Editing counters filters");
         _popup.OpenEditCounters(Config.Counters_List, null, 
             () => Config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger));
     }
@@ -154,11 +155,13 @@ public class ExtrasSubMenuViewModelImpl : ExtrasSubMenuViewModelBase
     }
     public override void MediaMprisEndpointsPreferredClicked()
     {
+        _logger.Information("Editing preferred MPRIS endpoints");
         _popup.OpenEditList(Config.Media_Mpris_PreferredEndpoints, "Editing preferred MPRIS endpoints", "Pref. Endpoint", null,
             () => Config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger));
     }
     public override void MediaMprisEndpointsIgnoredClicked()
     {
+        _logger.Information("Editing ignored MPRIS endpoints");
         _popup.OpenEditList(Config.Media_Mpris_IgnoredEndpoints, "Editing ignored MPRIS endpoints", "Ign. Endpoint", null,
             () => Config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger));
     }
