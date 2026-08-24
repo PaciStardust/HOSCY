@@ -7,7 +7,8 @@ public interface IOutputManagerService : IAutoStartStopService
 {
     #region Info
     public IReadOnlyList<IOutputHandlerStartInfo> GetHandlerInfos(bool activeOnly);
-    public ServiceStatus GetProcessorStatus(IOutputHandlerStartInfo handlerInfo);
+    public ServiceStatus GetHandlerStatus(IOutputHandlerStartInfo handlerInfo);
+    public bool IsHandlerRefreshNeeded();
     #endregion
 
     #region Control

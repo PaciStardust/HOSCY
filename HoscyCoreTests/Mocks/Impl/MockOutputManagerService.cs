@@ -43,6 +43,11 @@ public class MockOutputManagerService : MockStartStopServiceBase, IOutputManager
         OnProcessingIndicatorSet.Invoke(this, isProcessing);
     }
 
+    public bool IsHandlerRefreshNeeded()
+    {
+        return false;
+    }
+
     public override Res Start()
     {
         var res = base.Start();
@@ -61,7 +66,7 @@ public class MockOutputManagerService : MockStartStopServiceBase, IOutputManager
         return [];
     }
 
-    public ServiceStatus GetProcessorStatus(IOutputHandlerStartInfo _)
+    public ServiceStatus GetHandlerStatus(IOutputHandlerStartInfo _)
     {
         return ServiceStatus.Processing;
     }

@@ -415,28 +415,28 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
     [Test]
     public void GetHandlerStatusTest()
     {
-        var status = _output.GetProcessorStatus(_infoA);
+        var status = _output.GetHandlerStatus(_infoA);
         Assert.That(status, Is.EqualTo(ServiceStatus.Stopped));
         
         _infoA.Enabled = true;
         _output.RefreshHandlers().AssertOk();
 
         _handlerA.OverrideRunningStatus = ServiceStatus.Started;
-        status = _output.GetProcessorStatus(_infoA);
+        status = _output.GetHandlerStatus(_infoA);
         Assert.That(status, Is.EqualTo(ServiceStatus.Started));
 
         _handlerA.OverrideRunningStatus = ServiceStatus.Processing;
-        status = _output.GetProcessorStatus(_infoA);
+        status = _output.GetHandlerStatus(_infoA);
         Assert.That(status, Is.EqualTo(ServiceStatus.Processing));
 
         _handlerA.OverrideRunningStatus = ServiceStatus.Faulted;
-        status = _output.GetProcessorStatus(_infoA);
+        status = _output.GetHandlerStatus(_infoA);
         Assert.That(status, Is.EqualTo(ServiceStatus.Faulted));
 
         _infoA.Enabled = false;
         _output.RefreshHandlers().AssertOk();
 
-        status = _output.GetProcessorStatus(_infoA);
+        status = _output.GetHandlerStatus(_infoA);
         Assert.That(status, Is.EqualTo(ServiceStatus.Stopped));
     }
 
@@ -488,13 +488,13 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
             Assert.That(activeHandlers, Is.Empty);
 
             Assert.That(_handlerA.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Stopped));
-            Assert.That(_output.GetProcessorStatus(_infoA), Is.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_output.GetHandlerStatus(_infoA), Is.EqualTo(ServiceStatus.Stopped));
             Assert.That(activeHandlers, Does.Not.Contain(_infoA));
             Assert.That(_handlerA.Started, Is.False);
             Assert.That(stoppedA, Is.False);
 
             Assert.That(_handlerB.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Stopped));
-            Assert.That(_output.GetProcessorStatus(_infoB), Is.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_output.GetHandlerStatus(_infoB), Is.EqualTo(ServiceStatus.Stopped));
             Assert.That(activeHandlers, Does.Not.Contain(_infoB));
             Assert.That(_handlerB.Started, Is.False);
             Assert.That(stoppedB, Is.False);
@@ -510,13 +510,13 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
             Assert.That(activeHandlers, Is.Empty);
 
             Assert.That(_handlerA.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Stopped));
-            Assert.That(_output.GetProcessorStatus(_infoA), Is.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_output.GetHandlerStatus(_infoA), Is.EqualTo(ServiceStatus.Stopped));
             Assert.That(activeHandlers, Does.Not.Contain(_infoA));
             Assert.That(_handlerA.Started, Is.False);
             Assert.That(stoppedA, Is.False);
 
             Assert.That(_handlerB.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Stopped));
-            Assert.That(_output.GetProcessorStatus(_infoB), Is.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_output.GetHandlerStatus(_infoB), Is.EqualTo(ServiceStatus.Stopped));
             Assert.That(activeHandlers, Does.Not.Contain(_infoB));
             Assert.That(_handlerB.Started, Is.False);
             Assert.That(stoppedB, Is.False);
@@ -531,13 +531,13 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
             Assert.That(activeHandlers, Has.Count.EqualTo(2));
 
             Assert.That(_handlerA.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Stopped));
-            Assert.That(_output.GetProcessorStatus(_infoA), Is.Not.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_output.GetHandlerStatus(_infoA), Is.Not.EqualTo(ServiceStatus.Stopped));
             Assert.That(activeHandlers, Does.Contain(_infoA));
             Assert.That(_handlerA.Started, Is.True);
             Assert.That(stoppedA, Is.False);
 
             Assert.That(_handlerB.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Stopped));
-            Assert.That(_output.GetProcessorStatus(_infoB), Is.Not.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_output.GetHandlerStatus(_infoB), Is.Not.EqualTo(ServiceStatus.Stopped));
             Assert.That(activeHandlers, Does.Contain(_infoB));
             Assert.That(_handlerB.Started, Is.True);
             Assert.That(stoppedB, Is.False);
@@ -552,13 +552,13 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
             Assert.That(activeHandlers, Has.Count.EqualTo(2));
 
             Assert.That(_handlerA.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Stopped));
-            Assert.That(_output.GetProcessorStatus(_infoA), Is.Not.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_output.GetHandlerStatus(_infoA), Is.Not.EqualTo(ServiceStatus.Stopped));
             Assert.That(activeHandlers, Does.Contain(_infoA));
             Assert.That(_handlerA.Started, Is.True);
             Assert.That(stoppedA, Is.False);
 
             Assert.That(_handlerB.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Stopped));
-            Assert.That(_output.GetProcessorStatus(_infoB), Is.Not.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_output.GetHandlerStatus(_infoB), Is.Not.EqualTo(ServiceStatus.Stopped));
             Assert.That(activeHandlers, Does.Contain(_infoB));
             Assert.That(_handlerB.Started, Is.True);
             Assert.That(stoppedB, Is.False);
@@ -573,13 +573,13 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
             Assert.That(activeHandlers, Has.Count.EqualTo(1));
 
             Assert.That(_handlerA.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Stopped));
-            Assert.That(_output.GetProcessorStatus(_infoA), Is.Not.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_output.GetHandlerStatus(_infoA), Is.Not.EqualTo(ServiceStatus.Stopped));
             Assert.That(activeHandlers, Does.Contain(_infoA));
             Assert.That(_handlerA.Started, Is.True);
             Assert.That(stoppedA, Is.False);
 
             Assert.That(_handlerB.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Stopped));
-            Assert.That(_output.GetProcessorStatus(_infoB), Is.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_output.GetHandlerStatus(_infoB), Is.EqualTo(ServiceStatus.Stopped));
             Assert.That(activeHandlers, Does.Not.Contain(_infoB));
             Assert.That(_handlerB.Started, Is.False);
             Assert.That(stoppedB, Is.True);
@@ -594,13 +594,13 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
             Assert.That(activeHandlers, Has.Count.EqualTo(1));
 
             Assert.That(_handlerA.GetCurrentStatus(), Is.Not.EqualTo(ServiceStatus.Stopped));
-            Assert.That(_output.GetProcessorStatus(_infoA), Is.Not.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_output.GetHandlerStatus(_infoA), Is.Not.EqualTo(ServiceStatus.Stopped));
             Assert.That(activeHandlers, Does.Contain(_infoA));
             Assert.That(_handlerA.Started, Is.True);
             Assert.That(stoppedA, Is.False);
 
             Assert.That(_handlerB.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Stopped));
-            Assert.That(_output.GetProcessorStatus(_infoB), Is.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_output.GetHandlerStatus(_infoB), Is.EqualTo(ServiceStatus.Stopped));
             Assert.That(activeHandlers, Does.Not.Contain(_infoB));
             Assert.That(_handlerB.Started, Is.False);
             Assert.That(stoppedB, Is.True);
@@ -615,13 +615,13 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
             Assert.That(activeHandlers, Is.Empty);
 
             Assert.That(_handlerA.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Stopped));
-            Assert.That(_output.GetProcessorStatus(_infoA), Is.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_output.GetHandlerStatus(_infoA), Is.EqualTo(ServiceStatus.Stopped));
             Assert.That(activeHandlers, Does.Not.Contain(_infoA));
             Assert.That(_handlerA.Started, Is.False);
             Assert.That(stoppedA, Is.True);
 
             Assert.That(_handlerB.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Stopped));
-            Assert.That(_output.GetProcessorStatus(_infoB), Is.EqualTo(ServiceStatus.Stopped));
+            Assert.That(_output.GetHandlerStatus(_infoB), Is.EqualTo(ServiceStatus.Stopped));
             Assert.That(activeHandlers, Does.Not.Contain(_infoB));
             Assert.That(_handlerB.Started, Is.False);
             Assert.That(stoppedB, Is.True);

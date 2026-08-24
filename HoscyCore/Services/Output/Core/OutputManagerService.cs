@@ -178,7 +178,7 @@ public class OutputManagerService
         return returnInfos;
     }
 
-    public ServiceStatus GetProcessorStatus(IOutputHandlerStartInfo handlerInfo)
+    public ServiceStatus GetHandlerStatus(IOutputHandlerStartInfo handlerInfo)
     {
         var activeHandler = RetrieveActiveHandlerByType(handlerInfo.ModuleType);
         if (activeHandler is null)
@@ -201,6 +201,32 @@ public class OutputManagerService
         return (settings.HasFlag(OutputSettingsFlags.AllowTextOutput) && id.HasFlag(OutputsAsMediaFlags.OutputsAsText))
             || (settings.HasFlag(OutputSettingsFlags.AllowOtherOutput) && id.HasFlag(OutputsAsMediaFlags.OutputsAsOther))
             || (settings.HasFlag(OutputSettingsFlags.AllowAudioOutput) && id.HasFlag(OutputsAsMediaFlags.OutputsAsAudio));
+    }
+
+    public bool IsHandlerRefreshNeeded()
+    {
+        var allHandlers = GetHandlerInfos(false);
+        var activeHandlers = GetHandlerInfos(true).Select(x => x.ModuleType).ToArray();
+
+        foreach (var handler in allHandlers)
+        {
+            if (handler.ShouldBeEnabled())
+            {
+                if (!activeHandlers.Any(x => handler.ModuleType == x))
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                if (activeHandlers.Any(x => handler.ModuleType == x))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
     #endregion
 

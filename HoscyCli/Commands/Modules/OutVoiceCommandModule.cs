@@ -30,7 +30,7 @@ public class OutVoiceCommandModule
     [SubCommandModule(["status"], "Get output module status")]
     public Res CmdStatus()
     {
-        var status = _output.GetProcessorStatus(_info);
+        var status = _output.GetHandlerStatus(_info);
         Console.WriteLine($"Current status is {status}");
         return ResC.Ok();
     }
