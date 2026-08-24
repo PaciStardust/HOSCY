@@ -351,11 +351,15 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
     </ControlTheme>
 
     <ControlTheme x:Key="HLabelL" TargetType="Label" BasedOn="{StaticResource HLabel}">
-        <Setter Property="FontSize" Value="30"/>
+        <Setter Property="FontSize" Value="28"/>
     </ControlTheme>
 
     <ControlTheme x:Key="HLabelM" TargetType="Label" BasedOn="{StaticResource HLabel}">
         <Setter Property="FontSize" Value="24"/>
+    </ControlTheme>
+
+    <ControlTheme x:Key="HLabelS" TargetType="Label" BasedOn="{StaticResource HLabel}">
+        <Setter Property="FontSize" Value="20"/>
     </ControlTheme>
 
     <!-- Checkbox -->
