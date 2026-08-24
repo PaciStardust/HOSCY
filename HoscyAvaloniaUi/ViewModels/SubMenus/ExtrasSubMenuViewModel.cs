@@ -188,23 +188,21 @@ public class ExtrasSubMenuViewModelImpl : ExtrasSubMenuViewModelBase
         var res = _media.GetCurrentModuleInfo();
         if (res is null)
         {
-            MediaBackendReloadNeeded = !string.IsNullOrWhiteSpace(Config.Media_Backend);
             MediaBackendHasEndpoints = false;
         } 
         else
         {
             if (!res.IsOk)
             {
-                MediaBackendReloadNeeded = true;
                 MediaBackendHasEndpoints = false;
                 _popup.OpenNotification("Failed to retrieve current module", res.Msg.Message, true, true);
             }
             else
             {
                 MediaBackendHasEndpoints = _media.CanGetEndpoints;
-                MediaBackendReloadNeeded = Config.Media_Backend != res.Value.Name;
             }
         }
+        MediaBackendReloadNeeded = _media.IsModuleRefreshNeeded();
     }
 }
 
