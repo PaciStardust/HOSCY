@@ -3,16 +3,202 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="using:HoscyAvaloniaUi.ViewModels.SubMenus"
-	mc:Ignorable="d" d:DesignHeight="420" d:DesignWidth="689"
+	xmlns:cfg="using:HoscyCore.Configuration.Modern"
+	mc:Ignorable="d" d:DesignHeight="2000" d:DesignWidth="689"
 	x:DataType="vm:OutputSubMenuViewModelBase"
-	x:Class="HoscyAvaloniaUi.Views.SubMenus.OutputSubMenu">
+	x:Class="HoscyAvaloniaUi.Views.SubMenus.OutputSubMenu"
+	Background="{StaticResource BackgroundBaseBrush}">
 
 	<Design.DataContext>
 		<vm:OutputSubMenuViewModelPreview/>
 	</Design.DataContext>
 
-	<ScrollViewer Margin="16,8,8,8" VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="0,0,32,0">
-        </StackPanel>
+	<ScrollViewer Theme="{StaticResource HScrollViewerPage}">
+		<StackPanel Theme="{StaticResource HStackL}">
+			<StackPanel Theme="{StaticResource HStack}">
+				<StackPanel Theme="{StaticResource HStackS}">
+					<WrapPanel Theme="{StaticResource HWrap}">
+						<Label Content="Output Modules" Theme="{StaticResource HLabelL}"/>
+
+						<Button Content="Reload" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="ModuleReloadClicked" ToolTip.Tip="Reloads the output modules"/>
+					</WrapPanel>
+
+					<TextBlock Theme="{StaticResource HTextBlockError}" Text="Different modules than currently selected are loaded, please press 'Reload'" IsVisible="{Binding ModuleReloadNeeded}"/>
+				</StackPanel>
+
+				<StackPanel Theme="{StaticResource HStackIndent}">
+					<WrapPanel Theme="{StaticResource HWrap}">
+						<Label Content="API Module" Theme="{StaticResource HLabelM}"/>
+						<Button Content="Edit Presets" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="ModuleApiEditPresets" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Api_Presets}"/>
+					</WrapPanel>
+
+					<StackPanel Theme="{StaticResource HStackIndent}">
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Enable Output Via API" IsChecked="{Binding Config.Output_Api_Enabled}" Click="ModuleToggled" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_Api_Enabled}"/>
+
+						<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding Config.Output_Api_Enabled}">
+							<Label Theme="{StaticResource HLabelS}" Content="Endpoints / Presets"/>
+
+							<StackPanel Theme="{StaticResource HStackIndent}">
+								<WrapPanel Theme="{StaticResource HWrap}">
+									<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding ModuleApiPresetMessage.Index}" ItemsSource="{Binding ModuleApiPresetMessage.Options}" SelectionChanged="ModuleApiPresetMessageChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_Api_Preset_Message}"/>
+									<Label Theme="{StaticResource HLabel}" Content="Preset for Messages" VerticalAlignment="Center"/>
+								</WrapPanel>
+
+								<WrapPanel Theme="{StaticResource HWrap}">
+									<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding ModuleApiPresetNotification.Index}" ItemsSource="{Binding ModuleApiPresetNotification.Options}" SelectionChanged="ModuleApiPresetNotificationChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_Api_Preset_Notification}"/>
+									<Label Theme="{StaticResource HLabel}" Content="Preset for Notifications" VerticalAlignment="Center"/>
+								</WrapPanel>
+
+								<WrapPanel Theme="{StaticResource HWrap}">
+									<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding ModuleApiPresetClear.Index}" ItemsSource="{Binding ModuleApiPresetClear.Options}" SelectionChanged="ModuleApiPresetClearChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_Api_Preset_Clear}"/>
+									<Label Theme="{StaticResource HLabel}" Content="Preset for Clearing" VerticalAlignment="Center"/>
+								</WrapPanel>
+
+								<WrapPanel Theme="{StaticResource HWrap}">
+									<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding ModuleApiPresetProcessing.Index}" ItemsSource="{Binding ModuleApiPresetProcessing.Options}" SelectionChanged="ModuleApiPresetProcessingChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_Api_Preset_Processing}"/>
+									<Label Theme="{StaticResource HLabel}" Content="Preset for Processing Indicator" VerticalAlignment="Center"/>
+								</WrapPanel>
+							</StackPanel>
+
+							<Label Theme="{StaticResource HLabelS}" Content="Other Options"/>
+
+							<StackPanel Theme="{StaticResource HStackIndent}">
+								<WrapPanel Theme="{StaticResource HWrap}">
+									<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="True ..." Text="{Binding Config.Output_Api_Value_True}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_Api_Value_True}"/>
+									<Label Theme="{StaticResource HLabel}" Content="API True Value" VerticalAlignment="Center"/>
+								</WrapPanel>
+
+								<WrapPanel Theme="{StaticResource HWrap}">
+									<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="False ..." Text="{Binding Config.Output_Api_Value_False}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_Api_Value_False}"/>
+									<Label Theme="{StaticResource HLabel}" Content="API False Value" VerticalAlignment="Center"/>
+								</WrapPanel>
+
+								<WrapPanel Theme="{StaticResource HWrap}">
+									<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding ModuleApiTranslationFormat.Index}" ItemsSource="{Binding ModuleApiTranslationFormat.Options}" SelectionChanged="ModuleApiTranslationFormatChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_Api_TranslationFormat}"/>
+									<Label Theme="{StaticResource HLabel}" Content="Translation Format" VerticalAlignment="Center"/>
+								</WrapPanel>
+
+								<CheckBox Theme="{StaticResource HCheckBox}" Content="Prepend Priority to Notifications" IsChecked="{Binding Config.Output_Api_PrependNotificationPriority}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_Api_PrependNotificationPriority}"/>
+							</StackPanel>
+						</StackPanel>
+					</StackPanel>
+
+					<StackPanel Theme="{StaticResource HStackS}">
+						<Label Content="Voice Module" Theme="{StaticResource HLabelM}"/>
+						<TextBlock Theme="{StaticResource HTextBlockNote}" Text="(Full configuration for Voice Output is located in the 'Voice' Tab)"/>
+					</StackPanel>
+
+					<StackPanel Theme="{StaticResource HStackIndent}">
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Enable Output Via Voice" IsChecked="{Binding Config.Output_Voice_Enabled}" Click="ModuleToggled" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_Voice_Enabled}"/>
+
+						<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding Config.Output_Voice_Enabled}">
+							<CheckBox Theme="{StaticResource HCheckBox}" Content="Send Translation To Voice" IsChecked="{Binding Config.Output_Voice_SendTranslated}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_Voice_SendTranslated}"/>
+						</StackPanel>
+					</StackPanel>
+
+					<Label Content="OSC Textbox Module" Theme="{StaticResource HLabelM}"/>
+
+					<StackPanel Theme="{StaticResource HStackIndent}">
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Enable Output via Textbox" IsChecked="{Binding Config.Output_VrcTxt_Enabled}" Click="ModuleToggled" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Enabled}"/>
+						
+						<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding Config.Output_VrcTxt_Enabled}">
+							<Label Theme="{StaticResource HLabelS}" Content="General Options"/>
+
+							<StackPanel Theme="{StaticResource HStackIndent}">
+								<CheckBox Theme="{StaticResource HCheckBox}" Content="Display Text In Textbox" IsChecked="{Binding Config.Output_VrcTxt_Do_Send}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Do_Send}"/>
+
+								<CheckBox Theme="{StaticResource HCheckBox}" Content="Use Typing Indicator For Activity" IsChecked="{Binding Config.Output_VrcTxt_Do_Indicator}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Do_Indicator}"/>
+							</StackPanel>
+
+							<StackPanel Theme="{StaticResource HStack}" IsEnabled="{Binding Config.Output_VrcTxt_Do_Send}">
+								<Label Theme="{StaticResource HLabelS}" Content="Output Styling"/>
+
+								<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Output_VrcTxt_Do_Send}">
+									<WrapPanel Theme="{StaticResource HWrap}">
+										<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Output_VrcTxt_Send_MaxDisplayedCharacters, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.Output_VrcTxt_Send_MaxDisplayedCharacters}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Send_MaxDisplayedCharacters}"/>
+										<Label Theme="{StaticResource HLabel}" Content="Max Displayed Characters" VerticalAlignment="Center"/>
+									</WrapPanel>
+
+									<WrapPanel Theme="{StaticResource HWrap}">
+										<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="Start ..." Text="{Binding Config.Output_VrcTxt_Notification_IndicatorTextStart}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Notification_IndicatorTextStart}"/>
+										<Label Theme="{StaticResource HLabel}" Content="Notification Indicator Start" VerticalAlignment="Center"/>
+									</WrapPanel>
+
+									<WrapPanel Theme="{StaticResource HWrap}">
+										<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="End ..." Text="{Binding Config.Output_VrcTxt_Notification_IndicatorTextEnd}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Notification_IndicatorTextEnd}"/>
+										<Label Theme="{StaticResource HLabel}" Content="Notification Indicator End" VerticalAlignment="Center"/>
+									</WrapPanel>
+								</StackPanel>
+
+								<Label Theme="{StaticResource HLabelS}" Content="Translation"/>
+							
+								<StackPanel Theme="{StaticResource HStackIndent}">
+									<CheckBox Theme="{StaticResource HCheckBox}" Content="Send Translation To Textbox" IsChecked="{Binding Config.Output_VrcTxt_Send_ShowTranslation}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Send_ShowTranslation}"/>
+
+									<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Output_VrcTxt_Send_ShowTranslation}">
+										<CheckBox Theme="{StaticResource HCheckBox}" Content="Append Original After Translation" IsChecked="{Binding Config.Output_VrcTxt_Send_AddOriginalToTranslation}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Send_AddOriginalToTranslation}"/>
+									</StackPanel>
+								</StackPanel>
+
+								<Label Theme="{StaticResource HLabelS}" Content="Sounds"/>
+
+								<StackPanel Theme="{StaticResource HStackIndent}">
+									<CheckBox Theme="{StaticResource HCheckBox}" Content="Sound On Message" IsChecked="{Binding Config.Output_VrcTxt_Sound_OnMessage}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Sound_OnMessage}"/>
+
+									<CheckBox Theme="{StaticResource HCheckBox}" Content="Sound On Notification" IsChecked="{Binding Config.Output_VrcTxt_Sound_OnNotification}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Sound_OnNotification}"/>
+								</StackPanel>
+
+								<Label Theme="{StaticResource HLabelS}" Content="Timeouts"/>
+
+								<StackPanel Theme="{StaticResource HStackIndent}">
+									<CheckBox Theme="{StaticResource HCheckBox}" Content="Use Dyamic Timeout" IsChecked="{Binding Config.Output_VrcTxt_Timeout_UseDynamic}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Timeout_UseDynamic}"/>
+
+									<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding !Config.Output_VrcTxt_Timeout_UseDynamic}">
+										<WrapPanel Theme="{StaticResource HWrap}">
+											<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Output_VrcTxt_Timeout_StaticMs, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.Output_VrcTxt_Timeout_StaticMs}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Timeout_StaticMs}"/>
+											<Label Theme="{StaticResource HLabel}" Content="Static Timeout (ms) " VerticalAlignment="Center"/>
+										</WrapPanel>
+									</StackPanel>
+
+									<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Output_VrcTxt_Timeout_UseDynamic}">
+										<WrapPanel Theme="{StaticResource HWrap}">
+											<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.Output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs}"/>
+											<Label Theme="{StaticResource HLabel}" Content="Timeout Per 20 Characters (ms)" VerticalAlignment="Center"/>
+										</WrapPanel>
+
+										<WrapPanel Theme="{StaticResource HWrap}">
+											<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Output_VrcTxt_Timeout_DynamicMinimumMs, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.Output_VrcTxt_Timeout_DynamicMinimumMs}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Timeout_DynamicMinimumMs}"/>
+											<Label Theme="{StaticResource HLabel}" Content="Dynamic Timeout Minimum (ms) " VerticalAlignment="Center"/>
+										</WrapPanel>
+									</StackPanel>
+
+									<CheckBox Theme="{StaticResource HCheckBox}" Content="Automatically Clear After Notification" IsChecked="{Binding Config.Output_VrcTxt_Timeout_AutomaticallyClearNotification}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Timeout_AutomaticallyClearNotification}"/>
+									
+									<CheckBox Theme="{StaticResource HCheckBox}" Content="Automatically Clear After Message" IsChecked="{Binding Config.Output_VrcTxt_Timeout_AutomaticallyClearMessage}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Timeout_AutomaticallyClearMessage}"/>
+
+									<CheckBox Theme="{StaticResource HCheckBox}" Content="Use Notification Priority System" IsChecked="{Binding Config.Output_VrcTxt_Notification_UsePrioritySystem}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Notification_UsePrioritySystem}"/>
+
+									<CheckBox Theme="{StaticResource HCheckBox}" Content="Skip Notification When Message" IsChecked="{Binding Config.Output_VrcTxt_Notification_SkipWhenMessageAvailable}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Notification_SkipWhenMessageAvailable}"/>
+								</StackPanel>
+							</StackPanel>
+
+							<Label Theme="{StaticResource HLabelS}" Content="OSC Addresses"/>
+
+							<StackPanel Theme="{StaticResource HStackIndent}">
+								<StackPanel Theme="{StaticResource HStackS}">
+									<Label Theme="{StaticResource HLabel}" Content="Send Message"/>
+									<TextBox Text="{Binding Config.Osc_Address_Game_Textbox}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Game_Textbox}"/>
+								</StackPanel>
+
+								<StackPanel Theme="{StaticResource HStackS}">
+									<Label Theme="{StaticResource HLabel}" Content="Trigger Typing Indicator"/>
+									<TextBox Text="{Binding Config.Osc_Address_Game_Typing}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Game_Typing}"/>
+								</StackPanel>
+							</StackPanel>
+						</StackPanel>
+					</StackPanel>
+				</StackPanel>
+			</StackPanel>
+		</StackPanel>
     </ScrollViewer>
 </UserControl>
