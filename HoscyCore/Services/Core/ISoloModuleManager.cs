@@ -8,6 +8,7 @@ public interface ISoloModuleManager<TModuleStartInfo> : IAutoStartStopService
     public IReadOnlyList<TModuleStartInfo> GetModuleInfos();
     public Res<TModuleStartInfo>? GetCurrentModuleInfo();
     public ServiceStatus GetCurrentModuleStatus();
+    public bool IsModuleRefreshNeeded();
 
     public Res StartModule();
     public Res RestartModule();

@@ -41,4 +41,9 @@ public abstract class MockSoloModuleManagerBase<TModuleStartInfo> : MockStartSto
     {
         return ResC.Ok();
     }
+
+    public bool IsModuleRefreshNeeded()
+    {
+        return false;
+    }
 }

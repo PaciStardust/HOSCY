@@ -74,6 +74,27 @@ SoloModuleManagerBase<TModuleStartInfo, TModule>
     {
         return _currentModule?.GetCurrentStatus() ?? ServiceStatus.Stopped;
     }
+
+    public bool IsModuleRefreshNeeded()
+    {
+        var selectedModule = GetSelectedModuleName();
+        var currentModule = GetCurrentModuleInfo();
+
+        if (currentModule is null)
+        {
+            return !string.IsNullOrWhiteSpace(selectedModule);
+        }
+
+        if (!currentModule.IsOk)
+        {
+            _logger.Warning("Module refresh could not be performed ({err})", currentModule.Msg);
+            return true;
+        }
+
+        return !currentModule.Value.Name.Equals(selectedModule, StringComparison.OrdinalIgnoreCase);
+    }
+
+
     #endregion
 
     #region Start / Stop
