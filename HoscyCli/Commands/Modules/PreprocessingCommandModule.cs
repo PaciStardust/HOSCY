@@ -2,6 +2,7 @@ using HoscyCli.Commands.Core;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Output.Preprocessing;
+using HoscyCore.Services.Output.Preprocessing.Replacements;
 using HoscyCore.Utility;
 
 namespace HoscyCli.Commands.Modules;
@@ -10,13 +11,13 @@ namespace HoscyCli.Commands.Modules;
 public class PreprocessingCommandModule
 (   
     ReflectPropEditCommandModule reflectCm,
-    PartialReplacementOutputPreprocessor preprocessPartial,
-    FullReplacementOutputPreprocessor preprocessFull
+    IPartialReplacementOutputPreprocessor preprocessPartial,
+    IFullReplacementOutputPreprocessor preprocessFull
 ) : AttributeCommandModule, ICoreCommandModule
 {
     private readonly ReflectPropEditCommandModule _reflectCm = reflectCm;
-    private readonly PartialReplacementOutputPreprocessor _preprocessPartial = preprocessPartial;
-    private readonly FullReplacementOutputPreprocessor _preprocessFull = preprocessFull;
+    private readonly IPartialReplacementOutputPreprocessor _preprocessPartial = preprocessPartial;
+    private readonly IFullReplacementOutputPreprocessor _preprocessFull = preprocessFull;
 
     public string ModuleName => "Preprocessing";
     public string ModuleDescription => "Configure preprocessing";
