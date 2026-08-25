@@ -4,14 +4,15 @@ using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Output.Core;
 using Serilog;
 
-namespace HoscyCore.Services.Output.Preprocessing;
+namespace HoscyCore.Services.Output.Preprocessing.Replacements;
 
 /// <summary>
 /// Handles replacing text fully
 /// </summary>
-[LoadIntoDiContainer(typeof(FullReplacementOutputPreprocessor), Lifetime.Transient)]
+[LoadIntoDiContainer(typeof(IFullReplacementOutputPreprocessor), Lifetime.Transient)]
 public class FullReplacementOutputPreprocessor(ConfigModel config, ILogger logger) 
-    : ReplacementOutputPreprocessorBase<FullReplacementHandler>(config, logger.ForContext<FullReplacementOutputPreprocessor>())
+    : ReplacementOutputPreprocessorBase<FullReplacementHandler>(config, logger.ForContext<FullReplacementOutputPreprocessor>()),
+    IFullReplacementOutputPreprocessor
 {
     #region Simple Overrides
     public override bool IsEnabled()

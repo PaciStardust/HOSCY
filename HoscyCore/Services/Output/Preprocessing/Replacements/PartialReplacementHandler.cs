@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
 using HoscyCore.Configuration.Modern;
 
-namespace HoscyCore.Services.Output.Preprocessing;
+namespace HoscyCore.Services.Output.Preprocessing.Replacements;
 
 public class PartialReplacementHandler
 {

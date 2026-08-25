@@ -4,9 +4,9 @@ using HoscyCore.Services.Output.Core;
 using HoscyCore.Utility;
 using Serilog;
 
-namespace HoscyCore.Services.Output.Preprocessing;
+namespace HoscyCore.Services.Output.Preprocessing.Replacements;
 
-public abstract class ReplacementOutputPreprocessorBase<T> : IOutputPreprocessor
+public abstract class ReplacementOutputPreprocessorBase<T> : IReplacementOutputPreprocessor
 {
     protected readonly ConfigModel _config;
     protected readonly ILogger _logger;
