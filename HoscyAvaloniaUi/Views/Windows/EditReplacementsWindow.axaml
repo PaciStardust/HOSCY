@@ -1,0 +1,61 @@
+<Window xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:HoscyAvaloniaUi.ViewModels.Windows"
+	xmlns:cfg="using:HoscyCore.Configuration.Modern"
+	mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="400"
+	x:DataType="vm:EditReplacementsWindowViewModelBase"
+	x:Class="HoscyAvaloniaUi.Views.Windows.EditReplacementsWindow"
+
+	Title="Edit Filters"
+	MinHeight="400"
+	MinWidth="700"
+	Height="400"
+	Width="700"
+	CanResize="True"
+	Background="{StaticResource BackgroundBaseBrush}" 
+	WindowStartupLocation="CenterOwner">
+
+	<Design.DataContext>
+		<vm:EditReplacementsWindowViewModelPreview/>
+	</Design.DataContext>
+
+	<Grid Margin="16" ColumnDefinitions="5*,16,3*">
+		<ListBox Grid.Column="0" Theme="{StaticResource HListBoxF}" SelectedIndex="{Binding SelectedIndex}" ItemsSource="{Binding DataDisplayed}"
+			ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="SelectionChanged"/>
+
+		<Grid Grid.Column="2" RowDefinitions="Auto,16,1*">
+			<StackPanel Grid.Row="0" Theme="{StaticResource HStack}">
+				<WrapPanel Theme="{StaticResource HWrap}" HorizontalAlignment="Center">
+					<Button Theme="{StaticResource HButton}" Content="Add New" Click="AddEntry"/>
+					<Button Theme="{StaticResource HButton}" Content="Remove" Click="RemoveEntry"/>
+				</WrapPanel>
+
+				<WrapPanel Theme="{StaticResource HWrapL}" HorizontalAlignment="Center">
+					<Button Theme="{StaticResource HButton}" Content="Modify" Click="ModifyEntry"/>
+					<CheckBox Theme="{StaticResource HCheckBox}" Content="Enabled" IsChecked="{Binding SelectedEnabled}" ToolTip.Tip="{x:Static cfg:ReplacementDataModel.DESC_Enabled}"/>
+				</WrapPanel>
+			</StackPanel>
+
+			<ScrollViewer Grid.Row="2" Theme="{StaticResource HScrollViewer}">
+				<StackPanel Theme="{StaticResource HStack}">
+					<StackPanel Theme="{StaticResource HStackS}">
+						<Label Theme="{StaticResource HLabel}" HorizontalAlignment="Center" Content="Original Text"/>
+						<TextBox Theme="{StaticResource HTextBoxLarge}" Text="{Binding SelectedText}" PlaceholderText="Original Text ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:ReplacementDataModel.DESC_Text}"/>
+					</StackPanel>
+
+					<StackPanel Theme="{StaticResource HStackS}">
+						<Label Theme="{StaticResource HLabel}" HorizontalAlignment="Center" Content="Replacement Text"/>
+						<TextBox Theme="{StaticResource HTextBoxLarge}" Text="{Binding SelectedReplacement}" PlaceholderText="Replacement Text ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:ReplacementDataModel.DESC_Replacement}"/>
+					</StackPanel>
+
+					<WrapPanel Theme="{StaticResource HWrapL}" HorizontalAlignment="Center">
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Regex" IsChecked="{Binding SelectedUseRegex}" ToolTip.Tip="{x:Static cfg:ReplacementDataModel.DESC_UseRegex}"/>
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Ignore Case" IsChecked="{Binding SelectedIgnoreCase}" ToolTip.Tip="{x:Static cfg:ReplacementDataModel.DESC_IgnoreCase}"/>
+					</WrapPanel>
+				</StackPanel>
+			</ScrollViewer>
+		</Grid>
+	</Grid>
+</Window>

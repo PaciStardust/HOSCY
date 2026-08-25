@@ -26,7 +26,8 @@ public class PopupWindowFactory
     IContainerBulkLoader<EditFiltersWindowViewModelBase> editFiltersWvmLoader,
     IContainerBulkLoader<DisplayListWindowViewModelBase> displayListWvmLoader,
     IContainerBulkLoader<EditListWindowViewModelBase> editListWvmLoader,
-    IContainerBulkLoader<EditOscRelayFiltersWindowViewModelBase> editOscRelayFiltersWvmLoader
+    IContainerBulkLoader<EditOscRelayFiltersWindowViewModelBase> editOscRelayFiltersWvmLoader,
+    IContainerBulkLoader<EditReplacementsWindowViewModelBase> editReplacementsWvmLoader
 )
     : IService
 {
@@ -42,6 +43,7 @@ public class PopupWindowFactory
     private readonly IContainerBulkLoader<DisplayListWindowViewModelBase> _displayListWvmLoader = displayListWvmLoader;
     private readonly IContainerBulkLoader<EditListWindowViewModelBase> _editListWvmLoader = editListWvmLoader;
     private readonly IContainerBulkLoader<EditOscRelayFiltersWindowViewModelBase> _editOscRelayFiltersWvmLoader = editOscRelayFiltersWvmLoader;
+    private readonly IContainerBulkLoader<EditReplacementsWindowViewModelBase> _editReplacementsWvmLoader = editReplacementsWvmLoader;
 
     private void Open(Func<Window> windowCreate, ViewModelBase vm, bool dialog, Window? parent, Action? onClose)
     {
@@ -175,5 +177,16 @@ public class PopupWindowFactory
         vmRes.Value.Init(values);
 
         Open(() => new EditOscRelayFiltersWindow(), vmRes.Value, true, parentWindow, onClose);
+    }
+
+    public void OpenEditReplacements(List<ReplacementDataModel> values, Window? parentWindow, Action? onClose = null)
+    {
+        _logger.Debug("Creating replacement editor");
+
+        var vmRes = _editReplacementsWvmLoader.GetInstance();
+        if (!vmRes.IsOk) return;
+        vmRes.Value.Init(values);
+
+        Open(() => new EditReplacementsWindow(), vmRes.Value, true, parentWindow, onClose);
     }
 }
