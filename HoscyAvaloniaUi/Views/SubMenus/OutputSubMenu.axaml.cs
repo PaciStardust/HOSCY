@@ -10,6 +10,17 @@ public partial class OutputSubMenu : UserControl
         InitializeComponent();
     }
 
+    private void ReplacementsPartialClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        (DataContext as OutputSubMenuViewModelBase)?.ReplacementsPartialClicked();
+        e.Handled = true;
+    }
+    private void ReplacementsFullClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        (DataContext as OutputSubMenuViewModelBase)?.ReplacementsFullClicked();
+        e.Handled = true;
+    }
+
     private void ModuleReloadClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         (DataContext as OutputSubMenuViewModelBase)?.ModuleReloadClicked();

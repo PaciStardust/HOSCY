@@ -16,6 +16,31 @@
 	<ScrollViewer Theme="{StaticResource HScrollViewerPage}">
 		<StackPanel Theme="{StaticResource HStackL}">
 			<StackPanel Theme="{StaticResource HStack}">
+				<Label Content="Replacements" Theme="{StaticResource HLabelL}"/>
+
+				<StackPanel Theme="{StaticResource HStackIndent}">
+					<WrapPanel Theme="{StaticResource HWrap}">
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Enable Partial Replacements" IsChecked="{Binding Config.Preprocessing_DoReplacementsPartial}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Preprocessing_DoReplacementsPartial}"/>
+						<Button Content="Edit Partial Replacements" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="ReplacementsPartialClicked" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Preprocessing_ReplacementsPartial}"/>
+						<TextBlock Theme="{StaticResource HTextBlockError}" Text="{Binding ReplacementsPartialInvalid}"/>
+					</WrapPanel>
+
+					<WrapPanel Theme="{StaticResource HWrap}">
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Enable Full Replacements" IsChecked="{Binding Config.Preprocessing_DoReplacementsFull}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Preprocessing_DoReplacementsFull}"/>
+						<Button Content="Edit Full Replacements" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="ReplacementsFullClicked" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Preprocessing_ReplacementsFull}"/>
+						<TextBlock Theme="{StaticResource HTextBlockError}" Text="{Binding ReplacementsFullInvalid}"/>
+					</WrapPanel>
+
+					<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Preprocessing_DoReplacementsFull}">
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Ignored ..." Text="{Binding Config.Preprocessing_ReplacementFullIgnoredCharacters}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Preprocessing_ReplacementFullIgnoredCharacters}"/>
+							<Label Theme="{StaticResource HLabel}" Content="Ignored Characters For Full Replacements" VerticalAlignment="Center"/>
+						</WrapPanel>
+					</StackPanel>
+				</StackPanel>
+			</StackPanel>
+
+			<StackPanel Theme="{StaticResource HStack}">
 				<StackPanel Theme="{StaticResource HStackS}">
 					<WrapPanel Theme="{StaticResource HWrap}">
 						<Label Content="Output Modules" Theme="{StaticResource HLabelL}"/>
