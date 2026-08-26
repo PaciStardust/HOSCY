@@ -82,7 +82,7 @@ public abstract class ReplacementOutputPreprocessorBase<T> : IReplacementOutputP
 
         return countBroken == 0
             ? ResC.Ok()
-            : ResC.FailLog($"{countBroken} models could not be loaded and have been disabled", _logger, lvl: ResMsgLvl.Warning);
+            : ResC.FailLog($"{countBroken} replacement model{(countBroken > 1 ? "s" : string.Empty)} could not be loaded and have been disabled", _logger, lvl: ResMsgLvl.Warning);
     }
     #endregion
 }
