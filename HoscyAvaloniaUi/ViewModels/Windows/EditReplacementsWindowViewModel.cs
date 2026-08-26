@@ -19,7 +19,7 @@ public abstract partial class EditReplacementsWindowViewModelBase : EditComplexL
     public partial bool SelectedIgnoreCase { get; set; }
 }
 
-[LoadIntoDiContainer(typeof(EditApiPresetsWindowViewModelBase), Lifetime.Transient)]
+[LoadIntoDiContainer(typeof(EditReplacementsWindowViewModelBase), Lifetime.Transient)]
 public class EditReplacementsWindowViewModelImpl(ILogger logger) : EditReplacementsWindowViewModelBase
 {
     private readonly ILogger _logger = logger.ForContext<EditReplacementsWindowViewModelImpl>();
@@ -39,7 +39,7 @@ public class EditReplacementsWindowViewModelImpl(ILogger logger) : EditReplaceme
         }
         if (!string.IsNullOrWhiteSpace(SelectedReplacement))
         {
-            newModel.Text = SelectedReplacement;
+            newModel.Replacement = SelectedReplacement;
         }
 
         return newModel;
