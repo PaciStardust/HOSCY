@@ -236,7 +236,8 @@ public class DiContainer
                 var bulkTypes = availableServices
                     .Select(x => x.GetType())
                     .Where(x => x.IsAssignableTo(parameterType.GetGenericArguments()[0]) 
-                        && x.IsAssignableTo(interfaceService));
+                        && x.IsAssignableTo(interfaceService))
+                    .Select(x => x.GetCustomAttribute<LoadIntoDiContainerAttribute>()?.AsType ?? x);
                 dependencies.AddRange(bulkTypes);
                 continue;
             }
