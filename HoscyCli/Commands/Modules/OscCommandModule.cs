@@ -57,10 +57,16 @@ public class OscCommandModule(IOscRelayService oscRelay, IOscListenService oscLi
         var res = _reflectCm.SetProperty(nameof(ConfigModel.Osc_Relay_Filters));
         if (!res.IsOk) return res;
 
-        res = _oscRelay.Stop();
-        if (!res.IsOk) return res;
+        var resReload = _oscRelay.ReloadFilters();
+        if (!resReload.IsOk) return ResC.Fail(resReload.Msg);
+
+        var invalid = _oscRelay.GetInvalidFilterNames();
+        if (invalid.Length > 0)
+        {
+            Console.WriteLine($"The following filters are invalid: {string.Join(", ", invalid)}");
+        }
         
-        return _oscRelay.Start();
+        return ResC.Ok();
     }
 
     [SubCommandModule(["port-in"], ConfigModel.DESC_Osc_Routing_ListenPort)]
