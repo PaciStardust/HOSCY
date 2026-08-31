@@ -35,7 +35,7 @@ public class WebClientFunctionTests : TestBase<WebClientFunctionTests>
         AssertServiceProcessing(_client);
     }
 
-    [Test]
+    [Test, Explicit]
     public async Task TestDownloadAsync()
     {
         var path = Path.Join(_tempFolder, "dltest.html");
@@ -49,7 +49,7 @@ public class WebClientFunctionTests : TestBase<WebClientFunctionTests>
         };
     }
 
-    [Test]
+    [Test, Explicit]
     public async Task TestPostAsync()
     {
         var requestMessage = new HttpRequestMessage(HttpMethod.Get, "https://paci.dev/");
