@@ -20,12 +20,6 @@ public abstract class MockStartStopServiceBase : IStartStopService
     public virtual ResMsg? GetErrorMessageIfExists()
         => null;
 
-    public virtual Res Restart()
-    {
-        var res = Stop();
-        if (!res.IsOk) return res;
-        return Start();
-    }
     public virtual Res Start()
     {
         Started = true;

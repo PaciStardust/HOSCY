@@ -62,20 +62,6 @@ public abstract class StartStopServiceBase(ILogger logger) : IStartStopService
     protected abstract void DisposeCleanup();
     #endregion
 
-    #region Restart
-    public Res Restart()
-    {
-        return SafeExecute("restart", RestartForService);
-    }
-    protected virtual Res RestartForService()
-    {
-        var resStop = Stop();
-        if (!resStop.IsOk) return resStop;
-
-        return Start();
-    }
-    #endregion
-
     #region Exceptions
     public virtual ResMsg? GetErrorMessageIfExists()
         => _internalErrorMessage;

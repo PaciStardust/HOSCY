@@ -17,10 +17,10 @@ public class AudioServiceStartupTests : TestBase<AudioServiceStartupTests>
         _audio = new(_logger, _config);
     }
 
-    [TestCase(false, false), TestCase(true, false), TestCase(false, true)]
-    public void StartStopRestartTest(bool restartNotStart, bool doAgain)
+        [TestCase(false), TestCase(true)]
+    public void StartStopTest(bool doAgain)
     {
-        SimpleStartStopRestartTest(_audio, false, restartNotStart, doAgain);
+        SimpleStartStopTest(_audio, false, doAgain);
     }
 }
 

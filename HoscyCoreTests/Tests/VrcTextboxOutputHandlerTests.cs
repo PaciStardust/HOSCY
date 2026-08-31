@@ -22,10 +22,10 @@ public class VrcTextboxOutputHandlerStartupTests : TestBase<VrcTextboxOutputHand
         _handler = new(_logger, _config, _send);
     }
 
-    [TestCase(false, false), TestCase(true, false), TestCase(false, true)]
-    public void StartStopRestartTest(bool restartNotStart, bool doAgain)
+    [TestCase(false), TestCase(true)]
+    public void StartStopTest(bool doAgain)
     {
-        SimpleStartStopRestartTest(_handler, false, restartNotStart, doAgain);
+        SimpleStartStopTest(_handler, false, doAgain);
     }
 }
 

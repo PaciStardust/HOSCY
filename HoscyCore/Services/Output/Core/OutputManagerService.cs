@@ -302,7 +302,9 @@ public class OutputManagerService
         _logger.Information("Restarting Handler with type \"{handlerType}\"", handler.GetType().FullName);
         handler.OnModuleStopped -= HandleOnModuleStopped;
         
-        var res = handler.Restart();
+        var res = handler.Stop();
+        res = res.IsOk ? handler.Start() : res;
+
         if (!res.IsOk)
         {
             _logger.Error("Failed restarting Handler with type \"{handlerType}\" ({result})",

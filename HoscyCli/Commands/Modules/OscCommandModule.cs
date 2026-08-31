@@ -56,7 +56,11 @@ public class OscCommandModule(IOscRelayService oscRelay, IOscListenService oscLi
     {
         var res = _reflectCm.SetProperty(nameof(ConfigModel.Osc_Relay_Filters));
         if (!res.IsOk) return res;
-        return _oscRelay.Restart();
+
+        res = _oscRelay.Stop();
+        if (!res.IsOk) return res;
+        
+        return _oscRelay.Start();
     }
 
     [SubCommandModule(["port-in"], ConfigModel.DESC_Osc_Routing_ListenPort)]
@@ -67,7 +71,10 @@ public class OscCommandModule(IOscRelayService oscRelay, IOscListenService oscLi
         var res = _oscQuery.Stop();
         if (!res.IsOk) return res;
 
-        res = _oscListen.Restart();
+        res = _oscListen.Stop();
+        if (!res.IsOk) return res;
+
+        res = _oscListen.Start();
         if (!res.IsOk) return res;
         
         return _oscQuery.Start();

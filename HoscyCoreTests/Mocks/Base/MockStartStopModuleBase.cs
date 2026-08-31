@@ -30,10 +30,6 @@ public abstract class MockStartStopModuleBase : MockStartStopServiceBase, IStart
         OnModuleStopped.Invoke(this, EventArgs.Empty);
         return ResultToReturn ?? res;
     }
-    public override Res Restart()
-    {
-        return ResultToReturn ?? base.Restart();
-    }
 
     protected ResMsg? _fault = null;
     public override ResMsg? GetErrorMessageIfExists()

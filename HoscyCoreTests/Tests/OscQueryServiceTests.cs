@@ -23,10 +23,10 @@ public class OscQueryServiceStartupTests : TestBase<OscQueryServiceStartupTests>
         _query = new(_logger, _notify, _listen, _registry);
     }
 
-    [TestCase(false, false), TestCase(true, false), TestCase(false, true)]
-    public void StartStopRestartTest(bool restartNotStart, bool doAgain)
+    [TestCase(false), TestCase(true)]
+    public void StartStopTest(bool doAgain)
     {
-        SimpleStartStopRestartTest(_query, false, restartNotStart, doAgain);
+        SimpleStartStopTest(_query, false, doAgain);
     }
 }
 

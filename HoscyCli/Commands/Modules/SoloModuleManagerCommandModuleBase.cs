@@ -61,10 +61,10 @@ public abstract class SoloModuleManagerCommandModuleBase<Tmanager, Tstartinfo>
         return _manager.StopModule();
     }
 
-    [SubCommandModule(["restart"], "Restart module")]
-    public Res CmdRestart()
+    [SubCommandModule(["refresh"], "Refresh module")]
+    public Res CmdRefresh()
     {
-        return _manager.RestartModule();
+        return _manager.RefreshModule();
     }
     #endregion
 }

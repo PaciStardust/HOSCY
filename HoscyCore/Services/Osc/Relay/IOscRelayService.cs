@@ -1,4 +1,5 @@
 using HoscyCore.Services.Core;
+using HoscyCore.Utility;
 using LucHeart.CoreOSC;
 
 namespace HoscyCore.Services.Osc.Relay;
@@ -18,4 +19,6 @@ public interface IOscRelayService : IAutoStartStopService
     /// </summary>
     /// <returns></returns>
     public string[] GetInvalidFilterNames();
+
+    public Res ReloadFilters();
 }

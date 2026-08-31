@@ -35,12 +35,6 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
         _filters = null;
     }
 
-    protected override Res RestartForService()
-    {
-        ClearFault();
-        return ReloadValidRelayFilters(_config.Osc_Relay_Filters.ToList());
-    }
-
     protected override bool IsStarted()
         => _filters is not null;
     protected override bool IsProcessing()
@@ -56,6 +50,12 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
             if (!filter.Matches(message.Address)) continue;
             _sender.SendSyncFireAndForget(filter.Ip, filter.Port, message.Address, message.Arguments);
         }
+    }
+
+    public Res ReloadFilters() //todo: use in UI !!!!
+    {
+        ClearFault();
+        return ReloadValidRelayFilters(_config.Osc_Relay_Filters.ToList());
     }
 
     private Res ReloadValidRelayFilters(List<OscRelayFilterModel> filterModels)

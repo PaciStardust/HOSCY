@@ -27,11 +27,6 @@ public abstract class MockSoloModuleManagerBase<TModuleStartInfo> : MockStartSto
         return ResC.Ok();
     }
 
-    public Res RestartModule()
-    {
-        return ResC.Ok();
-    }
-
     public Res StopModule()
     {
         return ResC.Ok();

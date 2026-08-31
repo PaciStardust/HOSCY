@@ -30,12 +30,9 @@ public class AfkServiceStartupTests : TestBase<AfkServiceStartupTests>
     }
 
     [Test]
-    public void StartStopRestartTest()
+    public void StartStopTest()
     {
         _afk.Start().AssertOk();
-        AssertServiceStarted(_afk);
-
-        _afk.Restart().AssertOk();
         AssertServiceStarted(_afk);
 
         _afk.Stop().AssertOk();
@@ -76,7 +73,7 @@ public class AfkServiceStartupTests : TestBase<AfkServiceStartupTests>
             Assert.That(_output.Notifications, Has.Count.EqualTo(1));
         }
 
-        _afk.Restart().AssertOk();
+        _afk.Stop().AssertOk();
         using (Assert.EnterMultipleScope())
         {
             AssertServiceStarted(_afk);
@@ -85,6 +82,7 @@ public class AfkServiceStartupTests : TestBase<AfkServiceStartupTests>
         Thread.Sleep(6000);
         Assert.That(_output.Notifications, Has.Count.EqualTo(2));
 
+        _afk.Start().AssertOk();
         _afk.StartAfk();
         using (Assert.EnterMultipleScope())
         {

@@ -75,7 +75,7 @@ public class OscSubMenuViewModelImpl : OscSubMenuViewModelBase
     }
     public override void ReloadListenerClicked()
     {
-        _logger.Information("Manually restarting OSC Listener and Query");
+        _logger.Information("Manually reloading OSC Listener and Query");
 
         var res = _oscQuery.Stop();
         if (!res.IsOk) 
@@ -84,10 +84,11 @@ public class OscSubMenuViewModelImpl : OscSubMenuViewModelBase
             return;
         }
 
-        res = _oscListen.Restart();
+        res = _oscListen.Stop();
+        res = res.IsOk ? _oscListen.Start() : res;
         if (!res.IsOk)
         {
-            _popup.OpenNotification("Failed to restart OSC Listener", res.Msg.Message, true, true, null);
+            _popup.OpenNotification("Failed to reloading OSC Listener", res.Msg.Message, true, true, null);
             return;
         }
         

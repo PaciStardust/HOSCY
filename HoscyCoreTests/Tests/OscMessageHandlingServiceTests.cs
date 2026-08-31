@@ -43,10 +43,10 @@ public class OscMessageHandlingServiceStartupTests : TestBase<OscMessageHandling
         AssertServiceStopped(_handlingService);
     }
 
-    [TestCase(false, false), TestCase(true, false), TestCase(false, true)]
-    public void StartStopRestartTest(bool restartNotStart, bool doAgain)
+        [TestCase(false), TestCase(true)]
+    public void StartStopTest(bool doAgain)
     {
-        SimpleStartStopRestartTest(_handlingService, false, restartNotStart, doAgain);
+        SimpleStartStopTest(_handlingService, false, doAgain);
     }
 }
 

@@ -30,10 +30,10 @@ public class OscCommandServiceStartupTests : TestBase<OscCommandServiceStartupTe
         _commandService = new(_logger, _parser, _sender, _notify);
     }
 
-    [TestCase(false, false), TestCase(true, false), TestCase(false, true)]
-    public void StartStopRestartTest(bool restartNotStart, bool doAgain)
+        [TestCase(false), TestCase(true)]
+    public void StartStopTest(bool doAgain)
     {
-        SimpleStartStopRestartTest(_commandService, false, restartNotStart,  doAgain);
+        SimpleStartStopTest(_commandService, false, doAgain);
     }
 }
 

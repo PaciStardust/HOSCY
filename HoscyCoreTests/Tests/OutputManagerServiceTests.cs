@@ -115,8 +115,8 @@ public class OutputManagerServiceStartupTests : OutputManagerServiceTestBase<Out
         SetSharedClasses();
     }
 
-    [TestCase(false, false), TestCase(true, false), TestCase(false, true)]
-    public void StartStopRestartTest(bool restartNotStart, bool doAgain)
+    [TestCase(false), TestCase(true)]
+    public void StartStopTest(bool doAgain)
     {
         _infoA.Enabled = false;
 
@@ -151,11 +151,8 @@ public class OutputManagerServiceStartupTests : OutputManagerServiceTestBase<Out
             Assert.That(_handlerA.Started, Is.True);
             Assert.That(_handlerB.Started, Is.False);
         }
-
-        if (restartNotStart)
-            _output.Restart().AssertOk();
-        else
-            _output.Start().AssertOk();
+        
+        _output.Start().AssertOk();
         using (Assert.EnterMultipleScope())
         {
             AssertServiceProcessing(_output);

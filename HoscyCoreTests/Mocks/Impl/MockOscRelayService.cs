@@ -1,4 +1,5 @@
 using HoscyCore.Services.Osc.Relay;
+using HoscyCore.Utility;
 using HoscyCoreTests.Mocks.Base;
 using LucHeart.CoreOSC;
 
@@ -21,5 +22,11 @@ public class MockOscRelayService : MockStartStopServiceBase, IOscRelayService
     {
         InvalidFilters.Clear();
         ReceivedMessages.Clear();
+    }
+
+    public Res ReloadFilters()
+    {
+        InvalidFilters.Clear();
+        return ResC.Ok();
     }
 }

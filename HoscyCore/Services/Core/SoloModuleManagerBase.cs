@@ -251,36 +251,6 @@ SoloModuleManagerBase<TModuleStartInfo, TModule>
         }
     }
 
-    public Res RestartModule()
-    {
-        return CallModuleStateChangeSafe(RestartModuleInternal, "restart");
-    }
-    private Res RestartModuleInternal()
-    {
-        _logger.Information("Restarting current module");
-        
-        if (_currentModule is null)
-        {
-            _logger.Information("Did not restart current module, no module running");
-            return ResC.Ok();
-        }
-
-        _currentModule.OnModuleStopped -= HandleOnModuleStopped;
-        var res = ResC.Wrap(_currentModule.Restart, "Module Restart", _logger);
-        _currentModule.OnModuleStopped += HandleOnModuleStopped;
-
-        if (!res.IsOk)
-        {
-            _logger.Error("Failed restarting current module ({result})", res);
-        }
-        else
-        {
-            _logger.Information("Restarted current module");
-        }
-        
-        return res;
-    }
-
     public Res RefreshModule()
     {
         _logger.Information("Performing module refresh");

@@ -167,10 +167,16 @@ public class ServiceManagerCommandModule : AttributeCommandModule, ICoreCommandM
         var startStopService = selected as IStartStopService;
         if (startStopService is null) return ResC.Fail( "Selected service does not support restarting"); 
 
-        _logger.Debug("Manually restarting service: \"{serviceName}\"", selected.GetType().Name);
-        var res = startStopService!.Restart();
+        _logger.Debug("Manually stopping service: \"{serviceName}\"", selected.GetType().Name);
+        var res = startStopService!.Stop();
         if (res.IsOk)
-            _logger.Debug("Manually restarted service: \"{serviceName}\"", selected.GetType().Name);
+        {
+            _logger.Debug("Manually starting service: \"{serviceName}\"", selected.GetType().Name);
+            res = startStopService!.Start();
+        }
+
+        if (res.IsOk)
+            _logger.Debug("Manually restart service: \"{serviceName}\"", selected.GetType().Name);
         else 
             _logger.Debug("Failed manually restarting service: \"{serviceName}\" ({result})", selected.GetType().Name, res);
         return res;

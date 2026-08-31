@@ -78,7 +78,7 @@ public abstract class TestBase<T>
         Assert.That(status, Is.EqualTo(ServiceStatus.Faulted), "Service status not faulted");
     }
 
-    protected static void SimpleStartStopRestartTest(IStartStopService service, bool startedNotProcessing, bool restartNotStart, bool doAgain)
+    protected static void SimpleStartStopTest(IStartStopService service, bool startedNotProcessing, bool doAgain)
     {
         static void AssertServiceRunning(IStartStopService service, bool startedNotProcessing)
         {
@@ -93,10 +93,7 @@ public abstract class TestBase<T>
         service.Start().AssertOk();
         AssertServiceRunning(service, startedNotProcessing);
 
-        if (restartNotStart)
-            service.Restart().AssertOk();
-        else 
-            service.Start().AssertOk();
+        service.Start().AssertOk();
         AssertServiceRunning(service, startedNotProcessing);
 
         service.Stop().AssertOk();

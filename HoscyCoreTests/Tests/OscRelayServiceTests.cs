@@ -25,8 +25,7 @@ public class OscRelayServiceStartupTests : TestBase<OscRelayServiceStartupTests>
         _relay = new(_logger, _config, _sender, _notify);
     }
 
-    [TestCase(true), TestCase(false)]
-    public void StartStopRestartTest(bool restartNotStart)
+    public void StartStopTest()
     {
         AssertServiceStopped(_relay);
         
@@ -41,11 +40,7 @@ public class OscRelayServiceStartupTests : TestBase<OscRelayServiceStartupTests>
             Filters = ["A"]
         });
 
-        if (restartNotStart)
-            _relay.Restart().AssertOk();
-        else
-            _relay.Start().AssertOk();
-            
+        _relay.Start().AssertOk();
         AssertServiceProcessing(_relay);
 
         _relay.Stop().AssertOk();
@@ -73,7 +68,7 @@ public class OscRelayServiceFunctionTests : TestBase<OscRelayServiceFunctionTest
     {
         _sender.Clear();
         _config.Osc_Relay_Filters.Clear();
-        _relay.Restart().AssertOk();
+        _relay.ReloadFilters().AssertOk();
         AssertServiceStarted(_relay);
     }
 
@@ -115,7 +110,7 @@ public class OscRelayServiceFunctionTests : TestBase<OscRelayServiceFunctionTest
                 Enabled = false
             }
         ]);
-        _relay.Restart().AssertOk();
+        _relay.ReloadFilters().AssertOk();
 
         var invalidFilters = _relay.GetInvalidFilterNames();
         using (Assert.EnterMultipleScope())
@@ -171,7 +166,7 @@ public class OscRelayServiceFunctionTests : TestBase<OscRelayServiceFunctionTest
             }
         ]);
 
-        _relay.Restart().AssertOk();
+        _relay.ReloadFilters().AssertOk();
         Assert.That(_sender.ReceivedMessages, Has.Count.EqualTo(3));
         _sender.Clear();
 

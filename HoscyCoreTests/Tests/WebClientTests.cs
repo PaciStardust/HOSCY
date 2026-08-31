@@ -15,10 +15,10 @@ public class WebClientStartupTests : TestBase<WebClientStartupTests>
         _client = new(_logger);
     }
 
-    [TestCase(false, false), TestCase(true, false), TestCase(false, true)]
-    public void StartStopRestartTest(bool restartNotStart, bool doAgain)
+    [TestCase(false), TestCase(true)]
+    public void StartStopTest(bool doAgain)
     {
-        SimpleStartStopRestartTest(_client, false, restartNotStart, doAgain);
+        SimpleStartStopTest(_client, false, doAgain);
     }
 }
 

@@ -27,10 +27,10 @@ public class OscSendAndListenServiceStartupTests : TestBase<OscSendAndListenServ
         _listen = new(_config, _logger, _notify, _handler, _relay);
     }
 
-    [TestCase(false, false), TestCase(true, false), TestCase(false, true)]
-    public void StartStopRestartTest(bool restartNotStart, bool doAgain)
+    [TestCase(false), TestCase(true)]
+    public void StartStopTest(bool doAgain)
     {
-        SimpleStartStopRestartTest(_listen, false, restartNotStart, doAgain);
+        SimpleStartStopTest(_listen, false, doAgain);
     }
 }
 
@@ -64,7 +64,8 @@ public class OscSendAndListenServiceFunctionTests : TestBase<OscSendAndListenSer
         _config.Osc_Relay_IgnoreIfHandled = true;
 
         _config.Osc_Routing_ListenPort = 8642;
-        _listen.Restart().AssertOk();
+        _listen.Stop().AssertOk();
+        _listen.Start().AssertOk();
 
         var portResult = _listen.GetPort();
         portResult.AssertOk();

@@ -41,8 +41,8 @@ public class ApiTranslationProviderStartupTests : TestBase<ApiTranslationProvide
         _provider.Start().AssertFail();
     }
 
-    [TestCase(false, false), TestCase(true, false), TestCase(false, true)]
-    public void StartStopRestartTest(bool restartNotStart, bool doAgain)
+    [TestCase(false), TestCase(true)]
+    public void StartStopTest(bool doAgain)
     {
         _config.Translation_Api_Preset = "Test";
         var preset = new ApiPresetModel() { Name = "Test" };
@@ -56,10 +56,7 @@ public class ApiTranslationProviderStartupTests : TestBase<ApiTranslationProvide
             Assert.That(_client.LoadedModel, Is.EqualTo(preset));
         }
 
-        if (restartNotStart)
-            _provider.Restart().AssertOk();
-        else 
-            _provider.Start().AssertOk();
+        _provider.Start().AssertOk();
         using (Assert.EnterMultipleScope()) {
             AssertServiceProcessing(_provider);
             Assert.That(_client.LoadedModel, Is.EqualTo(preset));
