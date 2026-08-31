@@ -17,7 +17,7 @@ public class OscRelayFilterModel : ObservableObject
 
     public const string DESC_Port = "Target port for relaying OSC";
     public const ushort MIN_Port = ushort.MinValue;
-    public const ushort MAX_Port = ushort.MinValue;
+    public const ushort MAX_Port = ushort.MaxValue;
     private ushort _port = ushort.MinValue;
     public ushort Port
     {
