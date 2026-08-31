@@ -27,6 +27,7 @@ public abstract partial class OutputSubMenuViewModelBase : ViewModelBase
     [ObservableProperty]
     public partial bool ModuleReloadNeeded { get; set; }
     public virtual void ModuleReloadClicked() { }
+    public virtual void ModuleRestartClicked() { }
     public virtual void ModuleToggled() { }
 
     [ObservableProperty]
@@ -128,6 +129,16 @@ public class OutputSubMenuViewModelImpl : OutputSubMenuViewModelBase
         if (!res.IsOk)
         {
             _popup.OpenNotification("Failed reloading output modules", res.Msg.Message, true, true);
+        }
+        UpdateModuleStatus();
+    }
+    public override void ModuleRestartClicked()
+    {
+        _logger.Information("Manually restarting output modules");
+        var res = _output.RestartHandlers();
+        if (!res.IsOk)
+        {
+            _popup.OpenNotification("Failed restarting output modules", res.Msg.Message, true, true);
         }
         UpdateModuleStatus();
     }

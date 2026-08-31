@@ -13,7 +13,7 @@ public interface IOutputManagerService : IAutoStartStopService
 
     #region Control
     public Res RefreshHandlers();
-    public Res RestartHandlers(); //todo: use in UI
+    public Res RestartHandlers();
     #endregion
 
     #region Processor Control

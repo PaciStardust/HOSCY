@@ -46,6 +46,7 @@
 						<Label Content="Output Modules" Theme="{StaticResource HLabelL}"/>
 
 						<Button Content="Reload" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="ModuleReloadClicked" ToolTip.Tip="Reloads the output modules"/>
+						<Button Content="Restart" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="ModuleReestartClicked" ToolTip.Tip="Restarts all active output modules"/>
 					</WrapPanel>
 
 					<TextBlock Theme="{StaticResource HTextBlockError}" Text="Different modules than currently selected are loaded, please press 'Reload'" IsVisible="{Binding ModuleReloadNeeded}"/>

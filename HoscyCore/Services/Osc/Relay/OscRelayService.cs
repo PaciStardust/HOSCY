@@ -52,7 +52,7 @@ public class OscRelayService(ILogger logger, ConfigModel config, IOscSendService
         }
     }
 
-    public Res ReloadFilters() //todo: use in UI !!!!
+    public Res ReloadFilters()
     {
         ClearFault();
         return ReloadValidRelayFilters(_config.Osc_Relay_Filters.ToList());

@@ -26,6 +26,11 @@ public partial class OutputSubMenu : UserControl
         (DataContext as OutputSubMenuViewModelBase)?.ModuleReloadClicked();
         e.Handled = true;
     }
+    private void ModuleRestartClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        (DataContext as OutputSubMenuViewModelBase)?.ModuleRestartClicked();
+        e.Handled = true;
+    }
     private void ModuleToggled(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         (DataContext as OutputSubMenuViewModelBase)?.ModuleToggled();
