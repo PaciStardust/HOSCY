@@ -4,7 +4,9 @@ using HoscyAvaloniaUi.Services;
 using HoscyAvaloniaUi.ViewModels.Core;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
+using HoscyCore.Services.Interfacing;
 using HoscyCore.Services.Osc.Query;
+using HoscyCore.Services.Osc.Relay;
 using HoscyCore.Services.Osc.SendReceive;
 using HoscyCore.Utility;
 using Serilog;
@@ -36,15 +38,18 @@ public class OscSubMenuViewModelImpl : OscSubMenuViewModelBase
     private readonly OscQueryHostRegistry _queryHosts;
     private readonly IOscListenService _oscListen;
     private readonly IOscQueryService _oscQuery;
+    private readonly IOscRelayService _oscRelay;
 
     public OscSubMenuViewModelImpl
     (
         ConfigModel config,
         ILogger logger,
         PopupWindowFactory popup,
+        IBackToFrontNotifyService notify,
         OscQueryHostRegistry queryHosts,
         IOscListenService oscListen,
-        IOscQueryService oscQuery
+        IOscQueryService oscQuery,
+        IOscRelayService oscRelay
     )
     {
         Config = config;
@@ -53,9 +58,11 @@ public class OscSubMenuViewModelImpl : OscSubMenuViewModelBase
         _queryHosts = queryHosts;
         _oscListen = oscListen;
         _oscQuery = oscQuery;
+        _oscRelay = oscRelay;
 
         CheckListeningPortUnapplied();
-        CheckRelayFilterValidity();
+        CheckRelayFilterValidity(false)
+            .IfFail(x => notify.SendResult("Failed to check relay filter validity", x));
     }
 
     private void CheckListeningPortUnapplied()
@@ -109,26 +116,26 @@ public class OscSubMenuViewModelImpl : OscSubMenuViewModelBase
     }
     private void RelayFiltersClosed()
     {
-        var strings = CheckRelayFilterValidity();
-        if (strings.Length > 0)
+        var strings = CheckRelayFilterValidity(true);
+        if (!strings.IsOk)
         {
-            var msg = $"Following relay filters are invalid:\n{string.Join("\n", strings.Select(x => $" - {x}"))}";
+            _popup.OpenNotification("Failed to check filter validity", strings.Msg.Message, true, true);
+            return;
+        }
+
+        if (strings.Value.Length > 0)
+        {
+            var msg = $"Following relay filters are invalid:\n{string.Join("\n", strings.Value.Select(x => $" - {x}"))}";
             _popup.OpenNotification("Invalid relay filters found", msg, false, true);
         }
         Config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
     }
-    private string[] CheckRelayFilterValidity()
+    private Res<string[]> CheckRelayFilterValidity(bool reload)
     {
-        var invalidFilters = Config.Osc_Relay_Filters.Where(x => !x.GetValidity());
-        if (!invalidFilters.Any())
-        {
-            RelayFiltersInvalid = string.Empty;
-            return [];
-        }
-
-        var strings = invalidFilters.Select(x => x.Name).ToArray();
-        RelayFiltersInvalid = $"({strings.Length} Relay{(strings.Length == 1 ? "" : "s")} Invalid)";
-        return strings;
+        var res = reload ? _oscRelay.ReloadFilters() : null;
+        var invalidNames = _oscRelay.GetInvalidFilterNames();
+        RelayFiltersInvalid = invalidNames.Length > 0 ? $"({invalidNames.Length} Relay{(invalidNames.Length == 1 ? "" : "s")} Invalid)" : string.Empty;
+        return res?.IsOk ?? true ? ResC.TOk(invalidNames) : ResC.TFail<string[]>(res.Msg);
     }
 
     public override void QueryServicesClicked()
