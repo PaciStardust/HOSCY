@@ -293,6 +293,7 @@ SoloModuleManagerBase<TModuleStartInfo, TModule>
         {
             _moduleChangeErrorMessages.Add(res.Msg);
         }
+        OnModuleStatusUpdate();
         return res;
     }
 
@@ -323,6 +324,7 @@ SoloModuleManagerBase<TModuleStartInfo, TModule>
 
             _logger.Debug("Performed module post-shutdown cleanup");
         }
+        OnModuleStatusUpdate();
     }
 
     private void UnsubscribeFromModuleEvents(TModule module)
@@ -337,6 +339,7 @@ SoloModuleManagerBase<TModuleStartInfo, TModule>
     {
         var moduleType = sender?.GetType();
         _logger.Error("Encountered an error in Module \"{moduleType}\": {msg}", moduleType?.FullName, msg);
+        OnModuleStatusUpdate();
         _notify.SendResult("Module error", msg.WithContext($"Error in Module \"{moduleType?.Name ?? "???"}\""));
     }
     #endregion
@@ -378,5 +381,6 @@ SoloModuleManagerBase<TModuleStartInfo, TModule>
     protected virtual void OnModulePostAssign() { }
     protected virtual Res OnModulePreStop(TModule module) { return ResC.Ok(); }
     protected virtual void OnModulePostStop() { }
+    protected virtual void OnModuleStatusUpdate() { }
     #endregion
 }

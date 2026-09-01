@@ -56,11 +56,6 @@ public class RecognitionManagerService
         return ResC.Ok();
     }
 
-    protected override void OnModulePostAssign()
-    {
-        InvokeModuleStatusChanged();
-    }
-
     protected override Res OnModulePreStop(IRecognitionModule module)
     {
         var res = SetListeningInternal(module, false); // Internal to not notify of change yet
@@ -73,8 +68,8 @@ public class RecognitionManagerService
         module.OnSpeechRecognized -= HandleOnSpeechRecognized;
         module.OnInternalListeningStatusChange -= HandleOnInternalListeningStatusChange;
     }
-
-    protected override void OnModulePostStop()
+    
+    protected override void OnModuleStatusUpdate()
     {
         InvokeModuleStatusChanged();
     }
