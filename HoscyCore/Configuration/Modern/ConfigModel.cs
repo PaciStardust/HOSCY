@@ -1047,12 +1047,12 @@ public class ConfigModel : ObservableObject
     private bool _recognition_AutoStart = false;
 
     public const string DESC_Recognition_Fixup_NoiseFilter = "List of noises to be removed from output";
-    public HashSet<string> Recognition_Fixup_NoiseFilter
+    public List<string> Recognition_Fixup_NoiseFilter //todo: [FEAT] Actual noise filter?
     {
         get => _recognition_Fixup_NoiseFilter;
         set => SetProperty(ref _recognition_Fixup_NoiseFilter, value);
     }
-    private HashSet<string> _recognition_Fixup_NoiseFilter = [];
+    private List<string> _recognition_Fixup_NoiseFilter = [];
 
     public const string DESC_Recognition_Fixup_RemoveEndPeriod = "Remove the period at the end of a message";
     public bool Recognition_Fixup_RemoveEndPeriod

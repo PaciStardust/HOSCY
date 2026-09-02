@@ -46,6 +46,8 @@ public abstract partial class RecogSubMenuViewModelBase : ViewModelBase
     public virtual void OptionsSelectedModuleRestartClicked() { }
     public virtual void OptionsSelectedModuleToggleMuteClicked() { }
 
+    public virtual void OptionsOutputNoiseFilterClicked() { }
+
     [ObservableProperty]
     public partial bool OptionsMicrophoneAvailable { get; protected set; }
     [ObservableProperty]
@@ -187,6 +189,17 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
         OptionsSelectedModuleToggleMuteEnabled = running;
 
         OptionsSelectedModuleRestartEnabled = running;
+    }
+
+    public override void OptionsOutputNoiseFilterClicked()
+    {
+        _logger.Information("Manually editing recognition noise filter");
+        _popup.OpenEditList(Config.Recognition_Fixup_NoiseFilter, "Edit Recognition Noise Filters", "Noise", null, OptionsOutputNoiseFilterRefresh);
+    }
+    private void OptionsOutputNoiseFilterRefresh()
+    {
+        var res = _recognition.UpdateSettings();
+        res.IfFail(x => _popup.OpenNotification("Failed to update recognition noise filter", x.Message, true, true));
     }
 
     public override void OptionsMicrophoneChanged()

@@ -27,11 +27,8 @@
 
 							<WrapPanel Theme="{StaticResource HWrap}">
 								<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding OptionsSelectedModule.Index}" ItemsSource="{Binding OptionsSelectedModule.Options}" SelectionChanged="OptionsSelectedModuleChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_SelectedModuleName}"/>
-								
 								<Button Content="{Binding OptionsSelectedModuleStartStopText}" BorderBrush="{Binding OptionsSelectedModuleStartStopBrush}" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsSelectedModuleStartStopClicked" ToolTip.Tip="Starts and stops the selected recognition module"/>
-								
 								<Button Content="{Binding OptionsSelectedModuleToggleMuteText}" BorderBrush="{Binding OptionsSelectedModuleToggleMuteBrush}" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsSelectedModuleToggleMuteClicked" IsEnabled="{Binding OptionsSelectedModuleToggleMuteEnabled}" ToolTip.Tip="(Un)Mutes the current recognition module"/>
-								
 								<Button Content="Refresh" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsSelectedModuleRefreshClicked" ToolTip.Tip="Swaps out recognition modules if selection changed"/>
 								<Button Content="Restart" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsSelectedModuleRestartClicked" IsEnabled="{Binding OptionsSelectedModuleRestartEnabled}" ToolTip.Tip="Restarts the current recognition module"/>
 							</WrapPanel>
@@ -40,9 +37,14 @@
 
 							<TextBlock Theme="{StaticResource HTextBlockNote}" Text="{Binding OptionsSelectedModuleDescription}"/>
 						</StackPanel>
+
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Automatically Start Module At Launch" IsChecked="{Binding Config.Recognition_AutoStart}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_AutoStart}"/>
 					</StackPanel>
 
-					<Label Content="Output" Theme="{StaticResource HLabelM}"/>
+					<WrapPanel Theme="{StaticResource HWrap}">
+						<Label Content="Output" Theme="{StaticResource HLabelM}"/>
+						<Button Content="Edit Noise Filter" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsOutputNoiseFilterClicked" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Fixup_NoiseFilter}"/>
+					</WrapPanel>
 
 					<StackPanel Theme="{StaticResource HStackIndent}">
 						<WrapPanel Theme="{StaticResource HWrap}">
@@ -59,6 +61,10 @@
 						</WrapPanel>
 
 						<CheckBox Theme="{StaticResource HCheckBox}" Content="Translate Recognized Text" IsChecked="{Binding Config.Recognition_Send_DoTranslate}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Send_DoTranslate}"/>
+						
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Remove Period At End Of Output" IsChecked="{Binding Config.Recognition_Fixup_RemoveEndPeriod}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Fixup_RemoveEndPeriod}"/>
+
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Capitalize First Letter Of Output" IsChecked="{Binding Config.Recognition_Fixup_CapitalizeFirstLetter}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Fixup_CapitalizeFirstLetter}"/>
 					</StackPanel>
 
 					<Label Content="Audio" Theme="{StaticResource HLabelM}"/>

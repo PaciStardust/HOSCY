@@ -37,6 +37,12 @@ public partial class RecogSubMenu : UserControl
         e.Handled = true;
     }
 
+    private void OptionsOutputNoiseFilterClicked(object? sender, RoutedEventArgs e)
+    {
+        (DataContext as RecogSubMenuViewModelBase)?.OptionsOutputNoiseFilterClicked();
+        e.Handled = true;
+    }
+
     private void OptionsMicrophoneChanged(object? sender, SelectionChangedEventArgs e)
     {
         (DataContext as RecogSubMenuViewModelBase)?.OptionsMicrophoneChanged();
