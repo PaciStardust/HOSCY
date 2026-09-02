@@ -123,11 +123,12 @@ public partial class App : Application
             }
         });
 
+        var uiHelper = new UiHelperService(mainWindow);
         var startParams = new HoscyCoreAppStartParameters()
         {
             OnProgress = onProgressAction,
             OnNewLoggerCreated = onNewLoggerLoaded,
-            AdditionalContainerInserts = x => { x.AddSingleton(new UiHelperService(mainWindow)); }
+            AdditionalContainerInserts = x => { x.AddSingleton(uiHelper); }
         };
 
         var startRes = ResC.TWrap(() => _coreApp.Start(startParams), "Failed to start core app", _startLogger, ResMsgLvl.Fatal);
@@ -148,7 +149,8 @@ public partial class App : Application
 
         Dispatcher.UIThread.Invoke(() =>
         {
-
+            uiHelper.UpdateBrushes();
+            
             var menuRes = containerRes.Value.GetRequiredService<CoreMenuViewModelBase>();
             if (!menuRes.IsOk)
             {
