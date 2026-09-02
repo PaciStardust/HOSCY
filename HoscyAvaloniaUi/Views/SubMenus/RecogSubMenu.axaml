@@ -3,16 +3,103 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="using:HoscyAvaloniaUi.ViewModels.SubMenus"
-	mc:Ignorable="d" d:DesignHeight="420" d:DesignWidth="689"
+	xmlns:cfg="using:HoscyCore.Configuration.Modern"
+	mc:Ignorable="d" d:DesignHeight="1000" d:DesignWidth="689"
 	x:DataType="vm:RecogSubMenuViewModelBase"
-	x:Class="HoscyAvaloniaUi.Views.SubMenus.RecogSubMenu">
+	x:Class="HoscyAvaloniaUi.Views.SubMenus.RecogSubMenu"
+	Background="{StaticResource BackgroundBaseBrush}">
 
 	<Design.DataContext>
 		<vm:RecogSubMenuViewModelPreview/>
 	</Design.DataContext>
 
-	<ScrollViewer Margin="16,8,8,8" VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="0,0,32,0">
-        </StackPanel>
-    </ScrollViewer>
+	<ScrollViewer Theme="{StaticResource HScrollViewerPage}">
+		<StackPanel Theme="{StaticResource HStackL}">
+			<StackPanel Theme="{StaticResource HStack}">
+				<Label Content="General Settings" Theme="{StaticResource HLabelL}"/>
+
+				<StackPanel Theme="{StaticResource HStackIndent}">
+					<Label Content="Module" Theme="{StaticResource HLabelM}"/>
+
+					<StackPanel Theme="{StaticResource HStackIndent}">
+						<StackPanel Theme="{StaticResource HStackS}">
+							<Label Theme="{StaticResource HLabel}" Content="Selected Module"/>
+
+							<WrapPanel Theme="{StaticResource HWrap}">
+								<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding OptionsSelectedModule.Index}" ItemsSource="{Binding OptionsSelectedModule.Options}" SelectionChanged="OptionsSelectedModuleChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_SelectedModuleName}"/>
+								
+								<Button Content="{Binding OptionsSelectedModuleStartStopText}" BorderBrush="{Binding OptionsSelectedModuleStartStopBrush}" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsSelectedModuleStartStopClicked" ToolTip.Tip="Starts and stops the selected recognition module"/>
+								
+								<Button Content="{Binding OptionsSelectedModuleToggleMuteText}" BorderBrush="{Binding OptionsSelectedModuleToggleMuteBrush}" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsSelectedModuleToggleMuteClicked" IsEnabled="{Binding OptionsSelectedModuleToggleMuteEnabled}" ToolTip.Tip="(Un)Mutes the current recognition module"/>
+								
+								<Button Content="Refresh" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsSelectedModuleRefreshClicked" ToolTip.Tip="Swaps out recognition modules if selection changed"/>
+								<Button Content="Restart" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsSelectedModuleRestartClicked" IsEnabled="{Binding OptionsSelectedModuleRestartEnabled}" ToolTip.Tip="Restarts the current recognition module"/>
+							</WrapPanel>
+
+							<TextBlock Theme="{StaticResource HTextBlockError}" Text="Currently selected module is not loaded, please press 'Reload'" IsVisible="{Binding OptionsSelectedModuleRestartNeeded}"/>
+
+							<TextBlock Theme="{StaticResource HTextBlockNote}" Text="{Binding OptionsSelectedModuleDescription}"/>
+						</StackPanel>
+					</StackPanel>
+
+					<Label Content="Output" Theme="{StaticResource HLabelM}"/>
+
+					<StackPanel Theme="{StaticResource HStackIndent}">
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<Label Theme="{StaticResource HLabel}" Content="Output Via ..."/>
+							<CheckBox Theme="{StaticResource HCheckBox}" Content="Text" IsChecked="{Binding Config.Recognition_Send_ViaText}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Send_ViaText}"/>
+							<CheckBox Theme="{StaticResource HCheckBox}" Content="Audio" IsChecked="{Binding Config.Recognition_Send_ViaAudio}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Send_ViaAudio}"/>
+							<CheckBox Theme="{StaticResource HCheckBox}" Content="Other" IsChecked="{Binding Config.Recognition_Send_ViaOther}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Send_ViaOther}"/>
+						</WrapPanel>
+
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<Label Theme="{StaticResource HLabel}" Content="Allow Preprocessors ..."/>
+							<CheckBox Theme="{StaticResource HCheckBox}" Content="Partial" IsChecked="{Binding Config.Recognition_Send_DoPreprocessPartial}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Send_DoPreprocessPartial}"/>
+							<CheckBox Theme="{StaticResource HCheckBox}" Content="Full" IsChecked="{Binding Config.Recognition_Send_DoPreprocessFull}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Send_DoPreprocessFull}"/>
+						</WrapPanel>
+
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Translate Recognized Text" IsChecked="{Binding Config.Recognition_Send_DoTranslate}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Send_DoTranslate}"/>
+					</StackPanel>
+
+					<Label Content="Audio" Theme="{StaticResource HLabelM}"/>
+					
+					<StackPanel Theme="{StaticResource HStackIndent}">
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Start Recognition Unmuted" IsChecked="{Binding Config.Recognition_Mute_StartUnmuted}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Mute_StartUnmuted}"/>
+						
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Play Sound When (Un)Muting" IsChecked="{Binding Config.Recognition_Mute_PlaySound}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Mute_PlaySound}"/>
+					
+						<StackPanel Theme="{StaticResource HStackS}" IsEnabled="{Binding OptionsMicrophoneAvailable}">
+							<Label Theme="{StaticResource HLabel}" Content="Input Microphone"/>
+							<WrapPanel Theme="{StaticResource HWrap}">
+								<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding OptionsMicrophone.Index}" ItemsSource="{Binding OptionsMicrophone.Options}" SelectionChanged="OptionsMicrophoneChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_MicrophoneName}"/>
+								<Button Content="Refresh" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsMicrophoneRefreshClicked" ToolTip.Tip="Refreshes the list of microphones"/>
+							</WrapPanel>
+						</StackPanel>
+					</StackPanel>
+
+					<Label Content="OSC" Theme="{StaticResource HLabelM}"/>
+
+					<StackPanel Theme="{StaticResource HStackIndent}">
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Send Listening Status Via OSC" IsChecked="{Binding Config.Recognition_SendListeningStatusViaOsc}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_SendListeningStatusViaOsc}"/>
+
+						<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Recognition_SendListeningStatusViaOsc}">
+							<StackPanel Theme="{StaticResource HStackS}">
+								<Label Theme="{StaticResource HLabel}" Content="Target OSC Address"/>
+								<TextBox Text="{Binding Config.Osc_Address_Tool_NotificationForRecognitionListening}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Tool_NotificationForRecognitionListening}"/>
+							</StackPanel>
+						</StackPanel>
+
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="(Un)Mute Whenn (Un)Muting In Game" IsChecked="{Binding Config.Recognition_Mute_OnGameMute}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Mute_OnGameMute}"/>
+
+						<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Recognition_SendListeningStatusViaOsc}">
+							<StackPanel Theme="{StaticResource HStackS}">
+								<Label Theme="{StaticResource HLabel}" Content="Game Mute OSC Address"/>
+								<TextBox Text="{Binding Config.Osc_Address_Game_Mute}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Game_Mute}"/>
+							</StackPanel>
+						</StackPanel>
+					</StackPanel>
+				</StackPanel>
+			</StackPanel>
+		</StackPanel>
+	</ScrollViewer>
 </UserControl>
