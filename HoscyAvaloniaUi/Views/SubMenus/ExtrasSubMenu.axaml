@@ -28,7 +28,7 @@
 					<CheckBox Theme="{StaticResource HCheckBox}" Content="Show AFK Status" IsChecked="{Binding Config.Afk_ShowDuration}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_ShowDuration}"/>
 
 					<!-- AFK Options -->
-					<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Afk_ShowDuration}">
+					<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding Config.Afk_ShowDuration}">
 						<WrapPanel Theme="{StaticResource HWrap}">
 							<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Afk_BaseDurationDisplayIntervalSeconds, Converter={StaticResource FloatRange}, ConverterParameter=ConfigModel.Afk_BaseDurationDisplayIntervalSeconds}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_BaseDurationDisplayIntervalSeconds}"/>
 							<Label Theme="{StaticResource HLabel}" Content="Base Display Interval (s)" VerticalAlignment="Center"/>
@@ -68,7 +68,7 @@
 				<StackPanel Theme="{StaticResource HStackIndent}">
 					<CheckBox Theme="{StaticResource HCheckBox}" Content="Show Counter Notifications" IsChecked="{Binding Config.Counters_ShowNotification}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Counters_ShowNotification}"/>
 
-					<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Counters_ShowNotification}">
+					<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding Config.Counters_ShowNotification}">
 						<WrapPanel Theme="{StaticResource HWrap}">
 							<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Counters_DisplayCooldownSeconds, Converter={StaticResource FloatRange}, ConverterParameter=ConfigModel.Counters_DisplayCooldownSeconds}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Counters_DisplayCooldownSeconds}"/>
 							<Label Theme="{StaticResource HLabel}" Content="Counter Cooldown Duration (s)" VerticalAlignment="Center"/>
@@ -114,7 +114,7 @@
 					<StackPanel Theme="{StaticResource HStackIndent}">
 						<CheckBox Theme="{StaticResource HCheckBox}" Content="Show Media Notifications" IsChecked="{Binding Config.Media_ShowStatus}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_ShowStatus}"/>
 
-						<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Media_ShowStatus}">
+						<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding Config.Media_ShowStatus}">
 							<WrapPanel Theme="{StaticResource HWrap}">
 								<TextBox Theme="{StaticResource HTextBoxMedium}" PlaceholderText="Paused ..." Text="{Binding Config.Media_PauseText}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_PauseText}"/>
 								<Label Theme="{StaticResource HLabel}" Content="Media Pause Text" VerticalAlignment="Center"/>

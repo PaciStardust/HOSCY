@@ -211,12 +211,18 @@ public class ExtrasSubMenuViewModelPreview : ExtrasSubMenuViewModelBase
 {
     public ExtrasSubMenuViewModelPreview()
     {
-        Config = new();
+        Config = new()
+        {
+            Afk_ShowDuration = true,
+            Counters_ShowNotification = true,
+            Media_ShowStatus = true
+        };
         MediaBackends = new(["Test Backend"], string.Empty, null, string.Empty);
         MediaBackendDescription = "Description Placeholder";
         MediaBackendReloadNeeded = true;
         AfkActive = true;
         MediaFiltersInvalid = "Test invalid text";
+        MediaBackendIsLinuxMpris = true;
     }
 }
 #endif

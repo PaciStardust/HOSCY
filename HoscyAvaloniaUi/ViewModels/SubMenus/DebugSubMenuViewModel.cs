@@ -131,7 +131,10 @@ public class DebugSubMenuViewModelPreview : DebugSubMenuViewModelBase
 {
     public DebugSubMenuViewModelPreview()
     {
-        Config = new();
+        Config = new()
+        {
+            Debug_LogViaFileFollow = true
+        };
         LogLevels = new(["Test"], string.Empty, null, string.Empty);
         LogFiltersInvalid = "(n filters invalid)";
     }

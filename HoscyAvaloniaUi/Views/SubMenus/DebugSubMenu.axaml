@@ -27,7 +27,7 @@
 					
 					<CheckBox Theme="{StaticResource HCheckBox}" Content="Log via File Follow Command" IsChecked="{Binding Config.Debug_LogViaFileFollow}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Debug_LogViaFileFollow}"/>
 
-					<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Debug_LogViaFileFollow}">
+					<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding Config.Debug_LogViaFileFollow}">
 						<StackPanel Theme="{StaticResource HStackS}">
 							<Label Theme="{StaticResource HLabel}" Content="File Follow Terminal Process"/>
 							<TextBox Text="{Binding Config.Debug_LogFileFollowProcess}" Tag="Process ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Debug_LogFileFollowProcess}"/>
