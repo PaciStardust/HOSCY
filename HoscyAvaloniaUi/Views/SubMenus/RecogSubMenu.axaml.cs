@@ -108,4 +108,10 @@ public partial class RecogSubMenu : UserControl
         (DataContext as RecogSubMenuViewModelBase)?.ModulesWhisperVadModeChanged();
         e.Handled = true;
     }
+
+    private void ModulesWindowsModelChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        (DataContext as RecogSubMenuViewModelBase)?.ModulesWindowsModelChanged();
+        e.Handled = true;
+    }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -109,6 +110,10 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
     private readonly IRecognitionModuleStartInfo[] _recognitionInfos;
     private readonly UiHelperService _uiHelper;
 
+    #if WINDOWS
+    private readonly Dictionary<string,(string Desc,string Id)> _windowsModels;
+    #endif
+
     public RecogSubMenuViewModelImpl
     (
         ConfigModel config, 
@@ -134,8 +139,9 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
         OptionsSelectedModule = new([.. _recognitionInfos.Select(x => x.Name)], Config.Recognition_SelectedModuleName, _logger, "OptionsSelectedModule");
         OptionsSelectedModuleUpdateComboBox();
 
+        List<ResMsg> errors = [];
         var mics = OptionsMicrophoneGetNames();
-        mics.IfFail(x => notify.SendResult("Failed loading playback devices", x));
+        mics.IfFail(errors.Add);
         OptionsMicrophone = new(mics.Value ?? [], Config.Recognition_MicrophoneName, _logger, "OptionsMicrophone");
 
         ModulesAnyApiPresets = new([.. Config.Api_Presets.Select(x => x.Name)], Config.Recognition_Api_Preset, _logger, "ModulesAnyApiPresets");
@@ -145,7 +151,26 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
         ModulesWhisperModels = new([.. Config.Recognition_Whisper_Models.Keys], Config.Recognition_Whisper_SelectedModel, _logger, "ModulesWhisperModels");
         ModulesWhisperVadMode = new([.. Enum.GetNames<WhisperIpcVadOperatingMode>()], Enum.GetName(Config.Recognition_Whisper_Cfg_VadOperatingMode) ?? string.Empty, _logger, "ModulesWhisperVadMode");
 
-        //todo: WINDOWS
+        #if WINDOWS
+        _windowsModels = [];
+        var winModels = WinApi.GetWindowsRecognizers(_logger);
+        winModels.IfFail(errors.Add);
+        foreach(var model in winModels.Value ?? [])
+        {
+            _windowsModels[model.Name] = (model.Desc, model.Id);
+        }
+        ModulesWindowsModels = new([.. _windowsModels.Keys], _windowsModels.FirstOrDefault(x => x.Value.Id == Config.Recognition_Windows_ModelId).Key, _logger, "ModulesWindowsModels");
+        ModulesWindowsModelsUpdateComboBox();
+        #else
+        ModulesWindowsModels = new();
+        ModulesWindowsModelDescription = "This feature is not supported outside of Windows";
+        #endif
+
+        if (errors.Count > 0)
+        {
+            var error = ResC.FailM(errors);
+            notify.SendResult("Some data could not be loaded", error.Msg!);
+        }
     }
 
     public override void OptionsSelectedModuleChanged()
@@ -185,6 +210,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
         ModulesAzureIsSelected = flags.HasFlag(RecognitionModuleConfigFlags.Azure);
         ModulesVoskIsSelected = flags.HasFlag(RecognitionModuleConfigFlags.Vosk);
         ModulesWhisperIsSelected = flags.HasFlag(RecognitionModuleConfigFlags.Whisper);
+        ModulesWindowsIsSelected = flags.HasFlag(RecognitionModuleConfigFlags.Windows);
     }
     private void OptionsSelectedModuleOnStatusChanged(object? sender, RecognitionStatusChangedEventArgs e)
     {
@@ -399,6 +425,39 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
 
         Config.Recognition_Whisper_Cfg_VadOperatingMode = match;
     }
+
+    public override void ModulesWindowsModelChanged()
+    {
+        #if WINDOWS
+        ModulesWindowsModelsUpdateComboBox();
+        #endif
+    }
+    #if WINDOWS
+    private void ModulesWindowsModelsUpdateComboBox()
+    {
+        var description =  "Description: ";
+
+        var selected = ModulesWindowsModels.GetSelected();
+        if (selected is null)
+        {
+            description += "No module is selected";
+        }
+        else
+        {
+            if (!_windowsModels.TryGetValue(selected, out var modelData))
+            {
+                description += "Selected module not found";
+                Config.Recognition_Windows_ModelId = string.Empty;
+            }
+            else
+            {
+                description += modelData.Desc;
+                Config.Recognition_Windows_ModelId = modelData.Id;
+            }
+        }
+        ModulesWindowsModelDescription = description;
+    }
+    #endif
 }
 
 #if DEBUG
@@ -429,6 +488,10 @@ public class RecogSubMenuViewModelPreview : RecogSubMenuViewModelBase
         ModulesWhisperModels = new();
         ModulesWhisperVadMode = new();
         ModulesWhisperShowAdvancedSettings = true;
+
+        ModulesWindowsIsSelected = true;
+        ModulesWindowsModels = new();
+        ModulesWindowsModelDescription = "Sample Description";
     }
 }
 #endif

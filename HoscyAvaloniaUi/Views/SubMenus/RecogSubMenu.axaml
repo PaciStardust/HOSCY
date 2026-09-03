@@ -331,6 +331,21 @@
 					</StackPanel>
 
 					<Label Content="Windows Module" Theme="{StaticResource HLabelM}"/>
+
+					<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="False" IsVisible="{Binding !ModulesWindowsIsSelected}">
+						<Label Theme="{StaticResource HLabel}" Content="{Binding ModulesSettingsVisibleIfCompatible}" VerticalAlignment="Center"/>
+					</StackPanel>
+
+					<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding ModulesWindowsIsSelected}">
+						<StackPanel Theme="{StaticResource HStackS}">
+							<WrapPanel Theme="{StaticResource HWrap}">
+								<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding ModulesWindowsModels.Index}" ItemsSource="{Binding ModulesWindowsModels.Options}" SelectionChanged="ModulesWindowsModelChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Windows_ModelId}"/>
+								<Label Theme="{StaticResource HLabel}" VerticalAlignment="Center" Content="Selected Model"/>
+							</WrapPanel>
+
+							<TextBlock Theme="{StaticResource HTextBlockNote}" Text="{Binding ModulesWindowsModelDescription}"/>
+						</StackPanel>
+					</StackPanel>
 				</StackPanel>
 			</StackPanel>
 		</StackPanel>
