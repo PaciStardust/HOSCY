@@ -151,9 +151,13 @@
 					</StackPanel>
 
 					<!-- Media (MPRIS) Options -->
-					<Label Content="Linux MRPIS" Theme="{StaticResource HLabelM}"/>
+					<Label Content="Linux MRPIS Backend" Theme="{StaticResource HLabelM}"/>
 
-					<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding MediaBackendIsLinuxMpris}">
+					<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="False" IsVisible="{Binding !MediaBackendIsLinuxMpris}">
+						<Label Theme="{StaticResource HLabel}" Content="(Settings are visible if compatible media backend is selected)" VerticalAlignment="Center"/>
+					</StackPanel>
+
+					<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding MediaBackendIsLinuxMpris}">
 						<WrapPanel Theme="{StaticResource HWrap}">
 							<Label Theme="{StaticResource HLabel}" Content="Endpoints:" VerticalAlignment="Center"/>
 							<Button Content="Edit Preferred" Theme="{StaticResource HButton}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="MediaMprisEndpointsPreferredClicked" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_Mpris_PreferredEndpoints}"/>
