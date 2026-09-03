@@ -24,7 +24,7 @@
 
 				<StackPanel Theme="{StaticResource HStackIndent}">
 					<WrapPanel Theme="{StaticResource HWrap}">
-						<TextBox Theme="{StaticResource HTextBoxMedium}" PlaceholderText="IP ..." Text="{Binding Config.Osc_Routing_TargetIp, UpdateSourceTrigger=LostFocus}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Routing_TargetIp}"/>
+						<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="IP ..." Text="{Binding Config.Osc_Routing_TargetIp, UpdateSourceTrigger=LostFocus}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Routing_TargetIp}"/>
 						<Label Theme="{StaticResource HLabel}" Content="Target IP" VerticalAlignment="Center"/>
 					</WrapPanel>
 

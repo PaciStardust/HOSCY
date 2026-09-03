@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using Avalonia;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using HoscyAvaloniaUi.Services;
@@ -12,6 +11,7 @@ using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Interfacing;
 using HoscyCore.Services.Recognition.Core;
+using HoscyCore.Services.Recognition.Extra;
 using HoscyCore.Utility;
 using Serilog;
 
@@ -54,6 +54,49 @@ public abstract partial class RecogSubMenuViewModelBase : ViewModelBase
     public partial ComboBoxData OptionsMicrophone { get; set; }
     public virtual void OptionsMicrophoneChanged() { }
     public virtual void OptionsMicrophoneRefreshClicked() { }
+
+    [ObservableProperty]
+    public partial string ModulesSettingsVisibleIfCompatible { get; protected set; } = "(Settings are visible if compatible recognition module is selected)";
+
+    [ObservableProperty]
+    public partial bool ModulesAnyApiIsSelected { get; protected set; }
+    [ObservableProperty]
+    public partial ComboBoxData ModulesAnyApiPresets { get; set; }
+    public virtual void ModulesAnyApiEditPresets() { }
+    public virtual void ModulesAnyApiPresetChanged() { }
+
+    [ObservableProperty]
+    public partial bool ModulesAzureIsSelected { get; protected set; }
+    public virtual void ModulesAzureEditPresetPhrases() { }
+    public virtual void ModulesAzureEditLanguages() { }
+
+    [ObservableProperty]
+    public partial bool ModulesVoskIsSelected { get; protected set; }
+    [ObservableProperty]
+    public partial ComboBoxData ModulesVoskModels { get; set; }
+    public virtual void ModulesVoskEditModels() { }
+    public virtual void ModulesVoskModelChanged() { }
+
+    [ObservableProperty]
+    public partial bool ModulesWhisperIsSelected { get; protected set; }
+    [ObservableProperty]
+    public partial ComboBoxData ModulesWhisperModels { get; set; }
+    [ObservableProperty]
+    public partial ComboBoxData ModulesWhisperVadMode { get; set; }
+    [ObservableProperty]
+    public partial bool ModulesWhisperShowAdvancedSettings { get; set; }
+    public virtual void ModulesWhisperEditModels() { }
+    public virtual void ModulesWhisperModelChanged() { }
+    public virtual void ModulesWhisperEditNoiseFilter() { }
+    public virtual void ModulesWhisperVadModeChanged() { }
+
+    [ObservableProperty]
+    public partial bool ModulesWindowsIsSelected { get; protected set; }
+    [ObservableProperty]
+    public partial ComboBoxData ModulesWindowsModels { get; set; }
+    [ObservableProperty]
+    public partial string ModulesWindowsModelDescription { get; set; }
+    public virtual void ModulesWindowsModelChanged() { }
 }
 
 [PrototypeLoadIntoDiContainer(typeof(RecogSubMenuViewModelBase), Lifetime.Transient)]
@@ -94,6 +137,15 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
         var mics = OptionsMicrophoneGetNames();
         mics.IfFail(x => notify.SendResult("Failed loading playback devices", x));
         OptionsMicrophone = new(mics.Value ?? [], Config.Recognition_MicrophoneName, _logger, "OptionsMicrophone");
+
+        ModulesAnyApiPresets = new([.. Config.Api_Presets.Select(x => x.Name)], Config.Recognition_Api_Preset, _logger, "ModulesAnyApiPresets");
+
+        ModulesVoskModels = new([.. Config.Recognition_Vosk_Models.Keys], Config.Recognition_Vosk_CurrentModel, _logger, "ModulesVoskModels");
+
+        ModulesWhisperModels = new([.. Config.Recognition_Whisper_Models.Keys], Config.Recognition_Whisper_SelectedModel, _logger, "ModulesWhisperModels");
+        ModulesWhisperVadMode = new([.. Enum.GetNames<WhisperIpcVadOperatingMode>()], Enum.GetName(Config.Recognition_Whisper_Cfg_VadOperatingMode) ?? string.Empty, _logger, "ModulesWhisperVadMode");
+
+        //todo: WINDOWS
     }
 
     public override void OptionsSelectedModuleChanged()
@@ -128,10 +180,15 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
 
         OptionsSelectedModuleDescription = description;
         OptionsMicrophoneAvailable = flags.HasFlag(RecognitionModuleConfigFlags.Microphone);
+
+        ModulesAnyApiIsSelected = flags.HasFlag(RecognitionModuleConfigFlags.AnyApi);
+        ModulesAzureIsSelected = flags.HasFlag(RecognitionModuleConfigFlags.Azure);
+        ModulesVoskIsSelected = flags.HasFlag(RecognitionModuleConfigFlags.Vosk);
+        ModulesWhisperIsSelected = flags.HasFlag(RecognitionModuleConfigFlags.Whisper);
     }
     private void OptionsSelectedModuleOnStatusChanged(object? sender, RecognitionStatusChangedEventArgs e)
     {
-        OptionsSelectedModuleUpdateButtons(e.Status, e.IsListening); //todo: sound?
+        OptionsSelectedModuleUpdateButtons(e.Status, e.IsListening);
     }
     public override void OptionsSelectedModuleStartStopClicked()
     {
@@ -238,6 +295,110 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
         var mics = _audio.GetCaptureDevices();
         return mics.IsOk ? ResC.TOk(mics.Value.Select(x => x.Name).ToArray()) : ResC.TFail<string[]>(mics.Msg);
     }
+
+    public override void ModulesAnyApiEditPresets()
+    {
+        _logger.Information("Editing api presets");
+        _popup.OpenEditApiPresets(Config.Api_Presets, null, ModulesAnyApiReloadPresetBox);
+    }
+    private void ModulesAnyApiReloadPresetBox()
+    {
+        _logger.Debug("Reloading Any-API Preset ComboBox");
+        var presetNames = Config.Api_Presets.Select(x => x.Name).ToArray();
+        ModulesAnyApiPresets.RefreshItems(presetNames, Config.Recognition_Api_Preset);
+    }
+    public override void ModulesAnyApiPresetChanged()
+    {
+        var selected = ModulesAnyApiPresets.GetSelected();
+        if (selected is null) return;
+
+        var match = Config.Api_Presets.FirstOrDefault(x => x.Name == selected);
+        if (match is null)
+        {
+            _logger.Warning("Failed to find API preset match for value {val}", selected);
+            return;
+        }
+
+        Config.Recognition_Api_Preset = selected;
+    }
+
+    public override void ModulesAzureEditLanguages()
+    {
+        _logger.Information("Editing azure languages");
+        _popup.OpenEditList(Config.Recognition_Azure_Languages, "Edit Azure Languages", "Language", null);
+    }
+
+    public override void ModulesAzureEditPresetPhrases()
+    {
+        _logger.Information("Editing azure phrases");
+        _popup.OpenEditList(Config.Recognition_Azure_PresetPhrases, "Edit Azure Preset Phrases", "Phrase", null);
+    }
+
+    public override void ModulesVoskEditModels()
+    {
+        _logger.Information("Editing vosk models");
+        _popup.OpenEditDict("Editing Vosk Models", "Model Name", "Model Path", Config.Recognition_Vosk_Models, null, ModulesVoskReloadModelBox);
+    }
+    private void ModulesVoskReloadModelBox()
+    {
+        _logger.Debug("Reloading Vosk Model ComboBox");
+        ModulesVoskModels.RefreshItems([.. Config.Recognition_Vosk_Models.Keys], Config.Recognition_Vosk_CurrentModel);
+    }
+    public override void ModulesVoskModelChanged()
+    {
+        var selected = ModulesVoskModels.GetSelected();
+        if (selected is null) return;
+
+        if (Config.Recognition_Vosk_Models.ContainsKey(selected))
+        {
+            _logger.Warning("Failed to find Vosk Model match for value {val}", selected);
+            return;
+        }
+
+        Config.Recognition_Vosk_CurrentModel = selected;
+    }
+
+    public override void ModulesWhisperEditModels()
+    {
+        _logger.Information("Editing whisper models");
+        _popup.OpenEditDict("Editing Whisper Models", "Model Name", "Model Path", Config.Recognition_Whisper_Models, null, ModulesWhisperReloadModelBox);
+    }
+    private void ModulesWhisperReloadModelBox()
+    {
+        _logger.Debug("Reloading Whisper Model ComboBox");
+        ModulesWhisperModels.RefreshItems([.. Config.Recognition_Whisper_Models.Keys], Config.Recognition_Whisper_SelectedModel);
+    }
+    public override void ModulesWhisperModelChanged()
+    {
+        var selected = ModulesWhisperModels.GetSelected();
+        if (selected is null) return;
+
+        if (Config.Recognition_Whisper_Models.ContainsKey(selected))
+        {
+            _logger.Warning("Failed to find Whisper Model match for value {val}", selected);
+            return;
+        }
+
+        Config.Recognition_Whisper_SelectedModel = selected;
+    }
+    public override void ModulesWhisperEditNoiseFilter()
+    {
+        _logger.Information("Editing whisper noise filters");
+        _popup.OpenEditDict("Editing Whisper Noise Filter", "Noise Name", "Noise Text", Config.Recognition_Whisper_Cfg_NoiseFilter, null); //todo: format, reload needed?
+    }
+    public override void ModulesWhisperVadModeChanged()
+    {
+        var selected = ModulesWhisperModels.GetSelected();
+        if (selected is null) return;
+
+        if (!Enum.TryParse<WhisperIpcVadOperatingMode>(selected, out var match))
+        {
+            _logger.Warning("Failed to find WhisperIpcVadOperatingMode match for value {val}", selected);
+            return;
+        }
+
+        Config.Recognition_Whisper_Cfg_VadOperatingMode = match;
+    }
 }
 
 #if DEBUG
@@ -255,6 +416,19 @@ public class RecogSubMenuViewModelPreview : RecogSubMenuViewModelBase
 
         OptionsMicrophoneAvailable = true;
         OptionsMicrophone = new();
+
+        ModulesAnyApiIsSelected = true;
+        ModulesAnyApiPresets = new();
+
+        ModulesAzureIsSelected = true;
+
+        ModulesVoskIsSelected = true;
+        ModulesVoskModels = new();
+
+        ModulesWhisperIsSelected = true;
+        ModulesWhisperModels = new();
+        ModulesWhisperVadMode = new();
+        ModulesWhisperShowAdvancedSettings = true;
     }
 }
 #endif

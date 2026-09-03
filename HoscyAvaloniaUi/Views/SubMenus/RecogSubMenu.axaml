@@ -4,7 +4,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="using:HoscyAvaloniaUi.ViewModels.SubMenus"
 	xmlns:cfg="using:HoscyCore.Configuration.Modern"
-	mc:Ignorable="d" d:DesignHeight="1000" d:DesignWidth="689"
+	mc:Ignorable="d" d:DesignHeight="3000" d:DesignWidth="689"
 	x:DataType="vm:RecogSubMenuViewModelBase"
 	x:Class="HoscyAvaloniaUi.Views.SubMenus.RecogSubMenu"
 	Background="{StaticResource BackgroundBaseBrush}">
@@ -97,13 +97,240 @@
 
 						<CheckBox Theme="{StaticResource HCheckBox}" Content="(Un)Mute Whenn (Un)Muting In Game" IsChecked="{Binding Config.Recognition_Mute_OnGameMute}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Mute_OnGameMute}"/>
 
-						<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Recognition_SendListeningStatusViaOsc}">
+						<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Recognition_Mute_OnGameMute}">
 							<StackPanel Theme="{StaticResource HStackS}">
 								<Label Theme="{StaticResource HLabel}" Content="Game Mute OSC Address"/>
 								<TextBox Text="{Binding Config.Osc_Address_Game_Mute}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Game_Mute}"/>
 							</StackPanel>
 						</StackPanel>
 					</StackPanel>
+				</StackPanel>
+			</StackPanel>
+
+			<StackPanel Theme="{StaticResource HStack}">
+				<Label Content="Modules" Theme="{StaticResource HLabelL}"/>
+
+				<StackPanel Theme="{StaticResource HStackIndent}">
+					<WrapPanel Theme="{StaticResource HWrap}">
+						<Label Content="Any-API Module" Theme="{StaticResource HLabelM}"/>
+						<Button Content="Edit Presets" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="ModulesAnyApiEditPresets" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Api_Presets}"/>
+					</WrapPanel>
+
+					<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="False" IsVisible="{Binding !ModulesAnyApiIsSelected}">
+						<Label Theme="{StaticResource HLabel}" Content="{Binding ModulesSettingsVisibleIfCompatible}" VerticalAlignment="Center"/>
+					</StackPanel>
+
+					<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding ModulesAnyApiIsSelected}">
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding ModulesAnyApiPresets.Index}" ItemsSource="{Binding ModulesAnyApiPresets.Options}" SelectionChanged="ModulesAnyApiPresetChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Api_Preset}"/>
+							<Label Theme="{StaticResource HLabel}" Content="Preset for Recognition" VerticalAlignment="Center"/>
+						</WrapPanel>
+
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Recognition_Api_MaxRecordingTime, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.Recognition_Api_MaxRecordingTime}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Api_MaxRecordingTime}"/>
+							<Label Theme="{StaticResource HLabel}" Content="Maximum Recording Time (s)" VerticalAlignment="Center"/>
+						</WrapPanel>
+					</StackPanel>
+
+					<Label Content="Azure Module" Theme="{StaticResource HLabelM}"/>
+
+					<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="False" IsVisible="{Binding !ModulesAzureIsSelected}">
+						<Label Theme="{StaticResource HLabel}" Content="{Binding ModulesSettingsVisibleIfCompatible}" VerticalAlignment="Center"/>
+					</StackPanel>
+
+					<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding ModulesAzureIsSelected}">
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<TextBox Theme="{StaticResource HTextBoxMedium}" PlaceholderText="Region ..." Text="{Binding Config.AzureServices_Region}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_AzureServices_Region}"/>
+							<Label Theme="{StaticResource HLabel}" Content="Azure Services Region" VerticalAlignment="Center"/>
+						</WrapPanel>
+
+						<StackPanel Theme="{StaticResource HStackS}">
+							<Label Theme="{StaticResource HLabel}" Content="Azure Services API Key"/>
+							<TextBox Text="{Binding Config.AzureServices_ApiKey}" Tag="API Key ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_AzureServices_ApiKey}"/>
+						</StackPanel>
+
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Censor Profanity" IsChecked="{Binding Config.AzureServices_CensorProfanity}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_AzureServices_CensorProfanity}"/>
+
+						<StackPanel Theme="{StaticResource HStackS}">
+							<Label Theme="{StaticResource HLabel}" Content="Custom Endpoint"/>
+							<TextBox Text="{Binding Config.Recognition_Azure_CustomEndpoint}" Tag="Endpoint ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Azure_CustomEndpoint}"/>
+						</StackPanel>
+
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<Label Theme="{StaticResource HLabel}" VerticalAlignment="Center" Content="Input Tuning:"/>
+							<Button Content="Edit Preset Phrases" Theme="{StaticResource HButton}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="ModulesAzureEditPresetPhrases" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Azure_PresetPhrases}"/>
+							<Button Content="Edit Languages" Theme="{StaticResource HButton}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="ModulesAzureEditLanguages" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Azure_Languages}"/>
+						</WrapPanel>
+					</StackPanel>
+
+					<Label Content="Vosk Module" Theme="{StaticResource HLabelM}"/>
+
+					<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="False" IsVisible="{Binding !ModulesVoskIsSelected}">
+						<Label Theme="{StaticResource HLabel}" Content="{Binding ModulesSettingsVisibleIfCompatible}" VerticalAlignment="Center"/>
+					</StackPanel>
+
+					<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding ModulesVoskIsSelected}">
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding ModulesVoskModels.Index}" ItemsSource="{Binding ModulesVoskModels.Options}" SelectionChanged="ModulesVoskModelChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Vosk_CurrentModel}"/>
+							<Label Theme="{StaticResource HLabel}" Content="Vosk Model To Use" VerticalAlignment="Center"/>
+							<Button Content="Edit Models" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="ModulesVoskEditModels" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Vosk_Models}"/>
+						</WrapPanel>
+
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Recognition_Vosk_NewWordWaitTimeMs, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.Recognition_Vosk_NewWordWaitTimeMs}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Vosk_NewWordWaitTimeMs}"/>
+							<Label Theme="{StaticResource HLabel}" Content="New Word Wait Time (ms)" VerticalAlignment="Center"/>
+						</WrapPanel>
+					</StackPanel>
+
+					<Label Content="Whisper Module" Theme="{StaticResource HLabelM}"/>
+
+					<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="False" IsVisible="{Binding !ModulesWhisperIsSelected}">
+						<Label Theme="{StaticResource HLabel}" Content="{Binding ModulesSettingsVisibleIfCompatible}" VerticalAlignment="Center"/>
+					</StackPanel>
+
+					<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding ModulesWhisperIsSelected}">
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding ModulesWhisperModels.Index}" ItemsSource="{Binding ModulesWhisperModels.Options}" SelectionChanged="ModulesWhisperModelChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_SelectedModel}"/>
+							<Label Theme="{StaticResource HLabel}" Content="Whisper Model To Use" VerticalAlignment="Center"/>
+							<Button Content="Edit Models" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="ModulesWhisperEditModels" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_Models}"/>
+						</WrapPanel>
+
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<Label Content="Output Tweaks" Theme="{StaticResource HLabelS}" VerticalAlignment="Center"/>
+							<Button Content="Edit Noise Filter" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="ModulesWhisperEditNoiseFilter" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_Cfg_NoiseFilter}"/>
+						</WrapPanel>
+
+						<StackPanel Theme="{StaticResource HStackIndent}">
+							<CheckBox Theme="{StaticResource HCheckBox}" Content="Clean Up Random Brackets" IsChecked="{Binding Config.Recognition_Whisper_Fix_RemoveRandomBrackets}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_Fix_RemoveRandomBrackets}"/>
+
+							<CheckBox Theme="{StaticResource HCheckBox}" Content="Log Filtered Noises" IsChecked="{Binding Config.Recognition_Whisper_Dbg_LogFilteredNoises}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_Dbg_LogFilteredNoises}"/>
+
+							<CheckBox Theme="{StaticResource HCheckBox}" Content="Translate To English" IsChecked="{Binding Config.Recognition_Whisper_Cfg_TranslateToEnglish}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_Cfg_TranslateToEnglish}"/>
+						</StackPanel>
+
+						<Label Content="Input Tweaks" Theme="{StaticResource HLabelS}" VerticalAlignment="Center"/>
+
+						<StackPanel Theme="{StaticResource HStackIndent}">
+							<CheckBox Theme="{StaticResource HCheckBox}" Content="Automatic Language Detection" IsChecked="{Binding Config.Recognition_Whisper_Cfg_DetectLanguage}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_Cfg_DetectLanguage}"/>
+
+							<WrapPanel Theme="{StaticResource HWrap}">
+								<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Language ..." Text="{Binding Config.Recognition_Whisper_Cfg_Language}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_Cfg_Language}"/>
+								<Label Theme="{StaticResource HLabel}" Content="Spoken Language (Shortcode)" VerticalAlignment="Center"/>
+							</WrapPanel>
+						</StackPanel>
+
+						<Label Content="Whisper Parameters" Theme="{StaticResource HLabelS}" VerticalAlignment="Center"/>
+
+						<StackPanel Theme="{StaticResource HStackIndent}">
+							<CheckBox Theme="{StaticResource HCheckBox}" Content="Use Single Segment Mode" IsChecked="{Binding Config.Recognition_Whisper_Cfg_UseSingleSegmentMode}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_Cfg_UseSingleSegmentMode}"/>
+
+							<CheckBox Theme="{StaticResource HCheckBox}" Content="Use GPU (Graphics Card) For Processing" IsChecked="{Binding Config.Recognition_Whisper_Cfg_UseGpu}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_Cfg_UseGpu}"/>
+
+							<WrapPanel Theme="{StaticResource HWrap}">
+								<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Recognition_Whisper_Cfg_MinSentenceDurationMs, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.Recognition_Whisper_Cfg_MinSentenceDurationMs}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_Cfg_MinSentenceDurationMs}"/>
+								<Label Theme="{StaticResource HLabel}" Content="-" VerticalAlignment="Center"/>
+								<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Recognition_Whisper_Cfg_MaxSentenceDurationMs, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.Recognition_Whisper_Cfg_MaxSentenceDurationMs}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_Cfg_MaxSentenceDurationMs}"/>
+								<Label Theme="{StaticResource HLabel}" Content="Recognition Duration Range (ms)" VerticalAlignment="Center"/>
+							</WrapPanel>
+
+							<WrapPanel Theme="{StaticResource HWrap}">
+								<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Recognition_Whisper_Cfg_DetectPauseDurationMs, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.Recognition_Whisper_Cfg_DetectPauseDurationMs}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_Cfg_DetectPauseDurationMs}"/>
+								<Label Theme="{StaticResource HLabel}" Content="Pause Detection Duration (ms)" VerticalAlignment="Center"/>
+							</WrapPanel>
+
+							<WrapPanel Theme="{StaticResource HWrap}">
+								<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Recognition_Whisper_Cfg_DetectOuterSilenceDurationMs, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.Recognition_Whisper_Cfg_DetectOuterSilenceDurationMs}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_Cfg_DetectOuterSilenceDurationMs}"/>
+								<Label Theme="{StaticResource HLabel}" Content="Outer Silence Detection Duration (ms)" VerticalAlignment="Center"/>
+							</WrapPanel>
+
+							<WrapPanel Theme="{StaticResource HWrap}">
+								<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Recognition_Whisper_Cfg_RecognitionUpdateIntervalMs, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.Recognition_Whisper_Cfg_RecognitionUpdateIntervalMs}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_Cfg_RecognitionUpdateIntervalMs}"/>
+								<Label Theme="{StaticResource HLabel}" Content="Recognition Update Interval (ms)" VerticalAlignment="Center"/>
+							</WrapPanel>
+
+							<WrapPanel Theme="{StaticResource HWrap}">
+								<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding ModulesWhisperVadMode.Index}" ItemsSource="{Binding ModulesWhisperVadMode.Options}" SelectionChanged="ModulesWhisperVadModeChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_Cfg_VadOperatingMode}"/>
+								<Label Theme="{StaticResource HLabel}" Content="Voice Activity Detection Mode" VerticalAlignment="Center"/>
+							</WrapPanel>
+						</StackPanel>
+
+						<Label Content="Advanced Whisper Parameters" Theme="{StaticResource HLabelS}" VerticalAlignment="Center"/>
+
+						<StackPanel Theme="{StaticResource HStackIndent}">
+							<CheckBox Theme="{StaticResource HCheckBox}" Content="Show Advanced Settings" IsChecked="{Binding ModulesWhisperShowAdvancedSettings}" ToolTip.Tip="Show additional advanced settings"/>
+
+							<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding ModulesWhisperShowAdvancedSettings}">
+								<CheckBox Theme="{StaticResource HCheckBox}" Content="Set Thread Count" IsChecked="{Binding Config.Recognition_Whisper_CfgAdv_SetThreads}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_CfgAdv_SetThreads}"/>
+
+								<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Recognition_Whisper_CfgAdv_SetThreads}">
+									<WrapPanel Theme="{StaticResource HWrap}">
+										<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Recognition_Whisper_CfgAdv_ThreadsUsed, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.Recognition_Whisper_CfgAdv_ThreadsUsed}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_CfgAdv_ThreadsUsed}"/>
+										<Label Theme="{StaticResource HLabel}" Content="Max Tokens Per Segment" VerticalAlignment="Center"/>
+									</WrapPanel>
+								</StackPanel>
+
+								<WrapPanel Theme="{StaticResource HWrap}">
+									<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Recognition_Whisper_CfgAdv_GraphicsAdapterId, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.Recognition_Whisper_CfgAdv_GraphicsAdapterId}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_CfgAdv_GraphicsAdapterId}"/>
+									<Label Theme="{StaticResource HLabel}" Content="Graphics Adapter (GPU) ID" VerticalAlignment="Center"/>
+								</WrapPanel>
+
+								<WrapPanel Theme="{StaticResource HWrap}">
+									<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Recognition_Whisper_CfgAdv_MaxSegmentLength, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.Recognition_Whisper_CfgAdv_MaxSegmentLength}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_CfgAdv_MaxSegmentLength}"/>
+									<Label Theme="{StaticResource HLabel}" Content="Max Segment Length" VerticalAlignment="Center"/>
+								</WrapPanel>
+
+								<WrapPanel Theme="{StaticResource HWrap}">
+									<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Recognition_Whisper_CfgAdv_MaxTokensPerSegment, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.Recognition_Whisper_CfgAdv_MaxTokensPerSegment}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_CfgAdv_MaxTokensPerSegment}"/>
+									<Label Theme="{StaticResource HLabel}" Content="Max Tokens Per Segment" VerticalAlignment="Center"/>
+								</WrapPanel>
+
+								<WrapPanel Theme="{StaticResource HWrap}">
+									<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Recognition_Whisper_CfgAdv_NoSpeechThreshold, Converter={StaticResource FloatRange}, ConverterParameter=ConfigModel.Recognition_Whisper_CfgAdv_NoSpeechThreshold}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_CfgAdv_NoSpeechThreshold}"/>
+									<Label Theme="{StaticResource HLabel}" Content="No Speech Threshold" VerticalAlignment="Center"/>
+								</WrapPanel>
+
+								<StackPanel Theme="{StaticResource HStackS}">
+									<Label Theme="{StaticResource HLabel}" Content="Prompt"/>
+									<TextBox Text="{Binding Config.Recognition_Whisper_CfgAdv_Prompt}" Tag="Prompt ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_CfgAdv_Prompt}"/>
+								</StackPanel>
+
+								<CheckBox Theme="{StaticResource HCheckBox}" Content="Use Beam Search Sampling" IsChecked="{Binding Config.Recognition_Whisper_CfgAdv_UseBeamSearchSampling}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_CfgAdv_UseBeamSearchSampling}"/>
+								
+								<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Recognition_Whisper_CfgAdv_UseBeamSearchSampling}">
+									<WrapPanel Theme="{StaticResource HWrap}">
+										<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Recognition_Whisper_CfgAdv_BeamSize, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.Recognition_Whisper_CfgAdv_BeamSize}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_CfgAdv_BeamSize}"/>
+										<Label Theme="{StaticResource HLabel}" Content="Beam Search Size" VerticalAlignment="Center"/>
+									</WrapPanel>
+								</StackPanel>
+
+								<CheckBox Theme="{StaticResource HCheckBox}" Content="Use Greedy Sampling" IsChecked="{Binding Config.Recognition_Whisper_CfgAdv_UseGreedySampling}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_CfgAdv_UseGreedySampling}"/>
+								
+								<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Recognition_Whisper_CfgAdv_UseGreedySampling}">
+									<WrapPanel Theme="{StaticResource HWrap}">
+										<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Recognition_Whisper_CfgAdv_GreedyBestOf, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.Recognition_Whisper_CfgAdv_GreedyBestOf}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_CfgAdv_GreedyBestOf}"/>
+										<Label Theme="{StaticResource HLabel}" Content="Greedy Best Of" VerticalAlignment="Center"/>
+									</WrapPanel>
+								</StackPanel>
+
+								<WrapPanel Theme="{StaticResource HWrap}">
+									<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Recognition_Whisper_CfgAdv_MaxInitialT, Converter={StaticResource FloatRange}, ConverterParameter=ConfigModel.Recognition_Whisper_CfgAdv_MaxInitialT}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_CfgAdv_MaxInitialT}"/>
+									<Label Theme="{StaticResource HLabel}" Content="Max Initial T" VerticalAlignment="Center"/>
+								</WrapPanel>
+
+								<WrapPanel Theme="{StaticResource HWrap}">
+									<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Recognition_Whisper_CfgAdv_Temperature, Converter={StaticResource FloatRange}, ConverterParameter=ConfigModel.Recognition_Whisper_CfgAdv_Temperature}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_CfgAdv_Temperature}"/>
+									<Label Theme="{StaticResource HLabel}" Content="Temperature" VerticalAlignment="Center"/>
+								</WrapPanel>
+
+								<WrapPanel Theme="{StaticResource HWrap}">
+									<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Recognition_Whisper_CfgAdv_TemperatureInc, Converter={StaticResource FloatRange}, ConverterParameter=ConfigModel.Recognition_Whisper_CfgAdv_TemperatureInc}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_CfgAdv_TemperatureInc}"/>
+									<Label Theme="{StaticResource HLabel}" Content="Temperature Inc" VerticalAlignment="Center"/>
+								</WrapPanel>
+							</StackPanel>
+						</StackPanel>
+					</StackPanel>
+
+					<Label Content="Windows Module" Theme="{StaticResource HLabelM}"/>
 				</StackPanel>
 			</StackPanel>
 		</StackPanel>

@@ -54,4 +54,58 @@ public partial class RecogSubMenu : UserControl
         (DataContext as RecogSubMenuViewModelBase)?.OptionsMicrophoneRefreshClicked();
         e.Handled = true;
     }
+
+    private void ModulesAnyApiEditPresets(object? sender, RoutedEventArgs e)
+    {
+        (DataContext as RecogSubMenuViewModelBase)?.ModulesAnyApiEditPresets();
+        e.Handled = true;
+    }
+    private void ModulesAnyApiPresetChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        (DataContext as RecogSubMenuViewModelBase)?.ModulesAnyApiPresetChanged();
+        e.Handled = true;
+    }
+
+    private void ModulesAzureEditPresetPhrases(object? sender, RoutedEventArgs e)
+    {
+        (DataContext as RecogSubMenuViewModelBase)?.ModulesAzureEditPresetPhrases();
+        e.Handled = true;
+    }
+    private void ModulesAzureEditLanguages(object? sender, RoutedEventArgs e)
+    {
+        (DataContext as RecogSubMenuViewModelBase)?.ModulesAzureEditLanguages();
+        e.Handled = true;
+    }
+
+    private void ModulesVoskEditModels(object? sender, RoutedEventArgs e)
+    {
+        (DataContext as RecogSubMenuViewModelBase)?.ModulesVoskEditModels();
+        e.Handled = true;
+    }
+    private void ModulesVoskModelChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        (DataContext as RecogSubMenuViewModelBase)?.ModulesVoskModelChanged();
+        e.Handled = true;
+    }
+
+    private void ModulesWhisperEditModels(object? sender, RoutedEventArgs e)
+    {
+        (DataContext as RecogSubMenuViewModelBase)?.ModulesWhisperEditModels();
+        e.Handled = true;
+    }
+    private void ModulesWhisperModelChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        (DataContext as RecogSubMenuViewModelBase)?.ModulesWhisperModelChanged();
+        e.Handled = true;
+    }
+    private void ModulesWhisperEditNoiseFilter(object? sender, RoutedEventArgs e)
+    {
+        (DataContext as RecogSubMenuViewModelBase)?.ModulesWhisperEditNoiseFilter();
+        e.Handled = true;
+    }
+    private void ModulesWhisperVadModeChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        (DataContext as RecogSubMenuViewModelBase)?.ModulesWhisperVadModeChanged();
+        e.Handled = true;
+    }
 }
