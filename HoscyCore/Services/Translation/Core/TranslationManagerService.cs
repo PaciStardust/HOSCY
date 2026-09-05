@@ -76,6 +76,18 @@ public class TranslationManagerService
     {
         _logger.Warning("Skipped translation request for input \"{input}\", no provider running", inputForLog);
     }
+
+    public event Action<ServiceStatus> OnModuleStatusChanged = delegate {};
+    private void InvokeModuleStatusChanged()
+    {
+        var status = GetCurrentModuleStatus();
+        _logger.Verbose("Triggering event for module status update started={started}", status);
+        OnModuleStatusChanged.Invoke(status);
+    }
+    protected override void OnModuleStatusUpdate()
+    {
+        InvokeModuleStatusChanged();
+    }
     #endregion
 
     #region Overrides
