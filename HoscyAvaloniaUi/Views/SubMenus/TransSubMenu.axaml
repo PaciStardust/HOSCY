@@ -3,16 +3,59 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="using:HoscyAvaloniaUi.ViewModels.SubMenus"
-	mc:Ignorable="d" d:DesignHeight="420" d:DesignWidth="689"
+	xmlns:cfg="using:HoscyCore.Configuration.Modern"
+	mc:Ignorable="d" d:DesignHeight="1000" d:DesignWidth="689"
 	x:DataType="vm:TransSubMenuViewModelBase"
-	x:Class="HoscyAvaloniaUi.Views.SubMenus.TransSubMenu">
+	x:Class="HoscyAvaloniaUi.Views.SubMenus.TransSubMenu"
+	Background="{StaticResource BackgroundBaseBrush}">
 
 	<Design.DataContext>
 		<vm:TransSubMenuViewModelPreview/>
 	</Design.DataContext>
 
-	<ScrollViewer Margin="16,8,8,8" VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="0,0,32,0">
-        </StackPanel>
-    </ScrollViewer>
+	<ScrollViewer Theme="{StaticResource HScrollViewerPage}">
+		<StackPanel Theme="{StaticResource HStackL}">
+			<StackPanel Theme="{StaticResource HStack}">
+				<Label Content="General Translation Settings" Theme="{StaticResource HLabelL}"/>
+
+				<StackPanel Theme="{StaticResource HStack}">
+					<Label Content="Translation Module" Theme="{StaticResource HLabelM}"/>
+
+					<StackPanel Theme="{StaticResource HStackIndent}">
+						<StackPanel Theme="{StaticResource HStackS}">
+							<Label Theme="{StaticResource HLabel}" Content="Selected Module"/>
+
+							<WrapPanel Theme="{StaticResource HWrap}">
+								<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding OptionsSelectedModule.Index}" ItemsSource="{Binding OptionsSelectedModule.Options}" SelectionChanged="OptionsSelectedModuleChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Translation_SelectedModuleName}"/>
+								<Button Content="{Binding OptionsSelectedModuleStartStopText}" BorderBrush="{Binding OptionsSelectedModuleStartStopBrush}" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsSelectedModuleStartStopClicked" ToolTip.Tip="Starts and stops the selected translation module"/>
+								<Button Content="Refresh" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsSelectedModuleRefreshClicked" ToolTip.Tip="Swaps out translation modules if selection changed"/>
+								<Button Content="Restart" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsSelectedModuleRestartClicked" IsEnabled="{Binding OptionsSelectedModuleRestartEnabled}" ToolTip.Tip="Restarts the current translation module"/>
+							</WrapPanel>
+
+							<TextBlock Theme="{StaticResource HTextBlockError}" Text="Currently selected module is not loaded, please press 'Reload'" IsVisible="{Binding OptionsSelectedModuleRestartNeeded}"/>
+
+							<TextBlock Theme="{StaticResource HTextBlockNote}" Text="{Binding OptionsSelectedModuleDescription}"/>
+						</StackPanel>
+
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Automatically Start Module At Launch" IsChecked="{Binding Config.Translation_AutoStart}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Translation_AutoStart}"/>
+					</StackPanel>
+
+					<Label Content="Output" Theme="{StaticResource HLabelM}"/>
+
+					<StackPanel Theme="{StaticResource HStackIndent}">
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Translation_MaxTextLength, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.Translation_MaxTextLength}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Translation_MaxTextLength}"/>
+							<Label Theme="{StaticResource HLabel}" Content="Maximum Allowed Text Length" VerticalAlignment="Center"/>
+						</WrapPanel>
+						
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Skip Longer Messages" IsChecked="{Binding Config.Translation_SkipLongerMessages}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Translation_SkipLongerMessages}"/>
+
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Send Untranslated If No Translation Available" IsChecked="{Binding Config.Translation_SendUntranslatedIfUnavailable}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Translation_SendUntranslatedIfUnavailable}"/>
+
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Send Untranslated If Translation Failed" IsChecked="{Binding Config.Translation_SendUntranslatedIfFailed}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Translation_SendUntranslatedIfFailed}"/>
+					</StackPanel>	
+				</StackPanel>
+			</StackPanel>
+		</StackPanel>
+	</ScrollViewer>
 </UserControl>
