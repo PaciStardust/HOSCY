@@ -18,7 +18,7 @@
 			<StackPanel Theme="{StaticResource HStack}">
 				<Label Content="General Translation Settings" Theme="{StaticResource HLabelL}"/>
 
-				<StackPanel Theme="{StaticResource HStack}">
+				<StackPanel Theme="{StaticResource HStackIndent}">
 					<Label Content="Translation Module" Theme="{StaticResource HLabelM}"/>
 
 					<StackPanel Theme="{StaticResource HStackIndent}">
