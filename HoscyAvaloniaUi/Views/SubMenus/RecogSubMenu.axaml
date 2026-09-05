@@ -16,10 +16,10 @@
 	<ScrollViewer Theme="{StaticResource HScrollViewerPage}">
 		<StackPanel Theme="{StaticResource HStackL}">
 			<StackPanel Theme="{StaticResource HStack}">
-				<Label Content="General Settings" Theme="{StaticResource HLabelL}"/>
+				<Label Content="General Recognition Settings" Theme="{StaticResource HLabelL}"/>
 
 				<StackPanel Theme="{StaticResource HStackIndent}">
-					<Label Content="Module" Theme="{StaticResource HLabelM}"/>
+					<Label Content="Recognition Module" Theme="{StaticResource HLabelM}"/>
 
 					<StackPanel Theme="{StaticResource HStackIndent}">
 						<StackPanel Theme="{StaticResource HStackS}">

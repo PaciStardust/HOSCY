@@ -107,7 +107,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
     private readonly IAudioService _audio;
     private readonly PopupWindowFactory _popup;
     private readonly IRecognitionManagerService _recognition;
-    private readonly IRecognitionModuleStartInfo[] _recognitionInfos;
+    private readonly IRecognitionModuleStartInfo[] _recognitionInfosOrdered;
     private readonly UiHelperService _uiHelper;
 
     #if WINDOWS
@@ -135,8 +135,8 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
         OptionsSelectedModuleUpdateButtons(_recognition.GetCurrentModuleStatus(), _recognition.IsListening);
         _recognition.OnModuleStatusChanged += OptionsSelectedModuleOnStatusChanged;
 
-        _recognitionInfos = [.. _recognition.GetModuleInfos().OrderByDescending(x => x.Priority)];
-        OptionsSelectedModule = new([.. _recognitionInfos.Select(x => x.Name)], Config.Recognition_SelectedModuleName, _logger, "OptionsSelectedModule");
+        _recognitionInfosOrdered = [.. _recognition.GetModuleInfos().OrderByDescending(x => x.Priority)];
+        OptionsSelectedModule = new([.. _recognitionInfosOrdered.Select(x => x.Name)], Config.Recognition_SelectedModuleName, _logger, "OptionsSelectedModule");
         OptionsSelectedModuleUpdateComboBox();
 
         List<ResMsg> errors = [];
@@ -189,7 +189,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
         }
         else
         {
-            var match = _recognitionInfos.FirstOrDefault(x => x.Name == selected);
+            var match = _recognitionInfosOrdered.FirstOrDefault(x => x.Name == selected);
             if (match is null)
             {
                 description += "Selected module not found";
