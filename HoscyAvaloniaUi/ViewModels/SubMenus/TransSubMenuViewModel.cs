@@ -33,6 +33,16 @@ public abstract partial class TransSubMenuViewModelBase : ViewModelBase
     public virtual void OptionsSelectedModuleStartStopClicked() { }
     public virtual void OptionsSelectedModuleRefreshClicked() { }
     public virtual void OptionsSelectedModuleRestartClicked() { }
+
+    [ObservableProperty]
+    public partial string ModulesSettingsVisibleIfCompatible { get; protected set; } = "(Settings are visible if compatible translation module is selected)";
+
+    [ObservableProperty]
+    public partial bool ModulesAnyApiIsSelected { get; protected set; }
+    [ObservableProperty]
+    public partial ComboBoxData ModulesAnyApiPresets { get; set; }
+    public virtual void ModulesAnyApiEditPresets() { }
+    public virtual void ModulesAnyApiPresetChanged() { }
 }
 
 [PrototypeLoadIntoDiContainer(typeof(TransSubMenuViewModelBase), Lifetime.Transient)]
@@ -62,10 +72,11 @@ public class TransSubMenuViewModelImpl : TransSubMenuViewModelBase
         OptionsSelectedModuleUpdateButtons(_trans.GetCurrentModuleStatus());
         _trans.OnModuleStatusChanged += OptionsSelectedModuleOnStatusChanged;
 
-
         _transInfosOrdered = [.. _trans.GetModuleInfos().OrderByDescending(x => x.Priority)];
         OptionsSelectedModule = new([.. _transInfosOrdered.Select(x => x.Name)], Config.Translation_SelectedModuleName, _logger, "OptionsSelectedModule");
         OptionsSelectedModuleUpdateComboBox();
+
+        ModulesAnyApiPresets = new([.. Config.Api_Presets.Select(x => x.Name)], Config.Translation_Api_Preset, _logger, "ModulesAnyApiPresets");
     }
 
         public override void OptionsSelectedModuleChanged()
@@ -99,6 +110,7 @@ public class TransSubMenuViewModelImpl : TransSubMenuViewModelBase
         Config.Translation_SelectedModuleName = selected ?? string.Empty;
 
         OptionsSelectedModuleDescription = description;
+        ModulesAnyApiIsSelected = flags.HasFlag(TranslationModuleConfigFlags.Api);
     }
     private void OptionsSelectedModuleOnStatusChanged(ServiceStatus status)
     {
@@ -145,6 +157,32 @@ public class TransSubMenuViewModelImpl : TransSubMenuViewModelBase
         OptionsSelectedModuleStartStopBrush = running ? _uiHelper.ValidBrush : _uiHelper.InvalidBrush;
         OptionsSelectedModuleRestartEnabled = running;
     }
+
+    public override void ModulesAnyApiEditPresets()
+    {
+        _logger.Information("Editing api presets");
+        _popup.OpenEditApiPresets(Config.Api_Presets, null, ModulesAnyApiReloadPresetBox);
+    }
+    private void ModulesAnyApiReloadPresetBox()
+    {
+        _logger.Debug("Reloading Any-API Preset ComboBox");
+        var presetNames = Config.Api_Presets.Select(x => x.Name).ToArray();
+        ModulesAnyApiPresets.RefreshItems(presetNames, Config.Translation_Api_Preset);
+    }
+    public override void ModulesAnyApiPresetChanged()
+    {
+        var selected = ModulesAnyApiPresets.GetSelected();
+        if (selected is null) return;
+
+        var match = Config.Api_Presets.FirstOrDefault(x => x.Name == selected);
+        if (match is null)
+        {
+            _logger.Warning("Failed to find API preset match for value {val}", selected);
+            return;
+        }
+
+        Config.Translation_Api_Preset = selected;
+    }
 }
 
 #if DEBUG
@@ -158,6 +196,10 @@ public class TransSubMenuViewModelPreview : TransSubMenuViewModelBase
         OptionsSelectedModuleStartStopText = "Stopped";
         OptionsSelectedModuleRestartNeeded = true;
         OptionsSelectedModuleDescription = "Description Placeholder 123";
+
+        ModulesAnyApiIsSelected = true;
+
+        ModulesAnyApiPresets = new();
     }
 }
 #endif

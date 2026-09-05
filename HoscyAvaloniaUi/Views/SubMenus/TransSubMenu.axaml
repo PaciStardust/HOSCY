@@ -56,6 +56,28 @@
 					</StackPanel>	
 				</StackPanel>
 			</StackPanel>
+
+			<StackPanel Theme="{StaticResource HStack}">
+				<Label Content="Modules" Theme="{StaticResource HLabelL}"/>
+
+				<StackPanel Theme="{StaticResource HStackIndent}">
+					<WrapPanel Theme="{StaticResource HWrap}">
+						<Label Content="Any-API Module" Theme="{StaticResource HLabelM}"/>
+						<Button Content="Edit Presets" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="ModulesAnyApiEditPresets" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Api_Presets}"/>
+					</WrapPanel>
+
+					<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="False" IsVisible="{Binding !ModulesAnyApiIsSelected}">
+						<Label Theme="{StaticResource HLabel}" Content="{Binding ModulesSettingsVisibleIfCompatible}" VerticalAlignment="Center"/>
+					</StackPanel>
+
+					<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding ModulesAnyApiIsSelected}">
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding ModulesAnyApiPresets.Index}" ItemsSource="{Binding ModulesAnyApiPresets.Options}" SelectionChanged="ModulesAnyApiPresetChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Api_Preset}"/>
+							<Label Theme="{StaticResource HLabel}" Content="Preset for Translation" VerticalAlignment="Center"/>
+						</WrapPanel>
+					</StackPanel>
+				</StackPanel>
+			</StackPanel>
 		</StackPanel>
 	</ScrollViewer>
 </UserControl>

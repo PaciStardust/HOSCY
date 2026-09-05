@@ -31,4 +31,15 @@ public partial class TransSubMenu : UserControl
         (DataContext as TransSubMenuViewModelBase)?.OptionsSelectedModuleRestartClicked();
         e.Handled = true;
     }
+
+    private void ModulesAnyApiEditPresets(object? sender, RoutedEventArgs e)
+    {
+        (DataContext as TransSubMenuViewModelBase)?.ModulesAnyApiEditPresets();
+        e.Handled = true;
+    }
+    private void ModulesAnyApiPresetChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        (DataContext as TransSubMenuViewModelBase)?.ModulesAnyApiPresetChanged();
+        e.Handled = true;
+    }
 }
