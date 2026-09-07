@@ -91,7 +91,7 @@
 						<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Recognition_SendListeningStatusViaOsc}">
 							<StackPanel Theme="{StaticResource HStackS}">
 								<Label Theme="{StaticResource HLabel}" Content="Target OSC Address"/>
-								<TextBox Text="{Binding Config.Osc_Address_Tool_NotificationForRecognitionListening}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Tool_NotificationForRecognitionListening}"/>
+								<TextBox Text="{Binding Config.Osc_Address_Tool_NotificationForRecognitionListening}" PlaceholderText="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Tool_NotificationForRecognitionListening}"/>
 							</StackPanel>
 						</StackPanel>
 
@@ -100,7 +100,7 @@
 						<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Recognition_Mute_OnGameMute}">
 							<StackPanel Theme="{StaticResource HStackS}">
 								<Label Theme="{StaticResource HLabel}" Content="Game Mute OSC Address"/>
-								<TextBox Text="{Binding Config.Osc_Address_Game_Mute}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Game_Mute}"/>
+								<TextBox Text="{Binding Config.Osc_Address_Game_Mute}" PlaceholderText="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Game_Mute}"/>
 							</StackPanel>
 						</StackPanel>
 					</StackPanel>
@@ -146,14 +146,14 @@
 
 						<StackPanel Theme="{StaticResource HStackS}">
 							<Label Theme="{StaticResource HLabel}" Content="Azure Services API Key"/>
-							<TextBox Text="{Binding Config.AzureServices_ApiKey}" Tag="API Key ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_AzureServices_ApiKey}"/>
+							<TextBox Text="{Binding Config.AzureServices_ApiKey}" PlaceholderText="API Key ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_AzureServices_ApiKey}"/>
 						</StackPanel>
 
 						<CheckBox Theme="{StaticResource HCheckBox}" Content="Censor Profanity" IsChecked="{Binding Config.AzureServices_CensorProfanity}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_AzureServices_CensorProfanity}"/>
 
 						<StackPanel Theme="{StaticResource HStackS}">
 							<Label Theme="{StaticResource HLabel}" Content="Custom Endpoint"/>
-							<TextBox Text="{Binding Config.Recognition_Azure_CustomEndpoint}" Tag="Endpoint ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Azure_CustomEndpoint}"/>
+							<TextBox Text="{Binding Config.Recognition_Azure_CustomEndpoint}" PlaceholderText="Endpoint ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Azure_CustomEndpoint}"/>
 						</StackPanel>
 
 						<WrapPanel Theme="{StaticResource HWrap}">
@@ -291,7 +291,7 @@
 
 								<StackPanel Theme="{StaticResource HStackS}">
 									<Label Theme="{StaticResource HLabel}" Content="Prompt"/>
-									<TextBox Text="{Binding Config.Recognition_Whisper_CfgAdv_Prompt}" Tag="Prompt ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_CfgAdv_Prompt}"/>
+									<TextBox Text="{Binding Config.Recognition_Whisper_CfgAdv_Prompt}" PlaceholderText="Prompt ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_CfgAdv_Prompt}"/>
 								</StackPanel>
 
 								<CheckBox Theme="{StaticResource HCheckBox}" Content="Use Beam Search Sampling" IsChecked="{Binding Config.Recognition_Whisper_CfgAdv_UseBeamSearchSampling}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_CfgAdv_UseBeamSearchSampling}"/>

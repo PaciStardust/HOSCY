@@ -58,12 +58,12 @@
 					<StackPanel Theme="{StaticResource HStackIndent}">
 						<StackPanel Theme="{StaticResource HStackS}">
 							<Label Theme="{StaticResource HLabel}" Content="Send Message"/>
-							<TextBox Text="{Binding Config.Osc_Address_Game_Textbox}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Game_Textbox}"/>
+							<TextBox Text="{Binding Config.Osc_Address_Game_Textbox}" PlaceholderText="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Game_Textbox}"/>
 						</StackPanel>
 
 						<StackPanel Theme="{StaticResource HStackS}">
 							<Label Theme="{StaticResource HLabel}" Content="Trigger Typing Indicator"/>
-							<TextBox Text="{Binding Config.Osc_Address_Game_Typing}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Game_Typing}"/>
+							<TextBox Text="{Binding Config.Osc_Address_Game_Typing}" PlaceholderText="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Game_Typing}"/>
 						</StackPanel>
 					</StackPanel>
 
@@ -72,12 +72,12 @@
 					<StackPanel Theme="{StaticResource HStackIndent}">
 						<StackPanel Theme="{StaticResource HStackS}">
 							<Label Theme="{StaticResource HLabel}" Content="On Mute"/>
-							<TextBox Text="{Binding Config.Osc_Address_Game_Mute}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Game_Mute}"/>
+							<TextBox Text="{Binding Config.Osc_Address_Game_Mute}" PlaceholderText="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Game_Mute}"/>
 						</StackPanel>
 
 						<StackPanel Theme="{StaticResource HStackS}">
 							<Label Theme="{StaticResource HLabel}" Content="On AFK"/>
-							<TextBox Text="{Binding Config.Osc_Address_Game_Afk}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Game_Afk}"/>
+							<TextBox Text="{Binding Config.Osc_Address_Game_Afk}" PlaceholderText="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Game_Afk}"/>
 						</StackPanel>
 					</StackPanel>
 
@@ -86,27 +86,27 @@
 					<StackPanel Theme="{StaticResource HStackIndent}">
 						<StackPanel Theme="{StaticResource HStackS}">
 							<Label Theme="{StaticResource HLabel}" Content="Toggle Playback"/>
-							<TextBox Text="{Binding Config.Osc_Address_Media_Toggle}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Media_Toggle}"/>
+							<TextBox Text="{Binding Config.Osc_Address_Media_Toggle}" PlaceholderText="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Media_Toggle}"/>
 						</StackPanel>
 
 						<StackPanel Theme="{StaticResource HStackS}">
 							<Label Theme="{StaticResource HLabel}" Content="Pause Playback"/>
-							<TextBox Text="{Binding Config.Osc_Address_Media_Pause}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Media_Pause}"/>
+							<TextBox Text="{Binding Config.Osc_Address_Media_Pause}" PlaceholderText="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Media_Pause}"/>
 						</StackPanel>
 
 						<StackPanel Theme="{StaticResource HStackS}">
 							<Label Theme="{StaticResource HLabel}" Content="Resume Playback"/>
-							<TextBox Text="{Binding Config.Osc_Address_Media_Play}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Media_Play}"/>
+							<TextBox Text="{Binding Config.Osc_Address_Media_Play}" PlaceholderText="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Media_Play}"/>
 						</StackPanel>
 
 						<StackPanel Theme="{StaticResource HStackS}">
 							<Label Theme="{StaticResource HLabel}" Content="Previous Track"/>
-							<TextBox Text="{Binding Config.Osc_Address_Media_Previous}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Media_Previous}"/>
+							<TextBox Text="{Binding Config.Osc_Address_Media_Previous}" PlaceholderText="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Media_Previous}"/>
 						</StackPanel>
 
 						<StackPanel Theme="{StaticResource HStackS}">
 							<Label Theme="{StaticResource HLabel}" Content="Next Track"/>
-							<TextBox Text="{Binding Config.Osc_Address_Media_Next}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Media_Next}"/>
+							<TextBox Text="{Binding Config.Osc_Address_Media_Next}" PlaceholderText="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Media_Next}"/>
 						</StackPanel>
 					</StackPanel>
 
@@ -115,27 +115,27 @@
 					<StackPanel Theme="{StaticResource HStackIndent}">
 						<StackPanel Theme="{StaticResource HStackS}">
 							<Label Theme="{StaticResource HLabel}" Content="Clear Output"/>
-							<TextBox Text="{Binding Config.Osc_Address_Tool_Clear}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Tool_Clear}"/>
+							<TextBox Text="{Binding Config.Osc_Address_Tool_Clear}" PlaceholderText="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Tool_Clear}"/>
 						</StackPanel>
 
 						<StackPanel Theme="{StaticResource HStackS}">
 							<Label Theme="{StaticResource HLabel}" Content="Toggle Speech Recognition"/>
-							<TextBox Text="{Binding Config.Osc_Address_Tool_ToggleMute}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Tool_ToggleMute}"/>
+							<TextBox Text="{Binding Config.Osc_Address_Tool_ToggleMute}" PlaceholderText="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Tool_ToggleMute}"/>
 						</StackPanel>
 
 						<StackPanel Theme="{StaticResource HStackS}">
 							<Label Theme="{StaticResource HLabel}" Content="Toggle Partial Replacements"/>
-							<TextBox Text="{Binding Config.Osc_Address_Tool_ToggleReplacementsPartial}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Tool_ToggleReplacementsPartial}"/>
+							<TextBox Text="{Binding Config.Osc_Address_Tool_ToggleReplacementsPartial}" PlaceholderText="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Tool_ToggleReplacementsPartial}"/>
 						</StackPanel>
 
 						<StackPanel Theme="{StaticResource HStackS}">
 							<Label Theme="{StaticResource HLabel}" Content="Toggle Full Replacements"/>
-							<TextBox Text="{Binding Config.Osc_Address_Tool_ToggleReplacementsFull}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Tool_ToggleReplacementsFull}"/>
+							<TextBox Text="{Binding Config.Osc_Address_Tool_ToggleReplacementsFull}" PlaceholderText="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Tool_ToggleReplacementsFull}"/>
 						</StackPanel>
 
 						<StackPanel Theme="{StaticResource HStackS}">
 							<Label Theme="{StaticResource HLabel}" Content="Toggle Automatic Speech Recognition Toggle"/>
-							<TextBox Text="{Binding Config.Osc_Address_Tool_ToggleRecognitionAutoMute}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Tool_ToggleRecognitionAutoMute}"/>
+							<TextBox Text="{Binding Config.Osc_Address_Tool_ToggleRecognitionAutoMute}" PlaceholderText="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Tool_ToggleRecognitionAutoMute}"/>
 						</StackPanel>
 					</StackPanel>
 
@@ -144,22 +144,22 @@
 					<StackPanel Theme="{StaticResource HStackIndent}">
 						<StackPanel Theme="{StaticResource HStackS}">
 							<Label Theme="{StaticResource HLabel}" Content="Send Text Message via HOSCY"/>
-							<TextBox Text="{Binding Config.Osc_Address_Input_TextMessage}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Input_TextMessage}"/>
+							<TextBox Text="{Binding Config.Osc_Address_Input_TextMessage}" PlaceholderText="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Input_TextMessage}"/>
 						</StackPanel>
 
 						<StackPanel Theme="{StaticResource HStackS}">
 							<Label Theme="{StaticResource HLabel}" Content="Send Text Notification via HOSCY"/>
-							<TextBox Text="{Binding Config.Osc_Address_Input_TextNotification}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Input_TextNotification}"/>
+							<TextBox Text="{Binding Config.Osc_Address_Input_TextNotification}" PlaceholderText="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Input_TextNotification}"/>
 						</StackPanel>
 
 						<StackPanel Theme="{StaticResource HStackS}">
 							<Label Theme="{StaticResource HLabel}" Content="Send Audio Message via HOSCY"/>
-							<TextBox Text="{Binding Config.Osc_Address_Input_AudioMessage}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Input_AudioMessage}"/>
+							<TextBox Text="{Binding Config.Osc_Address_Input_AudioMessage}" PlaceholderText="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Input_AudioMessage}"/>
 						</StackPanel>
 
 						<StackPanel Theme="{StaticResource HStackS}">
 							<Label Theme="{StaticResource HLabel}" Content="Send Other Message via HOSCY"/>
-							<TextBox Text="{Binding Config.Osc_Address_Input_OtherMessage}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Input_OtherMessage}"/>
+							<TextBox Text="{Binding Config.Osc_Address_Input_OtherMessage}" PlaceholderText="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Input_OtherMessage}"/>
 						</StackPanel>
 					</StackPanel>
 
@@ -168,7 +168,7 @@
 					<StackPanel Theme="{StaticResource HStackIndent}">
 						<StackPanel Theme="{StaticResource HStackS}">
 							<Label Theme="{StaticResource HLabel}" Content="On Recognition Status Changed"/>
-							<TextBox Text="{Binding Config.Osc_Address_Tool_NotificationForRecognitionListening}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Tool_NotificationForRecognitionListening}"/>
+							<TextBox Text="{Binding Config.Osc_Address_Tool_NotificationForRecognitionListening}" PlaceholderText="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Tool_NotificationForRecognitionListening}"/>
 						</StackPanel>
 					</StackPanel>
 				</StackPanel>

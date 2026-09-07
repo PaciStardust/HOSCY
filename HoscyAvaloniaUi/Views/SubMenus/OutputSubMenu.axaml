@@ -213,12 +213,12 @@
 							<StackPanel Theme="{StaticResource HStackIndent}">
 								<StackPanel Theme="{StaticResource HStackS}">
 									<Label Theme="{StaticResource HLabel}" Content="Send Message"/>
-									<TextBox Text="{Binding Config.Osc_Address_Game_Textbox}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Game_Textbox}"/>
+									<TextBox Text="{Binding Config.Osc_Address_Game_Textbox}" PlaceholderText="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Game_Textbox}"/>
 								</StackPanel>
 
 								<StackPanel Theme="{StaticResource HStackS}">
 									<Label Theme="{StaticResource HLabel}" Content="Trigger Typing Indicator"/>
-									<TextBox Text="{Binding Config.Osc_Address_Game_Typing}" Tag="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Game_Typing}"/>
+									<TextBox Text="{Binding Config.Osc_Address_Game_Typing}" PlaceholderText="Address ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Osc_Address_Game_Typing}"/>
 								</StackPanel>
 							</StackPanel>
 						</StackPanel>
