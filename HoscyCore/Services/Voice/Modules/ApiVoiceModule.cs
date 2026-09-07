@@ -11,8 +11,8 @@ namespace HoscyCore.Services.Voice.Modules;
 [LoadIntoDiContainer(typeof(ApiVoiceModuleStartInfo))]
 public class ApiVoiceModuleStartInfo : IVoiceModuleStartInfo
 {
-    public VoiceModuleConfigFlags ConfigFlags => VoiceModuleConfigFlags.Api;
-    public string Name => "API";
+    public VoiceModuleConfigFlags ConfigFlags => VoiceModuleConfigFlags.AnyApi;
+    public string Name => "Any-API Voice";
     public string Description => "TTS using any API";
     public Type ModuleType => typeof(ApiVoiceModule);
     public ModulePriority Priority => ModulePriority.Low;

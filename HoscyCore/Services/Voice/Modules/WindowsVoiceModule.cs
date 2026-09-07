@@ -16,7 +16,7 @@ namespace HoscyCore.Services.Voice.Modules;
 public class WindowsVoiceModuleStartInfo : IVoiceModuleStartInfo
 {
     public VoiceModuleConfigFlags ConfigFlags => VoiceModuleConfigFlags.Windows;
-    public string Name => "Windows";
+    public string Name => "Windows Voice";
     public string Description => "Voice synthesis using Windows";
     public Type ModuleType => typeof(WindowsVoiceModule);
     public ModulePriority Priority => ModulePriority.Low;

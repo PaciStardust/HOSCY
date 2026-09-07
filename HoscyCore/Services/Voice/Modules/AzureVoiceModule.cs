@@ -12,7 +12,7 @@ namespace HoscyCore.Services.Voice.Modules;
 public class AzureVoiceModuleStartInfo : IVoiceModuleStartInfo
 {
     public VoiceModuleConfigFlags ConfigFlags => VoiceModuleConfigFlags.Azure;
-    public string Name => "Azure Services";
+    public string Name => "Azure Services Voice";
     public string Description => "Voice synthesis using Azure";
     public Type ModuleType => typeof(AzureVoiceModule);
     public ModulePriority Priority => ModulePriority.Medium;

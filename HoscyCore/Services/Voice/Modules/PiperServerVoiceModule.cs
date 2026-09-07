@@ -15,7 +15,7 @@ namespace HoscyCore.Services.Voice.Modules;
 public class PiperServerVoiceModuleStartInfo : IVoiceModuleStartInfo
 {
     public VoiceModuleConfigFlags ConfigFlags => VoiceModuleConfigFlags.PiperWeb;
-    public string Name => "Piper Server";
+    public string Name => "Piper Server Voice";
     public string Description => "TTS using a Piper Webserver";
     public Type ModuleType => typeof(PiperServerVoiceModule);
     public ModulePriority Priority => ModulePriority.High;
