@@ -27,7 +27,8 @@ public class PopupWindowFactory
     IContainerBulkLoader<DisplayListWindowViewModelBase> displayListWvmLoader,
     IContainerBulkLoader<EditListWindowViewModelBase> editListWvmLoader,
     IContainerBulkLoader<EditOscRelayFiltersWindowViewModelBase> editOscRelayFiltersWvmLoader,
-    IContainerBulkLoader<EditReplacementsWindowViewModelBase> editReplacementsWvmLoader
+    IContainerBulkLoader<EditReplacementsWindowViewModelBase> editReplacementsWvmLoader,
+    IContainerBulkLoader<EditAzureVoicesWindowViewModelBase> editAzureVoicesWvmLoader
 )
     : IService
 {
@@ -44,6 +45,7 @@ public class PopupWindowFactory
     private readonly IContainerBulkLoader<EditListWindowViewModelBase> _editListWvmLoader = editListWvmLoader;
     private readonly IContainerBulkLoader<EditOscRelayFiltersWindowViewModelBase> _editOscRelayFiltersWvmLoader = editOscRelayFiltersWvmLoader;
     private readonly IContainerBulkLoader<EditReplacementsWindowViewModelBase> _editReplacementsWvmLoader = editReplacementsWvmLoader;
+    private readonly IContainerBulkLoader<EditAzureVoicesWindowViewModelBase> _editAzureVoicesWvmLoader = editAzureVoicesWvmLoader;
 
     private void Open(Func<Window> windowCreate, ViewModelBase vm, bool dialog, Window? parent, Action? onClose)
     {
@@ -188,5 +190,16 @@ public class PopupWindowFactory
         vmRes.Value.Init(values);
 
         Open(() => new EditReplacementsWindow(), vmRes.Value, true, parentWindow, onClose);
+    }
+
+    public void OpenEditAzureVoices(List<AzureTtsVoiceModel> values, Window? parentWindow, Action? onClose = null)
+    {
+        _logger.Debug("Creating azure voice editor");
+
+        var vmRes = _editAzureVoicesWvmLoader.GetInstance();
+        if (!vmRes.IsOk) return;
+        vmRes.Value.Init(values);
+
+        Open(() => new EditAzureVoicesWindow(), vmRes.Value, true, parentWindow, onClose);
     }
 }

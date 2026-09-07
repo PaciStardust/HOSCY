@@ -1,0 +1,60 @@
+<Window xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:HoscyAvaloniaUi.ViewModels.Windows"
+	xmlns:cfg="using:HoscyCore.Configuration.Modern"
+	mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="400"
+	x:DataType="vm:EditAzureVoicesWindowViewModelBase"
+	x:Class="HoscyAvaloniaUi.Views.Windows.EditAzureVoicesWindow"
+
+	Title="Edit Azure Voices"
+	MinHeight="400"
+	MinWidth="700"
+	Height="400"
+	Width="700"
+	CanResize="True"
+	Background="{StaticResource BackgroundBaseBrush}" 
+	WindowStartupLocation="CenterOwner">
+
+	<Design.DataContext>
+		<vm:EditAzureVoicesWindowViewModelPreview/>
+	</Design.DataContext>
+
+	<Grid Margin="16" ColumnDefinitions="5*,16,3*">
+		<ListBox Grid.Column="0" Theme="{StaticResource HListBoxF}" SelectedIndex="{Binding SelectedIndex}" ItemsSource="{Binding DataDisplayed}"
+			ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="SelectionChanged"/>
+
+		<Grid Grid.Column="2" RowDefinitions="Auto,16,1*">
+			<StackPanel Grid.Row="0" Theme="{StaticResource HStack}">
+				<WrapPanel Theme="{StaticResource HWrap}" HorizontalAlignment="Center">
+					<Button Theme="{StaticResource HButton}" Content="Add New" Click="AddEntry"/>
+					<Button Theme="{StaticResource HButton}" Content="Remove" Click="RemoveEntry"/>
+				</WrapPanel>
+
+				<WrapPanel Theme="{StaticResource HWrap}" HorizontalAlignment="Center">
+					<Button Theme="{StaticResource HButton}" Content="Modify" Click="ModifyEntry"/>
+				</WrapPanel>
+			</StackPanel>
+				
+			<ScrollViewer Grid.Row="2" Theme="{StaticResource HScrollViewer}">
+				<StackPanel Theme="{StaticResource HStack}">
+					<StackPanel Theme="{StaticResource HStackS}">
+						<Label Theme="{StaticResource HLabel}" HorizontalAlignment="Center" Content="Name"/>
+						<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedName}" PlaceholderText="Name ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:AzureTtsVoiceModel.DESC_Name}"/>
+					</StackPanel>
+
+					<StackPanel Theme="{StaticResource HStackS}">
+						<Label Theme="{StaticResource HLabel}" HorizontalAlignment="Center" Content="Voice"/>
+						<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedVoice}" PlaceholderText="Voice ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:AzureTtsVoiceModel.DESC_Voice}"/>
+					</StackPanel>
+
+					<StackPanel Theme="{StaticResource HStackS}">
+						<Label Theme="{StaticResource HLabel}" HorizontalAlignment="Center" Content="Language"/>
+						<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedLanguage}" PlaceholderText="Language ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:AzureTtsVoiceModel.DESC_Language}"/>
+					</StackPanel>
+				</StackPanel>
+			</ScrollViewer>
+		</Grid>
+	</Grid>
+</Window>
