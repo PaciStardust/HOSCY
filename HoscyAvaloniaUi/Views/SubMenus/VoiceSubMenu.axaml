@@ -3,16 +3,189 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="using:HoscyAvaloniaUi.ViewModels.SubMenus"
-	mc:Ignorable="d" d:DesignHeight="420" d:DesignWidth="689"
+	xmlns:cfg="using:HoscyCore.Configuration.Modern"
+	mc:Ignorable="d" d:DesignHeight="3000" d:DesignWidth="689"
 	x:DataType="vm:VoiceSubMenuViewModelBase"
-	x:Class="HoscyAvaloniaUi.Views.SubMenus.VoiceSubMenu">
+	x:Class="HoscyAvaloniaUi.Views.SubMenus.VoiceSubMenu"
+	Background="{StaticResource BackgroundBaseBrush}">
 
 	<Design.DataContext>
 		<vm:VoiceSubMenuViewModelPreview/>
 	</Design.DataContext>
 
-	<ScrollViewer Margin="16,8,8,8" VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="0,0,32,0">
-        </StackPanel>
-    </ScrollViewer>
+	<ScrollViewer Theme="{StaticResource HScrollViewerPage}">
+		<StackPanel Theme="{StaticResource HStackL}">
+			<StackPanel Theme="{StaticResource HStack}">
+				<Label Content="General Voice Settings" Theme="{StaticResource HLabelL}"/>
+
+				<StackPanel Theme="{StaticResource HStackIndent}">
+					<Label Content="Voice Module" Theme="{StaticResource HLabelM}"/>
+
+					<StackPanel Theme="{StaticResource HStackIndent}">
+						<StackPanel Theme="{StaticResource HStackS}">
+							<Label Theme="{StaticResource HLabel}" Content="Selected Module"/>
+
+							<WrapPanel Theme="{StaticResource HWrap}">
+								<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding OptionsSelectedModule.Index}" ItemsSource="{Binding OptionsSelectedModule.Options}" SelectionChanged="OptionsSelectedModuleChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_SelectedModuleName}"/>
+								<Button Content="{Binding OptionsSelectedModuleStartStopText}" BorderBrush="{Binding OptionsSelectedModuleStartStopBrush}" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsSelectedModuleStartStopClicked" ToolTip.Tip="Starts and stops the selected voice module"/>
+								<Button Content="Refresh" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsSelectedModuleRefreshClicked" ToolTip.Tip="Swaps out voice modules if selection changed"/>
+								<Button Content="Restart" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsSelectedModuleRestartClicked" IsEnabled="{Binding OptionsSelectedModuleRestartEnabled}" ToolTip.Tip="Restarts the current voice module"/>
+							</WrapPanel>
+
+							<TextBlock Theme="{StaticResource HTextBlockError}" Text="Currently selected module is not loaded, please press 'Reload'" IsVisible="{Binding OptionsSelectedModuleRestartNeeded}"/>
+
+							<TextBlock Theme="{StaticResource HTextBlockNote}" Text="{Binding OptionsSelectedModuleDescription}"/>
+						</StackPanel>
+
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Automatically Start Module At Launch" IsChecked="{Binding Config.Voice_AutoStart}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_AutoStart}"/>
+					</StackPanel>
+
+					<Label Content="Audio" Theme="{StaticResource HLabelM}"/>
+					
+					<StackPanel Theme="{StaticResource HStackIndent}">
+						<StackPanel Theme="{StaticResource HStackS}">
+							<Label Theme="{StaticResource HLabel}" Content="Input Speaker"/>
+							<WrapPanel Theme="{StaticResource HWrap}">
+								<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding OptionsSpeaker.Index}" ItemsSource="{Binding OptionsSpeaker.Options}" SelectionChanged="OptionsSpeakerChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_CurrentSpeakerName}"/>
+								<Button Content="Refresh" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsSpeakerRefreshClicked" ToolTip.Tip="Refreshes the list of speakers"/>
+							</WrapPanel>
+						</StackPanel>
+
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<Slider Theme="{StaticResource HSlider}" Width="320" VerticalAlignment="Center" Minimum="0" Maximum="1" Value="{Binding Config.Voice_AudioVolumePercent}" ValueChanged="OptionsSpeakerVolumeChanged"/>
+							<Label Theme="{StaticResource HLabel}" Content="{Binding OptionsSpeakerVolumeText}"/>
+						</WrapPanel>
+					</StackPanel>
+
+					<Label Content="Output" Theme="{StaticResource HLabelM}"/>
+
+					<StackPanel Theme="{StaticResource HStackIndent}">
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Voice_MaximumTextLength, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.Voice_MaximumTextLength}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_MaximumTextLength}"/>
+							<Label Theme="{StaticResource HLabel}" Content="Maximum Allowed Text Length" VerticalAlignment="Center"/>
+						</WrapPanel>
+						
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Skip Longer Text" IsChecked="{Binding Config.Voice_SkipLongerText}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_SkipLongerText}"/>
+					</StackPanel>	
+				</StackPanel>
+			</StackPanel>
+
+			<StackPanel Theme="{StaticResource HStack}">
+				<Label Content="Modules" Theme="{StaticResource HLabelL}"/>
+
+				<StackPanel Theme="{StaticResource HStackIndent}">
+					<WrapPanel Theme="{StaticResource HWrap}">
+						<Label Content="Any-API Module" Theme="{StaticResource HLabelM}"/>
+						<Button Content="Edit Presets" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="ModulesAnyApiEditPresets" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Api_Presets}"/>
+					</WrapPanel>
+
+					<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="False" IsVisible="{Binding !ModulesAnyApiIsSelected}">
+						<Label Theme="{StaticResource HLabel}" Content="{Binding ModulesSettingsVisibleIfCompatible}" VerticalAlignment="Center"/>
+					</StackPanel>
+
+					<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding ModulesAnyApiIsSelected}">
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding ModulesAnyApiPresets.Index}" ItemsSource="{Binding ModulesAnyApiPresets.Options}" SelectionChanged="ModulesAnyApiPresetChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Api_Preset}"/>
+							<Label Theme="{StaticResource HLabel}" Content="Preset for Recognition" VerticalAlignment="Center"/>
+						</WrapPanel>
+					</StackPanel>
+
+					<Label Content="Azure Module" Theme="{StaticResource HLabelM}"/>
+
+					<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="False" IsVisible="{Binding !ModulesAzureIsSelected}">
+						<Label Theme="{StaticResource HLabel}" Content="{Binding ModulesSettingsVisibleIfCompatible}" VerticalAlignment="Center"/>
+					</StackPanel>
+
+					<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding ModulesAzureIsSelected}">
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding ModulesAzureVoices.Index}" ItemsSource="{Binding ModulesAzureVoices.Options}" SelectionChanged="ModulesAzureVoiceChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_Azure_VoiceList}"/>
+							<Label Theme="{StaticResource HLabel}" Content="Current Voice" VerticalAlignment="Center"/>
+							<Button Content="Edit Voices" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="ModulesAzureEditVoices" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_Azure_CurrentVoice}"/>
+						</WrapPanel>
+
+						<StackPanel Theme="{StaticResource HStackS}">
+							<Label Theme="{StaticResource HLabel}" Content="Custom Endpoint"/>
+							<TextBox Text="{Binding Config.Voice_Azure_CustomEndpoint}" PlaceholderText="Endpoint ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_Azure_CustomEndpoint}"/>
+						</StackPanel>
+					
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<TextBox Theme="{StaticResource HTextBoxMedium}" PlaceholderText="Region ..." Text="{Binding Config.AzureServices_Region}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_AzureServices_Region}"/>
+							<Label Theme="{StaticResource HLabel}" Content="Azure Services Region" VerticalAlignment="Center"/>
+						</WrapPanel>
+
+						<StackPanel Theme="{StaticResource HStackS}">
+							<Label Theme="{StaticResource HLabel}" Content="Azure Services API Key"/>
+							<TextBox Text="{Binding Config.AzureServices_ApiKey}" PlaceholderText="API Key ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_AzureServices_ApiKey}"/>
+						</StackPanel>
+
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Censor Profanity" IsChecked="{Binding Config.AzureServices_CensorProfanity}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_AzureServices_CensorProfanity}"/>
+					</StackPanel>
+
+					<Label Content="Piper Server Module" Theme="{StaticResource HLabelM}"/>
+
+					<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="False" IsVisible="{Binding !ModulesPiperIsSelected}">
+						<Label Theme="{StaticResource HLabel}" Content="{Binding ModulesSettingsVisibleIfCompatible}" VerticalAlignment="Center"/>
+					</StackPanel>
+
+					<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding ModulesPiperIsSelected}">
+						<Label Theme="{StaticResource HLabelS}" Content="Addressing"/>
+
+						<StackPanel Theme="{StaticResource HStackIndent}">
+							<WrapPanel Theme="{StaticResource HWrap}">
+								<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="IP ..." Text="{Binding Config.Voice_Piper_Ip, UpdateSourceTrigger=LostFocus}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_Piper_Ip}"/>
+								<Label Theme="{StaticResource HLabel}" Content="Target IP" VerticalAlignment="Center"/>
+							</WrapPanel>
+
+							<WrapPanel Theme="{StaticResource HWrap}">
+								<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="Port ..." Text="{Binding Config.Voice_Piper_Port, UpdateSourceTrigger=LostFocus, Converter={StaticResource UshortRange}, ConverterParameter=ConfigModel.Voice_Piper_Port}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_Piper_Port}"/>
+								<Label Theme="{StaticResource HLabel}" Content="Target Port" VerticalAlignment="Center"/>
+							</WrapPanel>
+						</StackPanel>
+
+						<Label Theme="{StaticResource HLabelS}" Content="Request Parameters"/>
+						
+						<StackPanel Theme="{StaticResource HStackIndent}">
+							<WrapPanel Theme="{StaticResource HWrap}">
+								<TextBox Theme="{StaticResource HTextBoxMedium}" PlaceholderText="Voice ..." Text="{Binding Config.Voice_Piper_Request_Voice}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_Piper_Request_Voice}"/>
+								<Label Theme="{StaticResource HLabel}" Content="Request Voice" VerticalAlignment="Center"/>
+							</WrapPanel>
+
+							<WrapPanel Theme="{StaticResource HWrap}">
+								<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="Scale ..." Text="{Binding Config.Voice_Piper_Request_NoiseScale, Converter={StaticResource FloatRange}, ConverterParameter=ConfigModel.Voice_Piper_Request_NoiseScale}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_Piper_Request_NoiseScale}"/>
+								<Label Theme="{StaticResource HLabel}" Content="Noise Scale" VerticalAlignment="Center"/>
+							</WrapPanel>
+
+							<WrapPanel Theme="{StaticResource HWrap}">
+								<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="W Scale ..." Text="{Binding Config.Voice_Piper_Request_NoiseWScale, Converter={StaticResource FloatRange}, ConverterParameter=ConfigModel.Voice_Piper_Request_NoiseWScale}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_Piper_Request_NoiseWScale}"/>
+								<Label Theme="{StaticResource HLabel}" Content="Noise W Scale" VerticalAlignment="Center"/>
+							</WrapPanel>
+						</StackPanel>
+
+						<Label Theme="{StaticResource HLabelS}" Content="Process Creation"/>
+
+						<StackPanel Theme="{StaticResource HStackIndent}">
+							<CheckBox Theme="{StaticResource HCheckBox}" Content="Start Piper Process At Module Startup" IsChecked="{Binding Config.Voice_Piper_Process_Enabled}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_Piper_Process_Enabled}"/>
+
+							<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding Config.Voice_Piper_Process_Enabled}">
+								<WrapPanel Theme="{StaticResource HWrap}">
+									<TextBox Theme="{StaticResource HTextBoxMedium}" PlaceholderText="Terminal ..." Text="{Binding Config.Voice_Piper_Process_Terminal}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_Piper_Process_Terminal}"/>
+									<Label Theme="{StaticResource HLabel}" Content="Terminal Process Name" VerticalAlignment="Center"/>
+								</WrapPanel>
+
+								<WrapPanel Theme="{StaticResource HWrap}">
+									<TextBox Theme="{StaticResource HTextBoxMedium}" PlaceholderText="Voice ..." Text="{Binding Config.Voice_Piper_Process_Voice}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_Piper_Process_Voice}"/>
+									<Label Theme="{StaticResource HLabel}" Content="Process Voice" VerticalAlignment="Center"/>
+								</WrapPanel>
+
+								<StackPanel Theme="{StaticResource HStackS}">
+									<Label Theme="{StaticResource HLabel}" Content="Python VENV Directory"/>
+									<TextBox Text="{Binding Config.Voice_Piper_Process_VenvDir}" PlaceholderText="Directory ..." Theme="{StaticResource HTextBoxLong}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_Piper_Process_VenvDir}"/>
+								</StackPanel>
+							</StackPanel>
+						</StackPanel>
+					</StackPanel>
+				</StackPanel>
+			</StackPanel>
+		</StackPanel>
+	</ScrollViewer>
 </UserControl>
