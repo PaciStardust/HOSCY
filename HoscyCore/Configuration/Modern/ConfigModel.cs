@@ -1597,16 +1597,6 @@ public class ConfigModel : ObservableObject
     private string _voice_Azure_CustomEndpoint = string.Empty;
     #endregion
 
-    #region Voice - Microsoft
-    public const string DESC_Voice_Microsoft_ModelName = "ID of Microsoft TTS model";
-    public string Voice_Microsoft_ModelName
-    {
-        get => _voice_Microsoft_ModelName;
-        set => SetProperty(ref _voice_Microsoft_ModelName, value);
-    }
-    private string _voice_Microsoft_ModelName = string.Empty;
-    #endregion
-
     #region Voice - Piper
     public const string DESC_Voice_Piper_Process_Enabled = "Should a Piper process be started on module start";
     public bool Voice_Piper_Process_Enabled
@@ -1687,6 +1677,16 @@ public class ConfigModel : ObservableObject
             value.MinMax(MIN_Voice_Piper_Request_NoiseWScale, MAX_Voice_Piper_Request_NoiseWScale));
     }
     private float _voice_Piper_Request_NoiseWScale = -1;
+    #endregion
+
+    #region Voice - Windows
+    public const string DESC_Voice_Windows_ModelName = "ID of Windows TTS model";
+    public string Voice_Windows_ModelName
+    {
+        get => _voice_Windows_ModelName;
+        set => SetProperty(ref _voice_Windows_ModelName, value);
+    }
+    private string _voice_Windows_ModelName = string.Empty;
     #endregion
 
     #region WebRtc

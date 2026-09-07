@@ -19,9 +19,9 @@ public class VoiWindowsCommandModule
     private readonly ReflectPropEditCommandModule _reflectCm = reflectCm;
     private readonly ILogger _logger = logger.ForContext<VoiWindowsCommandModule>();
 
-    public string ModuleName => "Voice - Azure";
-    public string ModuleDescription => "Configure the azure services voice module";
-    public string[] ModuleCommands => [ "voi-azure" ];
+    public string ModuleName => "Voice - Windows";
+    public string ModuleDescription => "Configure the windows voice module";
+    public string[] ModuleCommands => [ "voi-windows" ];
 
     protected override Res AddExtrasSubcommands(List<(SubCommandModuleAttribute Attribute, Func<string?, Res> Func)> list)
     {
@@ -32,7 +32,7 @@ public class VoiWindowsCommandModule
     private QuickConfigCommandInfo[] GetQuickCommands()
     {
         return [
-            new(["selected-model"], nameof(ConfigModel.Voice_Microsoft_ModelName), ConfigModel.DESC_Voice_Microsoft_ModelName)
+            new(["selected-model"], nameof(ConfigModel.Voice_Windows_ModelName), ConfigModel.DESC_Voice_Windows_ModelName)
         ];
     }
 

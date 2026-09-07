@@ -48,10 +48,10 @@ public class WindowsVoiceModule(
         if (voiceRes.Count == 0)
             return ResC.FailLog("Could not find any voices to use", _logger);
 
-        var voiceMatch = voiceRes.FirstOrDefault(x => x.Id == _config.Voice_Microsoft_ModelName);
+        var voiceMatch = voiceRes.FirstOrDefault(x => x.Id == _config.Voice_Windows_ModelName);
         if (voiceMatch is null)
         {
-            _logger.Warning("Failed to find voice matching ID {id}", _config.Voice_Microsoft_ModelName);
+            _logger.Warning("Failed to find voice matching ID {id}", _config.Voice_Windows_ModelName);
             voiceMatch = voiceRes[0];
         }
         _synth.SelectVoice(voiceMatch.Name);
