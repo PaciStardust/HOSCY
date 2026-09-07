@@ -1680,7 +1680,7 @@ public class ConfigModel : ObservableObject
     #endregion
 
     #region Voice - Windows
-    public const string DESC_Voice_Windows_ModelName = "ID of Windows TTS model";
+    public const string DESC_Voice_Windows_ModelName = "ID of Windows TTS model"; //todo: impl in ui
     public string Voice_Windows_ModelName
     {
         get => _voice_Windows_ModelName;

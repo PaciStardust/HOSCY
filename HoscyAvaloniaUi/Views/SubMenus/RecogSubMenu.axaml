@@ -4,7 +4,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="using:HoscyAvaloniaUi.ViewModels.SubMenus"
 	xmlns:cfg="using:HoscyCore.Configuration.Modern"
-	mc:Ignorable="d" d:DesignHeight="3000" d:DesignWidth="689"
+	mc:Ignorable="d" d:DesignHeight="3200" d:DesignWidth="689"
 	x:DataType="vm:RecogSubMenuViewModelBase"
 	x:Class="HoscyAvaloniaUi.Views.SubMenus.RecogSubMenu"
 	Background="{StaticResource BackgroundBaseBrush}">
@@ -347,6 +347,51 @@
 						</StackPanel>
 					</StackPanel>
 				</StackPanel>
+			</StackPanel>
+
+			<StackPanel Theme="{StaticResource HStack}">
+				<Label Content="WebRTC Audio" Theme="{StaticResource HLabelL}"/>
+
+				<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="False" IsVisible="{Binding !WebRtcAvailable}">
+						<Label Theme="{StaticResource HLabel}" Content="{Binding ModulesSettingsVisibleIfCompatible}" VerticalAlignment="Center"/>
+					</StackPanel>
+
+					<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding WebRtcAvailable}">
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Enable WebRTC Audio Processing If Possible" IsChecked="{Binding Config.WebRtc_Enabled}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_WebRtc_Enabled}"/>
+
+						<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding Config.WebRtc_Enabled}">
+							<CheckBox Theme="{StaticResource HCheckBox}" Content="Use Echo Cancellation" IsChecked="{Binding Config.WebRtc_UseEchoCancellation}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_WebRtc_UseEchoCancellation}"/>
+							
+							<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.WebRtc_UseEchoCancellation}">
+								<WrapPanel Theme="{StaticResource HWrap}">
+									<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.WebRtc_EchoCancellationDelayMs, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.WebRtc_EchoCancellationDelayMs}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_WebRtc_EchoCancellationDelayMs}"/>
+									<Label Theme="{StaticResource HLabel}" Content="Echo Cancellation Delay (ms)" VerticalAlignment="Center"/>
+								</WrapPanel>
+							</StackPanel>
+
+							<CheckBox Theme="{StaticResource HCheckBox}" Content="Use Noise Suppression" IsChecked="{Binding Config.WebRtc_UseNoiseSuppression}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_WebRtc_UseNoiseSuppression}"/>
+
+							<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.WebRtc_UseNoiseSuppression}">
+								<WrapPanel Theme="{StaticResource HWrap}">
+									<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding WebRtcNoiseSuppressionLevel.Index}" ItemsSource="{Binding WebRtcNoiseSuppressionLevel.Options}" SelectionChanged="WebRtcNoiseSuppressionLevelChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_WebRtc_NoiseSuppressionLevel}"/>
+									<Label Theme="{StaticResource HLabel}" VerticalAlignment="Center" Content="Noise Suppression Level"/>
+								</WrapPanel>
+							</StackPanel>
+
+							<CheckBox Theme="{StaticResource HCheckBox}" Content="Use Automatic Gain Control" IsChecked="{Binding Config.WebRtc_UseAutomaticGainControl}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_WebRtc_UseAutomaticGainControl}"/>
+							
+							<CheckBox Theme="{StaticResource HCheckBox}" Content="Use High Pass Filter" IsChecked="{Binding Config.WebRtc_UseHighPassFilter}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_WebRtc_UseHighPassFilter}"/>
+
+							<CheckBox Theme="{StaticResource HCheckBox}" Content="Use Preamplifier" IsChecked="{Binding Config.WebRtc_UsePreAmplifier}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_WebRtc_UsePreAmplifier}"/>
+
+							<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.WebRtc_UsePreAmplifier}">
+								<WrapPanel Theme="{StaticResource HWrap}">
+									<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.WebRtc_PreAmplifierGainFactor, Converter={StaticResource FloatRange}, ConverterParameter=ConfigModel.WebRtc_PreAmplifierGainFactor}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_WebRtc_PreAmplifierGainFactor}"/>
+									<Label Theme="{StaticResource HLabel}" Content="Preamplifier Gain Factor" VerticalAlignment="Center"/>
+								</WrapPanel>
+							</StackPanel>
+						</StackPanel>
+					</StackPanel>
 			</StackPanel>
 		</StackPanel>
 	</ScrollViewer>

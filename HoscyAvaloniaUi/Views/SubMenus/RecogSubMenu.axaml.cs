@@ -114,4 +114,10 @@ public partial class RecogSubMenu : UserControl
         (DataContext as RecogSubMenuViewModelBase)?.ModulesWindowsModelChanged();
         e.Handled = true;
     }
+
+    private void WebRtcNoiseSuppressionLevelChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        (DataContext as RecogSubMenuViewModelBase)?.WebRtcNoiseSuppressionLevelChanged();
+        e.Handled = true;
+    }
 }

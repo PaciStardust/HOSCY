@@ -15,6 +15,7 @@ using HoscyCore.Services.Recognition.Core;
 using HoscyCore.Services.Recognition.Extra;
 using HoscyCore.Utility;
 using Serilog;
+using SoundFlow.Extensions.WebRtc.Apm;
 
 namespace HoscyAvaloniaUi.ViewModels.SubMenus;
 
@@ -98,6 +99,12 @@ public abstract partial class RecogSubMenuViewModelBase : ViewModelBase
     [ObservableProperty]
     public partial string ModulesWindowsModelDescription { get; set; }
     public virtual void ModulesWindowsModelChanged() { }
+
+    [ObservableProperty]
+    public partial bool WebRtcAvailable { get; protected set; }
+    [ObservableProperty]
+    public partial ComboBoxData WebRtcNoiseSuppressionLevel { get; set; }
+    public virtual void WebRtcNoiseSuppressionLevelChanged() { }
 }
 
 [PrototypeLoadIntoDiContainer(typeof(RecogSubMenuViewModelBase), Lifetime.Transient)]
@@ -166,6 +173,8 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
         ModulesWindowsModelDescription = "This feature is not supported outside of Windows";
         #endif
 
+        WebRtcNoiseSuppressionLevel = new([.. Enum.GetNames<NoiseSuppressionLevel>()], Enum.GetName(Config.WebRtc_NoiseSuppressionLevel) ?? string.Empty, _logger, "WebRtcNoiseSuppressionLevel");
+
         if (errors.Count > 0)
         {
             var error = ResC.FailM(errors);
@@ -211,6 +220,8 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
         ModulesVoskIsSelected = flags.HasFlag(RecognitionModuleConfigFlags.Vosk);
         ModulesWhisperIsSelected = flags.HasFlag(RecognitionModuleConfigFlags.Whisper);
         ModulesWindowsIsSelected = flags.HasFlag(RecognitionModuleConfigFlags.Windows);
+
+        WebRtcAvailable = flags.HasFlag(RecognitionModuleConfigFlags.WebRtc);
     }
     private void OptionsSelectedModuleOnStatusChanged(object? sender, RecognitionStatusChangedEventArgs e)
     {
@@ -432,7 +443,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
         ModulesWindowsModelsUpdateComboBox();
         #endif
     }
-    #if WINDOWS
+#if WINDOWS
     private void ModulesWindowsModelsUpdateComboBox()
     {
         var description =  "Description: ";
@@ -457,7 +468,21 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
         }
         ModulesWindowsModelDescription = description;
     }
-    #endif
+#endif
+
+    public override void WebRtcNoiseSuppressionLevelChanged()
+    {
+        var selected = WebRtcNoiseSuppressionLevel.GetSelected();
+        if (selected is null) return;
+
+        if (!Enum.TryParse<NoiseSuppressionLevel>(selected, out var match))
+        {
+            _logger.Warning("Failed to find NoiseSuppressionLevel match for value {val}", selected);
+            return;
+        }
+
+        Config.WebRtc_NoiseSuppressionLevel = match;
+    }
 }
 
 #if DEBUG
@@ -465,7 +490,10 @@ public class RecogSubMenuViewModelPreview : RecogSubMenuViewModelBase
 {
     public RecogSubMenuViewModelPreview()
     {
-        Config = new();
+        Config = new()
+        {
+            WebRtc_Enabled = true
+        };
 
         OptionsSelectedModule = new();
         OptionsSelectedModuleStartStopText = "Stopped";
@@ -492,6 +520,9 @@ public class RecogSubMenuViewModelPreview : RecogSubMenuViewModelBase
         ModulesWindowsIsSelected = true;
         ModulesWindowsModels = new();
         ModulesWindowsModelDescription = "Sample Description";
+
+        WebRtcAvailable = true;
+        WebRtcNoiseSuppressionLevel = new();
     }
 }
 #endif
