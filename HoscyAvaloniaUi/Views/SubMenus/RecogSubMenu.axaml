@@ -38,7 +38,7 @@
 							<TextBlock Theme="{StaticResource HTextBlockNote}" Text="{Binding OptionsSelectedModuleDescription}"/>
 						</StackPanel>
 
-						<CheckBox Theme="{StaticResource HCheckBox}" Content="Automatically Start Module At Launch" IsChecked="{Binding Config.Recognition_AutoStart}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_AutoStart}"/>
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Automatically Start Module At Launch" IsChecked="{Binding Config.Recognition_AutoStart}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_AutoStart}"/>
 					</StackPanel>
 
 					<WrapPanel Theme="{StaticResource HWrap}">
