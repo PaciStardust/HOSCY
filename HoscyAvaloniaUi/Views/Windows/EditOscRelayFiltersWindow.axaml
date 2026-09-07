@@ -21,7 +21,7 @@
 		<vm:EditOscRelayFiltersWindowViewModelPreview/>
 	</Design.DataContext>
 
-	<Grid Margin="16" ColumnDefinitions="2*,16,1*">
+	<Grid Margin="16" ColumnDefinitions="5*,16,3*">
 		<ListBox Grid.Column="0" Theme="{StaticResource HListBoxF}" SelectedIndex="{Binding SelectedIndex}" ItemsSource="{Binding DataDisplayed}"
 			ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="SelectionChanged"/>
 
