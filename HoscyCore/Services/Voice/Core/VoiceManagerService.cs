@@ -89,6 +89,18 @@ public class VoiceManagerService
 
         base.DisposeCleanup();
     }
+
+    public event Action<ServiceStatus> OnModuleStatusChanged = delegate {};
+    private void InvokeModuleStatusChanged()
+    {
+        var status = GetCurrentModuleStatus();
+        _logger.Verbose("Triggering event for module status update started={started}", status);
+        OnModuleStatusChanged.Invoke(status);
+    }
+    protected override void OnModuleStatusUpdate()
+    {
+        InvokeModuleStatusChanged();
+    }
     #endregion
 
     #region Control
