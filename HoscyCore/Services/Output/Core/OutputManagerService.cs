@@ -528,7 +528,7 @@ public class OutputManagerService
         if (compatibleHandlers.Length == 0)
         {
             OnMessage.Invoke(this, new(contents, [], null));
-            _logger.Warning("Message with contents \"{message}\" was not handled as no handlers fit the criteria", contents);
+            _logger.Debug("Message with contents \"{message}\" was not handled as no handlers fit the criteria", contents);
             return;
         }
 
@@ -593,7 +593,7 @@ public class OutputManagerService
         if (compatibleHandlers.Length == 0)
         {
             OnNotification.Invoke(this, new(contents, [], priority));
-            _logger.Warning("Notification with contents \"{message}\" was not handled as no handlers fit the criteria", contents);
+            _logger.Debug("Notification with contents \"{message}\" was not handled as no handlers fit the criteria", contents);
             return;
         }
 
