@@ -9,7 +9,8 @@ using Serilog;
 namespace HoscyAvaloniaUi.Services;
 
 [LoadIntoDiContainer(typeof(OutputHistoryService), Lifetime.Singleton)]
-public class OutputHistoryService(ILogger logger, IOutputManagerService output) : StartStopServiceBase(logger.ForContext<OutputHistoryService>())
+public class OutputHistoryService(ILogger logger, IOutputManagerService output) 
+    : StartStopServiceBase(logger.ForContext<OutputHistoryService>()), IAutoStartStopService
 {
     private readonly IOutputManagerService _output = output;
 
@@ -19,9 +20,7 @@ public class OutputHistoryService(ILogger logger, IOutputManagerService output) 
     public bool LastNotificationPostClear { get; private set; } = true;
     private bool _started = false;
 
-    public event Action OnOutputClear = delegate { };
-    public event Action<string, string[], OutputNotificationPriority> OnOutputNotification = delegate { };
-    public event Action<string, string?, string[]> OnOutputMessage = delegate { };
+    public event Action OnOutputUpdate = delegate { };
 
     protected override bool UseAlreadyStartedProtection => true;
 
@@ -40,6 +39,7 @@ public class OutputHistoryService(ILogger logger, IOutputManagerService output) 
     protected override Res StartForService()
     {
         DisposeCleanup();
+        _started = true;
         _output.OnClear += OnClear;
         _output.OnMessage += OnMessage;
         _output.OnNotification += OnNotification;
@@ -56,30 +56,42 @@ public class OutputHistoryService(ILogger logger, IOutputManagerService output) 
 
     private void OnMessage(object? sender, OutputMessageEventArgs e)
     {
-        _messageHistory.Add((e.Contents, e.Translation, e.Outputs));
+        var contents = e.Contents.Length > 2048 ? e.Contents[2048..] : e.Contents;
+        var trans = e.Translation is null ? null : e.Translation.Length > 2048 ? e.Translation[2048..] : e.Translation;
+        _messageHistory.Add((contents, trans, e.Outputs));
         if (_messageHistory.Count > 20)
         {
             _messageHistory.RemoveAt(0);
         }
         LastMessagePostClear = true;
-        OnOutputMessage.Invoke(e.Contents, e.Translation, e.Outputs);
+        OnOutputUpdate.Invoke();
     }
 
-    private void OnNotification(object? sender, OutputNotificationEventArgs e)
+    private void OnNotification(object? sender, OutputNotificationEventArgs e) //todo: notification source?
     {
-        _notificationHistory.Add((e.Contents, e.Outputs, e.Priority));
+        var contents = e.Contents.Length > 512 ? e.Contents[512..] : e.Contents;
+        _notificationHistory.Add((contents, e.Outputs, e.Priority));
         if (_notificationHistory.Count > 20)
         {
             _notificationHistory.RemoveAt(0);
         } 
         LastNotificationPostClear = true;
-        OnOutputNotification.Invoke(e.Contents, e.Outputs, e.Priority);
+        OnOutputUpdate.Invoke();
     }
 
     private void OnClear(object? sender, EventArgs e)
     {
         LastMessagePostClear = false;
         LastNotificationPostClear = false;
-        OnOutputClear.Invoke();
+        OnOutputUpdate.Invoke();
+    }
+
+    public (string Message, string? Translation, string[] Outputs)? GetLastMessage()
+    {
+        return _messageHistory.Count > 0 ? _messageHistory[^1] : null;
+    }
+    public (string Message, string[] Outputs, OutputNotificationPriority Priority)? GetLastNotification()
+    {
+        return _notificationHistory.Count > 0 ? _notificationHistory[^1] : null;
     }
 }
