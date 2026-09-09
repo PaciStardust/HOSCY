@@ -8,7 +8,7 @@ using Serilog;
 
 namespace HoscyCore.Services.Media.Core;
 
-[PrototypeLoadIntoDiContainer(typeof(MediaOutputService))] //todo: [TEST]
+[LoadIntoDiContainer(typeof(MediaOutputService))]
 public class MediaOutputService(IMediaControlService control, IOutputManagerService output, ConfigModel config, ILogger logger)
     : StartStopServiceBase(logger.ForContext<MediaOutputService>()), IAutoStartStopService
 {
@@ -21,7 +21,7 @@ public class MediaOutputService(IMediaControlService control, IOutputManagerServ
     #region Vars
     private bool _started = false;
 
-    private bool _lastHandledPlaying = false;
+    private bool? _lastHandledPlaying = null;
     private MediaUpdateInfoTrack _lastHandledTrack = new();
     #endregion
 
@@ -45,7 +45,7 @@ public class MediaOutputService(IMediaControlService control, IOutputManagerServ
     }
     protected override void DisposeCleanup()
     {
-        _lastHandledPlaying = false;
+        _lastHandledPlaying = null;
         _lastHandledTrack = new();
     }
     #endregion
@@ -55,8 +55,7 @@ public class MediaOutputService(IMediaControlService control, IOutputManagerServ
     private readonly OutputNotificationPriority _notificationPriority = OutputNotificationPriority.Low;
     private void HandleMediaUpdate(MediaUpdateInfo info)
     {
-
-        var currentPlaying = info.Playing ?? _lastHandledPlaying;
+        var currentPlaying = info.Playing ?? _lastHandledPlaying ?? true;
         if (!currentPlaying)
         {
             if (_lastHandledPlaying == currentPlaying)
