@@ -53,6 +53,7 @@ public class MediaOutputService(IMediaControlService control, IOutputManagerServ
     #region Event Handling
     private readonly OutputSettingsFlags _notificationFlags = OutputSettingsFlags.AllowTextOutput | OutputSettingsFlags.AllowOtherOutput;
     private readonly OutputNotificationPriority _notificationPriority = OutputNotificationPriority.Low;
+    private const string SOURCE_NAME = "Media";
     private void HandleMediaUpdate(MediaUpdateInfo info)
     {
         var currentPlaying = info.Playing ?? _lastHandledPlaying ?? true;
@@ -66,7 +67,7 @@ public class MediaOutputService(IMediaControlService control, IOutputManagerServ
             if (!string.IsNullOrWhiteSpace(_config.Media_PauseText) && _config.Media_ShowStatus)
             {
                 _logger.Information("Currently playing media has changed to PAUSED");
-                _output.SendNotification(_config.Media_PauseText, _notificationPriority, _notificationFlags);
+                _output.SendNotification(_config.Media_PauseText, SOURCE_NAME,  _notificationPriority, _notificationFlags);
             }
             return;
         }
@@ -115,7 +116,7 @@ public class MediaOutputService(IMediaControlService control, IOutputManagerServ
         }
 
         _logger.Information("Currently playing media has changed to: {playing}", mediaString);
-        _output.SendNotification($"{_config.Media_PlayingVerb} {mediaString}", _notificationPriority, _notificationFlags);
+        _output.SendNotification($"{_config.Media_PlayingVerb} {mediaString}", SOURCE_NAME, _notificationPriority, _notificationFlags);
     }
 
     private MediaUpdateInfoTrack? CleanTrack(MediaUpdateInfoTrack? track)

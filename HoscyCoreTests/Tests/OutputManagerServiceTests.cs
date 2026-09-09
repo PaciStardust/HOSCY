@@ -310,8 +310,8 @@ public class OutputManagerServiceStartupTests : OutputManagerServiceTestBase<Out
         {
             Assert.That(_output.GetCurrentStatus(), Is.EqualTo(ServiceStatus.Faulted));
             Assert.That(_output.GetErrorMessageIfExists()?.Message, Does.Contain(failRes.Msg!.Message));
-            Assert.That(_handlerA.Started, Is.True);
-            Assert.That(_output.GetHandlerInfos(true), Has.Count.EqualTo(1));
+            Assert.That(_handlerA.Started, Is.False);
+            Assert.That(_output.GetHandlerInfos(true), Has.Count.EqualTo(0));
         }
     }
 }
@@ -846,8 +846,8 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         _infoC.Enabled = true;
         _output.RefreshHandlers().AssertOk();
 
-        _output.SendMessage("TestMessage", OutputSettingsFlags.AllowAllOutputs);
-        _output.SendNotification("TestNotification", OutputNotificationPriority.Critical, OutputSettingsFlags.AllowAllOutputs);
+        _output.SendMessage("TestMessage", "Src", OutputSettingsFlags.AllowAllOutputs);
+        _output.SendNotification("TestNotification", "Src", OutputNotificationPriority.Critical, OutputSettingsFlags.AllowAllOutputs);
         Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
@@ -864,24 +864,34 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         }
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(_handlerA.ReceivedMessages[0], Is.EqualTo("TestMessage"));
-            Assert.That(_handlerB.ReceivedMessages[0], Is.EqualTo("TestMessage"));
-            Assert.That(_handlerC.ReceivedMessages[0], Is.EqualTo("TestMessage"));
+            Assert.That(_handlerA.ReceivedMessages[0].Message, Is.EqualTo("TestMessage"));
+            Assert.That(_handlerB.ReceivedMessages[0].Message, Is.EqualTo("TestMessage"));
+            Assert.That(_handlerC.ReceivedMessages[0].Message, Is.EqualTo("TestMessage"));
+
+            Assert.That(_handlerA.ReceivedMessages[0].Source, Is.EqualTo("Src"));
+            Assert.That(_handlerB.ReceivedMessages[0].Source, Is.EqualTo("Src"));
+            Assert.That(_handlerC.ReceivedMessages[0].Source, Is.EqualTo("Src"));
 
             Assert.That(_handlerA.ReceivedNotifications[0].Message, Is.EqualTo("TestNotification"));
             Assert.That(_handlerB.ReceivedNotifications[0].Message, Is.EqualTo("TestNotification"));
             Assert.That(_handlerC.ReceivedNotifications[0].Message, Is.EqualTo("TestNotification"));
+
+            Assert.That(_handlerA.ReceivedNotifications[0].Source, Is.EqualTo("Src"));
+            Assert.That(_handlerB.ReceivedNotifications[0].Source, Is.EqualTo("Src"));
+            Assert.That(_handlerC.ReceivedNotifications[0].Source, Is.EqualTo("Src"));
 
             Assert.That(_handlerA.ReceivedNotifications[0].Priority, Is.EqualTo(OutputNotificationPriority.Critical));
             Assert.That(_handlerB.ReceivedNotifications[0].Priority, Is.EqualTo(OutputNotificationPriority.Critical));
             Assert.That(_handlerC.ReceivedNotifications[0].Priority, Is.EqualTo(OutputNotificationPriority.Critical));
 
             Assert.That(messagesFromEvent[0].Contents, Is.EqualTo("TestMessage"));
+            Assert.That(messagesFromEvent[0].Source, Is.EqualTo("Src"));
             Assert.That(messagesFromEvent[0].Translation, Is.Null);
             Assert.That(messagesFromEvent[0].Outputs, Has.Length.EqualTo(3));
             Assert.That(messagesFromEvent[0].Outputs, Does.Contain(_handlerA.Name).And.Contain(_handlerB.Name).And.Contain(_handlerC.Name));
 
             Assert.That(notificationsFromEvent[0].Contents, Is.EqualTo("TestNotification"));
+            Assert.That(notificationsFromEvent[0].Source, Is.EqualTo("Src"));
             Assert.That(notificationsFromEvent[0].Priority, Is.EqualTo(OutputNotificationPriority.Critical));
             Assert.That(notificationsFromEvent[0].Outputs, Has.Length.EqualTo(3));
             Assert.That(notificationsFromEvent[0].Outputs, Does.Contain(_handlerA.Name).And.Contain(_handlerB.Name).And.Contain(_handlerC.Name));
@@ -897,8 +907,8 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         notificationsFromEvent.Clear();
         messagesFromEvent.Clear();
 
-        _output.SendMessage("TestMessage2", OutputSettingsFlags.AllowAllOutputs);
-        _output.SendNotification("TestNotification2", OutputNotificationPriority.Minimal, OutputSettingsFlags.AllowAllOutputs);
+        _output.SendMessage("TestMessage2", "Src2", OutputSettingsFlags.AllowAllOutputs);
+        _output.SendNotification("TestNotification2", "Src2", OutputNotificationPriority.Minimal, OutputSettingsFlags.AllowAllOutputs);
         Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
@@ -915,8 +925,11 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         }
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(_handlerA.ReceivedMessages[0], Is.EqualTo("TestMessage2"));
-            Assert.That(_handlerC.ReceivedMessages[0], Is.EqualTo("TestMessage2"));
+            Assert.That(_handlerA.ReceivedMessages[0].Message, Is.EqualTo("TestMessage2"));
+            Assert.That(_handlerC.ReceivedMessages[0].Message, Is.EqualTo("TestMessage2"));
+
+            Assert.That(_handlerA.ReceivedMessages[0].Source, Is.EqualTo("Src2"));
+            Assert.That(_handlerC.ReceivedMessages[0].Source, Is.EqualTo("Src2"));
 
             Assert.That(_handlerA.ReceivedNotifications[0].Message, Is.EqualTo("TestNotification2"));
             Assert.That(_handlerC.ReceivedNotifications[0].Message, Is.EqualTo("TestNotification2"));
@@ -925,11 +938,13 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
             Assert.That(_handlerC.ReceivedNotifications[0].Priority, Is.EqualTo(OutputNotificationPriority.Minimal));
 
             Assert.That(messagesFromEvent[0].Contents, Is.EqualTo("TestMessage2"));
+            Assert.That(messagesFromEvent[0].Source, Is.EqualTo("Src2"));
             Assert.That(messagesFromEvent[0].Translation, Is.Null);
             Assert.That(messagesFromEvent[0].Outputs, Has.Length.EqualTo(2));
             Assert.That(messagesFromEvent[0].Outputs, Does.Contain(_handlerA.Name).And.Not.Contain(_handlerB.Name).And.Contain(_handlerC.Name));
 
             Assert.That(notificationsFromEvent[0].Contents, Is.EqualTo("TestNotification2"));
+            Assert.That(notificationsFromEvent[0].Source, Is.EqualTo("Src2"));
             Assert.That(notificationsFromEvent[0].Priority, Is.EqualTo(OutputNotificationPriority.Minimal));
             Assert.That(notificationsFromEvent[0].Outputs, Has.Length.EqualTo(2));
             Assert.That(notificationsFromEvent[0].Outputs, Does.Contain(_handlerA.Name).And.Not.Contain(_handlerB.Name).And.Contain(_handlerC.Name));
@@ -956,8 +971,8 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
             var messageText = "Message" + i;
             var notificationText = "Notification" + i;
 
-            _output.SendMessage(messageText, flags);
-            _output.SendNotification(notificationText, OutputNotificationPriority.Critical, flags);
+            _output.SendMessage(messageText, string.Empty, flags);
+            _output.SendNotification(notificationText, string.Empty, OutputNotificationPriority.Critical, flags);
             Thread.Sleep(50);
 
             using (Assert.EnterMultipleScope())
@@ -1010,8 +1025,8 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
             var messageText = "Message" + i;
             var notificationText = "Notification" + i;
 
-            _output.SendMessage(messageText, flags);
-            _output.SendNotification(notificationText, OutputNotificationPriority.Critical, flags);
+            _output.SendMessage(messageText, string.Empty, flags);
+            _output.SendNotification(notificationText, string.Empty, OutputNotificationPriority.Critical, flags);
             Thread.Sleep(50);
 
             using (Assert.EnterMultipleScope())
@@ -1041,25 +1056,25 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
             {
                 if (flags.HasFlag(OutputSettingsFlags.AllowTextOutput))
                 {
-                    Assert.That(_handlerA.ReceivedMessages[0], Is.EqualTo(messageText), i.ToString());
+                    Assert.That(_handlerA.ReceivedMessages[0].Message, Is.EqualTo(messageText), i.ToString());
                     Assert.That(_handlerA.ReceivedNotifications[0].Message, Is.EqualTo(notificationText), i.ToString());
                 }
                 
                 if (flags.HasFlag(OutputSettingsFlags.AllowAudioOutput))
                 {
-                    Assert.That(_handlerB.ReceivedMessages[0], Is.EqualTo(messageText), i.ToString());
+                    Assert.That(_handlerB.ReceivedMessages[0].Message, Is.EqualTo(messageText), i.ToString());
                     Assert.That(_handlerB.ReceivedNotifications[0].Message, Is.EqualTo(notificationText), i.ToString());
                 }
 
                 if (flags.HasFlag(OutputSettingsFlags.AllowOtherOutput))
                 {
-                    Assert.That(_handlerC.ReceivedMessages[0], Is.EqualTo(messageText), i.ToString());
+                    Assert.That(_handlerC.ReceivedMessages[0].Message, Is.EqualTo(messageText), i.ToString());
                     Assert.That(_handlerC.ReceivedNotifications[0].Message, Is.EqualTo(notificationText), i.ToString());
                 }
 
                 if (flags != OutputSettingsFlags.None)
                 {
-                    Assert.That(_handlerD.ReceivedMessages[0], Is.EqualTo(messageText), i.ToString());
+                    Assert.That(_handlerD.ReceivedMessages[0].Message, Is.EqualTo(messageText), i.ToString());
                     Assert.That(_handlerD.ReceivedNotifications[0].Message, Is.EqualTo(notificationText), i.ToString());
                 }
             }
@@ -1084,7 +1099,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         _output.RefreshHandlers().AssertOk();
 
         var flags = OutputSettingsFlags.AllowAllOutputs | OutputSettingsFlags.DoTranslate;
-        _output.SendMessage("MsgTest", flags);
+        _output.SendMessage("MsgTest", string.Empty, flags);
         Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
@@ -1104,9 +1119,9 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
 
             Assert.That(_translator.ReceivedInput[0], Is.EqualTo("MsgTest"));
 
-            Assert.That(_handlerA.ReceivedMessages[0], Does.Contain("MsgTest").And.Contain("TlSuccess"));
-            Assert.That(_handlerB.ReceivedMessages[0], Is.EqualTo("TlSuccess"));
-            Assert.That(_handlerC.ReceivedMessages[0], Is.EqualTo("MsgTest"));
+            Assert.That(_handlerA.ReceivedMessages[0].Message, Does.Contain("MsgTest").And.Contain("TlSuccess"));
+            Assert.That(_handlerB.ReceivedMessages[0].Message, Is.EqualTo("TlSuccess"));
+            Assert.That(_handlerC.ReceivedMessages[0].Message, Is.EqualTo("MsgTest"));
         }
 
         _handlerA.ResetStats();
@@ -1117,7 +1132,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         messagesFromEvent.Clear();
 
         flags = OutputSettingsFlags.AllowAllOutputs;
-        _output.SendMessage("MsgTest2", flags);
+        _output.SendMessage("MsgTest2", string.Empty, flags);
         Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
@@ -1135,9 +1150,9 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
             Assert.That(messagesFromEvent[0].Contents, Is.EqualTo("MsgTest2"));
             Assert.That(messagesFromEvent[0].Translation, Is.Null);
 
-            Assert.That(_handlerA.ReceivedMessages[0], Is.EqualTo("MsgTest2"));
-            Assert.That(_handlerB.ReceivedMessages[0], Is.EqualTo("MsgTest2"));
-            Assert.That(_handlerC.ReceivedMessages[0], Is.EqualTo("MsgTest2"));
+            Assert.That(_handlerA.ReceivedMessages[0].Message, Is.EqualTo("MsgTest2"));
+            Assert.That(_handlerB.ReceivedMessages[0].Message, Is.EqualTo("MsgTest2"));
+            Assert.That(_handlerC.ReceivedMessages[0].Message, Is.EqualTo("MsgTest2"));
         }
 
         _output.OnMessage -= onMessage;
@@ -1154,7 +1169,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
 
         var flags = OutputSettingsFlags.AllowAllOutputs | OutputSettingsFlags.DoTranslate;
 
-        _output.SendMessage("Message1", flags);
+        _output.SendMessage("Message1", string.Empty, flags);
         Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
@@ -1165,12 +1180,12 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_translator.ReceivedInput[0], Is.EqualTo("Message1"));
-            Assert.That(_handlerB.ReceivedMessages[0], Is.EqualTo("TlResult"));
+            Assert.That(_handlerB.ReceivedMessages[0].Message, Is.EqualTo("TlResult"));
         }
 
         _translator.TranslateResult = TranslationResult.UseOriginal;
 
-        _output.SendMessage("Message2", flags);
+        _output.SendMessage("Message2", string.Empty, flags);
         Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
@@ -1181,12 +1196,12 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_translator.ReceivedInput[1], Is.EqualTo("Message2"));
-            Assert.That(_handlerB.ReceivedMessages[1], Is.EqualTo("Message2"));
+            Assert.That(_handlerB.ReceivedMessages[1].Message, Is.EqualTo("Message2"));
         }
 
         _translator.TranslateResult = TranslationResult.Failed;
 
-        _output.SendMessage("Message3", flags);
+        _output.SendMessage("Message3", string.Empty, flags);
         Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
@@ -1214,7 +1229,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
 
         var flags = OutputSettingsFlags.AllowAllOutputs | OutputSettingsFlags.DoTranslate;
 
-        _output.SendMessage("Test1", flags);
+        _output.SendMessage("Test1", string.Empty, flags);
         Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
@@ -1226,14 +1241,14 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         using (Assert.EnterMultipleScope())
         {
             Assert.That(_translator.ReceivedInput[0], Is.EqualTo("Test1"));
-            Assert.That(_handlerB.ReceivedMessages[0], Is.EqualTo("Output"));
-            Assert.That(_handlerC.ReceivedMessages[0], Is.EqualTo("Test1"));
+            Assert.That(_handlerB.ReceivedMessages[0].Message, Is.EqualTo("Output"));
+            Assert.That(_handlerC.ReceivedMessages[0].Message, Is.EqualTo("Test1"));
         }
 
         _infoB.Enabled = false;
         _output.RefreshHandlers().AssertOk();
 
-        _output.SendMessage("Test2", flags);
+        _output.SendMessage("Test2", string.Empty, flags);
         Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
@@ -1245,7 +1260,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
 
         _config.Translation_SendUntranslatedIfUnavailable = true;
 
-        _output.SendMessage("Test3", flags);
+        _output.SendMessage("Test3",  string.Empty, flags);
         Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
@@ -1256,7 +1271,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
         }
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(_handlerC.ReceivedMessages[1], Is.EqualTo("Test3"));
+            Assert.That(_handlerC.ReceivedMessages[1].Message, Is.EqualTo("Test3"));
         }
     }
 
@@ -1271,8 +1286,8 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
 
         var flags = OutputSettingsFlags.AllowAllOutputs | OutputSettingsFlags.DoPreprocessAll;
 
-        _output.SendMessage("Msg1", flags);
-        _output.SendNotification("Notif1", OutputNotificationPriority.Critical, flags);
+        _output.SendMessage("Msg1", string.Empty, flags);
+        _output.SendNotification("Notif1", string.Empty, OutputNotificationPriority.Critical, flags);
         Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
@@ -1291,14 +1306,14 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
             Assert.That(_preprocessorLatePartial.ReceivedInput[0], Is.EqualTo("Msg1"));
             Assert.That(_preprocessorLatePartial.ReceivedInput[1], Is.EqualTo("Notif1"));
 
-            Assert.That(_handlerA.ReceivedMessages[0], Is.EqualTo("Msg1"));
+            Assert.That(_handlerA.ReceivedMessages[0].Message, Is.EqualTo("Msg1"));
             Assert.That(_handlerA.ReceivedNotifications[0].Message, Is.EqualTo("Notif1"));
         }
 
         _preprocessorEarlyFull.ContinueIfHandled = false;
 
-        _output.SendMessage("Msg2", flags);
-        _output.SendNotification("Notif2", OutputNotificationPriority.Critical, flags);
+        _output.SendMessage("Msg2", string.Empty, flags);
+        _output.SendNotification("Notif2", string.Empty, OutputNotificationPriority.Critical, flags);
         Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
@@ -1317,14 +1332,14 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
             Assert.That(_preprocessorLatePartial.ReceivedInput[2], Is.EqualTo("Msg2"));
             Assert.That(_preprocessorLatePartial.ReceivedInput[3], Is.EqualTo("Notif2"));
 
-            Assert.That(_handlerA.ReceivedMessages[1], Is.EqualTo("Msg2"));
+            Assert.That(_handlerA.ReceivedMessages[1].Message, Is.EqualTo("Msg2"));
             Assert.That(_handlerA.ReceivedNotifications[1].Message, Is.EqualTo("Notif2"));
         }
 
         _preprocessorEarlyFull.ProcessedOutput = "Processed";
 
-        _output.SendMessage("Msg3", flags);
-        _output.SendNotification("Notif3", OutputNotificationPriority.Critical, flags);
+        _output.SendMessage("Msg3", string.Empty, flags);
+        _output.SendNotification("Notif3", string.Empty, OutputNotificationPriority.Critical, flags);
         Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
@@ -1343,8 +1358,8 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
 
         _preprocessorEarlyFull.OutputAfterStop = true;
 
-        _output.SendMessage("Msg4", flags);
-        _output.SendNotification("Notif4", OutputNotificationPriority.Critical, flags);
+        _output.SendMessage("Msg4", string.Empty, flags);
+        _output.SendNotification("Notif4", string.Empty, OutputNotificationPriority.Critical, flags);
         Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
@@ -1363,8 +1378,8 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
 
         _preprocessorEarlyFull.ContinueIfHandled = true;
 
-        _output.SendMessage("Msg5", flags);
-        _output.SendNotification("Notif5", OutputNotificationPriority.Critical, flags);
+        _output.SendMessage("Msg5", string.Empty, flags);
+        _output.SendNotification("Notif5", string.Empty, OutputNotificationPriority.Critical, flags);
         Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
@@ -1383,14 +1398,14 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
             Assert.That(_preprocessorLatePartial.ReceivedInput[4], Is.EqualTo("Processed"));
             Assert.That(_preprocessorLatePartial.ReceivedInput[5], Is.EqualTo("Processed"));
 
-            Assert.That(_handlerA.ReceivedMessages[3], Is.EqualTo("Processed"));
+            Assert.That(_handlerA.ReceivedMessages[3].Message, Is.EqualTo("Processed"));
             Assert.That(_handlerA.ReceivedNotifications[3].Message, Is.EqualTo("Processed"));
         }
 
         _preprocessorLatePartial.ProcessedOutput = "Processed2";
 
-        _output.SendMessage("Msg6", flags);
-        _output.SendNotification("Notif6", OutputNotificationPriority.Critical, flags);
+        _output.SendMessage("Msg6", string.Empty, flags);
+        _output.SendNotification("Notif6", string.Empty, OutputNotificationPriority.Critical, flags);
         Thread.Sleep(50);
 
         using (Assert.EnterMultipleScope())
@@ -1409,7 +1424,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
             Assert.That(_preprocessorLatePartial.ReceivedInput[6], Is.EqualTo("Processed"));
             Assert.That(_preprocessorLatePartial.ReceivedInput[7], Is.EqualTo("Processed"));
 
-            Assert.That(_handlerA.ReceivedMessages[4], Is.EqualTo("Processed2"));
+            Assert.That(_handlerA.ReceivedMessages[4].Message, Is.EqualTo("Processed2"));
             Assert.That(_handlerA.ReceivedNotifications[4].Message, Is.EqualTo("Processed2"));
         }
     }
@@ -1422,7 +1437,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
 
         var flags = OutputSettingsFlags.AllowAllOutputs | OutputSettingsFlags.DoPreprocessAll;
         
-        _output.SendMessage("Test", flags);
+        _output.SendMessage("Test", string.Empty, flags);
         Thread.Sleep(50);
         using (Assert.EnterMultipleScope())
         {
@@ -1432,7 +1447,7 @@ public class OutputManagerServiceFunctionTests : OutputManagerServiceTestBase<Ou
 
         _preprocessorLatePartial.Enabled = false;
 
-        _output.SendMessage("Test2", flags);
+        _output.SendMessage("Test2", string.Empty, flags);
         Thread.Sleep(50);
         using (Assert.EnterMultipleScope())
         {

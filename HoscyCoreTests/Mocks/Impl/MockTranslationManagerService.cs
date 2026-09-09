@@ -1,3 +1,4 @@
+using HoscyCore.Services.Core;
 using HoscyCore.Services.Translation.Core;
 using HoscyCoreTests.Mocks.Base;
 
@@ -9,6 +10,9 @@ public class MockTranslationManagerService : MockSoloModuleManagerBase<ITranslat
 
     public string? TranslateOutput { get; set; } = null;
     public TranslationResult TranslateResult { get; set; } = TranslationResult.Succeeded;
+
+    public event Action<ServiceStatus> OnModuleStatusChanged = delegate { };
+
     public TranslationResult TryTranslate(string input, out string? output)
     {
         ReceivedInput.Add(input);

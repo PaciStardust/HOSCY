@@ -162,7 +162,7 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
     {
         _config.Output_VrcTxt_Sound_OnNotification = doSound;
 
-        _handler.HandleNotification("123abc", OutputNotificationPriority.Medium);
+        _handler.HandleNotification("123abc", string.Empty, OutputNotificationPriority.Medium);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(1));
         using (Assert.EnterMultipleScope())
@@ -183,7 +183,7 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
     {
         _config.Output_VrcTxt_Sound_OnMessage = doSound;
 
-        _handler.HandleMessage("123abc");
+        _handler.HandleMessage("123abc", string.Empty);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(1));
         using (Assert.EnterMultipleScope())
@@ -201,7 +201,7 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
         _config.Output_VrcTxt_Do_Send = doOutput;
 
         // Sending a notification
-        _handler.HandleNotification("123abc", OutputNotificationPriority.Medium);
+        _handler.HandleNotification("123abc", string.Empty, OutputNotificationPriority.Medium);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(doOutput ? 1 : 0));
         if (doOutput)
@@ -212,7 +212,7 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
         ClearAndWait();
 
         // Sending a message
-        _handler.HandleMessage("123abc");
+        _handler.HandleMessage("123abc", string.Empty);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(doOutput ? 1 : 0));
         if (doOutput)
@@ -264,12 +264,12 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
         bool shouldOverride = otherPrio >= DEFAULT_PRIO && enabled;
 
         // Override by shortening timeout
-        _handler.HandleNotification(string.Empty.PadLeft(50, 'a'), DEFAULT_PRIO);
+        _handler.HandleNotification(string.Empty.PadLeft(50, 'a'), string.Empty, DEFAULT_PRIO);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(1));
 
         Thread.Sleep(VrcTextboxOutputHandler.TIMEOUT_MINIMUM_MS + TIMEOUT_WAIT_MS_2X);
-        _handler.HandleNotification("456def", otherPrio);
+        _handler.HandleNotification("456def", string.Empty, otherPrio);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(shouldOverride ? 2 : 1));
 
@@ -278,13 +278,13 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
         _config.Output_VrcTxt_Timeout_StaticMs = 1000;
 
         // Override before it is sent
-        _handler.HandleNotification("123abc", DEFAULT_PRIO);
+        _handler.HandleNotification("123abc", string.Empty, DEFAULT_PRIO);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(1));
 
-        _handler.HandleNotification("456def", DEFAULT_PRIO);
+        _handler.HandleNotification("456def", string.Empty, DEFAULT_PRIO);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
-        _handler.HandleNotification("789ghi", otherPrio);
+        _handler.HandleNotification("789ghi", string.Empty, otherPrio);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
 
         Thread.Sleep(VrcTextboxOutputHandler.TIMEOUT_MINIMUM_MS + TIMEOUT_WAIT_MS_2X);
@@ -297,13 +297,13 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
     {
         _config.Output_VrcTxt_Notification_SkipWhenMessageAvailable = enabled;
 
-        _handler.HandleNotification("123abc", OutputNotificationPriority.Medium);
+        _handler.HandleNotification("123abc", string.Empty, OutputNotificationPriority.Medium);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(1));
 
         Thread.Sleep(VrcTextboxOutputHandler.TIMEOUT_MINIMUM_MS + TIMEOUT_WAIT_MS_2X);
 
-        _handler.HandleMessage("456def");
+        _handler.HandleMessage("456def", string.Empty);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(enabled ? 2 : 1));
     }
@@ -316,7 +316,7 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
 
         _config.Output_VrcTxt_Timeout_AutomaticallyClearMessage = enabled;
 
-        _handler.HandleMessage("123abc");
+        _handler.HandleMessage("123abc", string.Empty);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(1));
 
@@ -332,7 +332,7 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
 
         _config.Output_VrcTxt_Timeout_AutomaticallyClearNotification = enabled;
 
-        _handler.HandleNotification("123abc", OutputNotificationPriority.Medium);
+        _handler.HandleNotification("123abc", string.Empty, OutputNotificationPriority.Medium);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(1));
 
@@ -344,7 +344,7 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
     public void ClearTest()
     {
         // Send message
-        _handler.HandleMessage("123abc");
+        _handler.HandleMessage("123abc", string.Empty);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(1));
 
@@ -359,7 +359,7 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
         Assert.That(_send.ReceivedMessages[1].Args[0], Is.Empty);
 
         // Message does not send yet due to timeout
-        _handler.HandleMessage("123abc");
+        _handler.HandleMessage("123abc", string.Empty);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(2));
 
@@ -375,8 +375,8 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
         _config.Output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs = _config.Output_VrcTxt_Timeout_DynamicMinimumMs / 2 + 250;
 
         // Timeout should be minimum
-        _handler.HandleMessage(string.Empty.PadRight(19, 'a'));
-        _handler.HandleMessage(string.Empty.PadRight(19, 'a'));
+        _handler.HandleMessage(string.Empty.PadRight(19, 'a'), string.Empty);
+        _handler.HandleMessage(string.Empty.PadRight(19, 'a'), string.Empty);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(1));
 
@@ -389,8 +389,8 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
         ClearAndWait();
         
         // Increased timeout because more characters
-        _handler.HandleMessage(string.Empty.PadRight(21, 'a'));
-        _handler.HandleMessage(string.Empty.PadRight(19, 'a'));
+        _handler.HandleMessage(string.Empty.PadRight(21, 'a'), string.Empty);
+        _handler.HandleMessage(string.Empty.PadRight(19, 'a'), string.Empty);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(1));
 
@@ -405,8 +405,8 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
         // Increased minimum timeout
         _config.Output_VrcTxt_Timeout_DynamicMinimumMs = VrcTextboxOutputHandler.TIMEOUT_MINIMUM_MS * 2;
 
-        _handler.HandleMessage("123abc");
-        _handler.HandleMessage("123abc");
+        _handler.HandleMessage("123abc", string.Empty);
+        _handler.HandleMessage("123abc", string.Empty);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(1));
 
@@ -426,8 +426,8 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
         _config.Output_VrcTxt_Timeout_UseDynamic = false;
         _config.Output_VrcTxt_Timeout_StaticMs = 2000;
 
-        _handler.HandleMessage("1");
-        _handler.HandleMessage("2");
+        _handler.HandleMessage("1", string.Empty);
+        _handler.HandleMessage("2", string.Empty);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(1));
 
@@ -441,8 +441,8 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
 
         _config.Output_VrcTxt_Timeout_StaticMs = 1000;
 
-        _handler.HandleMessage("3");
-        _handler.HandleMessage("4");
+        _handler.HandleMessage("3", string.Empty);
+        _handler.HandleMessage("4", string.Empty);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(1));
 
@@ -464,7 +464,7 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
 
         // Message total length = 11/20 => fits
         var message = "12345678901";
-        _handler.HandleNotification(message, OutputNotificationPriority.Medium);
+        _handler.HandleNotification(message, string.Empty, OutputNotificationPriority.Medium);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(1));
         using (Assert.EnterMultipleScope())
@@ -478,7 +478,7 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
 
         // Message total length = 20/20 => fits
         message = "12345678901234567890";
-        _handler.HandleNotification(message, OutputNotificationPriority.Medium);
+        _handler.HandleNotification(message, string.Empty, OutputNotificationPriority.Medium);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(2));
         using (Assert.EnterMultipleScope())
@@ -492,7 +492,7 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
 
         // Message total length = 24/20 => crops
         message = "123456789012345678901234";
-        _handler.HandleNotification(message, OutputNotificationPriority.Medium);
+        _handler.HandleNotification(message, string.Empty, OutputNotificationPriority.Medium);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(3));
         using (Assert.EnterMultipleScope())
@@ -510,7 +510,7 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
 
         // Message total length = 20/20 => fits
         message = "12345678901234567890";
-        _handler.HandleNotification(message, OutputNotificationPriority.Medium);
+        _handler.HandleNotification(message, string.Empty, OutputNotificationPriority.Medium);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(4));
         using (Assert.EnterMultipleScope())
@@ -526,7 +526,7 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
 
         // Message total length = 40/40 => fits
         message += message;
-        _handler.HandleNotification(message, OutputNotificationPriority.Medium);
+        _handler.HandleNotification(message, string.Empty, OutputNotificationPriority.Medium);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(5));
         using (Assert.EnterMultipleScope())
@@ -547,7 +547,7 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
 
         // Message fits
         var message = "1234567890";
-        _handler.HandleMessage(message);
+        _handler.HandleMessage(message, string.Empty);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(1));
         Assert.That(_send.ReceivedMessages[0].Args[0], Is.EqualTo(message));
@@ -556,7 +556,7 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
 
         // Message barely fits
         message = "12345678901234567890";
-        _handler.HandleMessage(message);
+        _handler.HandleMessage(message, string.Empty);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(2));
         Assert.That(_send.ReceivedMessages[1].Args[0], Is.EqualTo(message));
@@ -565,7 +565,7 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
 
         // Message should be split by last space
         message = "123456 8901234567 89012";
-        _handler.HandleMessage(message);
+        _handler.HandleMessage(message, string.Empty);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(3));
         Assert.That(_send.ReceivedMessages[2].Args[0], Is.EqualTo("123456 8901234567 ..."));
@@ -578,7 +578,7 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
 
         // Message should be split by last space again but ignore all whitespace
         message = "123456 8901234567       \r\n\t        89012";
-        _handler.HandleMessage(message);
+        _handler.HandleMessage(message, string.Empty);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(5));
         Assert.That(_send.ReceivedMessages[4].Args[0], Is.EqualTo("123456 8901234567 ..."));
@@ -591,7 +591,7 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
 
         // Message can not be split properly
         message = "123456789012345678901234567890 123456";
-        _handler.HandleMessage(message);
+        _handler.HandleMessage(message, string.Empty);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(7));
         Assert.That(_send.ReceivedMessages[6].Args[0], Is.EqualTo("1234567890123456789- ..."));
@@ -604,7 +604,7 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
 
         // Short to long word
         message = "12345 7890123456789012345";
-        _handler.HandleMessage(message);
+        _handler.HandleMessage(message, string.Empty);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(9));
         Assert.That(_send.ReceivedMessages[8].Args[0], Is.EqualTo("12345 ..."));
@@ -618,7 +618,7 @@ public class VrcTextboxOutputHandlerFunctionTests : TestBase<VrcTextboxOutputHan
 
         // Limit change
         message = "123456789012345678901234567890 123456";
-        _handler.HandleMessage(message);
+        _handler.HandleMessage(message, string.Empty);
         Thread.Sleep(TIMEOUT_WAIT_MS_2X);
         Assert.That(_send.ReceivedMessages, Has.Count.EqualTo(11));
         Assert.That(_send.ReceivedMessages[10].Args[0], Is.EqualTo(message));

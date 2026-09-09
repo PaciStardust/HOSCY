@@ -40,7 +40,7 @@ public class CounterOscMessageHandler(IOutputManagerService output, ConfigModel 
         {
             _counterLastDisplay = now;
             _logger.Debug("Sending counter notification \"{counterNotification}\"", counterString);
-            _output.SendNotification(counterString, OutputNotificationPriority.Low, OutputSettingsFlags.AllowTextOutput);
+            _output.SendNotification(counterString, "Counters", OutputNotificationPriority.Low, OutputSettingsFlags.AllowTextOutput);
         }
         return true;
     }

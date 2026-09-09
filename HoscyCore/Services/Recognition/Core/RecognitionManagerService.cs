@@ -161,7 +161,7 @@ public class RecognitionManagerService
         if (_config.Recognition_Send_DoPreprocessFull)
             flags |= OutputSettingsFlags.DoPreprocessFull;
 
-        _output.SendMessage(message, flags);
+        _output.SendMessage(message, "Recognition", flags);
     }
 
     private Regex _inputDenoiseFilter = new(" *");

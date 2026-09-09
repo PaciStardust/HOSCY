@@ -113,13 +113,14 @@ public class ApiOutputHandlerTests : TestBase<ApiOutputHandlerTests>
     [Test]
     public void MessageTest()
     {
-        SendTest(x => x.HandleMessage("Hii"), x => _config.Output_Api_Preset_Message = x);
+        SendTest(x => x.HandleMessage("Hii", string.Empty), x => _config.Output_Api_Preset_Message = x);
     }
 
     [Test]
     public void NotificationTest()
     {
-        SendTest(x => x.HandleNotification("Waaa", OutputNotificationPriority.Critical), x => _config.Output_Api_Preset_Notification = x);
+        SendTest(x => x.HandleNotification("Waaa", string.Empty, OutputNotificationPriority.Critical),
+            x => _config.Output_Api_Preset_Notification = x);
     }
 
     [Test]
@@ -164,7 +165,7 @@ public class ApiOutputHandlerTests : TestBase<ApiOutputHandlerTests>
 
         var baseMsg = "ThisIs A Test";
 
-        _handler.HandleNotification(baseMsg, OutputNotificationPriority.Medium);
+        _handler.HandleNotification(baseMsg, string.Empty, OutputNotificationPriority.Medium);
         Assert.That(_api.ReceivedStrings, Has.Count.EqualTo(1));
         using (Assert.EnterMultipleScope())
         {
@@ -174,7 +175,7 @@ public class ApiOutputHandlerTests : TestBase<ApiOutputHandlerTests>
 
         _config.Output_Api_PrependNotificationPriority = true;
 
-        _handler.HandleNotification(baseMsg, OutputNotificationPriority.Medium);
+        _handler.HandleNotification(baseMsg, string.Empty, OutputNotificationPriority.Medium);
         Assert.That(_api.ReceivedStrings, Has.Count.EqualTo(2));
         using (Assert.EnterMultipleScope())
         {

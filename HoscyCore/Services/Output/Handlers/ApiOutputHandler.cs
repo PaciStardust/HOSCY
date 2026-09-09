@@ -56,13 +56,13 @@ public class ApiOutputHandler(ILogger logger, IApiClient client, ConfigModel con
         SendInternal(_config.Output_Api_Preset_Clear, "Clear", string.Empty);
     }
 
-    public override Task HandleMessage(string contents)
+    public override Task HandleMessage(string contents, string source) //todo: add source?
     {
         SendInternal(_config.Output_Api_Preset_Message, "Message", contents);
         return Task.CompletedTask;
     }
 
-    public override Task HandleNotification(string contents, OutputNotificationPriority priority)
+    public override Task HandleNotification(string contents, string source, OutputNotificationPriority priority)
     {
         SendInternal(_config.Output_Api_Preset_Notification, "Notification",
             _config.Output_Api_PrependNotificationPriority ? $"{priority} > {contents}" : contents);

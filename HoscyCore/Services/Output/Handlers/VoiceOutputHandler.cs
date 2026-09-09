@@ -51,7 +51,7 @@ public class VoiceOutputHandler(ILogger logger, IVoiceManagerService manager, Co
         _manager.Clear();
     }
 
-    public override Task HandleMessage(string contents)
+    public override Task HandleMessage(string contents, string _)
     {
         _logger.Debug("Forwarding message \"{message}\" to manager", contents);
         var res = _manager.Enqueue(contents);
@@ -60,7 +60,7 @@ public class VoiceOutputHandler(ILogger logger, IVoiceManagerService manager, Co
     }
 
     public override void SetProcessingIndicator(bool isProcessing) { return; }
-    public override Task HandleNotification(string contents, OutputNotificationPriority priority)
+    public override Task HandleNotification(string contents, string _, OutputNotificationPriority priority)
         => Task.CompletedTask;
     #endregion
 }

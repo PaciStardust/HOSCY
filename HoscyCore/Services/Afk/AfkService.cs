@@ -22,6 +22,8 @@ public class AfkService(ConfigModel config, IOutputManagerService output, ILogge
     private static readonly OutputSettingsFlags _outputFlags = OutputSettingsFlags.AllowTextOutput;
     public event Action<bool> OnAfkStatusChanged = delegate { };
 
+    private const string SOURCE_NAME = "AFK";
+
     #region AFK
     public void StartAfk()
     {
@@ -37,7 +39,7 @@ public class AfkService(ConfigModel config, IOutputManagerService output, ILogge
         }
 
         _logger.Information("Starting AFK timer");
-        _output.SendNotification(_config.Afk_StartText, _afkNotificationPriority, _outputFlags);
+        _output.SendNotification(_config.Afk_StartText, SOURCE_NAME, _afkNotificationPriority, _outputFlags);
         OnAfkStatusChanged.Invoke(true);
         _afkStarted = DateTime.Now;
         _afkTimesChecked = 0;
@@ -53,7 +55,7 @@ public class AfkService(ConfigModel config, IOutputManagerService output, ILogge
         _logger.Information("Stopping AFK timer");
         if (_afkTimer is not null)
         {
-            _output.SendNotification(_config.Afk_StopText, _afkNotificationPriority, _outputFlags);
+            _output.SendNotification(_config.Afk_StopText, SOURCE_NAME, _afkNotificationPriority, _outputFlags);
             OnAfkStatusChanged.Invoke(false);
             _afkTimer.Stop();
             _afkTimer.Dispose();
@@ -76,7 +78,7 @@ public class AfkService(ConfigModel config, IOutputManagerService output, ILogge
         var time = (DateTimeOffset.UtcNow - _afkStarted).ToString(@"hh\:mm\:ss");
         _logger.Debug("Displaying AFK timer at {afkTime}", time);
         var message = $"{_config.Afk_StatusText} {time}";
-        _output.SendNotification(message, _afkNotificationPriority, _outputFlags);
+        _output.SendNotification(message, SOURCE_NAME, _afkNotificationPriority, _outputFlags);
     }
 
     public bool GetAfkStatus()

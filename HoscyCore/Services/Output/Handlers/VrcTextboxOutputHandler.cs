@@ -222,7 +222,7 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
     #endregion
 
     #region Input Processing
-    public override Task HandleNotification(string contents, OutputNotificationPriority priority)
+    public override Task HandleNotification(string contents, string _, OutputNotificationPriority priority)
     {
         if (!_config.Output_VrcTxt_Do_Send) return Task.CompletedTask;
 
@@ -251,7 +251,7 @@ public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSen
         return Task.CompletedTask;
     }
 
-    public override Task HandleMessage(string contents)  
+    public override Task HandleMessage(string contents, string _)  
     {
         if (!_config.Output_VrcTxt_Do_Send) return Task.CompletedTask;
 

@@ -143,32 +143,32 @@ public class RecognitionManagerServiceFunctionTests : RecognitionManagerServiceT
         AssertArgs(receivedArgs, 3, false, false);
 
         _manager.StopModule().AssertOk();
-        AssertArgs(receivedArgs, 4, false, true);
+        AssertArgs(receivedArgs, 5, false, true);
 
         _config.Recognition_Mute_StartUnmuted = true;
         _manager.StartModule().AssertOk();
-        AssertArgs(receivedArgs, 5, true, false);
+        AssertArgs(receivedArgs, 6, true, false);
 
         _manager.StopModule().AssertOk();
-        AssertArgs(receivedArgs, 6, false, true);
+        AssertArgs(receivedArgs, 8, false, true);
 
         _moduleA.ResultToReturn = ResC.Fail("aaa");
         _manager.StartModule().AssertFail();
-        AssertArgs(receivedArgs, 6, false, true);
+        AssertArgs(receivedArgs, 9, false, true);
 
         _moduleA.ResultToReturn = null;
         _manager.StartModule().AssertOk();
-        AssertArgs(receivedArgs, 7, true, false);
+        AssertArgs(receivedArgs, 10, true, false);
 
         _moduleA.Stop();
-        AssertArgs(receivedArgs, 8, false, true);
+        AssertArgs(receivedArgs, 11, false, true);
 
         _manager.StartModule().AssertOk();
-        AssertArgs(receivedArgs, 9, true, false);
+        AssertArgs(receivedArgs, 12, true, false);
 
         _moduleA.ResultToReturn = ResC.Fail("aaa");
         _manager.StopModule().AssertFail();
-        AssertArgs(receivedArgs, 10, false, true);
+        AssertArgs(receivedArgs, 14, false, true);
     }
 
     [Test]

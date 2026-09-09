@@ -18,17 +18,17 @@ public abstract class MockOutputHandler : MockStartStopModuleBase, IOutputHandle
     public OutputTranslationFormat GetTranslationOutputMode()
         => TranslationFormat;
 
-    public List<string> ReceivedMessages { get; init; } = [];
-    public Task HandleMessage(string contents)
+    public List<(string Message, string Source)> ReceivedMessages { get; init; } = [];
+    public Task HandleMessage(string contents, string source)
     {
-        ReceivedMessages.Add(contents);
+        ReceivedMessages.Add((contents, source));
         return Task.CompletedTask;
     }
 
-    public List<(string Message, OutputNotificationPriority Priority)> ReceivedNotifications { get; init; } = [];
-    public Task HandleNotification(string contents, OutputNotificationPriority priority)
+    public List<(string Message, string Source, OutputNotificationPriority Priority)> ReceivedNotifications { get; init; } = [];
+    public Task HandleNotification(string contents, string source, OutputNotificationPriority priority)
     {
-        ReceivedNotifications.Add((contents, priority));
+        ReceivedNotifications.Add((contents, source, priority));
         return Task.CompletedTask;
     }
 

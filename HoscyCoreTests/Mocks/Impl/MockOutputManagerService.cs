@@ -25,16 +25,16 @@ public class MockOutputManagerService : MockStartStopServiceBase, IOutputManager
         OnClear.Invoke(this, EventArgs.Empty);
     }
 
-    public void SendMessage(string contents, OutputSettingsFlags settings)
+    public void SendMessage(string contents, string? source, OutputSettingsFlags settings)
     {
         Messages.Add((contents, settings));
-        OnMessage.Invoke(this, new(contents, [], null));
+        OnMessage.Invoke(this, new(contents, source ?? string.Empty, [], null));
     }
 
-    public void SendNotification(string contents, OutputNotificationPriority priority, OutputSettingsFlags settings)
+    public void SendNotification(string contents, string? source, OutputNotificationPriority priority, OutputSettingsFlags settings)
     {
         Notifications.Add((contents, settings, priority));
-        OnNotification.Invoke(this, new(contents, [], priority));
+        OnNotification.Invoke(this, new(contents, source ?? string.Empty, [], priority));
     }
 
     public void SetProcessingIndicator(bool isProcessing, string id)

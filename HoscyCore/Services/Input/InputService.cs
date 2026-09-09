@@ -20,7 +20,7 @@ public class InputService(ConfigModel config, IOutputManagerService output, ILog
     
         var flags = GenerateManualFlags();
         _logger.Debug("Forwarding manual input message \"{message}\"", contents);
-        _output.SendMessage(contents, flags);
+        _output.SendMessage(contents, "Input", flags);
         _logger.Verbose("Forwarded manual input message \"{message}\"", contents);
     }
 
@@ -51,13 +51,14 @@ public class InputService(ConfigModel config, IOutputManagerService output, ILog
         SendExternalMessage(contents, OutputSettingsFlags.AllowOtherOutput, "other");
     }
 
+    private const string SOURCE_EXTERNAL_NAME = "External";
     private void SendExternalMessage(string contents, OutputSettingsFlags extraFlag, string logText)
     {
         if (string.IsNullOrWhiteSpace(contents)) return;
 
         var flags = GenerateExternalProcessingFlags() | extraFlag;
         _logger.Debug("Forwarding external {logText} message \"{message}\"", logText, contents);
-        _output.SendMessage(contents, flags);
+        _output.SendMessage(contents, SOURCE_EXTERNAL_NAME, flags);
         _logger.Verbose("Forwarded external {logText} message \"{message}\"", logText, contents);
     }
 
@@ -67,7 +68,7 @@ public class InputService(ConfigModel config, IOutputManagerService output, ILog
 
         var flags = GenerateExternalProcessingFlags() | OutputSettingsFlags.AllowTextOutput;
         _logger.Debug("Forwarding external text notification \"{message}\"", contents);
-        _output.SendNotification(contents, prio, flags);
+        _output.SendNotification(contents, SOURCE_EXTERNAL_NAME, prio, flags);
         _logger.Verbose("Forwarded external text notification \"{message}\"", contents);
     }
 
