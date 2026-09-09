@@ -406,10 +406,16 @@ public class OutputManagerService
         _refreshExceptions.Clear();
 
         _logger.Debug("Restarting all {handlerCount} active Handlers...", _activeHandlers.Count);
-        foreach(var handler in _activeHandlers)
+        
+        for(var i = _activeHandlers.Count - 1; i > -1; i--)
         {
+            var handler = _activeHandlers[i];
             var res = RestartHandler(handler);
             AddRefreshExceptionIfMessage(res, handler.Name);
+            if (handler.GetCurrentStatus() == ServiceStatus.Stopped)
+            {
+                CleanupAfterHandlerShutdown(handler);
+            }
         }
         _logger.Debug("Finished restarting all {handlerCount} active Handlers", _activeHandlers.Count);
 
@@ -482,16 +488,16 @@ public class OutputManagerService
         return false;
     }
     
-    public void SendMessage(string contents, OutputSettingsFlags settings)
+    public void SendMessage(string contents, string? source, OutputSettingsFlags settings)
     {
         if (string.IsNullOrWhiteSpace(contents) || !IsLoopAvailable(contents)) return;
-        _messageLoop?.AddMessage(contents, settings);
+        _messageLoop?.AddMessage(contents, source, settings);
     }
 
-    public void SendNotification(string contents, OutputNotificationPriority priority, OutputSettingsFlags settings)
+    public void SendNotification(string contents, string? source, OutputNotificationPriority priority, OutputSettingsFlags settings)
     {
         if (string.IsNullOrWhiteSpace(contents) || !IsLoopAvailable(contents)) return;
-        _messageLoop?.AddNotification(contents, priority, settings);
+        _messageLoop?.AddNotification(contents, source, priority, settings);
     }
 
     public void Clear()
@@ -515,7 +521,7 @@ public class OutputManagerService
     #endregion
 
     #region Handlers => Send Post-Queue
-    public async Task HandleMessagePostQueue(string contents, OutputSettingsFlags settings)
+    public async Task HandleMessagePostQueue(string contents, string source, OutputSettingsFlags settings)
     {
         var compatiblePreprocessors = _preprocessors.Where(x => IsPreprocessorCompatible(x, settings)).ToArray();
         var preProcessResult = Preprocess(ref contents, compatiblePreprocessors);
@@ -527,8 +533,8 @@ public class OutputManagerService
             .ToArray();
         if (compatibleHandlers.Length == 0)
         {
-            OnMessage.Invoke(this, new(contents, [], null));
-            _logger.Debug("Message with contents \"{message}\" was not handled as no handlers fit the criteria", contents);
+            OnMessage.Invoke(this, new(contents, source, [], null));
+            _logger.Warning("Message with contents \"{message}\" and source \"{source}\" was not handled as no handlers fit the criteria", contents, source);
             return;
         }
 
@@ -536,31 +542,31 @@ public class OutputManagerService
             && TryTranslateContentsIfNeeded(contents, compatibleHandlers, out var translatedText))
         {
             if (translatedText is null) return;
-            await ForwardMessageTranslated(contents, translatedText, compatibleHandlers);
+            await ForwardMessageTranslated(contents, source, translatedText, compatibleHandlers);
         } 
         else
         {
-            await ForwardMessage(contents, compatibleHandlers);
+            await ForwardMessage(contents, source, compatibleHandlers);
         }
     }
 
-    private async Task ForwardMessage(string contents, IOutputHandler[] handlers)
+    private async Task ForwardMessage(string contents, string source, IOutputHandler[] handlers)
     {
-        _logger.Verbose("Sending {handlerCount} handlers a message with contents \"{contentsMessage}\"",
-            handlers.Length, contents);
+        _logger.Verbose("Sending {handlerCount} handlers a message with contents \"{contentsMessage}\" and source \"{source}\"",
+            handlers.Length, contents, source);
         
-        await WaitForHandlers(handlers, x => x.HandleMessage(contents), contents);
+        await WaitForHandlers(handlers, x => x.HandleMessage(contents, source), contents);
 
         var handlerNames = handlers.Select(x => x.Name).ToArray();
-        OnMessage.Invoke(this, new(contents, handlerNames, null));
-        _logger.Verbose("Sent {handlerCount} handlers a message with contents \"{contentsMessage}\"",
-                handlers.Length, contents);
+        OnMessage.Invoke(this, new(contents, source, handlerNames, null));
+        _logger.Verbose("Sent {handlerCount} handlers a message with contents \"{contentsMessage}\" and source \"{source}\"",
+                handlers.Length, contents, source);
     }
 
-    private async Task ForwardMessageTranslated(string contents, string translation, IOutputHandler[] handlers)
+    private async Task ForwardMessageTranslated(string contents, string source, string translation, IOutputHandler[] handlers)
     {
-        _logger.Verbose("Sending {handlerCount} handlers a message with contents \"{contentsMessage}\" and translation \"{translation}\"",
-            handlers.Length, contents, translation);
+        _logger.Verbose("Sending {handlerCount} handlers a message with contents \"{contentsMessage}\", source \"{source}\" and translation \"{translation}\"",
+            handlers.Length, contents, source, translation);
 
         await WaitForHandlers(handlers, handler =>
         {
@@ -571,16 +577,16 @@ public class OutputManagerService
                 OutputTranslationFormat.Both => $"{translation} / {contents}",
                 _ => throw new ArgumentException("Unsupported TranslationOutputMode")
             };
-            return handler.HandleMessage(newContents);
+            return handler.HandleMessage(newContents, source);
         }, contents);
 
         var handlerNames = handlers.Select(x => x.Name).ToArray();
-        OnMessage.Invoke(this, new(contents, handlerNames, translation));
-        _logger.Verbose("Sent {handlerCount} handlers a message with contents \"{contentsMessage}\" and translation \"{translation}\"",
-            handlers.Length, contents, translation);
+        OnMessage.Invoke(this, new(contents, source, handlerNames, translation));
+        _logger.Verbose("Sent {handlerCount} handlers a message with contents \"{contentsMessage}\", source \"{source}\" and translation \"{translation}\"",
+            handlers.Length, contents, source, translation);
     }
 
-    public async Task HandleNotificationPostQueue(string contents, OutputNotificationPriority priority, OutputSettingsFlags settings)
+    public async Task HandleNotificationPostQueue(string contents, string source, OutputNotificationPriority priority, OutputSettingsFlags settings)
     {
         var compatiblePreprocessors = _preprocessors.Where(x => IsPreprocessorCompatible(x, settings)).ToArray();
         var preProcessResult = Preprocess(ref contents, compatiblePreprocessors);
@@ -592,20 +598,20 @@ public class OutputManagerService
             .ToArray();
         if (compatibleHandlers.Length == 0)
         {
-            OnNotification.Invoke(this, new(contents, [], priority));
-            _logger.Debug("Notification with contents \"{message}\" was not handled as no handlers fit the criteria", contents);
+            OnNotification.Invoke(this, new(contents, source, [], priority));
+            _logger.Warning("Notification with contents \"{message}\" and source \"{source}\" was not handled as no handlers fit the criteria", contents, source);
             return;
         }
 
-        _logger.Verbose("Sending {handlerCount} handlers a notification of priority {priority} with contents \"{contentsNotification}\"", 
-            compatibleHandlers.Length, priority.ToString(), contents);
+        _logger.Verbose("Sending {handlerCount} handlers a notification of priority {priority} with contents \"{contentsNotification}\" and source \"{source}\"", 
+            compatibleHandlers.Length, priority.ToString(), contents, source);
 
-        await WaitForHandlers(compatibleHandlers, x => x.HandleNotification(contents, priority), contents);
+        await WaitForHandlers(compatibleHandlers, x => x.HandleNotification(contents, source, priority), contents);
 
         var handlerNames = compatibleHandlers.Select(x => x.Name).ToArray();
-        OnNotification.Invoke(this, new(contents, handlerNames, priority));
-        _logger.Verbose("Sent {handlerCount} handlers a notification of priority {priority} with contents \"{contentsNotification}\"",
-            compatibleHandlers.Length, priority.ToString(), contents);
+        OnNotification.Invoke(this, new(contents, source, handlerNames, priority));
+        _logger.Verbose("Sent {handlerCount} handlers a notification of priority {priority} with contents \"{contentsNotification}\" and source \"{source}\"",
+            compatibleHandlers.Length, priority.ToString(), contents, source);
     }
     private async Task WaitForHandlers(IEnumerable<IOutputHandler> handlers, Func<IOutputHandler, Task> handlerTask, string contents)
     {
