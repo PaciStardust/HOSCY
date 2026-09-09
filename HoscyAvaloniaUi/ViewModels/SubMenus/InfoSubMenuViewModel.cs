@@ -130,7 +130,7 @@ public class InfoSubMenuViewModelImpl : InfoSubMenuViewModelBase
         if (_outputHistory.LastMessagePostClear)
         {
             var lastMsg = _outputHistory.GetLastMessage();
-            SentViaText = lastMsg is null ? TXT_MSG_NOTHING_SENT : $"Sent via {string.Join(", ", lastMsg.Value.Outputs.Length > 0 ? lastMsg.Value.Outputs : ["Nothing"])}";
+            SentViaText = lastMsg is null ? TXT_MSG_NOTHING_SENT : $"Sent from {lastMsg.Value.Source} via {string.Join(", ", lastMsg.Value.Outputs.Length > 0 ? lastMsg.Value.Outputs : ["Nothing"])}";
             MessageText = lastMsg is null ? TXT_MSG_NOTHING_SENT : lastMsg.Value.Translation is null ? lastMsg.Value.Message : $"{lastMsg.Value.Message}\n<=>\n{lastMsg.Value.Translation}";
         }
         else
@@ -141,7 +141,7 @@ public class InfoSubMenuViewModelImpl : InfoSubMenuViewModelBase
         if (_outputHistory.LastNotificationPostClear)
         {
             var lastNotify = _outputHistory.GetLastNotification();
-            NotificationText = lastNotify is null ? TXT_NOT_NOTHING_SENT : $"[{string.Join(", ", lastNotify.Value.Outputs.Length > 0 ?  lastNotify.Value.Outputs : ["Nothing"])}] {lastNotify.Value.Message}";
+            NotificationText = lastNotify is null ? TXT_NOT_NOTHING_SENT : $"[{lastNotify.Value.Source}>{string.Join("+", lastNotify.Value.Outputs.Length > 0 ?  lastNotify.Value.Outputs : ["Nothing"])}] {lastNotify.Value.Message}";
         }
         else
         {

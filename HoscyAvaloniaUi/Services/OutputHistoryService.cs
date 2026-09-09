@@ -14,8 +14,8 @@ public class OutputHistoryService(ILogger logger, IOutputManagerService output)
 {
     private readonly IOutputManagerService _output = output;
 
-    private readonly List<(string Message, string? Translation, string[] Output)> _messageHistory = [];
-    private readonly List<(string Message, string[] Output, OutputNotificationPriority Priority)> _notificationHistory = [];
+    private readonly List<(string Message, string Source, string? Translation, string[] Output)> _messageHistory = [];
+    private readonly List<(string Message, string Source, string[] Output, OutputNotificationPriority Priority)> _notificationHistory = [];
     public bool LastMessagePostClear { get; private set; } = true;
     public bool LastNotificationPostClear { get; private set; } = true;
     private bool _started = false;
@@ -58,7 +58,7 @@ public class OutputHistoryService(ILogger logger, IOutputManagerService output)
     {
         var contents = e.Contents.Length > 2048 ? e.Contents[2048..] : e.Contents;
         var trans = e.Translation is null ? null : e.Translation.Length > 2048 ? e.Translation[2048..] : e.Translation;
-        _messageHistory.Add((contents, trans, e.Outputs));
+        _messageHistory.Add((contents, e.Source, trans, e.Outputs));
         if (_messageHistory.Count > 20)
         {
             _messageHistory.RemoveAt(0);
@@ -67,10 +67,10 @@ public class OutputHistoryService(ILogger logger, IOutputManagerService output)
         OnOutputUpdate.Invoke();
     }
 
-    private void OnNotification(object? sender, OutputNotificationEventArgs e) //todo: notification source?
+    private void OnNotification(object? sender, OutputNotificationEventArgs e)
     {
         var contents = e.Contents.Length > 512 ? e.Contents[512..] : e.Contents;
-        _notificationHistory.Add((contents, e.Outputs, e.Priority));
+        _notificationHistory.Add((contents, e.Source, e.Outputs, e.Priority));
         if (_notificationHistory.Count > 20)
         {
             _notificationHistory.RemoveAt(0);
@@ -86,11 +86,11 @@ public class OutputHistoryService(ILogger logger, IOutputManagerService output)
         OnOutputUpdate.Invoke();
     }
 
-    public (string Message, string? Translation, string[] Outputs)? GetLastMessage()
+    public (string Message, string Source, string? Translation, string[] Outputs)? GetLastMessage()
     {
         return _messageHistory.Count > 0 ? _messageHistory[^1] : null;
     }
-    public (string Message, string[] Outputs, OutputNotificationPriority Priority)? GetLastNotification()
+    public (string Message, string Source, string[] Outputs, OutputNotificationPriority Priority)? GetLastNotification()
     {
         return _notificationHistory.Count > 0 ? _notificationHistory[^1] : null;
     }
