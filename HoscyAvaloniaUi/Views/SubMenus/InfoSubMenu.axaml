@@ -5,7 +5,8 @@
 	xmlns:vm="using:HoscyAvaloniaUi.ViewModels.SubMenus"
 	mc:Ignorable="d" d:DesignHeight="420" d:DesignWidth="689"
 	x:DataType="vm:InfoSubMenuViewModelBase"
-	x:Class="HoscyAvaloniaUi.Views.SubMenus.InfoSubMenu">
+	x:Class="HoscyAvaloniaUi.Views.SubMenus.InfoSubMenu"
+	Background="{StaticResource BackgroundBaseBrush}">
 
 	<Design.DataContext>
 		<vm:InfoSubMenuViewModelPreview/>
@@ -28,18 +29,19 @@
 		</Border>
 
 		<StackPanel Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center">
-			<!-- TODO Output Via recognition, functionality -->
             <Button Theme="{StaticResource HButton}"
 				x:Name="muteButton" 
 				Content="{Binding ListeningStatusText}" 
 				Foreground="{Binding ListeningStatusBrush}"
+				Click="ButtonToggleListeningClicked"
 				Height="76"/>
-            <Button Theme="{StaticResource HButton}" Content="Clear" Margin="0,16,0,0" Height="76"/>
+            <Button Theme="{StaticResource HButton}" Content="Clear" Margin="0,16,0,0" Height="76" Click="ButtonClearClicked"/>
             <Button Theme="{StaticResource HButton}"
 				x:Name="startButton"
 				Margin="0,16,0,0"
 				Content="{Binding ActiveStatusText}"
 				Foreground="{Binding ActiveStatusBrush}"
+				Click="ButtonStartStopClicked"
 				Height="76"/>
         </StackPanel>
 	</Grid>
