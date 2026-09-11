@@ -30,6 +30,7 @@ public abstract partial class DebugSubMenuViewModelBase : ViewModelBase
     public virtual void UtilOpenConfig() { }
     public virtual void UtilSaveConfig() { }
     public virtual void UtilReloadDevices() { }
+    public virtual void UtilManageServices() { }
 }
 
 [PrototypeLoadIntoDiContainer(typeof(DebugSubMenuViewModelBase), Lifetime.Transient)]
@@ -123,6 +124,11 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
             return;
         }
         _logger.Information("Reloaded audio devices");
+    }
+    public override void UtilManageServices()
+    {
+        _logger.Information("Opening service manager");
+        _popupFactory.OpenServiceManager(null);
     }
 }
 

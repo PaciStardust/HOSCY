@@ -65,6 +65,7 @@
 
 					<WrapPanel Theme="{StaticResource HWrap}">
 						<Button Content="Reload Devices" Theme="{StaticResource HButton}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="UtilReloadDevices" ToolTip.Tip="Reloads all audio devices" BorderBrush="{StaticResource InvalidBrush}"/>
+						<Button Content="Manage Services" Theme="{StaticResource HButton}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="UtilManageServices" ToolTip.Tip="Manages all services" BorderBrush="{StaticResource InvalidBrush}"/>
 					</WrapPanel>
 				</StackPanel>
 			</StackPanel>

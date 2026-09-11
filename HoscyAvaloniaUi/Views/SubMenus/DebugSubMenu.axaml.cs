@@ -42,4 +42,9 @@ public partial class DebugSubMenu : UserControl
         (DataContext as DebugSubMenuViewModelBase)?.UtilReloadDevices();
         e.Handled = true;
     }
+    private void UtilManageServices(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        (DataContext as DebugSubMenuViewModelBase)?.UtilManageServices();
+        e.Handled = true;
+    }
 }
