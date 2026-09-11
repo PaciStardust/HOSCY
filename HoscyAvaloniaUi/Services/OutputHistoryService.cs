@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Output.Core;
@@ -89,6 +90,12 @@ public class OutputHistoryService(ILogger logger, IOutputManagerService output)
     public (string Message, string Source, string? Translation, string[] Outputs)? GetLastMessage()
     {
         return _messageHistory.Count > 0 ? _messageHistory[^1] : null;
+    }
+    public (string Message, string Source, string? Translation, string[] Outputs)[] GetLastMessages()
+    {
+        var arr = _messageHistory.ToList();
+        arr.Reverse();
+        return [.. arr];
     }
     public (string Message, string Source, string[] Outputs, OutputNotificationPriority Priority)? GetLastNotification()
     {

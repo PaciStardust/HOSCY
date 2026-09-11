@@ -269,7 +269,7 @@ public class ConfigModel : ObservableObject
 
     #region Manual Input
     public const string DESC_ManualInput_SendViaAudio = "Send manual input as audio";
-    public bool ManualInput_SendViaAudio //todo: impl
+    public bool ManualInput_SendViaAudio
     {
         get => _manualInput_SendViaAudio;
         set => SetProperty(ref _manualInput_SendViaAudio, value);
@@ -277,7 +277,7 @@ public class ConfigModel : ObservableObject
     private bool _manualInput_SendViaAudio;
 
     public const string DESC_ManualInput_SendViaText = "Send manual input as text";
-    public bool ManualInput_SendViaText //todo: impl
+    public bool ManualInput_SendViaText
     {
         get => _manualInput_SendViaText;
         set => SetProperty(ref _manualInput_SendViaText, value);
@@ -285,7 +285,7 @@ public class ConfigModel : ObservableObject
     private bool _manualInput_SendViaText = true;
 
     public const string DESC_ManualInput_SendViaOther = "Send manual input as other";
-    public bool ManualInput_SendViaOther //todo: impl
+    public bool ManualInput_SendViaOther
     {
         get => _manualInput_SendViaOther;
         set => SetProperty(ref _manualInput_SendViaOther, value);
@@ -293,7 +293,7 @@ public class ConfigModel : ObservableObject
     private bool _manualInput_SendViaOther = true;
 
     public const string DESC_ManualInput_DoPreprocessFull = "Do full preprocessing for manual input";
-    public bool ManualInput_DoPreprocessFull //todo: impl
+    public bool ManualInput_DoPreprocessFull
     {
         get => _manualInput_DoPreprocessFull;
         set => SetProperty(ref _manualInput_DoPreprocessFull, value);
@@ -301,7 +301,7 @@ public class ConfigModel : ObservableObject
     private bool _manualInput_DoPreprocessFull = true;
 
     public const string DESC_ManualInput_DoPreprocessPartial = "Do partial preprocessing for manual input";
-    public bool ManualInput_DoPreprocessPartial //todo: impl
+    public bool ManualInput_DoPreprocessPartial
     {
         get => _manualInput_DoPreprocessPartial;
         set => SetProperty(ref _manualInput_DoPreprocessPartial, value);
@@ -309,7 +309,7 @@ public class ConfigModel : ObservableObject
     private bool _manualInput_DoPreprocessPartial = true;
 
     public const string DESC_ManualInput_DoTranslate = "Translate manual input";
-    public bool ManualInput_DoTranslate //todo: impl
+    public bool ManualInput_DoTranslate
     {
         get => _manualInput_DoTranslate;
         set => SetProperty(ref _manualInput_DoTranslate, value);
@@ -317,7 +317,7 @@ public class ConfigModel : ObservableObject
     private bool _manualInput_DoTranslate = true;
 
     public const string DESC_ManualInput_TextPresets = "Presets for manual input";
-    public Dictionary<string, string> ManualInput_TextPresets //todo: impl
+    public Dictionary<string, string> ManualInput_TextPresets
     {
         get => _manualInput_TextPresets;
         set => SetProperty(ref _manualInput_TextPresets, value);

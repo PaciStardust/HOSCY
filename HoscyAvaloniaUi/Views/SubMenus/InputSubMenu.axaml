@@ -3,16 +3,43 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="using:HoscyAvaloniaUi.ViewModels.SubMenus"
+	xmlns:cfg="using:HoscyCore.Configuration.Modern"
 	mc:Ignorable="d" d:DesignHeight="420" d:DesignWidth="689"
 	x:DataType="vm:InputSubMenuViewModelBase"
-	x:Class="HoscyAvaloniaUi.Views.SubMenus.InputSubMenu">
+	x:Class="HoscyAvaloniaUi.Views.SubMenus.InputSubMenu"
+	Background="{StaticResource BackgroundBaseBrush}">
 
 	<Design.DataContext>
 		<vm:InputSubMenuViewModelPreview/>
 	</Design.DataContext>
 
-	<ScrollViewer Margin="16,8,8,8" VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="0,0,32,0">
-        </StackPanel>
-    </ScrollViewer>
+	<!-- TODO: Tooltips -->
+
+	<Grid ColumnDefinitions="2*,16,1*" RowDefinitions="*,16,auto,8,auto" Margin="16">
+		<TextBox Grid.Column="0" Grid.Row="0" Theme="{StaticResource HTextBoxLarge}" AcceptsReturn="True" Text="{Binding TextboxContent}" PlaceholderText="{Binding LastSent}"/>
+
+		<ListBox Grid.Column="2" Grid.Row="0" Theme="{StaticResource HListBoxF}" ItemsSource="{Binding Presets}" SelectedIndex="{Binding PresetIndex}" SelectionChanged="PresetSelected"/> 
+
+		<WrapPanel Grid.Column="0" Grid.Row="2" Theme="{StaticResource HWrap}" HorizontalAlignment="Center">
+            <Button Theme="{StaticResource HButton}" Content="Send / Resend" Click="SendClicked" ToolTip.Tip="Sends the message or fills the box with the last sent one"/>
+            <Button Theme="{StaticResource HButton}" Content="Clear" Click="ClearClicked" ToolTip.Tip="Clears the output"/>
+			<CheckBox Theme="{StaticResource HCheckBox}" Content="Translate" IsChecked="{Binding Config.ManualInput_DoTranslate}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_ManualInput_DoTranslate}"/>
+		</WrapPanel>
+
+		<WrapPanel Grid.Column="2" Grid.Row="2" Theme="{StaticResource HWrap}" HorizontalAlignment="Center">
+            <Button Theme="{StaticResource HButton}" Content="Presets" Click="PresetsClicked" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_ManualInput_TextPresets}"/>
+            <Button Theme="{StaticResource HButton}" Content="History" Click="HistoryClicked" ToolTip.Tip="Opens a list of the last send messages"/>
+		</WrapPanel>
+
+		<WrapPanel Grid.Column="0" Grid.Row="4" Theme="{StaticResource HWrap}" HorizontalAlignment="Center">
+            <CheckBox Theme="{StaticResource HCheckBox}" Content="Via Text" IsChecked="{Binding Config.ManualInput_SendViaText}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_ManualInput_SendViaText}"/>
+			<CheckBox Theme="{StaticResource HCheckBox}" Content="Via Audio" IsChecked="{Binding Config.ManualInput_SendViaAudio}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_ManualInput_SendViaAudio}"/>
+			<CheckBox Theme="{StaticResource HCheckBox}" Content="Via Other" IsChecked="{Binding Config.ManualInput_SendViaOther}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_ManualInput_SendViaOther}"/>
+		</WrapPanel>
+
+		<WrapPanel Grid.Column="2" Grid.Row="4" Theme="{StaticResource HWrap}" HorizontalAlignment="Center">
+			<CheckBox Theme="{StaticResource HCheckBox}" Content="Pre Full" IsChecked="{Binding Config.ManualInput_DoPreprocessFull}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_ManualInput_DoPreprocessFull}"/>
+			<CheckBox Theme="{StaticResource HCheckBox}" Content="Pre Part" IsChecked="{Binding Config.ManualInput_DoPreprocessPartial}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_ManualInput_DoPreprocessPartial}"/>
+		</WrapPanel>
+	</Grid>
 </UserControl>
