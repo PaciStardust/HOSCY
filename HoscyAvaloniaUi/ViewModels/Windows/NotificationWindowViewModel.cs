@@ -18,7 +18,7 @@ public abstract partial class NotificationWindowViewModelBase : ViewModelBase //
     [ObservableProperty]
     public partial bool CopyClipboardVisible { get; set; } = true;
 
-    public abstract void OnClipboardClick(IClipboard? clipboard, string text);
+    public abstract void OnClipboardClick(IClipboard? clipboard);
     public abstract void OnGithubClick();
 }
 
@@ -26,7 +26,7 @@ public abstract partial class NotificationWindowViewModelBase : ViewModelBase //
 public class NotificationWindowViewModelImpl(ILogger logger) : NotificationWindowViewModelBase
 {
     private readonly ILogger _logger = logger.ForContext<NotificationWindowViewModelImpl>();
-    public override void OnClipboardClick(IClipboard? clipboard, string text)
+    public override void OnClipboardClick(IClipboard? clipboard)
     {
         _logger.Debug("Received clipboard copy request");
         
@@ -36,7 +36,7 @@ public class NotificationWindowViewModelImpl(ILogger logger) : NotificationWindo
             return;
         }
 
-        var res = ResC.WrapR(clipboard.SetTextAsync(text).AsSync, "Clipboard copy failed", _logger);
+        var res = ResC.WrapR(clipboard.SetTextAsync(Notification).AsSync, "Clipboard copy failed", _logger);
         if (res.IsOk)
         {
             _logger.Debug("Clipboard copy request succeeded");
@@ -52,7 +52,7 @@ public class NotificationWindowViewModelImpl(ILogger logger) : NotificationWindo
 #if DEBUG
 public class NotificationWindowViewModelPreview : NotificationWindowViewModelBase
 {
-    public override void OnClipboardClick(IClipboard? clipboard, string text) { }
+    public override void OnClipboardClick(IClipboard? clipboard) { }
     public override void OnGithubClick() { }
 }
 #endif

@@ -19,7 +19,7 @@ public partial class NotificationWindow : Window
     private void OnClipboardClick(object? _, Avalonia.Interactivity.RoutedEventArgs e)
     {
         var vm = DataContext as NotificationWindowViewModelBase;
-        vm?.OnClipboardClick(Clipboard, vm.Notification);
+        vm?.OnClipboardClick(Clipboard);
         e.Handled = true;
     }
 }
