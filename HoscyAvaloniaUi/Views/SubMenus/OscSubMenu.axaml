@@ -47,6 +47,16 @@
 			</StackPanel>
 
 			<StackPanel Theme="{StaticResource HStack}">
+				<Label Content="External Input" Theme="{StaticResource HLabelL}"/>
+
+				<StackPanel Theme="{StaticResource HStackIndent}">
+					<CheckBox Theme="{StaticResource HCheckBox}" Content="Do Full Preprocessing" IsChecked="{Binding Config.ExternalInput_DoPreprocessFull}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_ExternalInput_DoPreprocessFull}"/>
+					<CheckBox Theme="{StaticResource HCheckBox}" Content="Do Partial Preprocessing" IsChecked="{Binding Config.ExternalInput_DoPreprocessPartial}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_ExternalInput_DoPreprocessPartial}"/>
+					<CheckBox Theme="{StaticResource HCheckBox}" Content="Do Translate" IsChecked="{Binding Config.ExternalInput_DoTranslate}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_ExternalInput_DoTranslate}"/>
+				</StackPanel>
+			</StackPanel>
+
+			<StackPanel Theme="{StaticResource HStack}">
 				<WrapPanel Theme="{StaticResource HWrap}">
 					<Label Content="Addresses" Theme="{StaticResource HLabelL}"/>
 					<Button Content="OSC Query Services" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="QueryServicesClicked" ToolTip.Tip="View located services for OSC Query"/>

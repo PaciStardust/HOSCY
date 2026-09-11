@@ -13,8 +13,6 @@
 		<vm:InputSubMenuViewModelPreview/>
 	</Design.DataContext>
 
-	<!-- TODO: Tooltips -->
-
 	<Grid ColumnDefinitions="2*,16,1*" RowDefinitions="*,16,auto,8,auto" Margin="16">
 		<TextBox Grid.Column="0" Grid.Row="0" Theme="{StaticResource HTextBoxLarge}" AcceptsReturn="True" Text="{Binding TextboxContent}" PlaceholderText="{Binding LastSent}"/>
 

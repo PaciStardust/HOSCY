@@ -75,7 +75,7 @@ public class ConfigModel : ObservableObject
 
     #region API
     public const string DESC_Api_Presets = "List of all API presets to be used in various locations";
-    public List<ApiPresetModel> Api_Presets //todo: impl
+    public List<ApiPresetModel> Api_Presets
     {
         get => _api_Presets;
         set => SetProperty(ref _api_Presets, value);
@@ -243,7 +243,7 @@ public class ConfigModel : ObservableObject
 
     #region External Input
     public const string DESC_ExternalInput_DoPreprocessFull = "Do full preprocessing on external input";
-    public bool ExternalInput_DoPreprocessFull //todo: impl
+    public bool ExternalInput_DoPreprocessFull
     {
         get => _externalInput_DoPreprocessFull;
         set => SetProperty(ref _externalInput_DoPreprocessFull, value);
@@ -251,7 +251,7 @@ public class ConfigModel : ObservableObject
     private bool _externalInput_DoPreprocessFull = true;
 
     public const string DESC_ExternalInput_DoPreprocessPartial = "Do partial preprocessing on external input";
-    public bool ExternalInput_DoPreprocessPartial//todo: impl
+    public bool ExternalInput_DoPreprocessPartial
     {
         get => _externalInput_DoPreprocessPartial;
         set => SetProperty(ref _externalInput_DoPreprocessPartial, value);
@@ -259,7 +259,7 @@ public class ConfigModel : ObservableObject
     private bool _externalInput_DoPreprocessPartial = true;
 
     public const string DESC_ExternalInput_DoTranslate = "Translate external input";
-    public bool ExternalInput_DoTranslate //todo: impl
+    public bool ExternalInput_DoTranslate
     {
         get => _externalInput_DoTranslate;
         set => SetProperty(ref _externalInput_DoTranslate, value);
@@ -1047,7 +1047,7 @@ public class ConfigModel : ObservableObject
     private bool _recognition_AutoStart = false;
 
     public const string DESC_Recognition_Fixup_NoiseFilter = "List of noises to be removed from output";
-    public List<string> Recognition_Fixup_NoiseFilter //todo: [FEAT] Actual noise filter?
+    public List<string> Recognition_Fixup_NoiseFilter
     {
         get => _recognition_Fixup_NoiseFilter;
         set => SetProperty(ref _recognition_Fixup_NoiseFilter, value);
