@@ -28,7 +28,8 @@ public class PopupWindowFactory
     IContainerBulkLoader<EditListWindowViewModelBase> editListWvmLoader,
     IContainerBulkLoader<EditOscRelayFiltersWindowViewModelBase> editOscRelayFiltersWvmLoader,
     IContainerBulkLoader<EditReplacementsWindowViewModelBase> editReplacementsWvmLoader,
-    IContainerBulkLoader<EditAzureVoicesWindowViewModelBase> editAzureVoicesWvmLoader
+    IContainerBulkLoader<EditAzureVoicesWindowViewModelBase> editAzureVoicesWvmLoader,
+    IContainerBulkLoader<ManageServicesWindowViewModelBase> manageServicesWvmLoader
 )
     : IService
 {
@@ -46,6 +47,7 @@ public class PopupWindowFactory
     private readonly IContainerBulkLoader<EditOscRelayFiltersWindowViewModelBase> _editOscRelayFiltersWvmLoader = editOscRelayFiltersWvmLoader;
     private readonly IContainerBulkLoader<EditReplacementsWindowViewModelBase> _editReplacementsWvmLoader = editReplacementsWvmLoader;
     private readonly IContainerBulkLoader<EditAzureVoicesWindowViewModelBase> _editAzureVoicesWvmLoader = editAzureVoicesWvmLoader;
+    private readonly IContainerBulkLoader<ManageServicesWindowViewModelBase> _manageServicesWvmLoader = manageServicesWvmLoader;
 
     private void Open(Func<Window> windowCreate, ViewModelBase vm, bool dialog, Window? parent, Action? onClose)
     {
@@ -201,5 +203,15 @@ public class PopupWindowFactory
         vmRes.Value.Init(values);
 
         Open(() => new EditAzureVoicesWindow(), vmRes.Value, true, parentWindow, onClose);
+    }
+
+    public void OpenServiceManager(Window? parentWindow, Action? onClose = null)
+    {
+        _logger.Debug("Creating service manager");
+
+        var vmRes = _manageServicesWvmLoader.GetInstance();
+        if (!vmRes.IsOk) return;
+
+        Open(() => new ManageServicesWindow(), vmRes.Value, true, parentWindow, onClose);
     }
 }

@@ -1,0 +1,66 @@
+<Window xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:HoscyAvaloniaUi.ViewModels.Windows"
+	xmlns:cfg="using:HoscyCore.Configuration.Modern"
+	mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="700"
+	x:DataType="vm:ManageServicesWindowViewModelBase"
+	x:Class="HoscyAvaloniaUi.Views.Windows.ManageServicesWindow"
+
+	Title="Manage Services"
+	MinHeight="400"
+	MinWidth="700"
+	Height="400"
+	Width="800"
+	CanResize="True"
+	Background="{StaticResource BackgroundBaseBrush}" 
+	WindowStartupLocation="CenterOwner">
+
+	<Design.DataContext>
+		<vm:ManageServicesWindowViewModelPreview/>
+	</Design.DataContext>
+
+	<Grid Margin="16" ColumnDefinitions="1*,16,1*">
+		<ListBox Grid.Column="0" Theme="{StaticResource HListBoxF}" SelectedIndex="{Binding SelectedIndex}" ItemsSource="{Binding DataDisplayed}"
+			ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="SelectionChanged"/>
+
+		<Grid Grid.Column="2" RowDefinitions="Auto,16,1*">
+			<StackPanel Grid.Row="0" Theme="{StaticResource HStack}">
+				<WrapPanel Theme="{StaticResource HWrap}" HorizontalAlignment="Center">
+					<Button Theme="{StaticResource HButton}" Content="Refresh List" Click="RefreshClicked"/>
+					<Button Theme="{StaticResource HButton}" Content="Copy Error" Click="CopyClicked" IsEnabled="{Binding SelectedHasError}"/>
+				</WrapPanel>
+
+				<WrapPanel Theme="{StaticResource HWrap}" HorizontalAlignment="Center">
+					<Button Theme="{StaticResource HButton}" Content="Start / Stop" Click="StartStopClicked" IsEnabled="{Binding SelectedCanStartStop}"/>
+					<Button Theme="{StaticResource HButton}" Content="Restart" Click="RestartClicked" IsEnabled="{Binding SelectedCanStartStop}"/>
+				</WrapPanel>
+			</StackPanel>
+
+			<ScrollViewer Grid.Row="2" Theme="{StaticResource HScrollViewer}">
+				<StackPanel Theme="{StaticResource HStack}">
+					<StackPanel Theme="{StaticResource HStackS}">
+						<Label Theme="{StaticResource HLabel}" HorizontalAlignment="Center" Content="Service Name"/>
+						<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedName}" IsReadOnly="True" ToolTip.Tip="Name of the selected service"/>
+					</StackPanel>
+
+					<StackPanel Theme="{StaticResource HStackS}">
+						<Label Theme="{StaticResource HLabel}" HorizontalAlignment="Center" Content="Service Injected As"/>
+						<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedRepresents}" IsReadOnly="True" ToolTip.Tip="Name of the service type this service represents"/>
+					</StackPanel>
+
+					<StackPanel Theme="{StaticResource HStackS}" IsEnabled="{Binding SelectedIsStartStop}">
+						<Label Theme="{StaticResource HLabel}" HorizontalAlignment="Center" Content="Service Status"/>
+						<TextBox Theme="{StaticResource HTextBox}" Text="{Binding SelectedStatus}" IsReadOnly="True" ToolTip.Tip="Status of the service if it can be started and stopped"/>
+					</StackPanel>
+
+					<StackPanel Theme="{StaticResource HStackS}" IsEnabled="{Binding SelectedHasError}">
+						<Label Theme="{StaticResource HLabel}" HorizontalAlignment="Center" Content="Service Error"/>
+						<TextBox Theme="{StaticResource HTextBoxLarge}" Text="{Binding SelectedError}" IsReadOnly="True" ToolTip.Tip="Error of the service if available"/>
+					</StackPanel>
+				</StackPanel>
+			</ScrollViewer>
+		</Grid>
+	</Grid>
+</Window>
