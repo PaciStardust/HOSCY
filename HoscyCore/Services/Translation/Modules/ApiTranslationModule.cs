@@ -11,7 +11,7 @@ namespace HoscyCore.Services.Translation.Modules;
 [LoadIntoDiContainer(typeof(ApiTranslationModuleStartInfo))]
 public class ApiTranslationModuleStartInfo : ITranslationModuleStartInfo
 {
-    public string Name => "Api Translator";
+    public string Name => "API Translator";
     public string Description => "Translation using any provided API Info";
     public Type ModuleType => typeof(ApiTranslationModule);
     public ModulePriority Priority => ModulePriority.High;

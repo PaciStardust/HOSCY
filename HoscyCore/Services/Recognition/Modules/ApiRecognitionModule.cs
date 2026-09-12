@@ -13,7 +13,7 @@ namespace HoscyCore.Services.Recognition.Modules;
 [PrototypeLoadIntoDiContainer(typeof(ApiRecognitionModuleStartInfo), Lifetime.Singleton)]
 public class ApiRecognitionModuleStartInfo : IRecognitionModuleStartInfo
 {
-    public string Name => "Any-Api Recognizer";
+    public string Name => "Any-API Recognizer";
     public string Description => "Remote recognition using Any-API, not continuous";
     public Type ModuleType => typeof(ApiRecognitionModule);
     public ModulePriority Priority => ModulePriority.Low;
