@@ -120,32 +120,39 @@
 								<Label Theme="{StaticResource HLabel}" Content="Media Pause Text" VerticalAlignment="Center"/>
 							</WrapPanel>
 
-							<WrapPanel Theme="{StaticResource HWrap}">
-								<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Playing ..." Text="{Binding Config.Media_PlayingVerb}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_PlayingVerb}"/>
-								<Label Theme="{StaticResource HLabel}" Content="Media Playing Verb" VerticalAlignment="Center"/>
-							</WrapPanel>
+							<StackPanel Theme="{StaticResource HStackS}">
+								<Label Theme="{StaticResource HLabel}" Content="Text Configuration" VerticalAlignment="Center"/>
 
-							<WrapPanel Theme="{StaticResource HWrap}">
-								<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Inter ..." Text="{Binding Config.Media_IntermediateWord}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_IntermediateWord}"/>
-								<Label Theme="{StaticResource HLabel}" Content="Media Intermediate Word" VerticalAlignment="Center"/>
-							</WrapPanel>
+								<WrapPanel Theme="{StaticResource HWrap}">
+									<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="Playing ..." Text="{Binding Config.Media_PlayingVerb}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_PlayingVerb}"/>
 
-							<WrapPanel Theme="{StaticResource HWrap}">
-								<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Extra ..." Text="{Binding Config.Media_ExtraText}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_ExtraText}"/>
-								<Label Theme="{StaticResource HLabel}" Content="Media Extra Text" VerticalAlignment="Center"/>
-							</WrapPanel>
+									<WrapPanel Theme="{StaticResource HWrap}" IsVisible="{Binding !Config.Media_SwapArtistAndSongInText}">
+										<Label Theme="{StaticResource HLabel}" Content="'Song'" VerticalAlignment="Center"/>
+										<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="Inter ..." Text="{Binding Config.Media_IntermediateWord}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_IntermediateWord}"/>
+										<Label Theme="{StaticResource HLabel}" Content="'Artist'" VerticalAlignment="Center"/>
+									</WrapPanel>
 
-							<CheckBox Theme="{StaticResource HCheckBox}" Content="Swap Artist and Song" IsChecked="{Binding Config.Media_AddAlbumToText}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_AddAlbumToText}"/>
+									<WrapPanel Theme="{StaticResource HWrap}" IsVisible="{Binding Config.Media_SwapArtistAndSongInText}">
+										<Label Theme="{StaticResource HLabel}" Content="'Artist'" VerticalAlignment="Center"/>
+										<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="Inter ..." Text="{Binding Config.Media_IntermediateWord}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_IntermediateWord}"/>
+										<Label Theme="{StaticResource HLabel}" Content="'Song'" VerticalAlignment="Center"/>
+									</WrapPanel>
+
+									<WrapPanel Theme="{StaticResource HWrap}" IsEnabled="{Binding Config.Media_AddAlbumToText}">
+										<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="Album ..." Text="{Binding Config.Media_AlbumWord}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_AlbumWord}"/>
+										<Label Theme="{StaticResource HLabel}" Content="'Album'" VerticalAlignment="Center"/>
+									</WrapPanel>
+
+									<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="Extra ..." Text="{Binding Config.Media_ExtraText}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_ExtraText}"/>
+								</WrapPanel>
+							</StackPanel>
+
+							<CheckBox Theme="{StaticResource HCheckBox}" Content="Swap Artist and Song" IsChecked="{Binding Config.Media_SwapArtistAndSongInText}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_AddAlbumToText}"/>
 
 							<CheckBox Theme="{StaticResource HCheckBox}" Content="Add Album to Text" IsChecked="{Binding Config.Media_AddAlbumToText}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_AddAlbumToText}"/>
 
 							<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Media_AddAlbumToText}">
 								<CheckBox Theme="{StaticResource HCheckBox}" Content="Filter Same Name Album" IsChecked="{Binding Config.Media_FilterSameNameAlbum}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_FilterSameNameAlbum}"/>
-
-								<WrapPanel Theme="{StaticResource HWrap}">
-									<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Album ..." Text="{Binding Config.Media_AlbumWord}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Media_AlbumWord}"/>
-									<Label Theme="{StaticResource HLabel}" Content="Media Album Word" VerticalAlignment="Center"/>
-								</WrapPanel>
 							</StackPanel>
 						</StackPanel>
 					</StackPanel>
