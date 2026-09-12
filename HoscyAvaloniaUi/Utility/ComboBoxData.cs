@@ -7,7 +7,7 @@ namespace HoscyAvaloniaUi.Utility;
 
 public partial class ComboBoxData : ObservableObject
 {
-    public const string COMBO_BOX_NO_OPTIONS = "(No options available)";
+    public const string COMBO_BOX_NO_OPTIONS = "(No Options Available)";
 
     [ObservableProperty]
     public partial int Index { get; set; }

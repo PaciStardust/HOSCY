@@ -58,7 +58,7 @@ public abstract partial class RecogSubMenuViewModelBase : ViewModelBase
     public virtual void OptionsMicrophoneRefreshClicked() { }
 
     [ObservableProperty]
-    public partial string ModulesSettingsVisibleIfCompatible { get; protected set; } = "(Settings are visible if compatible recognition module is selected)";
+    public partial string ModulesSettingsVisibleIfCompatible { get; protected set; } = "(Settings are Visible if Compatible Recognition Module is Selected)";
 
     [ObservableProperty]
     public partial bool ModulesAnyApiIsSelected { get; protected set; }
@@ -170,7 +170,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
         ModulesWindowsModelsUpdateComboBox();
         #else
         ModulesWindowsModels = new();
-        ModulesWindowsModelDescription = "This feature is not supported outside of Windows";
+        ModulesWindowsModelDescription = "This Feature is Not Supported Outside of Windows";
         #endif
 
         WebRtcNoiseSuppressionLevel = new([.. Enum.GetNames<NoiseSuppressionLevel>()], Enum.GetName(Config.WebRtc_NoiseSuppressionLevel) ?? string.Empty, _logger, "WebRtcNoiseSuppressionLevel");
@@ -178,7 +178,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
         if (errors.Count > 0)
         {
             var error = ResC.FailM(errors);
-            notify.SendResult("Some data could not be loaded", error.Msg!);
+            notify.SendResult("Some Data Could Not be Loaded", error.Msg!);
         }
     }
 
@@ -201,7 +201,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
             var match = _recognitionInfosOrdered.FirstOrDefault(x => x.Name == selected);
             if (match is null)
             {
-                description += "Selected module not found";
+                description += "Selected Module Not Found";
             }
             else
             {
@@ -234,14 +234,14 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
         _logger.Information("Starting recognition module");
             OptionsSelectedModuleStartStopText = "Starting";
             var res = _recognition.StartModule();
-            res.IfFail(x => _popup.OpenNotification("Failed to start recognition module", x.Message, true, true));
+            res.IfFail(x => _popup.OpenNotification("Failed to Start Recognition Module", x.Message, true, true));
         } 
         else
         {
             _logger.Information("Stopping recognition module");
             OptionsSelectedModuleStartStopText = "Stopping";
             var res = _recognition.StopModule();
-            res.IfFail(x => _popup.OpenNotification("Failed to stop recognition module", x.Message, true, true));
+            res.IfFail(x => _popup.OpenNotification("Failed to Stop Recognition Module", x.Message, true, true));
         }
     }
     public override void OptionsSelectedModuleToggleMuteClicked()
@@ -251,14 +251,14 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
             var value = !_recognition.IsListening;
             _logger.Information("Setting recognition listening status to {value}", value);
             var res = _recognition.SetListening(value);
-            res.IfFail(x => _popup.OpenNotification("Failed to set recognition module listening status", x.Message, true, true));
+            res.IfFail(x => _popup.OpenNotification("Failed to Set Recognition Module Listening Status", x.Message, true, true));
         }
     }
     public override void OptionsSelectedModuleRefreshClicked()
     {
         _logger.Information("Refreshing recognition module");
         var res = _recognition.RefreshModule();
-        res.IfFail(x => _popup.OpenNotification("Failed to refresh recognition module", x.Message, true, true));
+        res.IfFail(x => _popup.OpenNotification("Failed to Refresh Recognition Module", x.Message, true, true));
     }
     public override void OptionsSelectedModuleRestartClicked()
     {
@@ -267,7 +267,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
             _logger.Information("Restarting recognition module");
             var res = _recognition.StopModule();
             res = res.IsOk ? _recognition.StartModule() : res;
-            res.IfFail(x => _popup.OpenNotification("Failed to restart recognition module", x.Message, true, true));
+            res.IfFail(x => _popup.OpenNotification("Failed to Restart Recognition Module", x.Message, true, true));
         }
     }
     private void OptionsSelectedModuleUpdateButtons(ServiceStatus status, bool listening)
@@ -293,7 +293,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
     private void OptionsOutputNoiseFilterRefresh()
     {
         var res = _recognition.UpdateSettings();
-        res.IfFail(x => _popup.OpenNotification("Failed to update recognition noise filter", x.Message, true, true));
+        res.IfFail(x => _popup.OpenNotification("Failed to Update Recognition Noise Filter", x.Message, true, true));
     }
 
     public override void OptionsMicrophoneChanged()
@@ -307,7 +307,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
         var mics = OptionsMicrophoneGetNames();
         if (!mics.IsOk)
         {
-            _popup.OpenNotification("Failed to assign selected microphone", mics.Msg.Message, true, true);
+            _popup.OpenNotification("Failed to Assign Selected Microphone", mics.Msg.Message, true, true);
             return;
         }
 
@@ -322,7 +322,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
         var mics = OptionsMicrophoneGetNames();
         if (!mics.IsOk)
         {
-            _popup.OpenNotification("Failed to retrieve microphones", mics.Msg.Message, true, true);
+            _popup.OpenNotification("Failed to Retrieve Microphones", mics.Msg.Message, true, true);
             return;
         }
         OptionsMicrophone.RefreshItems(mics.Value, Config.Recognition_MicrophoneName);
@@ -335,7 +335,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
 
     public override void ModulesAnyApiEditPresets()
     {
-        _logger.Information("Editing api presets");
+        _logger.Information("Editing API presets");
         _popup.OpenEditApiPresets(Config.Api_Presets, null, ModulesAnyApiReloadPresetBox);
     }
     private void ModulesAnyApiReloadPresetBox()
@@ -451,13 +451,13 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
         var selected = ModulesWindowsModels.GetSelected();
         if (selected is null)
         {
-            description += "No module is selected";
+            description += "No Module is Selected";
         }
         else
         {
             if (!_windowsModels.TryGetValue(selected, out var modelData))
             {
-                description += "Selected module not found";
+                description += "Selected Module Not Found";
                 Config.Recognition_Windows_ModelId = string.Empty;
             }
             else

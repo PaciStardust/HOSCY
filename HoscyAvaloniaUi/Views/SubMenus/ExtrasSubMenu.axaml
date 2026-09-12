@@ -36,7 +36,7 @@
 						
 						<WrapPanel Theme="{StaticResource HWrap}">
 							<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Afk_TimesDisplayedBeforeDoublingInterval, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.Afk_TimesDisplayedBeforeDoublingInterval}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Afk_TimesDisplayedBeforeDoublingInterval}"/>
-							<Label Theme="{StaticResource HLabel}" Content="Double Interval After Displaying ... Times" VerticalAlignment="Center"/>
+							<Label Theme="{StaticResource HLabel}" Content="Double Interval after Displaying ... Times" VerticalAlignment="Center"/>
 						</WrapPanel>
 
 						<WrapPanel Theme="{StaticResource HWrap}">
@@ -99,7 +99,7 @@
 							<Button Content="View Endpoints" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="MediaBackendEndpointsClicked" IsEnabled="{Binding MediaBackendHasEndpoints}" ToolTip.Tip="Views the endpoints for the currently running module"/>
 						</WrapPanel>
 
-						<TextBlock Theme="{StaticResource HTextBlockError}" Text="Currently selected module is not loaded, please press 'Reload'" IsVisible="{Binding MediaBackendReloadNeeded}"/>
+						<TextBlock Theme="{StaticResource HTextBlockError}" Text="Currently Selected Module is Mot Loaded, Please Press 'Reload'" IsVisible="{Binding MediaBackendReloadNeeded}"/>
 
 						<TextBlock Theme="{StaticResource HTextBlockNote}" Text="{Binding MediaBackendDescription}"/>
 					</StackPanel>

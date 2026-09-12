@@ -94,7 +94,7 @@ public class OutputSubMenuViewModelImpl : OutputSubMenuViewModelBase
         var refresh = _partReplaceProc.ReloadReplacements();
         if (!refresh.IsOk)
         {
-            _popup.OpenNotification("Failed to reload partial replacements", refresh.Msg.Message, true, true);
+            _popup.OpenNotification("Failed to Reload Partial Replacements", refresh.Msg.Message, true, true);
         }
         UpdateReplacementsStatus();
     }
@@ -108,7 +108,7 @@ public class OutputSubMenuViewModelImpl : OutputSubMenuViewModelBase
         var refresh = _fullReplaceProc.ReloadReplacements();
         if (!refresh.IsOk)
         {
-            _popup.OpenNotification("Failed to reload full replacements", refresh.Msg.Message, true, true);
+            _popup.OpenNotification("Failed to Reload Full Replacements", refresh.Msg.Message, true, true);
         }
         UpdateReplacementsStatus();
     }
@@ -128,7 +128,7 @@ public class OutputSubMenuViewModelImpl : OutputSubMenuViewModelBase
         var res = _output.RefreshHandlers();
         if (!res.IsOk)
         {
-            _popup.OpenNotification("Failed reloading output modules", res.Msg.Message, true, true);
+            _popup.OpenNotification("Failed Reloading Output Modules", res.Msg.Message, true, true);
         }
         UpdateModuleStatus();
     }
@@ -138,7 +138,7 @@ public class OutputSubMenuViewModelImpl : OutputSubMenuViewModelBase
         var res = _output.RestartHandlers();
         if (!res.IsOk)
         {
-            _popup.OpenNotification("Failed restarting output modules", res.Msg.Message, true, true);
+            _popup.OpenNotification("Failed Restarting Output Modules", res.Msg.Message, true, true);
         }
         UpdateModuleStatus();
     }

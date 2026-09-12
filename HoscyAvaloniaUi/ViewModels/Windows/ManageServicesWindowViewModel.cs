@@ -63,7 +63,7 @@ public class ManageServicesWindowViewModelImpl : ManageServicesWindowViewModelBa
         if (!serviceRes.IsOk)
         {
             _logger.Warning("Failed to load services ({msg})", serviceRes.Msg);
-            notify.SendResult("Failed to load services", serviceRes.Msg);
+            notify.SendResult("Failed to Load Services", serviceRes.Msg);
             _dataInternal = [];
         } 
         else
@@ -171,7 +171,7 @@ public class ManageServicesWindowViewModelImpl : ManageServicesWindowViewModelBa
             if (!stopRes.IsOk)
             {
                 _logger.Error("Failed to restart service {service} ({res})", serviceName, stopRes);
-                _popup.OpenNotification("Failed to stop service", stopRes.Msg.Message, true, true);
+                _popup.OpenNotification("Failed to Stop Service", stopRes.Msg.Message, true, true);
                 UpdateServiceList(SelectedIndex);
                 return;
             }
@@ -181,7 +181,7 @@ public class ManageServicesWindowViewModelImpl : ManageServicesWindowViewModelBa
         if (!startRes.IsOk)
         {
             _logger.Error("Failed to restart service {service} ({res})", serviceName, startRes);
-            _popup.OpenNotification("Failed to start service", startRes.Msg.Message, true, true);
+            _popup.OpenNotification("Failed to Start Service", startRes.Msg.Message, true, true);
             UpdateServiceList(SelectedIndex);
             return;
         }
@@ -205,7 +205,7 @@ public class ManageServicesWindowViewModelImpl : ManageServicesWindowViewModelBa
             if (!res.IsOk)
             {
                 _logger.Error("Failed to stop service {service} ({res})", serviceName, res);
-                _popup.OpenNotification("Failed to stop service", res.Msg.Message, true, true);
+                _popup.OpenNotification("Failed to Stop Service", res.Msg.Message, true, true);
             }
         }
         else
@@ -215,7 +215,7 @@ public class ManageServicesWindowViewModelImpl : ManageServicesWindowViewModelBa
             if (!res.IsOk)
             {
                 _logger.Error("Failed to start service {service} ({res})", serviceName, res);
-                _popup.OpenNotification("Failed to start service", res.Msg.Message, true, true);
+                _popup.OpenNotification("Failed to Start Service", res.Msg.Message, true, true);
             }
         }
 

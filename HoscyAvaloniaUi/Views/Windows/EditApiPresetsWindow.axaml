@@ -68,7 +68,7 @@
 					</StackPanel>
 
 					<StackPanel Theme="{StaticResource HStackS}">
-						<Label Theme="{StaticResource HLabel}" HorizontalAlignment="Center" Content="Content (Translation, [T] gets replaced)"/>
+						<Label Theme="{StaticResource HLabel}" HorizontalAlignment="Center" Content="Content (Translation, [T] Gets Replaced)"/>
 						<TextBox Theme="{StaticResource HTextBoxLarge}" Text="{Binding SelectedContentToSend}" PlaceholderText="Content ..." KeyUp="KeyPressed" ToolTip.Tip="{x:Static cfg:ApiPresetModel.DESC_ContentType}"/>
 					</StackPanel>
 

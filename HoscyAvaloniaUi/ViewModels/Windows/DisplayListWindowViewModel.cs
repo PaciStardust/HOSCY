@@ -38,7 +38,7 @@ public partial class DisplayListWindowViewModelImpl : DisplayListWindowViewModel
     public override void SelectionChanged()
     {
         SelectedIndex = SelectedIndex.MinMax(-1, DisplayedList.Length - 1);
-        SelectedText = SelectedIndex == -1 ? "(No data available)" : DisplayedList[SelectedIndex];
+        SelectedText = SelectedIndex == -1 ? "(No Data Available)" : DisplayedList[SelectedIndex];
     }
 }
 

@@ -35,7 +35,7 @@ public abstract partial class TransSubMenuViewModelBase : ViewModelBase
     public virtual void OptionsSelectedModuleRestartClicked() { }
 
     [ObservableProperty]
-    public partial string ModulesSettingsVisibleIfCompatible { get; protected set; } = "(Settings are visible if compatible translation module is selected)";
+    public partial string ModulesSettingsVisibleIfCompatible { get; protected set; } = "(Settings are Visible if Compatible Translation Module is Selected)";
 
     [ObservableProperty]
     public partial bool ModulesAnyApiIsSelected { get; protected set; }
@@ -91,14 +91,14 @@ public class TransSubMenuViewModelImpl : TransSubMenuViewModelBase
         var selected = OptionsSelectedModule.GetSelected();
         if (selected is null)
         {
-            description += "No module is selected";
+            description += "No Module is Selected";
         }
         else
         {
             var match = _transInfosOrdered.FirstOrDefault(x => x.Name == selected);
             if (match is null)
             {
-                description += "Selected module not found";
+                description += "Selected Module Not Found";
             }
             else
             {
@@ -123,21 +123,21 @@ public class TransSubMenuViewModelImpl : TransSubMenuViewModelBase
             _logger.Information("Starting translation module");
             OptionsSelectedModuleStartStopText = "Starting";
             var res = _trans.StartModule();
-            res.IfFail(x => _popup.OpenNotification("Failed to start translation module", x.Message, true, true));
+            res.IfFail(x => _popup.OpenNotification("Failed to Start Translation Module", x.Message, true, true));
         } 
         else
         {
             _logger.Information("Stopping translation module");
             OptionsSelectedModuleStartStopText = "Stopping";
             var res = _trans.StopModule();
-            res.IfFail(x => _popup.OpenNotification("Failed to stop translation module", x.Message, true, true));
+            res.IfFail(x => _popup.OpenNotification("Failed to Stop Translation Module", x.Message, true, true));
         }
     }
     public override void OptionsSelectedModuleRefreshClicked()
     {
         _logger.Information("Refreshing translation module");
         var res = _trans.RefreshModule();
-        res.IfFail(x => _popup.OpenNotification("Failed to refresh translation module", x.Message, true, true));
+        res.IfFail(x => _popup.OpenNotification("Failed to Refresh Translation Module", x.Message, true, true));
     }
     public override void OptionsSelectedModuleRestartClicked()
     {
@@ -146,7 +146,7 @@ public class TransSubMenuViewModelImpl : TransSubMenuViewModelBase
             _logger.Information("Restarting translation module");
             var res = _trans.StopModule();
             res = res.IsOk ? _trans.StartModule() : res;
-            res.IfFail(x => _popup.OpenNotification("Failed to restart translation module", x.Message, true, true));
+            res.IfFail(x => _popup.OpenNotification("Failed to Restart Translation Module", x.Message, true, true));
         }
     }
     private void OptionsSelectedModuleUpdateButtons(ServiceStatus status)

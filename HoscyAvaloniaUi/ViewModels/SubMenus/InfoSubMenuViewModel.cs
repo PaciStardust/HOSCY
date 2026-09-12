@@ -14,8 +14,8 @@ namespace HoscyAvaloniaUi.ViewModels.SubMenus;
 
 public abstract partial class InfoSubMenuViewModelBase : ViewModelBase
 {
-    protected const string TXT_MSG_NOTHING_SENT = "No message sent since opening";
-    protected const string TXT_NOT_NOTHING_SENT = "No notification sent since opening";
+    protected const string TXT_MSG_NOTHING_SENT = "No Message Sent Since Opening";
+    protected const string TXT_NOT_NOTHING_SENT = "No Notification Sent Since Opening";
     protected const string TXT_CLEARED = "[CLEARED]";
 
     [ObservableProperty]
@@ -98,14 +98,14 @@ public class InfoSubMenuViewModelImpl : InfoSubMenuViewModelBase
             _logger.Information("Starting recognition module");
             ListeningStatusText = "Starting";
             var res = _recognition.StartModule();
-            res.IfFail(x => _popup.OpenNotification("Failed to start recognition module", x.Message, true, true));
+            res.IfFail(x => _popup.OpenNotification("Failed to Start Recognition Module", x.Message, true, true));
         } 
         else
         {
-            _logger.Information("Stopping recognition module");
+            _logger.Information("Stopping ecognition module");
             ListeningStatusText = "Stopping";
             var res = _recognition.StopModule();
-            res.IfFail(x => _popup.OpenNotification("Failed to stop recognition module", x.Message, true, true));
+            res.IfFail(x => _popup.OpenNotification("Failed to Stop Recognition Module", x.Message, true, true));
         }
     }
     public override void ButtonToggleListeningClicked()
@@ -115,7 +115,7 @@ public class InfoSubMenuViewModelImpl : InfoSubMenuViewModelBase
             var value = !_recognition.IsListening;
             _logger.Information("Setting recognition listening status to {value}", value);
             var res = _recognition.SetListening(value);
-            res.IfFail(x => _popup.OpenNotification("Failed to set recognition module listening status", x.Message, true, true));
+            res.IfFail(x => _popup.OpenNotification("Failed to Set Recognition Module Listening Status", x.Message, true, true));
         }
     }
     public override void ButtonClearClicked()

@@ -34,7 +34,7 @@
 					<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Preprocessing_DoReplacementsFull}">
 						<WrapPanel Theme="{StaticResource HWrap}">
 							<TextBox Theme="{StaticResource HTextBoxShort}" PlaceholderText="Ignored ..." Text="{Binding Config.Preprocessing_ReplacementFullIgnoredCharacters}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Preprocessing_ReplacementFullIgnoredCharacters}"/>
-							<Label Theme="{StaticResource HLabel}" Content="Ignored Characters For Full Replacements" VerticalAlignment="Center"/>
+							<Label Theme="{StaticResource HLabel}" Content="Ignored Characters for Full Replacements" VerticalAlignment="Center"/>
 						</WrapPanel>
 					</StackPanel>
 				</StackPanel>
@@ -59,7 +59,7 @@
 					</WrapPanel>
 
 					<StackPanel Theme="{StaticResource HStackIndent}">
-						<CheckBox Theme="{StaticResource HCheckBox}" Content="Enable Output Via API" IsChecked="{Binding Config.Output_Api_Enabled}" Click="ModuleToggled" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_Api_Enabled}"/>
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Enable Output via API" IsChecked="{Binding Config.Output_Api_Enabled}" Click="ModuleToggled" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_Api_Enabled}"/>
 
 						<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding Config.Output_Api_Enabled}">
 							<Label Theme="{StaticResource HLabelS}" Content="Endpoints / Presets"/>
@@ -115,10 +115,10 @@
 					</StackPanel>
 
 					<StackPanel Theme="{StaticResource HStackIndent}">
-						<CheckBox Theme="{StaticResource HCheckBox}" Content="Enable Output Via Voice" IsChecked="{Binding Config.Output_Voice_Enabled}" Click="ModuleToggled" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_Voice_Enabled}"/>
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Enable Output via Voice" IsChecked="{Binding Config.Output_Voice_Enabled}" Click="ModuleToggled" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_Voice_Enabled}"/>
 
 						<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding Config.Output_Voice_Enabled}">
-							<CheckBox Theme="{StaticResource HCheckBox}" Content="Send Translation To Voice" IsChecked="{Binding Config.Output_Voice_SendTranslated}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_Voice_SendTranslated}"/>
+							<CheckBox Theme="{StaticResource HCheckBox}" Content="Send Translation to Voice" IsChecked="{Binding Config.Output_Voice_SendTranslated}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_Voice_SendTranslated}"/>
 						</StackPanel>
 					</StackPanel>
 
@@ -131,9 +131,9 @@
 							<Label Theme="{StaticResource HLabelS}" Content="General Options"/>
 
 							<StackPanel Theme="{StaticResource HStackIndent}">
-								<CheckBox Theme="{StaticResource HCheckBox}" Content="Display Text In Textbox" IsChecked="{Binding Config.Output_VrcTxt_Do_Send}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Do_Send}"/>
+								<CheckBox Theme="{StaticResource HCheckBox}" Content="Display Text in Textbox" IsChecked="{Binding Config.Output_VrcTxt_Do_Send}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Do_Send}"/>
 
-								<CheckBox Theme="{StaticResource HCheckBox}" Content="Use Typing Indicator For Activity" IsChecked="{Binding Config.Output_VrcTxt_Do_Indicator}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Do_Indicator}"/>
+								<CheckBox Theme="{StaticResource HCheckBox}" Content="Use Typing Indicator for Activity" IsChecked="{Binding Config.Output_VrcTxt_Do_Indicator}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Do_Indicator}"/>
 							</StackPanel>
 
 							<StackPanel Theme="{StaticResource HStack}" IsEnabled="{Binding Config.Output_VrcTxt_Do_Send}">
@@ -158,7 +158,7 @@
 								<Label Theme="{StaticResource HLabelS}" Content="Translation"/>
 							
 								<StackPanel Theme="{StaticResource HStackIndent}">
-									<CheckBox Theme="{StaticResource HCheckBox}" Content="Send Translation To Textbox" IsChecked="{Binding Config.Output_VrcTxt_Send_ShowTranslation}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Send_ShowTranslation}"/>
+									<CheckBox Theme="{StaticResource HCheckBox}" Content="Send Translation to Textbox" IsChecked="{Binding Config.Output_VrcTxt_Send_ShowTranslation}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Send_ShowTranslation}"/>
 
 									<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Output_VrcTxt_Send_ShowTranslation}">
 										<CheckBox Theme="{StaticResource HCheckBox}" Content="Append Original After Translation" IsChecked="{Binding Config.Output_VrcTxt_Send_AddOriginalToTranslation}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Send_AddOriginalToTranslation}"/>
@@ -168,9 +168,9 @@
 								<Label Theme="{StaticResource HLabelS}" Content="Sounds"/>
 
 								<StackPanel Theme="{StaticResource HStackIndent}">
-									<CheckBox Theme="{StaticResource HCheckBox}" Content="Sound On Message" IsChecked="{Binding Config.Output_VrcTxt_Sound_OnMessage}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Sound_OnMessage}"/>
+									<CheckBox Theme="{StaticResource HCheckBox}" Content="Sound on Message" IsChecked="{Binding Config.Output_VrcTxt_Sound_OnMessage}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Sound_OnMessage}"/>
 
-									<CheckBox Theme="{StaticResource HCheckBox}" Content="Sound On Notification" IsChecked="{Binding Config.Output_VrcTxt_Sound_OnNotification}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Sound_OnNotification}"/>
+									<CheckBox Theme="{StaticResource HCheckBox}" Content="Sound on Notification" IsChecked="{Binding Config.Output_VrcTxt_Sound_OnNotification}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Sound_OnNotification}"/>
 								</StackPanel>
 
 								<Label Theme="{StaticResource HLabelS}" Content="Timeouts"/>
@@ -188,7 +188,7 @@
 									<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Output_VrcTxt_Timeout_UseDynamic}">
 										<WrapPanel Theme="{StaticResource HWrap}">
 											<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.Output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Timeout_DynamicPer20CharactersDisplayedMs}"/>
-											<Label Theme="{StaticResource HLabel}" Content="Timeout Per 20 Characters (ms)" VerticalAlignment="Center"/>
+											<Label Theme="{StaticResource HLabel}" Content="Timeout per 20 Characters (ms)" VerticalAlignment="Center"/>
 										</WrapPanel>
 
 										<WrapPanel Theme="{StaticResource HWrap}">

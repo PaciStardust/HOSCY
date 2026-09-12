@@ -32,12 +32,12 @@
 								<Button Content="Restart" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsSelectedModuleRestartClicked" IsEnabled="{Binding OptionsSelectedModuleRestartEnabled}" ToolTip.Tip="Restarts the current translation module"/>
 							</WrapPanel>
 
-							<TextBlock Theme="{StaticResource HTextBlockError}" Text="Currently selected module is not loaded, please press 'Reload'" IsVisible="{Binding OptionsSelectedModuleRestartNeeded}"/>
+							<TextBlock Theme="{StaticResource HTextBlockError}" Text="Currently Selected Module is Not Loaded, Please Press 'Reload'" IsVisible="{Binding OptionsSelectedModuleRestartNeeded}"/>
 
 							<TextBlock Theme="{StaticResource HTextBlockNote}" Text="{Binding OptionsSelectedModuleDescription}"/>
 						</StackPanel>
 
-						<CheckBox Theme="{StaticResource HCheckBox}" Content="Automatically Start Module At Launch" IsChecked="{Binding Config.Translation_AutoStart}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Translation_AutoStart}"/>
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Automatically Start Module at Launch" IsChecked="{Binding Config.Translation_AutoStart}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Translation_AutoStart}"/>
 					</StackPanel>
 
 					<Label Content="Output" Theme="{StaticResource HLabelM}"/>
@@ -50,9 +50,9 @@
 						
 						<CheckBox Theme="{StaticResource HCheckBox}" Content="Skip Longer Messages" IsChecked="{Binding Config.Translation_SkipLongerMessages}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Translation_SkipLongerMessages}"/>
 
-						<CheckBox Theme="{StaticResource HCheckBox}" Content="Send Untranslated If No Translation Available" IsChecked="{Binding Config.Translation_SendUntranslatedIfUnavailable}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Translation_SendUntranslatedIfUnavailable}"/>
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Send Untranslated if No Translation Available" IsChecked="{Binding Config.Translation_SendUntranslatedIfUnavailable}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Translation_SendUntranslatedIfUnavailable}"/>
 
-						<CheckBox Theme="{StaticResource HCheckBox}" Content="Send Untranslated If Translation Failed" IsChecked="{Binding Config.Translation_SendUntranslatedIfFailed}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Translation_SendUntranslatedIfFailed}"/>
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Send Untranslated if Translation Failed" IsChecked="{Binding Config.Translation_SendUntranslatedIfFailed}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Translation_SendUntranslatedIfFailed}"/>
 					</StackPanel>	
 				</StackPanel>
 			</StackPanel>

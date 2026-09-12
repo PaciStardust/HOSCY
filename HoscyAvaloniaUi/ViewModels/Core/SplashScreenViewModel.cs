@@ -6,7 +6,7 @@ public partial class SplashScreenViewModel : ViewModelBase //todo: [FEAT] Open l
 {
 
     [ObservableProperty]
-    public partial string Progress { get; set; } = "Unknown Progress";
+    public partial string Progress { get; set; } = "Unknown progress";
 
     [ObservableProperty]
     public partial string VersionText { get; set; } = "v.?.?.?";

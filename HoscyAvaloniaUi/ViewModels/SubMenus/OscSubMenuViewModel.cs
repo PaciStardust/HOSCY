@@ -62,7 +62,7 @@ public class OscSubMenuViewModelImpl : OscSubMenuViewModelBase
 
         CheckListeningPortUnapplied();
         CheckRelayFilterValidity(false)
-            .IfFail(x => notify.SendResult("Failed to check relay filter validity", x));
+            .IfFail(x => notify.SendResult("Failed to Check Relay Filter Validity", x));
     }
 
     private void CheckListeningPortUnapplied()
@@ -87,7 +87,7 @@ public class OscSubMenuViewModelImpl : OscSubMenuViewModelBase
         var res = _oscQuery.Stop();
         if (!res.IsOk) 
         {
-            _popup.OpenNotification("Failed to stop OSC Query", res.Msg.Message, true, true, null);
+            _popup.OpenNotification("Failed to Stop OSC Query", res.Msg.Message, true, true, null);
             return;
         }
 
@@ -95,14 +95,14 @@ public class OscSubMenuViewModelImpl : OscSubMenuViewModelBase
         res = res.IsOk ? _oscListen.Start() : res;
         if (!res.IsOk)
         {
-            _popup.OpenNotification("Failed to reloading OSC Listener", res.Msg.Message, true, true, null);
+            _popup.OpenNotification("Failed to Reload OSC Listener", res.Msg.Message, true, true, null);
             return;
         }
         
         res = _oscQuery.Start();
         if (!res.IsOk)
         {
-            _popup.OpenNotification("Failed to start OSC Query", res.Msg.Message, true, true, null);
+            _popup.OpenNotification("Failed to Start OSC Query", res.Msg.Message, true, true, null);
             return;
         }
 
@@ -119,14 +119,14 @@ public class OscSubMenuViewModelImpl : OscSubMenuViewModelBase
         var strings = CheckRelayFilterValidity(true);
         if (!strings.IsOk)
         {
-            _popup.OpenNotification("Failed to check filter validity", strings.Msg.Message, true, true);
+            _popup.OpenNotification("Failed to Check Filter Validity", strings.Msg.Message, true, true);
             return;
         }
 
         if (strings.Value.Length > 0)
         {
             var msg = $"Following relay filters are invalid:\n{string.Join("\n", strings.Value.Select(x => $" - {x}"))}";
-            _popup.OpenNotification("Invalid relay filters found", msg, false, true);
+            _popup.OpenNotification("Invalid Relay Filters Found", msg, false, true);
         }
         Config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
     }

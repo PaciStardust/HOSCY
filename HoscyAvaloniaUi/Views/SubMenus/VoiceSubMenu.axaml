@@ -37,7 +37,7 @@
 							<TextBlock Theme="{StaticResource HTextBlockNote}" Text="{Binding OptionsSelectedModuleDescription}"/>
 						</StackPanel>
 
-						<CheckBox Theme="{StaticResource HCheckBox}" Content="Automatically Start Module At Launch" IsChecked="{Binding Config.Voice_AutoStart}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_AutoStart}"/>
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Automatically Start Module at Launch" IsChecked="{Binding Config.Voice_AutoStart}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_AutoStart}"/>
 					</StackPanel>
 
 					<Label Content="Audio" Theme="{StaticResource HLabelM}"/>
@@ -164,7 +164,7 @@
 						<Label Theme="{StaticResource HLabelS}" Content="Process Creation"/>
 
 						<StackPanel Theme="{StaticResource HStackIndent}">
-							<CheckBox Theme="{StaticResource HCheckBox}" Content="Start Piper Process At Module Startup" IsChecked="{Binding Config.Voice_Piper_Process_Enabled}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_Piper_Process_Enabled}"/>
+							<CheckBox Theme="{StaticResource HCheckBox}" Content="Start Piper Process at Module Startup" IsChecked="{Binding Config.Voice_Piper_Process_Enabled}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_Piper_Process_Enabled}"/>
 
 							<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding Config.Voice_Piper_Process_Enabled}">
 								<WrapPanel Theme="{StaticResource HWrap}">

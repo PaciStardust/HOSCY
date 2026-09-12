@@ -33,12 +33,12 @@
 								<Button Content="Restart" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsSelectedModuleRestartClicked" IsEnabled="{Binding OptionsSelectedModuleRestartEnabled}" ToolTip.Tip="Restarts the current recognition module"/>
 							</WrapPanel>
 
-							<TextBlock Theme="{StaticResource HTextBlockError}" Text="Currently selected module is not loaded, please press 'Reload'" IsVisible="{Binding OptionsSelectedModuleRestartNeeded}"/>
+							<TextBlock Theme="{StaticResource HTextBlockError}" Text="Currently Selected Module is Not Loaded, Please Press 'Reload'" IsVisible="{Binding OptionsSelectedModuleRestartNeeded}"/>
 
 							<TextBlock Theme="{StaticResource HTextBlockNote}" Text="{Binding OptionsSelectedModuleDescription}"/>
 						</StackPanel>
 
-						<CheckBox Theme="{StaticResource HCheckBox}" Content="Automatically Start Module At Launch" IsChecked="{Binding Config.Recognition_AutoStart}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_AutoStart}"/>
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Automatically Start Module at Launch" IsChecked="{Binding Config.Recognition_AutoStart}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_AutoStart}"/>
 					</StackPanel>
 
 					<WrapPanel Theme="{StaticResource HWrap}">
@@ -48,7 +48,7 @@
 
 					<StackPanel Theme="{StaticResource HStackIndent}">
 						<WrapPanel Theme="{StaticResource HWrap}">
-							<Label Theme="{StaticResource HLabel}" Content="Output Via ..."/>
+							<Label Theme="{StaticResource HLabel}" Content="Output via ..."/>
 							<CheckBox Theme="{StaticResource HCheckBox}" Content="Text" IsChecked="{Binding Config.Recognition_Send_ViaText}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Send_ViaText}"/>
 							<CheckBox Theme="{StaticResource HCheckBox}" Content="Audio" IsChecked="{Binding Config.Recognition_Send_ViaAudio}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Send_ViaAudio}"/>
 							<CheckBox Theme="{StaticResource HCheckBox}" Content="Other" IsChecked="{Binding Config.Recognition_Send_ViaOther}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Send_ViaOther}"/>
@@ -62,9 +62,9 @@
 
 						<CheckBox Theme="{StaticResource HCheckBox}" Content="Translate Recognized Text" IsChecked="{Binding Config.Recognition_Send_DoTranslate}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Send_DoTranslate}"/>
 						
-						<CheckBox Theme="{StaticResource HCheckBox}" Content="Remove Period At End Of Output" IsChecked="{Binding Config.Recognition_Fixup_RemoveEndPeriod}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Fixup_RemoveEndPeriod}"/>
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Remove Period at End of Output" IsChecked="{Binding Config.Recognition_Fixup_RemoveEndPeriod}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Fixup_RemoveEndPeriod}"/>
 
-						<CheckBox Theme="{StaticResource HCheckBox}" Content="Capitalize First Letter Of Output" IsChecked="{Binding Config.Recognition_Fixup_CapitalizeFirstLetter}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Fixup_CapitalizeFirstLetter}"/>
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Capitalize First Letter of Output" IsChecked="{Binding Config.Recognition_Fixup_CapitalizeFirstLetter}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Fixup_CapitalizeFirstLetter}"/>
 					</StackPanel>
 
 					<Label Content="Audio" Theme="{StaticResource HLabelM}"/>
@@ -86,7 +86,7 @@
 					<Label Content="OSC" Theme="{StaticResource HLabelM}"/>
 
 					<StackPanel Theme="{StaticResource HStackIndent}">
-						<CheckBox Theme="{StaticResource HCheckBox}" Content="Send Listening Status Via OSC" IsChecked="{Binding Config.Recognition_SendListeningStatusViaOsc}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_SendListeningStatusViaOsc}"/>
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Send Listening Status via OSC" IsChecked="{Binding Config.Recognition_SendListeningStatusViaOsc}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_SendListeningStatusViaOsc}"/>
 
 						<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Recognition_SendListeningStatusViaOsc}">
 							<StackPanel Theme="{StaticResource HStackS}">
@@ -95,7 +95,7 @@
 							</StackPanel>
 						</StackPanel>
 
-						<CheckBox Theme="{StaticResource HCheckBox}" Content="(Un)Mute Whenn (Un)Muting In Game" IsChecked="{Binding Config.Recognition_Mute_OnGameMute}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Mute_OnGameMute}"/>
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="(Un)Mute When (Un)Muting in Game" IsChecked="{Binding Config.Recognition_Mute_OnGameMute}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Mute_OnGameMute}"/>
 
 						<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Recognition_Mute_OnGameMute}">
 							<StackPanel Theme="{StaticResource HStackS}">
@@ -172,7 +172,7 @@
 					<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding ModulesVoskIsSelected}">
 						<WrapPanel Theme="{StaticResource HWrap}">
 							<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding ModulesVoskModels.Index}" ItemsSource="{Binding ModulesVoskModels.Options}" SelectionChanged="ModulesVoskModelChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Vosk_CurrentModel}"/>
-							<Label Theme="{StaticResource HLabel}" Content="Vosk Model To Use" VerticalAlignment="Center"/>
+							<Label Theme="{StaticResource HLabel}" Content="Vosk Model to Use" VerticalAlignment="Center"/>
 							<Button Content="Edit Models" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="ModulesVoskEditModels" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Vosk_Models}"/>
 						</WrapPanel>
 
@@ -191,7 +191,7 @@
 					<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding ModulesWhisperIsSelected}">
 						<WrapPanel Theme="{StaticResource HWrap}">
 							<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding ModulesWhisperModels.Index}" ItemsSource="{Binding ModulesWhisperModels.Options}" SelectionChanged="ModulesWhisperModelChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_SelectedModel}"/>
-							<Label Theme="{StaticResource HLabel}" Content="Whisper Model To Use" VerticalAlignment="Center"/>
+							<Label Theme="{StaticResource HLabel}" Content="Whisper Model to Use" VerticalAlignment="Center"/>
 							<Button Content="Edit Models" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="ModulesWhisperEditModels" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_Models}"/>
 						</WrapPanel>
 
@@ -201,11 +201,11 @@
 						</WrapPanel>
 
 						<StackPanel Theme="{StaticResource HStackIndent}">
-							<CheckBox Theme="{StaticResource HCheckBox}" Content="Clean Up Random Brackets" IsChecked="{Binding Config.Recognition_Whisper_Fix_RemoveRandomBrackets}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_Fix_RemoveRandomBrackets}"/>
+							<CheckBox Theme="{StaticResource HCheckBox}" Content="Clean up Random Brackets" IsChecked="{Binding Config.Recognition_Whisper_Fix_RemoveRandomBrackets}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_Fix_RemoveRandomBrackets}"/>
 
 							<CheckBox Theme="{StaticResource HCheckBox}" Content="Log Filtered Noises" IsChecked="{Binding Config.Recognition_Whisper_Dbg_LogFilteredNoises}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_Dbg_LogFilteredNoises}"/>
 
-							<CheckBox Theme="{StaticResource HCheckBox}" Content="Translate To English" IsChecked="{Binding Config.Recognition_Whisper_Cfg_TranslateToEnglish}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_Cfg_TranslateToEnglish}"/>
+							<CheckBox Theme="{StaticResource HCheckBox}" Content="Translate to English" IsChecked="{Binding Config.Recognition_Whisper_Cfg_TranslateToEnglish}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_Cfg_TranslateToEnglish}"/>
 						</StackPanel>
 
 						<Label Content="Input Tweaks" Theme="{StaticResource HLabelS}" VerticalAlignment="Center"/>
@@ -265,7 +265,7 @@
 								<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Recognition_Whisper_CfgAdv_SetThreads}">
 									<WrapPanel Theme="{StaticResource HWrap}">
 										<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Recognition_Whisper_CfgAdv_ThreadsUsed, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.Recognition_Whisper_CfgAdv_ThreadsUsed}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_CfgAdv_ThreadsUsed}"/>
-										<Label Theme="{StaticResource HLabel}" Content="Max Tokens Per Segment" VerticalAlignment="Center"/>
+										<Label Theme="{StaticResource HLabel}" Content="Max Tokens per Segment" VerticalAlignment="Center"/>
 									</WrapPanel>
 								</StackPanel>
 
@@ -281,7 +281,7 @@
 
 								<WrapPanel Theme="{StaticResource HWrap}">
 									<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="..." Text="{Binding Config.Recognition_Whisper_CfgAdv_MaxTokensPerSegment, Converter={StaticResource IntRange}, ConverterParameter=ConfigModel.Recognition_Whisper_CfgAdv_MaxTokensPerSegment}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_CfgAdv_MaxTokensPerSegment}"/>
-									<Label Theme="{StaticResource HLabel}" Content="Max Tokens Per Segment" VerticalAlignment="Center"/>
+									<Label Theme="{StaticResource HLabel}" Content="Max Tokens per Segment" VerticalAlignment="Center"/>
 								</WrapPanel>
 
 								<WrapPanel Theme="{StaticResource HWrap}">
@@ -357,7 +357,7 @@
 					</StackPanel>
 
 					<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding WebRtcAvailable}">
-						<CheckBox Theme="{StaticResource HCheckBox}" Content="Enable WebRTC Audio Processing If Possible" IsChecked="{Binding Config.WebRtc_Enabled}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_WebRtc_Enabled}"/>
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Enable WebRTC Audio Processing if Possible" IsChecked="{Binding Config.WebRtc_Enabled}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_WebRtc_Enabled}"/>
 
 						<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding Config.WebRtc_Enabled}">
 							<CheckBox Theme="{StaticResource HCheckBox}" Content="Use Echo Cancellation" IsChecked="{Binding Config.WebRtc_UseEchoCancellation}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_WebRtc_UseEchoCancellation}"/>

@@ -104,7 +104,7 @@ public class EditOscRelayFiltersWindowViewModelImpl(ILogger logger, PopupWindowF
         {
             return;
         }
-        _popup.OpenEditList(selectedModel.Filters, $"Editing filters for preset {selectedModel.Name}", "Filter Text", window);
+        _popup.OpenEditList(selectedModel.Filters, $"Edit Filters for Preset {selectedModel.Name}", "Filter Text", window);
     }
 }
 

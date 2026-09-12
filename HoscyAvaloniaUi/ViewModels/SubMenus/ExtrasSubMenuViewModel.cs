@@ -100,14 +100,14 @@ public class ExtrasSubMenuViewModelImpl : ExtrasSubMenuViewModelBase
     {
         if (!_media.CanGetEndpoints)
         {
-            _popup.OpenNotification("Failed opening endpoints", "Unable to open endpoint viewer. This option should only be available if the module supports it but it does not", true, true);
+            _popup.OpenNotification("Failed Opening Endpoints", "Unable to open endpoint viewer. This option should only be available if the module supports it but it does not.", true, true);
             return;
         }
 
         var endpoints = _media.GetEndpointNames();
         if (!endpoints.IsOk)
         {
-            _popup.OpenNotification("Failed retrieving endpoints", endpoints.Msg.Message, true, true);
+            _popup.OpenNotification("Failed Retrieving Endpoints", endpoints.Msg.Message, true, true);
             return;
         }
 
@@ -124,7 +124,7 @@ public class ExtrasSubMenuViewModelImpl : ExtrasSubMenuViewModelBase
         if (strings.Length > 0)
         {
             var msg = $"Following filters are invalid:\n{string.Join("\n", strings.Select(x => $" - {x}"))}";
-            _popup.OpenNotification("Invalid filters found", msg, false, true);
+            _popup.OpenNotification("Invalid Filters Found", msg, false, true);
         }
         Config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
     }
@@ -150,19 +150,19 @@ public class ExtrasSubMenuViewModelImpl : ExtrasSubMenuViewModelBase
 
         if (!result.IsOk)
         {
-            _popup.OpenNotification("Media backend reload failed", result.Msg.Message, true, true);
+            _popup.OpenNotification("Media Backend Reload Failed", result.Msg.Message, true, true);
         }
     }
     public override void MediaMprisEndpointsPreferredClicked()
     {
         _logger.Information("Editing preferred MPRIS endpoints");
-        _popup.OpenEditList(Config.Media_Mpris_PreferredEndpoints, "Editing preferred MPRIS endpoints", "Pref. Endpoint", null,
+        _popup.OpenEditList(Config.Media_Mpris_PreferredEndpoints, "Editing Preferred MPRIS Endpoints", "Pref. Endpoint", null,
             () => Config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger));
     }
     public override void MediaMprisEndpointsIgnoredClicked()
     {
         _logger.Information("Editing ignored MPRIS endpoints");
-        _popup.OpenEditList(Config.Media_Mpris_IgnoredEndpoints, "Editing ignored MPRIS endpoints", "Ign. Endpoint", null,
+        _popup.OpenEditList(Config.Media_Mpris_IgnoredEndpoints, "Editing Ignored MPRIS Endpoints", "Ign. Endpoint", null,
             () => Config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger));
     }
     private void MediaBackendUpdateMenus()
@@ -173,13 +173,13 @@ public class ExtrasSubMenuViewModelImpl : ExtrasSubMenuViewModelBase
 
         if (selected is null)
         {
-            description += "No media backend is selected";
+            description += "No Media Backend is Selected";
             Config.Media_Backend = string.Empty;
         } 
         else
         {
             var info = _mediaBackendInfos.FirstOrDefault(x => x.Name == selected);
-            description += info?.Description ?? "Selected backend not found";
+            description += info?.Description ?? "Selected Backend Not Found";
             Config.Media_Backend = info?.Name ?? string.Empty;
             MediaBackendIsLinuxMpris = info?.ConfigFlags.HasFlag(MediaBackendConfigFlags.LinuxMpris) ?? false;
         }
@@ -195,7 +195,7 @@ public class ExtrasSubMenuViewModelImpl : ExtrasSubMenuViewModelBase
             if (!res.IsOk)
             {
                 MediaBackendHasEndpoints = false;
-                _popup.OpenNotification("Failed to retrieve current module", res.Msg.Message, true, true);
+                _popup.OpenNotification("Failed to Retrieve Current Module", res.Msg.Message, true, true);
             }
             else
             {
@@ -221,7 +221,7 @@ public class ExtrasSubMenuViewModelPreview : ExtrasSubMenuViewModelBase
         MediaBackendDescription = "Description Placeholder";
         MediaBackendReloadNeeded = true;
         AfkActive = true;
-        MediaFiltersInvalid = "Test invalid text";
+        MediaFiltersInvalid = "Test Invalid Text";
         MediaBackendIsLinuxMpris = true;
     }
 }

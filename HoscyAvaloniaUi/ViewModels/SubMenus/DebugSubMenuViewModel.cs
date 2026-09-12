@@ -74,7 +74,7 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
         if (strings.Length > 0)
         {
             var msg = $"Following filters are invalid:\n{string.Join("\n", strings.Select(x => $" - {x}"))}";
-            _popupFactory.OpenNotification("Invalid filters found", msg, false, true);
+            _popupFactory.OpenNotification("Invalid Filters Found", msg, false, true);
         }
         Config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
     }
@@ -113,14 +113,14 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
         var res1 = _audio.GetCaptureDevices();
         if (!res1.IsOk)
         {
-            _popupFactory.OpenNotification("Can not load capture devices", res1.Msg.Message, true, true);
+            _popupFactory.OpenNotification("Can Not Load Capture Devices", res1.Msg.Message, true, true);
             return;
         }
 
         var res2 = _audio.GetPlaybackDevices();
         if (!res2.IsOk)
         {
-            _popupFactory.OpenNotification("Can not load playback devices", res2.Msg.Message, true, true);
+            _popupFactory.OpenNotification("Can Not Load Playback Devices", res2.Msg.Message, true, true);
             return;
         }
         _logger.Information("Reloaded audio devices");
@@ -142,7 +142,7 @@ public class DebugSubMenuViewModelPreview : DebugSubMenuViewModelBase
             Debug_LogViaFileFollow = true
         };
         LogLevels = new(["Test"], string.Empty, null, string.Empty);
-        LogFiltersInvalid = "(n filters invalid)";
+        LogFiltersInvalid = "(n Filters Invalid)";
     }
 }
 #endif

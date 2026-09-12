@@ -48,7 +48,7 @@ public abstract partial class VoiceSubMenuViewModelBase : ViewModelBase
     public virtual void OptionsSpeakerVolumeChanged() { }
 
     [ObservableProperty]
-    public partial string ModulesSettingsVisibleIfCompatible { get; protected set; } = "(Settings are visible if compatible voice module is selected)";
+    public partial string ModulesSettingsVisibleIfCompatible { get; protected set; } = "(Settings are Visible if Compatible Voice Module is Selected)";
 
     [ObservableProperty]
     public partial bool ModulesAnyApiIsSelected { get; protected set; }
@@ -115,7 +115,7 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
         if (errors.Count > 0)
         {
             var error = ResC.FailM(errors);
-            notify.SendResult("Some data could not be loaded", error.Msg!);
+            notify.SendResult("Some Data Could Not be Loaded", error.Msg!);
         }
     }
 
@@ -131,14 +131,14 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
         var selected = OptionsSelectedModule.GetSelected();
         if (selected is null)
         {
-            description += "No module is selected";
+            description += "No Module is Selected";
         }
         else
         {
             var match = _voiceInfosOrdered.FirstOrDefault(x => x.Name == selected);
             if (match is null)
             {
-                description += "Selected module not found";
+                description += "Selected Module Not Found";
             }
             else
             {
@@ -166,21 +166,21 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
             _logger.Information("Starting voice module");
             OptionsSelectedModuleStartStopText = "Starting";
             var res = _voice.StartModule();
-            res.IfFail(x => _popup.OpenNotification("Failed to start voice module", x.Message, true, true));
+            res.IfFail(x => _popup.OpenNotification("Failed to Start Voice Module", x.Message, true, true));
         } 
         else
         {
             _logger.Information("Stopping voice module");
             OptionsSelectedModuleStartStopText = "Stopping";
             var res = _voice.StopModule();
-            res.IfFail(x => _popup.OpenNotification("Failed to stop voice module", x.Message, true, true));
+            res.IfFail(x => _popup.OpenNotification("Failed to Stop Voice Module", x.Message, true, true));
         }
     }
     public override void OptionsSelectedModuleRefreshClicked()
     {
         _logger.Information("Refreshing voice module");
         var res = _voice.RefreshModule();
-        res.IfFail(x => _popup.OpenNotification("Failed to refresh voice module", x.Message, true, true));
+        res.IfFail(x => _popup.OpenNotification("Failed to Refresh Voice Module", x.Message, true, true));
     }
     public override void OptionsSelectedModuleRestartClicked()
     {
@@ -189,7 +189,7 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
             _logger.Information("Restarting voice module");
             var res = _voice.StopModule();
             res = res.IsOk ? _voice.StartModule() : res;
-            res.IfFail(x => _popup.OpenNotification("Failed to restart voice module", x.Message, true, true));
+            res.IfFail(x => _popup.OpenNotification("Failed to Restart Voice Module", x.Message, true, true));
         }
     }
     private void OptionsSelectedModuleUpdateButtons(ServiceStatus status)
@@ -213,7 +213,7 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
         var speakers = OptionsSpeakerGetNames();
         if (!speakers.IsOk)
         {
-            _popup.OpenNotification("Failed to assign selected speaker", speakers.Msg.Message, true, true);
+            _popup.OpenNotification("Failed to Assign Selected Speaker", speakers.Msg.Message, true, true);
             return;
         }
 
@@ -228,7 +228,7 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
         var speakers = OptionsSpeakerGetNames();
         if (!speakers.IsOk)
         {
-            _popup.OpenNotification("Failed to retrieve speakers", speakers.Msg.Message, true, true);
+            _popup.OpenNotification("Failed to Retrieve Speakers", speakers.Msg.Message, true, true);
             return;
         }
         OptionsSpeaker.RefreshItems(speakers.Value, Config.Voice_CurrentSpeakerName);

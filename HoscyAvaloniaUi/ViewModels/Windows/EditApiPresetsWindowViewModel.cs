@@ -99,7 +99,7 @@ public class EditApiPresetsWindowViewModelImpl
         {
             return;
         }
-        _popupFactory.OpenEditDict($"Editing headers for API preset {selectedModel.Name}", "Header Name", "Header Value", selectedModel.HeaderValues, window);
+        _popupFactory.OpenEditDict($"Edit Headers for API Preset {selectedModel.Name}", "Header Name", "Header Value", selectedModel.HeaderValues, window);
     }
 
     protected override ApiPresetModel CreateModelInternal(ApiPresetModel? selectedModel)
