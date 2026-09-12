@@ -145,15 +145,14 @@
 										<Label Theme="{StaticResource HLabel}" Content="Max Displayed Characters" VerticalAlignment="Center"/>
 									</WrapPanel>
 
-									<WrapPanel Theme="{StaticResource HWrap}">
-										<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="Start ..." Text="{Binding Config.Output_VrcTxt_Notification_IndicatorTextStart}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Notification_IndicatorTextStart}"/>
-										<Label Theme="{StaticResource HLabel}" Content="Notification Indicator Start" VerticalAlignment="Center"/>
-									</WrapPanel>
-
-									<WrapPanel Theme="{StaticResource HWrap}">
-										<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="End ..." Text="{Binding Config.Output_VrcTxt_Notification_IndicatorTextEnd}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Notification_IndicatorTextEnd}"/>
-										<Label Theme="{StaticResource HLabel}" Content="Notification Indicator End" VerticalAlignment="Center"/>
-									</WrapPanel>
+									<StackPanel Theme="{StaticResource HStackS}">
+										<Label Theme="{StaticResource HLabel}" Content="Notification Styling" VerticalAlignment="Center"/>
+										<WrapPanel Theme="{StaticResource HWrap}">
+											<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="Start ..." Text="{Binding Config.Output_VrcTxt_Notification_IndicatorTextStart}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Notification_IndicatorTextStart}"/>
+											<Label Theme="{StaticResource HLabel}" Content="'Notification Text'" VerticalAlignment="Center"/>
+											<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="End ..." Text="{Binding Config.Output_VrcTxt_Notification_IndicatorTextEnd}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Output_VrcTxt_Notification_IndicatorTextEnd}"/>
+										</WrapPanel>
+									</StackPanel>
 								</StackPanel>
 
 								<Label Theme="{StaticResource HLabelS}" Content="Translation"/>
