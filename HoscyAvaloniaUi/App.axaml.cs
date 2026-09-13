@@ -15,7 +15,6 @@ using Avalonia.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using HoscyAvaloniaUi.Services;
 using System.Linq;
-using System.Collections.Generic;
 
 namespace HoscyAvaloniaUi;
 
@@ -96,17 +95,25 @@ public partial class App : Application
             DataContext = mainWindowModel
         };
 
+        splashView.Clipboard = desktop.MainWindow.Clipboard;
+
         Task.Run(() => StartApplicationBackgroundTask(desktop.MainWindow, mainWindowModel, splashModel));
     }
 
     private void StartApplicationBackgroundTask(Window mainWindow, MainWindowViewModel mainWindowModel, SplashScreenViewModel splashModel)
     {
-        Action<string> onProgressAction = new((text) =>
+        Action<string, bool> onProgressAction = new((text, err) =>
         {
             Dispatcher.UIThread.Invoke(() =>
             {
-                splashModel.Progress = text; 
+                splashModel.ErrorCopyVisible = err;
+                splashModel.Progress = text;
             });
+        });
+
+        Action<string> onProgressActionWrapped = new(text =>
+        {
+            onProgressAction.Invoke(text, false);
         });
 
         Action<ILogger, bool> onNewLoggerLoaded = new((logger, external) =>
@@ -126,7 +133,7 @@ public partial class App : Application
         var uiHelper = new UiHelperService(mainWindow);
         var startParams = new HoscyCoreAppStartParameters()
         {
-            OnProgress = onProgressAction,
+            OnProgress = onProgressActionWrapped,
             OnNewLoggerCreated = onNewLoggerLoaded,
             AdditionalContainerInserts = x => { x.AddSingleton(uiHelper); }
         };
@@ -135,7 +142,7 @@ public partial class App : Application
         if (!startRes.IsOk)
         {
             _startLogger.Fatal("Failed starting Services in background ({result})", startRes);
-            onProgressAction.Invoke($"Unable to load (SERVICE):\n{startRes.Msg}");
+            onProgressAction.Invoke($"Unable to load (SERVICE):\n{startRes.Msg}", true);
             return;
         }
             
@@ -143,7 +150,7 @@ public partial class App : Application
         if (!containerRes.IsOk)
         {
             _startLogger.Fatal("Failed getting container ({result})", containerRes);
-            onProgressAction.Invoke($"Unable to load (CONTAIN):\n{containerRes.Msg}");
+            onProgressAction.Invoke($"Unable to load (CONTAIN):\n{containerRes.Msg}", true);
             return;
         }
 
@@ -155,7 +162,7 @@ public partial class App : Application
             if (!menuRes.IsOk)
             {
                 _startLogger.Fatal("Failed loading core menu ({result})", menuRes);
-                onProgressAction.Invoke($"Unable to load (NOMENU):\n{menuRes.Msg}");
+                onProgressAction.Invoke($"Unable to load (NOMENU):\n{menuRes.Msg}", true);
                 return;
             }
             var menu = menuRes.Value;
@@ -170,7 +177,7 @@ public partial class App : Application
                 menu.BannerMessage = $"Following warnings were sent during startup:\n{messages}";
             }
 
-            onProgressAction.Invoke("Switching to main UI");
+            onProgressAction.Invoke("Switching to main UI", false);
 
             mainWindowModel.CurrentView = new CoreMenu() { DataContext = menu };
         });
