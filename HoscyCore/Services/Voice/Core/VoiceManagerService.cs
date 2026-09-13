@@ -9,7 +9,7 @@ using Serilog;
 
 namespace HoscyCore.Services.Voice.Core;
 
-[PrototypeLoadIntoDiContainer(typeof(IVoiceManagerService))] //todo: [TEST] this
+[PrototypeLoadIntoDiContainer(typeof(IVoiceManagerService))] //todo: [TEST++] Does TTS work?
 public class VoiceManagerService
 (
     IBackToFrontNotifyService notify,

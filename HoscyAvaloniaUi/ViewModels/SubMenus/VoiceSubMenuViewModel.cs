@@ -78,7 +78,7 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
     private readonly IVoiceModuleStartInfo[] _voiceInfosOrdered;
     private readonly UiHelperService _uiHelper;
 
-    public VoiceSubMenuViewModelImpl //todo: windows module
+    public VoiceSubMenuViewModelImpl
     (
         ConfigModel config, 
         ILogger logger, 

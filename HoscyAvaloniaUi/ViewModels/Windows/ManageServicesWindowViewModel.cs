@@ -3,6 +3,7 @@ using System.Reflection;
 using Avalonia.Input.Platform;
 using CommunityToolkit.Mvvm.ComponentModel;
 using HoscyAvaloniaUi.Services;
+using HoscyAvaloniaUi.Utility;
 using HoscyAvaloniaUi.ViewModels.Core;
 using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
@@ -224,19 +225,7 @@ public class ManageServicesWindowViewModelImpl : ManageServicesWindowViewModelBa
 
     public override void CopyClicked(IClipboard? clipboard)
     {
-        _logger.Debug("Received clipboard copy request");
-        
-        if (clipboard is null)
-        {
-            _logger.Warning("Clipboard copy request failed, no clipboard available");
-            return;
-        }
-
-        var res = ResC.WrapR(clipboard.SetTextAsync(SelectedError).AsSync, "Clipboard copy failed", _logger);
-        if (res.IsOk)
-        {
-            _logger.Debug("Clipboard copy request succeeded");
-        }
+        ClipboardUtil.CopyToClipboard(_logger, clipboard, SelectedError);
     }
 }
 

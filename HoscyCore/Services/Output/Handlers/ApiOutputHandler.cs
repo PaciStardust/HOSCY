@@ -56,7 +56,7 @@ public class ApiOutputHandler(ILogger logger, IApiClient client, ConfigModel con
         SendInternal(_config.Output_Api_Preset_Clear, "Clear", string.Empty);
     }
 
-    public override Task HandleMessage(string contents, string source) //todo: add source?
+    public override Task HandleMessage(string contents, string source)
     {
         SendInternal(_config.Output_Api_Preset_Message, "Message", contents);
         return Task.CompletedTask;

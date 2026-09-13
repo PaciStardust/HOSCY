@@ -3,7 +3,7 @@ using Serilog;
 
 namespace HoscyCore.Utility;
 
-public abstract class AsyncProcessingLoop<T>(ILogger logger) : IDisposable //todo: [TEST] Write tests for this
+public abstract class AsyncProcessingLoop<T>(ILogger logger) : IDisposable
 {
     private readonly ILogger _logger = logger;
     private readonly Channel<(DateTimeOffset CreatedAt, T Item)> _channel = Channel.CreateUnbounded<(DateTimeOffset, T)>(new()

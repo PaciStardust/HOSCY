@@ -421,7 +421,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
     public override void ModulesWhisperEditNoiseFilter()
     {
         _logger.Information("Editing whisper noise filters");
-        _popup.OpenEditDict("Editing Whisper Noise Filter", "Noise Name", "Noise Text", Config.Recognition_Whisper_Cfg_NoiseFilter, null); //todo: format, reload needed?
+        _popup.OpenEditDict("Editing Whisper Noise Filter", "Noise Name", "Noise Text", Config.Recognition_Whisper_Cfg_NoiseFilter, null);
     }
     public override void ModulesWhisperVadModeChanged()
     {

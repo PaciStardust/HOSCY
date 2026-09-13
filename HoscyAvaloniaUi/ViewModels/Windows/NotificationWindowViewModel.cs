@@ -1,5 +1,6 @@
 using Avalonia.Input.Platform;
 using CommunityToolkit.Mvvm.ComponentModel;
+using HoscyAvaloniaUi.Utility;
 using HoscyAvaloniaUi.ViewModels.Core;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Utility;
@@ -7,7 +8,7 @@ using Serilog;
 
 namespace HoscyAvaloniaUi.ViewModels.Windows;
 
-public abstract partial class NotificationWindowViewModelBase : ViewModelBase //todo: init here?
+public abstract partial class NotificationWindowViewModelBase : ViewModelBase
 {
     [ObservableProperty]
     public partial string? WindowTitle { get; set; } = "Notification Title";
@@ -28,19 +29,7 @@ public class NotificationWindowViewModelImpl(ILogger logger) : NotificationWindo
     private readonly ILogger _logger = logger.ForContext<NotificationWindowViewModelImpl>();
     public override void OnClipboardClick(IClipboard? clipboard)
     {
-        _logger.Debug("Received clipboard copy request");
-        
-        if (clipboard is null)
-        {
-            _logger.Warning("Clipboard copy request failed, no clipboard available");
-            return;
-        }
-
-        var res = ResC.WrapR(clipboard.SetTextAsync(Notification).AsSync, "Clipboard copy failed", _logger);
-        if (res.IsOk)
-        {
-            _logger.Debug("Clipboard copy request succeeded");
-        }
+        ClipboardUtil.CopyToClipboard(_logger, clipboard, Notification);
     }
 
     public override void OnGithubClick()
