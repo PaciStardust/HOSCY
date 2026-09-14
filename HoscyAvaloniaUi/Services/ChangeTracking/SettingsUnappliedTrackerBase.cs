@@ -1,17 +1,16 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 using HoscyCore.Services.Core;
 using Serilog;
 
 namespace HoscyAvaloniaUi.Services.ChangeTracking;
 
-public abstract partial class SettingsUnappliedTrackerBase<T> 
-    : ObservableObject, IService where T : IService
+public abstract class SettingsUnappliedTrackerBase<T> : IService where T : IService
 {
     private readonly T _service;
     protected readonly ILogger _logger;
 
-    [ObservableProperty]
-    public partial bool Unapplied { get; private set; } = false;
+    public bool Unapplied { get; private set; } = false;
+    public event Action<bool> OnUnappliedChanged = delegate { };
 
     public SettingsUnappliedTrackerBase(T service, ILogger logger)
     {
@@ -20,8 +19,8 @@ public abstract partial class SettingsUnappliedTrackerBase<T>
         SubscribeToResetEvent(_service);
     }
 
-    public abstract void SubscribeToResetEvent(T service);
-    public abstract bool CanSetChange(T service);
+    protected abstract void SubscribeToResetEvent(T service);
+    protected abstract bool CanSetChange(T service);
     
     protected void ResetChange()
     {
@@ -29,6 +28,7 @@ public abstract partial class SettingsUnappliedTrackerBase<T>
         {
             _logger.Debug("Resetting unapplied flag");
             Unapplied = false;
+            OnUnappliedChanged.Invoke(false);
         }
     }
 
@@ -40,6 +40,7 @@ public abstract partial class SettingsUnappliedTrackerBase<T>
             {
                 _logger.Debug("Setting unapplied flag");
                 Unapplied = true;
+                OnUnappliedChanged.Invoke(true);
             }
         }
         else
