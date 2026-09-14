@@ -153,6 +153,8 @@ public partial class CoreMenuViewModelImpl : CoreMenuViewModelBase
 
         Application.Current!.Resources["AccentBrush"] = info.Color;
         Application.Current!.Resources["AccentHalfOpaBrush"] = new Color((byte)(info.Color.A / 2), info.Color.R, info.Color.G, info.Color.B);
+
+        (viewModel.Value as ViewModelBaseWithLoadedIndicator)?.Loaded = true;
     }
     #endregion
 }
