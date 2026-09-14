@@ -138,7 +138,7 @@ public class OscSendService(ILogger logger, ConfigModel config, IBackToFrontNoti
 
     private Res<IPEndPoint> ParseIpEndpoint(string ipString, ushort port)
     {
-        if (!IPAddress.TryParse(ipString, out var ipAddress))
+        if (port == 0 || !IPAddress.TryParse(ipString, out var ipAddress))
         {
             var message = $"Failed to convert IP string \"{ipString}\" to an IP address and is unable to send";
             _notify.SendWarning("OSC Send Error", message);
