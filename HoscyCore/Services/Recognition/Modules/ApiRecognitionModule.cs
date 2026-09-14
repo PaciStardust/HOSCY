@@ -71,6 +71,7 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
         _stream = new();
 
         var micResult = _audio.CreateCaptureDeviceProxy();
+        if (micResult is null) return ResC.Fail(ResMsg.Err("Unable to locate a usable microphone"));
         if (!micResult.IsOk) return ResC.Fail(micResult.Msg);
 
         _mic = micResult.Value;

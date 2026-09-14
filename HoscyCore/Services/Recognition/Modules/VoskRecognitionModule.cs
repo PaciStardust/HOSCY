@@ -94,6 +94,7 @@ public class VoskRecognitionModule(ILogger logger, ConfigModel config, IAudioSer
         _rec = recog.Value;
 
         var mic = _audio.CreateCaptureDeviceProxy();
+        if (mic is null) return ResC.Fail(ResMsg.Err("Unable to locate a capture device"));
         if (!mic.IsOk) return ResC.Fail(mic.Msg);
         _mic = mic.Value;
 

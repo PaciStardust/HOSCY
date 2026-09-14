@@ -66,6 +66,11 @@ public class AudioServiceFunctionTests : TestBase<AudioServiceFunctionTests>
         }
 
         var captureResult = _audioService.CreateCaptureDevice();
+        if (captureResult is null)
+        {
+            Assert.Inconclusive();
+            return;
+        }
         captureResult.AssertOk();
         var capture = captureResult.Value!;
 
@@ -102,6 +107,11 @@ public class AudioServiceFunctionTests : TestBase<AudioServiceFunctionTests>
         }
 
         var captureResult = _audioService.CreateCaptureDeviceProxy();
+        if (captureResult is null)
+        {
+            Assert.Inconclusive();
+            return;
+        }
         captureResult.AssertOk();
         var capture = captureResult.Value!;
 

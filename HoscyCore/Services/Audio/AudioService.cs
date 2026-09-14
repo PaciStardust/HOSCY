@@ -64,12 +64,13 @@ public class AudioService(ILogger logger, ConfigModel config)
             : ResC.TFail<DeviceInfo[]>(refRes.Msg);
     }
 
-    public Res<AudioCaptureDevice> CreateCaptureDevice()
+    public Res<AudioCaptureDevice>? CreateCaptureDevice()
     {
         var deviceInfos = GetCaptureDevices();
         if (!deviceInfos.IsOk) return ResC.TFail<AudioCaptureDevice>(deviceInfos.Msg);
 
         var deviceInfo = FindDeviceWithChecks(deviceInfos.Value, _config.Recognition_MicrophoneName, "capture");
+        if (deviceInfo is null) return null;
         if (!deviceInfo.IsOk) return ResC.TFail<AudioCaptureDevice>(deviceInfo.Msg);
 
         var format = new AudioFormat
@@ -88,9 +89,10 @@ public class AudioService(ILogger logger, ConfigModel config)
         }, $"Failed initializing capture device {deviceInfo.Value.Name}", _logger);
     }
 
-    public Res<AudioCaptureDeviceProxy> CreateCaptureDeviceProxy()
+    public Res<AudioCaptureDeviceProxy>? CreateCaptureDeviceProxy()
     {
         var dev = CreateCaptureDevice();
+        if (dev is null) return null;
         return dev.IsOk
             ? ResC.TOk<AudioCaptureDeviceProxy>(new (dev.Value, _logger))
             : ResC.TFail<AudioCaptureDeviceProxy>(dev.Msg);
@@ -106,12 +108,13 @@ public class AudioService(ILogger logger, ConfigModel config)
             : ResC.TFail<DeviceInfo[]>(refRes.Msg);
     }
 
-    public Res<AudioPlaybackDeviceProxy> CreatePlaybackDeviceProxy(string name, ILogger deviceLogger)
+    public Res<AudioPlaybackDeviceProxy>? CreatePlaybackDeviceProxy(string name, ILogger deviceLogger)
     {
         var deviceInfos = GetPlaybackDevices();
         if (!deviceInfos.IsOk) return ResC.TFail<AudioPlaybackDeviceProxy>(deviceInfos.Msg);
 
         var deviceInfo = FindDeviceWithChecks(deviceInfos.Value, name, "playback");
+        if (deviceInfo is null) return null;
         if (!deviceInfo.IsOk) return ResC.TFail<AudioPlaybackDeviceProxy>(deviceInfo.Msg);
 
         var format = new AudioFormat
@@ -132,14 +135,17 @@ public class AudioService(ILogger logger, ConfigModel config)
     #endregion
 
     #region Util
-    private Res<DeviceInfo> FindDeviceWithChecks(DeviceInfo[] devices, string configId, string deviceTypeForLog) {
+    private Res<DeviceInfo>? FindDeviceWithChecks(DeviceInfo[] devices, string configId, string deviceTypeForLog) {
         if (_audioEngine is null || _audioEngine.IsDisposed)
             return ResC.TFailLog<DeviceInfo>($"Unable to retrieve {deviceTypeForLog} device, audio engine is not available", logger);
         
         var devInfo = AudioUtils.FindDevice(devices, configId, logger);
-        return devInfo.HasValue
-            ? ResC.TOk(devInfo.Value)
-            : ResC.TFailLog<DeviceInfo>($"Unable to retrieve {deviceTypeForLog} device, none found", logger, lvl: ResMsgLvl.Error);
+        if (!devInfo.HasValue)
+        {
+            _logger.Error("Unable to retrieve {deviceTypeForLog} device, none found", deviceTypeForLog);
+        }
+
+        return devInfo.HasValue ? ResC.TOk(devInfo.Value) : null;
     }
 
     private Res UpdateAudioDevices()

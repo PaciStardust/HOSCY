@@ -41,7 +41,7 @@ public class VoiceManagerService
 
     #region Startup
     protected override bool IsStarted()
-        => base.IsStarted() || _toProcess is not null || _playback is not null || _processingTask is not null;
+        => base.IsStarted() || _toProcess is not null || _processingTask is not null;
     protected override bool IsProcessing()
         => base.IsProcessing() && _toProcess is not null && _playback is not null && _playback.IsRunning || _processingTask is not null;
 
@@ -158,6 +158,11 @@ public class VoiceManagerService
             return ResC.FailLog("Unable to create playback, it already exists", _logger);
 
         var playback = _audio.CreatePlaybackDeviceProxy(_config.Voice_CurrentSpeakerName, _logger);
+        if (playback is null)
+        {
+            SetFaultLogNotify(ResMsg.Wrn("No microphone could be located, no voice output will be possible"), "No Voice Possible", _notify, _logger);
+            return ResC.Ok();
+        }
         if (!playback.IsOk) return ResC.Fail(playback.Msg);
         _playback = playback.Value;
 
