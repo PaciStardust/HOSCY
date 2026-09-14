@@ -70,4 +70,10 @@ public partial class VoiceSubMenu : UserControl
         (DataContext as VoiceSubMenuViewModelBase)?.ModulesAzureVoiceChanged();
         e.Handled = true;
     }
+
+    private void ModulesWindowsModelChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        (DataContext as RecogSubMenuViewModelBase)?.ModulesWindowsModelChanged();
+        e.Handled = true;
+    }
 }

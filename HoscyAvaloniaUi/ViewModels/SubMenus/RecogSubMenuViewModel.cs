@@ -443,7 +443,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
         ModulesWindowsModelsUpdateComboBox();
         #endif
     }
-#if WINDOWS
+    #if WINDOWS
     private void ModulesWindowsModelsUpdateComboBox()
     {
         var description =  "Description: ";
@@ -468,7 +468,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
         }
         ModulesWindowsModelDescription = description;
     }
-#endif
+    #endif
 
     public override void WebRtcNoiseSuppressionLevelChanged()
     {

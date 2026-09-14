@@ -43,6 +43,8 @@ public abstract partial class VoiceSubMenuViewModelBase : ViewModelBase
     public partial ComboBoxData OptionsSpeaker { get; set; }
     [ObservableProperty]
     public partial string OptionsSpeakerVolumeText { get; set; }
+    [ObservableProperty]
+    public partial bool OptionsSpeakerApplyNeeded { get; protected set; }
     public virtual void OptionsSpeakerChanged() { }
     public virtual void OptionsSpeakerRefreshClicked() { }
     public virtual void OptionsSpeakerVolumeChanged() { }
@@ -66,6 +68,14 @@ public abstract partial class VoiceSubMenuViewModelBase : ViewModelBase
 
     [ObservableProperty]
     public partial bool ModulesPiperIsSelected { get; protected set; }
+
+    [ObservableProperty]
+    public partial bool ModulesWindowsIsSelected { get; protected set; }
+    [ObservableProperty]
+    public partial ComboBoxData ModulesWindowsModels { get; set; }
+    [ObservableProperty]
+    public partial string ModulesWindowsModelDescription { get; set; }
+    public virtual void ModulesWindowsModelChanged() { }
 }
 
 [PrototypeLoadIntoDiContainer(typeof(VoiceSubMenuViewModelBase), Lifetime.Transient)]
@@ -77,6 +87,10 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
     private readonly IVoiceManagerService _voice;
     private readonly IVoiceModuleStartInfo[] _voiceInfosOrdered;
     private readonly UiHelperService _uiHelper;
+
+    #if WINDOWS
+    private readonly Dictionary<string,(string Desc,string Id)> _windowsModels;
+    #endif
 
     public VoiceSubMenuViewModelImpl
     (
@@ -111,6 +125,21 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
         ModulesAnyApiPresets = new([.. Config.Api_Presets.Select(x => x.Name)], Config.Voice_Api_Preset, _logger, "ModulesAnyApiPresets");
 
         ModulesAzureVoices = new([.. Config.Voice_Azure_VoiceList.Select(x => x.Name)], Config.Voice_Azure_CurrentVoice, _logger, "ModulesAzureVoices");
+
+        #if WINDOWS
+        _windowsModels = [];
+        var winModels = WinApi.GetWindowsVoices(_logger);
+        winModels.IfFail(errors.Add);
+        foreach(var model in winModels.Value ?? [])
+        {
+            _windowsModels[model.Name] = (model.Description, model.Id);
+        }
+        ModulesWindowsModels = new([.. _windowsModels.Keys], _windowsModels.FirstOrDefault(x => x.Value.Id == Config.Voice_Windows_ModelName).Key, _logger, "ModulesWindowsModels");
+        ModulesWindowsModelsUpdateComboBox();
+        #else
+        ModulesWindowsModels = new();
+        ModulesWindowsModelDescription = "This Feature is Not Supported Outside of Windows";
+        #endif
 
         if (errors.Count > 0)
         {
@@ -154,6 +183,7 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
         ModulesAnyApiIsSelected = flags.HasFlag(VoiceModuleConfigFlags.AnyApi);
         ModulesAzureIsSelected = flags.HasFlag(VoiceModuleConfigFlags.Azure);
         ModulesPiperIsSelected = flags.HasFlag(VoiceModuleConfigFlags.PiperWeb);
+        ModulesWindowsIsSelected = flags.HasFlag(VoiceModuleConfigFlags.Windows);
     }
     private void OptionsSelectedModuleOnStatusChanged(ServiceStatus status)
     {
@@ -294,6 +324,39 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
 
         Config.Voice_Azure_CurrentVoice = selected;
     }
+
+    public override void ModulesWindowsModelChanged()
+    {
+        #if WINDOWS
+        ModulesWindowsModelsUpdateComboBox();
+        #endif
+    }
+    #if WINDOWS
+    private void ModulesWindowsModelsUpdateComboBox()
+    {
+        var description =  "Description: ";
+
+        var selected = ModulesWindowsModels.GetSelected();
+        if (selected is null)
+        {
+            description += "No Module is Selected";
+        }
+        else
+        {
+            if (!_windowsModels.TryGetValue(selected, out var modelData))
+            {
+                description += "Selected Module Not Found";
+                Config.Voice_Windows_ModelName = string.Empty;
+            }
+            else
+            {
+                description += modelData.Desc;
+                Config.Voice_Windows_ModelName = modelData.Id;
+            }
+        }
+        ModulesWindowsModelDescription = description;
+    }
+    #endif
 }
 
 #if DEBUG
