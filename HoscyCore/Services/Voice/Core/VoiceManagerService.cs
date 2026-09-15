@@ -188,8 +188,8 @@ public class VoiceManagerService
                 _isPlaying = false;
                 var res = ResC.FailLog("Playback failed to stop after 30s", _logger, lvl: ResMsgLvl.Warning);
                 playbackErrors.Add(res.Msg!);
-                _cts = null;
             }
+            _cts = null;
         }
 
         _playback?.Stop().IfFail(playbackErrors.Add);
@@ -197,6 +197,11 @@ public class VoiceManagerService
         _playback = null;
 
         return playbackErrors.Count > 0 ? ResC.FailM(playbackErrors) : ResC.Ok();
+    }
+
+    public string? GetPlaybackName()
+    {
+        return _playback?.GetDeviceName();
     }
 
     private async Task RunProcessingLoop()

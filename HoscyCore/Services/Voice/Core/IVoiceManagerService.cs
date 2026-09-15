@@ -8,5 +8,6 @@ public interface IVoiceManagerService : ISoloModuleManager<IVoiceModuleStartInfo
     public Res Enqueue(string text);
     public void Clear();
     public Res ChangePlayback(string name); //todo: impl in ui
+    public string? GetPlaybackName();
     public event Action<ServiceStatus> OnModuleStatusChanged;
 }

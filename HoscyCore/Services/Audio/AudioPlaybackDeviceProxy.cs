@@ -12,6 +12,11 @@ public class AudioPlaybackDeviceProxy(AudioPlaybackDevice playback, ILogger logg
     
     public MemoryStream Stream { get; private init; } = new();
 
+    public string? GetDeviceName()
+    {
+        return _playback.Info?.Name ?? string.Empty;
+    }
+
     public Res Start()
     {
         return ResC.WrapR(_playback.Start, "Failed to start playback device", _logger);

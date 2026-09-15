@@ -73,7 +73,7 @@ public class OutputSubMenuViewModelImpl : OutputSubMenuViewModelBase
 
         UpdateReplacementsStatus();
 
-        UpdateModuleStatus(); //todo: make this update in real time
+        UpdateModuleStatus();
 
         var presetNames = Config.Api_Presets.Select(x => x.Name).ToArray();
         ModuleApiPresetMessage = new(presetNames, Config.Output_Api_Preset_Message, _logger, "ModuleApiPresetMessage");
