@@ -32,6 +32,17 @@ public partial class VoiceSubMenu : UserControl
         e.Handled = true;
     }
 
+    private void OptionsSelectedModuleSetUnappliedChangeText(object? sender, TextChangedEventArgs e)
+    {
+        (DataContext as VoiceSubMenuViewModelBase)?.OptionsSelectedModuleSetUnappliedChange();
+        e.Handled = true;
+    }
+    private void OptionsSelectedModuleSetUnappliedChangeCheck(object? sender, RoutedEventArgs e)
+    {
+        (DataContext as VoiceSubMenuViewModelBase)?.OptionsSelectedModuleSetUnappliedChange();
+        e.Handled = true;
+    }
+
     private void OptionsSpeakerChanged(object? sender, SelectionChangedEventArgs e)
     {
         (DataContext as VoiceSubMenuViewModelBase)?.OptionsSpeakerChanged();
@@ -73,7 +84,7 @@ public partial class VoiceSubMenu : UserControl
 
     private void ModulesWindowsModelChanged(object? sender, SelectionChangedEventArgs e)
     {
-        (DataContext as RecogSubMenuViewModelBase)?.ModulesWindowsModelChanged();
+        (DataContext as VoiceSubMenuViewModelBase)?.ModulesWindowsModelChanged();
         e.Handled = true;
     }
 }

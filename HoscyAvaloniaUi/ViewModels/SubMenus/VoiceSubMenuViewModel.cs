@@ -4,6 +4,7 @@ using System.Linq;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using HoscyAvaloniaUi.Services;
+using HoscyAvaloniaUi.Services.ChangeTracking;
 using HoscyAvaloniaUi.Utility;
 using HoscyAvaloniaUi.ViewModels.Core;
 using HoscyCore.Configuration.Modern;
@@ -17,7 +18,7 @@ using Serilog;
 
 namespace HoscyAvaloniaUi.ViewModels.SubMenus;
 
-public abstract partial class VoiceSubMenuViewModelBase : ViewModelBase
+public abstract partial class VoiceSubMenuViewModelBase : ViewModelBaseWithLoadedIndicator
 {
     [ObservableProperty]
     public partial ConfigModel Config { get; set; }
@@ -38,6 +39,7 @@ public abstract partial class VoiceSubMenuViewModelBase : ViewModelBase
     public virtual void OptionsSelectedModuleStartStopClicked() { }
     public virtual void OptionsSelectedModuleRefreshClicked() { }
     public virtual void OptionsSelectedModuleRestartClicked() { }
+    public virtual void OptionsSelectedModuleSetUnappliedChange() { }
 
     [ObservableProperty]
     public partial ComboBoxData OptionsSpeaker { get; set; }
@@ -87,6 +89,7 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
     private readonly IVoiceManagerService _voice;
     private readonly IVoiceModuleStartInfo[] _voiceInfosOrdered;
     private readonly UiHelperService _uiHelper;
+    private readonly VoiceUnappliedTracker _unapplied;
 
     #if WINDOWS
     private readonly Dictionary<string,(string Desc,string Id)> _windowsModels;
@@ -100,7 +103,8 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
         IBackToFrontNotifyService notify,
         PopupWindowFactory popup,
         IVoiceManagerService voice,
-        UiHelperService uiHelper
+        UiHelperService uiHelper,
+        VoiceUnappliedTracker unapplied
     )
     {
         Config = config;
@@ -109,6 +113,7 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
         _popup = popup;
         _voice = voice;
         _uiHelper = uiHelper;
+        _unapplied = unapplied;
 
         OptionsSelectedModuleUpdateButtons(_voice.GetCurrentModuleStatus());
         _voice.OnModuleStatusChanged += OptionsSelectedModuleOnStatusChanged;
@@ -146,11 +151,26 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
             var error = ResC.FailM(errors);
             notify.SendResult("Some Data Could Not be Loaded", error.Msg!);
         }
+
+        _unapplied.OnUnappliedChanged += OptionsSelectedModuleOnUnappliedChanged;
+        OptionsSelectedModuleOnUnappliedChanged(_unapplied.Unapplied);
+    }
+    private void OptionsSelectedModuleOnUnappliedChanged(bool obj)
+    {
+        OptionsSelectedModuleRestartNeeded = obj;
+    }
+    public override void OptionsSelectedModuleSetUnappliedChange()
+    {
+        if (Loaded)
+        {
+            _unapplied.SetChange();
+        }
     }
 
     public override void OptionsSelectedModuleChanged()
     {
         OptionsSelectedModuleUpdateComboBox();
+        OptionsSelectedModuleSetUnappliedChange();
     }
     private void OptionsSelectedModuleUpdateComboBox()
     {
@@ -283,12 +303,14 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
         _logger.Debug("Reloading Any-API Preset ComboBox");
         var presetNames = Config.Api_Presets.Select(x => x.Name).ToArray();
         ModulesAnyApiPresets.RefreshItems(presetNames, Config.Voice_Api_Preset);
+        OptionsSelectedModuleSetUnappliedChange();
     }
     public override void ModulesAnyApiPresetChanged()
     {
         var selected = ModulesAnyApiPresets.GetSelected();
         if (selected is null) return;
 
+        OptionsSelectedModuleSetUnappliedChange();
         var match = Config.Api_Presets.FirstOrDefault(x => x.Name == selected);
         if (match is null)
         {
@@ -309,12 +331,14 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
         _logger.Debug("Reloading Azure Voices ComboBox");
         var voiceNames = Config.Voice_Azure_VoiceList.Select(x => x.Name).ToArray();
         ModulesAzureVoices.RefreshItems(voiceNames, Config.Voice_Azure_CurrentVoice);
+        OptionsSelectedModuleSetUnappliedChange();
     }
     public override void ModulesAzureVoiceChanged()
     {
         var selected = ModulesAzureVoices.GetSelected();
         if (selected is null) return;
 
+        OptionsSelectedModuleSetUnappliedChange();
         var match = Config.Voice_Azure_VoiceList.FirstOrDefault(x => x.Name == selected);
         if (match is null)
         {
@@ -343,6 +367,7 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
         }
         else
         {
+            OptionsSelectedModuleSetUnappliedChange();
             if (!_windowsModels.TryGetValue(selected, out var modelData))
             {
                 description += "Selected Module Not Found";
@@ -384,6 +409,8 @@ public class VoiceSubMenuViewModelPreview : VoiceSubMenuViewModelBase
         ModulesAzureVoices = new();
 
         ModulesPiperIsSelected = true;
+
+        ModulesWindowsIsSelected = true;
     }
 }
 #endif
