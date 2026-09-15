@@ -49,6 +49,7 @@ public abstract partial class VoiceSubMenuViewModelBase : ViewModelBaseWithLoade
     public partial bool OptionsSpeakerApplyNeeded { get; protected set; }
     public virtual void OptionsSpeakerChanged() { }
     public virtual void OptionsSpeakerRefreshClicked() { }
+    public virtual void OptionsSpeakerApplyClicked() { }
     public virtual void OptionsSpeakerVolumeChanged() { }
 
     [ObservableProperty]
@@ -126,6 +127,7 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
         var speakers = OptionsSpeakerGetNames();
         speakers.IfFail(errors.Add);
         OptionsSpeaker = new(speakers.Value ?? [], Config.Voice_CurrentSpeakerName, _logger, "OptionsSpeaker");
+        OptionsSpeakerUpdateApplyNeeded();
 
         ModulesAnyApiPresets = new([.. Config.Api_Presets.Select(x => x.Name)], Config.Voice_Api_Preset, _logger, "ModulesAnyApiPresets");
 
@@ -272,6 +274,7 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
         {
             Config.Voice_CurrentSpeakerName = match;
         }
+        OptionsSpeakerUpdateApplyNeeded();
     }
     public override void OptionsSpeakerRefreshClicked()
     {
@@ -282,11 +285,28 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
             return;
         }
         OptionsSpeaker.RefreshItems(speakers.Value, Config.Voice_CurrentSpeakerName);
+        OptionsSpeakerUpdateApplyNeeded();
     }
     private Res<string[]> OptionsSpeakerGetNames()
     {
         var speakers = _audio.GetPlaybackDevices();
         return speakers.IsOk ? ResC.TOk(speakers.Value.Select(x => x.Name).ToArray()) : ResC.TFail<string[]>(speakers.Msg);
+    }
+    public override void OptionsSpeakerApplyClicked()
+    {
+        var res = _voice.ChangePlayback(Config.Voice_CurrentSpeakerName);
+        res.IfFail(x => _popup.OpenNotification("Failed to Apply Speaker", x.Message, true, true));
+        OptionsSpeakerUpdateApplyNeeded();
+    }
+    private void OptionsSpeakerUpdateApplyNeeded()
+    {
+        var current = _voice.GetPlaybackName();
+        if (current is null)
+        {
+            OptionsSpeakerApplyNeeded = true;
+            return;
+        }
+        OptionsSpeakerApplyNeeded = current != Config.Voice_CurrentSpeakerName;
     }
     public override void OptionsSpeakerVolumeChanged()
     {

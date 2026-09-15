@@ -53,6 +53,11 @@ public partial class VoiceSubMenu : UserControl
         (DataContext as VoiceSubMenuViewModelBase)?.OptionsSpeakerRefreshClicked();
         e.Handled = true;
     }
+    private void OptionsSpeakerApplyClicked(object? sender, RoutedEventArgs e)
+    {
+        (DataContext as VoiceSubMenuViewModelBase)?.OptionsSpeakerApplyClicked();
+        e.Handled = true;
+    }
 
     private void OptionsSpeakerVolumeChanged(object? sender, Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {

@@ -48,6 +48,7 @@
 							<WrapPanel Theme="{StaticResource HWrap}">
 								<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding OptionsSpeaker.Index}" ItemsSource="{Binding OptionsSpeaker.Options}" SelectionChanged="OptionsSpeakerChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_CurrentSpeakerName}"/>
 								<Button Content="Refresh" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsSpeakerRefreshClicked" ToolTip.Tip="Refreshes the list of speakers"/>
+								<Button Content="Apply" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsSpeakerApplyClicked" ToolTip.Tip="Applies the speaker change"/>
 							</WrapPanel>
 							<TextBlock Theme="{StaticResource HTextBlockError}" Text="Currently selected speaker is not used, please press 'Apply'" IsVisible="{Binding OptionsSpeakerApplyNeeded}"/>
 						</StackPanel>
