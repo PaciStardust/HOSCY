@@ -37,6 +37,17 @@ public partial class RecogSubMenu : UserControl
         e.Handled = true;
     }
 
+    private void OptionsSelectedModuleSetUnappliedChangeText(object? sender, TextChangedEventArgs e)
+    {
+        (DataContext as VoiceSubMenuViewModelBase)?.OptionsSelectedModuleSetUnappliedChange();
+        e.Handled = true;
+    }
+    private void OptionsSelectedModuleSetUnappliedChangeCheck(object? sender, RoutedEventArgs e)
+    {
+        (DataContext as VoiceSubMenuViewModelBase)?.OptionsSelectedModuleSetUnappliedChange();
+        e.Handled = true;
+    }
+
     private void OptionsOutputNoiseFilterClicked(object? sender, RoutedEventArgs e)
     {
         (DataContext as RecogSubMenuViewModelBase)?.OptionsOutputNoiseFilterClicked();

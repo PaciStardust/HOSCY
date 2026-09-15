@@ -4,6 +4,7 @@ using System.Linq;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using HoscyAvaloniaUi.Services;
+using HoscyAvaloniaUi.Services.ChangeTracking;
 using HoscyAvaloniaUi.Utility;
 using HoscyAvaloniaUi.ViewModels.Core;
 using HoscyCore.Configuration.Modern;
@@ -19,7 +20,7 @@ using SoundFlow.Extensions.WebRtc.Apm;
 
 namespace HoscyAvaloniaUi.ViewModels.SubMenus;
 
-public abstract partial class RecogSubMenuViewModelBase : ViewModelBase
+public abstract partial class RecogSubMenuViewModelBase : ViewModelBaseWithLoadedIndicator
 {
     [ObservableProperty]
     public partial ConfigModel Config { get; set; }
@@ -47,6 +48,7 @@ public abstract partial class RecogSubMenuViewModelBase : ViewModelBase
     public virtual void OptionsSelectedModuleRefreshClicked() { }
     public virtual void OptionsSelectedModuleRestartClicked() { }
     public virtual void OptionsSelectedModuleToggleMuteClicked() { }
+    public virtual void OptionsSelectedModuleSetUnappliedChange() { }
 
     public virtual void OptionsOutputNoiseFilterClicked() { }
 
@@ -108,7 +110,7 @@ public abstract partial class RecogSubMenuViewModelBase : ViewModelBase
 }
 
 [PrototypeLoadIntoDiContainer(typeof(RecogSubMenuViewModelBase), Lifetime.Transient)]
-public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT] Change indicator?
+public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase
 {
     private readonly ILogger _logger;
     private readonly IAudioService _audio;
@@ -116,6 +118,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
     private readonly IRecognitionManagerService _recognition;
     private readonly IRecognitionModuleStartInfo[] _recognitionInfosOrdered;
     private readonly UiHelperService _uiHelper;
+    private readonly RecogUnappliedTracker _unapplied;
 
     #if WINDOWS
     private readonly Dictionary<string,(string Desc,string Id)> _windowsModels;
@@ -129,7 +132,8 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
         IBackToFrontNotifyService notify,
         PopupWindowFactory popup,
         IRecognitionManagerService recognition,
-        UiHelperService uiHelper
+        UiHelperService uiHelper,
+        RecogUnappliedTracker unapplied
     )
     {
         Config = config;
@@ -138,6 +142,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
         _popup = popup;
         _recognition = recognition;
         _uiHelper = uiHelper;
+        _unapplied = unapplied;
 
         OptionsSelectedModuleUpdateButtons(_recognition.GetCurrentModuleStatus(), _recognition.IsListening);
         _recognition.OnModuleStatusChanged += OptionsSelectedModuleOnStatusChanged;
@@ -180,6 +185,20 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
             var error = ResC.FailM(errors);
             notify.SendResult("Some Data Could Not be Loaded", error.Msg!);
         }
+
+        _unapplied.OnUnappliedChanged += OptionsSelectedModuleOnUnappliedChanged;
+        OptionsSelectedModuleOnUnappliedChanged(_unapplied.Unapplied);
+    }
+    private void OptionsSelectedModuleOnUnappliedChanged(bool obj)
+    {
+        OptionsSelectedModuleRestartNeeded = obj;
+    }
+    public override void OptionsSelectedModuleSetUnappliedChange()
+    {
+        if (Loaded)
+        {
+            _unapplied.SetChange();
+        }
     }
 
     public override void OptionsSelectedModuleChanged()
@@ -198,6 +217,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
         }
         else
         {
+            OptionsSelectedModuleSetUnappliedChange();
             var match = _recognitionInfosOrdered.FirstOrDefault(x => x.Name == selected);
             if (match is null)
             {
@@ -304,6 +324,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
             return;
         }
 
+        OptionsSelectedModuleSetUnappliedChange();
         var mics = OptionsMicrophoneGetNames();
         if (!mics.IsOk)
         {
@@ -325,6 +346,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
             _popup.OpenNotification("Failed to Retrieve Microphones", mics.Msg.Message, true, true);
             return;
         }
+        OptionsSelectedModuleSetUnappliedChange();
         OptionsMicrophone.RefreshItems(mics.Value, Config.Recognition_MicrophoneName);
     }
     private Res<string[]> OptionsMicrophoneGetNames()
@@ -343,12 +365,14 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
         _logger.Debug("Reloading Any-API Preset ComboBox");
         var presetNames = Config.Api_Presets.Select(x => x.Name).ToArray();
         ModulesAnyApiPresets.RefreshItems(presetNames, Config.Recognition_Api_Preset);
+        OptionsSelectedModuleSetUnappliedChange();
     }
     public override void ModulesAnyApiPresetChanged()
     {
         var selected = ModulesAnyApiPresets.GetSelected();
         if (selected is null) return;
 
+        OptionsSelectedModuleSetUnappliedChange();
         var match = Config.Api_Presets.FirstOrDefault(x => x.Name == selected);
         if (match is null)
         {
@@ -362,13 +386,13 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
     public override void ModulesAzureEditLanguages()
     {
         _logger.Information("Editing azure languages");
-        _popup.OpenEditList(Config.Recognition_Azure_Languages, "Edit Azure Languages", "Language", null);
+        _popup.OpenEditList(Config.Recognition_Azure_Languages, "Edit Azure Languages", "Language", null, OptionsSelectedModuleSetUnappliedChange);
     }
 
     public override void ModulesAzureEditPresetPhrases()
     {
         _logger.Information("Editing azure phrases");
-        _popup.OpenEditList(Config.Recognition_Azure_PresetPhrases, "Edit Azure Preset Phrases", "Phrase", null);
+        _popup.OpenEditList(Config.Recognition_Azure_PresetPhrases, "Edit Azure Preset Phrases", "Phrase", null, OptionsSelectedModuleSetUnappliedChange);
     }
 
     public override void ModulesVoskEditModels()
@@ -380,12 +404,14 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
     {
         _logger.Debug("Reloading Vosk Model ComboBox");
         ModulesVoskModels.RefreshItems([.. Config.Recognition_Vosk_Models.Keys], Config.Recognition_Vosk_CurrentModel);
+        OptionsSelectedModuleSetUnappliedChange();
     }
     public override void ModulesVoskModelChanged()
     {
         var selected = ModulesVoskModels.GetSelected();
         if (selected is null) return;
 
+        OptionsSelectedModuleSetUnappliedChange();
         if (Config.Recognition_Vosk_Models.ContainsKey(selected))
         {
             _logger.Warning("Failed to find Vosk Model match for value {val}", selected);
@@ -404,12 +430,14 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
     {
         _logger.Debug("Reloading Whisper Model ComboBox");
         ModulesWhisperModels.RefreshItems([.. Config.Recognition_Whisper_Models.Keys], Config.Recognition_Whisper_SelectedModel);
+        OptionsSelectedModuleSetUnappliedChange();
     }
     public override void ModulesWhisperModelChanged()
     {
         var selected = ModulesWhisperModels.GetSelected();
         if (selected is null) return;
 
+        OptionsSelectedModuleSetUnappliedChange();
         if (Config.Recognition_Whisper_Models.ContainsKey(selected))
         {
             _logger.Warning("Failed to find Whisper Model match for value {val}", selected);
@@ -428,6 +456,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
         var selected = ModulesWhisperModels.GetSelected();
         if (selected is null) return;
 
+        OptionsSelectedModuleSetUnappliedChange();
         if (!Enum.TryParse<WhisperIpcVadOperatingMode>(selected, out var match))
         {
             _logger.Warning("Failed to find WhisperIpcVadOperatingMode match for value {val}", selected);
@@ -455,6 +484,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
         }
         else
         {
+            OptionsSelectedModuleSetUnappliedChange();
             if (!_windowsModels.TryGetValue(selected, out var modelData))
             {
                 description += "Selected Module Not Found";
@@ -475,6 +505,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase //todo: [FEAT
         var selected = WebRtcNoiseSuppressionLevel.GetSelected();
         if (selected is null) return;
 
+        OptionsSelectedModuleSetUnappliedChange();
         if (!Enum.TryParse<NoiseSuppressionLevel>(selected, out var match))
         {
             _logger.Warning("Failed to find NoiseSuppressionLevel match for value {val}", selected);

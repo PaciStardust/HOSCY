@@ -170,7 +170,6 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
     public override void OptionsSelectedModuleChanged()
     {
         OptionsSelectedModuleUpdateComboBox();
-        OptionsSelectedModuleSetUnappliedChange();
     }
     private void OptionsSelectedModuleUpdateComboBox()
     {
@@ -184,6 +183,7 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
         }
         else
         {
+            OptionsSelectedModuleSetUnappliedChange();
             var match = _voiceInfosOrdered.FirstOrDefault(x => x.Name == selected);
             if (match is null)
             {
