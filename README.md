@@ -12,19 +12,18 @@ For the following reasons this project is currently being rewritten from the gro
   - ✅ Dependency injection
   - ✅ Logging
   - ✅ Config Loading
-  - ❌ Displaying startup errors (Currently windows only)
-  - 🆗 Loading splash screen
+  - ✅ Displaying startup errors (Currently windows only)
+  - ✅ Loading splash screen
   - ❌ Version checking & updating
-- ❌ **User Interface**
+- ✅ **User Interface**
   - ✅ Recreation of original Hoscy components
-  - ❌ Recreation of UI
-- ❌ **Features**
+  - ✅ Recreation of UI
+- ✅ **Features**
   - ✅ OSC
     - ✅ Sending
     - ✅ Receiving
     - ✅ Routing
     - ✅ OscQuery
-  - ❌ Hotkeys
   - ✅ Media
     - ✅ Control
     - ✅ Display
