@@ -22,13 +22,13 @@
 					<WrapPanel Theme="{StaticResource HWrap}">
 						<CheckBox Theme="{StaticResource HCheckBox}" Content="Enable Partial Replacements" IsChecked="{Binding Config.Preprocessing_DoReplacementsPartial}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Preprocessing_DoReplacementsPartial}"/>
 						<Button Content="Edit Partial Replacements" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="ReplacementsPartialClicked" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Preprocessing_ReplacementsPartial}"/>
-						<TextBlock Theme="{StaticResource HTextBlockError}" Text="{Binding ReplacementsPartialInvalid}"/>
+						<TextBlock Theme="{StaticResource HTextBlockError}" Text="{Binding ReplacementsPartialInvalid}" VerticalAlignment="Center"/>
 					</WrapPanel>
 
 					<WrapPanel Theme="{StaticResource HWrap}">
 						<CheckBox Theme="{StaticResource HCheckBox}" Content="Enable Full Replacements" IsChecked="{Binding Config.Preprocessing_DoReplacementsFull}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Preprocessing_DoReplacementsFull}"/>
 						<Button Content="Edit Full Replacements" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="ReplacementsFullClicked" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Preprocessing_ReplacementsFull}"/>
-						<TextBlock Theme="{StaticResource HTextBlockError}" Text="{Binding ReplacementsFullInvalid}"/>
+						<TextBlock Theme="{StaticResource HTextBlockError}" Text="{Binding ReplacementsFullInvalid}" VerticalAlignment="Center"/>
 					</WrapPanel>
 
 					<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="{Binding Config.Preprocessing_DoReplacementsFull}">
