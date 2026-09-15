@@ -173,6 +173,7 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
     }
     protected override bool UseOnlySetListeningWhenStartedProtection => true;
 
+    private DateTimeOffset _lastSentSpeechActivityAt = DateTimeOffset.MinValue;
     private void OnAudioProcessed(Span<byte> span, Capability capability)
     {
         if (!IsListening) return;
@@ -180,12 +181,18 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
         if (_recordingStartedAt.AddSeconds(_config.Recognition_Api_MaxRecordingTime) < DateTimeOffset.UtcNow)
         {
             _logger.Debug("Hit maximum recording time, cancelling");
+            _lastSentSpeechActivityAt = DateTimeOffset.MinValue;
             SetListening(false);
             InvokeInternalListeningStatusChange();
             return;
         }
 
-        InvokeSpeechActivity(true); //todo: [FIX] This needs a cooldown
+        var now = DateTimeOffset.Now;
+        if (_lastSentSpeechActivityAt.AddSeconds(1) <= now)
+        {
+            InvokeSpeechActivity(true);
+            _lastSentSpeechActivityAt = now;
+        }
         try
         {
             _stream?.Write(span);
