@@ -2,6 +2,7 @@ using System.Linq;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using HoscyAvaloniaUi.Services;
+using HoscyAvaloniaUi.Services.ChangeTracking;
 using HoscyAvaloniaUi.Utility;
 using HoscyAvaloniaUi.ViewModels.Core;
 using HoscyCore.Configuration.Modern;
@@ -12,7 +13,7 @@ using Serilog;
 
 namespace HoscyAvaloniaUi.ViewModels.SubMenus;
 
-public abstract partial class TransSubMenuViewModelBase : ViewModelBase
+public abstract partial class TransSubMenuViewModelBase : ViewModelBaseWithLoadedIndicator
 {
     [ObservableProperty]
     public partial ConfigModel Config { get; set; }
@@ -33,6 +34,7 @@ public abstract partial class TransSubMenuViewModelBase : ViewModelBase
     public virtual void OptionsSelectedModuleStartStopClicked() { }
     public virtual void OptionsSelectedModuleRefreshClicked() { }
     public virtual void OptionsSelectedModuleRestartClicked() { }
+    public virtual void OptionsSelectedModuleSetUnappliedChange() { }
 
     [ObservableProperty]
     public partial string ModulesSettingsVisibleIfCompatible { get; protected set; } = "(Settings are Visible if Compatible Translation Module is Selected)";
@@ -53,6 +55,7 @@ public class TransSubMenuViewModelImpl : TransSubMenuViewModelBase
     private readonly ITranslationModuleStartInfo[] _transInfosOrdered;
     private readonly PopupWindowFactory _popup;
     private readonly UiHelperService _uiHelper;
+    private readonly TransUnappliedTracker _unapplied;
 
     public TransSubMenuViewModelImpl
     (
@@ -60,7 +63,8 @@ public class TransSubMenuViewModelImpl : TransSubMenuViewModelBase
         ILogger logger, 
         ITranslationManagerService trans,
         PopupWindowFactory popup,
-        UiHelperService uiHelper
+        UiHelperService uiHelper,
+        TransUnappliedTracker unapplied
     )
     {
         Config = config;
@@ -68,6 +72,7 @@ public class TransSubMenuViewModelImpl : TransSubMenuViewModelBase
         _trans = trans;
         _popup = popup;
         _uiHelper = uiHelper;
+        _unapplied = unapplied;
 
         OptionsSelectedModuleUpdateButtons(_trans.GetCurrentModuleStatus());
         _trans.OnModuleStatusChanged += OptionsSelectedModuleOnStatusChanged;
@@ -77,9 +82,23 @@ public class TransSubMenuViewModelImpl : TransSubMenuViewModelBase
         OptionsSelectedModuleUpdateComboBox();
 
         ModulesAnyApiPresets = new([.. Config.Api_Presets.Select(x => x.Name)], Config.Translation_Api_Preset, _logger, "ModulesAnyApiPresets");
+
+        _unapplied.OnUnappliedChanged += OptionsSelectedModuleOnUnappliedChanged;
+        OptionsSelectedModuleOnUnappliedChanged(_unapplied.Unapplied);
+    }
+    private void OptionsSelectedModuleOnUnappliedChanged(bool obj)
+    {
+        OptionsSelectedModuleRestartNeeded = obj;
+    }
+    public override void OptionsSelectedModuleSetUnappliedChange()
+    {
+        if (Loaded)
+        {
+            _unapplied.SetChange();
+        }
     }
 
-        public override void OptionsSelectedModuleChanged()
+    public override void OptionsSelectedModuleChanged()
     {
         OptionsSelectedModuleUpdateComboBox();
     }
@@ -95,6 +114,7 @@ public class TransSubMenuViewModelImpl : TransSubMenuViewModelBase
         }
         else
         {
+            OptionsSelectedModuleSetUnappliedChange();
             var match = _transInfosOrdered.FirstOrDefault(x => x.Name == selected);
             if (match is null)
             {
@@ -168,12 +188,14 @@ public class TransSubMenuViewModelImpl : TransSubMenuViewModelBase
         _logger.Debug("Reloading Any-API Preset ComboBox");
         var presetNames = Config.Api_Presets.Select(x => x.Name).ToArray();
         ModulesAnyApiPresets.RefreshItems(presetNames, Config.Translation_Api_Preset);
+        OptionsSelectedModuleSetUnappliedChange();
     }
     public override void ModulesAnyApiPresetChanged()
     {
         var selected = ModulesAnyApiPresets.GetSelected();
         if (selected is null) return;
 
+        OptionsSelectedModuleSetUnappliedChange();
         var match = Config.Api_Presets.FirstOrDefault(x => x.Name == selected);
         if (match is null)
         {

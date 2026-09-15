@@ -23,7 +23,7 @@
 
 					<StackPanel Theme="{StaticResource HStackIndent}">
 						<StackPanel Theme="{StaticResource HStackS}">
-							<Label Theme="{StaticResource HLabel}" Content="Selected Module"/>
+							<Label Theme="{StaticResource HLabel}" Content="Selected Module*"/>
 
 							<WrapPanel Theme="{StaticResource HWrap}">
 								<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding OptionsSelectedModule.Index}" ItemsSource="{Binding OptionsSelectedModule.Options}" SelectionChanged="OptionsSelectedModuleChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Translation_SelectedModuleName}"/>
@@ -32,7 +32,7 @@
 								<Button Content="Restart" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsSelectedModuleRestartClicked" IsEnabled="{Binding OptionsSelectedModuleRestartEnabled}" ToolTip.Tip="Restarts the current translation module"/>
 							</WrapPanel>
 
-							<TextBlock Theme="{StaticResource HTextBlockError}" Text="Currently Selected Module is Not Loaded, Please Press 'Reload'" IsVisible="{Binding OptionsSelectedModuleRestartNeeded}"/>
+							<TextBlock Theme="{StaticResource HTextBlockError}" Text="Some Changed Settings Require a Module Restart to Apply" IsVisible="{Binding OptionsSelectedModuleRestartNeeded}"/>
 
 							<TextBlock Theme="{StaticResource HTextBlockNote}" Text="{Binding OptionsSelectedModuleDescription}"/>
 						</StackPanel>
@@ -63,7 +63,7 @@
 				<StackPanel Theme="{StaticResource HStackIndent}">
 					<WrapPanel Theme="{StaticResource HWrap}">
 						<Label Content="Any-API Module" Theme="{StaticResource HLabelM}"/>
-						<Button Content="Edit Presets" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="ModulesAnyApiEditPresets" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Api_Presets}"/>
+						<Button Content="Edit Presets*" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="ModulesAnyApiEditPresets" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Api_Presets}"/>
 					</WrapPanel>
 
 					<StackPanel Theme="{StaticResource HStackIndent}" IsEnabled="False" IsVisible="{Binding !ModulesAnyApiIsSelected}">
@@ -73,7 +73,7 @@
 					<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding ModulesAnyApiIsSelected}">
 						<WrapPanel Theme="{StaticResource HWrap}">
 							<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding ModulesAnyApiPresets.Index}" ItemsSource="{Binding ModulesAnyApiPresets.Options}" SelectionChanged="ModulesAnyApiPresetChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Api_Preset}"/>
-							<Label Theme="{StaticResource HLabel}" Content="Preset for Translation" VerticalAlignment="Center"/>
+							<Label Theme="{StaticResource HLabel}" Content="Preset for Translation*" VerticalAlignment="Center"/>
 						</WrapPanel>
 					</StackPanel>
 				</StackPanel>
