@@ -6,7 +6,7 @@ using Serilog;
 
 namespace HoscyCore.Services.Output.Preprocessing;
 
-[PrototypeLoadIntoDiContainer(typeof(MediaCommandOutputPreprocessor))] //todo: [TEST]
+[PrototypeLoadIntoDiContainer(typeof(MediaCommandOutputPreprocessor))]
 public class MediaCommandOutputPreprocessor(IMediaControlService media, ILogger logger) : IOutputPreprocessor
 {
     private readonly IMediaControlService _media = media;
