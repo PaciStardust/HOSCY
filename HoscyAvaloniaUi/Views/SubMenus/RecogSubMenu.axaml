@@ -172,7 +172,7 @@
 					<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding ModulesVoskIsSelected}">
 						<WrapPanel Theme="{StaticResource HWrap}">
 							<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding ModulesVoskModels.Index}" ItemsSource="{Binding ModulesVoskModels.Options}" SelectionChanged="ModulesVoskModelChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Vosk_CurrentModel}"/>
-							<Label Theme="{StaticResource HLabel}" Content="Vosk Model to Use*" VerticalAlignment="Center"/>
+							<Label Theme="{StaticResource HLabel}" Content="Model for Vosk*" VerticalAlignment="Center"/>
 							<Button Content="Edit Models*" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="ModulesVoskEditModels" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Vosk_Models}"/>
 						</WrapPanel>
 
@@ -191,7 +191,7 @@
 					<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding ModulesWhisperIsSelected}">
 						<WrapPanel Theme="{StaticResource HWrap}">
 							<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding ModulesWhisperModels.Index}" ItemsSource="{Binding ModulesWhisperModels.Options}" SelectionChanged="ModulesWhisperModelChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_SelectedModel}"/>
-							<Label Theme="{StaticResource HLabel}" Content="Whisper Model to Use*" VerticalAlignment="Center"/>
+							<Label Theme="{StaticResource HLabel}" Content="Model for Whisper*" VerticalAlignment="Center"/>
 							<Button Content="Edit Models*" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="ModulesWhisperEditModels" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Whisper_Models}"/>
 						</WrapPanel>
 
