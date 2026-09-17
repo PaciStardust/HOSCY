@@ -86,7 +86,8 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
             return ResC.Fail(procRes.IsOk ? ResMsg.Ftl(message) : procRes.Msg);
         }
 
-        var started = OtherUtils.WaitWhile(() => { return !_startedSignalReceived; }, 5000, 10); 
+        //todo: this should likely differentiate between "loading" and "started"
+        var started = OtherUtils.WaitWhile(() => { return !_startedSignalReceived; }, 30_000, 10); 
         if (!started)
         {
             var message = "Did not receive startup signal from process";
