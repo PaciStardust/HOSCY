@@ -412,7 +412,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase
         if (selected is null) return;
 
         OptionsSelectedModuleSetUnappliedChange();
-        if (Config.Recognition_Vosk_Models.ContainsKey(selected))
+        if (!Config.Recognition_Vosk_Models.ContainsKey(selected))
         {
             _logger.Warning("Failed to find Vosk Model match for value {val}", selected);
             return;
@@ -438,7 +438,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase
         if (selected is null) return;
 
         OptionsSelectedModuleSetUnappliedChange();
-        if (Config.Recognition_Whisper_Models.ContainsKey(selected))
+        if (!Config.Recognition_Whisper_Models.ContainsKey(selected))
         {
             _logger.Warning("Failed to find Whisper Model match for value {val}", selected);
             return;
@@ -453,7 +453,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase
     }
     public override void ModulesWhisperVadModeChanged()
     {
-        var selected = ModulesWhisperModels.GetSelected();
+        var selected = ModulesWhisperVadMode.GetSelected();
         if (selected is null) return;
 
         OptionsSelectedModuleSetUnappliedChange();
