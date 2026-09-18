@@ -7,7 +7,7 @@ using Serilog;
 
 namespace HoscyCore.Services.Media.Core;
 
-[PrototypeLoadIntoDiContainer(typeof(IMediaControlService))] //todo: [TEST]
+[PrototypeLoadIntoDiContainer(typeof(IMediaControlService))]
 public class MediaControlService
 (
     IBackToFrontNotifyService notify,
