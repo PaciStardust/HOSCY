@@ -51,7 +51,7 @@ public partial class ComboBoxData : ObservableObject
             return ([COMBO_BOX_NO_OPTIONS], 0);
         }
 
-        logger?.Debug("Loading combo box {id} with value {value}", id, selected);
+        logger?.Verbose("Loading combo box {id} with value {value}", id, selected);
         var idx = options.IndexOf(selected);
         if (idx == -1)
         {

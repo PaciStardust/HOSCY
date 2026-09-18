@@ -5,7 +5,7 @@ using Serilog.Events;
 
 namespace HoscyWhisperV2Process;
 
-public class Program //todo: [FIX] Typing indicator not good, noises
+public class Program //todo: [FIX] Typing indicator not good, noises, windows no audio, windows fail to unmute
 {   
     public static async Task Main(string[] args)
     {

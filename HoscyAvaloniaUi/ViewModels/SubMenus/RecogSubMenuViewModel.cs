@@ -362,7 +362,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase
     }
     private void ModulesAnyApiReloadPresetBox()
     {
-        _logger.Debug("Reloading Any-API Preset ComboBox");
+        _logger.Verbose("Reloading Any-API Preset ComboBox");
         var presetNames = Config.Api_Presets.Select(x => x.Name).ToArray();
         ModulesAnyApiPresets.RefreshItems(presetNames, Config.Recognition_Api_Preset);
         OptionsSelectedModuleSetUnappliedChange();
@@ -402,7 +402,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase
     }
     private void ModulesVoskReloadModelBox()
     {
-        _logger.Debug("Reloading Vosk Model ComboBox");
+        _logger.Verbose("Reloading Vosk Model ComboBox");
         ModulesVoskModels.RefreshItems([.. Config.Recognition_Vosk_Models.Keys], Config.Recognition_Vosk_CurrentModel);
         OptionsSelectedModuleSetUnappliedChange();
     }
@@ -428,7 +428,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase
     }
     private void ModulesWhisperReloadModelBox()
     {
-        _logger.Debug("Reloading Whisper Model ComboBox");
+        _logger.Verbose("Reloading Whisper Model ComboBox");
         ModulesWhisperModels.RefreshItems([.. Config.Recognition_Whisper_Models.Keys], Config.Recognition_Whisper_SelectedModel);
         OptionsSelectedModuleSetUnappliedChange();
     }

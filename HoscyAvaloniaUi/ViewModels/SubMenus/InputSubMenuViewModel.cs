@@ -67,7 +67,7 @@ public class InputSubMenuViewModelImpl : InputSubMenuViewModelBase
 
     private void RefreshPresets()
     {
-        _logger.Debug("Refreshing text presets");
+        _logger.Verbose("Refreshing text presets");
         Presets = [.. Config.ManualInput_TextPresets.Keys];
         PresetIndex = -1;
     }

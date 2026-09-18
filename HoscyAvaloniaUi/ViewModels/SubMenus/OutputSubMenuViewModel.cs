@@ -154,7 +154,7 @@ public class OutputSubMenuViewModelImpl : OutputSubMenuViewModelBase
     }
     private void ModuleApiReloadPresetBoxes()
     {
-        _logger.Debug("Reloading all API Preset ComboBoxes");
+        _logger.Verbose("Reloading all API Preset ComboBoxes");
         var presetNames = Config.Api_Presets.Select(x => x.Name).ToArray();
         ModuleApiPresetMessage.RefreshItems(presetNames, Config.Output_Api_Preset_Message);
         ModuleApiPresetNotification.RefreshItems(presetNames, Config.Output_Api_Preset_Notification);

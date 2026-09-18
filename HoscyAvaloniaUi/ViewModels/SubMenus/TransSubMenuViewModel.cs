@@ -185,7 +185,7 @@ public class TransSubMenuViewModelImpl : TransSubMenuViewModelBase
     }
     private void ModulesAnyApiReloadPresetBox()
     {
-        _logger.Debug("Reloading Any-API Preset ComboBox");
+        _logger.Verbose("Reloading Any-API Preset ComboBox");
         var presetNames = Config.Api_Presets.Select(x => x.Name).ToArray();
         ModulesAnyApiPresets.RefreshItems(presetNames, Config.Translation_Api_Preset);
         OptionsSelectedModuleSetUnappliedChange();

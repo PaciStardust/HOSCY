@@ -320,7 +320,7 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
     }
     private void ModulesAnyApiReloadPresetBox()
     {
-        _logger.Debug("Reloading Any-API Preset ComboBox"); //todo: why debug, wrong unapplied settings text, audio not working, unmute during mute issues
+        _logger.Verbose("Reloading Any-API Preset ComboBox"); //todo: wrong unapplied settings text
         var presetNames = Config.Api_Presets.Select(x => x.Name).ToArray();
         ModulesAnyApiPresets.RefreshItems(presetNames, Config.Voice_Api_Preset);
         OptionsSelectedModuleSetUnappliedChange();
@@ -348,7 +348,7 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
     }
     private void ModulesAzureReloadVoicesBox()
     {
-        _logger.Debug("Reloading Azure Voices ComboBox");
+        _logger.Verbose("Reloading Azure Voices ComboBox");
         var voiceNames = Config.Voice_Azure_VoiceList.Select(x => x.Name).ToArray();
         ModulesAzureVoices.RefreshItems(voiceNames, Config.Voice_Azure_CurrentVoice);
         OptionsSelectedModuleSetUnappliedChange();
