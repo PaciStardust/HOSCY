@@ -81,7 +81,16 @@ public record WhisperIpcMute(bool State)
     public const char IDENTIFIER = 'M';
 }
 
-public record WhisperIpcStatus(bool State)
+public record WhisperIpcStatus(WhisperIpcStartupStage Stage)
 {
     public const char IDENTIFIER = 'S';
+}
+
+public enum WhisperIpcStartupStage
+{
+    Inactive,
+    ProcessStarted,
+    InitPassed,
+    ModelLoaded,
+    Ready
 }

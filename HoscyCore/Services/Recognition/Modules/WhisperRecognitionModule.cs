@@ -41,9 +41,10 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
     #endregion
 
     #region Startup
-    private bool _startedSignalReceived = false;
+    private WhisperIpcStartupStage _startupStage = WhisperIpcStartupStage.Inactive;
     protected override Res StartForService()
     {
+        _logger.Debug("Creating IPC pipe");
         var pipeRes = ResC.TWrapR(() => new IpcSendPipe(_logger, _config.Debug_LogVerboseExtra),
             "Failed to create IPC pipe", _logger);
         if (!pipeRes.IsOk) return ResC.Fail(pipeRes.Msg);
@@ -52,6 +53,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
         var confRes = CreateWhisperConfigArg(_ipcPipe.GetPipeClientHandle());
         if (!confRes.IsOk) return ResC.Fail(confRes.Msg);
 
+        _logger.Debug("Creating whisper process process and launching");
         var procPath = Path.Combine(PathUtils.PathExecutableFolder, "HoscyWhisperV2Process");
         var process = new Process()
         {
@@ -69,7 +71,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
         process.OutputDataReceived += HandleConsoleOutput;
         process.ErrorDataReceived += HandleConsoleOutput;
 
-        _startedSignalReceived = false;
+        _startupStage = WhisperIpcStartupStage.Inactive;
         var procRes = ResC.TWrapR(process.Start, "Failed to start process", _logger);
         if (procRes.IsOk && procRes.Value)
         {
@@ -78,6 +80,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
             _whisperProcess = process;
         }
 
+        _logger.Debug("Verifying whisper process start");
         if (_whisperProcess is null || OtherUtils.HasProcessExitedSafe(_whisperProcess))
         {
             var message = "Unable to start whisper process";
@@ -86,15 +89,19 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
             return ResC.Fail(procRes.IsOk ? ResMsg.Ftl(message) : procRes.Msg);
         }
 
-        //todo: this should likely differentiate between "loading" and "started"
-        var started = OtherUtils.WaitWhile(() => { return !_startedSignalReceived; }, 30_000, 10); 
-        if (!started)
+        (string StageName, WhisperIpcStartupStage StageEnum, int StageWaitMs)[] stages = [
+            ("Process Start", WhisperIpcStartupStage.ProcessStarted, 10_000),
+            ("Init Passed", WhisperIpcStartupStage.InitPassed, 10_000),
+            ("Model Loaded", WhisperIpcStartupStage.ModelLoaded, 30_000),
+            ("Ready", WhisperIpcStartupStage.Ready, 10_000)
+        ];
+        for (var i = 0; i < stages.Length; i++)
         {
-            var message = "Did not receive startup signal from process";
-            _logger.Error(message);
-            PerformCleanup();
-            return ResC.Fail(ResMsg.Err(message));
+            var (stageName, stageEnum, stageWaitMs) = stages[i];
+            var stageRes = WaitForStage(i+1, stages.Length, stageName, stageEnum, stageWaitMs);
+            if (stageRes != null) return stageRes;
         }
+
         _whisperProcess.Exited += OnUnexpectedProcessExit;
 
         try
@@ -114,6 +121,19 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
         _keepAlive.Start();
 
         return ResC.Ok();
+
+        Res? WaitForStage(int nr, int nrOf, string name, WhisperIpcStartupStage stage, int waitMs)
+        {
+            _logger.Debug("Waiting for whisper process to pass stage {nr}/{nrOf} ({name})", nr, nrOf, name);
+            var started = OtherUtils.WaitWhile(() => { return _startupStage < stage && (stage == WhisperIpcStartupStage.ProcessStarted || _startupStage != WhisperIpcStartupStage.Inactive); }, waitMs, 10);
+            if (!started || _startupStage == WhisperIpcStartupStage.Inactive)
+            {
+                var msg = ResC.FailLog($"Process start failed to pass stage {nr}/{nrOf} ({name})", _logger, lvl: ResMsgLvl.Error);
+                PerformCleanup();
+                return msg;
+            }
+            return null;
+        }
     }
     protected override bool UseAlreadyStartedProtection => true;
 
@@ -267,7 +287,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
         }
 
         _whisperProcess.Exited -= OnUnexpectedProcessExit;
-        var signalSent = _ipcPipe?.Enqueue(WhisperIpcStatus.IDENTIFIER, new WhisperIpcStatus(false)) ?? ResC.Fail("IPC pipe is null");
+        var signalSent = _ipcPipe?.Enqueue(WhisperIpcStatus.IDENTIFIER, new WhisperIpcStatus(WhisperIpcStartupStage.Inactive)) ?? ResC.Fail("IPC pipe is null");
         if (!signalSent.IsOk)
         {
             _logger.Warning("Unable to queue stop signal to process ({info})",
@@ -355,11 +375,21 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
                 
             case WhisperIpcStatus.IDENTIFIER:
                 var resSta = _ipcConverter.DeserializeJson<WhisperIpcStatus>(json.Value);
-                if (resSta.IsOk && resSta.Value.State) 
+                if (resSta.IsOk)
                 {
-                    _logger.Debug("Received start signal from process");
-                    _startedSignalReceived = true;
-                }                
+                    var stage = resSta.Value.Stage;
+
+                    if (stage > _startupStage)
+                    {
+                        _logger.Debug("Received status signal from process ({stage})", resSta.Value.Stage.ToString());
+                        _startupStage = stage;
+                    }
+                    else if (stage == WhisperIpcStartupStage.Inactive && stage < _startupStage)
+                    {
+                        _logger.Error("Received inactive status signal from process after higher status has been set, load failed");
+                        _startupStage = stage;
+                    }
+                }             
                 return;
 
             case WhisperIpcKeepalive.IDENTIFIER:

@@ -45,22 +45,26 @@ public class WhisperApp : IDisposable
 
         using var recCore = new WhisperRecognitionCore(whisperProcessor, audioProcessor, capture, _logger);
         using var cts = new CancellationTokenSource();
+
+        _writer.SendStatus(WhisperIpcStartupStage.InitPassed);
+
         var recognitionTask = Task.Run(async () => await recCore.RecognizeAsync(cts.Token, _writer.SendRecognized));
         _ipcDataHandler?.OnStatus += (x) =>
         {
-            if (x.State) return;
+            if (x.Stage != WhisperIpcStartupStage.Inactive) return;
             _logger.Information("Recognition stop signal received");
             TryCancelCts(cts);
         };
 
         _logger.Debug("Waiting for recognition to start");
-        var res = await OtherUtils.WaitWhileAsync(() => !recCore.IsRunning && !cts.IsCancellationRequested && !recognitionTask.IsCompleted, 4000, 25);
-
-        _writer.SendStatus(true);
+        Thread.Sleep(5_000);
+        var res = await OtherUtils.WaitWhileAsync(() => !recCore.IsRunning && !cts.IsCancellationRequested && !recognitionTask.IsCompleted, 27_500, 10);
 
         if (res)
         {
+            _writer.SendStatus(WhisperIpcStartupStage.ModelLoaded);
             StartKeepAliveIfNeeded(cts);
+            _writer.SendStatus(WhisperIpcStartupStage.Ready);
 
             if (_ipcPipe is null)
             {
@@ -70,11 +74,13 @@ public class WhisperApp : IDisposable
                 TryCancelCts(cts);
             }
             _logger.Debug("Waiting for recognition to end");
+
             await recognitionTask;
         }
         else
         {
             _logger.Error("Recognition task is unexpectedly not running");
+            _writer.SendStatus(WhisperIpcStartupStage.Inactive);
         }
 
         if (recognitionTask.Exception is not null)

@@ -320,7 +320,7 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
     }
     private void ModulesAnyApiReloadPresetBox()
     {
-        _logger.Debug("Reloading Any-API Preset ComboBox");
+        _logger.Debug("Reloading Any-API Preset ComboBox"); //todo: why debug, wrong unapplied settings text, audio not working, unmute during mute issues
         var presetNames = Config.Api_Presets.Select(x => x.Name).ToArray();
         ModulesAnyApiPresets.RefreshItems(presetNames, Config.Voice_Api_Preset);
         OptionsSelectedModuleSetUnappliedChange();

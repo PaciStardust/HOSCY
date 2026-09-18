@@ -45,15 +45,15 @@ public class ConsoleDataWriter(bool asJson)
         }
     }
 
-    public void SendStatus(bool status)
+    public void SendStatus(WhisperIpcStartupStage stage)
     {
         if (_asJson)
         {
-            SendAsJson(WhisperIpcStatus.IDENTIFIER, new WhisperIpcStatus(status));
+            SendAsJson(WhisperIpcStatus.IDENTIFIER, new WhisperIpcStatus(stage));
         }
         else
         {
-            SendReadable($"Status is now: {status}");
+            SendReadable($"Startup Stage is now: {stage}");
         }
     }
 

@@ -41,6 +41,7 @@ public class Program //todo: [FIX] Typing indicator not good, noises
         if (args.Length == 0)
         {
             writer = new ConsoleDataWriter(false);
+            writer.SendStatus(WhisperIpcStartupStage.ProcessStarted);
             writer.SendLog(LogEventLevel.Information, "Starting process without args, likely running independent");
             config = new WhisperIpcConfig()
             {
@@ -51,6 +52,7 @@ public class Program //todo: [FIX] Typing indicator not good, noises
         else
         {
             writer = new ConsoleDataWriter(true);
+            writer.SendStatus(WhisperIpcStartupStage.ProcessStarted);
             writer.SendLog(LogEventLevel.Information, "Starting process with args");
             try
             {

@@ -45,7 +45,7 @@ public class IpcDataHandler(ILogger logger)
                 var resStatus = _converter.DeserializeJson<WhisperIpcStatus>(data);
                 if (resStatus.IsOk)
                 {
-                    _logger.Debug("Received status signal with state \"{data}\"", resStatus.Value.State);
+                    _logger.Debug("Received status signal with state \"{data}\"", resStatus.Value.Stage);
                     OnStatus(resStatus.Value);
                 }
                 return;
