@@ -320,7 +320,7 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
     }
     private void ModulesAnyApiReloadPresetBox()
     {
-        _logger.Verbose("Reloading Any-API Preset ComboBox"); //todo: wrong unapplied settings text
+        _logger.Verbose("Reloading Any-API Preset ComboBox");
         var presetNames = Config.Api_Presets.Select(x => x.Name).ToArray();
         ModulesAnyApiPresets.RefreshItems(presetNames, Config.Voice_Api_Preset);
         OptionsSelectedModuleSetUnappliedChange();

@@ -33,7 +33,7 @@
 								<Button Content="Restart" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsSelectedModuleRestartClicked" IsEnabled="{Binding OptionsSelectedModuleRestartEnabled}" ToolTip.Tip="Restarts the current recognition module"/>
 							</WrapPanel>
 
-							<TextBlock Theme="{StaticResource HTextBlockError}" Text="Currently Selected Module is Not Loaded, Please Press 'Reload'" IsVisible="{Binding OptionsSelectedModuleRestartNeeded}"/>
+							<TextBlock Theme="{StaticResource HTextBlockError}" Text="Some Changed Settings Require a Module Restart to Apply" IsVisible="{Binding OptionsSelectedModuleRestartNeeded}"/>
 
 							<TextBlock Theme="{StaticResource HTextBlockNote}" Text="{Binding OptionsSelectedModuleDescription}"/>
 						</StackPanel>
