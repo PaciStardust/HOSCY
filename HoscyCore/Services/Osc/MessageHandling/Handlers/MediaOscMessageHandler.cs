@@ -8,7 +8,7 @@ using Serilog;
 
 namespace HoscyCore.Services.Osc.MessageHandling.Handlers;
 
-[LoadIntoDiContainer(typeof(MediaOscMessageHandler))] //todo: [TEST]
+[LoadIntoDiContainer(typeof(MediaOscMessageHandler))]
 public class MediaOscMessageHandler
 (
     ConfigModel config,

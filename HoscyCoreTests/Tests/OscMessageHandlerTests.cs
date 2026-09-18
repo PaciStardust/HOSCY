@@ -360,9 +360,8 @@ public class OscMessageHandlerFunctionTests : TestBase<OscMessageHandlerFunction
     [Test]
     public void TestExternalInputMessageHandler()
     {
-        var config = new ConfigModel();
         var input = new MockInputService();
-        var handler = new ExternalInputOscMessageHandler(config, input, _logger);
+        var handler = new ExternalInputOscMessageHandler(_config, input, _logger);
 
         //Send inapplicable message
         var message = new OscMessage("/test", false);
@@ -547,6 +546,57 @@ public class OscMessageHandlerFunctionTests : TestBase<OscMessageHandlerFunction
         {
             Assert.That(res, Is.True);
             Assert.That(recognition.IsListening, Is.True);
+        }
+    }
+    #endregion
+
+    #region Media
+    [Test]
+    public void TestMediaMessageHandler()
+    {
+        var control = new MockMediaControlService();
+        var handler = new MediaOscMessageHandler(_config, control, _logger);
+
+        var msg = new OscMessage("/test/abc", true);
+        var res = handler.HandleMessage(msg);
+        Assert.That(res, Is.False);
+        AssertCallCounts(0, 0, 0, 0, 0);
+
+        msg = new(_config.Osc_Address_Media_Play, true);
+        res = handler.HandleMessage(msg);
+        Assert.That(res, Is.True);
+        AssertCallCounts(1, 0, 0, 0, 0);
+
+        msg = new(_config.Osc_Address_Media_Pause, true);
+        res = handler.HandleMessage(msg);
+        Assert.That(res, Is.True);
+        AssertCallCounts(1, 1, 0, 0, 0);
+
+        msg = new(_config.Osc_Address_Media_Toggle, true);
+        res = handler.HandleMessage(msg);
+        Assert.That(res, Is.True);
+        AssertCallCounts(1, 1, 1, 0, 0);
+
+        msg = new(_config.Osc_Address_Media_Next, true);
+        res = handler.HandleMessage(msg);
+        Assert.That(res, Is.True);
+        AssertCallCounts(1, 1, 1, 1, 0);
+
+        msg = new(_config.Osc_Address_Media_Previous, true);
+        res = handler.HandleMessage(msg);
+        Assert.That(res, Is.True);
+        AssertCallCounts(1, 1, 1, 1, 1);
+
+        void AssertCallCounts(int play, int pause, int playPause, int next, int previous)
+        {
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(control.CalledPlay, Is.EqualTo(play));
+                Assert.That(control.CalledPause, Is.EqualTo(pause));
+                Assert.That(control.CalledPlayPause, Is.EqualTo(playPause));
+                Assert.That(control.CalledNext, Is.EqualTo(next));
+                Assert.That(control.CalledPrevious, Is.EqualTo(previous));
+            }
         }
     }
     #endregion
