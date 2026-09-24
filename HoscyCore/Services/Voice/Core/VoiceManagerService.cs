@@ -36,7 +36,6 @@ public class VoiceManagerService
     private AudioPlaybackDeviceProxy? _playback = null;
     private CancellationTokenSource? _cts = null;
     private volatile bool _isPlaying = false;
-
     #endregion
 
     #region Startup
