@@ -3,7 +3,7 @@ using Serilog;
 
 namespace HoscyCore.Services.Audio;
 
-public class SwappableAudioPlaybackDevice
+public class SwappableAudioPlaybackDevice<T>
 (
     ILogger logger,
     IAudioService audio
@@ -33,15 +33,15 @@ public class SwappableAudioPlaybackDevice
     #endregion
 
     #region Playback
-    public async Task<Res> PlayAsync(float volume, Func<MemoryStream, CancellationToken, Task<Res>> writerTask)
+    public async Task<Res> PlayAsync(float volume, T passthrough, Func<MemoryStream, CancellationToken, T, Task<Res>> writerTask)
     {
-        var res = await ResC.WrapAsync(PlayAsyncInternal(volume, writerTask),
+        var res = await ResC.WrapAsync(PlayAsyncInternal(volume, passthrough, writerTask),
             "Failed to play audio", _logger);
         _deviceInUse = false;
         return res;
     }
 
-    private async Task<Res> PlayAsyncInternal(float volume, Func<MemoryStream, CancellationToken, Task<Res>> writerTask)
+    private async Task<Res> PlayAsyncInternal(float volume, T passthrough, Func<MemoryStream, CancellationToken, T, Task<Res>> writerTask)
     {
         if (_playback is null || !_playback.IsRunning)
         {
@@ -59,7 +59,7 @@ public class SwappableAudioPlaybackDevice
         }
 
         _logger.Verbose("Calling writer task");
-        var writerRes = await writerTask(_playback.Stream, _playbackCancellation.Token);
+        var writerRes = await writerTask(_playback.Stream, _playbackCancellation.Token, passthrough);
         if (!writerRes.IsOk)
         {
             _playback.ClearStream();
@@ -91,34 +91,13 @@ public class SwappableAudioPlaybackDevice
     #endregion
 
     #region Playback Setting
-    public void ForcePlaybackReload()
+    public Res SwapPlayback(string devName)
     {
-        _forcePlaybackReload = true;
-    }
-    private bool _forcePlaybackReload = false;
-    private string _lastErrorPlaybackName = string.Empty;
-    public Res SwapPlaybackIfNeeded(string devName)
-    {
-        if (string.IsNullOrEmpty(devName)) return ResC.Ok();
-        if (!_forcePlaybackReload)
-        {
-            var curDevName = _playback?.GetDeviceName();
-            if (curDevName is not null && curDevName == devName) return ResC.Ok();
-            if (devName == _lastErrorPlaybackName) return ResC.Ok();
-        }
-
+        _logger.Debug("Device swap initialized");
         var res = ClearPlayback(); 
         if (!res.IsOk) return res;
 
         res = CreatePlayback(devName);
-        if (!res.IsOk)
-        {
-            _lastErrorPlaybackName = devName;
-        }
-        else
-        {
-            _lastErrorPlaybackName = string.Empty;
-        }
         return res;
     }
 
@@ -143,13 +122,14 @@ public class SwappableAudioPlaybackDevice
         return ResC.Ok();
     }
 
-    private Res ClearPlayback()
+    public Res ClearPlayback()
     {
         if (_deviceInUse)
         {
             return ResC.FailLog("Unable to clear playback while in use", _logger);
         }
 
+        _logger.Debug("Clearing playback");
         var res = _playback?.Stop() ?? ResC.Ok();
         _playback?.Dispose();
         _playback = null;
