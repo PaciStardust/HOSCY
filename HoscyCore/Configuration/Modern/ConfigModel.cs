@@ -239,6 +239,25 @@ public class ConfigModel : ObservableObject
         set => SetProperty(ref _debug_LogExternalServices, value);
     }
     private bool _debug_LogExternalServices = false;
+
+    public const string DESC_Debug_InfoNoiseSpeakerName = "Speaker to play information sounds on";
+    public string Debug_InfoNoiseSpeakerName
+    {
+        get => _debug_InfoNoiseSpeakerName;
+        set => SetProperty(ref _debug_InfoNoiseSpeakerName, value);
+    }
+    private string _debug_InfoNoiseSpeakerName = string.Empty;
+
+    public const string DESC_Debug_InfoNoiseVolumePercent = "Volume of voice audio";
+    public const float MIN_Debug_InfoNoiseVolumePercent = 0;
+    public const float MAX_Debug_InfoNoiseVolumePercent = 1;
+    public float Debug_InfoNoiseVolumePercent
+    {
+        get => _debug_InfoNoiseVolumePercent;
+        set => SetProperty(ref _debug_InfoNoiseVolumePercent, 
+            value.MinMax(MIN_Debug_InfoNoiseVolumePercent, MAX_Debug_InfoNoiseVolumePercent));
+    }
+    private float _debug_InfoNoiseVolumePercent = 0.5f;
     #endregion
 
     #region External Input

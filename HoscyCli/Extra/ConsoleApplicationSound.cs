@@ -1,5 +1,6 @@
 using HoscyCore.Services.Audio;
 using HoscyCore.Services.Dependency;
+using HoscyCore.Utility;
 
 namespace HoscyCli.Extra;
 
@@ -14,5 +15,10 @@ public class ConsoleApplicationSound : IApplicationSound
     public void PlayNotificationSound()
     {
         Console.Beep();
+    }
+
+    public Res Refresh()
+    {
+        return ResC.Ok();
     }
 }
