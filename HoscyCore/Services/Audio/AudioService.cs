@@ -37,7 +37,7 @@ public class AudioService(ILogger logger, ConfigModel config)
         {
             return ResC.FailLog("Failed initializing audio engine", _logger, ex);
         }
-        return ResC.Ok();
+        return UpdateDeviceList();
     }
     protected override bool UseAlreadyStartedProtection => true;
 
@@ -58,14 +58,16 @@ public class AudioService(ILogger logger, ConfigModel config)
     #region Capture
     public Res<DeviceInfo[]> GetCaptureDevices()
     {  
-        var refRes = UpdateAudioDevices();
-        return refRes.IsOk
-            ? ResC.TOk(_audioEngine!.CaptureDevices)
-            : ResC.TFail<DeviceInfo[]>(refRes.Msg);
+        return _audioEngine is not null && !_audioEngine.IsDisposed 
+            ? ResC.TOk(_audioEngine.CaptureDevices)
+            : ResC.TFailLog<DeviceInfo[]>("Failed to retrieve capture devices, audio engine not available", _logger);
     }
 
     public Res<AudioCaptureDevice>? CreateCaptureDevice()
     {
+        var updateRes = UpdateDeviceList();
+        if (!updateRes.IsOk) return ResC.TFail<AudioCaptureDevice>(updateRes.Msg);
+
         var deviceInfos = GetCaptureDevices();
         if (!deviceInfos.IsOk) return ResC.TFail<AudioCaptureDevice>(deviceInfos.Msg);
 
@@ -102,14 +104,16 @@ public class AudioService(ILogger logger, ConfigModel config)
     #region Playback
     public Res<DeviceInfo[]> GetPlaybackDevices()
     {
-        var refRes = UpdateAudioDevices();
-        return refRes.IsOk
-            ? ResC.TOk(_audioEngine!.PlaybackDevices)
-            : ResC.TFail<DeviceInfo[]>(refRes.Msg);
+        return _audioEngine is not null && !_audioEngine.IsDisposed 
+            ? ResC.TOk(_audioEngine.PlaybackDevices)
+            : ResC.TFailLog<DeviceInfo[]>("Failed to retrieve playback devices, audio engine not available", _logger);
     }
 
     public Res<AudioPlaybackDeviceProxy>? CreatePlaybackDeviceProxy(string name, ILogger deviceLogger)
     {
+        var updateRes = UpdateDeviceList();
+        if (!updateRes.IsOk) return ResC.TFail<AudioPlaybackDeviceProxy>(updateRes.Msg);
+
         var deviceInfos = GetPlaybackDevices();
         if (!deviceInfos.IsOk) return ResC.TFail<AudioPlaybackDeviceProxy>(deviceInfos.Msg);
 
@@ -148,7 +152,7 @@ public class AudioService(ILogger logger, ConfigModel config)
         return devInfo.HasValue ? ResC.TOk(devInfo.Value) : null;
     }
 
-    private Res UpdateAudioDevices()
+    public Res UpdateDeviceList()
     {
         if (_audioEngine is null || _audioEngine.IsDisposed)
             return ResC.FailLog("Audio devices could not be updated, engine is not available", _logger);

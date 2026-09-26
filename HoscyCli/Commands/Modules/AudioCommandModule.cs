@@ -18,6 +18,9 @@ public class AudioCommandModule(IAudioService audio, ReflectPropEditCommandModul
     [SubCommandModule(["devices"], "Devices")]
     public Res CmdDevices()
     {
+        var updateRes = _audio.UpdateDeviceList();
+        if (!updateRes.IsOk) return updateRes;
+
         var micResult = _audio.GetCaptureDevices();
         if (!micResult.IsOk) return ResC.Fail(micResult.Msg);
 

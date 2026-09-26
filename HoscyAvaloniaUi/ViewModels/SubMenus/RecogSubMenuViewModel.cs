@@ -340,6 +340,13 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase
     }
     public override void OptionsMicrophoneRefreshClicked()
     {
+        var refresh = _audio.UpdateDeviceList();
+        if (!refresh.IsOk)
+        {
+            _popup.OpenNotification("Failed to Update Microphones", refresh.Msg.Message, true, true);
+            return;
+        }
+
         var mics = OptionsMicrophoneGetNames();
         if (!mics.IsOk)
         {

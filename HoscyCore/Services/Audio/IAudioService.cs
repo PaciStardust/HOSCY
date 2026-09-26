@@ -14,4 +14,6 @@ public interface IAudioService : IAutoStartStopService
     
     public Res<DeviceInfo[]> GetPlaybackDevices();
     public Res<AudioPlaybackDeviceProxy>? CreatePlaybackDeviceProxy(string name, ILogger deviceLogger);
+
+    public Res UpdateDeviceList();
 }

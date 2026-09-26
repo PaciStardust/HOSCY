@@ -278,6 +278,13 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
     }
     public override void OptionsSpeakerRefreshClicked()
     {
+        var refresh = _audio.UpdateDeviceList();
+        if (!refresh.IsOk)
+        {
+            _popup.OpenNotification("Failed to Update Speakers", refresh.Msg.Message, true, true);
+            return;
+        }
+
         var speakers = OptionsSpeakerGetNames();
         if (!speakers.IsOk)
         {

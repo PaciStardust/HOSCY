@@ -110,17 +110,10 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
     public override void UtilReloadDevices()
     {
         _logger.Information("Reloading audio devices");
-        var res1 = _audio.GetCaptureDevices();
+        var res1 = _audio.UpdateDeviceList();
         if (!res1.IsOk)
         {
-            _popupFactory.OpenNotification("Can Not Load Capture Devices", res1.Msg.Message, true, true);
-            return;
-        }
-
-        var res2 = _audio.GetPlaybackDevices();
-        if (!res2.IsOk)
-        {
-            _popupFactory.OpenNotification("Can Not Load Playback Devices", res2.Msg.Message, true, true);
+            _popupFactory.OpenNotification("Can Not Load Devices", res1.Msg.Message, true, true);
             return;
         }
         _logger.Information("Reloaded audio devices");

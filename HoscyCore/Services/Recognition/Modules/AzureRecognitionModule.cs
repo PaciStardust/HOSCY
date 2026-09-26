@@ -99,6 +99,9 @@ public class AzureRecognitionModule(ILogger logger, ConfigModel config, IAudioSe
 
     private Res<string> GetAudioDeviceName()
     {
+        var updateResult = _audio.UpdateDeviceList();
+        if (!updateResult.IsOk) return ResC.TFail<string>(updateResult.Msg);
+
         var deviceListResult = _audio.GetCaptureDevices();
         if (!deviceListResult.IsOk) return ResC.TFail<string>(deviceListResult.Msg);
 
