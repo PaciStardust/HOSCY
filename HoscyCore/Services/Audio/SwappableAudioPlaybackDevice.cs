@@ -1,18 +1,21 @@
 using HoscyCore.Utility;
 using Serilog;
+using SoundFlow.Structs;
 
 namespace HoscyCore.Services.Audio;
 
 public class SwappableAudioPlaybackDevice<T>
 (
     ILogger logger,
-    IAudioService audio
+    IAudioService audio,
+    AudioFormat? format = null
 )
     : IDisposable
 {
     #region Injects
     private readonly ILogger _logger = logger;
     private readonly IAudioService _audio = audio;
+    private readonly AudioFormat? _format = format;
     #endregion
 
     #region Vars
@@ -108,7 +111,7 @@ public class SwappableAudioPlaybackDevice<T>
         if (_playback is not null)
             return ResC.FailLog("Unable to create playback, it already exists", _logger);
 
-        var playback = _audio.CreatePlaybackDeviceProxy(devName, _logger);
+        var playback = _audio.CreatePlaybackDeviceProxy(devName, _logger, _format);
         if (playback is null)
         {
             return ResC.FailLog("No microphone could be located, no voice output will be possible", _logger, lvl: ResMsgLvl.Warning);

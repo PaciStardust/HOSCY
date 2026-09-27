@@ -13,7 +13,7 @@ public interface IAudioService : IAutoStartStopService
     public Res<AudioCaptureDevice>? CreateCaptureDevice();
     
     public Res<DeviceInfo[]> GetPlaybackDevices();
-    public Res<AudioPlaybackDeviceProxy>? CreatePlaybackDeviceProxy(string name, ILogger deviceLogger);
+    public Res<AudioPlaybackDeviceProxy>? CreatePlaybackDeviceProxy(string name, ILogger deviceLogger, AudioFormat? format = null);
 
     public Res UpdateDeviceList();
 }

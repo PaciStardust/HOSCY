@@ -109,7 +109,7 @@ public class AudioService(ILogger logger, ConfigModel config)
             : ResC.TFailLog<DeviceInfo[]>("Failed to retrieve playback devices, audio engine not available", _logger);
     }
 
-    public Res<AudioPlaybackDeviceProxy>? CreatePlaybackDeviceProxy(string name, ILogger deviceLogger)
+    public Res<AudioPlaybackDeviceProxy>? CreatePlaybackDeviceProxy(string name, ILogger deviceLogger, AudioFormat? format = null)
     {
         var updateRes = UpdateDeviceList();
         if (!updateRes.IsOk) return ResC.TFail<AudioPlaybackDeviceProxy>(updateRes.Msg);
@@ -121,7 +121,7 @@ public class AudioService(ILogger logger, ConfigModel config)
         if (deviceInfo is null) return null;
         if (!deviceInfo.IsOk) return ResC.TFail<AudioPlaybackDeviceProxy>(deviceInfo.Msg);
 
-        var format = new AudioFormat
+        format ??= new AudioFormat
         {
             SampleRate = 16000,
             Channels = 1,
@@ -131,7 +131,7 @@ public class AudioService(ILogger logger, ConfigModel config)
         _logger.Debug("Creating playback device for device {devName}", deviceInfo.Value.Name);
         return ResC.TWrap(() =>
         {
-            var device = _audioEngine!.InitializePlaybackDevice(deviceInfo.Value, format);
+            var device = _audioEngine!.InitializePlaybackDevice(deviceInfo.Value, format.Value);
             _logger.Debug("Created playback device for device {devName}", deviceInfo.Value.Name);
             return ResC.TOk(new AudioPlaybackDeviceProxy(device, deviceLogger));
         }, $"Failed initializing playback device {deviceInfo.Value.Name}", _logger);
