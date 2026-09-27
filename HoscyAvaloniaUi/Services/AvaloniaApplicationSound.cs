@@ -153,6 +153,11 @@ public class AvaloniaApplicationSound : StartStopServiceBase, IApplicationSound,
         return;
     }
 
+    public void PlayUnmuteSound()
+    {
+        return;
+    }
+
     public void PlayNotificationSound()
     {
         return;

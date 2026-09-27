@@ -91,7 +91,10 @@ public class RecognitionManagerService
         {
             if (_config.Recognition_Mute_PlaySound)
             {
-                _sound?.PlayMuteSound();
+                if (IsListening) 
+                    _sound?.PlayUnmuteSound();
+                else
+                    _sound?.PlayMuteSound();
             }
             _lastListeningState = IsListening;
         }
