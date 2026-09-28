@@ -26,4 +26,9 @@ public class ConsoleApplicationSound : IApplicationSound
     {
         return ResC.Ok();
     }
+
+    public bool IsRefreshNeeded()
+    {
+        return false;
+    }
 }

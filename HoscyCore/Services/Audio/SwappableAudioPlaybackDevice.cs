@@ -139,5 +139,10 @@ public class SwappableAudioPlaybackDevice<T>
 
         return res;
     }
+
+    public string? GetPlaybackName()
+    {
+        return _playback?.GetDeviceName();
+    }
     #endregion
 }

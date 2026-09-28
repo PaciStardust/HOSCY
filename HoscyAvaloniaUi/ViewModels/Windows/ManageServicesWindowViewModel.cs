@@ -225,7 +225,7 @@ public class ManageServicesWindowViewModelImpl : ManageServicesWindowViewModelBa
 
     public override void CopyClicked(IClipboard? clipboard)
     {
-        ClipboardUtil.CopyToClipboard(_logger, clipboard, SelectedError);
+        AvaloniaUtil.CopyToClipboard(_logger, clipboard, SelectedError);
     }
 }
 

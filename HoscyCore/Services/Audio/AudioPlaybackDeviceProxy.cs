@@ -14,7 +14,7 @@ public class AudioPlaybackDeviceProxy(AudioPlaybackDevice playback, ILogger logg
 
     public string? GetDeviceName()
     {
-        return _playback.Info?.Name ?? string.Empty;
+        return _playback.Info?.Name;
     }
 
     public Res Start()

@@ -17,6 +17,6 @@ public partial class SplashScreenViewModel : ViewModelBase
 
     public void CopyErrorClicked(IClipboard? clipboard)
     {
-        ClipboardUtil.CopyToClipboard(null, clipboard, Progress);
+        AvaloniaUtil.CopyToClipboard(null, clipboard, Progress);
     }
 }

@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using HoscyAvaloniaUi.ViewModels.SubMenus;
 
 namespace HoscyAvaloniaUi.Views.SubMenus;
@@ -8,6 +9,28 @@ public partial class DebugSubMenu : UserControl
     public DebugSubMenu()
     {
         InitializeComponent();
+    }
+
+    private void InfoSpeakerChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        (DataContext as DebugSubMenuViewModelBase)?.InfoSpeakerChanged();
+        e.Handled = true;
+    }
+    private void InfoSpeakerRefreshClicked(object? sender, RoutedEventArgs e)
+    {
+        (DataContext as DebugSubMenuViewModelBase)?.InfoSpeakerRefreshClicked();
+        e.Handled = true;
+    }
+    private void InfoSpeakerApplyClicked(object? sender, RoutedEventArgs e)
+    {
+        (DataContext as DebugSubMenuViewModelBase)?.InfoSpeakerApplyClicked();
+        e.Handled = true;
+    }
+
+    private void InfoSpeakerVolumeChanged(object? sender, Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    {
+        (DataContext as DebugSubMenuViewModelBase)?.InfoSpeakerVolumeChanged();
+        e.Handled = true;
     }
 
     private void LogLevelChanged(object? sender, SelectionChangedEventArgs e)
@@ -35,11 +58,6 @@ public partial class DebugSubMenu : UserControl
     private void UtilSaveConfig(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         (DataContext as DebugSubMenuViewModelBase)?.UtilSaveConfig();
-        e.Handled = true;
-    }
-    private void UtilReloadDevices(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        (DataContext as DebugSubMenuViewModelBase)?.UtilReloadDevices();
         e.Handled = true;
     }
     private void UtilManageServices(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

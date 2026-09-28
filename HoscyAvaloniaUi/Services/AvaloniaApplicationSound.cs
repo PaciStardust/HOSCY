@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using HoscyAvaloniaUi.Utility;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Audio;
 using HoscyCore.Services.Core;
@@ -20,7 +20,7 @@ public class AvaloniaApplicationSound : StartStopServiceBase, IApplicationSound,
     private readonly ConfigModel _config;
     private readonly IAudioService _audio;
     private readonly IBackToFrontNotifyService _notify;
-    private readonly SwappableAudioPlaybackDevice<byte[]> _playback;
+    private readonly SwappableAudioPlaybackDevice<string> _playback;
 
     public AvaloniaApplicationSound(ILogger logger, ConfigModel config, IAudioService audio, IBackToFrontNotifyService notify) 
         : base(logger.ForContext<AvaloniaApplicationSound>())
@@ -36,7 +36,7 @@ public class AvaloniaApplicationSound : StartStopServiceBase, IApplicationSound,
     #region Vars
     private Task? _processingTask = null;
     private volatile bool _shouldTaskRun = true;
-    private byte[] _nextToProcess = [];
+    private string _nextToProcess = string.Empty;
     private readonly Lock _nextToProcessLock = new();
     private bool _deviceReloadNeeded = true;
     #endregion
@@ -101,7 +101,7 @@ public class AvaloniaApplicationSound : StartStopServiceBase, IApplicationSound,
                     SetFaultLogNotify(swapRes.Msg, "Failed to load speaker for system audio", _notify, _logger);
                     lock(_nextToProcessLock)
                     {
-                        _nextToProcess = [];
+                        _nextToProcess = string.Empty;
                     }
                 }
             }
@@ -114,8 +114,8 @@ public class AvaloniaApplicationSound : StartStopServiceBase, IApplicationSound,
                 continue;
             }
 
-            var toProcess = _nextToProcess.ToArray();
-            _nextToProcess = [];
+            var toProcess = _nextToProcess;
+            _nextToProcess = string.Empty;
             _nextToProcessLock.Exit();
 
             var playbackRes = await _playback.PlayAsync(_config.Debug_InfoNoiseVolumePercent, toProcess, WriteNextToProcess);
@@ -126,15 +126,19 @@ public class AvaloniaApplicationSound : StartStopServiceBase, IApplicationSound,
             }
         }
     }
-    private static Task<Res> WriteNextToProcess(MemoryStream stream, CancellationToken _, byte[] toProcess)
+    private Task<Res> WriteNextToProcess(MemoryStream stream, CancellationToken _, string toProcess)
     {
-        stream.Write(toProcess);
+        var streamRes = AvaloniaUtil.GetAvaloniaResource(toProcess, _logger);
+        if (!streamRes.IsOk) return Task.FromResult(ResC.Fail(streamRes.Msg));
+        var sourceStream = streamRes.Value;
+        sourceStream.Position = 0;
+        sourceStream.CopyTo(stream);
         return Task.FromResult(ResC.Ok());
     }
     #endregion
 
     #region Writing
-    private void SetNextAudio(byte[] newAudio)
+    private void SetNextAudio(string resource)
     {
         var res = _playback.CancelCurrentAudio();
         if (!res.IsOk)
@@ -144,23 +148,30 @@ public class AvaloniaApplicationSound : StartStopServiceBase, IApplicationSound,
         }
         lock(_nextToProcessLock)
         {
-            _nextToProcess = newAudio;
+            _nextToProcess = resource;
         }
     }
 
     public void PlayMuteSound()
     {
-        return;
+        SetNextAudio("avares://HoscyAvaloniaUi/Assets/Mute.wav");
     }
 
     public void PlayUnmuteSound()
     {
-        return;
+        SetNextAudio("avares://HoscyAvaloniaUi/Assets/Unmute.wav");
     }
 
-    public void PlayNotificationSound()
+    public void PlayNotificationSound() //todo: [FEAT++] Needs its own file
     {
-        return;
+        PlayMuteSound();
+    }
+
+    public bool IsRefreshNeeded()
+    {
+        if (_deviceReloadNeeded) return false;
+        var devName = _playback.GetPlaybackName();
+        return devName is null || devName != _config.Debug_InfoNoiseSpeakerName;
     }
     #endregion
 }

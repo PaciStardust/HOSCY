@@ -29,7 +29,7 @@ public class NotificationWindowViewModelImpl(ILogger logger) : NotificationWindo
     private readonly ILogger _logger = logger.ForContext<NotificationWindowViewModelImpl>();
     public override void OnClipboardClick(IClipboard? clipboard)
     {
-        ClipboardUtil.CopyToClipboard(_logger, clipboard, Notification);
+        AvaloniaUtil.CopyToClipboard(_logger, clipboard, Notification);
     }
 
     public override void OnGithubClick()

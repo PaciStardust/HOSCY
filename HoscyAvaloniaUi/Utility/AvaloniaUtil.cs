@@ -1,10 +1,12 @@
+using System.IO;
 using Avalonia.Input.Platform;
+using Avalonia.Platform;
 using HoscyCore.Utility;
 using Serilog;
 
 namespace HoscyAvaloniaUi.Utility;
 
-public static class ClipboardUtil
+public static class AvaloniaUtil //todo: audio quality for API/piper, use swappable for voice, backup device, empty device, missing device in dropdown
 {
     public static void CopyToClipboard(ILogger? logger, IClipboard? clipboard, string text)
     {
@@ -21,5 +23,12 @@ public static class ClipboardUtil
         {
             logger?.Debug("Clipboard copy request succeeded");
         }
+    }
+
+    public static Res<Stream> GetAvaloniaResource(string path, ILogger logger)
+    {
+        logger.Debug("Retrieving avalonia resource \"{path}\"", path);
+        return ResC.TWrapR(() => AssetLoader.Open(new(path)),
+            $"Failed to retrieve avalonia resource \"{path}\"", logger);
     }
 }
