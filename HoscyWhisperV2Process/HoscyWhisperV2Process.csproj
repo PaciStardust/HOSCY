@@ -39,10 +39,10 @@
 
   <ItemGroup>
     <PackageReference Include="devnull.WebRtcVadSharp" Version="1.4.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.5-beta1" />
-    <PackageReference Include="Serilog" Version="4.3.2-dev-02419" />
+    <PackageReference Include="Newtonsoft.Json" Version="14.0.1-beta2" />
+    <PackageReference Include="Serilog" Version="4.4.1-dev-02447" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
-    <PackageReference Include="Whisper.net.AllRuntimes" Version="1.9.1-preview1" />
+    <PackageReference Include="Whisper.net.AllRuntimes" Version="1.9.2-preview1" />
   </ItemGroup>
 
   <ItemGroup>

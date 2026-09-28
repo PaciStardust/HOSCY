@@ -3,7 +3,7 @@ using HoscyCore.Utility;
 
 namespace HoscyCore.Services.Audio;
 
-public interface IApplicationSound : IService //todo: fix missing sound
+public interface IApplicationSound : IService
 {
     public void PlayMuteSound();
     public void PlayUnmuteSound();
