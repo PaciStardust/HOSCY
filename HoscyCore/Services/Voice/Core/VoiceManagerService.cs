@@ -9,47 +9,55 @@ using Serilog;
 
 namespace HoscyCore.Services.Voice.Core;
 
-[PrototypeLoadIntoDiContainer(typeof(IVoiceManagerService))] //todo: [TEST++] Does TTS work?
-public class VoiceManagerService
-(
-    IBackToFrontNotifyService notify,
-    ILogger logger,
-    IContainerBulkLoader<IVoiceModuleStartInfo> infoLoader,
-    IContainerBulkLoader<IVoiceModule> moduleLoader,
-    IAudioService audio,
-    ConfigModel config
-) 
-    : SoloModuleManagerBase<IVoiceModuleStartInfo, IVoiceModule>
-        (notify, logger.ForContext<VoiceManagerService>(), infoLoader, moduleLoader),
-    IVoiceManagerService
+[PrototypeLoadIntoDiContainer(typeof(IVoiceManagerService))]
+public class VoiceManagerService 
+    : SoloModuleManagerBase<IVoiceModuleStartInfo, IVoiceModule>, IVoiceManagerService
 {
     #region Injects
-    private readonly IAudioService _audio = audio;
-    private readonly ConfigModel _config = config;
+    private readonly IAudioService _audio;
+    private readonly ConfigModel _config;
+
+    public VoiceManagerService
+    (
+        IBackToFrontNotifyService notify,
+        ILogger logger,
+        IContainerBulkLoader<IVoiceModuleStartInfo> infoLoader,
+        IContainerBulkLoader<IVoiceModule> moduleLoader,
+        IAudioService audio,
+        ConfigModel config
+    )
+        :base(notify, logger.ForContext<VoiceManagerService>(), infoLoader, moduleLoader)
+    {
+        _config = config;
+        _audio = audio;
+        
+        _playback = new(_logger, _audio);
+    }
     #endregion
 
     #region Vars
+    private SwappableAudioPlaybackDevice<string> _playback;
     private Task? _processingTask = null;
-
-    private ConcurrentQueue<string>? _toProcess = null;
-
-    private AudioPlaybackDeviceProxy? _playback = null;
-    private CancellationTokenSource? _cts = null;
-    private volatile bool _isPlaying = false;
+    private volatile bool _shouldTaskRun = true;
+    private ConcurrentQueue<string> _toProcess = [];
+    private volatile bool _deviceReloadNeeded = true;
     #endregion
 
     #region Startup
     protected override bool IsStarted()
-        => base.IsStarted() || _toProcess is not null || _processingTask is not null;
+        => base.IsStarted() || _processingTask is not null;
     protected override bool IsProcessing()
-        => base.IsProcessing() && _toProcess is not null && _playback is not null && _playback.IsRunning || _processingTask is not null;
+        => base.IsProcessing() && _playback.IsPlaybackRunning;
 
     protected override Res StartForService()
     {
-        var createRes = CreateCurrentPlayback();
-        if (!createRes.IsOk) return createRes;
+        _playback.Dispose();
+        _playback = new(_logger, _audio);
 
-        _toProcess = [];
+        _deviceReloadNeeded = true;
+        _shouldTaskRun = true;
+        _toProcess.Clear();
+
         _processingTask = Task.Run(RunProcessingLoop);
 
         return base.StartForService();
@@ -59,14 +67,17 @@ public class VoiceManagerService
     {
         List<ResMsg> messages = [];
 
-        ClearCurrentPlayback().IfFail(messages.Add);
-
-        Clear();
-        _toProcess = null;
+        _shouldTaskRun = false;
+        _playback.CancelCurrentAudio().IfFail(messages.Add);
 
         LaunchUtils.SafelyWaitForTaskWithTimeoutAndReturnException(_processingTask, 500,
             new StartStopServiceException("Unable to stop processing loop"), _logger)
             .IfFail(messages.Add);
+
+        _playback.ClearPlayback().IfFail(messages.Add);
+
+        _deviceReloadNeeded = false;
+        _toProcess.Clear();
             
         base.StopForService().IfFail(messages.Add);
 
@@ -79,12 +90,6 @@ public class VoiceManagerService
         _processingTask = null;
 
         _playback?.Dispose();
-        _playback = null;
-
-        _toProcess = null;
-
-        _cts?.Dispose();
-        _cts = null;
 
         base.DisposeCleanup();
     }
@@ -108,20 +113,11 @@ public class VoiceManagerService
     protected override bool ShouldStartModelOnStartup()
         => _config.Voice_AutoStart;
     
-    public void Clear()
+    public Res Clear()
     {
         _logger.Debug("Clearing voice queue");
         _toProcess?.Clear();
-    }
-
-    public Res ChangePlayback(string name)
-    {
-        List<ResMsg> messages = [];
-
-        ClearCurrentPlayback().IfFail(messages.Add);
-        CreateCurrentPlayback().IfFail(messages.Add);
-
-        return messages.Count > 0 ? ResC.FailM(messages) : ResC.Ok();
+        return _playback.CancelCurrentAudio();
     }
     #endregion
 
@@ -149,101 +145,62 @@ public class VoiceManagerService
         return ResC.Ok();
     }
 
-    private Res CreateCurrentPlayback()
-    {
-        _logger.Debug("Creating current playback");
-
-        if (_cts is not null || _playback is not null)
-            return ResC.FailLog("Unable to create playback, it already exists", _logger);
-
-        var playback = _audio.CreatePlaybackDeviceProxy(_config.Voice_CurrentSpeakerName, _logger);
-        if (playback is null)
-        {
-            SetFaultLogNotify(ResMsg.Wrn("No microphone could be located, no voice output will be possible"), "No Voice Possible", _notify, _logger);
-            return ResC.Ok();
-        }
-        if (!playback.IsOk) return ResC.Fail(playback.Msg);
-        _playback = playback.Value;
-
-        var playbackOn = _playback.Start();
-        if (!playbackOn.IsOk) return playbackOn;
-
-        _cts = new();
-
-        return ResC.Ok();
-    }
-
-    private Res ClearCurrentPlayback()
-    {
-        List<ResMsg> playbackErrors = [];
-                
-        _logger.Debug("Clearing current playback");
-        if (_cts is not null)
-        {
-            _logger.Debug("Stopping current playing if needed");
-            _cts.Cancel();
-            if (!OtherUtils.WaitWhile(() => _isPlaying, 20_000, 10))
-            {
-                _isPlaying = false;
-                var res = ResC.FailLog("Playback failed to stop after 30s", _logger, lvl: ResMsgLvl.Warning);
-                playbackErrors.Add(res.Msg!);
-            }
-            _cts = null;
-        }
-
-        _playback?.Stop().IfFail(playbackErrors.Add);
-        _playback?.Dispose();
-        _playback = null;
-
-        return playbackErrors.Count > 0 ? ResC.FailM(playbackErrors) : ResC.Ok();
-    }
-
     public string? GetPlaybackName()
     {
-        return _playback?.GetDeviceName();
+        return _playback.GetPlaybackName();
+    }
+
+    public void RefreshPlayback()
+    {
+        _logger.Debug("Set flag to refresh audio device");
+        _deviceReloadNeeded = true;
+    }
+
+    public bool IsPlaybackRefreshNeeded()
+    {
+        if (_deviceReloadNeeded) return false;
+        var devName = _playback.GetPlaybackName();
+        return devName is null || devName != _config.Voice_CurrentSpeakerName;
     }
 
     private async Task RunProcessingLoop()
     {
-        while (_toProcess is not null)
+        while (_shouldTaskRun)
         {
-            _isPlaying = false;
-            if (_toProcess.IsEmpty || (_cts?.IsCancellationRequested ?? true) || !_toProcess.TryDequeue(out var voiceString))
+            if (_deviceReloadNeeded)
+            {
+                _deviceReloadNeeded = false;
+                var swapRes = _playback.SwapPlayback(_config.Voice_CurrentSpeakerName);
+                if (!swapRes.IsOk)
+                {
+                    SetFaultLogNotify(swapRes.Msg, "Failed to load speaker for voice audio", _notify, _logger);
+                    _toProcess.Clear();
+                }
+            }
+
+            if (_toProcess.Count == 0 || !_toProcess.TryDequeue(out var voiceString))
             {
                 await Task.Delay(25);
                 continue;
             }
 
-            if (_currentModule is null || _playback is null)
-            {
-                _logger.Warning("Component missing for processing, performing clear");
-                Clear();
-                continue;
-            }
-
-            _isPlaying = true;
-            _playback.ClearStream();
-            var voiceRes = await ResC.WrapAsync(_currentModule.CreateAudio(voiceString, _playback.Stream, _cts.Token), 
-                "Failed to create audio", _logger);
-            if (!voiceRes.IsOk)
-            {
-                _playback.ClearStream();
-                _isPlaying = false;
-                SetFaultLogNotify(voiceRes.Msg, "Failed to play audio", _notify, _logger);
-                await Task.Delay(10000);
-                continue;
-            }
-
-            var playbackRes = await _playback.PlayAsync(_config.Voice_AudioVolumePercent, _cts.Token);
-            _playback.ClearStream();
-            _isPlaying = false;
-                
+            var playbackRes = await _playback.PlayAsync(_config.Voice_AudioVolumePercent, voiceString, WriteAudio);
             if (!playbackRes.IsOk)
             {
                 SetFaultLogNotify(playbackRes.Msg, "Failed to play audio", _notify, _logger);
-                await Task.Delay(10000);
+                await Task.Delay(10_000);
             }
         }
+    }
+
+    private async Task<Res> WriteAudio(MemoryStream stream, CancellationToken ct, string voiceString)
+    {
+        if (_currentModule is null) return ResC.Ok();
+
+        var voiceRes = await ResC.WrapAsync(_currentModule.CreateAudio(voiceString, stream, ct), 
+                "Failed to create audio", _logger);
+
+        return voiceRes;
     }
     #endregion
 }

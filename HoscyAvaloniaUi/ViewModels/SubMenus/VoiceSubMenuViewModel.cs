@@ -301,19 +301,12 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
     }
     public override void OptionsSpeakerApplyClicked()
     {
-        var res = _voice.ChangePlayback(Config.Voice_CurrentSpeakerName);
-        res.IfFail(x => _popup.OpenNotification("Failed to Apply Speaker", x.Message, true, true));
+        _voice.RefreshPlayback();
         OptionsSpeakerUpdateApplyNeeded();
     }
     private void OptionsSpeakerUpdateApplyNeeded()
     {
-        var current = _voice.GetPlaybackName();
-        if (current is null)
-        {
-            OptionsSpeakerApplyNeeded = true;
-            return;
-        }
-        OptionsSpeakerApplyNeeded = current != Config.Voice_CurrentSpeakerName;
+        OptionsSpeakerApplyNeeded = _voice.IsPlaybackRefreshNeeded();
     }
     public override void OptionsSpeakerVolumeChanged()
     {
