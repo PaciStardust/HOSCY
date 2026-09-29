@@ -14,7 +14,7 @@ using Serilog;
 namespace HoscyAvaloniaUi.Services;
 
 [LoadIntoDiContainer(typeof(IApplicationSound))]
-public class AvaloniaApplicationSound : StartStopServiceBase, IApplicationSound, IAutoStartStopService
+public class AvaloniaApplicationSound : StartStopServiceBase, IApplicationSound, IAutoStartStopService //todo: IN/Out at same time breaks, add warning, poststart error not handled correctly?
 {
     #region Injects
     private readonly ConfigModel _config;
@@ -83,7 +83,7 @@ public class AvaloniaApplicationSound : StartStopServiceBase, IApplicationSound,
     #region Playback
     public Res Refresh()
     {
-        _logger.Debug("Set flag to refresh audio device");
+        _logger.Debug("Set flag to refresh audio device"); //todo: does nothing at times?
         _deviceReloadNeeded = true;
         return ResC.Ok();
     }

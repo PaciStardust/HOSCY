@@ -205,7 +205,7 @@ SoloModuleManagerBase<TModuleStartInfo, TModule>
 
         if (!resPost.IsOk)
         {
-            UnsubscribeFromModuleEvents(module);
+            UnsubscribeFromModuleEvents(module); //todo: No cleanup done???
             _logger.Error("Failed to start module with name \"{moduleName}\" and type \"{moduleType}\" ({result})",
                 info.Name, info.ModuleType.FullName, res);
             return ResC.FailM(resPre.Msg, res.Msg, resPost.Msg);
