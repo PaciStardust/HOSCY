@@ -222,21 +222,6 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
         }
     }
 
-    private Task OnSendTaskComplete(Task<Res<string>> task, string actionForLog, string presetName, string contents) //todo: why is this here?
-    {
-        if (task.IsFaulted)
-        {
-            var msg = ResC.FailLog($"Failed to send {actionForLog} \"{contents}\" via \"{presetName}\" for unknown reason", _logger, task.Exception);
-            SetFault(msg.Msg!);
-        }
-        else if (task.IsCompletedSuccessfully && task.Result is not null && !task.Result.IsOk)
-        {
-            _logger.Warning($"Failed to send {actionForLog} \"{contents}\" via \"{presetName}\" with result: {task.Result.Msg}");
-            SetFault(task.Result.Msg);
-        } 
-        return Task.CompletedTask;
-    }
-
     private void InitStream(MemoryStream? stream)
     {
         stream?.SetLength(0);
