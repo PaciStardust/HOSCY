@@ -139,11 +139,11 @@ public class PiperServerVoiceModule
 
     private Res<HttpRequestMessage> CreateMessage(string text)
     {
-        List<string> args = [$"\"text\": \"{Regex.Escape(text)}\""];
+        List<string> args = [$"\"text\": \"{System.Web.HttpUtility.JavaScriptStringEncode(text)}\""];
         
         if(!string.IsNullOrWhiteSpace(_config.Voice_Piper_Request_Voice))
         {
-            args.Add($"\"voice\": \"{Regex.Escape(_config.Voice_Piper_Request_Voice)}\"");
+            args.Add($"\"voice\": \"{System.Web.HttpUtility.JavaScriptStringEncode(_config.Voice_Piper_Request_Voice)}\"");
         }
 
         if (_config.Voice_Piper_Request_NoiseScale >= 0)
