@@ -20,7 +20,6 @@ public class AvaloniaApplicationSound : StartStopServiceBase, IApplicationSound,
     private readonly ConfigModel _config;
     private readonly IAudioService _audio;
     private readonly IBackToFrontNotifyService _notify;
-    private readonly SwappableAudioPlaybackDevice<string> _playback;
 
     public AvaloniaApplicationSound(ILogger logger, ConfigModel config, IAudioService audio, IBackToFrontNotifyService notify) 
         : base(logger.ForContext<AvaloniaApplicationSound>())
@@ -34,23 +33,29 @@ public class AvaloniaApplicationSound : StartStopServiceBase, IApplicationSound,
     #endregion
 
     #region Vars
+    private SwappableAudioPlaybackDevice<string> _playback;
     private Task? _processingTask = null;
     private volatile bool _shouldTaskRun = true;
     private string _nextToProcess = string.Empty;
     private readonly Lock _nextToProcessLock = new();
-    private bool _deviceReloadNeeded = true;
+    private volatile bool _deviceReloadNeeded = true;
     #endregion
 
     #region Startup
     protected override bool IsStarted()
         => _processingTask is not null;
     protected override bool IsProcessing()
-        => IsStarted() && _playback is not null && _playback.IsPlaybackRunning;
+        => IsStarted() && _playback.IsPlaybackRunning;
     protected override bool UseAlreadyStartedProtection => true;
 
     protected override Res StartForService()
     {
-        Interlocked.Exchange(ref _shouldTaskRun, true);
+        _playback.Dispose();
+        _playback = new(_logger, _audio);
+
+        _nextToProcess = string.Empty;
+        _deviceReloadNeeded = true;
+        _shouldTaskRun = true;
         _processingTask = Task.Run(RunProcessingLoop);
         return ResC.Ok();
     }
@@ -59,14 +64,17 @@ public class AvaloniaApplicationSound : StartStopServiceBase, IApplicationSound,
     {
         List<ResMsg> messages = [];
 
-        Interlocked.Exchange(ref _shouldTaskRun, false);
+        _shouldTaskRun = false;
         _playback.CancelCurrentAudio().IfFail(messages.Add);
 
         LaunchUtils.SafelyWaitForTaskWithTimeoutAndReturnException(_processingTask, 500,
             new StartStopServiceException("Unable to stop processing loop"), _logger)
             .IfFail(messages.Add);
 
-        _playback.CancelCurrentAudio().IfFail(messages.Add);
+        _playback.ClearPlayback().IfFail(messages.Add);
+
+        _nextToProcess = string.Empty;
+        _deviceReloadNeeded = false;
 
         return messages.Count == 0 ? ResC.Ok() : ResC.FailM(messages);
     }
@@ -83,7 +91,7 @@ public class AvaloniaApplicationSound : StartStopServiceBase, IApplicationSound,
     #region Playback
     public Res Refresh()
     {
-        _logger.Debug("Set flag to refresh audio device"); //todo: does nothing at times?
+        _logger.Debug("Set flag to refresh audio device");
         _deviceReloadNeeded = true;
         return ResC.Ok();
     }
