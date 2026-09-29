@@ -37,7 +37,7 @@ public class VoskRecognitionModule(ILogger logger, ConfigModel config, IAudioSer
     private AudioCaptureDeviceProxy? _mic = null;
     private VoskRecognizer? _rec = null;
     private Thread? _voskThread = null;
-    private bool _shouldThreadStop = false;
+    private volatile bool _shouldThreadStop = false;
     #endregion
 
     #region Start / Stop

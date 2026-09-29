@@ -21,7 +21,7 @@ public class VrcTextboxOutputHandlerStartInfo(ConfigModel config) : IOutputHandl
         => _config.Output_VrcTxt_Enabled;
 }
 
-[LoadIntoDiContainer(typeof(VrcTextboxOutputHandler), Lifetime.Transient)]
+[LoadIntoDiContainer(typeof(VrcTextboxOutputHandler), Lifetime.Transient)] //todo: better thread safety
 public class VrcTextboxOutputHandler(ILogger logger, ConfigModel config, IOscSendService sender)
     : OutputHandlerBase(logger.ForContext<VrcTextboxOutputHandler>())
 {

@@ -8,8 +8,8 @@ public abstract class IpcPipeBase<T> : IDisposable where T : PipeStream
     protected readonly T _ipcPipe;
     protected readonly Thread _ipcThread;
     protected readonly ILogger _logger;
-    protected bool _isDisposed = false;
-    protected bool _shouldThreadRun = false;
+    protected volatile bool _isDisposed = false;
+    protected volatile bool _shouldThreadRun = false;
 
     public IpcPipeBase(ILogger logger)
     {

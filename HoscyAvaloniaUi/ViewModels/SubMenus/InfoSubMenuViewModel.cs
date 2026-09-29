@@ -9,7 +9,7 @@ using HoscyCore.Services.Output.Core;
 using HoscyCore.Services.Recognition.Core;
 using Serilog;
 
-namespace HoscyAvaloniaUi.ViewModels.SubMenus;
+namespace HoscyAvaloniaUi.ViewModels.SubMenus; //todo: "Starting" text
 
 public abstract partial class InfoSubMenuViewModelBase : ViewModelBase
 {

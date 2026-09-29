@@ -12,7 +12,7 @@ using Tmds.DBus;
 namespace HoscyCore.Services.Media.Backends;
 
 [PrototypeLoadIntoDiContainer(typeof(LinuxMprisMediaBackendStartInfo), Lifetime.Singleton)]
-public class LinuxMprisMediaBackendStartInfo : IMediaBackendStartInfo
+public class LinuxMprisMediaBackendStartInfo : IMediaBackendStartInfo //todo: Thread safety
 {
     public MediaBackendConfigFlags ConfigFlags => MediaBackendConfigFlags.LinuxMpris;
     public string Name => "Linux MPRIS";
@@ -34,7 +34,7 @@ public class LinuxMprisMediaBackend(ILogger logger, ConfigModel config) : MediaB
     private EndpointCache? _currentEndpoint = null;
 
     private Task? _refreshTask = null;
-    private bool _stopRefreshTask = false;
+    private volatile bool _stopRefreshTask = false;
     #endregion
 
     #region Start / Stop

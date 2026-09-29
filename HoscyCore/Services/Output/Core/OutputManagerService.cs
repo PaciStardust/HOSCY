@@ -521,7 +521,7 @@ public class OutputManagerService
     #endregion
 
     #region Handlers => Send Post-Queue
-    public async Task HandleMessagePostQueue(string contents, string source, OutputSettingsFlags settings)
+    public async Task HandleMessagePostQueue(string contents, string source, OutputSettingsFlags settings) //todo: this needs thread safety
     {
         var compatiblePreprocessors = _preprocessors.Where(x => IsPreprocessorCompatible(x, settings)).ToArray();
         var preProcessResult = Preprocess(ref contents, compatiblePreprocessors);
