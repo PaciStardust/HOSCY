@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using HoscyAvaloniaUi.Services;
@@ -9,7 +10,7 @@ using HoscyCore.Services.Output.Core;
 using HoscyCore.Services.Recognition.Core;
 using Serilog;
 
-namespace HoscyAvaloniaUi.ViewModels.SubMenus; //todo: "Starting" text
+namespace HoscyAvaloniaUi.ViewModels.SubMenus;
 
 public abstract partial class InfoSubMenuViewModelBase : ViewModelBase
 {
@@ -36,7 +37,7 @@ public abstract partial class InfoSubMenuViewModelBase : ViewModelBase
 
     public virtual void ButtonToggleListeningClicked() { }
     public virtual void ButtonClearClicked() { }
-    public virtual void ButtonStartStopClicked() { }
+    public virtual Task ButtonStartStopClicked() { return Task.CompletedTask; }
 }
 
 [PrototypeLoadIntoDiContainer(typeof(InfoSubMenuViewModelBase), Lifetime.Transient)]
@@ -90,19 +91,23 @@ public class InfoSubMenuViewModelImpl : InfoSubMenuViewModelBase
             : (_uiHelper.ValidBrush, "Running");
     }
 
-    public override void ButtonStartStopClicked()
+    public override async Task ButtonStartStopClicked()
     {
         if (_recognition.GetCurrentModuleStatus() == ServiceStatus.Stopped)
         {
             _logger.Information("Starting recognition module");
-            ListeningStatusText = "Starting";
+            ActiveStatusText = "Starting";
+            ActiveStatusBrush = _uiHelper.FrontBrush;
+            await Task.Run(async () => await Task.Delay(25));
             var res = _recognition.StartModule();
             res.IfFail(x => _popup.OpenNotification("Failed to Start Recognition Module", x.Message, true, true));
         } 
         else
         {
             _logger.Information("Stopping ecognition module");
-            ListeningStatusText = "Stopping";
+            ActiveStatusText = "Stopping";
+            ActiveStatusBrush = _uiHelper.FrontBrush;
+            await Task.Run(async () => await Task.Delay(25));
             var res = _recognition.StopModule();
             res.IfFail(x => _popup.OpenNotification("Failed to Stop Recognition Module", x.Message, true, true));
         }

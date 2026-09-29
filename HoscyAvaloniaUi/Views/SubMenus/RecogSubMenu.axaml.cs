@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using HoscyAvaloniaUi.ViewModels.SubMenus;
@@ -16,9 +17,10 @@ public partial class RecogSubMenu : UserControl
         (DataContext as RecogSubMenuViewModelBase)?.OptionsSelectedModuleChanged();
         e.Handled = true;
     }
-    private void OptionsSelectedModuleStartStopClicked(object? sender, RoutedEventArgs e)
+    private async void OptionsSelectedModuleStartStopClicked(object? sender, RoutedEventArgs e)
     {
-        (DataContext as RecogSubMenuViewModelBase)?.OptionsSelectedModuleStartStopClicked();
+        if (DataContext is RecogSubMenuViewModelBase rBase)
+            await rBase.OptionsSelectedModuleStartStopClicked();
         e.Handled = true;
     }
     private void OptionsSelectedModuleRefreshClicked(object? sender, RoutedEventArgs e)

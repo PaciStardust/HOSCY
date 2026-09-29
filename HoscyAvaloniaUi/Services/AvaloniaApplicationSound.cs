@@ -79,7 +79,7 @@ public class AvaloniaApplicationSound : StartStopServiceBase, IApplicationSound,
         return messages.Count == 0 ? ResC.Ok() : ResC.FailM(messages);
     }
 
-    protected override void DisposeCleanup() //todo: Fix volatile, threads, tasks, thread safety in other areas
+    protected override void DisposeCleanup()
     {
         _processingTask?.Dispose();
         _processingTask = null;

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using HoscyAvaloniaUi.ViewModels.SubMenus;
@@ -16,9 +17,10 @@ public partial class InfoSubMenu : UserControl
         (DataContext as InfoSubMenuViewModelBase)?.ButtonClearClicked();
         args.Handled = true;
     }
-    private void ButtonStartStopClicked(object? sender, RoutedEventArgs args)
+    private async void ButtonStartStopClicked(object? sender, RoutedEventArgs args)
     {
-        (DataContext as InfoSubMenuViewModelBase)?.ButtonStartStopClicked();
+        if (DataContext is InfoSubMenuViewModelBase iBase)
+            await iBase.ButtonStartStopClicked();
         args.Handled = true;
     }
     private void ButtonToggleListeningClicked(object? sender, RoutedEventArgs args)

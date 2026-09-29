@@ -13,6 +13,7 @@ public class UiHelperService : IService
         
         ValidBrush = UnknownBrush;
         InvalidBrush = UnknownBrush;
+        FrontBrush = UnknownBrush;
     }
 
     private readonly Window _parent;
@@ -31,9 +32,12 @@ public class UiHelperService : IService
             ? brush as IBrush : null) ?? UnknownBrush;
         InvalidBrush = (_parent.TryFindResource("InvalidBrush", null, out var brush2) 
             ? brush2 as IBrush : null) ?? UnknownBrush;
+        FrontBrush = (_parent.TryFindResource("FrontBrush", null, out var brush3) 
+            ? brush3 as IBrush : null) ?? UnknownBrush;
     }
 
     public IBrush UnknownBrush { get; init; } = new SolidColorBrush(Colors.HotPink);
     public IBrush ValidBrush { get; private set; }
     public IBrush InvalidBrush { get; private set; }
+    public IBrush FrontBrush { get; private set; }
 }
