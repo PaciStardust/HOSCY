@@ -435,7 +435,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
 
         _muteSignalReceived = null;
         _logger.Debug("Sending mute signal and waiting for result");
-        if (OtherUtils.WaitWhile(() => { return _muteSignalReceived is null; }, 50, 5))
+        if (OtherUtils.WaitWhile(() => { return _muteSignalReceived is null; }, 250, 5))
         {
             _listening = _muteSignalReceived!.Value;
             return ResC.TOk(_listening);
