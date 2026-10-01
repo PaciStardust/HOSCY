@@ -27,6 +27,7 @@
 							<Button Content="Apply" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="InfoSpeakerApplyClicked" ToolTip.Tip="Applies the speaker change"/>
 						</WrapPanel>
 						<TextBlock Theme="{StaticResource HTextBlockError}" Text="Currently selected speaker is not used, please press 'Apply'" IsVisible="{Binding InfoSpeakerApplyNeeded}"/>
+						<TextBlock Theme="{StaticResource HTextBlockNote}" Text="Warning: Some Devices (Like AirPods) do Not Function Correctly When Used as Output And Input at the Same Time, Even Across Different Applications"/>
 					</StackPanel>
 
 					<WrapPanel Theme="{StaticResource HWrap}">

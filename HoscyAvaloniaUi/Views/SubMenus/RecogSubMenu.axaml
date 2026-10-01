@@ -80,6 +80,7 @@
 								<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding OptionsMicrophone.Index}" ItemsSource="{Binding OptionsMicrophone.Options}" SelectionChanged="OptionsMicrophoneChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_MicrophoneName}"/>
 								<Button Content="Refresh*" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsMicrophoneRefreshClicked" ToolTip.Tip="Refreshes the list of microphones"/>
 							</WrapPanel>
+							<TextBlock Theme="{StaticResource HTextBlockNote}" Text="Warning: Some Devices (Like AirPods) do Not Function Correctly When Used as Output And Input at the Same Time, Even Across Different Applications"/>
 						</StackPanel>
 					</StackPanel>
 

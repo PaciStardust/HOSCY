@@ -14,7 +14,7 @@ using Serilog;
 namespace HoscyAvaloniaUi.Services;
 
 [LoadIntoDiContainer(typeof(IApplicationSound))]
-public class AvaloniaApplicationSound : StartStopServiceBase, IApplicationSound, IAutoStartStopService //todo: IN/Out at same time breaks, add warning
+public class AvaloniaApplicationSound : StartStopServiceBase, IApplicationSound, IAutoStartStopService
 {
     #region Injects
     private readonly ConfigModel _config;
