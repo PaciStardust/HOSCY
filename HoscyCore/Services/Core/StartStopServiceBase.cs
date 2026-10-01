@@ -42,9 +42,9 @@ public abstract class StartStopServiceBase(ILogger logger) : IStartStopService
         });
         if (res.IsOk) return res;
 
-        _logger.Debug("Start failed performing dispose...");
-        var resDispose = ResC.WrapR(DisposeCleanup, "Failed to dispose", _logger);
-        return ResC.FailM(res.Msg?.WithContext("Start"), resDispose.Msg?.WithContext("Dispose"));
+        _logger.Debug("Start failed, shutting down and performing dispose...");
+        var resStop = Stop();
+        return ResC.FailM(res.Msg?.WithContext("Start"), resStop.Msg?.WithContext("Stop"));
     }
     protected abstract bool UseAlreadyStartedProtection { get; }
     protected abstract Res StartForService();

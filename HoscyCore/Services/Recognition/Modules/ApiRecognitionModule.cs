@@ -93,7 +93,6 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
         {
             _mic.SetListening(false);
             _mic.Stop().IfFail((x) => fails.Add(x.WithContext("Mic Stop")));
-            
         }
 
         if (_client.IsPresetLoaded())

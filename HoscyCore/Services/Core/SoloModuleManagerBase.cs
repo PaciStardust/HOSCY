@@ -193,22 +193,35 @@ SoloModuleManagerBase<TModuleStartInfo, TModule>
         module.OnRuntimeError += HandleOnRuntimeError;
         module.OnModuleStopped += HandleOnModuleStopped;
 
-        var resPre = ResC.Wrap(() => OnModulePreStart(module), "Module Pre-Start failed", _logger);
+        List<ResMsg> errors = [];
 
-        var res = resPre.IsOk 
-            ? ResC.Wrap(module.Start, $"{selectedModuleName} Module Start failed", _logger) 
-            : ResC.Fail($"{selectedModuleName} Module Pre-Start prerequisite failed");
-        
-        var resPost = res.IsOk 
-            ? ResC.Wrap(() => OnModulePostStart(module), $"{selectedModuleName} Module Post-Start failed", _logger)
-            : ResC.Fail($"{selectedModuleName} Module Post-Start prerequisite failed");
+        var res = ResC.Wrap(() => OnModulePreStart(module), "Module Pre-Start failed", _logger);
+        res.IfFail(x => errors.Add(x.WithContext("Pre-Start")));
 
-        if (!resPost.IsOk)
+        if (res.IsOk)
         {
-            UnsubscribeFromModuleEvents(module); //todo: No cleanup done???
+            res = ResC.Wrap(module.Start, $"{selectedModuleName} Module Start failed", _logger);
+            res.IfFail(x => errors.Add(x.WithContext("Start")));
+
+            if (res.IsOk)
+            {
+                res = ResC.Wrap(() => OnModulePostStart(module), $"{selectedModuleName} Module Post-Start failed", _logger);
+                if (!res.IsOk)
+                {
+                    errors.Add(res.Msg.WithContext("Post-Start"));
+                    ResC.Wrap(module.Stop, $"{selectedModuleName} Module Post-Start Error Stop failed", _logger)
+                        .IfFail(x => errors.Add(x.WithContext("Post-Start Error Stop")));
+                }
+            }
+        }
+        
+        if (errors.Count > 0)
+        {
+            UnsubscribeFromModuleEvents(module);
+            res = ResC.FailM(errors);
             _logger.Error("Failed to start module with name \"{moduleName}\" and type \"{moduleType}\" ({result})",
                 info.Name, info.ModuleType.FullName, res);
-            return ResC.FailM(resPre.Msg, res.Msg, resPost.Msg);
+            return res;
         };
 
         _currentModule = module;
