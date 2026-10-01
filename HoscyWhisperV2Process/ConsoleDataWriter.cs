@@ -75,6 +75,15 @@ public class ConsoleDataWriter(bool asJson)
         }
     }
 
+    public void SendNotification(string title, string message)
+    {
+        if (_asJson)
+        {
+            SendAsJson(WhisperIpcNotify.IDENTIFIER, new WhisperIpcNotify("WHISPER - " + title, message));
+        }
+    }
+
+
     private static void SendAsJson<T>(char id, T data) where T : class
     {
         try

@@ -84,7 +84,7 @@ public class RecognitionComponentFactory(WhisperIpcConfig config)
         return new AudioProcessor(vad, _config);
     } 
 
-    public WhisperProcessor CreateWhisperProcessor(ILogger logger)
+    public WhisperProcessor CreateWhisperProcessor(ILogger logger, ConsoleDataWriter writer)
     {
         logger.Debug("Creating whisper processor");
 
@@ -119,8 +119,9 @@ public class RecognitionComponentFactory(WhisperIpcConfig config)
                 var lowerLanguage = _config.Whisper_Language.ToLower();
                 if (!whisperLanguages.Contains(lowerLanguage))
                 {
-                    logger.Warning("Language is invalid, possible languages: {languages}",
-                        string.Join(", ", whisperLanguages));
+                    var langText = string.Join(", ", whisperLanguages);
+                    writer.SendNotification("Invalid Language", $"Possible values: {langText}");
+                    logger.Warning("Language is invalid, possible languages: {languages}", langText);
                     whisperBuilder.WithLanguage("auto");
                 }
                 else

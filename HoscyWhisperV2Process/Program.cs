@@ -5,7 +5,7 @@ using Serilog.Events;
 
 namespace HoscyWhisperV2Process;
 
-public class Program //todo: [FIX] Typing indicator not good, noises, page indicator, missing audio frames warning
+public class Program //todo: [FIX] Typing indicator not good, noises, skipped text because not finalized
 {   
     public static async Task Main(string[] args)
     {
@@ -19,6 +19,7 @@ public class Program //todo: [FIX] Typing indicator not good, noises, page indic
         }
         catch (Exception ex)
         {
+            writer.SendNotification("Logic Stopped", ex.Message);
             writer.SendLog(LogEventLevel.Error, $"Logic stopped due to Exception of type {ex.GetType().Name}: {ex.Message}", ex.StackTrace);
         }
 
@@ -29,6 +30,7 @@ public class Program //todo: [FIX] Typing indicator not good, noises, page indic
         }
         catch (Exception ex)
         {
+            writer.SendNotification("Cleanup Failed", ex.Message);
             writer.SendLog(LogEventLevel.Error, $"Cleanup failed due to Exception of type {ex.GetType().Name}: {ex.Message}", ex.StackTrace);
         }
 
@@ -63,6 +65,7 @@ public class Program //todo: [FIX] Typing indicator not good, noises, page indic
             }
             catch(Exception ex)
             {
+                writer.SendNotification("Failed Loading Config", ex.Message);
                 writer.SendLog(LogEventLevel.Error, $"{ex.GetType().Name}: {ex.Message}");
                 config = null;
                 return false;

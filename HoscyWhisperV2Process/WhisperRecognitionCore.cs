@@ -8,13 +8,21 @@ using Whisper.net;
 
 namespace HoscyWhisperV2Process;
 
-public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProcessor audioProcessor, AudioCaptureDeviceProxy audioCapture, ILogger logger)
+public class WhisperRecognitionCore
+(
+    WhisperProcessor whisperProcessor, 
+    AudioProcessor audioProcessor, 
+    AudioCaptureDeviceProxy audioCapture, 
+    ILogger logger,
+    ConsoleDataWriter writer
+)
     : IDisposable
 {
     #region Inject
     private readonly WhisperProcessor _whisperProcessor = whisperProcessor;
     private readonly AudioProcessor _audioProcessor = audioProcessor;
     private readonly AudioCaptureDeviceProxy _audioCapture = audioCapture;
+    private readonly ConsoleDataWriter _writer = writer;
     private readonly ILogger _logger = logger;    
     #endregion
 
@@ -36,6 +44,7 @@ public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProc
 
         if (recTask.Exception is not null)
         {
+            _writer.SendNotification("Recognition Error", recTask.Exception.Message);
             _logger.Error(recTask.Exception, "Recognition stopping with Exception");
         }
 
@@ -50,9 +59,36 @@ public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProc
     #region Audio Processing
     private const int BYTES_PER_SECOND = 16_000 * 2;
     private const int BYTES_PER_10_MS = BYTES_PER_SECOND / 100;
+    private DateTimeOffset _frameAverageStart = DateTimeOffset.MinValue;
+    private int _frameAverageCount = 0;
+    private bool _frameAverageWarned = false;
+    private const int FRAME_AVERAGE_SECONDS = 10;
+    private const int FRAME_AVERAGE_FRAMES_MAX = 100 * FRAME_AVERAGE_SECONDS;
+    private const int FRAME_AVERAGE_FRAMES_TOLERATED = FRAME_AVERAGE_FRAMES_MAX / 3 * 2;
     private void ProcessAudioFrames(Span<byte> audioFrames, Capability _)
     {
         var frameCount = audioFrames.Length / BYTES_PER_10_MS;
+
+        var now = DateTimeOffset.Now;
+        if (_frameAverageStart.AddSeconds(FRAME_AVERAGE_SECONDS) < now)
+        {
+            #if !DBG_AUDIO 
+            if (_frameAverageCount < FRAME_AVERAGE_FRAMES_TOLERATED)
+            {
+                if (!_frameAverageWarned)
+                {
+                    //todo: Test this?
+                    _writer.SendNotification("Unstable Device", "Device is sending too little data and may not be working correctly, recognition may not work");
+                    _frameAverageWarned = true;
+                }
+                _logger.Warning("Received audio frames over {secs}s lower than tolerated value {tolerated} ({counted})",
+                    FRAME_AVERAGE_SECONDS, FRAME_AVERAGE_FRAMES_TOLERATED, _frameAverageCount);
+            }
+            #endif
+            _frameAverageCount = 0;
+            _frameAverageStart = now;
+        }
+        _frameAverageCount += frameCount;
 
         for (var i = 0; i < frameCount; i++)
         {
@@ -125,6 +161,7 @@ public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProc
             var processingQueueItemId = _processingQueueItem.Id;
             if (_activelyRecordingSegmentId < processingQueueItemId)
             {
+                _writer.SendNotification("Queue Order Wrong", "New ID SOMEHOW lower than queue ID");
                 _logger.Error("Queue not empty, new entry has ID {newId}, which is SOMEHOW lower than queue ID {queueId} => No override",
                     _activelyRecordingSegmentId, processingQueueItemId);
                 return;
@@ -136,6 +173,7 @@ public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProc
             }
             else
             {
+                _writer.SendNotification("Queue Can Not Keep Up", "Processing likely unable to keep up and model should maybe be swapped with a smaller one");
                 _logger.Warning("Queue not empty, new entry has ID {newId}, which is higher than queue ID {queueId} => Processing likely unable to keep up and model should maybe be swapped with a smaller one",
                     _activelyRecordingSegmentId, processingQueueItemId);
             }
@@ -160,8 +198,10 @@ public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProc
             _currentCts.Cancel();
             _logger.Verbose("Set new recognition data with ID {id}-{subId} and length {len}",
                 _activelyRecordingSegmentId, _activelyRecordingSegmentSubId, recognitionData.Length);
-        } catch (Exception ex)
+        } 
+        catch (Exception ex)
         {
+            _writer.SendNotification("Failed Recognition Data Creation", ex.Message);
             _logger.Error(ex, "Creation of recognition data failed (ID {id}-{subId})",
                 _activelyRecordingSegmentId, _activelyRecordingSegmentSubId);
             return;
@@ -265,11 +305,13 @@ public class WhisperRecognitionCore(WhisperProcessor whisperProcessor, AudioProc
         }
         catch (WhisperProcessingException ex)
         {
+            _writer.SendNotification($"Whisper Error", ex.Message);
             _logger.Warning("Whisper Error (ID {id}-{subId}): {message}",
                 current.Id, current.SubId, ex.Message);
         }
         catch (Exception ex)
         {
+            _writer.SendNotification($"Whisper Error (Generic)", ex.Message);
             _logger.Error(ex, "Recognition encountered an exception of type {exType} (ID {id}-{subId})",
                 ex.GetType().Name, current.SubId, current.Id);
         }        

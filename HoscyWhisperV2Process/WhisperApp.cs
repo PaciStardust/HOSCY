@@ -41,9 +41,9 @@ public class WhisperApp : IDisposable
 
         using var vad = _factory.CreateVad(_logger);
         var audioProcessor = _factory.CreateAudioProcessor(vad);
-        using var whisperProcessor = _factory.CreateWhisperProcessor(_logger);
+        using var whisperProcessor = _factory.CreateWhisperProcessor(_logger, _writer);
 
-        using var recCore = new WhisperRecognitionCore(whisperProcessor, audioProcessor, capture, _logger);
+        using var recCore = new WhisperRecognitionCore(whisperProcessor, audioProcessor, capture, _logger, _writer);
         using var cts = new CancellationTokenSource();
 
         _writer.SendStatus(WhisperIpcStartupStage.InitPassed);
@@ -79,6 +79,7 @@ public class WhisperApp : IDisposable
         }
         else
         {
+            _writer.SendNotification("Unexpected Stop", "Recognition Unexpectedly not Running");
             _logger.Error("Recognition task is unexpectedly not running");
             _writer.SendStatus(WhisperIpcStartupStage.Inactive);
         }
