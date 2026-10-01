@@ -405,6 +405,16 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
                 }
                 return;
 
+            case WhisperIpcNotify.IDENTIFIER:
+                var resNotify = _ipcConverter.DeserializeJson<WhisperIpcNotify>(json.Value);
+                if (resNotify.IsOk)
+                {
+                    _logger.Debug("Notify received with title \"{title}\" and text \"{text}\"",
+                        resNotify.Value.Title, resNotify.Value.Message);
+                    _notify.SendInfo(resNotify.Value.Title, resNotify.Value.Message);
+                }
+                return;
+
             default: 
                 _logger.Warning("Received unknown data with identifier {id}: \"{data}\"", id, json.Value);
                 return;

@@ -86,6 +86,11 @@ public record WhisperIpcStatus(WhisperIpcStartupStage Stage)
     public const char IDENTIFIER = 'S';
 }
 
+public record WhisperIpcNotify(string Title, string Message)
+{
+    public const char IDENTIFIER = 'N';
+}
+
 public enum WhisperIpcStartupStage
 {
     Inactive,
