@@ -36,7 +36,7 @@ public class RecognitionComponentFactory(WhisperIpcConfig config)
     {
         logger.Debug("Creating audio device");
 
-        var devInfo = AudioUtils.FindDevice(engine.CaptureDevices, _config.CaptureDeviceName, logger) 
+        var devInfo = AudioUtils.FindDevice(logger, engine.CaptureDevices, _config.CaptureDeviceName) 
             ?? throw new ArgumentException("Failed to locate a suitable microphone");
 
         var format = new AudioFormat()
