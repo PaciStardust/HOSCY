@@ -5,7 +5,8 @@ using SoundFlow.Components;
 
 namespace HoscyCore.Services.Audio;
 
-public class AudioPlaybackDeviceProxy(AudioPlaybackDevice playback, ILogger logger) : IDisposable
+public class AudioPlaybackDeviceProxy(AudioPlaybackDevice playback, ILogger logger) 
+    : IAudioPlaybackDeviceProxy
 {
     private readonly AudioPlaybackDevice _playback = playback;
     private readonly ILogger _logger = logger;

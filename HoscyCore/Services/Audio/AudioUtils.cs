@@ -12,6 +12,8 @@ namespace HoscyCore.Services.Audio;
 
 public static class AudioUtils
 {
+    public const string EMPTY_DEVICE = "[No Device]";
+
     public static DeviceInfo? FindDevice(DeviceInfo[]? devices, string configId, ILogger logger)
     {
         if (devices is null || devices.Length == 0)
