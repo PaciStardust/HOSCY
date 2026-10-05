@@ -12,7 +12,7 @@ public class WhisperRecognitionCore
 (
     WhisperProcessor whisperProcessor, 
     AudioProcessor audioProcessor, 
-    AudioCaptureDeviceProxy audioCapture, 
+    IAudioCaptureDeviceProxy audioCapture, 
     ILogger logger,
     ConsoleDataWriter writer
 )
@@ -21,7 +21,7 @@ public class WhisperRecognitionCore
     #region Inject
     private readonly WhisperProcessor _whisperProcessor = whisperProcessor;
     private readonly AudioProcessor _audioProcessor = audioProcessor;
-    private readonly AudioCaptureDeviceProxy _audioCapture = audioCapture;
+    private readonly IAudioCaptureDeviceProxy _audioCapture = audioCapture;
     private readonly ConsoleDataWriter _writer = writer;
     private readonly ILogger _logger = logger;    
     #endregion

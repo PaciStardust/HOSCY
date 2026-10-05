@@ -36,7 +36,7 @@ public class WindowsV2RecognitionModule(ILogger logger, ConfigModel config, IAud
 
     private SpeechRecognitionEngine? _engine = null;
     private SpeechStreamer? _stream = null;
-    private AudioCaptureDeviceProxy? _mic = null;
+    private IAudioCaptureDeviceProxy? _mic = null;
     #endregion
 
     #region Start / Stop

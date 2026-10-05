@@ -19,7 +19,7 @@ public class SwappableAudioPlaybackDevice<T>
     #endregion
 
     #region Vars
-    private AudioPlaybackDeviceProxy? _playback;
+    private IAudioPlaybackDeviceProxy? _playback;
     private CancellationTokenSource _playbackCancellation = new();
     private volatile bool _deviceInUse = false;
     #endregion

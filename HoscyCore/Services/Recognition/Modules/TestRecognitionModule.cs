@@ -29,7 +29,7 @@ public class TestRecognitionModule(ILogger logger, IAudioService audio)
     #region Vars
     private readonly IAudioService _audio = audio;
 
-    private AudioCaptureDeviceProxy? _mic = null;
+    private IAudioCaptureDeviceProxy? _mic = null;
     #endregion
 
     #region Infos / Events

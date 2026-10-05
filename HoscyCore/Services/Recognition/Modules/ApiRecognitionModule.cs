@@ -38,7 +38,7 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
     private readonly ConfigModel _config = config;
 
     private MemoryStream? _stream = null;
-    private AudioCaptureDeviceProxy? _mic = null;
+    private IAudioCaptureDeviceProxy? _mic = null;
     #endregion
 
     #region Start / Stop
