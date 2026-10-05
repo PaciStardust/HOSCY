@@ -29,6 +29,7 @@ public class EmptyAudioPlaybackDeviceProxy(ILogger logger) : IAudioPlaybackDevic
 
     public async Task<Res> PlayAsync(float volume, CancellationToken ct)
     {
+        _logger.Verbose("Received play on empty audio playback with {bytes} bytes of data", Stream.Length);
         ClearStream();
         await Task.Delay(10);
         return ResC.Ok();
@@ -36,12 +37,14 @@ public class EmptyAudioPlaybackDeviceProxy(ILogger logger) : IAudioPlaybackDevic
 
     public Res Start()
     {
+        _logger.Verbose("Received start on empty audio playback");
         IsRunning = true;
         return ResC.Ok();
     }
 
     public Res Stop()
     {
+        _logger.Verbose("Received stop on empty audio playback");
         IsRunning = false;
         return ResC.Ok();
     }
