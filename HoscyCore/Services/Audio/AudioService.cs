@@ -4,9 +4,7 @@ using HoscyCore.Services.Dependency;
 using HoscyCore.Utility;
 using Serilog;
 using SoundFlow.Abstracts;
-using SoundFlow.Abstracts.Devices;
 using SoundFlow.Backends.MiniAudio;
-using SoundFlow.Enums;
 using SoundFlow.Structs;
 
 namespace HoscyCore.Services.Audio;
@@ -61,9 +59,9 @@ public class AudioService(ILogger logger, ConfigModel config)
         return AudioUtils.GetCaptureInfosForEngine(_logger, _audioEngine);
     }
 
-    public Res<IAudioCaptureDeviceProxy>? CreateCapture(ILogger devLogger, string primaryName, string fallbackName, AudioFormat? format = null)
+    public Res<IAudioCaptureDeviceProxy>? CreateCapture(ILogger devLogger, string primaryName, string fallbackName = "", bool finalEmptyNotDefault = false, AudioFormat? format = null)
     {
-        return AudioUtils.CreateCaptureForEngine(_logger, devLogger, _audioEngine, primaryName, fallbackName, format);
+        return AudioUtils.CreateCaptureForEngine(_logger, devLogger, _audioEngine, primaryName, fallbackName, finalEmptyNotDefault, format);
     }
     #endregion
 
@@ -73,9 +71,9 @@ public class AudioService(ILogger logger, ConfigModel config)
         return AudioUtils.GetPlaybackInfosForEngine(_logger, _audioEngine);
     }
 
-    public Res<IAudioPlaybackDeviceProxy>? CreatePlayback(ILogger devLogger, string primaryName, string fallbackName, AudioFormat? format = null)
+    public Res<IAudioPlaybackDeviceProxy>? CreatePlayback(ILogger devLogger, string primaryName, string fallbackName = "", bool finalEmptyNotDefault = false, AudioFormat? format = null)
     {
-        return AudioUtils.CreatePlaybackForEngine(_logger, devLogger, _audioEngine, primaryName, fallbackName, format);
+        return AudioUtils.CreatePlaybackForEngine(_logger, devLogger, _audioEngine, primaryName, fallbackName, finalEmptyNotDefault, format);
     }
     #endregion
 

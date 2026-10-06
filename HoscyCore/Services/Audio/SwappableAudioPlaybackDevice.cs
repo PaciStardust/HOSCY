@@ -111,7 +111,7 @@ public class SwappableAudioPlaybackDevice<T>
         if (_playback is not null)
             return ResC.FailLog("Unable to create playback, it already exists", _logger);
 
-        var playback = _audio.CreatePlayback(_logger, devName, string.Empty, _format); //todo: secondary name
+        var playback = _audio.CreatePlayback(_logger, devName, format: _format); //todo: secondary name
         if (playback is null)
         {
             return ResC.FailLog("No microphone could be located, no voice output will be possible", _logger, lvl: ResMsgLvl.Warning);

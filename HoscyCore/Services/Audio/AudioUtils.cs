@@ -35,7 +35,8 @@ public static class AudioUtils
         Func<T> funcGetEmptyDevice,
         Func<DeviceInfo,Res<T>> funcCreateDevice,
         string primaryDeviceName, 
-        string fallbackDeviceName
+        string fallbackDeviceName = "",
+        bool finalEmptyNotDefault = false
     )
         where T: notnull
     {
@@ -64,17 +65,22 @@ public static class AudioUtils
             }
 
             (deviceInfo, defaultNull) = GetDeviceForName(logger, deviceType, deviceInfos.Value, fallbackDeviceName, defaultNull);
-            if (deviceInfo is null && !defaultNull)
+            if (deviceInfo is null)
             {
                 logger.Debug("No {devType} devices found for fallback or empty, looking for default", deviceType);
-                deviceInfo = GetDefaultDevice(logger, deviceType, deviceInfos.Value);
-            }
-        }
+                deviceInfo = defaultNull ? null : GetDefaultDevice(logger, deviceType, deviceInfos.Value);
 
-        if (deviceInfo is null)
-        {
-            logger.Warning("No {devType} device found", deviceType);
-            return null;
+                if (deviceInfo is null)
+                {
+                    logger.Warning("No {devType} device found, returning final null", deviceType);
+                    return null;
+                }
+                else if (finalEmptyNotDefault)
+                {
+                    logger.Warning("No {devType} device found, returning empty by request", deviceType);
+                    return ResC.TOk(funcGetEmptyDevice());
+                }
+            }
         }
 
         logger.Debug("Creating {devType} device for device {devName}", deviceType, deviceInfo.Value.Name);
@@ -152,7 +158,7 @@ public static class AudioUtils
     }
 
     public static Res<IAudioCaptureDeviceProxy>? CreateCaptureForEngine
-    (ILogger logger, ILogger devLogger, AudioEngine? audioEngine, string primaryDeviceName, string fallbackDeviceName, AudioFormat? format = null)
+    (ILogger logger, ILogger devLogger, AudioEngine? audioEngine, string primaryDeviceName, string fallbackDeviceName = "", bool finalEmptyNotDefault = false, AudioFormat? format = null)
     {
         format ??= new AudioFormat
         {
@@ -175,7 +181,8 @@ public static class AudioUtils
                 return ResC.TOk<IAudioCaptureDeviceProxy>(new AudioCaptureDeviceProxy(device, devLogger));
             },
             primaryDeviceName,
-            fallbackDeviceName
+            fallbackDeviceName,
+            finalEmptyNotDefault
         );
     }
     #endregion
@@ -189,7 +196,7 @@ public static class AudioUtils
     }
 
     public static Res<IAudioPlaybackDeviceProxy>? CreatePlaybackForEngine
-        (ILogger logger, ILogger devLogger, AudioEngine? audioEngine, string primaryDeviceName, string fallbackDeviceName, AudioFormat? format = null)
+        (ILogger logger, ILogger devLogger, AudioEngine? audioEngine, string primaryDeviceName, string fallbackDeviceName = "", bool finalEmptyNotDefault = false, AudioFormat? format = null)
     {
         format ??= new AudioFormat
         {
@@ -212,7 +219,8 @@ public static class AudioUtils
                 return ResC.TOk<IAudioPlaybackDeviceProxy>(new AudioPlaybackDeviceProxy(device, devLogger));
             },
             primaryDeviceName,
-            fallbackDeviceName
+            fallbackDeviceName,
+            finalEmptyNotDefault
         );
     }
     #endregion
