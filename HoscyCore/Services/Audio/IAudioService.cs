@@ -8,12 +8,11 @@ namespace HoscyCore.Services.Audio;
 
 public interface IAudioService : IAutoStartStopService
 {
-    public Res<DeviceInfo[]> GetCaptureDevices();
-    public Res<IAudioCaptureDeviceProxy>? CreateCaptureDeviceProxy();
-    public Res<AudioCaptureDevice>? CreateCaptureDevice();
+    public Res<DeviceInfo[]> GetCaptureInfos();
+    public Res<IAudioCaptureDeviceProxy>? CreateCapture(ILogger devLogger, string primaryName, string fallbackName, AudioFormat? format = null);
     
-    public Res<DeviceInfo[]> GetPlaybackDevices();
-    public Res<IAudioPlaybackDeviceProxy>? CreatePlaybackDeviceProxy(string name, ILogger deviceLogger, AudioFormat? format = null);
+    public Res<DeviceInfo[]> GetPlaybackInfos();
+    public Res<IAudioPlaybackDeviceProxy>? CreatePlayback(ILogger devLogger, string primaryName, string fallbackName, AudioFormat? format = null);
 
     public Res UpdateDeviceList();
 }

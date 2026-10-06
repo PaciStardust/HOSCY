@@ -56,31 +56,26 @@ public class AudioService(ILogger logger, ConfigModel config)
     #endregion
 
     #region Capture
-    public Res<DeviceInfo[]> GetCaptureDevices()
+    public Res<DeviceInfo[]> GetCaptureInfos()
     {  
-        return AudioUtils.GetCaptureDevicesForEngine(_logger, _audioEngine);
+        return AudioUtils.GetCaptureInfosForEngine(_logger, _audioEngine);
     }
 
-    public Res<AudioCaptureDevice>? CreateCaptureDevice()
+    public Res<IAudioCaptureDeviceProxy>? CreateCapture(ILogger devLogger, string primaryName, string fallbackName, AudioFormat? format = null)
     {
-        return AudioUtils.CreateCaptureDeviceForEngine(_logger, _audioEngine, _config.Recognition_MicrophoneName);
-    }
-
-    public Res<IAudioCaptureDeviceProxy>? CreateCaptureDeviceProxy()
-    {
-        return AudioUtils.CreateCaptureDeviceProxyForEngine(_logger, _audioEngine, _config.Recognition_MicrophoneName);
+        return AudioUtils.CreateCaptureForEngine(_logger, devLogger, _audioEngine, primaryName, fallbackName, format);
     }
     #endregion
 
     #region Playback
-    public Res<DeviceInfo[]> GetPlaybackDevices()
+    public Res<DeviceInfo[]> GetPlaybackInfos()
     {
-        return AudioUtils.GetPlaybackDevicesForEngine(_logger, _audioEngine);
+        return AudioUtils.GetPlaybackInfosForEngine(_logger, _audioEngine);
     }
 
-    public Res<IAudioPlaybackDeviceProxy>? CreatePlaybackDeviceProxy(string name, ILogger deviceLogger, AudioFormat? format = null)
+    public Res<IAudioPlaybackDeviceProxy>? CreatePlayback(ILogger devLogger, string primaryName, string fallbackName, AudioFormat? format = null)
     {
-        return AudioUtils.CreatePlaybackDeviceProxyForEngine(_logger, _audioEngine, name, format);
+        return AudioUtils.CreatePlaybackForEngine(_logger, devLogger, _audioEngine, primaryName, fallbackName, format);
     }
     #endregion
 

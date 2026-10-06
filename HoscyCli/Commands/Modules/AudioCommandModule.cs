@@ -21,10 +21,10 @@ public class AudioCommandModule(IAudioService audio, ReflectPropEditCommandModul
         var updateRes = _audio.UpdateDeviceList();
         if (!updateRes.IsOk) return updateRes;
 
-        var micResult = _audio.GetCaptureDevices();
+        var micResult = _audio.GetCaptureInfos();
         if (!micResult.IsOk) return ResC.Fail(micResult.Msg);
 
-        var speakerResult = _audio.GetPlaybackDevices();
+        var speakerResult = _audio.GetPlaybackInfos();
         if (!speakerResult.IsOk) return ResC.Fail(speakerResult.Msg);
 
         var micString = micResult is null

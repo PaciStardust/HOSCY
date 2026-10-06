@@ -128,7 +128,7 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
     }
     private Res<string[]> InfoSpeakerGetNames()
     {
-        var speakers = _audio.GetPlaybackDevices();
+        var speakers = _audio.GetPlaybackInfos();
         return speakers.IsOk ? ResC.TOk(speakers.Value.Select(x => x.Name).ToArray()) : ResC.TFail<string[]>(speakers.Msg);
     }
     public override void InfoSpeakerApplyClicked()

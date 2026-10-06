@@ -102,10 +102,10 @@ public class AzureRecognitionModule(ILogger logger, ConfigModel config, IAudioSe
         var updateResult = _audio.UpdateDeviceList();
         if (!updateResult.IsOk) return ResC.TFail<string>(updateResult.Msg);
 
-        var deviceListResult = _audio.GetCaptureDevices();
+        var deviceListResult = _audio.GetCaptureInfos();
         if (!deviceListResult.IsOk) return ResC.TFail<string>(deviceListResult.Msg);
 
-        var devMatch = AudioUtils.FindDevice(_logger, deviceListResult.Value, _config.Recognition_MicrophoneName);
+        var (devMatch, _) = AudioUtils.GetDeviceForName(_logger, "azure capture", deviceListResult.Value, _config.Recognition_MicrophoneName, false);
         if (devMatch is null) return ResC.TFailLog<string>($"Microphone with name \"{_config.Recognition_MicrophoneName}\" could not be found",
             _logger, lvl: ResMsgLvl.Warning);
 

@@ -1,5 +1,6 @@
 #if DEBUG
 
+using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Audio;
 using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
@@ -23,11 +24,12 @@ public class TestRecognitionModuleStartInfo : IRecognitionModuleStartInfo
 }
 
 [PrototypeLoadIntoDiContainer(typeof(TestRecognitionModule), Lifetime.Transient)]
-public class TestRecognitionModule(ILogger logger, IAudioService audio)
+public class TestRecognitionModule(ILogger logger, IAudioService audio, ConfigModel config)
     : RecognitionModuleBase(logger.ForContext<TestRecognitionModule>())
 {
     #region Vars
     private readonly IAudioService _audio = audio;
+    private readonly ConfigModel _config = config;
 
     private IAudioCaptureDeviceProxy? _mic = null;
     #endregion
@@ -40,7 +42,7 @@ public class TestRecognitionModule(ILogger logger, IAudioService audio)
 
     protected override Res StartForService()
     {
-        var micRes = _audio.CreateCaptureDeviceProxy();
+        var micRes = _audio.CreateCapture(_logger, _config.Recognition_MicrophoneName, string.Empty); //todo: secondary
         if (micRes is null) return ResC.Fail(ResMsg.Err("Unable to locate a capture device"));
         if (!micRes.IsOk) return ResC.Fail(micRes.Msg);
 

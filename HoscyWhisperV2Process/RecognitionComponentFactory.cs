@@ -32,12 +32,9 @@ public class RecognitionComponentFactory(WhisperIpcConfig config)
         return engine;
     }
 
-    public AudioCaptureDeviceProxy CreateCaptureDevice(AudioEngine engine, ILogger logger, WhisperIpcConfig cfg)
+    public IAudioCaptureDeviceProxy CreateCaptureDevice(AudioEngine engine, ILogger logger, WhisperIpcConfig cfg)
     {
         logger.Debug("Creating audio device");
-
-        var devInfo = AudioUtils.FindDevice(logger, engine.CaptureDevices, _config.CaptureDeviceName) 
-            ?? throw new ArgumentException("Failed to locate a suitable microphone");
 
         var format = new AudioFormat()
         {
@@ -47,17 +44,21 @@ public class RecognitionComponentFactory(WhisperIpcConfig config)
             SampleRate = 16_000
         };
 
-        var rawDevice = engine.InitializeCaptureDevice(devInfo, format);
-        var wrappedDevice = new AudioCaptureDeviceProxy(rawDevice, logger);
+        var device = AudioUtils.CreateCaptureForEngine(logger, logger, engine, _config.CaptureDeviceName, string.Empty, format) 
+            ?? throw new ArgumentNullException($"No microphone found for name \"{_config.CaptureDeviceName}\""); //todo: fallback
+        if (!device.IsOk)
+        {
+            throw new Exception("Failed to create microphone: " + device.Msg);
+        }
 
         if (cfg.WebRtc_Enabled)
         {
-            wrappedDevice.AddApmModifier(cfg.WebRtc_UseEchoCancellation, cfg.WebRtc_EchoCancellationDelayMs,
+            device.Value.AddApmModifier(cfg.WebRtc_UseEchoCancellation, cfg.WebRtc_EchoCancellationDelayMs,
                 cfg.WebRtc_UseNoiseSuppression, cfg.WebRtc_NoiseSuppressionLevel, cfg.WebRtc_UseAutomaticGainControl,
                 cfg.WebRtc_UseHighPassFilter, cfg.WebRtc_UsePreAmplifier, cfg.WebRtc_PreAmplifierGainFactor);
         }
 
-        return wrappedDevice;
+        return device.Value;
     }
 
     public WebRtcVad CreateVad(ILogger logger)

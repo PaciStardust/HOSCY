@@ -363,7 +363,7 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase
     }
     private Res<string[]> OptionsMicrophoneGetNames()
     {
-        var mics = _audio.GetCaptureDevices();
+        var mics = _audio.GetCaptureInfos();
         return mics.IsOk ? ResC.TOk(mics.Value.Select(x => x.Name).ToArray()) : ResC.TFail<string[]>(mics.Msg);
     }
 
