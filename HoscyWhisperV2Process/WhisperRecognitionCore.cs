@@ -59,7 +59,7 @@ public class WhisperRecognitionCore
     #region Audio Processing
     private const int BYTES_PER_SECOND = 16_000 * 2;
     private const int BYTES_PER_10_MS = BYTES_PER_SECOND / 100;
-    private DateTimeOffset _frameAverageStart = DateTimeOffset.MinValue;
+    private DateTimeOffset? _frameAverageStart;
     private int _frameAverageCount = 0;
     private bool _frameAverageWarned = false;
     private const int FRAME_AVERAGE_SECONDS = 10;
@@ -70,7 +70,8 @@ public class WhisperRecognitionCore
         var frameCount = audioFrames.Length / BYTES_PER_10_MS;
 
         var now = DateTimeOffset.Now;
-        if (_frameAverageStart.AddSeconds(FRAME_AVERAGE_SECONDS) < now)
+        _frameAverageStart ??= now;
+        if (_frameAverageStart.Value.AddSeconds(FRAME_AVERAGE_SECONDS) < now)
         {
             #if !DBG_AUDIO 
             if (_frameAverageCount < FRAME_AVERAGE_FRAMES_TOLERATED)
