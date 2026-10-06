@@ -248,6 +248,22 @@ public class ConfigModel : ObservableObject
     }
     private string _debug_InfoNoiseSpeakerName = string.Empty;
 
+    public const string DESC_Debug_InfoNoiseSpeakerFallbackName = "Fallback speaker to play information sounds on"; //todo: impl in UI
+    public string Debug_InfoNoiseSpeakerFallbackName
+    {
+        get => _debug_InfoNoiseSpeakerFallbackName;
+        set => SetProperty(ref _debug_InfoNoiseSpeakerFallbackName, value);
+    }
+    private string _debug_InfoNoiseSpeakerFallbackName = string.Empty;
+
+    public const string DESC_Debug_InfoNoiseSpeakerEmptyNotDefault = "Dummy speaker is used if requested speakers not found instead of default"; //todo: impl in UI
+    public bool Debug_InfoNoiseSpeakerEmptyNotDefault
+    {
+        get => _debug_InfoNoiseSpeakerEmptyNotDefault;
+        set => SetProperty(ref _debug_InfoNoiseSpeakerEmptyNotDefault, value);
+    }
+    private bool _debug_InfoNoiseSpeakerEmptyNotDefault = false;
+
     public const string DESC_Debug_InfoNoiseVolumePercent = "Volume of voice audio";
     public const float MIN_Debug_InfoNoiseVolumePercent = 0;
     public const float MAX_Debug_InfoNoiseVolumePercent = 1;
@@ -969,6 +985,22 @@ public class ConfigModel : ObservableObject
     }
     private string _recognition_MicrophoneName = string.Empty;
 
+    public const string DESC_Recognition_MicrophoneFallbackName = "Fallback microphone to use for recognition"; //todo: impl in UI
+    public string Recognition_MicrophoneFallbackName
+    {
+        get => _recognition_MicrophoneFallbackName;
+        set => SetProperty(ref _recognition_MicrophoneFallbackName, value);
+    }
+    private string _recognition_MicrophoneFallbackName = string.Empty;
+
+    public const string DESC_Recognition_MicrophoneEmptyNotDefault = "Dummy microphone is used if requested microphone not found instead of default"; //todo: impl in UI
+    public bool Recognition_MicrophoneEmptyNotDefault
+    {
+        get => _recognition_MicrophoneEmptyNotDefault;
+        set => SetProperty(ref _recognition_MicrophoneEmptyNotDefault, value);
+    }
+    private bool _recognition_MicrophoneEmptyNotDefault = false;
+
     public const string DESC_Recognition_Send_ViaText = "Send recognition result over text";
     public bool Recognition_Send_ViaText
     {
@@ -1532,6 +1564,22 @@ public class ConfigModel : ObservableObject
         set => SetProperty(ref _voice_CurrentSpeakerName, value);
     }
     private string _voice_CurrentSpeakerName = string.Empty;
+
+    public const string DESC_Voice_CurrentSpeakerFallbackName = "Name of fallback speaker for voice audio"; //todo: impl in UI
+    public string Voice_CurrentSpeakerFallbackName
+    {
+        get => _voice_CurrentSpeakerFallbackName;
+        set => SetProperty(ref _voice_CurrentSpeakerFallbackName, value);
+    }
+    private string _voice_CurrentSpeakerFallbackName = string.Empty;
+
+    public const string DESC_Voice_CurrentSpeakerEmptyNotDefault = "Dummy speaker is used if requested speaker not found instead of default"; //todo: impl in UI
+    public bool Voice_CurrentSpeakerEmptyNotDefault
+    {
+        get => _voice_CurrentSpeakerEmptyNotDefault;
+        set => SetProperty(ref _voice_CurrentSpeakerEmptyNotDefault, value);
+    }
+    private bool _voice_CurrentSpeakerEmptyNotDefault = false;
 
     public const string DESC_Voice_SelectedModuleName = "Name of voice module";
     public string Voice_SelectedModuleName
