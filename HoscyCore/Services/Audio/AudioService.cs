@@ -63,6 +63,11 @@ public class AudioService(ILogger logger, ConfigModel config)
     {
         return AudioUtils.CreateCaptureForEngine(_logger, devLogger, _audioEngine, primaryName, fallbackName, finalEmptyNotDefault, format);
     }
+
+    public Res<DeviceInfo>? GetCaptureInfoForNames(string primaryName, string fallbackName = "")
+    {
+        return AudioUtils.GetCaptureInfoForNamesForEngine(_logger, _audioEngine, primaryName, fallbackName);
+    }
     #endregion
 
     #region Playback
@@ -74,6 +79,11 @@ public class AudioService(ILogger logger, ConfigModel config)
     public Res<IAudioPlaybackDeviceProxy>? CreatePlayback(ILogger devLogger, string primaryName, string fallbackName = "", bool finalEmptyNotDefault = false, AudioFormat? format = null)
     {
         return AudioUtils.CreatePlaybackForEngine(_logger, devLogger, _audioEngine, primaryName, fallbackName, finalEmptyNotDefault, format);
+    }
+
+    public Res<DeviceInfo>? GetPlaybackInfoForNames(string primaryName, string fallbackName = "")
+    {
+        return AudioUtils.GetPlaybackInfoForNamesForEngine(_logger, _audioEngine, primaryName, fallbackName);
     }
     #endregion
 
