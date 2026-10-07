@@ -94,24 +94,24 @@ public class SwappableAudioPlaybackDevice<T>
     #endregion
 
     #region Playback Setting
-    public Res SwapPlayback(string devName)
+    public Res SwapPlayback(string primaryDevName, string fallbackDevName, bool useEmptyNotDefault)
     {
         _logger.Debug("Device swap initialized");
         var res = ClearPlayback(); 
         if (!res.IsOk) return res;
 
-        res = CreatePlayback(devName);
+        res = CreatePlayback(primaryDevName, fallbackDevName, useEmptyNotDefault);
         return res;
     }
 
-    private Res CreatePlayback(string devName)
+    private Res CreatePlayback(string primaryDevName, string fallbackDevName, bool useEmptyNotDefault)
     {
         _logger.Debug("Creating new playback");
 
         if (_playback is not null)
             return ResC.FailLog("Unable to create playback, it already exists", _logger);
 
-        var playback = _audio.CreatePlayback(_logger, devName, format: _format); //todo: secondary name
+        var playback = _audio.CreatePlayback(_logger, primaryDevName, fallbackDevName, useEmptyNotDefault, _format);
         if (playback is null)
         {
             return ResC.FailLog("No microphone could be located, no voice output will be possible", _logger, lvl: ResMsgLvl.Warning);

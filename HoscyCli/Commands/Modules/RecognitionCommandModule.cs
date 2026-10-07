@@ -37,7 +37,9 @@ public class RecognitionCommandModule
             new(["selected-module"], nameof(ConfigModel.Recognition_SelectedModuleName), ConfigModel.DESC_Recognition_SelectedModuleName),
             new(["fix-remove-end-period"], nameof(ConfigModel.Recognition_Fixup_RemoveEndPeriod), ConfigModel.DESC_Recognition_Fixup_RemoveEndPeriod),
             new(["fix-capitalize-first-letter"], nameof(ConfigModel.Recognition_Fixup_CapitalizeFirstLetter), ConfigModel.DESC_Recognition_Fixup_CapitalizeFirstLetter),
-            new(["microphone"], nameof(ConfigModel.Recognition_MicrophoneName), ConfigModel.DESC_Recognition_MicrophoneName),
+            new(["microphone-main"], nameof(ConfigModel.Recognition_MicrophoneName), ConfigModel.DESC_Recognition_MicrophoneName),
+            new(["microphone-fallback"], nameof(ConfigModel.Recognition_MicrophoneFallbackName), ConfigModel.DESC_Recognition_MicrophoneFallbackName),
+            new(["microphone-emptynotdefault"], nameof(ConfigModel.Recognition_MicrophoneFallbackName), ConfigModel.DESC_Recognition_MicrophoneEmptyNotDefault),
             new(["autostart"], nameof(ConfigModel.Recognition_AutoStart), ConfigModel.DESC_Recognition_AutoStart),
             new(["sound-on-mute"], nameof(ConfigModel.Recognition_Mute_PlaySound), ConfigModel.DESC_Recognition_Mute_PlaySound),
             new(["send-listening-via-osc"], nameof(ConfigModel.Recognition_SendListeningStatusViaOsc), ConfigModel.DESC_Recognition_SendListeningStatusViaOsc)

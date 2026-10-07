@@ -44,8 +44,15 @@ public class RecognitionComponentFactory(WhisperIpcConfig config)
             SampleRate = 16_000
         };
 
-        var device = AudioUtils.CreateCaptureForEngine(logger, logger, engine, _config.CaptureDeviceName, format: format) 
-            ?? throw new ArgumentNullException($"No microphone found for name \"{_config.CaptureDeviceName}\""); //todo: fallback
+        var device = AudioUtils.CreateCaptureForEngine
+        (
+            logger, logger, 
+            engine, 
+            _config.CaptureDeviceName,
+            _config.CaptureDeviceFallbackName,
+            _config.CaptureDeviceEmptyNotFallback,
+            format
+        ) ?? throw new ArgumentNullException($"No microphone found for name \"{_config.CaptureDeviceName}\" or \"{_config.CaptureDeviceFallbackName}\""); 
         if (!device.IsOk)
         {
             throw new Exception("Failed to create microphone: " + device.Msg);

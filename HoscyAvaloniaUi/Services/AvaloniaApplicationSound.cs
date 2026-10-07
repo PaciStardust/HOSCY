@@ -103,7 +103,12 @@ public class AvaloniaApplicationSound : StartStopServiceBase, IApplicationSound,
             if (_deviceReloadNeeded)
             {
                 _deviceReloadNeeded = false;
-                var swapRes = _playback.SwapPlayback(_config.Debug_InfoNoiseSpeakerName);
+                var swapRes = _playback.SwapPlayback
+                (
+                    _config.Debug_InfoNoiseSpeakerName, 
+                    _config.Debug_InfoNoiseSpeakerFallbackName, 
+                    _config.Debug_InfoNoiseSpeakerEmptyNotDefault
+                );
                 if (!swapRes.IsOk)
                 {
                     SetFaultLogNotify(swapRes.Msg, "Failed to load speaker for system audio", _notify, _logger);
@@ -179,7 +184,7 @@ public class AvaloniaApplicationSound : StartStopServiceBase, IApplicationSound,
     {
         if (_deviceReloadNeeded) return false;
         var devName = _playback.GetPlaybackName();
-        return devName is null || devName != _config.Debug_InfoNoiseSpeakerName;
+        return devName is null || devName != _config.Debug_InfoNoiseSpeakerName; //todo: remove
     }
     #endregion
 }

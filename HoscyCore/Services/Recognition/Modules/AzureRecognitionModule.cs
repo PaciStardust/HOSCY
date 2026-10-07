@@ -102,14 +102,11 @@ public class AzureRecognitionModule(ILogger logger, ConfigModel config, IAudioSe
         var updateResult = _audio.UpdateDeviceList();
         if (!updateResult.IsOk) return ResC.TFail<string>(updateResult.Msg);
 
-        var deviceListResult = _audio.GetCaptureInfos();
-        if (!deviceListResult.IsOk) return ResC.TFail<string>(deviceListResult.Msg);
-
-        var (devMatch, _) = AudioUtils.GetDeviceForName(_logger, "azure capture", deviceListResult.Value, _config.Recognition_MicrophoneName, false);
-        if (devMatch is null) return ResC.TFailLog<string>($"Microphone with name \"{_config.Recognition_MicrophoneName}\" could not be found",
+        var devMatch = _audio.GetCaptureInfoForNames(_config.Recognition_MicrophoneName, _config.Recognition_MicrophoneFallbackName);
+        if (devMatch is null) return ResC.TFailLog<string>($"Microphone with name \"{_config.Recognition_MicrophoneName}\" or \"{_config.Recognition_MicrophoneFallbackName}\" could not be found",
             _logger, lvl: ResMsgLvl.Warning);
 
-        return ResC.TOk(devMatch.Value.Name);
+        return devMatch.IsOk ? ResC.TOk(devMatch.Value.Name) : ResC.TFail<string>(devMatch.Msg);
     }
 
     private Res<SpeechConfig> CreateBaseSpeechConfig(bool isMultilang)

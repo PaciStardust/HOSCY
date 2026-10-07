@@ -42,7 +42,13 @@ public class TestRecognitionModule(ILogger logger, IAudioService audio, ConfigMo
 
     protected override Res StartForService()
     {
-        var micRes = _audio.CreateCapture(_logger, _config.Recognition_MicrophoneName, string.Empty); //todo: secondary
+        var micRes = _audio.CreateCapture
+        (
+            _logger, 
+            _config.Recognition_MicrophoneName, 
+            _config.Recognition_MicrophoneFallbackName, 
+            _config.Recognition_MicrophoneEmptyNotDefault
+        ); 
         if (micRes is null) return ResC.Fail(ResMsg.Err("Unable to locate a capture device"));
         if (!micRes.IsOk) return ResC.Fail(micRes.Msg);
 

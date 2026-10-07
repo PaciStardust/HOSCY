@@ -160,7 +160,7 @@ public class VoiceManagerService
     {
         if (_deviceReloadNeeded) return false;
         var devName = _playback.GetPlaybackName();
-        return devName is null || devName != _config.Voice_CurrentSpeakerName;
+        return devName is null || devName != _config.Voice_CurrentSpeakerName; //todo: remove
     }
 
     private async Task RunProcessingLoop()
@@ -170,7 +170,12 @@ public class VoiceManagerService
             if (_deviceReloadNeeded)
             {
                 _deviceReloadNeeded = false;
-                var swapRes = _playback.SwapPlayback(_config.Voice_CurrentSpeakerName);
+                var swapRes = _playback.SwapPlayback
+                (
+                    _config.Voice_CurrentSpeakerName, 
+                    _config.Voice_CurrentSpeakerFallbackName, 
+                    _config.Voice_CurrentSpeakerEmptyNotDefault
+                );
                 if (!swapRes.IsOk)
                 {
                     SetFaultLogNotify(swapRes.Msg, "Failed to load speaker for voice audio", _notify, _logger);

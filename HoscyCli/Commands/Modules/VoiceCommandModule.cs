@@ -29,6 +29,8 @@ public class VoiceCommandModule
         return [
             new(["selected-module"], nameof(ConfigModel.Voice_SelectedModuleName), ConfigModel.DESC_Voice_SelectedModuleName),
             new(["speaker"], nameof(ConfigModel.Voice_CurrentSpeakerName), ConfigModel.DESC_Voice_CurrentSpeakerName),
+            new(["speaker-fallback"], nameof(ConfigModel.Voice_CurrentSpeakerFallbackName), ConfigModel.DESC_Voice_CurrentSpeakerFallbackName),
+            new(["speaker-emptynotdefault"], nameof(ConfigModel.Voice_CurrentSpeakerEmptyNotDefault), ConfigModel.DESC_Voice_CurrentSpeakerEmptyNotDefault),
             new(["autostart"], nameof(ConfigModel.Voice_AutoStart), ConfigModel.DESC_Voice_AutoStart),
             new(["volume"], nameof(ConfigModel.Voice_AudioVolumePercent), ConfigModel.DESC_Voice_AudioVolumePercent),
             new(["maximum-text-length"], nameof(ConfigModel.Voice_MaximumTextLength), ConfigModel.DESC_Voice_MaximumTextLength),
