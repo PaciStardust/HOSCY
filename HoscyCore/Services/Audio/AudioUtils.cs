@@ -88,7 +88,7 @@ public static class AudioUtils
             $"Failed initializing {deviceType} device {deviceInfo.Value.Name}", logger);
     }
 
-    public static (DeviceInfo? Info, bool DefaultNull) GetDeviceForName(ILogger? logger, string deviceType, DeviceInfo[] infos, string deviceName, bool defaultNull)
+    private static (DeviceInfo? Info, bool DefaultNull) GetDeviceForName(ILogger? logger, string deviceType, DeviceInfo[] infos, string deviceName, bool defaultNull)
     {
         logger?.Debug("Locating {devType} device for name \"{name}\"", deviceType, deviceName);
 
@@ -147,6 +147,24 @@ public static class AudioUtils
     {
         return deviceName.Equals(DEVICE_NONE, StringComparison.OrdinalIgnoreCase);
     }
+
+    private static DeviceInfo? GetDeviceInfoForNames(ILogger logger, string deviceType, DeviceInfo[] infos, string primaryDeviceName, string fallbackDeviceName)
+    {
+        logger.Debug("Attempting to find {devType} Device with name \"{primary}\" or \"{secondary}\"",
+            deviceType, primaryDeviceName, fallbackDeviceName);
+
+        var (device, defaultNull) = GetDeviceForName(logger, deviceType, infos, primaryDeviceName, false);
+        if (device is not null) return device;
+
+        (device, _) = GetDeviceForName(logger, deviceType, infos, fallbackDeviceName, defaultNull);
+        if (device is null)
+        {
+            logger.Warning("Failed to find {devType} Device with name \"{primary}\" or \"{secondary}\"",
+                deviceType, primaryDeviceName, fallbackDeviceName);
+        }
+        
+        return device;
+    }
     #endregion
 
     #region Audio Engine Devices (Capture)
@@ -185,6 +203,15 @@ public static class AudioUtils
             finalEmptyNotDefault
         );
     }
+
+    public static Res<DeviceInfo>? GetCaptureInfoForNamesForEngine(ILogger logger, AudioEngine? audioEngine, string primaryDeviceName, string fallbackDeviceName = "")
+    {
+        var devices = GetCaptureInfosForEngine(logger, audioEngine);
+        if (!devices.IsOk) return ResC.TFail<DeviceInfo>(devices.Msg);
+
+        var search = GetDeviceInfoForNames(logger, "capture", devices.Value, primaryDeviceName, fallbackDeviceName);
+        return search is null ? null : ResC.TOk(search.Value);
+    }
     #endregion
 
     #region Audio Engine Devices (Playback)
@@ -222,6 +249,15 @@ public static class AudioUtils
             fallbackDeviceName,
             finalEmptyNotDefault
         );
+    }
+
+    public static Res<DeviceInfo>? GetPlaybackInfoForNamesForEngine(ILogger logger, AudioEngine? audioEngine, string primaryDeviceName, string fallbackDeviceName = "")
+    {
+        var devices = GetPlaybackInfosForEngine(logger, audioEngine);
+        if (!devices.IsOk) return ResC.TFail<DeviceInfo>(devices.Msg);
+
+        var search = GetDeviceInfoForNames(logger, "playback", devices.Value, primaryDeviceName, fallbackDeviceName);
+        return search is null ? null : ResC.TOk(search.Value);
     }
     #endregion
 
