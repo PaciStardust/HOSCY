@@ -55,7 +55,7 @@ public static class AudioUtils
             return ResC.TOk<T>(funcGetEmptyDevice());
         }
 
-        var (deviceInfo, defaultNull) = GetDeviceForName(logger, deviceType, deviceInfos.Value, primaryDeviceName, false);
+        var (deviceInfo, defaultNull) = GetDeviceInfoForNameFull(logger, deviceType, deviceInfos.Value, primaryDeviceName, false);
         if (deviceInfo is null)
         {
             if (IsNoneDevice(fallbackDeviceName))
@@ -64,7 +64,7 @@ public static class AudioUtils
                 return ResC.TOk(funcGetEmptyDevice());
             }
 
-            (deviceInfo, defaultNull) = GetDeviceForName(logger, deviceType, deviceInfos.Value, fallbackDeviceName, defaultNull);
+            (deviceInfo, defaultNull) = GetDeviceInfoForNameFull(logger, deviceType, deviceInfos.Value, fallbackDeviceName, defaultNull);
             if (deviceInfo is null)
             {
                 logger.Debug("No {devType} devices found for fallback or empty, looking for default", deviceType);
@@ -88,7 +88,7 @@ public static class AudioUtils
             $"Failed initializing {deviceType} device {deviceInfo.Value.Name}", logger);
     }
 
-    private static (DeviceInfo? Info, bool DefaultNull) GetDeviceForName(ILogger? logger, string deviceType, DeviceInfo[] infos, string deviceName, bool defaultNull)
+    private static (DeviceInfo? Info, bool DefaultNull) GetDeviceInfoForNameFull(ILogger? logger, string deviceType, DeviceInfo[] infos, string deviceName, bool defaultNull)
     {
         logger?.Debug("Locating {devType} device for name \"{name}\"", deviceType, deviceName);
 
@@ -117,8 +117,9 @@ public static class AudioUtils
             logger?.Debug("Located {devType} device with name \"{name}\"", deviceType, match.Name);
             return (match, defaultNull);
         }
+        logger?.Warning("Failed locating {devType} device for name \"{name}\"", deviceType, deviceName);
 
-        return (null, defaultNull);
+        return (GetDeviceInfoForName(logger, deviceType, infos, deviceName, false), defaultNull);
     }
 
     private static DeviceInfo? GetDefaultDevice(ILogger? logger, string deviceType, DeviceInfo[] infos)
@@ -134,29 +135,50 @@ public static class AudioUtils
             logger?.Debug("Located default {devType} device with name \"{name}\"", deviceType, match.Name);
             return match;
         }
-        logger?.Warning("Failed to locate a default {devType} device", deviceType);
         return null;
     }
 
-    private static bool IsDefaultDevice(string deviceName)
+    public static bool IsDefaultDevice(string deviceName)
     {
         return deviceName.Equals(DEVICE_DEFAULT, StringComparison.OrdinalIgnoreCase);
     }
 
-    private static bool IsNoneDevice(string deviceName)
+    public static bool IsNoneDevice(string deviceName)
     {
         return deviceName.Equals(DEVICE_NONE, StringComparison.OrdinalIgnoreCase);
     }
 
-    private static DeviceInfo? GetDeviceInfoForNames(ILogger logger, string deviceType, DeviceInfo[] infos, string primaryDeviceName, string fallbackDeviceName)
+    public static DeviceInfo? GetDeviceInfoForName(ILogger? logger, string deviceType, DeviceInfo[] infos, string deviceName, bool logVerbose = true)
+    {
+        if (logVerbose)
+        {
+            logger?.Debug("Locating {devType} device for name \"{name}\"", deviceType, deviceName);
+        }
+
+        var matches = infos.Where(x => x.Name.Equals(deviceName, StringComparison.OrdinalIgnoreCase)).ToArray();
+        if (matches.Length > 0)
+        {
+            if (matches.Length > 1)
+            {
+                logger?.Warning("Multiple {devType} devices found for name, picking first", deviceType);
+            }
+            var match = matches[0];
+            logger?.Debug("Located {devType} device with name \"{name}\"", deviceType, match.Name);
+            return match;
+        }
+        logger?.Warning("Failed to locate a default {devType} device", deviceType);
+        return null;
+    }
+
+    private static DeviceInfo? GetDeviceInfoForNamesFull(ILogger logger, string deviceType, DeviceInfo[] infos, string primaryDeviceName, string fallbackDeviceName)
     {
         logger.Debug("Attempting to find {devType} Device with name \"{primary}\" or \"{secondary}\"",
             deviceType, primaryDeviceName, fallbackDeviceName);
 
-        var (device, defaultNull) = GetDeviceForName(logger, deviceType, infos, primaryDeviceName, false);
+        var (device, defaultNull) = GetDeviceInfoForNameFull(logger, deviceType, infos, primaryDeviceName, false);
         if (device is not null) return device;
 
-        (device, _) = GetDeviceForName(logger, deviceType, infos, fallbackDeviceName, defaultNull);
+        (device, _) = GetDeviceInfoForNameFull(logger, deviceType, infos, fallbackDeviceName, defaultNull);
         if (device is null)
         {
             logger.Warning("Failed to find {devType} Device with name \"{primary}\" or \"{secondary}\"",
@@ -209,7 +231,7 @@ public static class AudioUtils
         var devices = GetCaptureInfosForEngine(logger, audioEngine);
         if (!devices.IsOk) return ResC.TFail<DeviceInfo>(devices.Msg);
 
-        var search = GetDeviceInfoForNames(logger, "capture", devices.Value, primaryDeviceName, fallbackDeviceName);
+        var search = GetDeviceInfoForNamesFull(logger, "capture", devices.Value, primaryDeviceName, fallbackDeviceName);
         return search is null ? null : ResC.TOk(search.Value);
     }
     #endregion
@@ -256,7 +278,7 @@ public static class AudioUtils
         var devices = GetPlaybackInfosForEngine(logger, audioEngine);
         if (!devices.IsOk) return ResC.TFail<DeviceInfo>(devices.Msg);
 
-        var search = GetDeviceInfoForNames(logger, "playback", devices.Value, primaryDeviceName, fallbackDeviceName);
+        var search = GetDeviceInfoForNamesFull(logger, "playback", devices.Value, primaryDeviceName, fallbackDeviceName);
         return search is null ? null : ResC.TOk(search.Value);
     }
     #endregion
