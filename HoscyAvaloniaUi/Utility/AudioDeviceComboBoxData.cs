@@ -112,7 +112,7 @@ public partial class AudioDeviceComboBoxData : ObservableObject
             return;
         }
 
-        var selected = options[idx];
+        var selected = options[idx].Replace(INDICATOR_MISSING, string.Empty);
         if (!selected.Equals(deviceName, System.StringComparison.OrdinalIgnoreCase))
         {
             _logger?.Information("Set {dev} for id {id} to \"{name}\"", isFallback ? "fallback" : "primary", _id, deviceName);
