@@ -27,6 +27,8 @@ public partial class AudioDeviceComboBoxData : ObservableObject
     private readonly bool _isCapture;
     private readonly IBackToFrontNotifyService _notify;
 
+    private bool _lastLoadFailed = false;
+
     public AudioDeviceComboBoxData
     (
         ILogger? logger, 
@@ -52,11 +54,13 @@ public partial class AudioDeviceComboBoxData : ObservableObject
         var devices = _isCapture ? _audio.GetCaptureInfos() : _audio.GetPlaybackInfos();
         if (!devices.IsOk)
         {
+            _lastLoadFailed = true;
             (PrimaryIndex, PrimaryOptions) = SetFailed();
             (FallbackIndex, FallbackOptions) = SetFailed();
             _notify.SendResult("Failed to Load Devices", devices.Msg);
             return;
         }
+        _lastLoadFailed = false;
 
         var deviceInfos = devices.Value;
         var deviceNames = deviceInfos.Select(x => x.Name)
@@ -88,7 +92,7 @@ public partial class AudioDeviceComboBoxData : ObservableObject
             }
 
             var list = deviceNames.ToList();
-            list.Insert(0, $"{INDICATOR_MISSING} {deviceName}");
+            list.Insert(0, $"{INDICATOR_MISSING}{deviceName}");
             return (0, list.ToArray());
         }
 
@@ -100,10 +104,12 @@ public partial class AudioDeviceComboBoxData : ObservableObject
 
     public bool OnSelectionChanged(string deviceName, bool isFallback, out string newDevice)
     {
+        newDevice = string.Empty;
+        if (_lastLoadFailed) return false;
+
         var (idx, options) = isFallback 
             ? (FallbackIndex, FallbackOptions)
             : (PrimaryIndex, PrimaryOptions);
-        newDevice = string.Empty;
 
         if (idx == -1) return false;
         if (idx >= options.Length)
