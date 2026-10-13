@@ -11,7 +11,6 @@ public partial class AudioDeviceComboBoxData : ObservableObject
 {
     private const string INDICATOR_MISSING = "[Missing] ";
 
-
     [ObservableProperty]
     public partial int PrimaryIndex { get; set; }
     [ObservableProperty]
@@ -99,24 +98,27 @@ public partial class AudioDeviceComboBoxData : ObservableObject
         }
     }
 
-    public void OnSelectionChanged(ref string deviceName, bool isFallback)
+    public bool OnSelectionChanged(string deviceName, bool isFallback, out string newDevice)
     {
         var (idx, options) = isFallback 
             ? (FallbackIndex, FallbackOptions)
             : (PrimaryIndex, PrimaryOptions);
+        newDevice = string.Empty;
 
-        if (idx == -1) return;
+        if (idx == -1) return false;
         if (idx >= options.Length)
         {
             _logger?.Warning($"Selected index for combo box {_id} too big");
-            return;
+            return false;
         }
 
         var selected = options[idx].Replace(INDICATOR_MISSING, string.Empty);
         if (!selected.Equals(deviceName, System.StringComparison.OrdinalIgnoreCase))
         {
             _logger?.Information("Set {dev} for id {id} to \"{name}\"", isFallback ? "fallback" : "primary", _id, deviceName);
-            deviceName = selected;
+            newDevice = selected;
+            return true;
         }
+        return false;
     }
 }
