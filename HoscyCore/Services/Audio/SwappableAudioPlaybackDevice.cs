@@ -120,8 +120,11 @@ public class SwappableAudioPlaybackDevice<T>
         _playback = playback.Value;
 
         var playbackOn = _playback.Start();
-        if (!playbackOn.IsOk) return playbackOn;
-
+        if (!playbackOn.IsOk) 
+        {
+            return playbackOn;
+        }
+        OnPlaybackChanged.Invoke(_playback.GetDeviceName());
         return ResC.Ok();
     }
 
@@ -137,6 +140,7 @@ public class SwappableAudioPlaybackDevice<T>
         _playback?.Dispose();
         _playback = null;
 
+        OnPlaybackChanged.Invoke(null);
         return res;
     }
 
@@ -144,5 +148,6 @@ public class SwappableAudioPlaybackDevice<T>
     {
         return _playback?.GetDeviceName();
     }
+    public event Action<string?> OnPlaybackChanged = delegate { };
     #endregion
 }
