@@ -140,7 +140,7 @@ public static class AudioUtils
 
     public static bool IsDefaultDevice(string deviceName)
     {
-        return deviceName.Equals(DEVICE_DEFAULT, StringComparison.OrdinalIgnoreCase);
+        return string.IsNullOrWhiteSpace(deviceName) || deviceName.Equals(DEVICE_DEFAULT, StringComparison.OrdinalIgnoreCase);
     }
 
     public static bool IsNoneDevice(string deviceName)
