@@ -40,7 +40,6 @@ public class VoiceManagerService
     private Task? _processingTask = null;
     private volatile bool _shouldTaskRun = true;
     private ConcurrentQueue<string> _toProcess = [];
-    private volatile bool _deviceReloadNeeded = true;
     #endregion
 
     #region Startup
@@ -53,8 +52,9 @@ public class VoiceManagerService
     {
         _playback.Dispose();
         _playback = new(_logger, _audio);
-
-        _deviceReloadNeeded = true;
+        _playback.OnStatusChanged += InvokeOnPlaybackStatusChanged;
+        
+        _playback.SwapPending = true;
         _shouldTaskRun = true;
         _toProcess.Clear();
 
@@ -76,7 +76,8 @@ public class VoiceManagerService
 
         _playback.ClearPlayback().IfFail(messages.Add);
 
-        _deviceReloadNeeded = false;
+        _playback.SwapPending = false;
+        _playback.OnStatusChanged -= InvokeOnPlaybackStatusChanged;
         _toProcess.Clear();
             
         base.StopForService().IfFail(messages.Add);
@@ -145,33 +146,12 @@ public class VoiceManagerService
         return ResC.Ok();
     }
 
-    public string? GetPlaybackName()
-    {
-        // return _playback.GetPlaybackName();
-        return string.Empty;
-    }
-
-    public void RefreshPlayback()
-    {
-        _logger.Debug("Set flag to refresh audio device");
-        _deviceReloadNeeded = true;
-    }
-
-    public bool IsPlaybackRefreshNeeded()
-    {
-        // if (_deviceReloadNeeded) return false;
-        // var devName = _playback.GetPlaybackName();
-        // return devName is null || devName != _config.Voice_CurrentSpeakerName; //todo: remove
-        return false;
-    }
-
     private async Task RunProcessingLoop()
     {
         while (_shouldTaskRun)
         {
-            if (_deviceReloadNeeded)
+            if (_playback.SwapPending)
             {
-                _deviceReloadNeeded = false;
                 var swapRes = _playback.SwapPlayback
                 (
                     _config.Voice_CurrentSpeakerName, 
@@ -208,6 +188,24 @@ public class VoiceManagerService
                 "Failed to create audio", _logger);
 
         return voiceRes;
+    }
+    #endregion
+
+    #region Playback
+    public void RefreshPlayback()
+    {
+        _logger.Debug("Set flag to refresh audio device");
+        _playback.SwapPending = true;
+    }
+
+    public event Action<AudioPlaybackDeviceStatusInfo> OnPlaybackStatusChanged = delegate { };
+    public AudioPlaybackDeviceStatusInfo GetPlaybackStatus()
+    {
+        return _playback.GetCurrentStatus();
+    }
+    private void InvokeOnPlaybackStatusChanged(AudioPlaybackDeviceStatusInfo info)
+    {
+        OnPlaybackStatusChanged.Invoke(info);
     }
     #endregion
 }

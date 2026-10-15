@@ -306,7 +306,7 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
     }
     private void OptionsSpeakerUpdateApplyNeeded()
     {
-        OptionsSpeakerApplyNeeded = _voice.IsPlaybackRefreshNeeded();
+        //OptionsSpeakerApplyNeeded = _voice.IsPlaybackRefreshNeeded(); todo: remove
     }
     public override void OptionsSpeakerVolumeChanged()
     {
