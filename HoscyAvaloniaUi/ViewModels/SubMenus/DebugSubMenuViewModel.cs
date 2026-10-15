@@ -23,6 +23,8 @@ public abstract partial class DebugSubMenuViewModelBase : ViewModelBase
     [ObservableProperty]
     public partial AudioDeviceComboBoxData InfoSpeaker { get; set; }
     [ObservableProperty]
+    public partial string InfoSpeakerStatusText { get; set; }
+    [ObservableProperty]
     public partial string InfoSpeakerVolumeText { get; set; }
     [ObservableProperty]
     public partial bool InfoSpeakerApplyNeeded { get; protected set; }
@@ -74,7 +76,8 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
         List<ResMsg> errors = [];
         InfoSpeaker = new(_logger, _audio, "InfoSpeaker", false, notify, 
             Config.Debug_InfoNoiseSpeakerName, Config.Debug_InfoNoiseSpeakerFallbackName);
-        InfoSpeakerUpdateApplyNeeded();
+        InfoSpeakerStatusText = _applicationSound.GetPlaybackStatus().ToString();
+        _applicationSound.OnPlaybackStatusChanged += InfoNoiseSpeakerStatusChanged;
 
         LogLevels = new(Enum.GetNames<LogEventLevel>(), Enum.GetName(Config.Debug_LogMinimumSeverity) ?? string.Empty, _logger, "LogLevel");
         LogUpdateFilterValidity();
@@ -104,23 +107,21 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
     public override void InfoSpeakerRefreshClicked()
     {
         InfoSpeaker.RefreshItems(Config.Debug_InfoNoiseSpeakerName, Config.Debug_InfoNoiseSpeakerFallbackName);
-        InfoSpeakerUpdateApplyNeeded(); //todo: ???
     }
     public override void InfoSpeakerApplyClicked()
     {
         var res = _applicationSound.Refresh();;
         res.IfFail(x => _popup.OpenNotification("Failed to Apply Speaker", x.Message, true, true));
-        InfoSpeakerUpdateApplyNeeded();
-    }
-    private void InfoSpeakerUpdateApplyNeeded()
-    {
-        //InfoSpeakerApplyNeeded = _applicationSound.IsRefreshNeeded();
     }
     public override void InfoSpeakerVolumeChanged()
     {
         InfoSpeakerVolumeText = $"Speaker Volume ({MathF.Round(Config.Debug_InfoNoiseVolumePercent * 100)}%)";
     }
 
+    private void InfoNoiseSpeakerStatusChanged(AudioPlaybackDeviceStatusInfo info)
+    {
+        InfoSpeakerStatusText = info.ToString();
+    }
 
     public override void LogLevelChanged()
     {
