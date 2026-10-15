@@ -154,7 +154,7 @@ public class SwappableAudioPlaybackDevice<T>
     #endregion
 
     #region State
-    public bool SwapPending //todo: invoke event here?
+    public bool SwapPending
     {
         get => _swapPending;
         set {

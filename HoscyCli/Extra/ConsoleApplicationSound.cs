@@ -27,8 +27,9 @@ public class ConsoleApplicationSound : IApplicationSound
         return ResC.Ok();
     }
 
-    public bool IsRefreshNeeded()
+    public event Action<AudioPlaybackDeviceStatusInfo> OnPlaybackStatusChanged = delegate { };
+    public AudioPlaybackDeviceStatusInfo GetPlaybackStatus()
     {
-        return false;
+        return new(AudioPlaybackDeviceState.Running, "Console");
     }
 }
