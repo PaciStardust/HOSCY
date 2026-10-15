@@ -147,7 +147,8 @@ public class VoiceManagerService
 
     public string? GetPlaybackName()
     {
-        return _playback.GetPlaybackName();
+        // return _playback.GetPlaybackName();
+        return string.Empty;
     }
 
     public void RefreshPlayback()
@@ -158,9 +159,10 @@ public class VoiceManagerService
 
     public bool IsPlaybackRefreshNeeded()
     {
-        if (_deviceReloadNeeded) return false;
-        var devName = _playback.GetPlaybackName();
-        return devName is null || devName != _config.Voice_CurrentSpeakerName; //todo: remove
+        // if (_deviceReloadNeeded) return false;
+        // var devName = _playback.GetPlaybackName();
+        // return devName is null || devName != _config.Voice_CurrentSpeakerName; //todo: remove
+        return false;
     }
 
     private async Task RunProcessingLoop()

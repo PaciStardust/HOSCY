@@ -21,12 +21,13 @@ public abstract partial class DebugSubMenuViewModelBase : ViewModelBase
     public partial ConfigModel Config { get; set; }
 
     [ObservableProperty]
-    public partial ComboBoxData InfoSpeaker { get; set; }
+    public partial AudioDeviceComboBoxData InfoSpeaker { get; set; }
     [ObservableProperty]
     public partial string InfoSpeakerVolumeText { get; set; }
     [ObservableProperty]
     public partial bool InfoSpeakerApplyNeeded { get; protected set; }
     public virtual void InfoSpeakerChanged() { }
+    public virtual void InfoSpeakerFallbackChanged() { }
     public virtual void InfoSpeakerRefreshClicked() { }
     public virtual void InfoSpeakerApplyClicked() { }
     public virtual void InfoSpeakerVolumeChanged() { }
@@ -71,9 +72,8 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
         _applicationSound = applicationSound;
 
         List<ResMsg> errors = [];
-        var speakers = InfoSpeakerGetNames();
-        speakers.IfFail(errors.Add);
-        InfoSpeaker = new(speakers.Value ?? [], Config.Debug_InfoNoiseSpeakerName, _logger, "InfoSpeaker");
+        InfoSpeaker = new(_logger, _audio, "InfoSpeaker", false, notify, 
+            Config.Debug_InfoNoiseSpeakerName, Config.Debug_InfoNoiseSpeakerFallbackName);
         InfoSpeakerUpdateApplyNeeded();
 
         LogLevels = new(Enum.GetNames<LogEventLevel>(), Enum.GetName(Config.Debug_LogMinimumSeverity) ?? string.Empty, _logger, "LogLevel");
@@ -88,48 +88,23 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
 
     public override void InfoSpeakerChanged()
     {
-        var selected = InfoSpeaker.GetSelected();
-        if (selected is null)
+        if (InfoSpeaker.OnSelectionChanged(Config.Debug_InfoNoiseSpeakerName, false, out var newSpeaker))
         {
-            return;
+            Config.Debug_InfoNoiseSpeakerName = newSpeaker;
         }
-
-        var speakers = InfoSpeakerGetNames();
-        if (!speakers.IsOk)
-        {
-            _popup.OpenNotification("Failed to Assign Selected Speaker", speakers.Msg.Message, true, true);
-            return;
-        }
-
-        var match = speakers.Value.FirstOrDefault(x => x == selected);
-        if (match is not null)
-        {
-            Config.Debug_InfoNoiseSpeakerName = match;
-        }
-        InfoSpeakerUpdateApplyNeeded();
     }
+    public override void InfoSpeakerFallbackChanged()
+    {
+        if (InfoSpeaker.OnSelectionChanged(Config.Debug_InfoNoiseSpeakerFallbackName, true, out var newSpeaker))
+        {
+            Config.Debug_InfoNoiseSpeakerFallbackName = newSpeaker;
+        }
+    }
+
     public override void InfoSpeakerRefreshClicked()
     {
-        var refresh = _audio.UpdateDeviceList();
-        if (!refresh.IsOk)
-        {
-            _popup.OpenNotification("Failed to Update Speakers", refresh.Msg.Message, true, true);
-            return;
-        }
-
-        var speakers = InfoSpeakerGetNames();
-        if (!speakers.IsOk)
-        {
-            _popup.OpenNotification("Failed to Retrieve Speakers", speakers.Msg.Message, true, true);
-            return;
-        }
-        InfoSpeaker.RefreshItems(speakers.Value, Config.Debug_InfoNoiseSpeakerName);
-        InfoSpeakerUpdateApplyNeeded();
-    }
-    private Res<string[]> InfoSpeakerGetNames()
-    {
-        var speakers = _audio.GetPlaybackInfos();
-        return speakers.IsOk ? ResC.TOk(speakers.Value.Select(x => x.Name).ToArray()) : ResC.TFail<string[]>(speakers.Msg);
+        InfoSpeaker.RefreshItems(Config.Debug_InfoNoiseSpeakerName, Config.Debug_InfoNoiseSpeakerFallbackName);
+        InfoSpeakerUpdateApplyNeeded(); //todo: ???
     }
     public override void InfoSpeakerApplyClicked()
     {
@@ -139,7 +114,7 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
     }
     private void InfoSpeakerUpdateApplyNeeded()
     {
-        InfoSpeakerApplyNeeded = _applicationSound.IsRefreshNeeded();
+        //InfoSpeakerApplyNeeded = _applicationSound.IsRefreshNeeded();
     }
     public override void InfoSpeakerVolumeChanged()
     {

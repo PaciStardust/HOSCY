@@ -179,12 +179,5 @@ public class AvaloniaApplicationSound : StartStopServiceBase, IApplicationSound,
     {
         PlayMuteSound();
     }
-
-    public bool IsRefreshNeeded()
-    {
-        if (_deviceReloadNeeded) return false;
-        var devName = _playback.GetPlaybackName();
-        return devName is null || devName != _config.Debug_InfoNoiseSpeakerName; //todo: remove
-    }
     #endregion
 }

@@ -24,7 +24,7 @@ public class EmptyAudioPlaybackDeviceProxy(ILogger logger) : IAudioPlaybackDevic
 
     public string? GetDeviceName()
     {
-        return IsRunning ? AudioUtils.DEVICE_NONE : null;
+        return AudioUtils.DEVICE_NONE;
     }
 
     public async Task<Res> PlayAsync(float volume, CancellationToken ct)

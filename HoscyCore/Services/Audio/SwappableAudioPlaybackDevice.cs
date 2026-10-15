@@ -25,7 +25,6 @@ public class SwappableAudioPlaybackDevice<T>
     #endregion
 
     #region Utils
-    public bool IsPlaybackRunning => _playback?.IsRunning ?? false;
     public void Dispose()
     {
         _playbackCancellation?.Dispose();
@@ -97,10 +96,19 @@ public class SwappableAudioPlaybackDevice<T>
     public Res SwapPlayback(string primaryDevName, string fallbackDevName, bool useEmptyNotDefault)
     {
         _logger.Debug("Device swap initialized");
-        var res = ClearPlayback(); 
-        if (!res.IsOk) return res;
+        _swapPending = false;
+        _swapping = true;
+        InvokeStatusUpdate();
 
-        res = CreatePlayback(primaryDevName, fallbackDevName, useEmptyNotDefault);
+        var res = ClearPlayback(); 
+        if (res.IsOk)
+        {
+            res = CreatePlayback(primaryDevName, fallbackDevName, useEmptyNotDefault);
+        }
+
+        _swapping = false;
+        InvokeStatusUpdate();
+
         return res;
     }
 
@@ -120,11 +128,11 @@ public class SwappableAudioPlaybackDevice<T>
         _playback = playback.Value;
 
         var playbackOn = _playback.Start();
+        InvokeStatusUpdate();
         if (!playbackOn.IsOk) 
         {
             return playbackOn;
         }
-        OnPlaybackChanged.Invoke(_playback.GetDeviceName());
         return ResC.Ok();
     }
 
@@ -140,14 +148,58 @@ public class SwappableAudioPlaybackDevice<T>
         _playback?.Dispose();
         _playback = null;
 
-        OnPlaybackChanged.Invoke(null);
+        InvokeStatusUpdate();
         return res;
     }
+    #endregion
 
-    public string? GetPlaybackName()
+    #region State
+    public bool IsPlaybackRunning => _playback?.IsRunning ?? false;
+
+    public bool SwapPending //todo: invoke event here?
     {
-        return _playback?.GetDeviceName();
+        get => _swapPending;
+        set {
+            _swapPending = value;
+            InvokeStatusUpdate();
+        }
     }
-    public event Action<string?> OnPlaybackChanged = delegate { };
+    private bool _swapPending = false;
+    private bool _swapping = false;
+
+    public event Action<SwappableAudioPlaybackStatus> OnStatusChanged = delegate { };
+
+    public SwappableAudioPlaybackStatus GetCurrentStatus()
+    {
+        var state = _swapping
+            ? SwappableAudioPlaybackState.Swapping
+            : _playback is null
+                ? SwappableAudioPlaybackState.Stopped
+                : _playback.IsRunning
+                    ? _swapPending
+                        ? SwappableAudioPlaybackState.SwapPending
+                        : SwappableAudioPlaybackState.Running
+                    : SwappableAudioPlaybackState.Error;
+
+        var devName = _playback?.GetDeviceName();
+        return new(state, devName);
+    }
+    private void InvokeStatusUpdate()
+    {
+        var status = GetCurrentStatus();
+        _logger.Verbose("Sending status update with state {state} and device {device}", status.State, status.Name);
+        OnStatusChanged.Invoke(status);
+    }
     #endregion
 }
+
+public enum SwappableAudioPlaybackState
+{
+    SwapPending,
+    Swapping,
+    Error,
+    Stopped,
+    Running
+}
+
+public record SwappableAudioPlaybackStatus(SwappableAudioPlaybackState State, string? Name);

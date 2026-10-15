@@ -20,14 +20,22 @@
 
 				<StackPanel Theme="{StaticResource HStackIndent}">
 					<StackPanel Theme="{StaticResource HStackS}">
-						<Label Theme="{StaticResource HLabel}" Content="Info Noise Speaker"/>
 						<WrapPanel Theme="{StaticResource HWrap}">
-							<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding InfoSpeaker.Index}" ItemsSource="{Binding InfoSpeaker.Options}" SelectionChanged="InfoSpeakerChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Debug_InfoNoiseSpeakerName}"/>
+							<Label Theme="{StaticResource HLabel}" Content="Info Noise Speaker"/>
 							<Button Content="Refresh" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="InfoSpeakerRefreshClicked" ToolTip.Tip="Refreshes the list of speakers"/>
 							<Button Content="Apply" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="InfoSpeakerApplyClicked" ToolTip.Tip="Applies the speaker change"/>
 						</WrapPanel>
-						<TextBlock Theme="{StaticResource HTextBlockError}" Text="Currently selected speaker is not used, please press 'Apply'" IsVisible="{Binding InfoSpeakerApplyNeeded}"/>
+						<TextBlock Theme="{StaticResource HTextBlockNote}" Text="Current Device (Press 'Apply' to change):"/>
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding InfoSpeaker.PrimaryIndex}" ItemsSource="{Binding InfoSpeaker.PrimaryOptions}" SelectionChanged="InfoSpeakerChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Debug_InfoNoiseSpeakerName}"/>
+							<Label Theme="{StaticResource HLabel}" Content="Primary Speaker" VerticalAlignment="Center"/>
+						</WrapPanel>
+						<WrapPanel Theme="{StaticResource HWrap}">
+							<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding InfoSpeaker.FallbackIndex}" ItemsSource="{Binding InfoSpeaker.FallbackOptions}" SelectionChanged="InfoSpeakerFallbackChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Debug_InfoNoiseSpeakerFallbackName}"/>
+							<Label Theme="{StaticResource HLabel}" Content="Fallback Speaker" VerticalAlignment="Center"/>
+						</WrapPanel>
 						<TextBlock Theme="{StaticResource HTextBlockNote}" Text="Warning: Some Devices (Like AirPods) do Not Function Correctly When Used as Output And Input at the Same Time, Even Across Different Applications"/>
+						<CheckBox Theme="{StaticResource HCheckBox}" Content="Use Empty Device as Third Option" IsChecked="{Binding Config.Debug_InfoNoiseSpeakerEmptyNotDefault}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Debug_InfoNoiseSpeakerEmptyNotDefault}"/>
 					</StackPanel>
 
 					<WrapPanel Theme="{StaticResource HWrap}">
