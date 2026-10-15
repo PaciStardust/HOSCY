@@ -22,9 +22,6 @@ public readonly record struct AudioPlaybackDeviceStatusInfo(AudioPlaybackDeviceS
             AudioPlaybackDeviceState.Running => string.Empty,
             _ => "Unknown"
         };
-
-        return string.IsNullOrWhiteSpace(Name) 
-            ? $"{Name} ({stateText})"
-            : $"Device {stateText}";
+        return $"{Name ?? "Nameless Device"}{(stateText.Length == 0 ? string.Empty : $" ({stateText})")}";
     }
 }
