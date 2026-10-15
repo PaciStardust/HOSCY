@@ -47,7 +47,7 @@ public class VoiceManagerService
     protected override bool IsStarted()
         => base.IsStarted() || _processingTask is not null;
     protected override bool IsProcessing()
-        => base.IsProcessing() && _playback.IsPlaybackRunning;
+        => base.IsProcessing() && _playback.GetCurrentStatus().State == AudioPlaybackDeviceState.Running;
 
     protected override Res StartForService()
     {

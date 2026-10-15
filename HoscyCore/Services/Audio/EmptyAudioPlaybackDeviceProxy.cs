@@ -22,9 +22,9 @@ public class EmptyAudioPlaybackDeviceProxy(ILogger logger) : IAudioPlaybackDevic
         Stream.Dispose();
     }
 
-    public string? GetDeviceName()
+    public AudioPlaybackDeviceStatusInfo GetDeviceStatus()
     {
-        return AudioUtils.DEVICE_NONE;
+        return new(IsRunning ? AudioPlaybackDeviceState.Running : AudioPlaybackDeviceState.Stopped, AudioUtils.DEVICE_NONE);
     }
 
     public async Task<Res> PlayAsync(float volume, CancellationToken ct)

@@ -45,7 +45,7 @@ public class AvaloniaApplicationSound : StartStopServiceBase, IApplicationSound,
     protected override bool IsStarted()
         => _processingTask is not null;
     protected override bool IsProcessing()
-        => IsStarted() && _playback.IsPlaybackRunning;
+        => IsStarted() && _playback.GetCurrentStatus().State == AudioPlaybackDeviceState.Running;
     protected override bool UseAlreadyStartedProtection => true;
 
     protected override Res StartForService()

@@ -13,9 +13,14 @@ public class AudioPlaybackDeviceProxy(AudioPlaybackDevice playback, ILogger logg
     
     public MemoryStream Stream { get; private init; } = new();
 
-    public string? GetDeviceName()
+    public AudioPlaybackDeviceStatusInfo GetDeviceStatus()
     {
-        return _playback.Info?.Name;
+        var (name, state) = _playback is null
+            ? (AudioPlaybackDeviceState.Stopped, null)
+            : _playback.IsRunning
+                ? (AudioPlaybackDeviceState.Running, _playback.Info?.Name)
+                : (AudioPlaybackDeviceState.Error, _playback.Info?.Name);
+        return new(name, state);
     }
 
     public Res Start()
@@ -27,8 +32,6 @@ public class AudioPlaybackDeviceProxy(AudioPlaybackDevice playback, ILogger logg
     {
         return ResC.WrapR(_playback.Stop, "Failed to stop playback device", _logger);
     }
-
-    public bool IsRunning => _playback.IsRunning;
 
     public void Dispose()
     {

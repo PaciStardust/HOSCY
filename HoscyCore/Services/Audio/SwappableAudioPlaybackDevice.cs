@@ -45,7 +45,7 @@ public class SwappableAudioPlaybackDevice<T>
 
     private async Task<Res> PlayAsyncInternal(float volume, T passthrough, Func<MemoryStream, CancellationToken, T, Task<Res>> writerTask)
     {
-        if (_playback is null || !_playback.IsRunning)
+        if (_playback is null || _playback.GetDeviceStatus().State != AudioPlaybackDeviceState.Running)
         {
             _deviceInUse = false;
             return ResC.FailLog("Unable to play audio, the device is not initialized", _logger);
@@ -154,8 +154,6 @@ public class SwappableAudioPlaybackDevice<T>
     #endregion
 
     #region State
-    public bool IsPlaybackRunning => _playback?.IsRunning ?? false;
-
     public bool SwapPending //todo: invoke event here?
     {
         get => _swapPending;
@@ -167,22 +165,23 @@ public class SwappableAudioPlaybackDevice<T>
     private bool _swapPending = false;
     private bool _swapping = false;
 
-    public event Action<SwappableAudioPlaybackStatus> OnStatusChanged = delegate { };
+    public event Action<AudioPlaybackDeviceStatusInfo> OnStatusChanged = delegate { };
 
-    public SwappableAudioPlaybackStatus GetCurrentStatus()
+    public AudioPlaybackDeviceStatusInfo GetCurrentStatus()
     {
-        var state = _swapping
-            ? SwappableAudioPlaybackState.Swapping
-            : _playback is null
-                ? SwappableAudioPlaybackState.Stopped
-                : _playback.IsRunning
-                    ? _swapPending
-                        ? SwappableAudioPlaybackState.SwapPending
-                        : SwappableAudioPlaybackState.Running
-                    : SwappableAudioPlaybackState.Error;
+        var playbackStatus = _playback?.GetDeviceStatus();
 
-        var devName = _playback?.GetDeviceName();
-        return new(state, devName);
+        var state = _swapping
+            ? AudioPlaybackDeviceState.Swapping
+            : playbackStatus is null
+                ? AudioPlaybackDeviceState.Stopped
+                : playbackStatus.Value.State == AudioPlaybackDeviceState.Running
+                    ? _swapPending
+                        ? AudioPlaybackDeviceState.SwapPending
+                        : AudioPlaybackDeviceState.Running
+                    : AudioPlaybackDeviceState.Error;
+
+        return new(state, playbackStatus?.Name);
     }
     private void InvokeStatusUpdate()
     {
@@ -192,14 +191,3 @@ public class SwappableAudioPlaybackDevice<T>
     }
     #endregion
 }
-
-public enum SwappableAudioPlaybackState
-{
-    SwapPending,
-    Swapping,
-    Error,
-    Stopped,
-    Running
-}
-
-public record SwappableAudioPlaybackStatus(SwappableAudioPlaybackState State, string? Name);
