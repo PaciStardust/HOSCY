@@ -37,7 +37,8 @@ sealed class Program
         return AppBuilder.Configure(() => new App(logger))
             .UsePlatformDetect()
             .WithInterFont()
-            .LogToSerilog(logger);
+            .LogToSerilog(logger)
+            .UseWaylandWithFallback();
     }
 
     public static AppBuilder BuildAvaloniaApp()
