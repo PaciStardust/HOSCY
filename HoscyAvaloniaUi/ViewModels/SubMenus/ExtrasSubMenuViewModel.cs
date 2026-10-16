@@ -89,7 +89,7 @@ public class ExtrasSubMenuViewModelImpl : ExtrasSubMenuViewModelBase
     {
         _logger.Information("Editing counters filters");
         _popup.OpenEditCounters(Config.Counters_List, null, 
-            () => Config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger));
+            () => Config.TrySave(PathUtils.PathConfig, ConfigModelLoader.DEFAULT_FILE_NAME, _logger));
     }
 
     public override void MediaBackendChanged()
@@ -126,7 +126,7 @@ public class ExtrasSubMenuViewModelImpl : ExtrasSubMenuViewModelBase
             var msg = $"Following filters are invalid:\n{string.Join("\n", strings.Select(x => $" - {x}"))}";
             _popup.OpenNotification("Invalid Filters Found", msg, false, true);
         }
-        Config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
+        Config.TrySave(PathUtils.PathConfig, ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
     }
     private string[] MediaUpdateFilterValidity()
     {
@@ -157,13 +157,13 @@ public class ExtrasSubMenuViewModelImpl : ExtrasSubMenuViewModelBase
     {
         _logger.Information("Editing preferred MPRIS endpoints");
         _popup.OpenEditList(Config.Media_Mpris_PreferredEndpoints, "Editing Preferred MPRIS Endpoints", "Pref. Endpoint", null,
-            () => Config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger));
+            () => Config.TrySave(PathUtils.PathConfig, ConfigModelLoader.DEFAULT_FILE_NAME, _logger));
     }
     public override void MediaMprisEndpointsIgnoredClicked()
     {
         _logger.Information("Editing ignored MPRIS endpoints");
         _popup.OpenEditList(Config.Media_Mpris_IgnoredEndpoints, "Editing Ignored MPRIS Endpoints", "Ign. Endpoint", null,
-            () => Config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger));
+            () => Config.TrySave(PathUtils.PathConfig, ConfigModelLoader.DEFAULT_FILE_NAME, _logger));
     }
     private void MediaBackendUpdateMenus()
     {

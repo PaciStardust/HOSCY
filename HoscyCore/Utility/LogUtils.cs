@@ -12,7 +12,7 @@ public static class LogUtils
     public static string LogFileName => _logFileName;
     private const string LOG_FILE_START = "log-";
     private const string LOG_FILE_END = ".txt";
-    private static readonly string _logFileName = $"{LOG_FILE_START}{DateTimeOffset.UtcNow:MM-dd-yyyy-HH-mm-ss}{LOG_FILE_END}";
+    private static readonly string _logFileName = Path.Combine(PathUtils.PathLog, $"{LOG_FILE_START}{DateTimeOffset.UtcNow:MM-dd-yyyy-HH-mm-ss}{LOG_FILE_END}");
 
     public static ILogger CreateTemporaryLogger<T>(bool disableConsoleLogging = false)
     {

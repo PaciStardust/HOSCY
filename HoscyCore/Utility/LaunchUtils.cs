@@ -43,8 +43,11 @@ public static class LaunchUtils
     {
         try
         {
+            var legacyFolder = Path.Join(PathUtils.PathHoscyApp, "config");
+
             logger.Information("Attempting to load config file...");
-            var resConfig = ConfigModelLoader.TryLoad(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, logger);
+            var resConfig = ConfigModelLoader.TryLoad(PathUtils.PathConfig, ConfigModelLoader.DEFAULT_FILE_NAME, logger);
+            resConfig ??= ConfigModelLoader.TryLoad(legacyFolder, ConfigModelLoader.DEFAULT_FILE_NAME, logger);
             if (resConfig is not null && !resConfig.IsOk)
             {
                 return resConfig;
@@ -55,7 +58,9 @@ public static class LaunchUtils
             {
                 logger.Information("Could not find config file, attempting to load legacy config file instead...");
 
-                var resLegacyConfig = LegacyConfigModelLoader.TryLoad(PathUtils.PathConfigFolder, LegacyConfigModelLoader.DEFAULT_FILE_NAME, logger);
+                var resLegacyConfig = LegacyConfigModelLoader.TryLoad(PathUtils.PathConfig, LegacyConfigModelLoader.DEFAULT_FILE_NAME, logger);
+                resLegacyConfig ??= LegacyConfigModelLoader.TryLoad(legacyFolder, LegacyConfigModelLoader.DEFAULT_FILE_NAME, logger);
+
                 var resLegacyUpgrade = resLegacyConfig is null ? null : (resLegacyConfig.IsOk ? resLegacyConfig.Value.Upgrade(logger) : ResC.Fail(resLegacyConfig.Msg));
 
                 if (resLegacyUpgrade is not null && !resLegacyUpgrade.IsOk)
@@ -83,7 +88,7 @@ public static class LaunchUtils
             }
 
             logger.Information("Successfully created and upgraded the provided configuration");
-            config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, logger);
+            config.TrySave(PathUtils.PathConfig, ConfigModelLoader.DEFAULT_FILE_NAME, logger);
             return ResC.TOk(config);
         }
         catch (Exception ex)

@@ -133,7 +133,7 @@ public partial class CoreMenuViewModelImpl : CoreMenuViewModelBase
         }
         else
         {
-            ConfigModelLoader.TrySave(_config, PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
+            ConfigModelLoader.TrySave(_config, PathUtils.PathConfig, ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
         }
 
         var title = NavButtons[selectedIndex].Title;

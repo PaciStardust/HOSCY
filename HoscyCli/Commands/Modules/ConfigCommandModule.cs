@@ -58,7 +58,7 @@ public class ConfigCommandModule(ReflectPropEditCommandModule reflectionCm, Conf
     [SubCommandModule(["save", "s"], "Save the config file")]
     public Res Save()
     {
-        var success = _config.TrySave(PathUtils.PathConfigFolder,ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
+        var success = _config.TrySave(PathUtils.PathConfig,ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
         if (!success) return ResC.Fail("Saving failed!");
         Console.WriteLine("Config saved");
         return ResC.Ok();

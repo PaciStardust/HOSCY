@@ -8,15 +8,23 @@ namespace HoscyCore.Utility;
 /// </summary>
 public static class PathUtils
 {
-    public static string PathExecutable { get; private set; }
-    public static string PathConfigFolder { get; private set; }
-    public static string PathExecutableFolder { get; private set; }
+    //public static string PathConfigFolder { get; private set; }
+    //public static string PathExecutableFolder { get; private set; }
+
+    public static string PathConfig { get; private set; }
+    public static string PathLog { get; private set; }
+    public static string PathHoscyApp { get; private set; }
 
     static PathUtils()
     {
-        PathExecutable = Assembly.GetExecutingAssembly().Location;
-        PathExecutableFolder = Path.GetDirectoryName(PathExecutable) ?? Directory.GetCurrentDirectory();
-        PathConfigFolder = Path.GetFullPath(Path.Combine(PathExecutableFolder, "config"));
+        var pathExecutable = Assembly.GetExecutingAssembly().Location;
+        PathHoscyApp = Path.GetFullPath(Path.GetDirectoryName(pathExecutable) ?? Directory.GetCurrentDirectory());
+
+        var envAppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData, Environment.SpecialFolderOption.DoNotVerify);
+        PathConfig = Path.Combine(envAppData ?? PathHoscyApp, "hoscy");
+
+        var envAppDataLocal = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData, Environment.SpecialFolderOption.DoNotVerify);
+        PathLog = Path.Combine(envAppDataLocal ?? PathHoscyApp, "hoscy");
     }
 
     /// <summary>

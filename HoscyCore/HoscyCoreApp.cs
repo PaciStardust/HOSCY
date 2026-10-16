@@ -20,7 +20,7 @@ public class HoscyCoreApp(ILogger? initialLogger = null)
         _currentLogger.Information("Starting HOSCY Version {hoscyVersion}", version);
         onProgress?.Invoke($"Loading HOSCY Version {version}");
 
-        LogUtils.TryCleanLogs(PathUtils.PathExecutableFolder, _currentLogger);
+        LogUtils.TryCleanLogs(PathUtils.PathLog, _currentLogger);
 
         if (config is null)
         {
@@ -64,7 +64,7 @@ public class HoscyCoreApp(ILogger? initialLogger = null)
         if (_container is not null)
         {
             _container.GetService<ConfigModel>()?.
-                TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _currentLogger);
+                TrySave(PathUtils.PathConfig, ConfigModelLoader.DEFAULT_FILE_NAME, _currentLogger);
             _container.StopServices().IfFail((x) => stopErrors.Add(x.WithContext("StopServices")));
             _container = null;
         }

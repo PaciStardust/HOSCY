@@ -128,7 +128,7 @@ public class OscSubMenuViewModelImpl : OscSubMenuViewModelBase
             var msg = $"Following relay filters are invalid:\n{string.Join("\n", strings.Value.Select(x => $" - {x}"))}";
             _popup.OpenNotification("Invalid Relay Filters Found", msg, false, true);
         }
-        Config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
+        Config.TrySave(PathUtils.PathConfig, ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
     }
     private Res<string[]> CheckRelayFilterValidity(bool reload)
     {

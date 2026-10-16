@@ -149,7 +149,7 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
             var msg = $"Following filters are invalid:\n{string.Join("\n", strings.Select(x => $" - {x}"))}";
             _popup.OpenNotification("Invalid Filters Found", msg, false, true);
         }
-        Config.TrySave(PathUtils.PathConfigFolder, ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
+        Config.TrySave(PathUtils.PathConfig, ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
     }
     private string[] LogUpdateFilterValidity()
     {
@@ -168,7 +168,7 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
     public override void UtilOpenConfig()
     {
         _logger.Information("Manually opening config");
-        OtherUtils.OpenFileOrFolder(PathUtils.PathConfigFolder, _logger);
+        OtherUtils.OpenFileOrFolder(PathUtils.PathConfig, _logger);
     }
     public override void UtilOpenGit()
     {
@@ -178,7 +178,7 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
     public override void UtilSaveConfig()
     {
         _logger.Information("Manually saving config");
-        Config.TrySave(PathUtils.PathConfigFolder,ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
+        Config.TrySave(PathUtils.PathConfig,ConfigModelLoader.DEFAULT_FILE_NAME, _logger);
     }
     public override void UtilManageServices()
     {
