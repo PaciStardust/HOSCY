@@ -269,8 +269,14 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
             Config.Voice_CurrentSpeakerFallbackName = newSpeaker;
         }
     }
-    public override void OptionsSpeakerRefreshClicked() //todo: refresh
+    public override void OptionsSpeakerRefreshClicked()
     {
+        var res = _audio.UpdateDeviceList();
+        if (!res.IsOk)
+        {
+            _popup.OpenNotification("Failed to Refresh Speakers", res.Msg.Message, true, true);
+            return;
+        }
         OptionsSpeaker.RefreshItems(Config.Voice_CurrentSpeakerName, Config.Voice_CurrentSpeakerFallbackName);
     }
     public override void OptionsSpeakerApplyClicked()

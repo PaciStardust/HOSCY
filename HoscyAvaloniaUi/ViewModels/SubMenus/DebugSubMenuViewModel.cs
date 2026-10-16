@@ -100,8 +100,14 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
             Config.Debug_InfoNoiseSpeakerFallbackName = newSpeaker;
         }
     }
-    public override void InfoSpeakerRefreshClicked() //todo: refresh
+    public override void InfoSpeakerRefreshClicked()
     {
+        var res = _audio.UpdateDeviceList();
+        if (!res.IsOk)
+        {
+            _popup.OpenNotification("Failed to Refresh Speakers", res.Msg.Message, true, true);
+            return;
+        }
         InfoSpeaker.RefreshItems(Config.Debug_InfoNoiseSpeakerName, Config.Debug_InfoNoiseSpeakerFallbackName);
     }
     public override void InfoSpeakerApplyClicked()
