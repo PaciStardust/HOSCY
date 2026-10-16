@@ -48,6 +48,11 @@ public partial class VoiceSubMenu : UserControl
         (DataContext as VoiceSubMenuViewModelBase)?.OptionsSpeakerChanged();
         e.Handled = true;
     }
+    private void OptionsSpeakerFallbackChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        (DataContext as VoiceSubMenuViewModelBase)?.OptionsSpeakerFallbackChanged();
+        e.Handled = true;
+    }
     private void OptionsSpeakerRefreshClicked(object? sender, RoutedEventArgs e)
     {
         (DataContext as VoiceSubMenuViewModelBase)?.OptionsSpeakerRefreshClicked();

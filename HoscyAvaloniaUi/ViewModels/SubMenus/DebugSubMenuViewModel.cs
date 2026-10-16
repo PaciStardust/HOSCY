@@ -26,14 +26,11 @@ public abstract partial class DebugSubMenuViewModelBase : ViewModelBase
     public partial string InfoSpeakerStatusText { get; set; }
     [ObservableProperty]
     public partial string InfoSpeakerVolumeText { get; set; }
-    [ObservableProperty]
-    public partial bool InfoSpeakerApplyNeeded { get; protected set; }
     public virtual void InfoSpeakerChanged() { }
     public virtual void InfoSpeakerFallbackChanged() { }
     public virtual void InfoSpeakerRefreshClicked() { }
     public virtual void InfoSpeakerApplyClicked() { }
     public virtual void InfoSpeakerVolumeChanged() { }
-
 
     [ObservableProperty]
     public partial ComboBoxData LogLevels { get; set; }

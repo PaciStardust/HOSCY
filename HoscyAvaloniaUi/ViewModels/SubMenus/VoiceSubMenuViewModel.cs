@@ -42,12 +42,13 @@ public abstract partial class VoiceSubMenuViewModelBase : ViewModelBaseWithLoade
     public virtual void OptionsSelectedModuleSetUnappliedChange() { }
 
     [ObservableProperty]
-    public partial ComboBoxData OptionsSpeaker { get; set; }
+    public partial AudioDeviceComboBoxData OptionsSpeaker { get; set; }
+    [ObservableProperty]
+    public partial string OptionsSpeakerStatusText { get; set; }
     [ObservableProperty]
     public partial string OptionsSpeakerVolumeText { get; set; }
-    [ObservableProperty]
-    public partial bool OptionsSpeakerApplyNeeded { get; protected set; }
     public virtual void OptionsSpeakerChanged() { }
+    public virtual void OptionsSpeakerFallbackChanged() { }
     public virtual void OptionsSpeakerRefreshClicked() { }
     public virtual void OptionsSpeakerApplyClicked() { }
     public virtual void OptionsSpeakerVolumeChanged() { }
@@ -124,10 +125,10 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
         OptionsSelectedModuleUpdateComboBox();
 
         List<ResMsg> errors = [];
-        var speakers = OptionsSpeakerGetNames();
-        speakers.IfFail(errors.Add);
-        OptionsSpeaker = new(speakers.Value ?? [], Config.Voice_CurrentSpeakerName, _logger, "OptionsSpeaker");
-        OptionsSpeakerUpdateApplyNeeded();
+        OptionsSpeaker = new(_logger, _audio, "OptionsSpeaker", false, notify, 
+            Config.Voice_CurrentSpeakerName, Config.Voice_CurrentSpeakerFallbackName);
+        OptionsSpeakerStatusText = _voice.GetPlaybackStatus().ToString();
+        _voice.OnPlaybackStatusChanged += OptionsSpeakerStatusChanged;
 
         ModulesAnyApiPresets = new([.. Config.Api_Presets.Select(x => x.Name)], Config.Voice_Api_Preset, _logger, "ModulesAnyApiPresets");
 
@@ -256,61 +257,22 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
 
     public override void OptionsSpeakerChanged()
     {
-        var selected = OptionsSpeaker.GetSelected();
-        if (selected is null)
+        if (OptionsSpeaker.OnSelectionChanged(Config.Voice_CurrentSpeakerName, false, out var newSpeaker))
         {
-            return;
+            Config.Voice_CurrentSpeakerName = newSpeaker;
         }
+    }
+    public override void OptionsSpeakerFallbackChanged()
+    {
+        if (OptionsSpeaker.OnSelectionChanged(Config.Voice_CurrentSpeakerFallbackName, true, out var newSpeaker))
+        {
+            Config.Voice_CurrentSpeakerFallbackName = newSpeaker;
+        }
+    }
 
-        var speakers = OptionsSpeakerGetNames();
-        if (!speakers.IsOk)
-        {
-            _popup.OpenNotification("Failed to Assign Selected Speaker", speakers.Msg.Message, true, true);
-            return;
-        }
-
-        var match = speakers.Value.FirstOrDefault(x => x == selected);
-        if (match is not null)
-        {
-            Config.Voice_CurrentSpeakerName = match;
-        }
-        OptionsSpeakerUpdateApplyNeeded();
-    }
-    public override void OptionsSpeakerRefreshClicked()
+    private void OptionsSpeakerStatusChanged(AudioPlaybackDeviceStatusInfo info)
     {
-        var refresh = _audio.UpdateDeviceList();
-        if (!refresh.IsOk)
-        {
-            _popup.OpenNotification("Failed to Update Speakers", refresh.Msg.Message, true, true);
-            return;
-        }
-
-        var speakers = OptionsSpeakerGetNames();
-        if (!speakers.IsOk)
-        {
-            _popup.OpenNotification("Failed to Retrieve Speakers", speakers.Msg.Message, true, true);
-            return;
-        }
-        OptionsSpeaker.RefreshItems(speakers.Value, Config.Voice_CurrentSpeakerName);
-        OptionsSpeakerUpdateApplyNeeded();
-    }
-    private Res<string[]> OptionsSpeakerGetNames()
-    {
-        var speakers = _audio.GetPlaybackInfos();
-        return speakers.IsOk ? ResC.TOk(speakers.Value.Select(x => x.Name).ToArray()) : ResC.TFail<string[]>(speakers.Msg);
-    }
-    public override void OptionsSpeakerApplyClicked()
-    {
-        _voice.RefreshPlayback();
-        OptionsSpeakerUpdateApplyNeeded();
-    }
-    private void OptionsSpeakerUpdateApplyNeeded()
-    {
-        //OptionsSpeakerApplyNeeded = _voice.IsPlaybackRefreshNeeded(); todo: remove
-    }
-    public override void OptionsSpeakerVolumeChanged()
-    {
-        OptionsSpeakerVolumeText = $"Speaker Volume ({MathF.Round(Config.Voice_AudioVolumePercent * 100)}%)";
+        OptionsSpeakerStatusText = info.ToString();
     }
 
     public override void ModulesAnyApiEditPresets()
@@ -419,7 +381,6 @@ public class VoiceSubMenuViewModelPreview : VoiceSubMenuViewModelBase
         OptionsSelectedModuleRestartNeeded = true;
         OptionsSelectedModuleDescription = "Description Placeholder 123";
 
-        OptionsSpeaker = new();
         OptionsSpeakerVolumeText = "Speaker Volume";
 
         ModulesAnyApiIsSelected = true;

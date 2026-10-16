@@ -44,13 +44,22 @@
 					
 					<StackPanel Theme="{StaticResource HStackIndent}">
 						<StackPanel Theme="{StaticResource HStackS}">
-							<Label Theme="{StaticResource HLabel}" Content="Input Speaker"/>
-							<WrapPanel Theme="{StaticResource HWrap}">
-								<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding OptionsSpeaker.Index}" ItemsSource="{Binding OptionsSpeaker.Options}" SelectionChanged="OptionsSpeakerChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_CurrentSpeakerName}"/>
-								<Button Content="Refresh" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsSpeakerRefreshClicked" ToolTip.Tip="Refreshes the list of speakers"/>
-								<Button Content="Apply" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsSpeakerApplyClicked" ToolTip.Tip="Applies the speaker change"/>
+							<Label Theme="{StaticResource HLabel}" Content="Output Speaker"/>
+							<WrapPanel Theme="{StaticResource HWrapS}">
+								<TextBlock Theme="{StaticResource HTextBlockNote}" Text="Current ('Apply' to change): "/>
+								<TextBlock Theme="{StaticResource HTextBlockNote}" Text="{Binding OptionsSpeakerStatusText}"/>
 							</WrapPanel>
-							<TextBlock Theme="{StaticResource HTextBlockError}" Text="Currently selected speaker is not used, please press 'Apply'" IsVisible="{Binding OptionsSpeakerApplyNeeded}"/>
+							<WrapPanel Theme="{StaticResource HWrap}">
+								<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding OptionsSpeaker.PrimaryIndex}" ItemsSource="{Binding OptionsSpeaker.PrimaryOptions}" SelectionChanged="OptionsSpeakerChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_CurrentSpeakerName}"/>
+								<Label Theme="{StaticResource HLabel}" Content="Primary Speaker" VerticalAlignment="Center"/>
+								<Button Content="Apply Devices" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsSpeakerApplyClicked" ToolTip.Tip="Applies the speaker change"/>
+							</WrapPanel>
+							<WrapPanel Theme="{StaticResource HWrap}">
+								<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding OptionsSpeaker.FallbackIndex}" ItemsSource="{Binding OptionsSpeaker.FallbackOptions}" SelectionChanged="OptionsSpeakerFallbackChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_CurrentSpeakerFallbackName}"/>
+								<Label Theme="{StaticResource HLabel}" Content="Fallback Speaker" VerticalAlignment="Center"/>
+								<Button Content="Refresh Devices" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsSpeakerRefreshClicked" ToolTip.Tip="Refreshes the list of speakers"/>
+							</WrapPanel>
+							<CheckBox Theme="{StaticResource HCheckBox}" Content="Use Empty Device as Third Option" IsChecked="{Binding Config.Voice_CurrentSpeakerEmptyNotDefault}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_CurrentSpeakerEmptyNotDefault}"/>
 							<TextBlock Theme="{StaticResource HTextBlockNote}" Text="Warning: Some Devices (Like AirPods) do Not Function Correctly When Used as Output And Input at the Same Time, Even Across Different Applications"/>
 						</StackPanel>
 
@@ -89,7 +98,7 @@
 					<StackPanel Theme="{StaticResource HStackIndent}" IsVisible="{Binding ModulesAnyApiIsSelected}">
 						<WrapPanel Theme="{StaticResource HWrap}">
 							<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding ModulesAnyApiPresets.Index}" ItemsSource="{Binding ModulesAnyApiPresets.Options}" SelectionChanged="ModulesAnyApiPresetChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Api_Preset}"/>
-							<Label Theme="{StaticResource HLabel}" Content="Preset for Recognition*" VerticalAlignment="Center"/>
+							<Label Theme="{StaticResource HLabel}" Content="Preset for Voice*" VerticalAlignment="Center"/>
 						</WrapPanel>
 					</StackPanel>
 
