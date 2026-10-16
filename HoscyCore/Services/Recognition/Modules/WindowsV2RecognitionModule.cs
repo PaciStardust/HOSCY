@@ -44,7 +44,13 @@ public class WindowsV2RecognitionModule(ILogger logger, ConfigModel config, IAud
     {
         _stream = new(16000);
 
-        var micResult = _audio.CreateCaptureDeviceProxy();
+        var micResult = _audio.CreateCapture
+        (
+            _logger, 
+            _config.Recognition_MicrophoneName,
+            _config.Recognition_MicrophoneFallbackName,
+            _config.Recognition_MicrophoneEmptyNotDefault
+        );
         if (micResult is null) return ResC.Fail(ResMsg.Err("Unable to locate a capture device"));
         if (!micResult.IsOk) return ResC.Fail(micResult.Msg);
         _mic = micResult.Value;
