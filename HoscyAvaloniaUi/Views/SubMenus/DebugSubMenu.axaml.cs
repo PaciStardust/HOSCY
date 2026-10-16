@@ -60,6 +60,11 @@ public partial class DebugSubMenu : UserControl
         (DataContext as DebugSubMenuViewModelBase)?.UtilOpenConfig();
         e.Handled = true;
     }
+    private void UtilOpenLogs(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        (DataContext as DebugSubMenuViewModelBase)?.UtilOpenLogs();
+        e.Handled = true;
+    }
     private void UtilSaveConfig(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         (DataContext as DebugSubMenuViewModelBase)?.UtilSaveConfig();

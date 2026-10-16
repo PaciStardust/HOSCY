@@ -42,6 +42,7 @@ public abstract partial class DebugSubMenuViewModelBase : ViewModelBase
     
     public virtual void UtilOpenGit() { }
     public virtual void UtilOpenConfig() { }
+    public virtual void UtilOpenLogs() { }
     public virtual void UtilSaveConfig() { }
     public virtual void UtilManageServices() { }
 }
@@ -169,6 +170,11 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
     {
         _logger.Information("Manually opening config");
         OtherUtils.OpenFileOrFolder(PathUtils.PathConfig, _logger);
+    }
+    public override void UtilOpenLogs()
+    {
+        _logger.Information("Manually opening logs");
+        OtherUtils.OpenFileOrFolder(PathUtils.PathLog, _logger);
     }
     public override void UtilOpenGit()
     {
