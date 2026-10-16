@@ -269,12 +269,18 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
             Config.Voice_CurrentSpeakerFallbackName = newSpeaker;
         }
     }
-
+    public override void OptionsSpeakerRefreshClicked() //todo: refresh
+    {
+        OptionsSpeaker.RefreshItems(Config.Voice_CurrentSpeakerName, Config.Voice_CurrentSpeakerFallbackName);
+    }
+    public override void OptionsSpeakerApplyClicked()
+    {
+        _voice.RefreshPlayback();
+    }
     public override void OptionsSpeakerVolumeChanged()
     {
         OptionsSpeakerVolumeText = $"Speaker Volume ({MathF.Round(Config.Voice_AudioVolumePercent * 100)}%)";
     }
-
     private void OptionsSpeakerStatusChanged(AudioPlaybackDeviceStatusInfo info)
     {
         OptionsSpeakerStatusText = info.ToString();

@@ -100,8 +100,7 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
             Config.Debug_InfoNoiseSpeakerFallbackName = newSpeaker;
         }
     }
-
-    public override void InfoSpeakerRefreshClicked()
+    public override void InfoSpeakerRefreshClicked() //todo: refresh
     {
         InfoSpeaker.RefreshItems(Config.Debug_InfoNoiseSpeakerName, Config.Debug_InfoNoiseSpeakerFallbackName);
     }
@@ -114,7 +113,6 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
     {
         InfoSpeakerVolumeText = $"Speaker Volume ({MathF.Round(Config.Debug_InfoNoiseVolumePercent * 100)}%)";
     }
-
     private void InfoNoiseSpeakerStatusChanged(AudioPlaybackDeviceStatusInfo info)
     {
         InfoSpeakerStatusText = info.ToString();
