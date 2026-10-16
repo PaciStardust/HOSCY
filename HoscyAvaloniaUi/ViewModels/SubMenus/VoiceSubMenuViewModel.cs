@@ -270,6 +270,11 @@ public class VoiceSubMenuViewModelImpl : VoiceSubMenuViewModelBase
         }
     }
 
+    public override void OptionsSpeakerVolumeChanged()
+    {
+        OptionsSpeakerVolumeText = $"Speaker Volume ({MathF.Round(Config.Debug_InfoNoiseVolumePercent * 100)}%)";
+    }
+
     private void OptionsSpeakerStatusChanged(AudioPlaybackDeviceStatusInfo info)
     {
         OptionsSpeakerStatusText = info.ToString();
