@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -38,23 +39,23 @@ public class AvaloniaApplicationSound : StartStopServiceBase, IApplicationSound,
     private volatile bool _shouldTaskRun = true;
     private string _nextToProcess = string.Empty;
     private readonly Lock _nextToProcessLock = new();
-    private volatile bool _deviceReloadNeeded = true;
     #endregion
 
     #region Startup
     protected override bool IsStarted()
         => _processingTask is not null;
     protected override bool IsProcessing()
-        => IsStarted() && _playback.IsPlaybackRunning;
+        => IsStarted() && _playback.GetCurrentStatus().State == AudioPlaybackDeviceState.Running;
     protected override bool UseAlreadyStartedProtection => true;
 
     protected override Res StartForService()
     {
         _playback.Dispose();
         _playback = new(_logger, _audio);
+        _playback.OnStatusChanged += InvokeOnPlaybackStatusChanged;
 
         _nextToProcess = string.Empty;
-        _deviceReloadNeeded = true;
+        _playback.SwapPending = true;
         _shouldTaskRun = true;
         _processingTask = Task.Run(RunProcessingLoop);
         return ResC.Ok();
@@ -74,7 +75,8 @@ public class AvaloniaApplicationSound : StartStopServiceBase, IApplicationSound,
         _playback.ClearPlayback().IfFail(messages.Add);
 
         _nextToProcess = string.Empty;
-        _deviceReloadNeeded = false;
+        _playback.SwapPending = false;
+        _playback.OnStatusChanged -= InvokeOnPlaybackStatusChanged;
 
         return messages.Count == 0 ? ResC.Ok() : ResC.FailM(messages);
     }
@@ -89,10 +91,20 @@ public class AvaloniaApplicationSound : StartStopServiceBase, IApplicationSound,
     #endregion
 
     #region Playback
+    public event Action<AudioPlaybackDeviceStatusInfo> OnPlaybackStatusChanged = delegate { };
+    public AudioPlaybackDeviceStatusInfo GetPlaybackStatus()
+    {
+        return _playback.GetCurrentStatus();
+    }
+    private void InvokeOnPlaybackStatusChanged(AudioPlaybackDeviceStatusInfo info)
+    {
+        OnPlaybackStatusChanged.Invoke(info);
+    }
+
     public Res Refresh()
     {
         _logger.Debug("Set flag to refresh audio device");
-        _deviceReloadNeeded = true;
+        _playback.SwapPending = true;
         return ResC.Ok();
     }
 
@@ -100,10 +112,14 @@ public class AvaloniaApplicationSound : StartStopServiceBase, IApplicationSound,
     {
         while (_shouldTaskRun)
         {
-            if (_deviceReloadNeeded)
+            if (_playback.SwapPending)
             {
-                _deviceReloadNeeded = false;
-                var swapRes = _playback.SwapPlayback(_config.Debug_InfoNoiseSpeakerName);
+                var swapRes = _playback.SwapPlayback
+                (
+                    _config.Debug_InfoNoiseSpeakerName, 
+                    _config.Debug_InfoNoiseSpeakerFallbackName, 
+                    _config.Debug_InfoNoiseSpeakerEmptyNotDefault
+                );
                 if (!swapRes.IsOk)
                 {
                     SetFaultLogNotify(swapRes.Msg, "Failed to load speaker for system audio", _notify, _logger);
@@ -173,13 +189,6 @@ public class AvaloniaApplicationSound : StartStopServiceBase, IApplicationSound,
     public void PlayNotificationSound() //todo: [FEAT++] Needs its own file
     {
         PlayMuteSound();
-    }
-
-    public bool IsRefreshNeeded()
-    {
-        if (_deviceReloadNeeded) return false;
-        var devName = _playback.GetPlaybackName();
-        return devName is null || devName != _config.Debug_InfoNoiseSpeakerName;
     }
     #endregion
 }

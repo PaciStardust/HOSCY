@@ -19,13 +19,12 @@ public class SwappableAudioPlaybackDevice<T>
     #endregion
 
     #region Vars
-    private AudioPlaybackDeviceProxy? _playback;
+    private IAudioPlaybackDeviceProxy? _playback;
     private CancellationTokenSource _playbackCancellation = new();
     private volatile bool _deviceInUse = false;
     #endregion
 
     #region Utils
-    public bool IsPlaybackRunning => _playback?.IsRunning ?? false;
     public void Dispose()
     {
         _playbackCancellation?.Dispose();
@@ -46,7 +45,7 @@ public class SwappableAudioPlaybackDevice<T>
 
     private async Task<Res> PlayAsyncInternal(float volume, T passthrough, Func<MemoryStream, CancellationToken, T, Task<Res>> writerTask)
     {
-        if (_playback is null || !_playback.IsRunning)
+        if (_playback is null || _playback.GetDeviceStatus().State != AudioPlaybackDeviceState.Running)
         {
             _deviceInUse = false;
             return ResC.FailLog("Unable to play audio, the device is not initialized", _logger);
@@ -94,24 +93,33 @@ public class SwappableAudioPlaybackDevice<T>
     #endregion
 
     #region Playback Setting
-    public Res SwapPlayback(string devName)
+    public Res SwapPlayback(string primaryDevName, string fallbackDevName, bool useEmptyNotDefault)
     {
         _logger.Debug("Device swap initialized");
-        var res = ClearPlayback(); 
-        if (!res.IsOk) return res;
+        _swapPending = false;
+        _swapping = true;
+        InvokeStatusUpdate();
 
-        res = CreatePlayback(devName);
+        var res = ClearPlayback(); 
+        if (res.IsOk)
+        {
+            res = CreatePlayback(primaryDevName, fallbackDevName, useEmptyNotDefault);
+        }
+
+        _swapping = false;
+        InvokeStatusUpdate();
+
         return res;
     }
 
-    private Res CreatePlayback(string devName)
+    private Res CreatePlayback(string primaryDevName, string fallbackDevName, bool useEmptyNotDefault)
     {
         _logger.Debug("Creating new playback");
 
         if (_playback is not null)
             return ResC.FailLog("Unable to create playback, it already exists", _logger);
 
-        var playback = _audio.CreatePlaybackDeviceProxy(devName, _logger, _format);
+        var playback = _audio.CreatePlayback(_logger, primaryDevName, fallbackDevName, useEmptyNotDefault, _format);
         if (playback is null)
         {
             return ResC.FailLog("No microphone could be located, no voice output will be possible", _logger, lvl: ResMsgLvl.Warning);
@@ -120,8 +128,11 @@ public class SwappableAudioPlaybackDevice<T>
         _playback = playback.Value;
 
         var playbackOn = _playback.Start();
-        if (!playbackOn.IsOk) return playbackOn;
-
+        InvokeStatusUpdate();
+        if (!playbackOn.IsOk) 
+        {
+            return playbackOn;
+        }
         return ResC.Ok();
     }
 
@@ -137,12 +148,46 @@ public class SwappableAudioPlaybackDevice<T>
         _playback?.Dispose();
         _playback = null;
 
+        InvokeStatusUpdate();
         return res;
     }
+    #endregion
 
-    public string? GetPlaybackName()
+    #region State
+    public bool SwapPending
     {
-        return _playback?.GetDeviceName();
+        get => _swapPending;
+        set {
+            _swapPending = value;
+            InvokeStatusUpdate();
+        }
+    }
+    private bool _swapPending = false;
+    private bool _swapping = false;
+
+    public event Action<AudioPlaybackDeviceStatusInfo> OnStatusChanged = delegate { };
+
+    public AudioPlaybackDeviceStatusInfo GetCurrentStatus()
+    {
+        var playbackStatus = _playback?.GetDeviceStatus();
+
+        var state = _swapping
+            ? AudioPlaybackDeviceState.Swapping
+            : playbackStatus is null
+                ? AudioPlaybackDeviceState.Stopped
+                : playbackStatus.Value.State == AudioPlaybackDeviceState.Running
+                    ? _swapPending
+                        ? AudioPlaybackDeviceState.SwapPending
+                        : AudioPlaybackDeviceState.Running
+                    : AudioPlaybackDeviceState.Error;
+
+        return new(state, playbackStatus?.Name);
+    }
+    private void InvokeStatusUpdate()
+    {
+        var status = GetCurrentStatus();
+        _logger.Verbose("Sending status update with state {state} and device {device}", status.State, status.Name);
+        OnStatusChanged.Invoke(status);
     }
     #endregion
 }

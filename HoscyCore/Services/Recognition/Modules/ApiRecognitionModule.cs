@@ -38,7 +38,7 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
     private readonly ConfigModel _config = config;
 
     private MemoryStream? _stream = null;
-    private AudioCaptureDeviceProxy? _mic = null;
+    private IAudioCaptureDeviceProxy? _mic = null;
     #endregion
 
     #region Start / Stop
@@ -70,7 +70,13 @@ public class ApiRecognitionModule //todo: [TEST] does this work?
 
         _stream = new();
 
-        var micResult = _audio.CreateCaptureDeviceProxy();
+        var micResult = _audio.CreateCapture
+        (
+            _logger, 
+            _config.Recognition_MicrophoneName,
+            _config.Recognition_MicrophoneFallbackName,
+            _config.Recognition_MicrophoneEmptyNotDefault
+        );
         if (micResult is null) return ResC.Fail(ResMsg.Err("Unable to locate a usable microphone"));
         if (!micResult.IsOk) return ResC.Fail(micResult.Msg);
 

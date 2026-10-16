@@ -75,11 +75,17 @@
 						<CheckBox Theme="{StaticResource HCheckBox}" Content="Play Sound When (Un)Muting" IsChecked="{Binding Config.Recognition_Mute_PlaySound}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_Mute_PlaySound}"/>
 					
 						<StackPanel Theme="{StaticResource HStackS}" IsEnabled="{Binding OptionsMicrophoneAvailable}">
-							<Label Theme="{StaticResource HLabel}" Content="Input Microphone*"/>
+							<Label Theme="{StaticResource HLabel}" Content="Input Microphone"/>
 							<WrapPanel Theme="{StaticResource HWrap}">
-								<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding OptionsMicrophone.Index}" ItemsSource="{Binding OptionsMicrophone.Options}" SelectionChanged="OptionsMicrophoneChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_MicrophoneName}"/>
-								<Button Content="Refresh*" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsMicrophoneRefreshClicked" ToolTip.Tip="Refreshes the list of microphones"/>
+								<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding OptionsMicrophone.PrimaryIndex}" ItemsSource="{Binding OptionsMicrophone.PrimaryOptions}" SelectionChanged="OptionsMicrophoneChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_MicrophoneName}"/>
+								<Label Theme="{StaticResource HLabel}" Content="Primary Mic*" VerticalAlignment="Center"/>
 							</WrapPanel>
+							<WrapPanel Theme="{StaticResource HWrap}">
+								<ComboBox Theme="{StaticResource HComboBoxSettings}" SelectedIndex="{Binding OptionsMicrophone.FallbackIndex}" ItemsSource="{Binding OptionsMicrophone.FallbackOptions}" SelectionChanged="OptionsMicrophoneFallbackChanged" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_MicrophoneFallbackName}"/>
+								<Label Theme="{StaticResource HLabel}" Content="Fallback Mic*" VerticalAlignment="Center"/>
+								<Button Content="Refresh Devices*" Theme="{StaticResource HButtonSmall}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="OptionsMicrophoneRefreshClicked" ToolTip.Tip="Refreshes the list of microphones"/>
+							</WrapPanel>
+							<CheckBox Theme="{StaticResource HCheckBox}" Content="Use Empty Device as Third Option" IsChecked="{Binding Config.Recognition_MicrophoneEmptyNotDefault}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Recognition_MicrophoneEmptyNotDefault}"/>
 							<TextBlock Theme="{StaticResource HTextBlockNote}" Text="Warning: Some Devices (Like AirPods) do Not Function Correctly When Used as Output And Input at the Same Time, Even Across Different Applications"/>
 						</StackPanel>
 					</StackPanel>

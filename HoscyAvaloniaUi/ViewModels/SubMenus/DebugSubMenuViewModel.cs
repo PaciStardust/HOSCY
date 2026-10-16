@@ -21,16 +21,16 @@ public abstract partial class DebugSubMenuViewModelBase : ViewModelBase
     public partial ConfigModel Config { get; set; }
 
     [ObservableProperty]
-    public partial ComboBoxData InfoSpeaker { get; set; }
+    public partial AudioDeviceComboBoxData InfoSpeaker { get; set; }
+    [ObservableProperty]
+    public partial string InfoSpeakerStatusText { get; set; }
     [ObservableProperty]
     public partial string InfoSpeakerVolumeText { get; set; }
-    [ObservableProperty]
-    public partial bool InfoSpeakerApplyNeeded { get; protected set; }
     public virtual void InfoSpeakerChanged() { }
+    public virtual void InfoSpeakerFallbackChanged() { }
     public virtual void InfoSpeakerRefreshClicked() { }
     public virtual void InfoSpeakerApplyClicked() { }
     public virtual void InfoSpeakerVolumeChanged() { }
-
 
     [ObservableProperty]
     public partial ComboBoxData LogLevels { get; set; }
@@ -71,10 +71,10 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
         _applicationSound = applicationSound;
 
         List<ResMsg> errors = [];
-        var speakers = InfoSpeakerGetNames();
-        speakers.IfFail(errors.Add);
-        InfoSpeaker = new(speakers.Value ?? [], Config.Debug_InfoNoiseSpeakerName, _logger, "InfoSpeaker");
-        InfoSpeakerUpdateApplyNeeded();
+        InfoSpeaker = new(_logger, _audio, "InfoSpeaker", false, notify, 
+            Config.Debug_InfoNoiseSpeakerName, Config.Debug_InfoNoiseSpeakerFallbackName);
+        InfoSpeakerStatusText = _applicationSound.GetPlaybackStatus().ToString();
+        _applicationSound.OnPlaybackStatusChanged += InfoNoiseSpeakerStatusChanged;
 
         LogLevels = new(Enum.GetNames<LogEventLevel>(), Enum.GetName(Config.Debug_LogMinimumSeverity) ?? string.Empty, _logger, "LogLevel");
         LogUpdateFilterValidity();
@@ -88,64 +88,41 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
 
     public override void InfoSpeakerChanged()
     {
-        var selected = InfoSpeaker.GetSelected();
-        if (selected is null)
+        if (InfoSpeaker.OnSelectionChanged(Config.Debug_InfoNoiseSpeakerName, false, out var newSpeaker))
         {
-            return;
+            Config.Debug_InfoNoiseSpeakerName = newSpeaker;
         }
-
-        var speakers = InfoSpeakerGetNames();
-        if (!speakers.IsOk)
+    }
+    public override void InfoSpeakerFallbackChanged()
+    {
+        if (InfoSpeaker.OnSelectionChanged(Config.Debug_InfoNoiseSpeakerFallbackName, true, out var newSpeaker))
         {
-            _popup.OpenNotification("Failed to Assign Selected Speaker", speakers.Msg.Message, true, true);
-            return;
+            Config.Debug_InfoNoiseSpeakerFallbackName = newSpeaker;
         }
-
-        var match = speakers.Value.FirstOrDefault(x => x == selected);
-        if (match is not null)
-        {
-            Config.Debug_InfoNoiseSpeakerName = match;
-        }
-        InfoSpeakerUpdateApplyNeeded();
     }
     public override void InfoSpeakerRefreshClicked()
     {
-        var refresh = _audio.UpdateDeviceList();
-        if (!refresh.IsOk)
+        var res = _audio.UpdateDeviceList();
+        if (!res.IsOk)
         {
-            _popup.OpenNotification("Failed to Update Speakers", refresh.Msg.Message, true, true);
+            _popup.OpenNotification("Failed to Refresh Speakers", res.Msg.Message, true, true);
             return;
         }
-
-        var speakers = InfoSpeakerGetNames();
-        if (!speakers.IsOk)
-        {
-            _popup.OpenNotification("Failed to Retrieve Speakers", speakers.Msg.Message, true, true);
-            return;
-        }
-        InfoSpeaker.RefreshItems(speakers.Value, Config.Debug_InfoNoiseSpeakerName);
-        InfoSpeakerUpdateApplyNeeded();
-    }
-    private Res<string[]> InfoSpeakerGetNames()
-    {
-        var speakers = _audio.GetPlaybackDevices();
-        return speakers.IsOk ? ResC.TOk(speakers.Value.Select(x => x.Name).ToArray()) : ResC.TFail<string[]>(speakers.Msg);
+        InfoSpeaker.RefreshItems(Config.Debug_InfoNoiseSpeakerName, Config.Debug_InfoNoiseSpeakerFallbackName);
     }
     public override void InfoSpeakerApplyClicked()
     {
         var res = _applicationSound.Refresh();;
         res.IfFail(x => _popup.OpenNotification("Failed to Apply Speaker", x.Message, true, true));
-        InfoSpeakerUpdateApplyNeeded();
-    }
-    private void InfoSpeakerUpdateApplyNeeded()
-    {
-        InfoSpeakerApplyNeeded = _applicationSound.IsRefreshNeeded();
     }
     public override void InfoSpeakerVolumeChanged()
     {
         InfoSpeakerVolumeText = $"Speaker Volume ({MathF.Round(Config.Debug_InfoNoiseVolumePercent * 100)}%)";
     }
-
+    private void InfoNoiseSpeakerStatusChanged(AudioPlaybackDeviceStatusInfo info)
+    {
+        InfoSpeakerStatusText = info.ToString();
+    }
 
     public override void LogLevelChanged()
     {

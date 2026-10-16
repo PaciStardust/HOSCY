@@ -16,6 +16,11 @@ public partial class DebugSubMenu : UserControl
         (DataContext as DebugSubMenuViewModelBase)?.InfoSpeakerChanged();
         e.Handled = true;
     }
+    private void InfoSpeakerFallbackChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        (DataContext as DebugSubMenuViewModelBase)?.InfoSpeakerFallbackChanged();
+        e.Handled = true;
+    }
     private void InfoSpeakerRefreshClicked(object? sender, RoutedEventArgs e)
     {
         (DataContext as DebugSubMenuViewModelBase)?.InfoSpeakerRefreshClicked();

@@ -56,8 +56,9 @@ public abstract partial class RecogSubMenuViewModelBase : ViewModelBaseWithLoade
     [ObservableProperty]
     public partial bool OptionsMicrophoneAvailable { get; protected set; }
     [ObservableProperty]
-    public partial ComboBoxData OptionsMicrophone { get; set; }
+    public partial AudioDeviceComboBoxData OptionsMicrophone { get; set; }
     public virtual void OptionsMicrophoneChanged() { }
+    public virtual void OptionsMicrophoneFallbackChanged() { }
     public virtual void OptionsMicrophoneRefreshClicked() { }
 
     [ObservableProperty]
@@ -153,9 +154,8 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase
         OptionsSelectedModuleUpdateComboBox();
 
         List<ResMsg> errors = [];
-        var mics = OptionsMicrophoneGetNames();
-        mics.IfFail(errors.Add);
-        OptionsMicrophone = new(mics.Value ?? [], Config.Recognition_MicrophoneName, _logger, "OptionsMicrophone");
+        OptionsMicrophone = new(_logger, _audio, "OptionsMicrophone", true, notify, 
+            Config.Recognition_MicrophoneName, Config.Recognition_MicrophoneFallbackName);
 
         ModulesAnyApiPresets = new([.. Config.Api_Presets.Select(x => x.Name)], Config.Recognition_Api_Preset, _logger, "ModulesAnyApiPresets");
 
@@ -323,48 +323,30 @@ public class RecogSubMenuViewModelImpl : RecogSubMenuViewModelBase
 
     public override void OptionsMicrophoneChanged()
     {
-        var selected = OptionsMicrophone.GetSelected();
-        if (selected is null)
+        if (OptionsMicrophone.OnSelectionChanged(Config.Recognition_MicrophoneName, false, out var newMic))
         {
-            return;
+            Config.Recognition_MicrophoneName = newMic;
+            OptionsSelectedModuleSetUnappliedChange();
         }
-
-        OptionsSelectedModuleSetUnappliedChange();
-        var mics = OptionsMicrophoneGetNames();
-        if (!mics.IsOk)
+    }
+    public override void OptionsMicrophoneFallbackChanged()
+    {
+        if (OptionsMicrophone.OnSelectionChanged(Config.Recognition_MicrophoneFallbackName, true, out var newMic))
         {
-            _popup.OpenNotification("Failed to Assign Selected Microphone", mics.Msg.Message, true, true);
-            return;
-        }
-
-        var match = mics.Value.FirstOrDefault(x => x == selected);
-        if (match is not null)
-        {
-            Config.Recognition_MicrophoneName = match;
+            Config.Recognition_MicrophoneFallbackName = newMic;
+            OptionsSelectedModuleSetUnappliedChange();
         }
     }
     public override void OptionsMicrophoneRefreshClicked()
     {
-        var refresh = _audio.UpdateDeviceList();
-        if (!refresh.IsOk)
+        var res = _audio.UpdateDeviceList();
+        if (!res.IsOk)
         {
-            _popup.OpenNotification("Failed to Update Microphones", refresh.Msg.Message, true, true);
+            _popup.OpenNotification("Failed to Refresh Microphones", res.Msg.Message, true, true);
             return;
         }
-
-        var mics = OptionsMicrophoneGetNames();
-        if (!mics.IsOk)
-        {
-            _popup.OpenNotification("Failed to Retrieve Microphones", mics.Msg.Message, true, true);
-            return;
-        }
+        OptionsMicrophone.RefreshItems(Config.Recognition_MicrophoneName, Config.Recognition_MicrophoneFallbackName);
         OptionsSelectedModuleSetUnappliedChange();
-        OptionsMicrophone.RefreshItems(mics.Value, Config.Recognition_MicrophoneName);
-    }
-    private Res<string[]> OptionsMicrophoneGetNames()
-    {
-        var mics = _audio.GetCaptureDevices();
-        return mics.IsOk ? ResC.TOk(mics.Value.Select(x => x.Name).ToArray()) : ResC.TFail<string[]>(mics.Msg);
     }
 
     public override void ModulesAnyApiEditPresets()
@@ -545,7 +527,6 @@ public class RecogSubMenuViewModelPreview : RecogSubMenuViewModelBase
         OptionsSelectedModuleDescription = "Description Placeholder 123";
 
         OptionsMicrophoneAvailable = true;
-        OptionsMicrophone = new();
 
         ModulesAnyApiIsSelected = true;
         ModulesAnyApiPresets = new();

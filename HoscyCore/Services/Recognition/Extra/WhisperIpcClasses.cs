@@ -10,6 +10,8 @@ public record WhisperIpcConfig
     public string ParentSendingPipe { get; init; } = string.Empty;
 
     public string CaptureDeviceName { get; init; } = string.Empty;
+    public string CaptureDeviceFallbackName { get; init; } = string.Empty;
+    public bool CaptureDeviceEmptyNotFallback { get; init; } = false;
     public WhisperIpcVadOperatingMode VadOperatingMode { get; init; } = WhisperIpcVadOperatingMode.Aggressive;
 
     public const uint MS_IN_FRAME = 10;

@@ -9,5 +9,7 @@ public interface IApplicationSound : IService
     public void PlayUnmuteSound();
     public void PlayNotificationSound();
     public Res Refresh();
-    public bool IsRefreshNeeded();
+
+    public event Action<AudioPlaybackDeviceStatusInfo> OnPlaybackStatusChanged;
+    public AudioPlaybackDeviceStatusInfo GetPlaybackStatus();
 }

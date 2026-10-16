@@ -9,14 +9,14 @@ using SoundFlow.Extensions.WebRtc.Apm.Modifiers;
 
 namespace HoscyCore.Services.Audio;
 
-public class AudioCaptureDeviceProxy(AudioCaptureDevice wrappedDevice, ILogger logger) : IDisposable
+public class AudioCaptureDeviceProxy(AudioCaptureDevice wrappedDevice, ILogger logger) : IAudioCaptureDeviceProxy
 {
     private readonly AudioCaptureDevice _wrappedDevice = wrappedDevice;
     private WebRtcApmModifier? _apmModifier = null; 
     private readonly ILogger _logger = logger.ForContext<AudioCaptureDeviceProxy>();
 
-    public bool IsStarted { get; private set; } = false;
-    public bool IsListening { get; private set; } = false;
+    public bool IsStarted { get; protected set; } = false;
+    public bool IsListening { get; protected set; } = false;
 
     public Res Start()
     {

@@ -4,9 +4,7 @@ using HoscyCore.Services.Dependency;
 using HoscyCore.Utility;
 using Serilog;
 using SoundFlow.Abstracts;
-using SoundFlow.Abstracts.Devices;
 using SoundFlow.Backends.MiniAudio;
-using SoundFlow.Enums;
 using SoundFlow.Structs;
 
 namespace HoscyCore.Services.Audio;
@@ -56,108 +54,43 @@ public class AudioService(ILogger logger, ConfigModel config)
     #endregion
 
     #region Capture
-    public Res<DeviceInfo[]> GetCaptureDevices()
+    public Res<DeviceInfo[]> GetCaptureInfos()
     {  
-        return _audioEngine is not null && !_audioEngine.IsDisposed 
-            ? ResC.TOk(_audioEngine.CaptureDevices)
-            : ResC.TFailLog<DeviceInfo[]>("Failed to retrieve capture devices, audio engine not available", _logger);
+        return AudioUtils.GetCaptureInfosForEngine(_logger, _audioEngine);
     }
 
-    public Res<AudioCaptureDevice>? CreateCaptureDevice()
+    public Res<IAudioCaptureDeviceProxy>? CreateCapture(ILogger devLogger, string primaryName, string fallbackName = "", bool finalEmptyNotDefault = false, AudioFormat? format = null)
     {
-        var updateRes = UpdateDeviceList();
-        if (!updateRes.IsOk) return ResC.TFail<AudioCaptureDevice>(updateRes.Msg);
-
-        var deviceInfos = GetCaptureDevices();
-        if (!deviceInfos.IsOk) return ResC.TFail<AudioCaptureDevice>(deviceInfos.Msg);
-
-        var deviceInfo = FindDeviceWithChecks(deviceInfos.Value, _config.Recognition_MicrophoneName, "capture");
-        if (deviceInfo is null) return null;
-        if (!deviceInfo.IsOk) return ResC.TFail<AudioCaptureDevice>(deviceInfo.Msg);
-
-        var format = new AudioFormat
-        {
-            SampleRate = 16000,
-            Channels = 1,
-            Format = SampleFormat.S16
-        };
-
-        _logger.Debug("Creating capture device for device {devName}", deviceInfo.Value.Name);
-        return ResC.TWrap(() =>
-        {
-            var device = _audioEngine!.InitializeCaptureDevice(deviceInfo.Value, format);
-            _logger.Debug("Created capture device for device {devName}", deviceInfo.Value.Name);
-            return ResC.TOk(device);
-        }, $"Failed initializing capture device {deviceInfo.Value.Name}", _logger);
+        return AudioUtils.CreateCaptureForEngine(_logger, devLogger, _audioEngine, primaryName, fallbackName, finalEmptyNotDefault, format);
     }
 
-    public Res<AudioCaptureDeviceProxy>? CreateCaptureDeviceProxy()
+    public Res<DeviceInfo>? GetCaptureInfoForNames(string primaryName, string fallbackName = "")
     {
-        var dev = CreateCaptureDevice();
-        if (dev is null) return null;
-        return dev.IsOk
-            ? ResC.TOk<AudioCaptureDeviceProxy>(new (dev.Value, _logger))
-            : ResC.TFail<AudioCaptureDeviceProxy>(dev.Msg);
+        return AudioUtils.GetCaptureInfoForNamesForEngine(_logger, _audioEngine, primaryName, fallbackName);
     }
     #endregion
 
     #region Playback
-    public Res<DeviceInfo[]> GetPlaybackDevices()
+    public Res<DeviceInfo[]> GetPlaybackInfos()
     {
-        return _audioEngine is not null && !_audioEngine.IsDisposed 
-            ? ResC.TOk(_audioEngine.PlaybackDevices)
-            : ResC.TFailLog<DeviceInfo[]>("Failed to retrieve playback devices, audio engine not available", _logger);
+        return AudioUtils.GetPlaybackInfosForEngine(_logger, _audioEngine);
     }
 
-    public Res<AudioPlaybackDeviceProxy>? CreatePlaybackDeviceProxy(string name, ILogger deviceLogger, AudioFormat? format = null)
+    public Res<IAudioPlaybackDeviceProxy>? CreatePlayback(ILogger devLogger, string primaryName, string fallbackName = "", bool finalEmptyNotDefault = false, AudioFormat? format = null)
     {
-        var updateRes = UpdateDeviceList();
-        if (!updateRes.IsOk) return ResC.TFail<AudioPlaybackDeviceProxy>(updateRes.Msg);
+        return AudioUtils.CreatePlaybackForEngine(_logger, devLogger, _audioEngine, primaryName, fallbackName, finalEmptyNotDefault, format);
+    }
 
-        var deviceInfos = GetPlaybackDevices();
-        if (!deviceInfos.IsOk) return ResC.TFail<AudioPlaybackDeviceProxy>(deviceInfos.Msg);
-
-        var deviceInfo = FindDeviceWithChecks(deviceInfos.Value, name, "playback");
-        if (deviceInfo is null) return null;
-        if (!deviceInfo.IsOk) return ResC.TFail<AudioPlaybackDeviceProxy>(deviceInfo.Msg);
-
-        format ??= new AudioFormat
-        {
-            SampleRate = 16000,
-            Channels = 1,
-            Format = SampleFormat.S16
-        };
-
-        _logger.Debug("Creating playback device for device {devName}", deviceInfo.Value.Name);
-        return ResC.TWrap(() =>
-        {
-            var device = _audioEngine!.InitializePlaybackDevice(deviceInfo.Value, format.Value);
-            _logger.Debug("Created playback device for device {devName}", deviceInfo.Value.Name);
-            return ResC.TOk(new AudioPlaybackDeviceProxy(device, deviceLogger));
-        }, $"Failed initializing playback device {deviceInfo.Value.Name}", _logger);
+    public Res<DeviceInfo>? GetPlaybackInfoForNames(string primaryName, string fallbackName = "")
+    {
+        return AudioUtils.GetPlaybackInfoForNamesForEngine(_logger, _audioEngine, primaryName, fallbackName);
     }
     #endregion
 
     #region Util
-    private Res<DeviceInfo>? FindDeviceWithChecks(DeviceInfo[] devices, string configId, string deviceTypeForLog) {
-        if (_audioEngine is null || _audioEngine.IsDisposed)
-            return ResC.TFailLog<DeviceInfo>($"Unable to retrieve {deviceTypeForLog} device, audio engine is not available", logger);
-        
-        var devInfo = AudioUtils.FindDevice(devices, configId, logger);
-        if (!devInfo.HasValue)
-        {
-            _logger.Error("Unable to retrieve {deviceTypeForLog} device, none found", deviceTypeForLog);
-        }
-
-        return devInfo.HasValue ? ResC.TOk(devInfo.Value) : null;
-    }
-
     public Res UpdateDeviceList()
     {
-        if (_audioEngine is null || _audioEngine.IsDisposed)
-            return ResC.FailLog("Audio devices could not be updated, engine is not available", _logger);
-
-        return ResC.WrapR(_audioEngine.UpdateAudioDevicesInfo, "Failed to update audio devices", _logger);
+        return AudioUtils.UpdateDeviceListForEngine(_logger, _audioEngine);
     }
     #endregion
 }

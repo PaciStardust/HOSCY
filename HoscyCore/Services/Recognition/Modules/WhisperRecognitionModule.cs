@@ -167,6 +167,8 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
             ParentSendingPipe = pipeHandleSend,
 
             CaptureDeviceName = _config.Recognition_MicrophoneName,
+            CaptureDeviceFallbackName = _config.Recognition_MicrophoneFallbackName,
+            CaptureDeviceEmptyNotFallback = _config.Recognition_MicrophoneEmptyNotDefault,
             VadOperatingMode = _config.Recognition_Whisper_Cfg_VadOperatingMode,
 
             Whisper_DetectLanguage = _config.Recognition_Whisper_Cfg_DetectLanguage,
