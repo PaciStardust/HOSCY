@@ -15,7 +15,7 @@ public class AzureRecognitionModuleStartInfo : IRecognitionModuleStartInfo //tod
 {
     public string Name => "Azure Recognizer";
     public string Description => "Remote recognition using Azure-API";
-    public Type ModuleType => typeof(TestRecognitionModule);
+    public Type ModuleType => typeof(AzureRecognitionModule);
     public ModulePriority Priority => ModulePriority.Medium;
 
     public RecognitionModuleConfigFlags ConfigFlags 
