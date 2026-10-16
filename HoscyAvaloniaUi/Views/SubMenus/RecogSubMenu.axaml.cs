@@ -61,7 +61,11 @@ public partial class RecogSubMenu : UserControl
         (DataContext as RecogSubMenuViewModelBase)?.OptionsMicrophoneChanged();
         e.Handled = true;
     }
-
+    private void OptionsMicrophoneFallbackChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        (DataContext as RecogSubMenuViewModelBase)?.OptionsMicrophoneFallbackChanged();
+        e.Handled = true;
+    }
     private void OptionsMicrophoneRefreshClicked(object? sender, RoutedEventArgs e)
     {
         (DataContext as RecogSubMenuViewModelBase)?.OptionsMicrophoneRefreshClicked();
