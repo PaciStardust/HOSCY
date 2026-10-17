@@ -1723,9 +1723,20 @@ public class ConfigModel : ObservableObject
     }
     private string _voice_Piper_Request_Voice = string.Empty;
 
-    public const string DESC_Voice_Piper_Request_NoiseScale = "Piper noise scale";
+    public const string DESC_Voice_Piper_Request_LengthScale = "Piper length scale (How slow should be spoken? Higher = Slower)";
+    public const float MIN_Voice_Piper_Request_LengthScale = -1;
+    public const float MAX_Voice_Piper_Request_LengthScale = 8;
+    public float Voice_Piper_Request_LengthScale
+    {
+        get => _voice_Piper_Request_LengthScale;
+        set => SetProperty(ref _voice_Piper_Request_LengthScale,
+            value.MinMax(MIN_Voice_Piper_Request_LengthScale, MAX_Voice_Piper_Request_LengthScale));
+    }
+    private float _voice_Piper_Request_LengthScale = -1;
+
+    public const string DESC_Voice_Piper_Request_NoiseScale = "Piper noise scale (Speaking Variability)";
     public const float MIN_Voice_Piper_Request_NoiseScale = -1;
-    public const float MAX_Voice_Piper_Request_NoiseScale = 1;
+    public const float MAX_Voice_Piper_Request_NoiseScale = 4;
     public float Voice_Piper_Request_NoiseScale
     {
         get => _voice_Piper_Request_NoiseScale;
@@ -1734,9 +1745,9 @@ public class ConfigModel : ObservableObject
     }
     private float _voice_Piper_Request_NoiseScale = -1;
 
-    public const string DESC_Voice_Piper_Request_NoiseWScale = "Piper noise w scale";
+    public const string DESC_Voice_Piper_Request_NoiseWScale = "Piper noise w scale (Phoneme width variability)";
     public const float MIN_Voice_Piper_Request_NoiseWScale = -1;
-    public const float MAX_Voice_Piper_Request_NoiseWScale = 1;
+    public const float MAX_Voice_Piper_Request_NoiseWScale = 4;
     public float Voice_Piper_Request_NoiseWScale
     {
         get => _voice_Piper_Request_NoiseWScale;

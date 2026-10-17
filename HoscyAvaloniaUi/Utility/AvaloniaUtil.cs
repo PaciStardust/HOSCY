@@ -6,7 +6,7 @@ using Serilog;
 
 namespace HoscyAvaloniaUi.Utility;
 
-public static class AvaloniaUtil //todo: audio quality for API/piper
+public static class AvaloniaUtil
 {
     public static void CopyToClipboard(ILogger? logger, IClipboard? clipboard, string text)
     {

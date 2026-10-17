@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Net.Http.Headers;
-using System.Text.RegularExpressions;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Core;
 using HoscyCore.Services.Dependency;
@@ -150,10 +149,13 @@ public class PiperServerVoiceModule
         {
             args.Add($"\"noise_scale\": {_config.Voice_Piper_Request_NoiseScale}");
         }
-
         if (_config.Voice_Piper_Request_NoiseWScale >= 0)
         {
             args.Add($"\"noise_w_scale\": {_config.Voice_Piper_Request_NoiseWScale}");
+        }
+        if (_config.Voice_Piper_Request_LengthScale > 0)
+        {
+            args.Add($"\"length_scale\": {_config.Voice_Piper_Request_LengthScale}");
         }
 
         var content = new StringContent($"{{{string.Join(", ", args)}}}", new MediaTypeHeaderValue("application/json"));

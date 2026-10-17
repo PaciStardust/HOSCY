@@ -37,6 +37,7 @@ public class VoiPiperCommandModule
             new(["port"], nameof(ConfigModel.Voice_Piper_Port), ConfigModel.DESC_Voice_Piper_Port),
 
             new(["req-voice"], nameof(ConfigModel.Voice_Piper_Request_Voice), ConfigModel.DESC_Voice_Piper_Request_Voice),
+            new(["req-length-scale"], nameof(ConfigModel.Voice_Piper_Request_LengthScale), ConfigModel.DESC_Voice_Piper_Request_LengthScale),
             new(["req-noise-scale"], nameof(ConfigModel.Voice_Piper_Request_NoiseScale), ConfigModel.DESC_Voice_Piper_Request_NoiseScale),
             new(["req-noise-w-scale"], nameof(ConfigModel.Voice_Piper_Request_NoiseWScale), ConfigModel.DESC_Voice_Piper_Request_NoiseWScale)
         ];

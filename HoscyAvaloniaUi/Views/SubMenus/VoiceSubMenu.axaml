@@ -163,6 +163,11 @@
 							</WrapPanel>
 
 							<WrapPanel Theme="{StaticResource HWrap}">
+								<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="L Scale ..." Text="{Binding Config.Voice_Piper_Request_LengthScale, Converter={StaticResource FloatRange}, ConverterParameter=ConfigModel.Voice_Piper_Request_NoiseScale}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_Piper_Request_LengthScale}"/>
+								<Label Theme="{StaticResource HLabel}" Content="Length Scale" VerticalAlignment="Center"/>
+							</WrapPanel>
+
+							<WrapPanel Theme="{StaticResource HWrap}">
 								<TextBox Theme="{StaticResource HTextBoxTiny}" PlaceholderText="Scale ..." Text="{Binding Config.Voice_Piper_Request_NoiseScale, Converter={StaticResource FloatRange}, ConverterParameter=ConfigModel.Voice_Piper_Request_NoiseScale}" ToolTip.Tip="{x:Static cfg:ConfigModel.DESC_Voice_Piper_Request_NoiseScale}"/>
 								<Label Theme="{StaticResource HLabel}" Content="Noise Scale" VerticalAlignment="Center"/>
 							</WrapPanel>
