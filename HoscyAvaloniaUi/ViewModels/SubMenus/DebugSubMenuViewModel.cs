@@ -9,6 +9,7 @@ using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Audio;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Interfacing;
+using HoscyCore.Services.Network;
 using HoscyCore.Utility;
 using Serilog;
 using Serilog.Events;
@@ -40,7 +41,7 @@ public abstract partial class DebugSubMenuViewModelBase : ViewModelBase
     public virtual void LogLevelChanged() { }
     public virtual void LogFiltersClicked() { }
     
-    public virtual void UtilOpenGit() { }
+    public virtual void UtilOpenRepo() { }
     public virtual void UtilOpenConfig() { }
     public virtual void UtilOpenLogs() { }
     public virtual void UtilSaveConfig() { }
@@ -54,6 +55,7 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
     private readonly ILogger _logger;
     private readonly IAudioService _audio;
     private readonly IApplicationSound _applicationSound;
+    private readonly IRepoService _repoService;
 
     public DebugSubMenuViewModelImpl
     (
@@ -62,7 +64,8 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
         PopupWindowFactory popupFactory, 
         IAudioService audio,
         IBackToFrontNotifyService notify,
-        IApplicationSound applicationSound
+        IApplicationSound applicationSound,
+        IRepoService repoService
     )
     {
         Config = config;
@@ -70,6 +73,7 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
         _popup = popupFactory;
         _audio = audio;
         _applicationSound = applicationSound;
+        _repoService = repoService;
 
         List<ResMsg> errors = [];
         InfoSpeaker = new(_logger, _audio, "InfoSpeaker", false, notify, 
@@ -176,10 +180,10 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
         _logger.Information("Manually opening logs");
         OtherUtils.OpenFileOrFolder(PathUtils.PathLog, _logger);
     }
-    public override void UtilOpenGit()
+    public override void UtilOpenRepo()
     {
-        _logger.Information("Manually opening git");
-        OtherUtils.OpenGithub(_logger);
+        _logger.Information("Manually opening repo");
+        OtherUtils.OpenWeb(_repoService.RepoUrl, _logger);
     }
     public override void UtilSaveConfig()
     {

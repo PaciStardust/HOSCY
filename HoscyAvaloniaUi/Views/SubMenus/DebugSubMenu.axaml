@@ -91,7 +91,7 @@
 				<!-- Settings for Tools -->
 				<StackPanel Theme="{StaticResource HStackIndent}">
 					<WrapPanel Theme="{StaticResource HWrap}">
-						<Button Content="Open Github" Theme="{StaticResource HButton}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="UtilOpenGit" ToolTip.Tip="Opens the projects repo"/>
+						<Button Content="Open Repository" Theme="{StaticResource HButton}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="UtilOpenRepo" ToolTip.Tip="Opens the projects repo"/>
 						<Button Content="Open Logs" Theme="{StaticResource HButton}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="UtilOpenLogs" ToolTip.Tip="Opens the logs folder"/>
 						<Button Content="Open Config" Theme="{StaticResource HButton}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="UtilOpenConfig" ToolTip.Tip="Opens the config folder"/>
 						<Button Content="Save Config" Theme="{StaticResource HButton}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="UtilSaveConfig" ToolTip.Tip="Saves the config"/>

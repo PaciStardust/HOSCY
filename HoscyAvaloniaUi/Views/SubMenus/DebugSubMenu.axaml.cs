@@ -50,9 +50,9 @@ public partial class DebugSubMenu : UserControl
         e.Handled = true;
     }
 
-    private void UtilOpenGit(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void UtilOpenRepo(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        (DataContext as DebugSubMenuViewModelBase)?.UtilOpenGit();
+        (DataContext as DebugSubMenuViewModelBase)?.UtilOpenRepo();
         e.Handled = true;
     }
     private void UtilOpenConfig(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

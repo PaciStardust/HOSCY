@@ -10,9 +10,9 @@ public partial class NotificationWindow : Window
         InitializeComponent();
     }
 
-    private void OnGithubClick(object? _, Avalonia.Interactivity.RoutedEventArgs e)
+    private void OnRepoClick(object? _, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        (DataContext as NotificationWindowViewModelBase)?.OnGithubClick();
+        (DataContext as NotificationWindowViewModelBase)?.OnRepoClick();
         e.Handled = true;
     }
 

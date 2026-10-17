@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using HoscyAvaloniaUi.Utility;
 using HoscyAvaloniaUi.ViewModels.Core;
 using HoscyCore.Services.Dependency;
+using HoscyCore.Services.Network;
 using HoscyCore.Utility;
 using Serilog;
 
@@ -20,21 +21,23 @@ public abstract partial class NotificationWindowViewModelBase : ViewModelBase
     public partial bool CopyClipboardVisible { get; set; } = true;
 
     public abstract void OnClipboardClick(IClipboard? clipboard);
-    public abstract void OnGithubClick();
+    public abstract void OnRepoClick();
 }
 
 [LoadIntoDiContainer(typeof(NotificationWindowViewModelBase), Lifetime.Transient)]
-public class NotificationWindowViewModelImpl(ILogger logger) : NotificationWindowViewModelBase
+public class NotificationWindowViewModelImpl(ILogger logger, IRepoService repoService) : NotificationWindowViewModelBase
 {
     private readonly ILogger _logger = logger.ForContext<NotificationWindowViewModelImpl>();
+    private readonly IRepoService _repoService = repoService;
+
     public override void OnClipboardClick(IClipboard? clipboard)
     {
         AvaloniaUtil.CopyToClipboard(_logger, clipboard, Notification);
     }
 
-    public override void OnGithubClick()
+    public override void OnRepoClick()
     {
-        OtherUtils.OpenGithub(_logger);
+        OtherUtils.OpenWeb(_repoService.RepoUrl, _logger);
     }
 }
 
@@ -42,6 +45,6 @@ public class NotificationWindowViewModelImpl(ILogger logger) : NotificationWindo
 public class NotificationWindowViewModelPreview : NotificationWindowViewModelBase
 {
     public override void OnClipboardClick(IClipboard? clipboard) { }
-    public override void OnGithubClick() { }
+    public override void OnRepoClick() { }
 }
 #endif

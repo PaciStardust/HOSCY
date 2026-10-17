@@ -102,23 +102,23 @@ public static class OtherUtils
             .TrimEnd();
     }
 
-    public static void OpenGithub(ILogger logger)
+    public static void OpenWeb(string url, ILogger logger)
     {
-        logger.Debug("Opening Github");
+        logger.Debug("Opening url \"{url}\"", url);
         try
         {
             Process.Start(new ProcessStartInfo()
             {
-                FileName = "https://github.com/PaciStardust/HOSCY",
+                FileName = url,
                 UseShellExecute = true
             });
         }
         catch (Exception ex)
         {
-            logger.Warning(ex, "Failed to open Github");
+            logger.Warning(ex, "Failed to open url \"{url}\"", url);
             return;
         }
-        logger.Debug("Opened Github");
+        logger.Debug("Opened url \"{url}\"", url);
     }
 
     public static void OpenFileOrFolder(string path, ILogger logger)
