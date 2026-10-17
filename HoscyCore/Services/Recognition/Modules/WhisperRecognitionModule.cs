@@ -54,7 +54,7 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
         if (!confRes.IsOk) return ResC.Fail(confRes.Msg);
 
         _logger.Debug("Creating whisper process process and launching");
-        var procPath = Path.Combine(PathUtils.PathHoscyApp, "HoscyWhisperV2Process");
+        var procPath = Path.Combine(PathUtils.PathHoscyApp, "HscyWhisperV2Process");
         var process = new Process()
         {
             StartInfo = new ProcessStartInfo(procPath)
