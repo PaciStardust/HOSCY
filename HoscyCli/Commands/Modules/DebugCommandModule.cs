@@ -31,7 +31,8 @@ public class DebugCommandModule(ReflectPropEditCommandModule _reflectCm) : Attri
             new(["log-severity"], nameof(ConfigModel.Debug_LogMinimumSeverity), ConfigModel.DESC_Debug_LogMinimumSeverity),
             new(["log-fiters"], nameof(ConfigModel.Debug_LogFilters), ConfigModel.DESC_Debug_LogFilters),
             new(["log-verbose-extra"], nameof(ConfigModel.Debug_LogVerboseExtra), ConfigModel.DESC_Debug_LogVerboseExtra),
-            new(["log-external-services"], nameof(ConfigModel.Debug_LogExternalServices), ConfigModel.DESC_Debug_LogExternalServices)
+            new(["log-external-services"], nameof(ConfigModel.Debug_LogExternalServices), ConfigModel.DESC_Debug_LogExternalServices),
+            new(["update-check"], nameof(ConfigModel.Debug_CheckForUpdatesOnStartup), ConfigModel.DESC_Debug_CheckForUpdatesOnStartup)
         ];
     }
 }
