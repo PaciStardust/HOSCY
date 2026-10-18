@@ -32,7 +32,7 @@
         <Label Grid.Row="0" Theme="{StaticResource HLabel}" HorizontalContentAlignment="Center" Content="{Binding WindowTitle}"/>
 
         <Border Grid.Row="2" Background="{StaticResource BackgroundDarkBrush}" CornerRadius="4">
-            <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="4">
+            <ScrollViewer Theme="{StaticResource HScrollViewer}" VerticalScrollBarVisibility="Auto" Margin="4">
                 <TextBlock Theme="{StaticResource HTextBlock}" Text="{Binding Notification}"/> 
             </ScrollViewer>
         </Border>
