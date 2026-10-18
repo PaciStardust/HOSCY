@@ -88,7 +88,7 @@ public class PopupWindowFactory
         }
     }
 
-    public void OpenNotification(string title, string message, bool copyVisible, bool doDialog, Window? windowForDialog = null, (string Name, string Url)? customButton = null)
+    public void OpenNotification(string title, string message, bool copyVisible, bool doDialog, Window? windowForDialog = null, (string Name, string? Url)? customButton = null)
     {
         _logger.Debug("Creating notif window (Title=\"{title}\", Msg=\"{msg}\", CopyV={copyV})",
             title, message, copyVisible);
