@@ -178,12 +178,12 @@ public class AvaloniaApplicationSound : StartStopServiceBase, IApplicationSound,
 
     public void PlayMuteSound()
     {
-        SetNextAudio("avares://HoscyAvaloniaUi/Assets/Mute.wav");
+        SetNextAudio("avares://HoscyUi/Assets/Mute.wav");
     }
 
     public void PlayUnmuteSound()
     {
-        SetNextAudio("avares://HoscyAvaloniaUi/Assets/Unmute.wav");
+        SetNextAudio("avares://HoscyUi/Assets/Unmute.wav");
     }
 
     public void PlayNotificationSound() //todo: [FEAT++] Needs its own file
