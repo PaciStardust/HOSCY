@@ -88,7 +88,7 @@ public class PopupWindowFactory
         }
     }
 
-    public void OpenNotification(string title, string message, bool copyVisible, bool doDialog, Window? windowForDialog = null)
+    public void OpenNotification(string title, string message, bool copyVisible, bool doDialog, Window? windowForDialog = null, (string Name, string Url)? customButton = null)
     {
         _logger.Debug("Creating notif window (Title=\"{title}\", Msg=\"{msg}\", CopyV={copyV})",
             title, message, copyVisible);
@@ -100,6 +100,12 @@ public class PopupWindowFactory
         vm.WindowTitle = title;
         vm.Notification = message;
         vm.CopyClipboardVisible = copyVisible;
+
+        if (customButton is not null)
+        {
+            vm.ButtonText = customButton.Value.Name;
+            vm.ButtonUrl = customButton.Value.Url;
+        }
 
         _sound?.PlayNotificationSound();
         Open(() => new NotificationWindow(), vm, doDialog, windowForDialog, null);

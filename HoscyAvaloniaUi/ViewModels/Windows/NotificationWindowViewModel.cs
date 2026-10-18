@@ -18,6 +18,10 @@ public abstract partial class NotificationWindowViewModelBase : ViewModelBase
     public partial string Notification { get; set; } = "Notification Text";
 
     [ObservableProperty]
+    public partial string ButtonText { get; set; } = "Open Repository";
+    public string? ButtonUrl { get; set; } = null;
+
+    [ObservableProperty]
     public partial bool CopyClipboardVisible { get; set; } = true;
 
     public abstract void OnClipboardClick(IClipboard? clipboard);
@@ -37,7 +41,7 @@ public class NotificationWindowViewModelImpl(ILogger logger, IRepoService repoSe
 
     public override void OnRepoClick()
     {
-        OtherUtils.OpenWeb(_repoService.RepoUrl, _logger);
+        OtherUtils.OpenWeb(ButtonUrl ?? _repoService.RepoUrl, _logger);
     }
 }
 

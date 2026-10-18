@@ -38,7 +38,7 @@
         </Border>
 
         <WrapPanel Theme="{StaticResource HWrap}" Grid.Row="4" HorizontalAlignment="Center">
-            <Button x:Name="buttonOpenRepo" Content="Open Repository" Theme="{StaticResource HButtonSmall}" Click="OnRepoClick"/>
+            <Button x:Name="buttonOpenRepo" Content="{Binding ButtonText}" Theme="{StaticResource HButtonSmall}" Click="OnRepoClick"/>
             <Button x:Name="buttonCopyClipboard" Content="Copy Text" Theme="{StaticResource HButtonSmall}" Click="OnClipboardClick" IsVisible="{Binding CopyClipboardVisible}"/>
         </WrapPanel>
     </Grid>
