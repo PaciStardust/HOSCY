@@ -7,11 +7,13 @@ using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using HoscyAvaloniaUi.Components;
 using HoscyAvaloniaUi.Services;
+using HoscyAvaloniaUi.Utility;
 using HoscyAvaloniaUi.ViewModels.SubMenus;
 using HoscyAvaloniaUi.Views.SubMenus;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Services.Dependency;
 using HoscyCore.Services.Interfacing;
+using HoscyCore.Services.Network;
 using HoscyCore.Utility;
 using Serilog;
 
@@ -64,6 +66,7 @@ public partial class CoreMenuViewModelImpl : CoreMenuViewModelBase
     private readonly ConfigModel _config;
     private readonly PopupWindowFactory _popup;
     private readonly IBackToFrontNotifyService _notify;
+    private readonly IRepoService _repoService;
 
     public CoreMenuViewModelImpl
     (
@@ -71,7 +74,8 @@ public partial class CoreMenuViewModelImpl : CoreMenuViewModelBase
         IContainerBulkLoader<ViewModelBase> vmLoader, 
         ConfigModel config,
         PopupWindowFactory popup,
-        IBackToFrontNotifyService notify
+        IBackToFrontNotifyService notify,
+        IRepoService repoService
     )
     {
         _logger = logger.ForContext<CoreMenuViewModelImpl>();
@@ -79,6 +83,7 @@ public partial class CoreMenuViewModelImpl : CoreMenuViewModelBase
         _config = config;
         _popup = popup;
         _notify = notify;
+        _repoService = repoService;
 
         _logger.Information("Loading buttons...");
         foreach(var buttonInfo in _buttonInfos)
@@ -92,6 +97,11 @@ public partial class CoreMenuViewModelImpl : CoreMenuViewModelBase
         }
 
         _notify.OnNotificationSent += HandleNotification;
+
+        if (_config.Debug_CheckForUpdatesOnStartup)
+        {
+            AvaloniaUtil.CheckForUpdates(_repoService, _popup).RunWithoutAwait();
+        }
     }
 
     #region Notifications

@@ -179,22 +179,7 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
     }
     public override async Task UtilCheckUpdate()
     {
-        var res = await _repoService.CheckForUpdates();
-        if (res is null) return;
-        if (!res.IsOk)
-        {
-            _popup.OpenNotification("Failed to Check Update", res.Msg.Message, true, true);
-            return;
-        }
-
-        var title = res.Value.Title ?? $"Update: {res.Value.VersionNew}";
-        var message = $"Version {res.Value.VersionCurrent} => {res.Value.VersionNew}";
-        if (!string.IsNullOrWhiteSpace(res.Value.Text))
-        {
-            message += $"\n\n{res.Value.Text}";
-        }
-
-        _popup.OpenNotification(title, message, false, true, customButton: ("Open Release Page", res.Value.Url));
+        await AvaloniaUtil.CheckForUpdates(_repoService, _popup);
     }
     public override void UtilOpenLogs()
     {
