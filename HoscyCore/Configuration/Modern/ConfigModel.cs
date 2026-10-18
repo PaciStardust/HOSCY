@@ -154,7 +154,7 @@ public class ConfigModel : ObservableObject
 
     #region Debug
     public const string DESC_Debug_CheckForUpdatesOnStartup = "Enables update checking and notications";
-    public bool Debug_CheckForUpdatesOnStartup //todo: [IMPL++] To be implemented
+    public bool Debug_CheckForUpdatesOnStartup
     {
         get => _debug_CheckForUpdatesOnStartup;
         set => SetProperty(ref _debug_CheckForUpdatesOnStartup, value);

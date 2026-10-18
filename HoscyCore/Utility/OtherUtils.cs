@@ -102,9 +102,9 @@ public static class OtherUtils
             .TrimEnd();
     }
 
-    public static void OpenWeb(string url, ILogger logger)
+    public static void OpenWeb(string url, ILogger? logger)
     {
-        logger.Debug("Opening url \"{url}\"", url);
+        logger?.Debug("Opening url \"{url}\"", url);
         try
         {
             Process.Start(new ProcessStartInfo()
@@ -115,10 +115,10 @@ public static class OtherUtils
         }
         catch (Exception ex)
         {
-            logger.Warning(ex, "Failed to open url \"{url}\"", url);
+            logger?.Warning(ex, "Failed to open url \"{url}\"", url);
             return;
         }
-        logger.Debug("Opened url \"{url}\"", url);
+        logger?.Debug("Opened url \"{url}\"", url);
     }
 
     public static void OpenFileOrFolder(string path, ILogger logger)

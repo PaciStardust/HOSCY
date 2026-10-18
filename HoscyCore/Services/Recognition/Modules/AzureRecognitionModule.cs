@@ -11,7 +11,7 @@ using Serilog;
 namespace HoscyCore.Services.Recognition.Modules;
 
 [PrototypeLoadIntoDiContainer(typeof(AzureRecognitionModuleStartInfo), Lifetime.Singleton)]
-public class AzureRecognitionModuleStartInfo : IRecognitionModuleStartInfo //todo: [TEST] Test this once azure available
+public class AzureRecognitionModuleStartInfo : IRecognitionModuleStartInfo //todo: [TEST++] this once azure available
 {
     public string Name => "Azure Recognizer";
     public string Description => "Remote recognition using Azure-API";
