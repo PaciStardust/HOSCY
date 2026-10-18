@@ -55,6 +55,12 @@ public partial class DebugSubMenu : UserControl
         (DataContext as DebugSubMenuViewModelBase)?.UtilOpenRepo();
         e.Handled = true;
     }
+    private async void UtilCheckUpdate(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (DataContext is DebugSubMenuViewModelBase vm)
+            await vm.UtilCheckUpdate();
+        e.Handled = true;
+    }
     private void UtilOpenConfig(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         (DataContext as DebugSubMenuViewModelBase)?.UtilOpenConfig();

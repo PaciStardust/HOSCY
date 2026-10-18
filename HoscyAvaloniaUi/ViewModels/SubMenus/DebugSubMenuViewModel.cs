@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using HoscyAvaloniaUi.Services;
 using HoscyAvaloniaUi.Utility;
@@ -42,6 +43,7 @@ public abstract partial class DebugSubMenuViewModelBase : ViewModelBase
     public virtual void LogFiltersClicked() { }
     
     public virtual void UtilOpenRepo() { }
+    public virtual Task UtilCheckUpdate() { return Task.CompletedTask; }
     public virtual void UtilOpenConfig() { }
     public virtual void UtilOpenLogs() { }
     public virtual void UtilSaveConfig() { }
@@ -174,6 +176,25 @@ public class DebugSubMenuViewModelImpl : DebugSubMenuViewModelBase
     {
         _logger.Information("Manually opening config");
         OtherUtils.OpenFileOrFolder(PathUtils.PathConfig, _logger);
+    }
+    public override async Task UtilCheckUpdate()
+    {
+        var res = await _repoService.CheckForUpdates();
+        if (res is null) return;
+        if (!res.IsOk)
+        {
+            _popup.OpenNotification("Failed to Check Update", res.Msg.Message, true, true);
+            return;
+        }
+
+        var title = res.Value.Title ?? $"Update: {res.Value.VersionNew}";
+        var message = $"Version {res.Value.VersionCurrent} => {res.Value.VersionNew}";
+        if (!string.IsNullOrWhiteSpace(res.Value.Text))
+        {
+            message += $"\n\n{res.Value.Text}";
+        }
+
+        _popup.OpenNotification(title, message, false, true, customButton: ("Open Release Page", res.Value.Url));
     }
     public override void UtilOpenLogs()
     {

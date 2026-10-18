@@ -99,6 +99,7 @@
 
 					<WrapPanel Theme="{StaticResource HWrap}">
 						<Button Content="Manage Services" Theme="{StaticResource HButton}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="UtilManageServices" ToolTip.Tip="Manages all services" BorderBrush="{StaticResource InvalidBrush}"/>
+						<Button Content="Check For Updates" Theme="{StaticResource HButton}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="UtilCheckUpdate" ToolTip.Tip="Checks for Available Updates"/>
 					</WrapPanel>
 				</StackPanel>
 			</StackPanel>
