@@ -80,11 +80,11 @@ public class RepoService(ILogger logger, IWebClient client) : IRepoService
             return null;
         }
 
-        var releaseUrl = OtherUtils.ExtractFromJson("url", res.Value, _logger);
+        var releaseUrl = OtherUtils.ExtractFromJson("html_url", res.Value, _logger);
         var releaseTitle = OtherUtils.ExtractFromJson("name", res.Value, _logger);
         var releaseText = OtherUtils.ExtractFromJson("body", res.Value, _logger);
 
-        return ResC.TOk(new UpdateInfo(releaseText.Value, releaseText.Value,
+        return ResC.TOk(new UpdateInfo(releaseTitle.Value, releaseText.Value,
             currentVersionRaw, releaseTag.Value, releaseUrl.Value));
     }
 }
