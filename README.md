@@ -44,6 +44,24 @@ For the following reasons this project is currently being rewritten from the gro
 - ✅ Updating Whisper
 - ✅ Improved TTS with Piper
 
+## AppImage Build Instructions
+Locally building an AppImage can be done easiest by installing Nix and using the provided flake.
+### Updating Dependencies and Flake
+Before generating the AppImage, make sure the NuGet dependencies in `flake-deps.json` are up to date by running
+```
+nix flake update
+```
+to update the flake and then 
+```
+nix build .#default.fetch-deps ./result ./flake-deps.json
+```
+to update the NuGet package information file.
+### Building the AppImage Itself
+To build the AppImage finally run the following:
+```
+nix bundle --bundler github:ralismark/nix-appimage .# -L
+```
+
 # HOSCY (Old version)
 HOSCY is a free and Open-Source tool with many utilities for communication and OSC aimed at making communication and use of OSC easier
 
