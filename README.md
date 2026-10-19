@@ -47,19 +47,29 @@ For the following reasons this project is currently being rewritten from the gro
 ## AppImage Build Instructions
 Locally building an AppImage can be done easiest by installing Nix and using the provided flake.
 ### Updating Dependencies and Flake
-Before generating the AppImage, make sure the NuGet dependencies in `flake-deps.json` are up to date by running
+Before generating the AppImage, make sure the NuGet dependencies in `flake-deps-xyz.json` are up to date by running
 ```
 nix flake update
 ```
 to update the flake and then 
 ```
-nix build .#default.fetch-deps ./result ./flake-deps.json
+nix build .#default.fetch-deps
+./result ./flake-deps-ui.json
+```
+or
+```
+nix build .#cli.fetch-deps
+./result ./flake-deps-cli.json
 ```
 to update the NuGet package information file.
 ### Building the AppImage Itself
 To build the AppImage finally run the following:
 ```
 nix bundle --bundler github:ralismark/nix-appimage .# -L
+```
+or
+```
+nix bundle --bundler github:ralismark/nix-appimage .#cli -L
 ```
 
 # HOSCY (Old version)

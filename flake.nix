@@ -5,15 +5,15 @@
     { self, nixpkgs, ... }:
     let
       pkgs = nixpkgs.legacyPackages.x86_64-linux;
-    in
-    {
-      packages.x86_64-linux.default = pkgs.buildDotnetModule {
-        pname = "hoscy";
+
+      create = { pname, projectFile, executables, mainProgram, nugetDeps } : pkgs.buildDotnetModule {
+        inherit pname;
+
         version = "0.1.0";
 
         src = ./.;
-        projectFile = [ "Hoscy.sln" ];
-        nugetDeps = ./flake-deps.json;
+        projectFile = projectFile ++ [ "./HoscyCore/HoscyCore.csproj" "./HoscyWhisperV2Process/HoscyWhisperV2Process.csproj" ];
+        nugetDeps = nugetDeps;
 
         runtimeDeps = with pkgs; [
           libGL
@@ -27,11 +27,7 @@
         dotnet-sdk = pkgs.dotnetCorePackages.sdk_10_0;
         dotnet-runtime = pkgs.dotnetCorePackages.runtime_10_0;
 
-        executables = [
-          "HscyCli"
-          "HoscyUi"
-          "HscyWhisperV2Process"
-        ];
+        executables = executables ++ [ "HscyWhisperV2Process" ];
 
         fixupPhase = ''
           shopt -s globstar
@@ -40,8 +36,26 @@
         '';
 
         meta = {
-          mainProgram = "HoscyUi";
+          mainProgram = mainProgram;
         };
+      };
+    in
+    {
+      packages.x86_64-linux.default = create 
+      { 
+        pname = "HoscyUi";
+        projectFile = [ "./HoscyAvaloniaUi/HoscyAvaloniaUi.csproj" ];
+        executables = [ "HoscyUi" ];
+        mainProgram = "HoscyUi";
+        nugetDeps = ./flake-deps-ui.json;
+      };
+      packages.x86_64-linux.cli = create 
+      { 
+        pname = "HoscyCli";
+        projectFile = [ "./HoscyCli/HoscyCli.csproj" ];
+        executables = [ "HscyCli" ];
+        mainProgram = "HscyCli";
+        nugetDeps = ./flake-deps-cli.json;
       };
     };
 }
