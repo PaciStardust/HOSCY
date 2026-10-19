@@ -28,9 +28,9 @@
         dotnet-runtime = pkgs.dotnetCorePackages.runtime_10_0;
 
         executables = [
-          "HoscyCli"
-          "HoscyAvaloniaUi"
-          "HoscyWhisperV2Process"
+          "HscyCli"
+          "HoscyUi"
+          "HscyWhisperV2Process"
         ];
 
         fixupPhase = ''
@@ -40,7 +40,7 @@
         '';
 
         meta = {
-          mainProgram = "HoscyAvaloniaUi";
+          mainProgram = "HoscyUi";
         };
       };
     };
