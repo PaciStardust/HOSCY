@@ -400,3 +400,5 @@ FodyWeavers.xsd
 
 # Nix result
 result
+
+*.AppImage
