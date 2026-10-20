@@ -35,7 +35,7 @@ For the following reasons this project is currently being rewritten from the gro
     - ✅ Azure Recognition
     - ✅ Vosk Recognition
     - ✅ Whisper Recognition
-    - ✅ Windows Recognition (V1 & V2)
+    - ✅ Windows Recognition (V1 & V2)\
   - ✅ TTS
     - ✅ Azure TTS
     - ✅ Windows TTS
@@ -51,26 +51,32 @@ Before generating the AppImage, make sure the NuGet dependencies in `flake-deps-
 ```
 nix flake update
 ```
-to update the flake and then 
+to update the flake and then for UI
 ```
 nix build .#default.fetch-deps
 ./result ./flake-deps-ui.json
 ```
-or
+or for CLI
 ```
 nix build .#cli.fetch-deps
 ./result ./flake-deps-cli.json
 ```
 to update the NuGet package information file.
 ### Building the AppImage Itself
-To build the AppImage finally run the following:
+To build the AppImage finally run the following for UI
 ```
 nix bundle --bundler github:ralismark/nix-appimage .# -L
 ```
-or
+or for CLI
 ```
 nix bundle --bundler github:ralismark/nix-appimage .#cli -L
 ```
+### Testing in a VM
+A very simple VM with Gnome and both Ui and Cli installed can be created by running:
+```
+nixos-rebuild build-vm --flake .#test-vm
+```
+Running `HoscyUi` / `HoscyCli` within the VM will start the tool.
 
 # HOSCY (Old version)
 HOSCY is a free and Open-Source tool with many utilities for communication and OSC aimed at making communication and use of OSC easier
