@@ -105,6 +105,7 @@
               neovim
               wget
               packageUi
+              packageCli
             ];
             services.xserver.enable = true;
             services.xserver.xkb = {
