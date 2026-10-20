@@ -402,3 +402,4 @@ FodyWeavers.xsd
 result
 
 *.AppImage
+*.qcow2

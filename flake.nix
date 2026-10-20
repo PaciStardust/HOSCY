@@ -2,7 +2,7 @@
   inputs.nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
 
   outputs =
-    { self, nixpkgs, ... }:
+    { self, nixpkgs, ... } @ inputs:
     let
       pkgs = nixpkgs.legacyPackages.x86_64-linux;
 
@@ -39,9 +39,8 @@
           mainProgram = mainProgram;
         };
       };
-    in
-    {
-      packages.x86_64-linux.default = create 
+
+      packageUi = create 
       { 
         pname = "HoscyUi";
         projectFile = [ "./HoscyAvaloniaUi/HoscyAvaloniaUi.csproj" ];
@@ -49,7 +48,7 @@
         mainProgram = "HoscyUi";
         nugetDeps = ./flake-deps-ui.json;
       };
-      packages.x86_64-linux.cli = create 
+      packageCli = create 
       { 
         pname = "HoscyCli";
         projectFile = [ "./HoscyCli/HoscyCli.csproj" ];
@@ -57,5 +56,73 @@
         mainProgram = "HscyCli";
         nugetDeps = ./flake-deps-cli.json;
       };
+    in
+    {
+      nixosConfigurations.test-vm = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs; };
+        modules = [
+          {
+            networking.hostName = "hoscy-test";
+            system.stateVersion = "25.11";
+            users.users.test = {
+              isNormalUser = true;
+              initialPassword = "test";
+              description = "Test-Account";
+              extraGroups = [ "networkmanager" "wheel" ];
+            };
+            virtualisation.vmVariant = {
+              virtualisation.memorySize = 16384;
+              virtualisation.cores = 8;
+              virtualisation.diskSize = 100000;
+            };
+            boot.loader.systemd-boot.enable = true;
+            boot.loader.efi.canTouchEfiVariables = true;
+            security.sudo = {
+              enable = true;
+              wheelNeedsPassword = true;
+            };
+            networking.networkmanager.enable = true;
+            time.timeZone = "Europe/Berlin";
+            i18n.defaultLocale = "en_GB.UTF-8";
+            i18n.extraLocaleSettings = {
+              LC_ADDRESS = "de_DE.UTF-8";
+              LC_IDENTIFICATION = "en_GB.UTF-8";
+              LC_MEASUREMENT = "de_DE.UTF-8";
+              LC_MONETARY = "de_DE.UTF-8";
+              LC_NAME = "de_DE.UTF-8";
+              LC_NUMERIC = "de_DE.UTF-8";
+              LC_PAPER = "de_DE.UTF-8";
+              LC_TELEPHONE = "de_DE.UTF-8";
+              LC_TIME = "en_GB.UTF-8";
+            };
+            console.keyMap = "us";
+            nix.settings.experimental-features = [ "nix-command" "flakes" ];
+            environment.systemPackages = with pkgs; [
+              curl
+              git
+              man-db
+              man-pages
+              neovim
+              wget
+              packageUi
+            ];
+            services.xserver.enable = true;
+            services.xserver.xkb = {
+              layout = "us";
+              variant = "altgr-intl";
+              model = "pc105";
+            };
+            hardware.graphics.enable = true;
+            services.displayManager.gdm.enable = true;
+            services.desktopManager.gnome.enable = true;
+            services.gnome.core-developer-tools.enable = false;
+            services.gnome.games.enable = false;
+            environment.gnome.excludePackages = with pkgs; [ gnome-tour gnome-user-docs ];
+            nixpkgs.hostPlatform = nixpkgs.lib.mkDefault "x86_64-linux";
+          }
+        ];
+      };
+      packages.x86_64-linux.default = packageUi;
+      packages.x86_64-linux.cli = packageCli;
     };
 }
