@@ -42,6 +42,7 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
                 <Label Theme="{StaticResource HLabelM}" Content="Mwow2" />
                 <Label Theme="{StaticResource HLabelL}" Content="Mwow2" />
                 <CheckBox Theme="{StaticResource HCheckBox}" Content="Mwow2" />
+                <CheckBox Theme="{StaticResource HCheckBox}" Content="Mwow2" IsChecked="True" />
                 <Slider Minimum="0" Maximum="10" Theme="{StaticResource HSlider}"/>
                 <ScrollBar
                 Orientation="Horizontal"
@@ -59,6 +60,9 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
         </Border>
     </Design.PreviewWith>
 
+    <FontFamily x:Key="NotoSans">avares://HoscyUi/Assets/Noto Sans/NotoSans-VariableFont.ttf#Noto Sans</FontFamily>
+    <FontFamily x:Key="NotoSansSymbols">avares://HoscyUi/Assets/Noto Sans/NotoSansSymbols2-Regular.ttf#Noto Sans Symbols 2, Regular</FontFamily>
+
     <conv:StringNullOrEmptyToBoolConverter x:Key="StringNullOrEmptyToBool"/>
     <conv:IntRangeConverter x:Key="IntRange"/>
     <conv:FloatRangeConverter x:Key="FloatRange"/>
@@ -71,7 +75,7 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
     <ControlTheme x:Key="HTextBlock" TargetType="TextBlock">
         <Setter Property="Foreground" Value="{StaticResource FrontBrush}"/>
         <Setter Property="FontSize" Value="18"/>
-        <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}"/>
         <Setter Property="TextWrapping" Value="Wrap"/>
 
         <Style Selector="^:disabled">
@@ -98,7 +102,7 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
         <Setter Property="BorderThickness" Value="0,0,0,2"/>
         <Setter Property="TextWrapping" Value="NoWrap"/>
         <Setter Property="FontSize" Value="18"/>
-        <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}"/>
         <Setter Property="SelectionBrush" Value="{DynamicResource AccentHalfOpaBrush}"/>
         <Setter Property="CaretBrush" Value="{DynamicResource AccentBrush}"/>
 
@@ -218,7 +222,7 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
         <Setter Property="BorderBrush" Value="{StaticResource BackgroundDarkBrush}"/>
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="FontSize" Value="18"/>
-        <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}"/>
 
         <Setter Property="Template">
             <ControlTemplate>
@@ -267,7 +271,7 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
     <ControlTheme x:Key="HListBox" TargetType="ListBox">
         <Setter Property="Foreground" Value="{StaticResource FrontBrush}"/>
         <Setter Property="FontSize" Value="18"/>
-        <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}"/>
         <Setter Property="BorderBrush" Value="{StaticResource BackgroundLightBrush}"/>
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="Background" Value="{StaticResource BackgroundDarkBrush}"/>
@@ -343,7 +347,7 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
     <ControlTheme x:Key="HLabel" TargetType="Label">
         <Setter Property="Foreground" Value="{StaticResource FrontBrush}"/>
         <Setter Property="FontSize" Value="18"/>
-        <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}"/>
 
         <Style Selector="^:disabled">
             <Setter Property="Opacity" Value="0.65"/>
@@ -367,7 +371,7 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
     <ControlTheme x:Key="HCheckBox" TargetType="CheckBox">
         <Setter Property="Foreground" Value="{StaticResource FrontBrush}"/>
         <Setter Property="FontSize" Value="18"/>
-        <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}"/>
         <Setter Property="BorderBrush" Value="{StaticResource BackgroundDarkBrush}"/>
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="Background" Value="{StaticResource BackgroundDarkBrush}"/>
@@ -388,11 +392,13 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
                         IsVisible="{TemplateBinding IsChecked}"
                         VerticalAlignment="Center"
                         HorizontalAlignment="Center"
-                        FontWeight="Bold"
-                        FontFamily="Segoe MDL2 Assets"
+                        FontWeight="Regular"
+                        FontFamily="{StaticResource NotoSansSymbols}"
+                        FontSize="16"
                         Foreground="{DynamicResource AccentBrush}"
+                        Margin="0.5,3.25,0,0"
                         IsHitTestVisible="False">
-                            &#xE73E;
+                            ⯌
                         </TextBlock>
                     </Border>
                     <ContentPresenter x:Name="PART_ContentPresenter"
@@ -998,7 +1004,7 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
         <Setter Property="MinHeight" Value="20"/>
         <Setter Property="Foreground" Value="{StaticResource FrontBrush}"/>
         <Setter Property="FontSize" Value="18"/>
-        <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}"/>
         <Setter Property="ItemContainerTheme" Value="{StaticResource HComboBoxItem}"/>
         <Setter Property="MaxDropDownHeight" Value="160"/>
 
@@ -1144,6 +1150,7 @@ xmlns:comp="using:HoscyAvaloniaUi.Components">
     <ControlTheme x:Key="{x:Type ToolTip}" TargetType="ToolTip">
         <Setter Property="ShowDelay" Value="2"/>
         <Setter Property="Opacity" Value="0" />
+        <Setter Property="Foreground" Value="{StaticResource FrontColor}"/>
         <Setter Property="Template">
             <ControlTemplate>
                 <Border Name="PART_LayoutRoot"

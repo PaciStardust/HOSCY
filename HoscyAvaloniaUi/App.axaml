@@ -17,4 +17,12 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
+
+    <Application.Styles>
+        <FluentTheme />
+            <Style Selector="ContentPresenter">
+                <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+                <Setter Property="FontWeight" Value="Medium" />
+            </Style>
+    </Application.Styles>
 </Application>

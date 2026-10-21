@@ -20,8 +20,10 @@
           kdePackages.wayland
           fcitx5
           libxkbcommon
+          fontconfig
           miniaudio
           pulseaudio
+          nix-ld
         ];
 
         dotnet-sdk = pkgs.dotnetCorePackages.sdk_10_0;
@@ -106,6 +108,7 @@
               wget
               packageUi
               packageCli
+              strace
             ];
             services.xserver.enable = true;
             services.xserver.xkb = {

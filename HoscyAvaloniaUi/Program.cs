@@ -36,7 +36,6 @@ sealed class Program
     {
         return AppBuilder.Configure(() => new App(logger))
             .UsePlatformDetect()
-            .WithInterFont()
             .LogToSerilog(logger)
             .UseWaylandWithFallback();
     }
@@ -46,6 +45,6 @@ sealed class Program
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithDataAnnotationsValidation()
-            .WithInterFont();
+            .UseWaylandWithFallback();
     }
 }
