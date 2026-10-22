@@ -22,17 +22,17 @@ public class RecognitionComponentFactory(WhisperIpcConfig config)
             .CreateLogger();
     }
 
-    public AudioEngine CreateAudioEngine(ILogger logger)
+    public ThreadedAudioEngine CreateAudioEngine(ILogger logger)
     {
         logger.Debug("Starting audio engine");
 
-        var engine = new MiniAudioEngine();
+        var engine = new ThreadedAudioEngine(new MiniAudioEngine(), logger,"WhisperAudioEngine");
         engine.UpdateAudioDevicesInfo();
 
         return engine;
     }
 
-    public IAudioCaptureDeviceProxy CreateCaptureDevice(AudioEngine engine, ILogger logger, WhisperIpcConfig cfg)
+    public IAudioCaptureDeviceProxy CreateCaptureDevice(ThreadedAudioEngine engine, ILogger logger, WhisperIpcConfig cfg)
     {
         logger.Debug("Creating audio device");
 

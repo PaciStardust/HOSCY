@@ -5,11 +5,12 @@ using SoundFlow.Components;
 
 namespace HoscyCore.Services.Audio;
 
-public class AudioPlaybackDeviceProxy(AudioPlaybackDevice playback, ILogger logger) 
+public class AudioPlaybackDeviceProxy(AudioPlaybackDevice playback, ILogger logger, ThreadedAudioEngine engine) 
     : IAudioPlaybackDeviceProxy
 {
     private readonly AudioPlaybackDevice _playback = playback;
     private readonly ILogger _logger = logger;
+    private readonly ThreadedAudioEngine _engine = engine;
     
     public MemoryStream Stream { get; private init; } = new();
 
@@ -47,8 +48,8 @@ public class AudioPlaybackDeviceProxy(AudioPlaybackDevice playback, ILogger logg
         try
         {
             _logger.Verbose("Initializing components to play audio");
-            provider = new FixedStreamDataProvider(_playback.Engine, _playback.Format, Stream);
-            player = new SoundPlayer(_playback.Engine, _playback.Format, provider)
+            provider = new FixedStreamDataProvider(_engine, _playback.Format, Stream);
+            player = new SoundPlayer(_engine.Engine, _playback.Format, provider)
             {
                 Volume = volume,
             };

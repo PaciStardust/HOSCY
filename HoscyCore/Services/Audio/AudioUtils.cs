@@ -3,7 +3,6 @@ using System.Runtime.InteropServices;
 using HoscyCore.Configuration.Modern;
 using HoscyCore.Utility;
 using Serilog;
-using SoundFlow.Abstracts;
 using SoundFlow.Abstracts.Devices;
 using SoundFlow.Enums;
 using SoundFlow.Extensions.WebRtc.Apm;
@@ -18,18 +17,18 @@ public static class AudioUtils
     public const string DEVICE_DEFAULT = "[Default Device]";
 
     #region Audio Engine Devices (General)
-    public static Res UpdateDeviceListForEngine(ILogger logger, AudioEngine? audioEngine)
+    public static Res UpdateDeviceListForEngine(ILogger logger, ThreadedAudioEngine? audioEngine)
     {
-        if (audioEngine is null || audioEngine.IsDisposed)
+        if (audioEngine is null)
             return ResC.FailLog("Audio devices could not be updated, engine is not available", logger);
 
-        return ResC.WrapR(audioEngine.UpdateAudioDevicesInfo, "Failed to update audio devices", logger);
+        return audioEngine.UpdateAudioDevicesInfo();
     }
 
     private static Res<T>? CreateDeviceForEngine<T>
     (
         ILogger logger, 
-        AudioEngine? audioEngine, 
+        ThreadedAudioEngine? audioEngine, 
         string deviceType,
         Func<Res<DeviceInfo[]>> funcGetDeviceInfos,
         Func<T> funcGetEmptyDevice,
@@ -190,15 +189,15 @@ public static class AudioUtils
     #endregion
 
     #region Audio Engine Devices (Capture)
-    public static Res<DeviceInfo[]> GetCaptureInfosForEngine(ILogger logger, AudioEngine? audioEngine)
+    public static Res<DeviceInfo[]> GetCaptureInfosForEngine(ILogger logger, ThreadedAudioEngine? audioEngine)
     {
-        return audioEngine is not null && !audioEngine.IsDisposed 
+        return audioEngine is not null
             ? ResC.TOk(audioEngine.CaptureDevices)
             : ResC.TFailLog<DeviceInfo[]>("Failed to retrieve capture devices, audio engine not available", logger);
     }
 
     public static Res<IAudioCaptureDeviceProxy>? CreateCaptureForEngine
-    (ILogger logger, ILogger devLogger, AudioEngine? audioEngine, string primaryDeviceName, string fallbackDeviceName = "", bool finalEmptyNotDefault = false, AudioFormat? format = null)
+    (ILogger logger, ILogger devLogger, ThreadedAudioEngine? audioEngine, string primaryDeviceName, string fallbackDeviceName = "", bool finalEmptyNotDefault = false, AudioFormat? format = null)
     {
         format ??= new AudioFormat
         {
@@ -217,8 +216,9 @@ public static class AudioUtils
             (deviceInfo) =>
             {
                 var device = audioEngine!.InitializeCaptureDevice(deviceInfo, format.Value);
+                if (!device.IsOk) return ResC.TFail<IAudioCaptureDeviceProxy>(device.Msg);
                 logger.Debug("Created capture device for device {devName}", deviceInfo.Name);
-                return ResC.TOk<IAudioCaptureDeviceProxy>(new AudioCaptureDeviceProxy(device, devLogger));
+                return ResC.TOk<IAudioCaptureDeviceProxy>(new AudioCaptureDeviceProxy(device.Value, devLogger));
             },
             primaryDeviceName,
             fallbackDeviceName,
@@ -226,7 +226,7 @@ public static class AudioUtils
         );
     }
 
-    public static Res<DeviceInfo>? GetCaptureInfoForNamesForEngine(ILogger logger, AudioEngine? audioEngine, string primaryDeviceName, string fallbackDeviceName = "")
+    public static Res<DeviceInfo>? GetCaptureInfoForNamesForEngine(ILogger logger, ThreadedAudioEngine? audioEngine, string primaryDeviceName, string fallbackDeviceName = "")
     {
         var devices = GetCaptureInfosForEngine(logger, audioEngine);
         if (!devices.IsOk) return ResC.TFail<DeviceInfo>(devices.Msg);
@@ -237,15 +237,15 @@ public static class AudioUtils
     #endregion
 
     #region Audio Engine Devices (Playback)
-    public static Res<DeviceInfo[]> GetPlaybackInfosForEngine(ILogger logger, AudioEngine? audioEngine)
+    public static Res<DeviceInfo[]> GetPlaybackInfosForEngine(ILogger logger, ThreadedAudioEngine? audioEngine)
     {
-        return audioEngine is not null && !audioEngine.IsDisposed 
+        return audioEngine is not null
             ? ResC.TOk(audioEngine.PlaybackDevices)
             : ResC.TFailLog<DeviceInfo[]>("Failed to retrieve playback devices, audio engine not available", logger);
     }
 
     public static Res<IAudioPlaybackDeviceProxy>? CreatePlaybackForEngine
-        (ILogger logger, ILogger devLogger, AudioEngine? audioEngine, string primaryDeviceName, string fallbackDeviceName = "", bool finalEmptyNotDefault = false, AudioFormat? format = null)
+        (ILogger logger, ILogger devLogger, ThreadedAudioEngine? audioEngine, string primaryDeviceName, string fallbackDeviceName = "", bool finalEmptyNotDefault = false, AudioFormat? format = null)
     {
         format ??= new AudioFormat
         {
@@ -264,8 +264,9 @@ public static class AudioUtils
             (deviceInfo) =>
             {
                 var device = audioEngine!.InitializePlaybackDevice(deviceInfo, format: format.Value);
+                if (!device.IsOk) return ResC.TFail<IAudioPlaybackDeviceProxy>(device.Msg);
                 logger.Debug("Created playback device for device {devName}", deviceInfo.Name);
-                return ResC.TOk<IAudioPlaybackDeviceProxy>(new AudioPlaybackDeviceProxy(device, devLogger));
+                return ResC.TOk<IAudioPlaybackDeviceProxy>(new AudioPlaybackDeviceProxy(device.Value, devLogger, audioEngine));
             },
             primaryDeviceName,
             fallbackDeviceName,
@@ -273,7 +274,7 @@ public static class AudioUtils
         );
     }
 
-    public static Res<DeviceInfo>? GetPlaybackInfoForNamesForEngine(ILogger logger, AudioEngine? audioEngine, string primaryDeviceName, string fallbackDeviceName = "")
+    public static Res<DeviceInfo>? GetPlaybackInfoForNamesForEngine(ILogger logger, ThreadedAudioEngine? audioEngine, string primaryDeviceName, string fallbackDeviceName = "")
     {
         var devices = GetPlaybackInfosForEngine(logger, audioEngine);
         if (!devices.IsOk) return ResC.TFail<DeviceInfo>(devices.Msg);
