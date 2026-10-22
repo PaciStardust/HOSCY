@@ -16,4 +16,5 @@ public interface IAudioService : IAutoStartStopService
     public Res<IAudioPlaybackDeviceProxy>? CreatePlayback(ILogger devLogger, string primaryName, string fallbackName = "", bool finalEmptyNotDefault = false, AudioFormat? format = null);
 
     public Res UpdateDeviceList();
+    public void SetAudioLockState(bool locked);
 }

@@ -14,7 +14,7 @@ public class AudioServiceStartupTests : TestBase<AudioServiceStartupTests>
     protected override void SetupExtra()
     {
         _config = new();
-        _audio = new(_logger, _config);
+        _audio = new(_logger);
     }
 
     [TestCase(false), TestCase(true)]
@@ -31,7 +31,7 @@ public class AudioServiceFunctionTests : TestBase<AudioServiceFunctionTests>
 
     protected override void OneTimeSetupExtra()
     {
-        var audioService = new AudioService(_logger, _config);
+        var audioService = new AudioService(_logger);
         audioService.Start().AssertOk();
         _audioService = audioService;
     }

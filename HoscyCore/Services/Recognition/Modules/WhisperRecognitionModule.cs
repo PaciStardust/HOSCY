@@ -11,6 +11,7 @@ using Serilog;
 using HoscyCore.Services.Interfacing;
 using System.Text;
 using System.Text.RegularExpressions;
+using HoscyCore.Services.Audio;
 
 namespace HoscyCore.Services.Recognition.Modules;
 
@@ -27,13 +28,14 @@ public class WhisperRecognitionModuleStartInfo : IRecognitionModuleStartInfo
 }
 
 [PrototypeLoadIntoDiContainer(typeof(WhisperRecognitionModule), Lifetime.Transient)]
-public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackToFrontNotifyService notify)
+public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackToFrontNotifyService notify, IAudioService audio)
     : RecognitionModuleBase(logger.ForContext<WhisperRecognitionModule>())
 {
     #region Vars
     private readonly ConfigModel _config = config;
     private readonly IpcDataConverter _ipcConverter = new(logger.ForContext<WhisperRecognitionModule>());
     private readonly IBackToFrontNotifyService _notify = notify;
+    private readonly IAudioService _audio = audio;
 
     private Process? _whisperProcess = null;
     private IpcSendPipe? _ipcPipe = null;
@@ -43,6 +45,18 @@ public class WhisperRecognitionModule(ILogger logger, ConfigModel config, IBackT
     #region Startup
     private WhisperIpcStartupStage _startupStage = WhisperIpcStartupStage.Inactive;
     protected override Res StartForService()
+    {
+        try
+        {
+            _audio.SetAudioLockState(true);
+            return StartForServiceInternal();
+        }
+        finally
+        {
+            _audio.SetAudioLockState(false);
+        }
+    }
+    private Res StartForServiceInternal()
     {
         _logger.Debug("Creating IPC pipe");
         var pipeRes = ResC.TWrapR(() => new IpcSendPipe(_logger, _config.Debug_LogVerboseExtra),

@@ -10,12 +10,11 @@ using SoundFlow.Structs;
 namespace HoscyCore.Services.Audio;
 
 [PrototypeLoadIntoDiContainer(typeof(IAudioService), Lifetime.Singleton)]
-public class AudioService(ILogger logger, ConfigModel config)
+public class AudioService(ILogger logger)
     : StartStopServiceBase(logger.ForContext<AudioService>()), IAudioService
 {
     #region Vars
-    private AudioEngine? _audioEngine;
-    private readonly ConfigModel _config = config;
+    private ThreadedAudioEngine? _audioEngine;
     #endregion
 
     #region Start / Stop
@@ -29,7 +28,7 @@ public class AudioService(ILogger logger, ConfigModel config)
         _logger.Debug("Starting audio engine");
         try
         {
-            _audioEngine = new MiniAudioEngine();
+            _audioEngine = new(new MiniAudioEngine(), _logger, "AudioService");
         }
         catch (Exception ex)
         {
@@ -45,7 +44,7 @@ public class AudioService(ILogger logger, ConfigModel config)
     }
     protected override void DisposeCleanup()
     {
-        if (_audioEngine is not null && !_audioEngine.IsDisposed)
+        if (_audioEngine is not null)
         {
             _audioEngine.Dispose();
         }
@@ -91,6 +90,18 @@ public class AudioService(ILogger logger, ConfigModel config)
     public Res UpdateDeviceList()
     {
         return AudioUtils.UpdateDeviceListForEngine(_logger, _audioEngine);
+    }
+
+    public void SetAudioLockState(bool locked)
+    {
+        if (locked)
+        {
+            _audioEngine?.Lock.Enter();
+        }
+        else
+        {
+            _audioEngine?.Lock.Exit();
+        }
     }
     #endregion
 }

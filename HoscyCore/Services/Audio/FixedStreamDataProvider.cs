@@ -25,7 +25,7 @@ public sealed class FixedStreamDataProvider : ISoundDataProvider
     /// <param name="engine">The audio engine instance.</param>
     /// <param name="stream">The stream to read audio data from. Must be readable and seekable.</param>
     /// <param name="options">Optional configuration for metadata reading.</param>
-    public FixedStreamDataProvider(AudioEngine engine, Stream stream, ReadOptions? options = null)
+    public FixedStreamDataProvider(ThreadedAudioEngine engine, Stream stream, ReadOptions? options = null)
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
         options ??= new ReadOptions();
@@ -76,7 +76,7 @@ public sealed class FixedStreamDataProvider : ISoundDataProvider
     /// <param name="engine">The audio engine instance.</param>
     /// <param name="format">The audio format.</param>
     /// <param name="stream">The stream to read audio data from.</param>
-    public FixedStreamDataProvider(AudioEngine engine, AudioFormat format, Stream stream)
+    public FixedStreamDataProvider(ThreadedAudioEngine engine, AudioFormat format, Stream stream)
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
         
